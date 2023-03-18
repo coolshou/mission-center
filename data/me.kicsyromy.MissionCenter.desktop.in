@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=missioncenter
+Exec=missioncenter
+Icon=me.kicsyromy.MissionCenter
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

@@ -1,0 +1,4 @@
+data/me.kicsyromy.MissionCenter.desktop.in
+data/me.kicsyromy.MissionCenter.appdata.xml.in
+data/me.kicsyromy.MissionCenter.gschema.xml
+src/window.blp
