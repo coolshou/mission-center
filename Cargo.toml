@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gtk = { version = "0.6", package = "gtk4" }
+sysinfo = "0.28"
 
 [dependencies.adw]
 package = "libadwaita"
@@ -16,6 +17,6 @@ features = ["v1_2"]
 git = "https://github.com/plotters-rs/plotters"
 rev = "acf5158"
 
-[dependencies.plotters-cairo]
-git = "https://github.com/plotters-rs/plotters-cairo"
-rev = "515ab36"
+[dependencies.plotters-backend]
+git = "https://github.com/plotters-rs/plotters"
+rev = "acf5158"

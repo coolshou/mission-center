@@ -28,6 +28,7 @@ use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
 mod application;
+mod cairo_plotter_backend;
 mod window;
 
 mod config {

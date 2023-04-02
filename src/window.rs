@@ -19,8 +19,10 @@
  */
 
 use adw::subclass::prelude::*;
-use gtk::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio, glib, prelude::*};
+use plotters::{drawing::IntoDrawingArea, prelude::*};
+
+use crate::plotters_cairo;
 
 mod imp {
     use super::*;
@@ -28,9 +30,10 @@ mod imp {
     #[derive(Debug, Default, gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
-        // Template widgets
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
+        #[template_child]
+        pub drawing_area: TemplateChild<gtk::DrawingArea>,
     }
 
     #[glib::object_subclass]
@@ -67,13 +70,63 @@ glib::wrapper! {
 
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
-        unsafe {
+        let this: MissionCenterWindow = unsafe {
             glib::Object::new_internal(
                 MissionCenterWindow::static_type(),
                 &mut [("application", application.into())],
             )
             .downcast()
             .unwrap()
-        }
+        };
+
+        this.imp().drawing_area.set_draw_func(|_, cr, w, h| {
+            let backend = plotters_cairo::CairoBackend::new(cr, (w as u32, h as u32)).unwrap();
+            let root = IntoDrawingArea::into_drawing_area(backend);
+
+            let draw_func = move || -> Result<(), Box<dyn std::error::Error>> {
+                // After this point, we should be able to construct a chart context
+                let mut chart = ChartBuilder::on(&root)
+                    // Set the caption of the chart
+                    .caption("This is our first plot", ("sans-serif", 40).into_font())
+                    // Set the size of the label region
+                    .x_label_area_size(20)
+                    .y_label_area_size(40)
+                    // Finally attach a coordinate on the drawing area and make a chart context
+                    .build_cartesian_2d(0f32..10f32, 0f32..10f32)?;
+
+                // Then we can draw a mesh
+                chart
+                    .configure_mesh()
+                    // We can customize the maximum number of labels allowed for each axis
+                    .x_labels(5)
+                    .y_labels(5)
+                    // We can also change the format of the label text
+                    .y_label_formatter(&|x| format!("{:.3}", x))
+                    .draw()?;
+
+                // And we can draw something in the drawing area
+                chart.draw_series(LineSeries::new(
+                    vec![(0.0, 0.0), (5.0, 5.0), (8.0, 7.0)],
+                    &RED,
+                ))?;
+                // Similarly, we can draw point series
+                chart.draw_series(PointSeries::of_element(
+                    vec![(0.0, 0.0), (5.0, 5.0), (8.0, 7.0)],
+                    5,
+                    &RED,
+                    &|c, s, st| {
+                        return EmptyElement::at(c)    // We want to construct a composed element on-the-fly
+                            + Circle::new((0, 0), s, st.filled()) // At this point, the new pixel coordinate is established
+                            + Text::new(format!("{:?}", c), (10, 0), ("sans-serif", 10).into_font());
+                    },
+                ))?;
+                root.present()?;
+
+                Ok(())
+            };
+            draw_func().unwrap();
+        });
+
+        this
     }
 }

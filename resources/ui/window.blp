@@ -38,6 +38,8 @@ template MissionCenterWindow : Adw.ApplicationWindow {
         hexpand: true;
         vexpand: true;
 
+        transition-type: crossfade;
+
         StackPage {
           name: "processes";
           icon-name: "system-run-symbolic";
@@ -51,14 +53,12 @@ template MissionCenterWindow : Adw.ApplicationWindow {
           name: "performance";
           icon-name: "speedometer-symbolic";
           title: "Performance";
-          child: Adw.StatusPage {
-            title: "Performance Page";
-
-            };
-          }
+          child: DrawingArea drawing_area {
+          };
         }
       }
     }
+  }
 }
 
 menu primary_menu {
