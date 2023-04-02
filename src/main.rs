@@ -24,11 +24,14 @@ use gtk::prelude::*;
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 
+use crate::sysinfo::run_cpu_usage_loop;
+
 use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
 mod application;
 mod cairo_plotter_backend;
+mod sysinfo;
 mod window;
 
 mod config {
@@ -61,6 +64,8 @@ fn main() {
         "me.kicsyromy.MissionCenter",
         &gio::ApplicationFlags::empty(),
     );
+
+    run_cpu_usage_loop();
 
     // Run the application. This function will block until the application
     // exits. Upon return, we have our exit code to return to the shell. (This
