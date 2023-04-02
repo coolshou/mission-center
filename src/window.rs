@@ -27,18 +27,16 @@ mod imp {
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/window.ui")]
-    pub struct MissioncenterWindow {
+    pub struct MissionCenterWindow {
         // Template widgets
         #[template_child]
-        pub header_bar: TemplateChild<gtk::HeaderBar>,
-        #[template_child]
-        pub label: TemplateChild<gtk::Label>,
+        pub header_bar: TemplateChild<adw::HeaderBar>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for MissioncenterWindow {
-        const NAME: &'static str = "MissioncenterWindow";
-        type Type = super::MissioncenterWindow;
+    impl ObjectSubclass for MissionCenterWindow {
+        const NAME: &'static str = "MissionCenterWindow";
+        type Type = super::MissionCenterWindow;
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
@@ -50,25 +48,32 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MissioncenterWindow {}
+    impl ObjectImpl for MissionCenterWindow {}
 
-    impl WidgetImpl for MissioncenterWindow {}
+    impl WidgetImpl for MissionCenterWindow {}
 
-    impl WindowImpl for MissioncenterWindow {}
+    impl WindowImpl for MissionCenterWindow {}
 
-    impl ApplicationWindowImpl for MissioncenterWindow {}
+    impl ApplicationWindowImpl for MissionCenterWindow {}
 
-    impl AdwApplicationWindowImpl for MissioncenterWindow {}
+    impl AdwApplicationWindowImpl for MissionCenterWindow {}
 }
 
 glib::wrapper! {
-    pub struct MissioncenterWindow(ObjectSubclass<imp::MissioncenterWindow>)
+    pub struct MissionCenterWindow(ObjectSubclass<imp::MissionCenterWindow>)
         @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow, adw::ApplicationWindow,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl MissioncenterWindow {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new(&[("application", application)])
+impl MissionCenterWindow {
+    pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
+        unsafe {
+            glib::Object::new_internal(
+                MissionCenterWindow::static_type(),
+                &mut [("application", application.into())],
+            )
+            .downcast()
+            .unwrap()
+        }
     }
 }

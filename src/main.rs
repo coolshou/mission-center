@@ -24,8 +24,8 @@ use gtk::prelude::*;
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 
-use self::application::MissioncenterApplication;
-use self::window::MissioncenterWindow;
+use self::application::MissionCenterApplication;
+use self::window::MissionCenterWindow;
 
 mod application;
 mod window;
@@ -56,7 +56,7 @@ fn main() {
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
-    let app = MissioncenterApplication::new(
+    let app = MissionCenterApplication::new(
         "me.kicsyromy.MissionCenter",
         &gio::ApplicationFlags::empty(),
     );
@@ -65,5 +65,5 @@ fn main() {
     // exits. Upon return, we have our exit code to return to the shell. (This
     // is the code you see when you do `echo $?` after running a command in a
     // terminal.
-    std::process::exit(app.run());
+    std::process::exit(app.run().into());
 }

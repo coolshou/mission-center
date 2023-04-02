@@ -18,47 +18,47 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use gtk::prelude::*;
 use adw::subclass::prelude::*;
+use gtk::prelude::*;
 use gtk::{gio, glib};
 
 use crate::config::VERSION;
-use crate::MissioncenterWindow;
+use crate::MissionCenterWindow;
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub struct MissioncenterApplication {}
+    pub struct MissionCenterApplication {}
 
     #[glib::object_subclass]
-    impl ObjectSubclass for MissioncenterApplication {
+    impl ObjectSubclass for MissionCenterApplication {
         const NAME: &'static str = "MissioncenterApplication";
-        type Type = super::MissioncenterApplication;
+        type Type = super::MissionCenterApplication;
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for MissioncenterApplication {
+    impl ObjectImpl for MissionCenterApplication {
         fn constructed(&self) {
             self.parent_constructed();
-            let obj = self.instance();
+            let obj = self.obj();
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
         }
     }
 
-    impl ApplicationImpl for MissioncenterApplication {
+    impl ApplicationImpl for MissionCenterApplication {
         // We connect to the activate callback to create a window when the application
         // has been launched. Additionally, this callback notifies us when the user
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
         fn activate(&self) {
-            let application = self.instance();
+            let application = self.obj();
             // Get the current window or create one if necessary
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = MissioncenterWindow::new(&*application);
+                let window = MissionCenterWindow::new(&*application);
                 window.upcast()
             };
 
@@ -67,19 +67,30 @@ mod imp {
         }
     }
 
-    impl GtkApplicationImpl for MissioncenterApplication {}
-    impl AdwApplicationImpl for MissioncenterApplication {}
+    impl GtkApplicationImpl for MissionCenterApplication {}
+
+    impl AdwApplicationImpl for MissionCenterApplication {}
 }
 
 glib::wrapper! {
-    pub struct MissioncenterApplication(ObjectSubclass<imp::MissioncenterApplication>)
+    pub struct MissionCenterApplication(ObjectSubclass<imp::MissionCenterApplication>)
         @extends gio::Application, gtk::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl MissioncenterApplication {
+impl MissionCenterApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        glib::Object::new(&[("application-id", &application_id), ("flags", flags)])
+        unsafe {
+            glib::Object::new_internal(
+                MissionCenterApplication::static_type(),
+                &mut [
+                    ("application-id", application_id.into()),
+                    ("flags", flags.into()),
+                ],
+            )
+            .downcast()
+            .unwrap()
+        }
     }
 
     fn setup_gactions(&self) {
@@ -89,7 +100,7 @@ impl MissioncenterApplication {
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
-        self.add_action_entries([quit_action, about_action]).unwrap();
+        self.add_action_entries([quit_action, about_action]);
     }
 
     fn show_about(&self) {
@@ -100,7 +111,7 @@ impl MissioncenterApplication {
             .application_icon("me.kicsyromy.MissionCenter")
             .developer_name("Romeo Calota")
             .version(VERSION)
-            .developers(vec!["Romeo Calota".into()])
+            .developers(vec!["Romeo Calota"])
             .copyright("© 2023 Romeo Calota")
             .build();
 
