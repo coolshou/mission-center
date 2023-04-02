@@ -22,7 +22,7 @@ use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 use plotters::{drawing::IntoDrawingArea, prelude::*};
 
-use crate::plotters_cairo;
+use crate::cairo_plotter_backend;
 
 mod imp {
     use super::*;
@@ -80,7 +80,7 @@ impl MissionCenterWindow {
         };
 
         this.imp().drawing_area.set_draw_func(|_, cr, w, h| {
-            let backend = plotters_cairo::CairoBackend::new(cr, (w as u32, h as u32)).unwrap();
+            let backend = cairo_plotter_backend::CairoBackend::new(cr, (w as u32, h as u32)).unwrap();
             let root = IntoDrawingArea::into_drawing_area(backend);
 
             let draw_func = move || -> Result<(), Box<dyn std::error::Error>> {
