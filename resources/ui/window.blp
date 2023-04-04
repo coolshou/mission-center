@@ -56,6 +56,14 @@ template MissionCenterWindow : Adw.ApplicationWindow {
           child: DrawingArea drawing_area {
           };
         }
+
+        StackPage {
+          name: "performancegl";
+          icon-name: "speedometer-symbolic";
+          title: "PerformanceGL";
+          child: $PerformancePage performance_page {
+          };
+        }
       }
     }
   }

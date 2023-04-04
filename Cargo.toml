@@ -2,10 +2,13 @@
 name = "missioncenter"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
+gl-rs = { package = "gl", version = "0.14" }
 gtk = { version = "0.6", package = "gtk4" }
+skia-safe = { version = "0", features = ["egl", "textlayout"] }
 sysinfo = "0.28"
 
 [dependencies.adw]

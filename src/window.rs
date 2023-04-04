@@ -23,6 +23,7 @@ use gtk::{gio, glib, prelude::*};
 use plotters::{drawing::IntoDrawingArea, prelude::*};
 
 use crate::cairo_plotter_backend;
+use crate::performance_page::PerformancePage;
 
 mod imp {
     use super::*;
@@ -34,6 +35,8 @@ mod imp {
         pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub drawing_area: TemplateChild<gtk::DrawingArea>,
+        #[template_child]
+        pub performance_page: TemplateChild<gtk::GLArea>,
     }
 
     #[glib::object_subclass]
@@ -43,6 +46,8 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
+            PerformancePage::ensure_type();
+
             klass.bind_template();
         }
 

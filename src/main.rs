@@ -31,6 +31,8 @@ use self::window::MissionCenterWindow;
 
 mod application;
 mod cairo_plotter_backend;
+mod performance_page;
+mod skia_plotter_backend;
 mod sysinfo;
 mod window;
 
