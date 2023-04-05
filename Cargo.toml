@@ -8,6 +8,7 @@ build = "build.rs"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl-rs = { package = "gl", version = "0.14" }
 gtk = { version = "0.6", package = "gtk4" }
+minidl = "0.1"
 skia-safe = { version = "0", features = ["egl", "textlayout"] }
 sysinfo = "0.28"
 

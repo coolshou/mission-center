@@ -18,18 +18,21 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::RefCell;
+use std::cell::Cell;
 
 use gtk::{gdk::GLContext, glib, prelude::*, subclass::prelude::*};
 use skia_safe::{gpu, gpu::gl, *};
 
 mod imp {
+    use std::thread::current;
+
     use super::*;
 
-    #[derive(Debug, Default, gtk::CompositeTemplate)]
+    #[derive(Default, gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page.ui")]
     pub struct PerformancePage {
-        pub context: RefCell<Option<gpu::DirectContext>>,
+        pub context: Cell<Option<gpu::DirectContext>>,
+        pub current_frame: Cell<u32>,
     }
 
     #[glib::object_subclass]
@@ -62,8 +65,12 @@ mod imp {
             this.set_has_depth_buffer(false);
 
             let this = binding.upcast_ref::<super::PerformancePage>();
+
             let interface = gl::Interface::new_native();
-            *this.imp().context.borrow_mut() = gpu::DirectContext::new_gl(interface, None);
+            this.imp()
+                .context
+                .set(gpu::DirectContext::new_gl(interface, None));
+            this.imp().current_frame.set(0);
         }
     }
 
@@ -80,30 +87,42 @@ mod imp {
 
         fn render(&self, context: &GLContext) -> bool {
             context.make_current();
-            let fb_info = {
+
+            let framebuffer_info = {
+                use gl_rs::{types::*, *};
+
+                let mut fboid: GLint = 0;
+                unsafe { GetIntegerv(FRAMEBUFFER_BINDING, &mut fboid) };
+
                 gl::FramebufferInfo {
-                    fboid: 0, //fboid.try_into().unwrap(),
+                    fboid: fboid.try_into().unwrap(),
                     format: gl::Format::RGBA8.into(),
                 }
             };
 
-            let render_target = gpu::BackendRenderTarget::new_gl((300, 200), 0, 8, fb_info);
+            let render_target =
+                gpu::BackendRenderTarget::new_gl((300, 200), 0, 8, framebuffer_info);
 
-            let mut binding = self.context.borrow_mut();
-            let context = (&mut *binding).as_mut().unwrap();
+            let mut binding = unsafe { &mut *self.context.as_ptr() };
+            if let Some(context) = (&mut *binding).as_mut() {
+                let mut surface = Surface::from_backend_render_target(
+                    context,
+                    &render_target,
+                    gpu::SurfaceOrigin::BottomLeft,
+                    ColorType::RGBA8888,
+                    None,
+                    None,
+                )
+                .unwrap();
 
-            let mut surface = Surface::from_backend_render_target(
-                context,
-                &render_target,
-                gpu::SurfaceOrigin::BottomLeft,
-                ColorType::RGBA8888,
-                None,
-                None,
-            )
-            .unwrap();
-
-            surface.canvas().clear(Color::WHITE);
-            context.flush_and_submit();
+                let current_frame = self.current_frame.get();
+                dbg!(current_frame);
+                self.current_frame.set(current_frame.wrapping_add(1));
+                surface
+                    .canvas()
+                    .clear(Color::new(current_frame | 0xFF000000));
+                context.flush_and_submit();
+            }
 
             true
         }

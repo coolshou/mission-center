@@ -59,6 +59,21 @@ fn main() {
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
+    // Initialize GL
+    #[cfg(target_os = "linux")]
+    {
+        let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
+        gl_rs::load_with(move |s| {
+            let symbol_name = if s.ends_with('\0') {
+                s.to_owned()
+            } else {
+                format!("{}\0", s)
+            };
+
+            unsafe { lib.sym(&symbol_name).unwrap() }
+        });
+    }
+
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
@@ -67,7 +82,7 @@ fn main() {
         &gio::ApplicationFlags::empty(),
     );
 
-    run_cpu_usage_loop();
+    // run_cpu_usage_loop();
 
     // Run the application. This function will block until the application
     // exits. Upon return, we have our exit code to return to the shell. (This
