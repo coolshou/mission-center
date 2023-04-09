@@ -24,8 +24,6 @@ use gtk::{gdk::GLContext, glib, prelude::*, subclass::prelude::*};
 use skia_safe::{gpu, gpu::gl, *};
 
 mod imp {
-    use std::thread::current;
-
     use super::*;
 
     #[derive(Default, gtk::CompositeTemplate)]
@@ -57,12 +55,12 @@ mod imp {
             self.parent_realize();
 
             let binding = self.obj();
-            let this = binding.upcast_ref::<gtk::GLArea>();
+            let gl_area = binding.upcast_ref::<gtk::GLArea>();
 
-            this.make_current();
+            gl_area.make_current();
 
-            this.set_has_stencil_buffer(true);
-            this.set_has_depth_buffer(false);
+            gl_area.set_has_stencil_buffer(true);
+            gl_area.set_has_depth_buffer(false);
 
             let this = binding.upcast_ref::<super::PerformancePage>();
 
@@ -103,7 +101,7 @@ mod imp {
             let render_target =
                 gpu::BackendRenderTarget::new_gl((300, 200), 0, 8, framebuffer_info);
 
-            let mut binding = unsafe { &mut *self.context.as_ptr() };
+            let binding = unsafe { &mut *self.context.as_ptr() };
             if let Some(context) = (&mut *binding).as_mut() {
                 let mut surface = Surface::from_backend_render_target(
                     context,
@@ -139,9 +137,12 @@ glib::wrapper! {
 impl PerformancePage {
     pub fn new() -> Self {
         let this: PerformancePage = unsafe {
-            glib::Object::new_internal(PerformancePage::static_type(), &mut [])
-                .downcast()
-                .unwrap()
+            glib::Object::new_internal(
+                PerformancePage::static_type(),
+                &mut [("auto-render", false.into())],
+            )
+            .downcast()
+            .unwrap()
         };
         this
     }

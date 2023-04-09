@@ -22,8 +22,7 @@ use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 use plotters::{drawing::IntoDrawingArea, prelude::*};
 
-use crate::cairo_plotter_backend;
-use crate::performance_page::PerformancePage;
+use crate::{cairo_plotter_backend, graph_widget::GraphWidget, performance_page::PerformancePage};
 
 mod imp {
     use super::*;
@@ -35,8 +34,6 @@ mod imp {
         pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub drawing_area: TemplateChild<gtk::DrawingArea>,
-        #[template_child]
-        pub performance_page: TemplateChild<gtk::GLArea>,
     }
 
     #[glib::object_subclass]
@@ -47,6 +44,7 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             PerformancePage::ensure_type();
+            GraphWidget::ensure_type();
 
             klass.bind_template();
         }
@@ -83,6 +81,15 @@ impl MissionCenterWindow {
             .downcast()
             .unwrap()
         };
+
+        // let performance_page = &this.imp().performance_page.get();
+        // glib::source::timeout_add_local(
+        //     std::time::Duration::from_millis(500),
+        //     glib::clone!(@strong performance_page => move || {
+        //         performance_page.queue_render();
+        //         glib::Continue(true)
+        //     }),
+        // );
 
         this.imp().drawing_area.set_draw_func(|_, cr, w, h| {
             let backend = cairo_plotter_backend::CairoBackend::new(cr, (w as u32, h as u32)).unwrap();
