@@ -5,9 +5,10 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
+egl = "0.2.7"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl-rs = { package = "gl", version = "0.14" }
-gtk = { version = "0.6", package = "gtk4" }
+gtk = { package = "gtk4", version = "0.6", features = ["gnome_44"] }
 minidl = "0.1"
 skia-safe = { version = "0", features = ["egl", "textlayout"] }
 sysinfo = "0.28"
