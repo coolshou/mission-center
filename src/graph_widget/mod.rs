@@ -1,4 +1,4 @@
-/* graph_widget.rs
+/* graph_widget/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -21,7 +21,8 @@
 use std::cell::Cell;
 
 use gtk::{
-    gdk::{prelude::*, GLContext, GLTexture},
+    gdk,
+    gdk::prelude::*,
     glib,
     glib::{once_cell::unsync::OnceCell, translate::ToGlibPtr},
     prelude::*,
@@ -29,16 +30,11 @@ use gtk::{
     Snapshot,
 };
 
-extern "C" {
-    fn gdk_wayland_display_get_egl_display(
-        instance: *mut gtk::gdk::ffi::GdkDisplay,
-    ) -> *mut core::ffi::c_void;
-}
+mod gl_context;
+mod render_target;
 
 mod eglext {
     pub const EGL_GL_TEXTURE_2D: egl::EGLint = 0x30B1;
-    pub const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::EGLint = 0x3098;
-    pub const EGL_CONTEXT_MINOR_VERSION_KHR: egl::EGLint = 0x30FB;
 
     extern "C" {
         pub fn eglCreateImage(
@@ -62,18 +58,99 @@ mod imp {
     use super::*;
 
     pub struct GraphWidget {
-        egl_display: Cell<*mut core::ffi::c_void>,
-        egl_context: Cell<*mut core::ffi::c_void>,
-        gdk_gl_context: OnceCell<GLContext>,
+        gdk_gl_context: OnceCell<gdk::GLContext>,
+
+        gl_context: OnceCell<gl_context::GLContext>,
         framebuffer: Cell<gl_rs::types::GLuint>,
+    }
+
+    impl GraphWidget {
+        fn create_gdk_gl_context(&self) -> Result<gdk::GLContext, glib::Error> {
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::GraphWidget>();
+
+            let surface = if let Some(native) = this.native() {
+                Ok(native.surface())
+            } else {
+                Err(glib::Error::new(
+                    gdk::GLError::NotAvailable,
+                    "Failed to get native surface",
+                ))
+            }?;
+
+            let gdk_gl_context = surface.create_gl_context()?;
+            gdk_gl_context.set_forward_compatible(true);
+            gdk_gl_context.realize()?;
+
+            Ok(gdk_gl_context)
+        }
+
+        fn create_offscreen_framebuffer(
+            &self,
+        ) -> Result<gl_rs::types::GLuint, gl_rs::types::GLenum> {
+            self.gl_context.get().unwrap().make_current();
+
+            Ok(unsafe {
+                let mut framebuffer = 0;
+                gl_rs::GenFramebuffers(1, &mut framebuffer);
+                let error = gl_rs::GetError();
+                if error != gl_rs::NO_ERROR {
+                    return Err(error);
+                }
+
+                framebuffer
+            })
+        }
+
+        fn create_offscreen_texture(
+            &self,
+            width: i32,
+            height: i32,
+        ) -> Result<gl_rs::types::GLuint, String> {
+            self.gl_context.get().unwrap().make_current();
+
+            let mut tex = 0;
+            unsafe {
+                use gl_rs::*;
+
+                GenTextures(1, &mut tex);
+                let error = GetError();
+                if error != NO_ERROR {
+                    return Err(format!("GenTextures: {}", error));
+                }
+
+                BindTexture(TEXTURE_2D, tex);
+                let error = GetError();
+                if error != NO_ERROR {
+                    return Err(format!("BindTexture: {}", error));
+                }
+
+                TexImage2D(
+                    TEXTURE_2D,
+                    0,
+                    RGBA as _,
+                    width,
+                    height,
+                    0,
+                    RGBA,
+                    UNSIGNED_BYTE,
+                    std::ptr::null_mut(),
+                );
+                let error = GetError();
+                if error != NO_ERROR {
+                    return Err(format!("TexImage2D: {}", error));
+                }
+            }
+
+            Ok(tex)
+        }
     }
 
     impl Default for GraphWidget {
         fn default() -> Self {
             Self {
-                egl_display: Cell::new(std::ptr::null_mut()),
-                egl_context: Cell::new(std::ptr::null_mut()),
                 gdk_gl_context: OnceCell::new(),
+                gl_context: OnceCell::new(),
                 framebuffer: Cell::new(u32::MAX),
             }
         }
@@ -90,99 +167,35 @@ mod imp {
 
     impl WidgetImpl for GraphWidget {
         fn realize(&self) {
-            use egl::*;
-
-            const EGL_CONFIG_ATTRIBUTES: [EGLint; 19] = [
-                EGL_RED_SIZE,
-                8,
-                EGL_GREEN_SIZE,
-                8,
-                EGL_BLUE_SIZE,
-                8,
-                EGL_ALPHA_SIZE,
-                8,
-                EGL_STENCIL_SIZE,
-                8,
-                EGL_DEPTH_SIZE,
-                0,
-                EGL_SAMPLES,
-                2,
-                EGL_RENDERABLE_TYPE,
-                EGL_OPENGL_BIT,
-                EGL_CONFORMANT,
-                EGL_OPENGL_BIT,
-                EGL_NONE,
-            ];
-
-            const EGL_CONTEXT_ATTRIBUTES: [EGLint; 5] = [
-                eglext::EGL_CONTEXT_MAJOR_VERSION_KHR,
-                3,
-                eglext::EGL_CONTEXT_MINOR_VERSION_KHR,
-                2,
-                EGL_NONE,
-            ];
-
             self.parent_realize();
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
-            let surface = this.native().unwrap().surface(); //gtk_native_get_surface (GTK_NATIVE (gtk_widget_get_root (widget)));
-            let gdk_gl_context = surface.create_gl_context().unwrap();
-            gdk_gl_context.set_forward_compatible(true);
-            gdk_gl_context.realize().unwrap();
-            self.gdk_gl_context.set(gdk_gl_context).unwrap();
+            let gdk_gl_context = self
+                .create_gdk_gl_context()
+                .expect("Failed to create GL context");
+            self.gdk_gl_context
+                .set(gdk_gl_context)
+                .expect("Failed to set GL context");
 
-            let display = this.display();
-            unsafe {
-                self.egl_display.set(gdk_wayland_display_get_egl_display(
-                    display.to_glib_none().0,
-                ));
-                let egl_config =
-                    choose_config(self.egl_display.get(), &EGL_CONFIG_ATTRIBUTES, 1).unwrap();
-                self.egl_context.set(
-                    create_context(
-                        self.egl_display.get(),
-                        egl_config,
-                        EGL_NO_CONTEXT,
-                        &EGL_CONTEXT_ATTRIBUTES,
-                    )
-                    .unwrap(),
-                );
+            let native = this.native().expect("Failed to get native surface");
+            let gl_context =
+                gl_context::GLContext::new(&native).expect("Failed to create GL context");
+            self.gl_context
+                .set(gl_context)
+                .expect("Failed to store GL context");
 
-                dbg!(egl::make_current(
-                    self.egl_display.get(),
-                    egl::EGL_NO_SURFACE,
-                    egl::EGL_NO_SURFACE,
-                    self.egl_context.get(),
-                ));
-
-                unsafe {
-                    let mut framebuffer = 0;
-                    gl_rs::GenFramebuffers(1, &mut framebuffer);
-                    if gl_rs::GetError() != gl_rs::NO_ERROR {
-                        panic!("Failed to create framebuffer");
-                    }
-
-                    self.framebuffer.set(framebuffer);
-                }
-
-                dbg!(self.egl_context.get());
-            }
+            self.gl_context.get().unwrap().make_current();
+            let framebuffer = self
+                .create_offscreen_framebuffer()
+                .expect("Failed to create framebuffer");
+            self.framebuffer.set(framebuffer);
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
-
-            dbg!(egl::make_current(
-                self.egl_display.get(),
-                egl::EGL_NO_SURFACE,
-                egl::EGL_NO_SURFACE,
-                self.egl_context.get(),
-            ));
-
-            dbg!(egl::get_error());
 
             let width = this.allocated_width();
             let height = this.allocated_height();
@@ -190,26 +203,16 @@ mod imp {
             unsafe {
                 use gl_rs::*;
 
-                let mut tex = 0;
-                GenTextures(1, &mut tex);
+                self.gl_context.get().unwrap().make_current();
+
+                let texture = self
+                    .create_offscreen_texture(this.allocated_width(), this.allocated_height())
+                    .expect("Failed to create offscreen texture");
+
+                BindTexture(TEXTURE_2D, texture);
+                BindFramebuffer(FRAMEBUFFER, texture);
                 dbg!(GetError());
-                BindTexture(TEXTURE_2D, tex);
-                dbg!(GetError());
-                TexImage2D(
-                    TEXTURE_2D,
-                    0,
-                    RGBA as _,
-                    width,
-                    height,
-                    0,
-                    RGBA,
-                    UNSIGNED_BYTE,
-                    std::ptr::null_mut(),
-                );
-                dbg!(GetError());
-                BindFramebuffer(FRAMEBUFFER, self.framebuffer.get());
-                dbg!(GetError());
-                FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, tex, 0);
+                FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, texture, 0);
                 dbg!(GetError());
                 if CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE {
                     panic!("Framebuffer is not complete!");
@@ -217,27 +220,27 @@ mod imp {
 
                 gl_rs::Viewport(0, 0, width, height);
                 dbg!(GetError());
-                gl_rs::ClearColor(1.0, 0.0, 0.0, 1.0);
+                gl_rs::ClearColor(0.0, 1.0, 1.0, 1.0);
                 dbg!(GetError());
                 gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
                 dbg!(GetError());
 
                 let image = eglext::eglCreateImage(
-                    self.egl_display.get(),
-                    self.egl_context.get(),
+                    self.gl_context.get().unwrap().egl_display,
+                    self.gl_context.get().unwrap().egl_context,
                     eglext::EGL_GL_TEXTURE_2D as _,
-                    core::mem::transmute(tex as types::GLintptr),
+                    core::mem::transmute(texture as types::GLintptr),
                     std::ptr::null(),
                 );
                 dbg!(egl::get_error());
 
                 BindTexture(TEXTURE_2D, 0);
-                DeleteTextures(1, &tex);
 
                 egl::bind_api(egl::EGL_OPENGL_API);
                 dbg!(egl::get_error());
                 self.gdk_gl_context.get().unwrap().make_current();
 
+                let mut tex = 0;
                 GenTextures(1, &mut tex);
                 dbg!(GetError());
                 BindTexture(TEXTURE_2D, tex);
@@ -265,6 +268,9 @@ mod imp {
                     &texture,
                     &gtk::graphene::Rect::new(0., 0., width as _, height as _),
                 );
+
+                eglext::eglDestroyImage(self.gl_context.get().unwrap().egl_display, image);
+                dbg!(egl::get_error());
             }
         }
     }
