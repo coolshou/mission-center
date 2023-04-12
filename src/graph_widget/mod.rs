@@ -18,38 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
-
 use gtk::{
-    gdk,
-    gdk::prelude::*,
-    glib,
-    glib::{once_cell::unsync::OnceCell, translate::ToGlibPtr},
-    prelude::*,
-    subclass::prelude::*,
-    Snapshot,
+    gdk, gdk::prelude::*, glib, glib::once_cell::unsync::OnceCell, prelude::*,
+    subclass::prelude::*, Snapshot,
 };
 
-mod gl_context;
+mod egl_context;
 mod render_target;
 
 mod eglext {
-    pub const EGL_GL_TEXTURE_2D: egl::EGLint = 0x30B1;
-
     extern "C" {
-        pub fn eglCreateImage(
-            dpy: *mut core::ffi::c_void,
-            ctx: *mut core::ffi::c_void,
-            target: u32,
-            buffer: *mut core::ffi::c_void,
-            attrib_list: *const i32,
-        ) -> *mut core::ffi::c_void;
-
-        pub fn eglDestroyImage(
-            dpy: *mut core::ffi::c_void,
-            image: *mut core::ffi::c_void,
-        ) -> egl::EGLBoolean;
-
         pub fn glEGLImageTargetTexture2DOES(target: u32, image: *mut core::ffi::c_void);
     }
 }
@@ -60,89 +38,43 @@ mod imp {
     pub struct GraphWidget {
         gdk_gl_context: OnceCell<gdk::GLContext>,
 
-        gl_context: OnceCell<gl_context::GLContext>,
-        framebuffer: Cell<gl_rs::types::GLuint>,
+        egl_context: OnceCell<egl_context::EGLContext>,
+        render_target: OnceCell<render_target::RenderTarget>,
     }
 
     impl GraphWidget {
-        fn create_gdk_gl_context(&self) -> Result<gdk::GLContext, glib::Error> {
+        fn realize(&self) -> Result<(), Box<dyn std::error::Error>> {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
-            let surface = if let Some(native) = this.native() {
-                Ok(native.surface())
-            } else {
-                Err(glib::Error::new(
-                    gdk::GLError::NotAvailable,
-                    "Failed to get native surface",
-                ))
-            }?;
+            // Obtain a native surface from the GtkWidget
+            let native = this
+                .native()
+                .ok_or("Failed to get native surface".to_owned())?;
 
-            let gdk_gl_context = surface.create_gl_context()?;
+            // Create a GDK GL context used as a bridge between GTK and EGL
+            let gdk_gl_context = native.surface().create_gl_context()?;
             gdk_gl_context.set_forward_compatible(true);
             gdk_gl_context.realize()?;
+            self.gdk_gl_context
+                .set(gdk_gl_context)
+                .map_err(|_| "GDK GL context initialized twice".to_owned())?;
 
-            Ok(gdk_gl_context)
-        }
+            // Create an EGL context used to do the actual rendering
+            let egl_context = egl_context::EGLContext::new(&native)?;
+            self.egl_context
+                .set(egl_context)
+                .map_err(|_| "EGL context initialized twice".to_owned())?;
 
-        fn create_offscreen_framebuffer(
-            &self,
-        ) -> Result<gl_rs::types::GLuint, gl_rs::types::GLenum> {
-            self.gl_context.get().unwrap().make_current();
+            let egl_context = unsafe { self.egl_context.get().unwrap_unchecked() };
+            egl_context.make_current()?;
 
-            Ok(unsafe {
-                let mut framebuffer = 0;
-                gl_rs::GenFramebuffers(1, &mut framebuffer);
-                let error = gl_rs::GetError();
-                if error != gl_rs::NO_ERROR {
-                    return Err(error);
-                }
+            // Create an offscreen render target
+            self.render_target
+                .set(render_target::RenderTarget::new()?)
+                .map_err(|_| "Render target initialized twice".to_owned())?;
 
-                framebuffer
-            })
-        }
-
-        fn create_offscreen_texture(
-            &self,
-            width: i32,
-            height: i32,
-        ) -> Result<gl_rs::types::GLuint, String> {
-            self.gl_context.get().unwrap().make_current();
-
-            let mut tex = 0;
-            unsafe {
-                use gl_rs::*;
-
-                GenTextures(1, &mut tex);
-                let error = GetError();
-                if error != NO_ERROR {
-                    return Err(format!("GenTextures: {}", error));
-                }
-
-                BindTexture(TEXTURE_2D, tex);
-                let error = GetError();
-                if error != NO_ERROR {
-                    return Err(format!("BindTexture: {}", error));
-                }
-
-                TexImage2D(
-                    TEXTURE_2D,
-                    0,
-                    RGBA as _,
-                    width,
-                    height,
-                    0,
-                    RGBA,
-                    UNSIGNED_BYTE,
-                    std::ptr::null_mut(),
-                );
-                let error = GetError();
-                if error != NO_ERROR {
-                    return Err(format!("TexImage2D: {}", error));
-                }
-            }
-
-            Ok(tex)
+            Ok(())
         }
     }
 
@@ -150,8 +82,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 gdk_gl_context: OnceCell::new(),
-                gl_context: OnceCell::new(),
-                framebuffer: Cell::new(u32::MAX),
+                egl_context: OnceCell::new(),
+                render_target: OnceCell::new(),
             }
         }
     }
@@ -168,29 +100,7 @@ mod imp {
     impl WidgetImpl for GraphWidget {
         fn realize(&self) {
             self.parent_realize();
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::GraphWidget>();
-
-            let gdk_gl_context = self
-                .create_gdk_gl_context()
-                .expect("Failed to create GL context");
-            self.gdk_gl_context
-                .set(gdk_gl_context)
-                .expect("Failed to set GL context");
-
-            let native = this.native().expect("Failed to get native surface");
-            let gl_context =
-                gl_context::GLContext::new(&native).expect("Failed to create GL context");
-            self.gl_context
-                .set(gl_context)
-                .expect("Failed to store GL context");
-
-            self.gl_context.get().unwrap().make_current();
-            let framebuffer = self
-                .create_offscreen_framebuffer()
-                .expect("Failed to create framebuffer");
-            self.framebuffer.set(framebuffer);
+            self.realize().expect("Failed to realize widget");
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {
@@ -200,78 +110,57 @@ mod imp {
             let width = this.allocated_width();
             let height = this.allocated_height();
 
-            unsafe {
-                use gl_rs::*;
+            self.egl_context.get().unwrap().make_current().unwrap();
+            self.render_target
+                .get()
+                .unwrap()
+                .resize(width, height)
+                .unwrap();
 
-                self.gl_context.get().unwrap().make_current();
+            let mut image = {
+                self.render_target.get().unwrap().bind().unwrap();
 
-                let texture = self
-                    .create_offscreen_texture(this.allocated_width(), this.allocated_height())
-                    .expect("Failed to create offscreen texture");
+                unsafe {
+                    use gl_rs::*;
 
-                BindTexture(TEXTURE_2D, texture);
-                BindFramebuffer(FRAMEBUFFER, texture);
-                dbg!(GetError());
-                FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, texture, 0);
-                dbg!(GetError());
-                if CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE {
-                    panic!("Framebuffer is not complete!");
+                    ClearColor(0.0, 1.0, 1.0, 1.0);
+                    dbg!(GetError());
+                    Clear(gl_rs::COLOR_BUFFER_BIT);
+                    dbg!(GetError());
                 }
 
-                gl_rs::Viewport(0, 0, width, height);
-                dbg!(GetError());
-                gl_rs::ClearColor(0.0, 1.0, 1.0, 1.0);
-                dbg!(GetError());
-                gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
-                dbg!(GetError());
+                self.render_target
+                    .get()
+                    .unwrap()
+                    .unbind(self.egl_context.get().unwrap())
+                    .unwrap()
+            };
 
-                let image = eglext::eglCreateImage(
-                    self.gl_context.get().unwrap().egl_display,
-                    self.gl_context.get().unwrap().egl_context,
-                    eglext::EGL_GL_TEXTURE_2D as _,
-                    core::mem::transmute(texture as types::GLintptr),
-                    std::ptr::null(),
-                );
-                dbg!(egl::get_error());
+            self.gdk_gl_context.get().unwrap().make_current();
 
-                BindTexture(TEXTURE_2D, 0);
+            let egl_image_texture = self
+                .render_target
+                .get()
+                .unwrap()
+                .export_as_texture(&mut image)
+                .unwrap();
 
-                egl::bind_api(egl::EGL_OPENGL_API);
-                dbg!(egl::get_error());
-                self.gdk_gl_context.get().unwrap().make_current();
-
-                let mut tex = 0;
-                GenTextures(1, &mut tex);
-                dbg!(GetError());
-                BindTexture(TEXTURE_2D, tex);
-                dbg!(GetError());
-                TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR as _);
-                dbg!(GetError());
-                TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR as _);
-                dbg!(GetError());
-                TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE as _);
-                dbg!(GetError());
-                TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE as _);
-                dbg!(GetError());
-                eglext::glEGLImageTargetTexture2DOES(TEXTURE_2D, image);
-                dbg!(GetError());
-                BindTexture(TEXTURE_2D, 0);
-                dbg!(GetError());
-                let texture = gtk::gdk::GLTexture::new(
+            let gdk_gl_texture = unsafe {
+                gdk::GLTexture::with_release_func(
                     self.gdk_gl_context.get().unwrap(),
-                    tex,
+                    egl_image_texture.id(),
                     width,
                     height,
-                );
-
-                snapshot.append_texture(
-                    &texture,
-                    &gtk::graphene::Rect::new(0., 0., width as _, height as _),
-                );
-
-                eglext::eglDestroyImage(self.gl_context.get().unwrap().egl_display, image);
-                dbg!(egl::get_error());
-            }
+                    move || {
+                        drop(egl_image_texture);
+                        drop(image);
+                    },
+                )
+            };
+            snapshot.append_texture(
+                &gdk_gl_texture,
+                &gtk::graphene::Rect::new(0., 0., width as _, height as _),
+            );
         }
     }
 }
