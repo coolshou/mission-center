@@ -34,7 +34,7 @@ pub enum RenderTargetError {
     GLError(u32),
     EGLContextError(EGLContextError),
     FailedToLoadGLLibrary,
-    MissingGlEGLImageTargetTexture2DOES,
+    MissingEGLImageTargetTexture2DOES,
     FramebufferIncomplete,
 }
 
@@ -56,10 +56,10 @@ impl RenderTarget {
     pub fn new() -> Result<Self, RenderTargetError> {
         let lib = minidl::Library::load("libGL.so.1\0")
             .map_err(|_| RenderTargetError::FailedToLoadGLLibrary)?;
-        let fn_ptr: *const c_void = unsafe { lib.sym("glEGLImageTargetTexture2DOES\0").unwrap() };
-        if fn_ptr.is_null() {
-            return Err(RenderTargetError::MissingGlEGLImageTargetTexture2DOES);
-        }
+
+        let fn_ptr_image_target_texture: *const c_void =
+            unsafe { lib.sym("glEGLImageTargetTexture2DOES\0") }
+                .map_err(|_| RenderTargetError::MissingEGLImageTargetTexture2DOES)?;
 
         let mut framebuffer = 0;
         let error = unsafe {
@@ -82,7 +82,9 @@ impl RenderTarget {
         Ok(Self {
             framebuffer,
             texture,
-            glEGLImageTargetTexture2DOES: unsafe { std::mem::transmute(fn_ptr) },
+            glEGLImageTargetTexture2DOES: unsafe {
+                std::mem::transmute(fn_ptr_image_target_texture)
+            },
         })
     }
 
@@ -261,15 +263,11 @@ impl RenderTarget {
             return Err(RenderTargetError::GLError(error));
         }
 
-        let error = unsafe {
-            gl_rs::Viewport(0, 0, width, height);
-            gl_rs::GetError()
-        };
-        if error != gl_rs::NO_ERROR {
-            return Err(RenderTargetError::GLError(error));
-        }
-
         Ok(())
+    }
+
+    pub fn framebuffer_id(&self) -> u32 {
+        self.framebuffer
     }
 
     pub fn texture_id(&self) -> u32 {

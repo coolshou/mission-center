@@ -25,12 +25,7 @@ use gtk::{
 
 mod egl_context;
 mod render_target;
-
-mod eglext {
-    extern "C" {
-        pub fn glEGLImageTargetTexture2DOES(target: u32, image: *mut core::ffi::c_void);
-    }
-}
+mod skia_plotter_backend;
 
 mod imp {
     use super::*;
@@ -40,6 +35,8 @@ mod imp {
 
         egl_context: OnceCell<egl_context::EGLContext>,
         render_target: OnceCell<render_target::RenderTarget>,
+
+        skia_context: std::cell::Cell<Option<skia_safe::gpu::DirectContext>>,
     }
 
     impl GraphWidget {
@@ -74,6 +71,68 @@ mod imp {
                 .set(render_target::RenderTarget::new()?)
                 .map_err(|_| "Render target initialized twice".to_owned())?;
 
+            let interface = skia_safe::gpu::gl::Interface::new_native();
+            self.skia_context
+                .set(skia_safe::gpu::DirectContext::new_gl(interface, None));
+
+            Ok(())
+        }
+
+        pub fn render(
+            &self,
+            canvas: &mut skia_safe::canvas::Canvas,
+            width: i32,
+            height: i32,
+        ) -> Result<(), Box<dyn std::error::Error>> {
+            let backend =
+                skia_plotter_backend::SkiaPlotterBackend::new(canvas, width as _, height as _);
+            let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
+
+            let draw_func = move || -> Result<(), Box<dyn std::error::Error>> {
+                use plotters::prelude::*;
+
+                // After this point, we should be able to construct a chart context
+                let mut chart = ChartBuilder::on(&root)
+                    // Set the caption of the chart
+                    .caption("This is our first plot", ("sans-serif", 40).into_font())
+                    // Set the size of the label region
+                    .x_label_area_size(20)
+                    .y_label_area_size(40)
+                    // Finally attach a coordinate on the drawing area and make a chart context
+                    .build_cartesian_2d(0f32..10f32, 0f32..10f32)?;
+
+                // Then we can draw a mesh
+                chart
+                    .configure_mesh()
+                    // We can customize the maximum number of labels allowed for each axis
+                    .x_labels(5)
+                    .y_labels(5)
+                    // We can also change the format of the label text
+                    .y_label_formatter(&|x| format!("{:.3}", x))
+                    .draw()?;
+
+                // And we can draw something in the drawing area
+                chart.draw_series(LineSeries::new(
+                    vec![(0.0, 0.0), (5.0, 5.0), (8.0, 7.0)],
+                    &RED,
+                ))?;
+                // Similarly, we can draw point series
+                chart.draw_series(PointSeries::of_element(
+                    vec![(0.0, 0.0), (5.0, 5.0), (8.0, 7.0)],
+                    5,
+                    &RED,
+                    &|c, s, st| {
+                        return EmptyElement::at(c)    // We want to construct a composed element on-the-fly
+                            + Circle::new((0, 0), s, st.filled()) // At this point, the new pixel coordinate is established
+                            + Text::new(format!("{:?}", c), (10, 0), ("sans-serif", 10).into_font());
+                    },
+                ))?;
+                root.present()?;
+
+                Ok(())
+            };
+            draw_func().unwrap();
+
             Ok(())
         }
     }
@@ -84,6 +143,7 @@ mod imp {
                 gdk_gl_context: OnceCell::new(),
                 egl_context: OnceCell::new(),
                 render_target: OnceCell::new(),
+                skia_context: std::cell::Cell::new(None),
             }
         }
     }
@@ -103,6 +163,7 @@ mod imp {
             self.realize().expect("Failed to realize widget");
         }
 
+        #[allow(mutable_transmutes)]
         fn snapshot(&self, snapshot: &Snapshot) {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
@@ -110,24 +171,58 @@ mod imp {
             let width = this.allocated_width();
             let height = this.allocated_height();
 
-            self.egl_context.get().unwrap().make_current().unwrap();
-            self.render_target
+            let egl_context = self.egl_context.get().expect("EGL context not initialized");
+            let render_target = self
+                .render_target
                 .get()
-                .unwrap()
-                .resize(width, height)
-                .unwrap();
+                .expect("Render target not initialized");
 
+            egl_context
+                .make_current()
+                .expect("Failed to make EGL context current");
+
+            render_target
+                .resize(width, height)
+                .expect("Failed to resize render target");
             let mut image = {
-                self.render_target.get().unwrap().bind().unwrap();
+                use skia_safe::*;
+
+                render_target.bind().expect("Failed to bind render target");
 
                 unsafe {
-                    use gl_rs::*;
-
-                    ClearColor(0.0, 1.0, 1.0, 1.0);
-                    dbg!(GetError());
-                    Clear(gl_rs::COLOR_BUFFER_BIT);
-                    dbg!(GetError());
+                    gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
+                    gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
                 }
+
+                let skia_render_target = gpu::BackendRenderTarget::new_gl(
+                    (width, height),
+                    0,
+                    8,
+                    gpu::gl::FramebufferInfo {
+                        fboid: self.render_target.get().unwrap().framebuffer_id(),
+                        format: gpu::gl::Format::RGBA8.into(),
+                    },
+                );
+
+                let skia_context = unsafe {
+                    (&mut *self.skia_context.as_ptr())
+                        .as_mut()
+                        .expect("Skia context not initialized")
+                };
+                let mut surface = Surface::from_backend_render_target(
+                    skia_context,
+                    &skia_render_target,
+                    gpu::SurfaceOrigin::TopLeft,
+                    ColorType::RGBA8888,
+                    None,
+                    None,
+                )
+                .expect("Failed to create Skia surface");
+
+                self.render(surface.canvas(), width, height)
+                    .expect("Failed to render");
+
+                skia_context.flush_and_submit();
 
                 self.render_target
                     .get()

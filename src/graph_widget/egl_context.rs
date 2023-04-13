@@ -4,7 +4,7 @@ use egl::EGLDisplay;
 
 use crate::graph_widget::render_target::RenderTarget;
 
-const EGL_CONFIG_ATTRIBUTES: [egl::EGLint; 19] = [
+const EGL_CONFIG_ATTRIBUTES: [egl::EGLint; 17] = [
     egl::EGL_RED_SIZE,
     8,
     egl::EGL_GREEN_SIZE,
@@ -17,8 +17,6 @@ const EGL_CONFIG_ATTRIBUTES: [egl::EGLint; 19] = [
     8,
     egl::EGL_DEPTH_SIZE,
     0,
-    egl::EGL_SAMPLES,
-    2,
     egl::EGL_RENDERABLE_TYPE,
     egl::EGL_OPENGL_BIT,
     egl::EGL_CONFORMANT,
@@ -107,7 +105,7 @@ impl EGLContext {
         use egl::*;
         use gtk::{glib::translate::ToGlibPtr, traits::WidgetExt};
 
-        bind_api(egl::EGL_OPENGL_API);
+        bind_api(egl::EGL_OPENGL_ES_API);
         let error = egl::get_error();
         if error != egl::EGL_SUCCESS {
             return Err(EGLContextError::ContextCreationFailed(error));
@@ -147,8 +145,8 @@ impl EGLContext {
     pub fn make_current(&self) -> Result<(), EGLContextError> {
         use egl::*;
 
-        bind_api(egl::EGL_OPENGL_API);
-        let error = egl::get_error();
+        bind_api(egl::EGL_OPENGL_ES_API);
+        let error = get_error();
         if error != egl::EGL_SUCCESS {
             return Err(EGLContextError::MakeCurrentFailed(error));
         }
