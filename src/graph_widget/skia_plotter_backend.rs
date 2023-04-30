@@ -289,4 +289,112 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
 
         Ok(())
     }
+
+    fn estimate_text_size<S: plotters_backend::BackendTextStyle>(
+        &self,
+        text: &str,
+        style: &S,
+    ) -> Result<(u32, u32), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
+        use plotters_backend::*;
+        use skia_safe::*;
+
+        let font_family = style.family().as_str().to_owned();
+        let font_style = self.to_sk_font_style(style);
+        let typeface = Typeface::new(&font_family, font_style).ok_or(
+            DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
+        )?;
+
+        let font = Font::new(typeface, Some(style.size() as f32));
+
+        let color = style.color();
+        let mut paint = Paint::new(
+            Color4f::new(
+                color.rgb.0 as f32 / 256.,
+                color.rgb.1 as f32 / 256.,
+                color.rgb.2 as f32 / 256.,
+                color.alpha as _,
+            ),
+            None,
+        );
+        paint.set_anti_alias(true);
+        let extents = font.measure_str(text, Some(&paint)).1;
+
+        Ok((extents.width() as u32, extents.height() as u32))
+    }
+
+    fn draw_text<S: plotters_backend::BackendTextStyle>(
+        &mut self,
+        text: &str,
+        style: &S,
+        pos: plotters_backend::BackendCoord,
+    ) -> Result<(), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
+        use skia_safe::*;
+        use {plotters_backend::text_anchor::*, plotters_backend::*};
+
+        let color = style.color();
+        if color.alpha == 0.0 {
+            return Ok(());
+        };
+
+        let (mut x, mut y) = (pos.0, pos.1);
+
+        let degree: f32 = match style.transform() {
+            FontTransform::None => 0.0,
+            FontTransform::Rotate90 => 90.0,
+            FontTransform::Rotate180 => 180.0,
+            FontTransform::Rotate270 => 270.0,
+        };
+
+        if degree != 0.0 {
+            self.canvas.save();
+            self.canvas.translate(Point::new(x as _, y as _));
+            self.canvas.rotate(degree, None);
+
+            x = 0;
+            y = 0;
+        }
+
+        let mut paint = Paint::new(
+            Color4f::new(
+                color.rgb.0 as f32 / 256.,
+                color.rgb.1 as f32 / 256.,
+                color.rgb.2 as f32 / 256.,
+                color.alpha as _,
+            ),
+            None,
+        );
+        paint.set_anti_alias(true);
+
+        let font_family = style.family().as_str().to_owned();
+        let font_style = self.to_sk_font_style(style);
+        let typeface = Typeface::new(&font_family, font_style).ok_or(
+            DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
+        )?;
+
+        let font = Font::new(typeface, Some(style.size() as f32));
+
+        let extents = font.measure_str(text, Some(&paint)).1;
+        let dx = match style.anchor().h_pos {
+            HPos::Left => 0.0,
+            HPos::Right => -extents.width(),
+            HPos::Center => -extents.width() / 2.0,
+        };
+        let dy = match style.anchor().v_pos {
+            VPos::Top => extents.height(),
+            VPos::Center => extents.height() / 2.0,
+            VPos::Bottom => 0.0,
+        };
+
+        let origin = Point::new(
+            x as f32 + dx - extents.x(),
+            y as f32 + dy - extents.y() - extents.height(),
+        );
+        self.canvas.draw_str(text, origin, &font, &paint);
+
+        if degree != 0.0 {
+            self.canvas.restore();
+        }
+
+        Ok(())
+    }
 }
