@@ -24,16 +24,13 @@ use gtk::prelude::*;
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 
-use crate::sysinfo::run_cpu_usage_loop;
+// use crate::sysinfo::run_cpu_usage_loop;
 
 use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
 mod application;
-mod cairo_plotter_backend;
 mod graph_widget;
-mod gtk_plotter_backend;
-mod performance_page;
 mod sysinfo;
 mod window;
 
@@ -64,13 +61,8 @@ fn main() {
     #[cfg(target_os = "linux")]
     {
         let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
-        gl_rs::load_with(move |s| {
-            let symbol_name = if s.ends_with('\0') {
-                s.to_owned()
-            } else {
-                format!("{}\0", s)
-            };
-
+        gl_rs::load_with(move |symbol| {
+            let symbol_name = format!("{}\0", symbol);
             unsafe { lib.sym(&symbol_name).unwrap() }
         });
     }

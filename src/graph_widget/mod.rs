@@ -18,10 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use gtk::{
-    gdk, gdk::prelude::*, glib, glib::once_cell::unsync::OnceCell, prelude::*,
-    subclass::prelude::*, GLArea, Snapshot,
-};
+use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
 mod skia_plotter_backend;
 
@@ -46,7 +43,7 @@ mod imp {
             Ok(())
         }
 
-        pub fn render(
+        pub fn render_graph(
             &self,
             canvas: &mut skia_safe::canvas::Canvas,
             width: i32,
@@ -107,11 +104,8 @@ mod imp {
     }
 
     impl GLAreaImpl for GraphWidget {
-        fn render(&self, context: &gdk::GLContext) -> bool {
+        fn render(&self, _: &gdk::GLContext) -> bool {
             use skia_safe::*;
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::GraphWidget>();
 
             let mut viewport_info: [gl_rs::types::GLint; 4] = [0; 4];
             unsafe {
@@ -121,7 +115,7 @@ mod imp {
             let width = viewport_info[2];
             let height = viewport_info[3];
             unsafe {
-                gl_rs::ClearColor(1.0, 0.0, 0.0, 1.0);
+                gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
                 gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
             }
 
@@ -155,7 +149,7 @@ mod imp {
             )
             .expect("Failed to create Skia surface");
 
-            self.render(surface.canvas(), width, height)
+            self.render_graph(surface.canvas(), width, height)
                 .expect("Failed to render");
 
             skia_context.flush_and_submit();
