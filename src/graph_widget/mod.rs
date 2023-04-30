@@ -50,28 +50,48 @@ mod imp {
             height: i32,
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
+            use rand::SeedableRng;
+            use rand_distr::{Distribution, Normal};
+            use rand_xorshift::XorShiftRng;
+
+            let data: Vec<_> = {
+                let norm_dist = Normal::new(500.0, 100.0).unwrap();
+                let mut x_rand = XorShiftRng::from_seed(*b"MyFragileSeed123");
+                let x_iter = norm_dist.sample_iter(&mut x_rand);
+                x_iter
+                    .filter(|x| *x < 1500.0)
+                    .take(100)
+                    .zip(0..)
+                    .map(|(x, b)| x + (b as f64).powf(1.2))
+                    .collect()
+            };
 
             let backend =
                 skia_plotter_backend::SkiaPlotterBackend::new(canvas, width as _, height as _);
             let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
 
-            // After this point, we should be able to construct a chart context
-            let mut chart = ChartBuilder::on(&root)
-                // Set the caption of the chart
-                // Set the size of the label region
-                .x_label_area_size(0)
-                .y_label_area_size(0)
-                // Finally attach a coordinate on the drawing area and make a chart context
-                .build_cartesian_2d(0_f32..60., 0_f32..100.)?;
+            root.fill(&WHITE)?;
 
-            // Then we can draw a mesh
+            let mut chart = ChartBuilder::on(&root)
+                .set_label_area_size(LabelAreaPosition::Left, 60)
+                .set_label_area_size(LabelAreaPosition::Bottom, 60)
+                .caption("Area Chart Demo", ("sans-serif", 40))
+                .build_cartesian_2d(0..(data.len() - 1), 0.0..1500.0)?;
+
             chart
                 .configure_mesh()
-                // We can customize the maximum number of labels allowed for each axis
-                .x_labels(60)
-                .y_labels(100)
-                // We can also change the format of the label text
+                .disable_x_mesh()
+                .disable_y_mesh()
                 .draw()?;
+
+            chart.draw_series(
+                AreaSeries::new(
+                    (0..).zip(data.iter()).map(|(x, y)| (x, *y)),
+                    0.0,
+                    &RED.mix(0.2),
+                )
+                .border_style(&RED),
+            )?;
 
             root.present()?;
 
@@ -114,6 +134,7 @@ mod imp {
 
             let width = viewport_info[2];
             let height = viewport_info[3];
+
             unsafe {
                 gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
                 gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
@@ -142,7 +163,7 @@ mod imp {
             let mut surface = Surface::from_backend_render_target(
                 skia_context,
                 &skia_render_target,
-                gpu::SurfaceOrigin::TopLeft,
+                gpu::SurfaceOrigin::BottomLeft,
                 ColorType::RGBA8888,
                 None,
                 None,

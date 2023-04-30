@@ -235,14 +235,20 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         paint.set_stroke_width(style.stroke_width() as _);
         paint.set_style(PaintStyle::Fill);
 
-        self.canvas.draw_points(
-            canvas::PointMode::Polygon,
-            vert.into_iter()
-                .map(|(x, y)| Point::new(x as _, y as _))
-                .collect::<Vec<_>>()
-                .as_slice(),
-            &paint,
-        );
+        let mut path = vert.into_iter();
+        let mut path_builder = Path::new();
+
+        if let Some((x, y)) = path.next() {
+            path_builder.move_to(Point::new(x as _, y as _));
+
+            for (x, y) in path {
+                path_builder.line_to(Point::new(x as _, y as _));
+            }
+
+            path_builder.close();
+        }
+
+        self.canvas.draw_path(&path_builder, &paint);
 
         Ok(())
     }
