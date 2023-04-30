@@ -20,22 +20,15 @@
 
 use gtk::{
     gdk, gdk::prelude::*, glib, glib::once_cell::unsync::OnceCell, prelude::*,
-    subclass::prelude::*, Snapshot,
+    subclass::prelude::*, GLArea, Snapshot,
 };
 
-mod egl_context;
-mod render_target;
 mod skia_plotter_backend;
 
 mod imp {
     use super::*;
 
     pub struct GraphWidget {
-        gdk_gl_context: OnceCell<gdk::GLContext>,
-
-        egl_context: OnceCell<egl_context::EGLContext>,
-        render_target: OnceCell<render_target::RenderTarget>,
-
         skia_context: std::cell::Cell<Option<skia_safe::gpu::DirectContext>>,
     }
 
@@ -44,34 +37,9 @@ mod imp {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
-            // Obtain a native surface from the GtkWidget
-            let native = this
-                .native()
-                .ok_or("Failed to get native surface".to_owned())?;
-
-            // Create a GDK GL context used as a bridge between GTK and EGL
-            let gdk_gl_context = native.surface().create_gl_context()?;
-            gdk_gl_context.set_forward_compatible(true);
-            gdk_gl_context.realize()?;
-            self.gdk_gl_context
-                .set(gdk_gl_context)
-                .map_err(|_| "GDK GL context initialized twice".to_owned())?;
-
-            // Create an EGL context used to do the actual rendering
-            let egl_context = egl_context::EGLContext::new(&native)?;
-            self.egl_context
-                .set(egl_context)
-                .map_err(|_| "EGL context initialized twice".to_owned())?;
-
-            let egl_context = unsafe { self.egl_context.get().unwrap_unchecked() };
-            egl_context.make_current()?;
-
-            // Create an offscreen render target
-            self.render_target
-                .set(render_target::RenderTarget::new()?)
-                .map_err(|_| "Render target initialized twice".to_owned())?;
-
+            this.make_current();
             let interface = skia_safe::gpu::gl::Interface::new_native();
+
             self.skia_context
                 .set(skia_safe::gpu::DirectContext::new_gl(interface, None));
 
@@ -117,9 +85,6 @@ mod imp {
     impl Default for GraphWidget {
         fn default() -> Self {
             Self {
-                gdk_gl_context: OnceCell::new(),
-                egl_context: OnceCell::new(),
-                render_target: OnceCell::new(),
                 skia_context: std::cell::Cell::new(None),
             }
         }
@@ -129,7 +94,7 @@ mod imp {
     impl ObjectSubclass for GraphWidget {
         const NAME: &'static str = "GraphWidget";
         type Type = super::GraphWidget;
-        type ParentType = gtk::Widget;
+        type ParentType = gtk::GLArea;
     }
 
     impl ObjectImpl for GraphWidget {}
@@ -139,107 +104,70 @@ mod imp {
             self.parent_realize();
             self.realize().expect("Failed to realize widget");
         }
+    }
 
-        #[allow(mutable_transmutes)]
-        fn snapshot(&self, snapshot: &Snapshot) {
+    impl GLAreaImpl for GraphWidget {
+        fn render(&self, context: &gdk::GLContext) -> bool {
+            use skia_safe::*;
+
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
-            let width = this.allocated_width();
-            let height = this.allocated_height();
+            let mut viewport_info: [gl_rs::types::GLint; 4] = [0; 4];
+            unsafe {
+                gl_rs::GetIntegerv(gl_rs::VIEWPORT, &mut viewport_info[0]);
+            }
 
-            let egl_context = self.egl_context.get().expect("EGL context not initialized");
-            let render_target = self
-                .render_target
-                .get()
-                .expect("Render target not initialized");
+            let width = viewport_info[2];
+            let height = viewport_info[3];
+            unsafe {
+                gl_rs::ClearColor(1.0, 0.0, 0.0, 1.0);
+                gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
+            }
 
-            egl_context
-                .make_current()
-                .expect("Failed to make EGL context current");
+            let framebuffer_info = {
+                use gl_rs::{types::*, *};
 
-            render_target
-                .resize(width, height)
-                .expect("Failed to resize render target");
-            let mut image = {
-                use skia_safe::*;
+                let mut fboid: GLint = 0;
+                unsafe { GetIntegerv(FRAMEBUFFER_BINDING, &mut fboid) };
 
-                render_target.bind().expect("Failed to bind render target");
-
-                unsafe {
-                    gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
-                    gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
+                gpu::gl::FramebufferInfo {
+                    fboid: fboid.try_into().unwrap(),
+                    format: gpu::gl::Format::RGBA8.into(),
                 }
-
-                let skia_render_target = gpu::BackendRenderTarget::new_gl(
-                    (width, height),
-                    0,
-                    8,
-                    gpu::gl::FramebufferInfo {
-                        fboid: self.render_target.get().unwrap().framebuffer_id(),
-                        format: gpu::gl::Format::RGBA8.into(),
-                    },
-                );
-
-                let skia_context = unsafe {
-                    (&mut *self.skia_context.as_ptr())
-                        .as_mut()
-                        .expect("Skia context not initialized")
-                };
-                let mut surface = Surface::from_backend_render_target(
-                    skia_context,
-                    &skia_render_target,
-                    gpu::SurfaceOrigin::TopLeft,
-                    ColorType::RGBA8888,
-                    None,
-                    None,
-                )
-                .expect("Failed to create Skia surface");
-
-                self.render(surface.canvas(), width, height)
-                    .expect("Failed to render");
-
-                skia_context.flush_and_submit();
-
-                self.render_target
-                    .get()
-                    .unwrap()
-                    .unbind(self.egl_context.get().unwrap())
-                    .unwrap()
             };
 
-            self.gdk_gl_context.get().unwrap().make_current();
+            let skia_render_target =
+                gpu::BackendRenderTarget::new_gl((width, height), 0, 8, framebuffer_info);
 
-            let egl_image_texture = self
-                .render_target
-                .get()
-                .unwrap()
-                .export_as_texture(&mut image)
-                .unwrap();
-
-            let gdk_gl_texture = unsafe {
-                gdk::GLTexture::with_release_func(
-                    self.gdk_gl_context.get().unwrap(),
-                    egl_image_texture.id(),
-                    width,
-                    height,
-                    move || {
-                        drop(egl_image_texture);
-                        drop(image);
-                    },
-                )
+            let skia_context = unsafe {
+                (&mut *self.skia_context.as_ptr())
+                    .as_mut()
+                    .expect("Skia context not initialized")
             };
-            snapshot.append_texture(
-                &gdk_gl_texture,
-                &gtk::graphene::Rect::new(0., 0., width as _, height as _),
-            );
+            let mut surface = Surface::from_backend_render_target(
+                skia_context,
+                &skia_render_target,
+                gpu::SurfaceOrigin::TopLeft,
+                ColorType::RGBA8888,
+                None,
+                None,
+            )
+            .expect("Failed to create Skia surface");
+
+            self.render(surface.canvas(), width, height)
+                .expect("Failed to render");
+
+            skia_context.flush_and_submit();
+
+            return true;
         }
     }
 }
 
 glib::wrapper! {
     pub struct GraphWidget(ObjectSubclass<imp::GraphWidget>)
-        @extends gtk::Widget,
+        @extends gtk::GLArea,
         @implements gtk::Accessible, gtk::Actionable,
                     gtk::Buildable, gtk::ConstraintTarget;
 }
