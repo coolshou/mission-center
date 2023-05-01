@@ -26,11 +26,28 @@ use crate::graph_widget::GraphWidget;
 mod imp {
     use super::*;
 
-    #[derive(Debug, Default, gtk::CompositeTemplate)]
+    #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
+
+        #[template_child]
+        pub graph_widget: TemplateChild<GraphWidget>,
+
+        pub system: std::cell::Cell<sysinfo::System>,
+    }
+
+    impl Default for MissionCenterWindow {
+        fn default() -> Self {
+            use sysinfo::{System, SystemExt};
+
+            Self {
+                header_bar: Default::default(),
+                graph_widget: Default::default(),
+                system: std::cell::Cell::new(System::new()),
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -69,6 +86,9 @@ glib::wrapper! {
 
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
+        use gtk::glib::translate::{FromGlibPtrNone, ToGlibPtr};
+        use sysinfo::{CpuExt, SystemExt};
+
         let this: MissionCenterWindow = unsafe {
             glib::Object::new_internal(
                 MissionCenterWindow::static_type(),
@@ -77,6 +97,31 @@ impl MissionCenterWindow {
             .downcast()
             .unwrap()
         };
+
+        let system = unsafe { &mut *this.imp().system.as_ptr() };
+        system.refresh_cpu();
+
+        // The windows should be destroyed after the main loop has exited so there should not be a
+        // need to explicitly remove the timeout source.
+        let this_ptr = this.inner.to_glib_none().0;
+        Some(glib::source::timeout_add_local(
+            std::time::Duration::from_millis(500),
+            move || {
+                let window =
+                    unsafe { gtk::Window::from_glib_none(this_ptr as *mut gtk::ffi::GtkWindow) };
+                let this: &MissionCenterWindow = unsafe { window.unsafe_cast_ref() };
+
+                let system = unsafe { &mut *this.imp().system.as_ptr() };
+                system.refresh_cpu();
+
+                this.imp()
+                    .graph_widget
+                    .get()
+                    .add_data_point(system.global_cpu_info().cpu_usage());
+
+                Continue(true)
+            },
+        ));
 
         this
     }

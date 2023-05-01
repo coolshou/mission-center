@@ -27,6 +27,17 @@ mod imp {
 
     pub struct GraphWidget {
         skia_context: std::cell::Cell<Option<skia_safe::gpu::DirectContext>>,
+
+        pub data: std::cell::Cell<Vec<f32>>,
+    }
+
+    impl Default for GraphWidget {
+        fn default() -> Self {
+            Self {
+                skia_context: std::cell::Cell::new(None),
+                data: std::cell::Cell::new(vec![0.0; 100]),
+            }
+        }
     }
 
     impl GraphWidget {
@@ -37,8 +48,10 @@ mod imp {
             this.make_current();
             let interface = skia_safe::gpu::gl::Interface::new_native();
 
-            self.skia_context
-                .set(skia_safe::gpu::DirectContext::new_gl(interface, None));
+            self.skia_context.set(Some(
+                skia_safe::gpu::DirectContext::new_gl(interface, None)
+                    .ok_or("Failed to create Skia DirectContext with OpenGL interface")?,
+            ));
 
             Ok(())
         }
@@ -51,19 +64,6 @@ mod imp {
             scale_factor: f32,
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
-            use rand::SeedableRng;
-            use rand_distr::{Distribution, Normal};
-            use rand_xorshift::XorShiftRng;
-
-            let data: Vec<_> = {
-                let norm_dist = Normal::new(50.0, 100.0).unwrap();
-                let mut x_rand = XorShiftRng::from_seed(*b"MyFragileSeed123");
-                let x_iter = norm_dist.sample_iter(&mut x_rand);
-                x_iter
-                    .filter(|x| *x < 100.0 && *x > 20.0)
-                    .take(150)
-                    .collect()
-            };
 
             let backend = skia_plotter_backend::SkiaPlotterBackend::new(
                 canvas,
@@ -73,9 +73,10 @@ mod imp {
             );
             let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
 
+            let data = unsafe { &*(self.data.as_ptr()) };
             let mut chart = ChartBuilder::on(&root)
                 .set_all_label_area_size(0)
-                .build_cartesian_2d(0..(data.len() - 1), 0.0..100.0)?;
+                .build_cartesian_2d(0..data.len(), 0_f32..100_f32)?;
 
             chart
                 .configure_mesh()
@@ -96,14 +97,6 @@ mod imp {
             root.present()?;
 
             Ok(())
-        }
-    }
-
-    impl Default for GraphWidget {
-        fn default() -> Self {
-            Self {
-                skia_context: std::cell::Cell::new(None),
-            }
         }
     }
 
@@ -138,7 +131,6 @@ mod imp {
             }
             let width = viewport_info[2];
             let height = viewport_info[3];
-            dbg!(width, height);
 
             unsafe {
                 gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
@@ -163,7 +155,7 @@ mod imp {
             let skia_context = unsafe {
                 (&mut *self.skia_context.as_ptr())
                     .as_mut()
-                    .expect("Skia context not initialized")
+                    .unwrap_unchecked()
             };
             let mut surface = Surface::from_backend_render_target(
                 skia_context,
@@ -187,8 +179,17 @@ mod imp {
 
 glib::wrapper! {
     pub struct GraphWidget(ObjectSubclass<imp::GraphWidget>)
-        @extends gtk::GLArea,
+        @extends gtk::Widget, gtk::GLArea,
         @implements gtk::Accessible, gtk::Actionable,
-                    gtk::Buildable, gtk::ConstraintTarget,
-                    gtk::Widget;
+                    gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl GraphWidget {
+    pub fn add_data_point(&mut self, value: f32) {
+        let data = unsafe { &mut *(self.imp().data.as_ptr()) };
+        data.push(value);
+        data.remove(0);
+
+        self.queue_render();
+    }
 }
