@@ -86,7 +86,6 @@ glib::wrapper! {
 
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
-        use gtk::glib::translate::{FromGlibPtrNone, ToGlibPtr};
         use sysinfo::{CpuExt, SystemExt};
 
         let this: MissionCenterWindow = unsafe {
@@ -103,18 +102,15 @@ impl MissionCenterWindow {
 
         // The windows should be destroyed after the main loop has exited so there should not be a
         // need to explicitly remove the timeout source.
-        let this_ptr = this.inner.to_glib_none().0;
+        let this_clone = this.clone();
         Some(glib::source::timeout_add_local(
             std::time::Duration::from_millis(500),
             move || {
-                let window =
-                    unsafe { gtk::Window::from_glib_none(this_ptr as *mut gtk::ffi::GtkWindow) };
-                let this: &MissionCenterWindow = unsafe { window.unsafe_cast_ref() };
-
-                let system = unsafe { &mut *this.imp().system.as_ptr() };
+                let system = unsafe { &mut *this_clone.imp().system.as_ptr() };
                 system.refresh_cpu();
 
-                this.imp()
+                this_clone
+                    .imp()
                     .graph_widget
                     .get()
                     .add_data_point(system.global_cpu_info().cpu_usage());
