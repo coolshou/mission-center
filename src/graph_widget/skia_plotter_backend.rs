@@ -2,6 +2,7 @@ pub struct SkiaPlotterBackend<'a> {
     canvas: &'a mut skia_safe::canvas::Canvas,
     width: u32,
     height: u32,
+    scale_factor: f32,
 }
 
 #[derive(Debug)]
@@ -18,11 +19,17 @@ impl std::fmt::Display for SkiaError {
 impl std::error::Error for SkiaError {}
 
 impl<'a> SkiaPlotterBackend<'a> {
-    pub fn new(canvas: &'a mut skia_safe::canvas::Canvas, width: u32, height: u32) -> Self {
+    pub fn new(
+        canvas: &'a mut skia_safe::canvas::Canvas,
+        width: u32,
+        height: u32,
+        scale_factor: f32,
+    ) -> Self {
         Self {
             canvas,
             width,
             height,
+            scale_factor,
         }
     }
 
@@ -55,7 +62,10 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
     type ErrorType = SkiaError;
 
     fn get_size(&self) -> (u32, u32) {
-        (self.width, self.height)
+        (
+            (self.width as f32 / self.scale_factor).round() as _,
+            (self.height as f32 / self.scale_factor).round() as _,
+        )
     }
 
     fn ensure_prepared(
@@ -78,8 +88,8 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         let rect = Rect::new(
             point.0 as _,
             point.1 as _,
-            (point.0 + 1) as _,
-            (point.1 + 1) as _,
+            (point.0 as f32 + self.scale_factor).round() as _,
+            (point.1 as f32 + self.scale_factor).round() as _,
         );
 
         let mut paint = Paint::new(
@@ -118,10 +128,16 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             None,
         );
         paint.set_anti_alias(true);
-        paint.set_stroke_width(style.stroke_width() as _);
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
 
-        let start = Point::new(from.0 as _, from.1 as _);
-        let end = Point::new(to.0 as _, to.1 as _);
+        let start = Point::new(
+            from.0 as f32 * self.scale_factor,
+            from.1 as f32 * self.scale_factor,
+        );
+        let end = Point::new(
+            to.0 as f32 * self.scale_factor,
+            to.1 as f32 * self.scale_factor,
+        );
 
         self.canvas.draw_line(start, end, &paint);
 
@@ -148,7 +164,7 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             None,
         );
         paint.set_anti_alias(true);
-        paint.set_stroke_width(style.stroke_width() as _);
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
 
         if fill {
             paint.set_style(PaintStyle::Fill);
@@ -158,10 +174,10 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
 
         self.canvas.draw_rect(
             Rect::new(
-                upper_left.0 as _,
-                upper_left.1 as _,
-                bottom_right.0 as _,
-                bottom_right.1 as _,
+                upper_left.0 as f32 * self.scale_factor,
+                upper_left.1 as f32 * self.scale_factor,
+                bottom_right.0 as f32 * self.scale_factor,
+                bottom_right.1 as f32 * self.scale_factor,
             ),
             &paint,
         );
@@ -190,13 +206,13 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             None,
         );
         paint.set_anti_alias(true);
-        paint.set_stroke_width(style.stroke_width() as _);
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
 
         let mut path = path.into_iter();
         if let Some((x, y)) = path.next() {
-            let mut start = (x as f32, y as f32);
+            let mut start = (x as f32 * self.scale_factor, y as f32 * self.scale_factor);
             for (x, y) in path {
-                let end = (x as _, y as _);
+                let end = (x as f32 * self.scale_factor, y as f32 * self.scale_factor);
 
                 self.canvas.draw_line(
                     Point::new(start.0, start.1),
@@ -232,17 +248,23 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             None,
         );
         paint.set_anti_alias(true);
-        paint.set_stroke_width(style.stroke_width() as _);
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
         paint.set_style(PaintStyle::Fill);
 
         let mut path = vert.into_iter();
         let mut path_builder = Path::new();
 
         if let Some((x, y)) = path.next() {
-            path_builder.move_to(Point::new(x as _, y as _));
+            path_builder.move_to(Point::new(
+                x as f32 * self.scale_factor,
+                y as f32 * self.scale_factor,
+            ));
 
             for (x, y) in path {
-                path_builder.line_to(Point::new(x as _, y as _));
+                path_builder.line_to(Point::new(
+                    x as f32 * self.scale_factor,
+                    y as f32 * self.scale_factor,
+                ));
             }
 
             path_builder.close();
@@ -273,7 +295,7 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             None,
         );
         paint.set_anti_alias(true);
-        paint.set_stroke_width(style.stroke_width() as _);
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
 
         if fill {
             paint.set_style(PaintStyle::Fill);
@@ -282,8 +304,11 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         }
 
         self.canvas.draw_circle(
-            Point::new(center.0 as _, center.1 as _),
-            radius as _,
+            Point::new(
+                center.0 as f32 * self.scale_factor,
+                center.1 as f32 * self.scale_factor,
+            ),
+            radius as f32 * self.scale_factor,
             &paint,
         );
 
@@ -304,7 +329,7 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
         )?;
 
-        let font = Font::new(typeface, Some(style.size() as f32));
+        let font = Font::new(typeface, Some(style.size() as f32 * self.scale_factor));
 
         let color = style.color();
         let mut paint = Paint::new(
@@ -319,7 +344,10 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         paint.set_anti_alias(true);
         let extents = font.measure_str(text, Some(&paint)).1;
 
-        Ok((extents.width() as u32, extents.height() as u32))
+        Ok((
+            (extents.width() / self.scale_factor).round() as u32,
+            (extents.height() / self.scale_factor).round() as u32,
+        ))
     }
 
     fn draw_text<S: plotters_backend::BackendTextStyle>(
@@ -336,7 +364,10 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             return Ok(());
         };
 
-        let (mut x, mut y) = (pos.0, pos.1);
+        let (mut x, mut y) = (
+            pos.0 as f32 * self.scale_factor,
+            pos.1 as f32 * self.scale_factor,
+        );
 
         let degree: f32 = match style.transform() {
             FontTransform::None => 0.0,
@@ -347,11 +378,11 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
 
         if degree != 0.0 {
             self.canvas.save();
-            self.canvas.translate(Point::new(x as _, y as _));
+            self.canvas.translate(Point::new(x, y));
             self.canvas.rotate(degree, None);
 
-            x = 0;
-            y = 0;
+            x = 0.;
+            y = 0.;
         }
 
         let mut paint = Paint::new(
@@ -371,7 +402,7 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
         )?;
 
-        let font = Font::new(typeface, Some(style.size() as f32));
+        let font = Font::new(typeface, Some(style.size() as f32 * self.scale_factor));
 
         let extents = font.measure_str(text, Some(&paint)).1;
         let dx = match style.anchor().h_pos {

@@ -48,6 +48,7 @@ mod imp {
             canvas: &mut skia_safe::canvas::Canvas,
             width: i32,
             height: i32,
+            scale_factor: f32,
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
             use rand::SeedableRng;
@@ -55,33 +56,32 @@ mod imp {
             use rand_xorshift::XorShiftRng;
 
             let data: Vec<_> = {
-                let norm_dist = Normal::new(500.0, 100.0).unwrap();
+                let norm_dist = Normal::new(50.0, 100.0).unwrap();
                 let mut x_rand = XorShiftRng::from_seed(*b"MyFragileSeed123");
                 let x_iter = norm_dist.sample_iter(&mut x_rand);
                 x_iter
-                    .filter(|x| *x < 1500.0)
-                    .take(100)
-                    .zip(0..)
-                    .map(|(x, b)| x + (b as f64).powf(1.2))
+                    .filter(|x| *x < 100.0 && *x > 20.0)
+                    .take(150)
                     .collect()
             };
 
-            let backend =
-                skia_plotter_backend::SkiaPlotterBackend::new(canvas, width as _, height as _);
+            let backend = skia_plotter_backend::SkiaPlotterBackend::new(
+                canvas,
+                width as _,
+                height as _,
+                scale_factor,
+            );
             let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
 
-            root.fill(&WHITE)?;
-
             let mut chart = ChartBuilder::on(&root)
-                .set_label_area_size(LabelAreaPosition::Left, 60)
-                .set_label_area_size(LabelAreaPosition::Bottom, 60)
-                .caption("Area Chart Demo", ("sans-serif", 40))
-                .build_cartesian_2d(0..(data.len() - 1), 0.0..1500.0)?;
+                .set_all_label_area_size(0)
+                .build_cartesian_2d(0..(data.len() - 1), 0.0..100.0)?;
 
             chart
                 .configure_mesh()
-                .disable_x_mesh()
-                .disable_y_mesh()
+                .max_light_lines(1)
+                .x_labels((0.02 * width as f32).floor() as _)
+                .y_labels((0.02 * height as f32).floor() as _)
                 .draw()?;
 
             chart.draw_series(
@@ -127,13 +127,18 @@ mod imp {
         fn render(&self, _: &gdk::GLContext) -> bool {
             use skia_safe::*;
 
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::GraphWidget>();
+
+            let native = this.native().expect("Failed to get scale factor");
+
             let mut viewport_info: [gl_rs::types::GLint; 4] = [0; 4];
             unsafe {
                 gl_rs::GetIntegerv(gl_rs::VIEWPORT, &mut viewport_info[0]);
             }
-
             let width = viewport_info[2];
             let height = viewport_info[3];
+            dbg!(width, height);
 
             unsafe {
                 gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
@@ -170,7 +175,7 @@ mod imp {
             )
             .expect("Failed to create Skia surface");
 
-            self.render_graph(surface.canvas(), width, height)
+            self.render_graph(surface.canvas(), width, height, native.scale_factor() as _)
                 .expect("Failed to render");
 
             skia_context.flush_and_submit();
@@ -184,5 +189,6 @@ glib::wrapper! {
     pub struct GraphWidget(ObjectSubclass<imp::GraphWidget>)
         @extends gtk::GLArea,
         @implements gtk::Accessible, gtk::Actionable,
-                    gtk::Buildable, gtk::ConstraintTarget;
+                    gtk::Buildable, gtk::ConstraintTarget,
+                    gtk::Widget;
 }
