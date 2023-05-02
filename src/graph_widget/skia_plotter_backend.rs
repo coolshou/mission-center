@@ -247,7 +247,6 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             ),
             None,
         );
-        paint.set_anti_alias(true);
         paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
         paint.set_style(PaintStyle::Fill);
 
@@ -255,18 +254,13 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         let mut path_builder = Path::new();
 
         if let Some((x, y)) = path.next() {
-            path_builder.move_to(Point::new(
-                x as f32 * self.scale_factor,
-                y as f32 * self.scale_factor,
-            ));
-
-            for (x, y) in path {
-                path_builder.line_to(Point::new(
-                    x as f32 * self.scale_factor,
-                    y as f32 * self.scale_factor,
-                ));
+            fn point(x: i32, y: i32, scale_factor: f32) -> Point {
+                Point::new(x as f32 * scale_factor, y as f32 * scale_factor)
             }
-
+            path_builder.move_to(point(x, y, self.scale_factor));
+            for (x, y) in path {
+                path_builder.line_to(point(x, y, self.scale_factor));
+            }
             path_builder.close();
         }
 
