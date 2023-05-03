@@ -22,8 +22,6 @@ use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
 mod imp {
-    use sysinfo::SystemExt;
-
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]

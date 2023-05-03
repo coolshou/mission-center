@@ -9,6 +9,27 @@ template MissionCenterWindow : Adw.ApplicationWindow {
     orientation: vertical;
 
     Adw.HeaderBar header_bar {
+      styles [
+        "flat"
+      ]
+
+      [start]
+      Box {
+        vexpand: true;
+
+        StackSwitcher title {
+          valign: start;
+          orientation: horizontal;
+          stack: stack;
+        }
+      }
+
+      title-widget: SearchEntry {
+          width-request: 400;
+
+          placeholder-text: _("Type a name, publisher, or PID to search");
+      };
+
       [end]
       MenuButton {
         icon-name: "open-menu-symbolic";
@@ -18,21 +39,6 @@ template MissionCenterWindow : Adw.ApplicationWindow {
 
     Box {
       orientation: horizontal;
-
-      Box {
-        vexpand: true;
-
-        margin-top: 5;
-        margin-bottom: 5;
-        margin-start: 5;
-        margin-end: 5;
-
-        StackSwitcher title {
-          valign: start;
-          orientation: vertical;
-          stack: stack;
-        }
-      }
 
       Stack stack {
         hexpand: true;

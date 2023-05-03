@@ -33,6 +33,8 @@ mod imp {
         pub cpu_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub cpu_usage_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub sidebar: TemplateChild<gtk::ListBox>,
     }
 
     impl Default for PerformancePage {
@@ -40,6 +42,7 @@ mod imp {
             Self {
                 cpu_usage_graph: Default::default(),
                 cpu_usage_label: Default::default(),
+                sidebar: Default::default(),
             }
         }
     }
@@ -67,6 +70,12 @@ mod imp {
             use sysinfo::{CpuExt, SystemExt};
 
             self.parent_realize();
+
+            let row = self
+                .sidebar
+                .row_at_index(0)
+                .expect("Failed to select first row");
+            self.sidebar.select_row(Some(&row));
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePage>().clone();
