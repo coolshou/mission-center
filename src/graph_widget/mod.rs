@@ -18,24 +18,47 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    gdk,
+    gdk::prelude::*,
+    glib,
+    glib::{ParamSpec, Properties, Value},
+    prelude::*,
+    subclass::prelude::*,
+};
 
 mod skia_plotter_backend;
 
 mod imp {
+    use std::cell::Cell;
+
+    use gtk::Settings;
+
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::GraphWidget)]
     pub struct GraphWidget {
-        skia_context: std::cell::Cell<Option<skia_safe::gpu::DirectContext>>,
+        #[property(get, set)]
+        grid_visible: Cell<bool>,
+        #[property(get, set)]
+        scroll: Cell<bool>,
 
-        pub data: std::cell::Cell<Vec<f32>>,
+        skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
+        pub(crate) data_points: Cell<Vec<f32>>,
+
+        scroll_offset: Cell<f32>,
     }
 
     impl Default for GraphWidget {
         fn default() -> Self {
             Self {
-                skia_context: std::cell::Cell::new(None),
-                data: std::cell::Cell::new(vec![0.0; 100]),
+                grid_visible: Cell::new(true),
+                scroll: Cell::new(false),
+
+                skia_context: Cell::new(None),
+                data_points: Cell::new(vec![0.0; 60]),
+                scroll_offset: Cell::new(0.),
             }
         }
     }
@@ -65,6 +88,27 @@ mod imp {
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
 
+            let mut paint = {
+                if let Some(settings) = Settings::default() {
+                    if settings.is_gtk_application_prefer_dark_theme() {
+                        skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 1.0, 1.0, 0.05), None)
+                    } else {
+                        skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 0.0, 0.0, 0.05), None)
+                    }
+                } else {
+                    skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 1.0, 1.0, 0.05), None)
+                }
+            };
+
+            paint.set_stroke_width(scale_factor);
+            paint.set_style(skia_safe::paint::Style::Stroke);
+
+            self.draw_outline(canvas, width, height, scale_factor, &paint);
+
+            if self.obj().grid_visible() {
+                self.draw_grid(canvas, width, height, scale_factor, &paint);
+            }
+
             let backend = skia_plotter_backend::SkiaPlotterBackend::new(
                 canvas,
                 width as _,
@@ -73,21 +117,20 @@ mod imp {
             );
             let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
 
-            let data = unsafe { &*(self.data.as_ptr()) };
+            let data_points = unsafe { &*(self.data_points.as_ptr()) };
             let mut chart = ChartBuilder::on(&root)
                 .set_all_label_area_size(0)
-                .build_cartesian_2d(0..data.len(), 0_f32..100_f32)?;
+                .build_cartesian_2d(0..data_points.len() - 1, 0_f32..100_f32)?;
 
             chart
                 .configure_mesh()
-                .max_light_lines(1)
-                .x_labels((0.02 * width as f32).floor() as _)
-                .y_labels((0.02 * height as f32).floor() as _)
+                .disable_mesh()
+                .disable_axes()
                 .draw()?;
 
             chart.draw_series(
                 AreaSeries::new(
-                    (0..).zip(data.iter()).map(|(x, y)| (x, *y)),
+                    (0..).zip(data_points.iter()).map(|(x, y)| (x, *y)),
                     0.0,
                     &RED.mix(0.2),
                 )
@@ -98,6 +141,73 @@ mod imp {
 
             Ok(())
         }
+
+        fn draw_outline(
+            &self,
+            canvas: &mut skia_safe::canvas::Canvas,
+            width: i32,
+            height: i32,
+            scale_factor: f32,
+            paint: &skia_safe::Paint,
+        ) {
+            let boundary = skia_safe::Rect::new(
+                scale_factor,
+                scale_factor,
+                width as f32 - scale_factor,
+                height as f32 - scale_factor,
+            );
+            canvas.draw_rect(&boundary, &paint);
+        }
+
+        fn draw_grid(
+            &self,
+            canvas: &mut skia_safe::canvas::Canvas,
+            width: i32,
+            height: i32,
+            scale_factor: f32,
+            paint: &skia_safe::Paint,
+        ) {
+            // Draw horizontal lines
+            let horizontal_line_count = 10;
+
+            let col_width = width as f32 - scale_factor;
+            let col_height = height as f32 / horizontal_line_count as f32;
+
+            for i in 1..horizontal_line_count {
+                canvas.draw_line(
+                    (scale_factor, col_height * i as f32),
+                    (col_width, col_height * i as f32),
+                    &paint,
+                );
+            }
+
+            // Draw vertical lines
+            let mut vertical_line_count = 6;
+
+            let x_offset = if self.obj().scroll() {
+                vertical_line_count += 1;
+
+                let mut x_offset = self.scroll_offset.get();
+                x_offset -= col_width / 3.;
+                x_offset %= col_width;
+                self.scroll_offset.set(x_offset);
+
+                x_offset
+            } else {
+                0.
+            };
+
+            let col_width = width as f32 / vertical_line_count as f32;
+            let col_height = height as f32 - scale_factor;
+
+            for i in 1..vertical_line_count {
+                canvas.draw_line(
+                    (col_width * i as f32 + x_offset, scale_factor),
+                    (col_width * i as f32 + x_offset, col_height),
+                    &paint,
+                );
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -107,7 +217,19 @@ mod imp {
         type ParentType = gtk::GLArea;
     }
 
-    impl ObjectImpl for GraphWidget {}
+    impl ObjectImpl for GraphWidget {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec)
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+    }
 
     impl WidgetImpl for GraphWidget {
         fn realize(&self) {
@@ -195,7 +317,7 @@ impl GraphWidget {
     }
 
     pub fn add_data_point(&mut self, value: f32) {
-        let data = unsafe { &mut *(self.imp().data.as_ptr()) };
+        let data = unsafe { &mut *(self.imp().data_points.as_ptr()) };
         data.push(value);
         data.remove(0);
 

@@ -64,8 +64,6 @@ mod imp {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, SystemExt};
 
-            self.parent_realize();
-
             fn compute_row_column_count(item_count: usize) -> (usize, usize) {
                 let item_count = item_count as isize;
                 let mut factors = Vec::new();
@@ -95,6 +93,15 @@ mod imp {
                 (result.0 as usize, result.1 as usize)
             }
 
+            self.parent_realize();
+
+            let right_click_controller = gtk::GestureClick::new();
+            right_click_controller.set_button(3); // Secondary click (AKA right click)
+            right_click_controller.connect_released(|click, n_press, x, y| {
+                dbg!(click, n_press, x, y);
+            });
+            self.usage_graphs.add_controller(right_click_controller);
+
             let cpu_count = SYS_INFO
                 .read()
                 .expect("Failed to read CPU count: Unable to acquire lock")
@@ -122,6 +129,7 @@ mod imp {
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
+
             Some(glib::source::timeout_add_local(
                 std::time::Duration::from_millis(1000),
                 move || {

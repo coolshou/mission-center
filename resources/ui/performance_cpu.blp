@@ -268,3 +268,22 @@ template PerformanceCpu : Box {
     }
   }
 }
+
+menu context_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("_About MissionCenter");
+      action: "app.about";
+    }
+  }
+}
