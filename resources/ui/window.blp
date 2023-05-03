@@ -41,19 +41,19 @@ template MissionCenterWindow : Adw.ApplicationWindow {
         transition-type: crossfade;
 
         StackPage {
+          name: "performance";
+          icon-name: "speedometer-symbolic";
+          title: "Performance";
+          child: .PerformancePage {
+          };
+        }
+
+        StackPage {
           name: "processes";
           icon-name: "system-run-symbolic";
           title: "Processes";
           child: Adw.StatusPage {
             title: "Processes Page";
-          };
-        }
-
-        StackPage {
-          name: "performance";
-          icon-name: "speedometer-symbolic";
-          title: "Performance";
-          child: .GraphWidget graph_widget {
           };
         }
       }

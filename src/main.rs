@@ -24,14 +24,15 @@ use gtk::prelude::*;
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 
-// use crate::sysinfo::run_cpu_usage_loop;
-
 use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
+// use crate::sysinfo::run_cpu_usage_loop;
+
 mod application;
 mod graph_widget;
-mod sysinfo;
+mod performance_cpu;
+mod performance_page;
 mod window;
 
 mod config {

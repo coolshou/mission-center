@@ -1,0 +1,258 @@
+using Gtk 4.0;
+
+template PerformanceCpu : Box {
+  orientation: vertical;
+
+  Box description {
+    orientation: vertical;
+    spacing: 7;
+    hexpand: true;
+
+    Box {
+      spacing: 200;
+
+      Label {
+        styles [
+          "title-1",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: _("CPU");
+      }
+
+      Label {
+        styles [
+          "title-3",
+        ]
+
+        halign: end;
+        label: "AMD Ryzen 9 3950X 16-Core Processor";
+      }
+    }
+
+    Box {
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: _("% Utilization over 60 seconds");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        label: _("100%");
+      }
+    }
+  }
+
+  Box details {
+    margin-top: 20;
+    spacing: 20;
+
+    Box dynamic_data {
+      orientation: vertical;
+      spacing: 10;
+
+      Box top_row {
+        spacing: 15;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Utilization");
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: "1%";
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Speed");
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: "3.50GHz";
+          }
+        }
+      }
+
+      Box mid_row {
+        spacing: 15;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Processes");
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: "144";
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Threads");
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: "1599";
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Handles");
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: "52346";
+          }
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Up time");
+        }
+
+        Label {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: "0:02:46:08";
+        }
+      }
+    }
+
+    Box system_info {
+      spacing: 10;
+
+      Box labels {
+        orientation: vertical;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Base Speed:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Sockets:");
+        }
+      }
+
+      Box values {
+        orientation: vertical;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: "3.5 GHz";
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: "1";
+        }
+      }
+    }
+  }
+}

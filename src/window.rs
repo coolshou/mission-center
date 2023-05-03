@@ -21,9 +21,12 @@
 use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
-use crate::graph_widget::GraphWidget;
-
 mod imp {
+    use crate::{
+        graph_widget::GraphWidget, performance_cpu::PerformanceCpu,
+        performance_page::PerformancePage,
+    };
+
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -31,21 +34,12 @@ mod imp {
     pub struct MissionCenterWindow {
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
-
-        #[template_child]
-        pub graph_widget: TemplateChild<GraphWidget>,
-
-        pub system: std::cell::Cell<sysinfo::System>,
     }
 
     impl Default for MissionCenterWindow {
         fn default() -> Self {
-            use sysinfo::{System, SystemExt};
-
             Self {
                 header_bar: Default::default(),
-                graph_widget: Default::default(),
-                system: std::cell::Cell::new(System::new()),
             }
         }
     }
@@ -58,6 +52,8 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             GraphWidget::ensure_type();
+            PerformanceCpu::ensure_type();
+            PerformancePage::ensure_type();
 
             klass.bind_template();
         }
@@ -86,8 +82,6 @@ glib::wrapper! {
 
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
-        use sysinfo::{CpuExt, SystemExt};
-
         let this: MissionCenterWindow = unsafe {
             glib::Object::new_internal(
                 MissionCenterWindow::static_type(),
@@ -96,29 +90,6 @@ impl MissionCenterWindow {
             .downcast()
             .unwrap()
         };
-
-        let system = unsafe { &mut *this.imp().system.as_ptr() };
-        system.refresh_cpu();
-
-        // The windows should be destroyed after the main loop has exited so there should not be a
-        // need to explicitly remove the timeout source.
-        let this_clone = this.clone();
-        Some(glib::source::timeout_add_local(
-            std::time::Duration::from_millis(500),
-            move || {
-                let system = unsafe { &mut *this_clone.imp().system.as_ptr() };
-                system.refresh_cpu();
-
-                this_clone
-                    .imp()
-                    .graph_widget
-                    .get()
-                    .add_data_point(system.global_cpu_info().cpu_usage());
-
-                Continue(true)
-            },
-        ));
-
         this
     }
 }
