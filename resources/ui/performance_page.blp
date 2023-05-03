@@ -46,6 +46,7 @@ template PerformancePage : Box {
 
   Box page_content {
     margin-top: 10;
+    margin-bottom: 15;
     margin-end: 20;
 
     Box sidebar_container {
@@ -71,7 +72,7 @@ template PerformancePage : Box {
 
           Box {
             orientation: vertical;
-            spacing: 5;
+            spacing: 3;
             width-request: 100;
 
             Label {
@@ -80,6 +81,11 @@ template PerformancePage : Box {
             }
 
             Label cpu_usage_label {
+              halign: start;
+              label: "usage";
+            }
+
+            Label {
               halign: start;
               label: "usage";
             }

@@ -179,12 +179,21 @@ mod imp {
 
 glib::wrapper! {
     pub struct GraphWidget(ObjectSubclass<imp::GraphWidget>)
-        @extends gtk::Widget, gtk::GLArea,
+        @extends gtk::GLArea, gtk::Widget,
         @implements gtk::Accessible, gtk::Actionable,
                     gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl GraphWidget {
+    pub fn new() -> Self {
+        let this: Self = unsafe {
+            glib::Object::new_internal(GraphWidget::static_type(), &mut [])
+                .downcast()
+                .unwrap()
+        };
+        this
+    }
+
     pub fn add_data_point(&mut self, value: f32) {
         let data = unsafe { &mut *(self.imp().data.as_ptr()) };
         data.push(value);

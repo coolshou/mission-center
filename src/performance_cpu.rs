@@ -19,18 +19,28 @@
  */
 
 use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio, glib, prelude::*};
 
 mod imp {
+    use sysinfo::SystemExt;
+
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_cpu.ui")]
-    pub struct PerformanceCpu {}
+    pub struct PerformanceCpu {
+        #[template_child]
+        pub usage_graphs: TemplateChild<gtk::Grid>,
+
+        pub graph_widgets: std::cell::Cell<Vec<crate::graph_widget::GraphWidget>>,
+    }
 
     impl Default for PerformanceCpu {
         fn default() -> Self {
-            Self {}
+            Self {
+                usage_graphs: Default::default(),
+                graph_widgets: std::cell::Cell::new(Vec::new()),
+            }
         }
     }
 
@@ -51,7 +61,87 @@ mod imp {
 
     impl ObjectImpl for PerformanceCpu {}
 
-    impl WidgetImpl for PerformanceCpu {}
+    impl WidgetImpl for PerformanceCpu {
+        fn realize(&self) {
+            use crate::SYS_INFO;
+            use sysinfo::{CpuExt, SystemExt};
+
+            self.parent_realize();
+
+            fn compute_row_column_count(item_count: usize) -> (usize, usize) {
+                let item_count = item_count as isize;
+                let mut factors = Vec::new();
+                factors.reserve(item_count as usize);
+
+                for i in 2..=(item_count as f64).sqrt().floor() as isize {
+                    if item_count % i == 0 {
+                        factors.push((i, item_count / i));
+                    }
+                }
+                let mut valid_factors = vec![];
+                for (i, j) in factors {
+                    if (i - j).abs() <= 1 {
+                        valid_factors.push((i, j));
+                    }
+                }
+
+                let result =
+                    if let Some((i, j)) = valid_factors.into_iter().max_by_key(|&(i, j)| i * j) {
+                        (i, j)
+                    } else {
+                        let i = item_count.min(((item_count as f64).sqrt() + 1.).floor() as isize);
+                        let j = ((item_count as f64) / i as f64).ceil() as isize;
+                        (i, j)
+                    };
+
+                (result.0 as usize, result.1 as usize)
+            }
+
+            let cpu_count = SYS_INFO
+                .read()
+                .expect("Failed to read CPU count: Unable to acquire lock")
+                .cpus()
+                .len();
+
+            let (_, col_count) = compute_row_column_count(cpu_count);
+
+            for i in 0..cpu_count {
+                let row_idx = i / col_count;
+                let col_idx = i % col_count;
+
+                let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+                let graph_widget_index = graph_widgets.len();
+
+                graph_widgets.push(crate::graph_widget::GraphWidget::new());
+                self.usage_graphs.attach(
+                    &graph_widgets[graph_widget_index],
+                    col_idx as i32,
+                    row_idx as i32,
+                    1,
+                    1,
+                );
+            }
+
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
+            Some(glib::source::timeout_add_local(
+                std::time::Duration::from_millis(1000),
+                move || {
+                    let sys_info = SYS_INFO
+                        .read()
+                        .expect("Failed to read CPU information: Unable to acquire lock");
+
+                    for (i, cpu) in sys_info.cpus().iter().enumerate() {
+                        let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
+                        let graph_widget = &mut graph_widgets[i];
+                        graph_widget.add_data_point(cpu.cpu_usage());
+                    }
+
+                    Continue(true)
+                },
+            ));
+        }
+    }
 
     impl BoxImpl for PerformanceCpu {}
 }

@@ -33,18 +33,13 @@ mod imp {
         pub cpu_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub cpu_usage_label: TemplateChild<gtk::Label>,
-
-        pub system: std::cell::Cell<sysinfo::System>,
     }
 
     impl Default for PerformancePage {
         fn default() -> Self {
-            use sysinfo::{System, SystemExt};
-
             Self {
                 cpu_usage_graph: Default::default(),
                 cpu_usage_label: Default::default(),
-                system: std::cell::Cell::new(System::new()),
             }
         }
     }
@@ -68,24 +63,22 @@ mod imp {
 
     impl WidgetImpl for PerformancePage {
         fn realize(&self) {
+            use crate::SYS_INFO;
             use sysinfo::{CpuExt, SystemExt};
 
             self.parent_realize();
 
-            let system = unsafe { &mut *self.system.as_ptr() };
-            system.refresh_cpu();
-
-            // The windows should be destroyed after the main loop has exited so there should not be a
-            // need to explicitly remove the timeout source.
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePage>().clone();
             Some(glib::source::timeout_add_local(
                 std::time::Duration::from_millis(500),
                 move || {
-                    let system = unsafe { &mut *this.imp().system.as_ptr() };
-                    system.refresh_cpu();
+                    let cpu_usage = SYS_INFO
+                        .read()
+                        .expect("Failed to read CPU information: Unable to acquire lock")
+                        .global_cpu_info()
+                        .cpu_usage();
 
-                    let cpu_usage = system.global_cpu_info().cpu_usage();
                     this.imp().cpu_usage_graph.get().add_data_point(cpu_usage);
                     this.imp()
                         .cpu_usage_label

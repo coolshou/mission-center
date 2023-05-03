@@ -21,7 +21,7 @@ template PerformanceCpu : Box {
         label: _("CPU");
       }
 
-      Label {
+      Label cpu_name {
         styles [
           "title-3",
         ]
@@ -50,6 +50,16 @@ template PerformanceCpu : Box {
         label: _("100%");
       }
     }
+  }
+
+  Grid usage_graphs {
+    row-spacing: 7;
+    column-spacing: 7;
+    vexpand: true;
+    hexpand: true;
+
+    row-homogeneous: true;
+    column-homogeneous: true;
   }
 
   Box details {

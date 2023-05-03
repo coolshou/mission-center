@@ -18,16 +18,22 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::sync::{Arc, RwLock};
+
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::gio;
 use gtk::prelude::*;
+use lazy_static::lazy_static;
+use sysinfo::{System, SystemExt};
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 
 use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
-// use crate::sysinfo::run_cpu_usage_loop;
+lazy_static! {
+    pub static ref SYS_INFO: Arc<RwLock<System>> = Arc::new(RwLock::new(System::new_all()));
+}
 
 mod application;
 mod graph_widget;
@@ -68,6 +74,33 @@ fn main() {
         });
     }
 
+    // Take an initial measurement
+    {
+        let mut sys_info = SYS_INFO
+            .write()
+            .expect("System information refresh failed: Unable to acquire lock");
+        sys_info.refresh_components_list();
+        sys_info.refresh_all();
+    }
+
+    // Set up the system information refresh thread
+    let sysinfo_refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
+    let sysinfo_refresh_thread_running_clone = Arc::clone(&sysinfo_refresh_thread_running);
+    let sysinfo_refresh_thread = std::thread::spawn(move || {
+        while sysinfo_refresh_thread_running_clone.load(std::sync::atomic::Ordering::Acquire) {
+            std::thread::sleep(std::time::Duration::from_secs(1));
+
+            {
+                let mut sys_info = SYS_INFO
+                    .write()
+                    .expect("System information refresh failed: Unable to acquire lock");
+
+                sys_info.refresh_components_list();
+                sys_info.refresh_all();
+            }
+        }
+    });
+
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
@@ -76,11 +109,17 @@ fn main() {
         &gio::ApplicationFlags::empty(),
     );
 
-    // run_cpu_usage_loop();
-
     // Run the application. This function will block until the application
     // exits. Upon return, we have our exit code to return to the shell. (This
     // is the code you see when you do `echo $?` after running a command in a
     // terminal.
-    std::process::exit(app.run().into());
+    let exit_code = app.run();
+
+    // Ask the system information refresh thread to stop
+    sysinfo_refresh_thread_running.store(false, std::sync::atomic::Ordering::Release);
+    sysinfo_refresh_thread
+        .join()
+        .expect("Unable to stop the system information refresh thread");
+
+    std::process::exit(exit_code.into());
 }
