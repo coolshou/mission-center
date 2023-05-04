@@ -118,6 +118,12 @@ mod imp {
                 let graph_widget_index = graph_widgets.len();
 
                 graph_widgets.push(crate::graph_widget::GraphWidget::new());
+                graph_widgets[graph_widget_index].set_base_color(gtk::gdk::RGBA::new(
+                    crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
+                    crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
+                    crate::CPU_USAGE_GRAPH_BASE_COLOR[2],
+                    1.,
+                ));
                 self.usage_graphs.attach(
                     &graph_widgets[graph_widget_index],
                     col_idx as i32,

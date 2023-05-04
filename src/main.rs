@@ -31,10 +31,6 @@ use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
-lazy_static! {
-    pub static ref SYS_INFO: Arc<RwLock<System>> = Arc::new(RwLock::new(System::new_all()));
-}
-
 mod application;
 mod graph_widget;
 mod performance_cpu;
@@ -43,6 +39,12 @@ mod window;
 
 mod config {
     include!(concat!(env!("BUILD_ROOT"), "/src/config.rs"));
+}
+
+const CPU_USAGE_GRAPH_BASE_COLOR: [f32; 3] = [0.06667, 0.49, 0.7333];
+
+lazy_static! {
+    pub static ref SYS_INFO: Arc<RwLock<System>> = Arc::new(RwLock::new(System::new_all()));
 }
 
 fn main() {

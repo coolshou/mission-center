@@ -227,48 +227,6 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         Ok(())
     }
 
-    fn fill_polygon<
-        S: plotters_backend::BackendStyle,
-        I: IntoIterator<Item = plotters_backend::BackendCoord>,
-    >(
-        &mut self,
-        vert: I,
-        style: &S,
-    ) -> Result<(), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
-        use skia_safe::*;
-
-        let color = style.color();
-        let mut paint = Paint::new(
-            Color4f::new(
-                color.rgb.0 as f32 / 256.,
-                color.rgb.1 as f32 / 256.,
-                color.rgb.2 as f32 / 256.,
-                color.alpha as _,
-            ),
-            None,
-        );
-        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
-        paint.set_style(PaintStyle::Fill);
-
-        let mut path = vert.into_iter();
-        let mut path_builder = Path::new();
-
-        if let Some((x, y)) = path.next() {
-            fn point(x: i32, y: i32, scale_factor: f32) -> Point {
-                Point::new(x as f32 * scale_factor, y as f32 * scale_factor)
-            }
-            path_builder.move_to(point(x, y, self.scale_factor));
-            for (x, y) in path {
-                path_builder.line_to(point(x, y, self.scale_factor));
-            }
-            path_builder.close();
-        }
-
-        self.canvas.draw_path(&path_builder, &paint);
-
-        Ok(())
-    }
-
     fn draw_circle<S: plotters_backend::BackendStyle>(
         &mut self,
         center: plotters_backend::BackendCoord,
@@ -309,21 +267,15 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         Ok(())
     }
 
-    fn estimate_text_size<S: plotters_backend::BackendTextStyle>(
-        &self,
-        text: &str,
+    fn fill_polygon<
+        S: plotters_backend::BackendStyle,
+        I: IntoIterator<Item = plotters_backend::BackendCoord>,
+    >(
+        &mut self,
+        vert: I,
         style: &S,
-    ) -> Result<(u32, u32), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
-        use plotters_backend::*;
+    ) -> Result<(), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
         use skia_safe::*;
-
-        let font_family = style.family().as_str().to_owned();
-        let font_style = self.to_sk_font_style(style);
-        let typeface = Typeface::new(&font_family, font_style).ok_or(
-            DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
-        )?;
-
-        let font = Font::new(typeface, Some(style.size() as f32 * self.scale_factor));
 
         let color = style.color();
         let mut paint = Paint::new(
@@ -335,13 +287,26 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
             ),
             None,
         );
-        paint.set_anti_alias(true);
-        let extents = font.measure_str(text, Some(&paint)).1;
+        paint.set_stroke_width(style.stroke_width() as f32 * self.scale_factor);
+        paint.set_style(PaintStyle::Fill);
 
-        Ok((
-            (extents.width() / self.scale_factor).round() as u32,
-            (extents.height() / self.scale_factor).round() as u32,
-        ))
+        let mut path = vert.into_iter();
+        let mut path_builder = Path::new();
+
+        if let Some((x, y)) = path.next() {
+            fn point(x: i32, y: i32, scale_factor: f32) -> Point {
+                Point::new(x as f32 * scale_factor, y as f32 * scale_factor)
+            }
+            path_builder.move_to(point(x, y, self.scale_factor));
+            for (x, y) in path {
+                path_builder.line_to(point(x, y, self.scale_factor));
+            }
+            path_builder.close();
+        }
+
+        self.canvas.draw_path(&path_builder, &paint);
+
+        Ok(())
     }
 
     fn draw_text<S: plotters_backend::BackendTextStyle>(
@@ -421,5 +386,40 @@ impl<'a> plotters_backend::DrawingBackend for SkiaPlotterBackend<'a> {
         }
 
         Ok(())
+    }
+
+    fn estimate_text_size<S: plotters_backend::BackendTextStyle>(
+        &self,
+        text: &str,
+        style: &S,
+    ) -> Result<(u32, u32), plotters_backend::DrawingErrorKind<Self::ErrorType>> {
+        use plotters_backend::*;
+        use skia_safe::*;
+
+        let font_family = style.family().as_str().to_owned();
+        let font_style = self.to_sk_font_style(style);
+        let typeface = Typeface::new(&font_family, font_style).ok_or(
+            DrawingErrorKind::DrawingError(SkiaError::FontNotFound(font_family)),
+        )?;
+
+        let font = Font::new(typeface, Some(style.size() as f32 * self.scale_factor));
+
+        let color = style.color();
+        let mut paint = Paint::new(
+            Color4f::new(
+                color.rgb.0 as f32 / 256.,
+                color.rgb.1 as f32 / 256.,
+                color.rgb.2 as f32 / 256.,
+                color.alpha as _,
+            ),
+            None,
+        );
+        paint.set_anti_alias(true);
+        let extents = font.measure_str(text, Some(&paint)).1;
+
+        Ok((
+            (extents.width() / self.scale_factor).round() as u32,
+            (extents.height() / self.scale_factor).round() as u32,
+        ))
     }
 }

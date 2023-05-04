@@ -32,8 +32,6 @@ mod skia_plotter_backend;
 mod imp {
     use std::cell::Cell;
 
-    use gtk::Settings;
-
     use super::*;
 
     #[derive(Properties)]
@@ -43,11 +41,15 @@ mod imp {
         grid_visible: Cell<bool>,
         #[property(get, set)]
         scroll: Cell<bool>,
+        #[property(get, set)]
+        base_color: Cell<gdk::RGBA>,
 
         skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
         pub(crate) data_points: Cell<Vec<f32>>,
 
         scroll_offset: Cell<f32>,
+        base_color_rgb: Cell<[u8; 3]>,
+        base_color_rgbf: Cell<[f32; 3]>,
     }
 
     impl Default for GraphWidget {
@@ -55,10 +57,14 @@ mod imp {
             Self {
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
+                base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
 
                 skia_context: Cell::new(None),
                 data_points: Cell::new(vec![0.0; 60]),
+
                 scroll_offset: Cell::new(0.),
+                base_color_rgb: Cell::new([0, 0, 0]),
+                base_color_rgbf: Cell::new([0., 0., 0.]),
             }
         }
     }
@@ -88,25 +94,30 @@ mod imp {
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
 
-            let mut paint = {
-                if let Some(settings) = Settings::default() {
-                    if settings.is_gtk_application_prefer_dark_theme() {
-                        skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 1.0, 1.0, 0.05), None)
-                    } else {
-                        skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 0.0, 0.0, 0.05), None)
-                    }
-                } else {
-                    skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 1.0, 1.0, 0.05), None)
-                }
-            };
+            let rgb = self.base_color_rgb.get();
+            let rgbf = self.base_color_rgbf.get();
 
-            paint.set_stroke_width(scale_factor);
-            paint.set_style(skia_safe::paint::Style::Stroke);
+            let mut outer_paint = skia_safe::Paint::new(
+                skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 1.0),
+                None,
+            );
+            outer_paint.set_stroke_width(scale_factor);
+            outer_paint.set_style(skia_safe::paint::Style::Stroke);
 
-            self.draw_outline(canvas, width, height, scale_factor, &paint);
+            let mut inner_paint = skia_safe::Paint::new(
+                skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 0.2),
+                None,
+            );
+            inner_paint.set_stroke_width(scale_factor);
+            inner_paint.set_style(skia_safe::paint::Style::Stroke);
+
+            let outer_color = RGBAColor(rgb[0], rgb[1], rgb[2], 1.0);
+            let inner_color = RGBAColor(rgb[0], rgb[1], rgb[2], 0.2);
+
+            self.draw_outline(canvas, width, height, scale_factor, &outer_paint);
 
             if self.obj().grid_visible() {
-                self.draw_grid(canvas, width, height, scale_factor, &paint);
+                self.draw_grid(canvas, width, height, scale_factor, &inner_paint);
             }
 
             let backend = skia_plotter_backend::SkiaPlotterBackend::new(
@@ -132,9 +143,9 @@ mod imp {
                 AreaSeries::new(
                     (0..).zip(data_points.iter()).map(|(x, y)| (x, *y)),
                     0.0,
-                    &RED.mix(0.2),
+                    &inner_color,
                 )
-                .border_style(&RED),
+                .border_style(&outer_color),
             )?;
 
             root.present()?;
@@ -223,7 +234,18 @@ mod imp {
         }
 
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
+            self.derived_set_property(id, value, pspec);
+
+            if pspec.name() == "base-color" || pspec.name() == "base_color" {
+                let base_color = self.obj().base_color();
+                self.base_color_rgb.set([
+                    ((base_color.red() * 255.) % 256.).floor() as u8,
+                    ((base_color.green() * 255.) % 256.).floor() as u8,
+                    ((base_color.blue() * 255.) % 256.).floor() as u8,
+                ]);
+                self.base_color_rgbf
+                    .set([base_color.red(), base_color.green(), base_color.blue()]);
+            }
         }
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
@@ -317,9 +339,10 @@ impl GraphWidget {
     }
 
     pub fn add_data_point(&mut self, value: f32) {
-        let data = unsafe { &mut *(self.imp().data_points.as_ptr()) };
+        let mut data = self.imp().data_points.take();
         data.push(value);
         data.remove(0);
+        self.imp().data_points.set(data);
 
         self.queue_render();
     }
