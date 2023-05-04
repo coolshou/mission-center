@@ -62,6 +62,10 @@ template PerformanceCpu : Box {
 
     row-homogeneous: true;
     column-homogeneous: true;
+
+    PopoverMenu context_menu {
+      menu-model: context_menu_model;
+    }
   }
 
   Box details {
@@ -269,21 +273,68 @@ template PerformanceCpu : Box {
   }
 }
 
-menu context_menu {
+menu context_menu_model {
+  section {
+    submenu {
+      label: _("Change _Graph To");
+
+      item {
+        label: _("Overall Utilization");
+        action: "";
+      }
+
+      item {
+        label: _("Logical Processor");
+        action: "";
+      }
+    }
+
+    item {
+      label: _("Show _Kernel Times");
+      action: "";
+    }
+  }
+
   section {
     item {
-      label: _("_Preferences");
-      action: "app.preferences";
+      label: _("Graph _Summary View");
+      action: "";
     }
 
-    item {
-      label: _("_Keyboard Shortcuts");
-      action: "win.show-help-overlay";
-    }
+    submenu {
+      label: _("_View");
 
+      item {
+        label: _("CPU");
+        action: "";
+      }
+
+      item {
+        label: _("Memory");
+        action: "";
+      }
+
+      item {
+        label: _("Disk");
+        action: "";
+      }
+
+      item {
+        label: _("Network");
+        action: "";
+      }
+
+      item {
+        label: _("GPU");
+        action: "";
+      }
+    }
+  }
+
+  section {
     item {
-      label: _("_About MissionCenter");
-      action: "app.about";
+      label: _("_Copy");
+      action: "";
     }
   }
 }

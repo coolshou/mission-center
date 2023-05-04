@@ -29,6 +29,8 @@ mod imp {
     pub struct PerformanceCpu {
         #[template_child]
         pub usage_graphs: TemplateChild<gtk::Grid>,
+        #[template_child]
+        pub context_menu: TemplateChild<gtk::Popover>,
 
         pub graph_widgets: std::cell::Cell<Vec<crate::graph_widget::GraphWidget>>,
     }
@@ -37,6 +39,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 usage_graphs: Default::default(),
+                context_menu: Default::default(),
                 graph_widgets: std::cell::Cell::new(Vec::new()),
             }
         }
@@ -95,10 +98,23 @@ mod imp {
 
             self.parent_realize();
 
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
+
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
-            right_click_controller.connect_released(|click, n_press, x, y| {
-                dbg!(click, n_press, x, y);
+            let this_clone = this.clone();
+            right_click_controller.connect_released(move |_click, _n_press, x, y| {
+                this_clone
+                    .imp()
+                    .context_menu
+                    .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                        x.round() as i32,
+                        y.round() as i32,
+                        1,
+                        1,
+                    )));
+                this_clone.imp().context_menu.popup();
             });
             self.usage_graphs.add_controller(right_click_controller);
 
@@ -132,9 +148,6 @@ mod imp {
                     1,
                 );
             }
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
 
             Some(glib::source::timeout_add_local(
                 std::time::Duration::from_millis(1000),
