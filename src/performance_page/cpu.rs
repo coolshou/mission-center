@@ -51,7 +51,7 @@ mod imp {
                 usage_graphs: Default::default(),
                 context_menu: Default::default(),
                 refresh_interval: Cell::new(1000),
-                graph_widgets: std::cell::Cell::new(Vec::new()),
+                graph_widgets: Cell::new(Vec::new()),
             }
         }
     }
@@ -62,14 +62,22 @@ mod imp {
             this.insert_action_group("graph", Some(&actions));
 
             let action = gio::SimpleAction::new("overall", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+                graph_widgets[0].set_visible(true);
+                for graph_widget in graph_widgets.iter().skip(1) {
+                    graph_widget.set_visible(false);
+                }
             }));
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("all-processors", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+                graph_widgets[0].set_visible(false);
+                for graph_widget in graph_widgets.iter().skip(1) {
+                    graph_widget.set_visible(true);
+                }
             }));
             actions.add_action(&action);
 
@@ -114,14 +122,26 @@ mod imp {
 
             let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
+            // Add one for overall CPU utilization
+            let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+            graph_widgets.push(GraphWidget::new());
+            graph_widgets[0].set_base_color(gtk::gdk::RGBA::new(
+                crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
+                crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
+                crate::CPU_USAGE_GRAPH_BASE_COLOR[2],
+                1.,
+            ));
+            self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
+            graph_widgets[0].set_scroll(true);
+            graph_widgets[0].set_visible(false);
+
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
 
-                let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
                 let graph_widget_index = graph_widgets.len();
 
-                graph_widgets.push(crate::graph_widget::GraphWidget::new());
+                graph_widgets.push(GraphWidget::new());
                 graph_widgets[graph_widget_index].set_base_color(gtk::gdk::RGBA::new(
                     crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
                     crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
@@ -146,9 +166,13 @@ mod imp {
                 .read()
                 .expect("Failed to read CPU information: Unable to acquire lock");
 
+            let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
+            // Update global CPU graph
+            graph_widgets[0].add_data_point(sys_info.global_cpu_info().cpu_usage());
+
+            // Update per-core graphs
             for (i, cpu) in sys_info.cpus().iter().enumerate() {
-                let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
-                let graph_widget = &mut graph_widgets[i];
+                let graph_widget = &mut graph_widgets[i + 1];
                 graph_widget.add_data_point(cpu.cpu_usage());
             }
 

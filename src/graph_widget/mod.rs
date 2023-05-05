@@ -69,12 +69,14 @@ mod imp {
             let this = obj.upcast_ref::<super::GraphWidget>();
 
             this.make_current();
-            let interface = skia_safe::gpu::gl::Interface::new_native();
 
+            let interface = skia_safe::gpu::gl::Interface::new_native();
             self.skia_context.set(Some(
                 skia_safe::gpu::DirectContext::new_gl(interface, None)
                     .ok_or("Failed to create Skia DirectContext with OpenGL interface")?,
             ));
+
+            this.set_auto_render(false);
 
             Ok(())
         }
@@ -87,6 +89,8 @@ mod imp {
             scale_factor: f32,
         ) -> Result<(), Box<dyn std::error::Error>> {
             use plotters::prelude::*;
+
+            let data_points = unsafe { &*(self.data_points.as_ptr()) };
 
             let rgb = self.base_color_rgb.get();
             let rgbf = self.base_color_rgbf.get();
@@ -111,7 +115,14 @@ mod imp {
             self.draw_outline(canvas, width, height, scale_factor, &outer_paint);
 
             if self.obj().grid_visible() {
-                self.draw_grid(canvas, width, height, scale_factor, &inner_paint);
+                self.draw_grid(
+                    canvas,
+                    width,
+                    height,
+                    scale_factor,
+                    data_points.len(),
+                    &inner_paint,
+                );
             }
 
             let backend = skia_plotter_backend::SkiaPlotterBackend::new(
@@ -122,7 +133,6 @@ mod imp {
             );
             let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
 
-            let data_points = unsafe { &*(self.data_points.as_ptr()) };
             let mut chart = ChartBuilder::on(&root)
                 .set_all_label_area_size(0)
                 .build_cartesian_2d(0..data_points.len() - 1, 0_f32..100_f32)?;
@@ -170,6 +180,7 @@ mod imp {
             width: i32,
             height: i32,
             scale_factor: f32,
+            data_point_count: usize,
             paint: &skia_safe::Paint,
         ) {
             // Draw horizontal lines
@@ -189,11 +200,14 @@ mod imp {
             // Draw vertical lines
             let mut vertical_line_count = 6;
 
+            let col_width = width as f32 / vertical_line_count as f32;
+            let col_height = height as f32 - scale_factor;
+
             let x_offset = if self.obj().scroll() {
                 vertical_line_count += 1;
 
                 let mut x_offset = self.scroll_offset.get();
-                x_offset -= col_width / 3.;
+                x_offset += (width as f32 / scale_factor) / data_point_count as f32;
                 x_offset %= col_width;
                 self.scroll_offset.set(x_offset);
 
@@ -202,13 +216,10 @@ mod imp {
                 0.
             };
 
-            let col_width = width as f32 / vertical_line_count as f32;
-            let col_height = height as f32 - scale_factor;
-
             for i in 1..vertical_line_count {
                 canvas.draw_line(
-                    (col_width * i as f32 + x_offset, scale_factor),
-                    (col_width * i as f32 + x_offset, col_height),
+                    (col_width * i as f32 - x_offset, scale_factor),
+                    (col_width * i as f32 - x_offset, col_height),
                     &paint,
                 );
             }
