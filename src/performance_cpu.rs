@@ -19,6 +19,7 @@
  */
 
 use adw::subclass::prelude::*;
+use glib::clone;
 use gtk::{gio, glib, prelude::*};
 
 mod imp {
@@ -45,78 +46,55 @@ mod imp {
         }
     }
 
-    #[glib::object_subclass]
-    impl ObjectSubclass for PerformanceCpu {
-        const NAME: &'static str = "PerformanceCpu";
-        type Type = super::PerformanceCpu;
-        type ParentType = gtk::Box;
+    impl PerformanceCpu {
+        fn configure_actions(this: &super::PerformanceCpu) {
+            let actions = gio::SimpleActionGroup::new();
+            this.insert_action_group("graph", Some(&actions));
 
-        fn class_init(klass: &mut Self::Class) {
-            klass.bind_template();
+            let action = gio::SimpleAction::new("overall", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("all-processors", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("kernel-times", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
         }
 
-        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-            obj.init_template();
-        }
-    }
-
-    impl ObjectImpl for PerformanceCpu {}
-
-    impl WidgetImpl for PerformanceCpu {
-        fn realize(&self) {
-            use crate::SYS_INFO;
-            use sysinfo::{CpuExt, SystemExt};
-
-            fn compute_row_column_count(item_count: usize) -> (usize, usize) {
-                let item_count = item_count as isize;
-                let mut factors = Vec::new();
-                factors.reserve(item_count as usize);
-
-                for i in 2..=(item_count as f64).sqrt().floor() as isize {
-                    if item_count % i == 0 {
-                        factors.push((i, item_count / i));
-                    }
-                }
-                let mut valid_factors = vec![];
-                for (i, j) in factors {
-                    if (i - j).abs() <= 1 {
-                        valid_factors.push((i, j));
-                    }
-                }
-
-                let result =
-                    if let Some((i, j)) = valid_factors.into_iter().max_by_key(|&(i, j)| i * j) {
-                        (i, j)
-                    } else {
-                        let i = item_count.min(((item_count as f64).sqrt() + 1.).floor() as isize);
-                        let j = ((item_count as f64) / i as f64).ceil() as isize;
-                        (i, j)
-                    };
-
-                (result.0 as usize, result.1 as usize)
-            }
-
-            self.parent_realize();
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
-
+        fn configure_context_menu(this: &super::PerformanceCpu) {
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
-            let this_clone = this.clone();
-            right_click_controller.connect_released(move |_click, _n_press, x, y| {
-                this_clone
-                    .imp()
-                    .context_menu
-                    .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
-                        x.round() as i32,
-                        y.round() as i32,
-                        1,
-                        1,
-                    )));
-                this_clone.imp().context_menu.popup();
-            });
-            self.usage_graphs.add_controller(right_click_controller);
+            right_click_controller.connect_released(
+                clone!(@weak this => move |_click, _n_press, x, y| {
+                    this
+                        .imp()
+                        .context_menu
+                        .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                            x.round() as i32,
+                            y.round() as i32,
+                            1,
+                            1,
+                        )));
+                    this.imp().context_menu.popup();
+                }),
+            );
+            this.imp()
+                .usage_graphs
+                .add_controller(right_click_controller);
+        }
+
+        fn populate_usage_graphs(&self) {
+            use crate::SYS_INFO;
+            use sysinfo::SystemExt;
 
             let cpu_count = SYS_INFO
                 .read()
@@ -124,7 +102,7 @@ mod imp {
                 .cpus()
                 .len();
 
-            let (_, col_count) = compute_row_column_count(cpu_count);
+            let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
@@ -148,10 +126,76 @@ mod imp {
                     1,
                 );
             }
+        }
+
+        fn compute_row_column_count(item_count: usize) -> (usize, usize) {
+            let item_count = item_count as isize;
+            let mut factors = Vec::new();
+            factors.reserve(item_count as usize);
+
+            for i in 2..=(item_count as f64).sqrt().floor() as isize {
+                if item_count % i == 0 {
+                    factors.push((i, item_count / i));
+                }
+            }
+            let mut valid_factors = vec![];
+            for (i, j) in factors {
+                if (i - j).abs() <= 1 {
+                    valid_factors.push((i, j));
+                }
+            }
+
+            let result = if let Some((i, j)) = valid_factors.into_iter().max_by_key(|&(i, j)| i * j)
+            {
+                (i, j)
+            } else {
+                let i = item_count.min(((item_count as f64).sqrt() + 1.).floor() as isize);
+                let j = ((item_count as f64) / i as f64).ceil() as isize;
+                (i, j)
+            };
+
+            (result.0 as usize, result.1 as usize)
+        }
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for PerformanceCpu {
+        const NAME: &'static str = "PerformanceCpu";
+        type Type = super::PerformanceCpu;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for PerformanceCpu {
+        fn constructed(&self) {
+            self.parent_constructed();
+            Self::configure_actions(self.obj().upcast_ref());
+        }
+    }
+
+    impl WidgetImpl for PerformanceCpu {
+        fn realize(&self) {
+            self.parent_realize();
+
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
+
+            Self::configure_context_menu(&this);
+            self.populate_usage_graphs();
 
             Some(glib::source::timeout_add_local(
                 std::time::Duration::from_millis(1000),
                 move || {
+                    use crate::SYS_INFO;
+                    use sysinfo::{CpuExt, SystemExt};
+
                     let sys_info = SYS_INFO
                         .read()
                         .expect("Failed to read CPU information: Unable to acquire lock");

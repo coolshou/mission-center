@@ -19,6 +19,7 @@
  */
 
 use adw::subclass::prelude::*;
+use glib::clone;
 use gtk::{gio, glib, prelude::*};
 
 mod imp {
@@ -47,6 +48,55 @@ mod imp {
         }
     }
 
+    impl PerformancePage {
+        fn configure_actions(this: &super::PerformancePage) {
+            let actions = gio::SimpleActionGroup::new();
+            this.insert_action_group("graph", Some(&actions));
+
+            let action = gio::SimpleAction::new("summary", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("cpu", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("memory", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("disk", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("network", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("gpu", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |action, parameter| {
+                dbg!(action, parameter);
+            }));
+            actions.add_action(&action);
+        }
+    }
+
     #[glib::object_subclass]
     impl ObjectSubclass for PerformancePage {
         const NAME: &'static str = "PerformancePage";
@@ -62,7 +112,12 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for PerformancePage {}
+    impl ObjectImpl for PerformancePage {
+        fn constructed(&self) {
+            self.parent_constructed();
+            Self::configure_actions(self.obj().upcast_ref());
+        }
+    }
 
     impl WidgetImpl for PerformancePage {
         fn realize(&self) {
