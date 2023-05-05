@@ -52,7 +52,20 @@ mod imp {
         pub handles: TemplateChild<gtk::Label>,
         #[template_child]
         pub uptime: TemplateChild<gtk::Label>,
-
+        #[template_child]
+        pub base_speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub sockets: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub virt_proc: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub virt_machine: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub l1_cache: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub l2_cache: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub l3_cache: TemplateChild<gtk::Label>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
@@ -74,6 +87,13 @@ mod imp {
                 threads: Default::default(),
                 handles: Default::default(),
                 uptime: Default::default(),
+                base_speed: Default::default(),
+                sockets: Default::default(),
+                virt_proc: Default::default(),
+                virt_machine: Default::default(),
+                l1_cache: Default::default(),
+                l2_cache: Default::default(),
+                l3_cache: Default::default(),
                 context_menu: Default::default(),
 
                 refresh_interval: Cell::new(1000),
@@ -251,6 +271,78 @@ mod imp {
             ));
         }
 
+        fn update_static_information(&self) {
+            use sysinfo::{CpuExt, SystemExt};
+
+            let sys_info = crate::SYS_INFO
+                .read()
+                .expect("Failed to read CPU information: Unable to acquire lock");
+
+            self.cpu_name
+                .set_text(sys_info.system().global_cpu_info().brand());
+
+            if let Some(base_frequency) = sys_info.cpu_base_frequency() {
+                self.base_speed.set_text(&format!(
+                    "{:.2} GHz",
+                    base_frequency as f32 / (1000. * 1000.)
+                ));
+            } else {
+                self.base_speed.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            self.virt_proc
+                .set_text(&format!("{}", sys_info.system().cpus().len()));
+
+            if let Some(is_vm) = sys_info.is_vm() {
+                if is_vm {
+                    self.virt_machine.set_text(&gettextrs::gettext("Yes"));
+                } else {
+                    self.virt_machine.set_text(&gettextrs::gettext("No"));
+                }
+            } else {
+                self.virt_machine.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            if let Some(socket_count) = sys_info.cpu_socket_count() {
+                self.sockets.set_text(&format!("{}", socket_count));
+            } else {
+                self.sockets.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            let l1_cache_size = if let Some(size) = sys_info.cpu_cache_size(1) {
+                if size > 1024 {
+                    format!("{:.1} MiB", size as f32 / 1024.)
+                } else {
+                    format!("{} KiB", size)
+                }
+            } else {
+                format!("N/A")
+            };
+            self.l1_cache.set_text(&l1_cache_size);
+
+            let l2_cache_size = if let Some(size) = sys_info.cpu_cache_size(2) {
+                if size > 1024 {
+                    format!("{:.1} MiB", size as f32 / 1024.)
+                } else {
+                    format!("{} KiB", size)
+                }
+            } else {
+                format!("N/A")
+            };
+            self.l2_cache.set_text(&l2_cache_size);
+
+            let l3_cache_size = if let Some(size) = sys_info.cpu_cache_size(3) {
+                if size > 1024 {
+                    format!("{:.1} MiB", size as f32 / 1024.)
+                } else {
+                    format!("{} KiB", size)
+                }
+            } else {
+                format!("N/A")
+            };
+            self.l3_cache.set_text(&l3_cache_size);
+        }
+
         fn compute_row_column_count(item_count: usize) -> (usize, usize) {
             let item_count = item_count as isize;
             let mut factors = Vec::new();
@@ -317,8 +409,6 @@ mod imp {
 
     impl WidgetImpl for PerformancePageCpu {
         fn realize(&self) {
-            use sysinfo::{CpuExt, SystemExt};
-
             self.parent_realize();
 
             let obj = self.obj();
@@ -326,17 +416,9 @@ mod imp {
 
             Self::configure_context_menu(&this);
             self.populate_usage_graphs();
-
-            {
-                let sys_info = crate::SYS_INFO
-                    .read()
-                    .expect("Failed to read CPU information: Unable to acquire lock");
-
-                self.cpu_name
-                    .set_text(sys_info.system().global_cpu_info().brand());
-            }
-
+            self.update_static_information();
             Self::update_view(&this);
+
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {

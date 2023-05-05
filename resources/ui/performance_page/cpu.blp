@@ -68,6 +68,7 @@ template PerformancePageCpu : Box {
   }
 
   Box {
+    margin-top: 2;
     height-request: 23;
 
     Box overall_graph_labels {
@@ -150,6 +151,7 @@ template PerformancePageCpu : Box {
 
       Box mid_row {
         spacing: 15;
+        width-request: 200;
 
         Box {
           orientation: vertical;
@@ -246,6 +248,7 @@ template PerformancePageCpu : Box {
 
       Box labels {
         orientation: vertical;
+        spacing: 3;
 
         Label {
           styles [
@@ -264,10 +267,6 @@ template PerformancePageCpu : Box {
           halign: start;
           label: _("Sockets:");
         }
-      }
-
-      Box values {
-        orientation: vertical;
 
         Label {
           styles [
@@ -275,7 +274,7 @@ template PerformancePageCpu : Box {
           ]
 
           halign: start;
-          label: "3.5 GHz";
+          label: _("Virtual processors:");
         }
 
         Label {
@@ -284,7 +283,95 @@ template PerformancePageCpu : Box {
           ]
 
           halign: start;
-          label: "1";
+          label: _("Virtual machine:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("L1 cache:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("L2 cache:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("L3 cache:");
+        }
+      }
+
+      Box values {
+        orientation: vertical;
+        spacing: 3;
+
+        Label base_speed {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label sockets {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label virt_proc {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label virt_machine {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label l1_cache {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label l2_cache {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label l3_cache {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
         }
       }
     }
