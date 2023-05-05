@@ -1,4 +1,4 @@
-/* performance_cpu.rs
+/* performance_page/cpu.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -30,10 +30,10 @@ mod imp {
     use super::*;
 
     #[derive(Properties)]
-    #[properties(wrapper_type = super::PerformanceCpu)]
+    #[properties(wrapper_type = super::PerformancePageCpu)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_cpu.ui")]
-    pub struct PerformanceCpu {
+    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/cpu.ui")]
+    pub struct PerformancePageCpu {
         #[template_child]
         pub usage_graphs: TemplateChild<gtk::Grid>,
         #[template_child]
@@ -45,7 +45,7 @@ mod imp {
         pub graph_widgets: Cell<Vec<GraphWidget>>,
     }
 
-    impl Default for PerformanceCpu {
+    impl Default for PerformancePageCpu {
         fn default() -> Self {
             Self {
                 usage_graphs: Default::default(),
@@ -56,8 +56,8 @@ mod imp {
         }
     }
 
-    impl PerformanceCpu {
-        fn configure_actions(this: &super::PerformanceCpu) {
+    impl PerformancePageCpu {
+        fn configure_actions(this: &super::PerformancePageCpu) {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
@@ -80,7 +80,7 @@ mod imp {
             actions.add_action(&action);
         }
 
-        fn configure_context_menu(this: &super::PerformanceCpu) {
+        fn configure_context_menu(this: &super::PerformancePageCpu) {
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
             right_click_controller.connect_released(
@@ -138,7 +138,7 @@ mod imp {
             }
         }
 
-        fn update_graph(this: &super::PerformanceCpu) {
+        fn update_graph(this: &super::PerformancePageCpu) {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, SystemExt};
 
@@ -192,9 +192,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for PerformanceCpu {
-        const NAME: &'static str = "PerformanceCpu";
-        type Type = super::PerformanceCpu;
+    impl ObjectSubclass for PerformancePageCpu {
+        const NAME: &'static str = "PerformancePageCpu";
+        type Type = super::PerformancePageCpu;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -206,7 +206,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for PerformanceCpu {
+    impl ObjectImpl for PerformancePageCpu {
         fn constructed(&self) {
             self.parent_constructed();
             Self::configure_actions(self.obj().upcast_ref());
@@ -225,12 +225,12 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformanceCpu {
+    impl WidgetImpl for PerformancePageCpu {
         fn realize(&self) {
             self.parent_realize();
 
             let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformanceCpu>().clone();
+            let this = obj.upcast_ref::<super::PerformancePageCpu>().clone();
 
             Self::configure_context_menu(&this);
             self.populate_usage_graphs();
@@ -244,11 +244,11 @@ mod imp {
         }
     }
 
-    impl BoxImpl for PerformanceCpu {}
+    impl BoxImpl for PerformancePageCpu {}
 }
 
 glib::wrapper! {
-    pub struct PerformanceCpu(ObjectSubclass<imp::PerformanceCpu>)
+    pub struct PerformancePageCpu(ObjectSubclass<imp::PerformancePageCpu>)
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
 }

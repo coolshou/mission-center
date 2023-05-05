@@ -33,7 +33,6 @@ use self::window::MissionCenterWindow;
 
 mod application;
 mod graph_widget;
-mod performance_cpu;
 mod performance_page;
 mod window;
 

@@ -1,4 +1,4 @@
-/* performance_page.rs
+/* performance_page/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -26,13 +26,17 @@ use gtk::{gio, glib, prelude::*};
 
 use crate::graph_widget::GraphWidget;
 
+mod cpu;
+
+pub type Cpu = cpu::PerformancePageCpu;
+
 mod imp {
     use super::*;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePage)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page.ui")]
+    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/page.ui")]
     pub struct PerformancePage {
         #[template_child]
         pub cpu_usage_graph: TemplateChild<GraphWidget>,

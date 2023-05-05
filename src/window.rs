@@ -22,10 +22,7 @@ use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
 mod imp {
-    use crate::{
-        graph_widget::GraphWidget, performance_cpu::PerformanceCpu,
-        performance_page::PerformancePage,
-    };
+    use crate::{graph_widget::GraphWidget, performance_page, performance_page::PerformancePage};
 
     use super::*;
 
@@ -52,8 +49,8 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             GraphWidget::ensure_type();
-            PerformanceCpu::ensure_type();
             PerformancePage::ensure_type();
+            performance_page::Cpu::ensure_type();
 
             klass.bind_template();
         }
