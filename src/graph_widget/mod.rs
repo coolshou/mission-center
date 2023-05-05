@@ -18,20 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use gtk::{
-    gdk,
-    gdk::prelude::*,
-    glib,
-    glib::{ParamSpec, Properties, Value},
-    prelude::*,
-    subclass::prelude::*,
-};
+use std::cell::Cell;
+
+use glib::{ParamSpec, Properties, Value};
+use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
 mod skia_plotter_backend;
 
 mod imp {
-    use std::cell::Cell;
-
     use super::*;
 
     #[derive(Properties)]

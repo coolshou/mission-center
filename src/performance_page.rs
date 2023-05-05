@@ -18,15 +18,19 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use adw::subclass::prelude::*;
-use glib::clone;
+use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-mod imp {
-    use crate::graph_widget::GraphWidget;
+use crate::graph_widget::GraphWidget;
 
+mod imp {
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::PerformancePage)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page.ui")]
     pub struct PerformancePage {
@@ -36,6 +40,9 @@ mod imp {
         pub cpu_usage_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
+
+        #[property(get, set)]
+        refresh_interval: Cell<u32>,
     }
 
     impl Default for PerformancePage {
@@ -44,6 +51,8 @@ mod imp {
                 cpu_usage_graph: Default::default(),
                 cpu_usage_label: Default::default(),
                 sidebar: Default::default(),
+
+                refresh_interval: Cell::new(1000),
             }
         }
     }
@@ -95,6 +104,30 @@ mod imp {
             }));
             actions.add_action(&action);
         }
+
+        fn update_graph(this: &super::PerformancePage) {
+            use crate::SYS_INFO;
+            use sysinfo::{CpuExt, SystemExt};
+
+            let cpu_usage = SYS_INFO
+                .read()
+                .expect("Failed to read CPU information: Unable to acquire lock")
+                .global_cpu_info()
+                .cpu_usage();
+
+            this.imp().cpu_usage_graph.get().add_data_point(cpu_usage);
+            this.imp()
+                .cpu_usage_label
+                .set_label(&format!("{}% 3.50Ghz", cpu_usage.round()));
+
+            let this = this.clone();
+            Some(glib::source::timeout_add_local_once(
+                std::time::Duration::from_millis(this.refresh_interval() as _),
+                move || {
+                    Self::update_graph(&this);
+                },
+            ));
+        }
     }
 
     #[glib::object_subclass]
@@ -117,13 +150,22 @@ mod imp {
             self.parent_constructed();
             Self::configure_actions(self.obj().upcast_ref());
         }
+
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec);
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
     }
 
     impl WidgetImpl for PerformancePage {
         fn realize(&self) {
-            use crate::SYS_INFO;
-            use sysinfo::{CpuExt, SystemExt};
-
             self.parent_realize();
 
             let row = self
@@ -134,21 +176,10 @@ mod imp {
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePage>().clone();
-            Some(glib::source::timeout_add_local(
-                std::time::Duration::from_millis(500),
+            Some(glib::source::timeout_add_local_once(
+                std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    let cpu_usage = SYS_INFO
-                        .read()
-                        .expect("Failed to read CPU information: Unable to acquire lock")
-                        .global_cpu_info()
-                        .cpu_usage();
-
-                    this.imp().cpu_usage_graph.get().add_data_point(cpu_usage);
-                    this.imp()
-                        .cpu_usage_label
-                        .set_label(&format!("{}% 3.50Ghz", cpu_usage.round()));
-
-                    Continue(true)
+                    Self::update_graph(&this);
                 },
             ));
         }

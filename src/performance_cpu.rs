@@ -18,13 +18,19 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use adw::subclass::prelude::*;
-use glib::clone;
+use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
+
+use crate::graph_widget::GraphWidget;
 
 mod imp {
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::PerformanceCpu)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_cpu.ui")]
     pub struct PerformanceCpu {
@@ -33,7 +39,10 @@ mod imp {
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
-        pub graph_widgets: std::cell::Cell<Vec<crate::graph_widget::GraphWidget>>,
+        #[property(get, set)]
+        refresh_interval: Cell<u32>,
+
+        pub graph_widgets: Cell<Vec<GraphWidget>>,
     }
 
     impl Default for PerformanceCpu {
@@ -41,6 +50,7 @@ mod imp {
             Self {
                 usage_graphs: Default::default(),
                 context_menu: Default::default(),
+                refresh_interval: Cell::new(1000),
                 graph_widgets: std::cell::Cell::new(Vec::new()),
             }
         }
@@ -128,6 +138,29 @@ mod imp {
             }
         }
 
+        fn update_graph(this: &super::PerformanceCpu) {
+            use crate::SYS_INFO;
+            use sysinfo::{CpuExt, SystemExt};
+
+            let sys_info = SYS_INFO
+                .read()
+                .expect("Failed to read CPU information: Unable to acquire lock");
+
+            for (i, cpu) in sys_info.cpus().iter().enumerate() {
+                let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
+                let graph_widget = &mut graph_widgets[i];
+                graph_widget.add_data_point(cpu.cpu_usage());
+            }
+
+            let this = this.clone();
+            Some(glib::source::timeout_add_local_once(
+                std::time::Duration::from_millis(this.refresh_interval() as _),
+                move || {
+                    Self::update_graph(&this);
+                },
+            ));
+        }
+
         fn compute_row_column_count(item_count: usize) -> (usize, usize) {
             let item_count = item_count as isize;
             let mut factors = Vec::new();
@@ -178,6 +211,18 @@ mod imp {
             self.parent_constructed();
             Self::configure_actions(self.obj().upcast_ref());
         }
+
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec);
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
     }
 
     impl WidgetImpl for PerformanceCpu {
@@ -190,23 +235,10 @@ mod imp {
             Self::configure_context_menu(&this);
             self.populate_usage_graphs();
 
-            Some(glib::source::timeout_add_local(
-                std::time::Duration::from_millis(1000),
+            Some(glib::source::timeout_add_local_once(
+                std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    use crate::SYS_INFO;
-                    use sysinfo::{CpuExt, SystemExt};
-
-                    let sys_info = SYS_INFO
-                        .read()
-                        .expect("Failed to read CPU information: Unable to acquire lock");
-
-                    for (i, cpu) in sys_info.cpus().iter().enumerate() {
-                        let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
-                        let graph_widget = &mut graph_widgets[i];
-                        graph_widget.add_data_point(cpu.cpu_usage());
-                    }
-
-                    Continue(true)
+                    Self::update_graph(&this);
                 },
             ));
         }

@@ -3,6 +3,8 @@ using Gtk 4.0;
 template PerformancePage : Box {
   orientation: vertical;
 
+  refresh-interval: 1000;
+
   Box page_title {
     margin-top: 5;
     margin-start: 10;
@@ -97,6 +99,8 @@ template PerformancePage : Box {
       }
     }
 
-    .PerformanceCpu {}
+    .PerformanceCpu {
+      refresh_interval: bind PerformancePage.refresh_interval;
+    }
   }
 }
