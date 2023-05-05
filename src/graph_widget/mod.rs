@@ -37,6 +37,10 @@ mod imp {
         scroll: Cell<bool>,
         #[property(get, set)]
         base_color: Cell<gdk::RGBA>,
+        #[property(get, set)]
+        horizontal_line_count: Cell<u32>,
+        #[property(get, set)]
+        vertical_line_count: Cell<u32>,
 
         skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
         pub(crate) data_points: Cell<Vec<f32>>,
@@ -52,6 +56,8 @@ mod imp {
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
+                horizontal_line_count: Cell::new(9),
+                vertical_line_count: Cell::new(6),
 
                 skia_context: Cell::new(None),
                 data_points: Cell::new(vec![0.0; 60]),
@@ -184,7 +190,7 @@ mod imp {
             paint: &skia_safe::Paint,
         ) {
             // Draw horizontal lines
-            let horizontal_line_count = 10;
+            let horizontal_line_count = self.obj().horizontal_line_count() + 1;
 
             let col_width = width as f32 - scale_factor;
             let col_height = height as f32 / horizontal_line_count as f32;
@@ -198,7 +204,7 @@ mod imp {
             }
 
             // Draw vertical lines
-            let mut vertical_line_count = 6;
+            let mut vertical_line_count = self.obj().vertical_line_count() + 1;
 
             let col_width = width as f32 / vertical_line_count as f32;
             let col_height = height as f32 - scale_factor;

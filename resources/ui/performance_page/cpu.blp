@@ -27,7 +27,6 @@ template PerformancePageCpu : Box {
         ]
 
         halign: end;
-        label: "AMD Ryzen 9 3950X 16-Core Processor";
       }
     }
 
@@ -58,7 +57,7 @@ template PerformancePageCpu : Box {
     vexpand: true;
     hexpand: true;
 
-    height-request: 100;
+    height-request: 120;
 
     row-homogeneous: true;
     column-homogeneous: true;
@@ -68,8 +67,33 @@ template PerformancePageCpu : Box {
     }
   }
 
+  Box {
+    height-request: 23;
+
+    Box overall_graph_labels {
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        valign: start;
+        label: _("60 seconds");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        valign: start;
+        label: "0";
+      }
+    }
+  }
+
   Box details {
-    margin-top: 20;
     spacing: 20;
 
     Box dynamic_data {
@@ -92,13 +116,12 @@ template PerformancePageCpu : Box {
             label: _("Utilization");
           }
 
-          Label {
+          Label utilization {
             styles [
               "title-4",
             ]
 
             halign: start;
-            label: "1%";
           }
         }
 
@@ -115,13 +138,12 @@ template PerformancePageCpu : Box {
             label: _("Speed");
           }
 
-          Label {
+          Label speed {
             styles [
               "title-4",
             ]
 
             halign: start;
-            label: "3.50GHz";
           }
         }
       }
@@ -142,13 +164,12 @@ template PerformancePageCpu : Box {
             label: _("Processes");
           }
 
-          Label {
+          Label processes {
             styles [
               "title-4",
             ]
 
             halign: start;
-            label: "144";
           }
         }
 
@@ -165,13 +186,12 @@ template PerformancePageCpu : Box {
             label: _("Threads");
           }
 
-          Label {
+          Label threads {
             styles [
               "title-4",
             ]
 
             halign: start;
-            label: "1599";
           }
         }
 
@@ -188,13 +208,12 @@ template PerformancePageCpu : Box {
             label: _("Handles");
           }
 
-          Label {
+          Label handles {
             styles [
               "title-4",
             ]
 
             halign: start;
-            label: "52346";
           }
         }
       }
@@ -212,13 +231,12 @@ template PerformancePageCpu : Box {
           label: _("Up time");
         }
 
-        Label {
+        Label uptime {
           styles [
             "title-4",
           ]
 
           halign: start;
-          label: "0:02:46:08";
         }
       }
     }

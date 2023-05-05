@@ -116,6 +116,7 @@ mod imp {
             let cpu_usage = SYS_INFO
                 .read()
                 .expect("Failed to read CPU information: Unable to acquire lock")
+                .system()
                 .global_cpu_info()
                 .cpu_usage();
 

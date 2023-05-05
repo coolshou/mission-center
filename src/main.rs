@@ -43,7 +43,74 @@ mod config {
 const CPU_USAGE_GRAPH_BASE_COLOR: [f32; 3] = [0.06667, 0.49, 0.7333];
 
 lazy_static! {
-    pub static ref SYS_INFO: Arc<RwLock<System>> = Arc::new(RwLock::new(System::new_all()));
+    pub static ref SYS_INFO: Arc<RwLock<SysInfo>> = Arc::new(RwLock::new(SysInfo::new()));
+}
+
+pub struct SysInfo {
+    system: System,
+
+    file_nr: Option<std::fs::File>,
+    thread_count: usize,
+    handle_count: usize,
+}
+
+impl SysInfo {
+    pub fn new() -> Self {
+        use std::fs::*;
+
+        let file_nr = OpenOptions::new()
+            .read(true)
+            .open("/proc/sys/fs/file-nr")
+            .ok();
+
+        Self {
+            system: System::new_all(),
+            file_nr,
+            thread_count: 0,
+            handle_count: 0,
+        }
+    }
+
+    pub fn system(&self) -> &System {
+        &self.system
+    }
+
+    pub fn thread_count(&self) -> usize {
+        self.thread_count
+    }
+
+    pub fn handle_count(&self) -> usize {
+        self.handle_count
+    }
+
+    pub fn refresh_all(&mut self) {
+        self.system.refresh_all();
+
+        self.thread_count = 0;
+        for (pid, _) in self.system.processes() {
+            if let Ok(entries) = std::fs::read_dir(format!("/proc/{}/task", pid)) {
+                self.thread_count += entries.count();
+            }
+        }
+
+        if let Some(file_nr) = &mut self.file_nr {
+            use std::io::*;
+
+            let mut buf = String::new();
+            file_nr.read_to_string(&mut buf).unwrap();
+
+            let mut split = buf.split_whitespace();
+            if let Some(handle_count) = split.next() {
+                self.handle_count = handle_count.parse().expect("Unable to parse handle count");
+            }
+
+            file_nr.seek(SeekFrom::Start(0)).unwrap();
+        }
+    }
+
+    pub fn refresh_components_list(&mut self) {
+        self.system.refresh_components_list();
+    }
 }
 
 fn main() {

@@ -22,7 +22,7 @@ use std::cell::Cell;
 
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*};
+use gtk::{gio, glib, prelude::*, Snapshot};
 
 use crate::graph_widget::GraphWidget;
 
@@ -35,7 +35,24 @@ mod imp {
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/cpu.ui")]
     pub struct PerformancePageCpu {
         #[template_child]
+        pub cpu_name: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graphs: TemplateChild<gtk::Grid>,
+        #[template_child]
+        pub overall_graph_labels: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub utilization: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub processes: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub threads: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub handles: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub uptime: TemplateChild<gtk::Label>,
+
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
@@ -48,9 +65,19 @@ mod imp {
     impl Default for PerformancePageCpu {
         fn default() -> Self {
             Self {
+                cpu_name: Default::default(),
                 usage_graphs: Default::default(),
+                overall_graph_labels: Default::default(),
+                utilization: Default::default(),
+                speed: Default::default(),
+                processes: Default::default(),
+                threads: Default::default(),
+                handles: Default::default(),
+                uptime: Default::default(),
                 context_menu: Default::default(),
+
                 refresh_interval: Cell::new(1000),
+
                 graph_widgets: Cell::new(Vec::new()),
             }
         }
@@ -65,6 +92,7 @@ mod imp {
             action.connect_activate(clone!(@weak this => move |_, _| {
                 let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
                 graph_widgets[0].set_visible(true);
+                this.imp().overall_graph_labels.set_visible(true);
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(false);
                 }
@@ -75,6 +103,7 @@ mod imp {
             action.connect_activate(clone!(@weak this => move |_, _| {
                 let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
                 graph_widgets[0].set_visible(false);
+                this.imp().overall_graph_labels.set_visible(false);
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(true);
                 }
@@ -117,6 +146,7 @@ mod imp {
             let cpu_count = SYS_INFO
                 .read()
                 .expect("Failed to read CPU count: Unable to acquire lock")
+                .system()
                 .cpus()
                 .len();
 
@@ -134,6 +164,11 @@ mod imp {
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_visible(false);
+
+            self.overall_graph_labels.set_visible(false);
+            self.overall_graph_labels
+                .bind_property("visible", &graph_widgets[0], "visible")
+                .build();
 
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
@@ -158,7 +193,7 @@ mod imp {
             }
         }
 
-        fn update_graph(this: &super::PerformancePageCpu) {
+        fn update_view(this: &super::PerformancePageCpu) {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, SystemExt};
 
@@ -168,19 +203,50 @@ mod imp {
 
             let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
             // Update global CPU graph
-            graph_widgets[0].add_data_point(sys_info.global_cpu_info().cpu_usage());
+            graph_widgets[0].add_data_point(sys_info.system().global_cpu_info().cpu_usage());
 
             // Update per-core graphs
-            for (i, cpu) in sys_info.cpus().iter().enumerate() {
+            for (i, cpu) in sys_info.system().cpus().iter().enumerate() {
                 let graph_widget = &mut graph_widgets[i + 1];
                 graph_widget.add_data_point(cpu.cpu_usage());
+            }
+
+            // Update footer labels
+            {
+                let global_cpu_info = sys_info.system().global_cpu_info();
+                this.imp()
+                    .utilization
+                    .set_text(&format!("{}%", global_cpu_info.cpu_usage().round()));
+                this.imp().speed.set_text(&format!(
+                    "{:.2} GHz",
+                    global_cpu_info.frequency() as f32 / 1024.
+                ));
+                this.imp()
+                    .processes
+                    .set_text(&format!("{}", sys_info.system().processes().len()));
+                this.imp()
+                    .threads
+                    .set_text(&format!("{}", sys_info.thread_count()));
+                this.imp()
+                    .handles
+                    .set_text(&format!("{}", sys_info.handle_count()));
+
+                let uptime = sys_info.system().uptime();
+                let days = uptime / 86400;
+                let hours = (uptime % 86400) / 3600;
+                let minutes = (uptime % 3600) / 60;
+                let seconds = uptime % 60;
+                this.imp().uptime.set_text(&format!(
+                    "{:02}:{:02}:{:02}:{:02}",
+                    days, hours, minutes, seconds
+                ));
             }
 
             let this = this.clone();
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_graph(&this);
+                    Self::update_view(&this);
                 },
             ));
         }
@@ -251,6 +317,8 @@ mod imp {
 
     impl WidgetImpl for PerformancePageCpu {
         fn realize(&self) {
+            use sysinfo::{CpuExt, SystemExt};
+
             self.parent_realize();
 
             let obj = self.obj();
@@ -259,12 +327,30 @@ mod imp {
             Self::configure_context_menu(&this);
             self.populate_usage_graphs();
 
+            {
+                let sys_info = crate::SYS_INFO
+                    .read()
+                    .expect("Failed to read CPU information: Unable to acquire lock");
+
+                self.cpu_name
+                    .set_text(sys_info.system().global_cpu_info().brand());
+            }
+
+            Self::update_view(&this);
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_graph(&this);
+                    Self::update_view(&this);
                 },
             ));
+        }
+
+        fn snapshot(&self, snapshot: &Snapshot) {
+            self.parent_snapshot(snapshot);
+            let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+
+            let graph_width = self.obj().allocated_width() as u32;
+            graph_widgets[0].set_vertical_line_count(graph_width / 100);
         }
     }
 
