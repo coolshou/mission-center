@@ -113,17 +113,20 @@ mod imp {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, SystemExt};
 
-            let cpu_usage = SYS_INFO
+            let cpu_info = SYS_INFO
                 .read()
-                .expect("Failed to read CPU information: Unable to acquire lock")
-                .system()
-                .global_cpu_info()
-                .cpu_usage();
+                .expect("Failed to read CPU information: Unable to acquire lock");
+            let cpu_info = cpu_info.system().global_cpu_info();
 
-            this.imp().cpu_usage_graph.get().add_data_point(cpu_usage);
             this.imp()
-                .cpu_usage_label
-                .set_label(&format!("{}% 3.50Ghz", cpu_usage.round()));
+                .cpu_usage_graph
+                .get()
+                .add_data_point(cpu_info.cpu_usage());
+            this.imp().cpu_usage_label.set_label(&format!(
+                "{}% {:.2} Ghz",
+                cpu_info.cpu_usage().round(),
+                cpu_info.frequency() as f32 / 1024.
+            ));
 
             let this = this.clone();
             Some(glib::source::timeout_add_local_once(
@@ -179,14 +182,7 @@ mod imp {
                 .expect("Failed to select first row");
             self.sidebar.select_row(Some(&row));
 
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformancePage>().clone();
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_graph(&this);
-                },
-            ));
+            Self::update_graph(self.obj().upcast_ref());
         }
     }
 

@@ -35,6 +35,10 @@ mod imp {
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/cpu.ui")]
     pub struct PerformancePageCpu {
         #[template_child]
+        pub utilization_label_all: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub utilization_label_overall: TemplateChild<gtk::Label>,
+        #[template_child]
         pub cpu_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub usage_graphs: TemplateChild<gtk::Grid>,
@@ -78,6 +82,8 @@ mod imp {
     impl Default for PerformancePageCpu {
         fn default() -> Self {
             Self {
+                utilization_label_all: Default::default(),
+                utilization_label_overall: Default::default(),
                 cpu_name: Default::default(),
                 usage_graphs: Default::default(),
                 overall_graph_labels: Default::default(),
@@ -111,8 +117,12 @@ mod imp {
             let action = gio::SimpleAction::new("overall", None);
             action.connect_activate(clone!(@weak this => move |_, _| {
                 let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+
                 graph_widgets[0].set_visible(true);
                 this.imp().overall_graph_labels.set_visible(true);
+                this.imp().utilization_label_overall.set_visible(true);
+                this.imp().utilization_label_all.set_visible(false);
+
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(false);
                 }
@@ -122,8 +132,12 @@ mod imp {
             let action = gio::SimpleAction::new("all-processors", None);
             action.connect_activate(clone!(@weak this => move |_, _| {
                 let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+
                 graph_widgets[0].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(false);
+                this.imp().utilization_label_overall.set_visible(false);
+                this.imp().utilization_label_all.set_visible(true);
+
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(true);
                 }
@@ -182,13 +196,12 @@ mod imp {
                 1.,
             ));
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
+            graph_widgets[0].set_data_set_len(60);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_visible(false);
 
             self.overall_graph_labels.set_visible(false);
-            self.overall_graph_labels
-                .bind_property("visible", &graph_widgets[0], "visible")
-                .build();
+            self.utilization_label_overall.set_visible(false);
 
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
@@ -197,6 +210,7 @@ mod imp {
                 let graph_widget_index = graph_widgets.len();
 
                 graph_widgets.push(GraphWidget::new());
+                graph_widgets[graph_widget_index].set_data_set_len(60);
                 graph_widgets[graph_widget_index].set_base_color(gtk::gdk::RGBA::new(
                     crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
                     crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
@@ -391,7 +405,14 @@ mod imp {
     impl ObjectImpl for PerformancePageCpu {
         fn constructed(&self) {
             self.parent_constructed();
-            Self::configure_actions(self.obj().upcast_ref());
+
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformancePageCpu>().clone();
+
+            Self::configure_actions(&this);
+            Self::configure_context_menu(&this);
+            self.populate_usage_graphs();
+            self.update_static_information();
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -411,20 +432,7 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformancePageCpu>().clone();
-
-            Self::configure_context_menu(&this);
-            self.populate_usage_graphs();
-            self.update_static_information();
-            Self::update_view(&this);
-
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(&this);
-                },
-            ));
+            Self::update_view(self.obj().upcast_ref());
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {

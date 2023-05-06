@@ -31,7 +31,7 @@ template PerformancePageCpu : Box {
     }
 
     Box {
-      Label {
+      Label utilization_label_all {
         styles [
           "caption",
         ]
@@ -39,6 +39,16 @@ template PerformancePageCpu : Box {
         hexpand: true;
         halign: start;
         label: _("% Utilization over 60 seconds");
+      }
+
+      Label utilization_label_overall {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: _("% Utilization");
       }
 
       Label {

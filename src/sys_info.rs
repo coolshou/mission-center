@@ -170,10 +170,6 @@ impl SysInfo {
         );
 
         if systemd_proxy == std::ptr::null_mut() {
-            g_printf(
-                b"Failed to create systemd proxy: %s\n\0".as_ptr() as _,
-                (*error).message,
-            );
             g_error_free(error);
             return None;
         }

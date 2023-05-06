@@ -30,6 +30,8 @@ mod imp {
     #[properties(wrapper_type = super::GraphWidget)]
     pub struct GraphWidget {
         #[property(get, set)]
+        data_set_len: Cell<u32>,
+        #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
         scroll: Cell<bool>,
@@ -49,7 +51,10 @@ mod imp {
 
     impl Default for GraphWidget {
         fn default() -> Self {
+            const DATA_SET_LEN_DEFAULT: usize = 60;
+
             Self {
+                data_set_len: Cell::new(DATA_SET_LEN_DEFAULT as _),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
@@ -57,7 +62,7 @@ mod imp {
                 vertical_line_count: Cell::new(6),
 
                 skia_context: Cell::new(None),
-                data_points: Cell::new(vec![0.0; 60]),
+                data_points: Cell::new(vec![0.0; DATA_SET_LEN_DEFAULT]),
 
                 scroll_offset: Cell::new(0.),
                 base_color_rgbf: Cell::new([0., 0., 0.]),
@@ -126,7 +131,7 @@ mod imp {
             inner_paint.set_style(skia_safe::paint::Style::Fill);
             outer_paint.set_anti_alias(true);
 
-            Self::draw_values(
+            Self::plot_values(
                 canvas,
                 width,
                 height,
@@ -207,7 +212,7 @@ mod imp {
             }
         }
 
-        fn draw_values(
+        fn plot_values(
             canvas: &mut skia_safe::Canvas,
             width: i32,
             height: i32,
@@ -261,10 +266,14 @@ mod imp {
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec);
 
-            if pspec.name() == "base-color" || pspec.name() == "base_color" {
+            if id == 4 {
                 let base_color = self.obj().base_color();
                 self.base_color_rgbf
                     .set([base_color.red(), base_color.green(), base_color.blue()]);
+            } else if id == 1 {
+                let mut data_points = self.data_points.take();
+                data_points.resize(self.obj().data_set_len() as _, 0.);
+                self.data_points.set(data_points);
             }
         }
 
@@ -295,6 +304,9 @@ mod imp {
             }
             let width = viewport_info[2];
             let height = viewport_info[3];
+
+            let _w2 = self.obj().allocated_width();
+            let _h2 = self.obj().allocated_height();
 
             unsafe {
                 gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
