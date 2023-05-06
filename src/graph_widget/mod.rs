@@ -23,8 +23,6 @@ use std::cell::Cell;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
-mod skia_plotter_backend;
-
 mod imp {
     use super::*;
 
@@ -46,7 +44,6 @@ mod imp {
         pub(crate) data_points: Cell<Vec<f32>>,
 
         scroll_offset: Cell<f32>,
-        base_color_rgb: Cell<[u8; 3]>,
         base_color_rgbf: Cell<[f32; 3]>,
     }
 
@@ -63,7 +60,6 @@ mod imp {
                 data_points: Cell::new(vec![0.0; 60]),
 
                 scroll_offset: Cell::new(0.),
-                base_color_rgb: Cell::new([0, 0, 0]),
                 base_color_rgbf: Cell::new([0., 0., 0.]),
             }
         }
@@ -89,34 +85,30 @@ mod imp {
 
         pub fn render_graph(
             &self,
-            canvas: &mut skia_safe::canvas::Canvas,
+            canvas: &mut skia_safe::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
         ) -> Result<(), Box<dyn std::error::Error>> {
-            use plotters::prelude::*;
+            use skia_safe::Paint;
 
             let data_points = unsafe { &*(self.data_points.as_ptr()) };
 
-            let rgb = self.base_color_rgb.get();
             let rgbf = self.base_color_rgbf.get();
 
-            let mut outer_paint = skia_safe::Paint::new(
+            let mut outer_paint = Paint::new(
                 skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 1.0),
                 None,
             );
             outer_paint.set_stroke_width(scale_factor);
             outer_paint.set_style(skia_safe::paint::Style::Stroke);
 
-            let mut inner_paint = skia_safe::Paint::new(
+            let mut inner_paint = Paint::new(
                 skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 0.2),
                 None,
             );
             inner_paint.set_stroke_width(scale_factor);
             inner_paint.set_style(skia_safe::paint::Style::Stroke);
-
-            let outer_color = RGBAColor(rgb[0], rgb[1], rgb[2], 1.0);
-            let inner_color = RGBAColor(rgb[0], rgb[1], rgb[2], 0.2);
 
             self.draw_outline(canvas, width, height, scale_factor, &outer_paint);
 
@@ -131,34 +123,18 @@ mod imp {
                 );
             }
 
-            let backend = skia_plotter_backend::SkiaPlotterBackend::new(
+            inner_paint.set_style(skia_safe::paint::Style::Fill);
+            outer_paint.set_anti_alias(true);
+
+            Self::draw_values(
                 canvas,
-                width as _,
-                height as _,
+                width,
+                height,
                 scale_factor,
+                data_points,
+                &outer_paint,
+                &inner_paint,
             );
-            let root = plotters::drawing::IntoDrawingArea::into_drawing_area(backend);
-
-            let mut chart = ChartBuilder::on(&root)
-                .set_all_label_area_size(0)
-                .build_cartesian_2d(0..data_points.len() - 1, 0_f32..100_f32)?;
-
-            chart
-                .configure_mesh()
-                .disable_mesh()
-                .disable_axes()
-                .draw()?;
-
-            chart.draw_series(
-                AreaSeries::new(
-                    (0..).zip(data_points.iter()).map(|(x, y)| (x, *y)),
-                    0.0,
-                    &inner_color,
-                )
-                .border_style(&outer_color),
-            )?;
-
-            root.present()?;
 
             Ok(())
         }
@@ -230,6 +206,44 @@ mod imp {
                 );
             }
         }
+
+        fn draw_values(
+            canvas: &mut skia_safe::Canvas,
+            width: i32,
+            height: i32,
+            scale_factor: f32,
+            data_points: &Vec<f32>,
+            outer_paint: &skia_safe::Paint,
+            inner_paint: &skia_safe::Paint,
+        ) {
+            let width = width as f32;
+            let height = height as f32;
+
+            let spacing_x = width / data_points.len() as f32;
+            let mut points = (0..).zip(data_points).map(|(x, y)| {
+                (
+                    x as f32 * spacing_x,
+                    height - (y.clamp(0., 100.) / 100.) * height,
+                )
+            });
+
+            let mut path = skia_safe::Path::new();
+            if let Some((x, y)) = points.next() {
+                path.move_to(skia_safe::Point::new(x, y));
+
+                for (x, y) in points {
+                    path.line_to(skia_safe::Point::new(x, y));
+                }
+
+                // Make sure to close out the path
+                path.line_to(skia_safe::Point::new(width - scale_factor, height));
+                path.line_to(skia_safe::Point::new(0_f32, height));
+
+                path.close();
+            }
+            canvas.draw_path(&path, &inner_paint);
+            canvas.draw_path(&path, &outer_paint);
+        }
     }
 
     #[glib::object_subclass]
@@ -249,11 +263,6 @@ mod imp {
 
             if pspec.name() == "base-color" || pspec.name() == "base_color" {
                 let base_color = self.obj().base_color();
-                self.base_color_rgb.set([
-                    ((base_color.red() * 255.) % 256.).floor() as u8,
-                    ((base_color.green() * 255.) % 256.).floor() as u8,
-                    ((base_color.blue() * 255.) % 256.).floor() as u8,
-                ]);
                 self.base_color_rgbf
                     .set([base_color.red(), base_color.green(), base_color.blue()]);
             }
