@@ -75,6 +75,8 @@ mod imp {
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
+        #[property(get, set)]
+        base_color: Cell<gtk::gdk::RGBA>,
 
         pub graph_widgets: Cell<Vec<GraphWidget>>,
     }
@@ -103,6 +105,7 @@ mod imp {
                 context_menu: Default::default(),
 
                 refresh_interval: Cell::new(1000),
+                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
 
                 graph_widgets: Cell::new(Vec::new()),
             }
@@ -177,6 +180,8 @@ mod imp {
             use crate::SYS_INFO;
             use sysinfo::SystemExt;
 
+            let base_color = self.obj().base_color();
+
             let cpu_count = SYS_INFO
                 .read()
                 .expect("Failed to read CPU count: Unable to acquire lock")
@@ -189,12 +194,7 @@ mod imp {
             // Add one for overall CPU utilization
             let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
             graph_widgets.push(GraphWidget::new());
-            graph_widgets[0].set_base_color(gtk::gdk::RGBA::new(
-                crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
-                crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
-                crate::CPU_USAGE_GRAPH_BASE_COLOR[2],
-                1.,
-            ));
+            graph_widgets[0].set_base_color(&base_color);
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_set_len(60);
             graph_widgets[0].set_scroll(true);
@@ -211,12 +211,7 @@ mod imp {
 
                 graph_widgets.push(GraphWidget::new());
                 graph_widgets[graph_widget_index].set_data_set_len(60);
-                graph_widgets[graph_widget_index].set_base_color(gtk::gdk::RGBA::new(
-                    crate::CPU_USAGE_GRAPH_BASE_COLOR[0],
-                    crate::CPU_USAGE_GRAPH_BASE_COLOR[1],
-                    crate::CPU_USAGE_GRAPH_BASE_COLOR[2],
-                    1.,
-                ));
+                graph_widgets[graph_widget_index].set_base_color(&base_color);
                 self.usage_graphs.attach(
                     &graph_widgets[graph_widget_index],
                     col_idx as i32,
@@ -421,6 +416,14 @@ mod imp {
 
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec);
+
+            // When base-color changes, update the graph colors
+            if id == 2 {
+                let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+                for graph_widget in graph_widgets {
+                    graph_widget.set_base_color(self.obj().base_color());
+                }
+            }
         }
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {

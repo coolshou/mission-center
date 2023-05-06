@@ -41,6 +41,8 @@ mod imp {
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
+        #[property(get, set)]
+        base_color: Cell<gtk::gdk::RGBA>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -50,6 +52,7 @@ mod imp {
                 context_menu: Default::default(),
 
                 refresh_interval: Cell::new(1000),
+                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
             }
         }
     }
@@ -89,7 +92,16 @@ mod imp {
         }
 
         fn update_view(this: &super::PerformancePageNetwork) {
+            use crate::SYS_INFO;
+            use sysinfo::SystemExt;
+
             let this = this.clone();
+
+            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            for (_name, _data) in sys_info.system().networks() {
+                break;
+            }
+
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {

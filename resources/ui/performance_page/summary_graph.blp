@@ -1,0 +1,41 @@
+using Gtk 4.0;
+
+template SummaryGraph: Box {
+  spacing: 10;
+  margin-top: 10;
+  margin-bottom: 10;
+  margin-end: 10;
+
+  .GraphWidget graph_widget {
+      width-request: 80;
+      height-request: 50;
+
+      data-set-len: 60;
+      grid-visible: false;
+  }
+
+  Box {
+    orientation: vertical;
+    spacing: 3;
+
+    Label label_heading {
+      halign: start;
+    }
+
+    Label label_info1 {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+
+    Label label_info2 {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+  }
+}

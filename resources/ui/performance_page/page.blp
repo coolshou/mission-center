@@ -51,60 +51,49 @@ template PerformancePage : Box {
     margin-bottom: 15;
     margin-end: 20;
 
-    Box sidebar_container {
-      orientation: vertical;
+    ListBox sidebar {
+      styles [
+        "navigation-sidebar",
+      ]
 
-      ListBox sidebar {
-        styles [
-          "navigation-sidebar",
-        ]
+      margin-end: 20;
 
-        margin-end: 20;
+      .SummaryGraph cpu_usage_graph {
+        name: "cpu";
+        width-request: 200;
 
-        Box {
-          spacing: 10;
-          margin-top: 10;
-          margin-bottom: 10;
-          margin-end: 10;
+        base-color: "#117dbb";
+        heading: _("CPU");
+      }
 
-          .GraphWidget cpu_usage_graph {
-              width-request: 80;
-              height-request: 50;
+      .SummaryGraph network_graph {
+        name: "network";
 
-              data-set-len: 60;
-              grid-visible: false;
-              base-color: "#117DBB";
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              halign: start;
-              label: _("CPU");
-            }
-
-            Label cpu_usage_label {
-              halign: start;
-              label: "usage";
-            }
-
-            Label {
-              halign: start;
-              label: "usage";
-            }
-          }
-        }
+        base-color: "#e889c5";
+        heading: _("Network");
+        info1: "Ethernet Instance 0";
+        info2: "S: 1023 Mbps R: 1023 Mbps";
       }
     }
 
-    // .PerformancePageCpu {
-    //   refresh_interval: bind PerformancePage.refresh_interval;
-    // }
-    .PerformancePageNetwork {
-      refresh_interval: bind PerformancePage.refresh_interval;
+    Stack subpages {
+      transition-type: slide_up_down;
+
+      StackPage {
+        name: "cpu";
+        child: .PerformancePageCpu {
+          base-color: bind cpu_usage_graph.base-color;
+          refresh_interval: bind PerformancePage.refresh_interval;
+        };
+      }
+
+      StackPage {
+        name: "network";
+        child: .PerformancePageNetwork {
+          base-color: bind network_graph.base-color;
+          refresh_interval: bind PerformancePage.refresh_interval;
+        };
+      }
     }
   }
 }

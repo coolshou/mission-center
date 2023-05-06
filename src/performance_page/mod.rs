@@ -28,7 +28,9 @@ use crate::graph_widget::GraphWidget;
 
 mod cpu;
 mod network;
+mod summary_graph;
 
+type SummaryGraph = summary_graph::SummaryGraph;
 type Cpu = cpu::PerformancePageCpu;
 type Network = network::PerformancePageNetwork;
 
@@ -41,11 +43,11 @@ mod imp {
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/page.ui")]
     pub struct PerformancePage {
         #[template_child]
-        pub cpu_usage_graph: TemplateChild<GraphWidget>,
-        #[template_child]
-        pub cpu_usage_label: TemplateChild<gtk::Label>,
+        cpu_usage_graph: TemplateChild<SummaryGraph>,
         #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub subpages: TemplateChild<gtk::Stack>,
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
@@ -55,8 +57,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 cpu_usage_graph: Default::default(),
-                cpu_usage_label: Default::default(),
                 sidebar: Default::default(),
+                subpages: Default::default(),
 
                 refresh_interval: Cell::new(1000),
             }
@@ -75,8 +77,12 @@ mod imp {
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("cpu", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let row= this.imp()
+                    .sidebar
+                    .row_at_index(0)
+                    .expect("Failed to select CPU row");
+                this.imp().sidebar.select_row(Some(&row));
             }));
             actions.add_action(&action);
 
@@ -113,22 +119,31 @@ mod imp {
 
         fn update_graph(this: &super::PerformancePage) {
             use crate::SYS_INFO;
-            use sysinfo::{CpuExt, SystemExt};
+            use sysinfo::{CpuExt, NetworkExt, SystemExt};
 
-            let cpu_info = SYS_INFO
+            let sys_info = SYS_INFO
                 .read()
-                .expect("Failed to read CPU information: Unable to acquire lock");
-            let cpu_info = cpu_info.system().global_cpu_info();
+                .expect("Failed to read system information: Unable to acquire lock");
+            let cpu_info = sys_info.system().global_cpu_info();
 
             this.imp()
                 .cpu_usage_graph
                 .get()
+                .graph_widget()
                 .add_data_point(cpu_info.cpu_usage());
-            this.imp().cpu_usage_label.set_label(&format!(
+            this.imp().cpu_usage_graph.set_info1(format!(
                 "{}% {:.2} Ghz",
                 cpu_info.cpu_usage().round(),
                 cpu_info.frequency() as f32 / 1024.
             ));
+
+            for (name, data) in sys_info.system().networks() {
+                let sent = data.transmitted();
+                let received = data.received();
+                dbg!(name, sent, received);
+
+                break;
+            }
 
             let this = this.clone();
             Some(glib::source::timeout_add_local_once(
@@ -147,6 +162,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            SummaryGraph::ensure_type();
             GraphWidget::ensure_type();
             Cpu::ensure_type();
             Network::ensure_type();
@@ -187,6 +203,24 @@ mod imp {
                 .row_at_index(0)
                 .expect("Failed to select first row");
             self.sidebar.select_row(Some(&row));
+
+            let this = self.obj().upcast_ref::<super::PerformancePage>().clone();
+            self.sidebar.connect_row_selected(move |_, selected_row| {
+                use glib::translate::*;
+                use std::ffi::CStr;
+
+                if let Some(row) = selected_row {
+                    let child = row.child().expect("Failed to get child of selected row");
+                    let widget_name =
+                        unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
+                    if widget_name.is_null() {
+                        return;
+                    }
+                    if let Ok(page_name) = unsafe { CStr::from_ptr(widget_name) }.to_str() {
+                        this.imp().subpages.set_visible_child_name(page_name);
+                    }
+                }
+            });
 
             Self::update_graph(self.obj().upcast_ref());
         }

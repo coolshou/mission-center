@@ -40,8 +40,6 @@ mod config {
     include!(concat!(env!("BUILD_ROOT"), "/src/config.rs"));
 }
 
-const CPU_USAGE_GRAPH_BASE_COLOR: [f32; 3] = [0.06667, 0.49, 0.7333];
-
 lazy_static! {
     pub static ref SYS_INFO: Arc<RwLock<sys_info::SysInfo>> =
         Arc::new(RwLock::new(sys_info::SysInfo::new()));

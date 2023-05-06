@@ -356,8 +356,7 @@ mod imp {
 glib::wrapper! {
     pub struct GraphWidget(ObjectSubclass<imp::GraphWidget>)
         @extends gtk::GLArea, gtk::Widget,
-        @implements gtk::Accessible, gtk::Actionable,
-                    gtk::Buildable, gtk::ConstraintTarget;
+        @implements gtk::Buildable;
 }
 
 impl GraphWidget {
