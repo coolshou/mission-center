@@ -293,6 +293,15 @@ template PerformancePageCpu : Box {
           ]
 
           halign: start;
+          label: _("Virtualization:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
           label: _("Virtual machine:");
         }
 
@@ -350,6 +359,15 @@ template PerformancePageCpu : Box {
           ]
 
           halign: start;
+        }
+
+        Label virtualization {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: "Unknown";
         }
 
         Label virt_machine {

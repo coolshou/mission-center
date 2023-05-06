@@ -22,8 +22,6 @@ use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
 mod imp {
-    use crate::{graph_widget::GraphWidget, performance_page, performance_page::PerformancePage};
-
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -48,10 +46,9 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
-            GraphWidget::ensure_type();
-            PerformancePage::ensure_type();
-            performance_page::Cpu::ensure_type();
+            use crate::performance_page::PerformancePage;
 
+            PerformancePage::ensure_type();
             klass.bind_template();
         }
 

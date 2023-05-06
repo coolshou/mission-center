@@ -27,8 +27,10 @@ use gtk::{gio, glib, prelude::*};
 use crate::graph_widget::GraphWidget;
 
 mod cpu;
+mod network;
 
-pub type Cpu = cpu::PerformancePageCpu;
+type Cpu = cpu::PerformancePageCpu;
+type Network = network::PerformancePageNetwork;
 
 mod imp {
     use super::*;
@@ -145,6 +147,10 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            GraphWidget::ensure_type();
+            Cpu::ensure_type();
+            Network::ensure_type();
+
             klass.bind_template();
         }
 

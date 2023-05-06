@@ -1,0 +1,281 @@
+using Gtk 4.0;
+
+template PerformancePageNetwork: Box {
+  orientation: vertical;
+
+  Box description {
+    orientation: vertical;
+    spacing: 7;
+    hexpand: true;
+
+    Box {
+      spacing: 200;
+
+      Label network_type {
+        styles [
+          "title-1",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: "Ethernet";
+      }
+
+      Label device_name {
+        styles [
+          "title-3",
+        ]
+
+        halign: end;
+        label: "Intel(R) 82579LM Gigabit Network Connection";
+      }
+    }
+
+    Box {
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: _("Throughput");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        label: _("1 Gbps");
+      }
+    }
+  }
+
+  .GraphWidget usage_graph {
+    vexpand: true;
+    hexpand: true;
+
+    height-request: 120;
+
+    base-color: "#e889c5";
+
+    PopoverMenu context_menu {
+      menu-model: context_menu_model;
+    }
+  }
+
+  Box {
+    margin-top: 2;
+    height-request: 23;
+
+    Box {
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        valign: start;
+        label: _("60 seconds");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        valign: start;
+        label: "0";
+      }
+    }
+  }
+
+  Box details {
+    spacing: 20;
+
+    Box dynamic_data {
+      orientation: vertical;
+      spacing: 10;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Send");
+        }
+
+        Label utilization {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: "234 Mbps";
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Receive");
+        }
+
+        Label speed {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: "428 Mbps";
+        }
+      }
+    }
+
+    Box system_info {
+      spacing: 10;
+
+      Box labels {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Adapter name:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Connection type:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("IPv4 address:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("IPv6 address:");
+        }
+      }
+
+      Box values {
+        orientation: vertical;
+        spacing: 3;
+
+        Label adapter_name {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label connection_type {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label ipv4_address {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label ipv6_address {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+  }
+}
+
+menu context_menu_model {
+  section {
+    item {
+      label: _("Graph _Summary View");
+      action: "graph.summary";
+    }
+
+    submenu {
+      label: _("_View");
+
+      item {
+        label: _("CP_U");
+        action: "graph.cpu";
+      }
+
+      item {
+        label: _("_Memory");
+        action: "graph.memory";
+      }
+
+      item {
+        label: _("_Disk");
+        action: "graph.disk";
+      }
+
+      item {
+        label: _("_Network");
+        action: "graph.network";
+      }
+
+      item {
+        label: _("_GPU");
+        action: "graph.gpu";
+      }
+    }
+
+    item {
+        label: _("_View network details");
+        action: "graph.network-details";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Copy");
+      action: "graph.copy";
+    }
+  }
+}
