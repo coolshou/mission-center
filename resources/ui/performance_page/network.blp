@@ -42,12 +42,10 @@ template PerformancePageNetwork: Box {
         label: _("Throughput");
       }
 
-      Label {
+      Label max_y {
         styles [
           "caption",
         ]
-
-        label: _("1 Gbps");
       }
     }
   }
@@ -61,6 +59,7 @@ template PerformancePageNetwork: Box {
     base-color: bind PerformancePageNetwork.base-color;
     data-set-count: 3;
     auto-scale: true;
+    auto-scale-pow2: true;
 
     PopoverMenu context_menu {
       menu-model: context_menu_model;

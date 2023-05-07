@@ -21,6 +21,7 @@
 use std::cell::Cell;
 
 use adw::subclass::prelude::*;
+use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*, Snapshot};
 
@@ -34,6 +35,8 @@ mod imp {
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/network.ui")]
     pub struct PerformancePageNetwork {
+        #[template_child]
+        pub max_y: TemplateChild<gtk::Label>,
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
@@ -60,6 +63,7 @@ mod imp {
     impl Default for PerformancePageNetwork {
         fn default() -> Self {
             Self {
+                max_y: Default::default(),
                 usage_graph: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
@@ -160,6 +164,12 @@ mod imp {
                     this.imp().usage_graph.add_data_point(0, sent);
                     this.imp().usage_graph.add_data_point(1, received);
 
+                    let max_y =
+                        crate::to_human_readable(this.imp().usage_graph.value_range_max(), 1024.);
+                    this.imp()
+                        .max_y
+                        .set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
+
                     break;
                 }
             }
@@ -182,6 +192,9 @@ mod imp {
 
             self.interface_name.set(interface_name);
             self.connection_type.set(connection_type);
+
+            self.usage_graph.set_filled(0, false);
+            self.usage_graph.set_dashed(0, true);
         }
     }
 

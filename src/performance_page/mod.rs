@@ -193,6 +193,9 @@ mod imp {
 
                     graph_widget.set_data_set_count(2);
                     graph_widget.set_auto_scale(true);
+                    graph_widget.set_auto_scale_pow2(true);
+                    graph_widget.set_filled(0, false);
+                    graph_widget.set_dashed(0, true);
                     graph_widget.set_base_color(gtk::gdk::RGBA::new(
                         BASE_COLOR[0] as f32 / 255.,
                         BASE_COLOR[1] as f32 / 255.,

@@ -26,6 +26,14 @@ use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 mod imp {
     use super::*;
 
+    #[derive(Clone)]
+    pub struct DataSetDescriptor {
+        pub dashed: bool,
+        pub fill: bool,
+
+        pub data_set: Vec<f32>,
+    }
+
     #[derive(Properties)]
     #[properties(wrapper_type = super::GraphWidget)]
     pub struct GraphWidget {
@@ -40,6 +48,8 @@ mod imp {
         #[property(get, set)]
         auto_scale: Cell<bool>,
         #[property(get, set)]
+        auto_scale_pow2: Cell<bool>,
+        #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
         scroll: Cell<bool>,
@@ -51,7 +61,7 @@ mod imp {
         vertical_line_count: Cell<u32>,
 
         skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
-        pub data_sets: Cell<Vec<Vec<f32>>>,
+        pub data_sets: Cell<Vec<DataSetDescriptor>>,
 
         scroll_offset: Cell<f32>,
     }
@@ -66,6 +76,7 @@ mod imp {
                 value_range_min: Cell::new(0.),
                 value_range_max: Cell::new(100.),
                 auto_scale: Cell::new(false),
+                auto_scale_pow2: Cell::new(false),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
@@ -73,7 +84,14 @@ mod imp {
                 vertical_line_count: Cell::new(6),
 
                 skia_context: Cell::new(None),
-                data_sets: Cell::new(vec![vec![0.0; DATA_SET_LEN_DEFAULT]; 1]),
+                data_sets: Cell::new(vec![
+                    DataSetDescriptor {
+                        dashed: false,
+                        fill: true,
+                        data_set: vec![0.0; DATA_SET_LEN_DEFAULT],
+                    };
+                    1
+                ]),
 
                 scroll_offset: Cell::new(0.),
             }
@@ -84,7 +102,7 @@ mod imp {
         fn set_data_points(&self, count: u32) {
             let mut data_points = self.data_sets.take();
             for values in data_points.iter_mut() {
-                values.resize(count as _, 0.);
+                values.data_set.resize(count as _, 0.);
             }
             self.data_sets.set(data_points);
 
@@ -93,7 +111,14 @@ mod imp {
 
         fn set_data_sets(&self, count: u32) {
             let mut data_points = self.data_sets.take();
-            data_points.resize(count as _, vec![0.; self.data_points.get() as _]);
+            data_points.resize(
+                count as _,
+                DataSetDescriptor {
+                    dashed: false,
+                    fill: true,
+                    data_set: vec![0.; self.data_points.get() as _],
+                },
+            );
             self.data_sets.set(data_points);
 
             self.data_set_count.set(count);
@@ -167,18 +192,32 @@ mod imp {
                 );
             }
 
-            inner_paint.set_style(skia_safe::paint::Style::Fill);
             outer_paint.set_anti_alias(true);
-
+            inner_paint.set_style(skia_safe::paint::Style::Fill);
             for values in data_points.iter() {
+                if values.dashed {
+                    outer_paint.set_path_effect(skia_safe::PathEffect::dash(
+                        &[scale_factor * 5., scale_factor * 2.],
+                        0.,
+                    ));
+                } else {
+                    outer_paint.set_path_effect(None);
+                }
+
+                let inner_paint = if values.fill {
+                    Some(&inner_paint)
+                } else {
+                    None
+                };
+
                 self.plot_values(
                     canvas,
                     width,
                     height,
                     scale_factor,
-                    values,
+                    &values.data_set,
                     &outer_paint,
-                    Some(&inner_paint),
+                    inner_paint,
                 );
             }
 
@@ -275,7 +314,7 @@ mod imp {
             let spacing_x = width / (data_points.len() - 1) as f32;
             let mut points = (0..).zip(data_points).map(|(x, y)| {
                 (
-                    x as f32 * spacing_x,
+                    x as f32 * spacing_x - 2. * scale_factor,
                     height - ((y.clamp(val_min, val_max) / val_max) * (height - 2. * scale_factor)),
                 )
             });
@@ -409,16 +448,53 @@ impl GraphWidget {
         this
     }
 
+    pub fn set_dashed(&self, index: usize, dashed: bool) {
+        let mut data = self.imp().data_sets.take();
+        if index < data.len() {
+            data[index].dashed = dashed;
+        }
+        self.imp().data_sets.set(data);
+    }
+
+    pub fn set_filled(&self, index: usize, filled: bool) {
+        let mut data = self.imp().data_sets.take();
+        if index < data.len() {
+            data[index].fill = filled;
+        }
+        self.imp().data_sets.set(data);
+    }
+
     pub fn add_data_point(&self, index: usize, value: f32) {
+        fn round_up_to_next_power_of_two(num: u32) -> u32 {
+            let mut n = num - 1;
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+
+            n + 1
+        }
+
         let mut data = self.imp().data_sets.take();
         if index < data.len() {
             if self.auto_scale() {
-                let max_y = value.max(self.value_range_max());
+                let mut max_y = value.max(self.value_range_max());
+                if self.auto_scale_pow2() {
+                    max_y = max_y.round();
+                    if max_y < 0. {
+                        max_y = -max_y;
+                        max_y = round_up_to_next_power_of_two(max_y as u32) as f32 * -1.;
+                    } else {
+                        max_y = round_up_to_next_power_of_two(max_y as u32) as f32;
+                    }
+                }
+
                 self.set_value_range_max(max_y);
             }
 
-            data[index].push(value);
-            data[index].remove(0);
+            data[index].data_set.push(value);
+            data[index].data_set.remove(0);
         }
         self.imp().data_sets.set(data);
 
