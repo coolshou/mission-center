@@ -194,7 +194,7 @@ mod imp {
                     1.,
                 ));
 
-                let page = Network::new();
+                let page = Network::new(&if_name, &conn_type);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,

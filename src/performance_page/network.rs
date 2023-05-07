@@ -37,23 +37,76 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub interface_name_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub connection_type_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub ipv4_address: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub ipv6_address: TemplateChild<gtk::Label>,
+        #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
         #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
+        #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
+        pub interface_name: Cell<String>,
+        #[property(get = Self::connection_type, set = Self::set_connection_type, type = String)]
+        pub connection_type: Cell<String>,
     }
 
     impl Default for PerformancePageNetwork {
         fn default() -> Self {
             Self {
                 usage_graph: Default::default(),
+                interface_name_label: Default::default(),
+                connection_type_label: Default::default(),
+                ipv4_address: Default::default(),
+                ipv6_address: Default::default(),
                 context_menu: Default::default(),
 
                 refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
+
+                interface_name: Cell::new(String::new()),
+                connection_type: Cell::new(String::new()),
             }
+        }
+    }
+
+    impl PerformancePageNetwork {
+        fn interface_name(&self) -> String {
+            unsafe { &*self.interface_name.as_ptr() }.clone()
+        }
+
+        fn set_interface_name(&self, interface_name: String) {
+            {
+                let if_name = unsafe { &*self.interface_name.as_ptr() };
+                if if_name == &interface_name {
+                    return;
+                }
+            }
+
+            self.interface_name.replace(interface_name);
+            self.update_static_information();
+        }
+
+        fn connection_type(&self) -> String {
+            unsafe { &*self.connection_type.as_ptr() }.clone()
+        }
+
+        fn set_connection_type(&self, connection_type: String) {
+            {
+                let conn_type = unsafe { &*self.interface_name.as_ptr() };
+                if conn_type == &connection_type {
+                    return;
+                }
+            }
+
+            self.connection_type.replace(connection_type);
+            self.update_static_information();
         }
     }
 
@@ -98,9 +151,13 @@ mod imp {
             let this = this.clone();
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-            for (_name, _data) in sys_info.system().networks() {
-                break;
+            let interface_name = this.imp().interface_name.take();
+            for (name, _data) in sys_info.system().networks() {
+                if name == &interface_name {
+                    break;
+                }
             }
+            this.imp().interface_name.set(interface_name);
 
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
@@ -110,7 +167,16 @@ mod imp {
             ));
         }
 
-        fn update_static_information(&self) {}
+        fn update_static_information(&self) {
+            let interface_name = self.interface_name.take();
+            let connection_type = self.connection_type.take();
+
+            self.interface_name_label.set_text(&interface_name);
+            self.connection_type_label.set_text(&connection_type);
+
+            self.interface_name.set(interface_name);
+            self.connection_type.set(connection_type);
+        }
     }
 
     #[glib::object_subclass]
@@ -178,12 +244,19 @@ glib::wrapper! {
 }
 
 impl PerformancePageNetwork {
-    pub fn new() -> Self {
+    pub fn new(interface_name: &str, connection_type: &str) -> Self {
         let this: Self = unsafe {
-            glib::Object::new_internal(Self::static_type(), &mut [])
-                .downcast()
-                .unwrap()
+            glib::Object::new_internal(
+                Self::static_type(),
+                &mut [
+                    ("interface-name", interface_name.to_owned().into()),
+                    ("connection-type", connection_type.to_owned().into()),
+                ],
+            )
+            .downcast()
+            .unwrap()
         };
+
         this
     }
 }
