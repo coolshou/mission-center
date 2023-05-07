@@ -45,6 +45,20 @@ lazy_static! {
         Arc::new(RwLock::new(sys_info::SysInfo::new()));
 }
 
+pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str) {
+    const UNITS: [&'static str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+
+    let mut index = 0;
+    let mut value = value;
+
+    while value >= divisor && index < UNITS.len() - 1 {
+        value /= divisor;
+        index += 1;
+    }
+
+    (value, UNITS[index])
+}
+
 fn main() {
     // Set up gettext translations
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");

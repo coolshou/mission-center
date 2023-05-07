@@ -213,7 +213,7 @@ mod imp {
             graph_widgets.push(GraphWidget::new());
             graph_widgets[0].set_base_color(&base_color);
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
-            graph_widgets[0].set_data_set_len(60);
+            graph_widgets[0].set_data_points(60);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_visible(false);
 
@@ -227,7 +227,7 @@ mod imp {
                 let graph_widget_index = graph_widgets.len();
 
                 graph_widgets.push(GraphWidget::new());
-                graph_widgets[graph_widget_index].set_data_set_len(60);
+                graph_widgets[graph_widget_index].set_data_points(60);
                 graph_widgets[graph_widget_index].set_base_color(&base_color);
                 self.usage_graphs.attach(
                     &graph_widgets[graph_widget_index],
@@ -251,12 +251,12 @@ mod imp {
 
             let mut graph_widgets = this.imp().graph_widgets.take();
             // Update global CPU graph
-            graph_widgets[0].add_data_point(sys_info.system().global_cpu_info().cpu_usage());
+            graph_widgets[0].add_data_point(0, sys_info.system().global_cpu_info().cpu_usage());
 
             // Update per-core graphs
             for (i, cpu) in sys_info.system().cpus().iter().enumerate() {
                 let graph_widget = &mut graph_widgets[i + 1];
-                graph_widget.add_data_point(cpu.cpu_usage());
+                graph_widget.add_data_point(0, cpu.cpu_usage());
             }
 
             this.imp().graph_widgets.set(graph_widgets);

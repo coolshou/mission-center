@@ -1,4 +1,4 @@
-/* graph_widget/mod.rs
+/* graph_widget.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -29,8 +29,16 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::GraphWidget)]
     pub struct GraphWidget {
-        #[property(get, set = Self::set_data_set_len)]
-        data_set_len: Cell<u32>,
+        #[property(get, set = Self::set_data_points)]
+        data_points: Cell<u32>,
+        #[property(get, set = Self::set_data_sets)]
+        data_set_count: Cell<u32>,
+        #[property(get, set)]
+        value_range_min: Cell<f32>,
+        #[property(get, set)]
+        value_range_max: Cell<f32>,
+        #[property(get, set)]
+        auto_scale: Cell<bool>,
         #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
@@ -43,7 +51,7 @@ mod imp {
         vertical_line_count: Cell<u32>,
 
         skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
-        pub(crate) data_points: Cell<Vec<f32>>,
+        pub data_sets: Cell<Vec<Vec<f32>>>,
 
         scroll_offset: Cell<f32>,
     }
@@ -53,7 +61,11 @@ mod imp {
             const DATA_SET_LEN_DEFAULT: usize = 60;
 
             Self {
-                data_set_len: Cell::new(DATA_SET_LEN_DEFAULT as _),
+                data_points: Cell::new(DATA_SET_LEN_DEFAULT as _),
+                data_set_count: Cell::new(1),
+                value_range_min: Cell::new(0.),
+                value_range_max: Cell::new(100.),
+                auto_scale: Cell::new(false),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
@@ -61,7 +73,7 @@ mod imp {
                 vertical_line_count: Cell::new(6),
 
                 skia_context: Cell::new(None),
-                data_points: Cell::new(vec![0.0; DATA_SET_LEN_DEFAULT]),
+                data_sets: Cell::new(vec![vec![0.0; DATA_SET_LEN_DEFAULT]; 1]),
 
                 scroll_offset: Cell::new(0.),
             }
@@ -69,12 +81,22 @@ mod imp {
     }
 
     impl GraphWidget {
-        fn set_data_set_len(&self, data_set_len: u32) {
-            let mut data_points = self.data_points.take();
-            data_points.resize(data_set_len as _, 0.);
-            self.data_points.set(data_points);
+        fn set_data_points(&self, count: u32) {
+            let mut data_points = self.data_sets.take();
+            for values in data_points.iter_mut() {
+                values.resize(count as _, 0.);
+            }
+            self.data_sets.set(data_points);
 
-            self.data_set_len.set(data_set_len);
+            self.data_points.set(count);
+        }
+
+        fn set_data_sets(&self, count: u32) {
+            let mut data_points = self.data_sets.take();
+            data_points.resize(count as _, vec![0.; self.data_points.get() as _]);
+            self.data_sets.set(data_points);
+
+            self.data_set_count.set(count);
         }
     }
 
@@ -105,7 +127,7 @@ mod imp {
         ) -> Result<(), Box<dyn std::error::Error>> {
             use skia_safe::Paint;
 
-            let data_points = self.data_points.take();
+            let data_points = self.data_sets.take();
             let base_color = self.base_color.get();
 
             let mut outer_paint = Paint::new(
@@ -148,17 +170,19 @@ mod imp {
             inner_paint.set_style(skia_safe::paint::Style::Fill);
             outer_paint.set_anti_alias(true);
 
-            Self::plot_values(
-                canvas,
-                width,
-                height,
-                scale_factor,
-                &data_points,
-                &outer_paint,
-                &inner_paint,
-            );
+            for values in data_points.iter() {
+                self.plot_values(
+                    canvas,
+                    width,
+                    height,
+                    scale_factor,
+                    values,
+                    &outer_paint,
+                    Some(&inner_paint),
+                );
+            }
 
-            self.data_points.set(data_points);
+            self.data_sets.set(data_points);
 
             Ok(())
         }
@@ -232,40 +256,50 @@ mod imp {
         }
 
         fn plot_values(
+            &self,
             canvas: &mut skia_safe::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
             data_points: &Vec<f32>,
             outer_paint: &skia_safe::Paint,
-            inner_paint: &skia_safe::Paint,
+            inner_paint: Option<&skia_safe::Paint>,
         ) {
             let width = width as f32;
             let height = height as f32;
 
-            let spacing_x = width / data_points.len() as f32;
+            let offset = -1. * self.value_range_min.get();
+            let val_max = self.value_range_max.get() - offset;
+            let val_min = self.value_range_min.get() - offset;
+
+            let spacing_x = width / (data_points.len() - 1) as f32;
             let mut points = (0..).zip(data_points).map(|(x, y)| {
                 (
                     x as f32 * spacing_x,
-                    height - (y.clamp(0., 100.) / 100.) * height,
+                    height - ((y.clamp(val_min, val_max) / val_max) * (height - 2. * scale_factor)),
                 )
             });
 
             let mut path = skia_safe::Path::new();
             if let Some((x, y)) = points.next() {
-                path.move_to(skia_safe::Point::new(x, y));
+                let mut final_x = x;
 
+                path.move_to(skia_safe::Point::new(x, y));
                 for (x, y) in points {
                     path.line_to(skia_safe::Point::new(x, y));
+                    final_x = x;
                 }
 
                 // Make sure to close out the path
-                path.line_to(skia_safe::Point::new(width - scale_factor, height));
-                path.line_to(skia_safe::Point::new(0_f32, height));
+                path.line_to(skia_safe::Point::new(final_x, height));
+                path.line_to(skia_safe::Point::new(x, height));
 
                 path.close();
             }
-            canvas.draw_path(&path, &inner_paint);
+
+            if let Some(inner_paint) = inner_paint {
+                canvas.draw_path(&path, &inner_paint);
+            }
             canvas.draw_path(&path, &outer_paint);
         }
     }
@@ -313,9 +347,6 @@ mod imp {
             }
             let width = viewport_info[2];
             let height = viewport_info[3];
-
-            let _w2 = self.obj().allocated_width();
-            let _h2 = self.obj().allocated_height();
 
             unsafe {
                 gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
@@ -378,11 +409,18 @@ impl GraphWidget {
         this
     }
 
-    pub fn add_data_point(&mut self, value: f32) {
-        let mut data = self.imp().data_points.take();
-        data.push(value);
-        data.remove(0);
-        self.imp().data_points.set(data);
+    pub fn add_data_point(&self, index: usize, value: f32) {
+        let mut data = self.imp().data_sets.take();
+        if index < data.len() {
+            if self.auto_scale() {
+                let max_y = value.max(self.value_range_max());
+                self.set_value_range_max(max_y);
+            }
+
+            data[index].push(value);
+            data[index].remove(0);
+        }
+        self.imp().data_sets.set(data);
 
         self.queue_render();
     }

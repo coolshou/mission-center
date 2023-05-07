@@ -146,14 +146,20 @@ mod imp {
 
         fn update_view(this: &super::PerformancePageNetwork) {
             use crate::SYS_INFO;
-            use sysinfo::SystemExt;
+            use sysinfo::{NetworkExt, SystemExt};
 
             let this = this.clone();
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
             let interface_name = this.imp().interface_name.take();
-            for (name, _data) in sys_info.system().networks() {
+            for (name, data) in sys_info.system().networks() {
                 if name == &interface_name {
+                    let sent = data.transmitted() as f32;
+                    let received = data.received() as f32;
+
+                    this.imp().usage_graph.add_data_point(0, sent);
+                    this.imp().usage_graph.add_data_point(1, received);
+
                     break;
                 }
             }
@@ -249,8 +255,8 @@ impl PerformancePageNetwork {
             glib::Object::new_internal(
                 Self::static_type(),
                 &mut [
-                    ("interface-name", interface_name.to_owned().into()),
-                    ("connection-type", connection_type.to_owned().into()),
+                    ("interface-name", interface_name.into()),
+                    ("connection-type", connection_type.into()),
                 ],
             )
             .downcast()

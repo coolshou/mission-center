@@ -36,6 +36,8 @@ type Cpu = cpu::PerformancePageCpu;
 type Network = network::PerformancePageNetwork;
 
 mod imp {
+    use crate::to_human_readable;
+
     use super::*;
 
     enum Pages {
@@ -185,14 +187,19 @@ mod imp {
 
                 summary.set_heading(conn_type.clone());
                 summary.set_info1(if_name.clone());
-                summary.set_info2("S: 0 R: 0");
 
-                summary.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
+                {
+                    let graph_widget = summary.graph_widget();
+
+                    graph_widget.set_data_set_count(2);
+                    graph_widget.set_auto_scale(true);
+                    graph_widget.set_base_color(gtk::gdk::RGBA::new(
+                        BASE_COLOR[0] as f32 / 255.,
+                        BASE_COLOR[1] as f32 / 255.,
+                        BASE_COLOR[2] as f32 / 255.,
+                        1.,
+                    ));
+                }
 
                 let page = Network::new(&if_name, &conn_type);
                 page.set_base_color(gtk::gdk::RGBA::new(
@@ -229,20 +236,37 @@ mod imp {
             for page in &pages {
                 match page {
                     Pages::Cpu((summary, _)) => {
-                        summary.graph_widget().add_data_point(cpu_info.cpu_usage());
+                        summary
+                            .graph_widget()
+                            .add_data_point(0, cpu_info.cpu_usage());
                         summary.set_info1(format!(
                             "{}% {:.2} Ghz",
                             cpu_info.cpu_usage().round(),
                             cpu_info.frequency() as f32 / 1024.
                         ));
                     }
-                    Pages::Network(_) => {
+                    Pages::Network(pages) => {
                         for (name, data) in sys_info.system().networks() {
-                            let sent = data.transmitted();
-                            let received = data.received();
-                            dbg!(name, sent, received);
+                            if let Some((summary, _)) = pages.get(name) {
+                                let sent = data.transmitted() as f32;
+                                let received = data.received() as f32;
 
-                            break;
+                                let graph_widget = summary.graph_widget();
+                                graph_widget.add_data_point(0, sent);
+                                graph_widget.add_data_point(1, received);
+
+                                let sent = to_human_readable(sent * 8., 1024.);
+                                let received = to_human_readable(received * 8., 1024.);
+                                summary.set_info2(gettext!(
+                                    "{}: {} {}bps {}: {} {}bps",
+                                    "S",
+                                    sent.0.round(),
+                                    sent.1,
+                                    "R",
+                                    received.0.round(),
+                                    received.1
+                                ));
+                            }
                         }
                     }
                 }
