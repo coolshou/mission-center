@@ -11,14 +11,13 @@ template PerformancePageNetwork: Box {
     Box {
       spacing: 200;
 
-      Label network_type {
+      Label title_connection_type{
         styles [
           "title-1",
         ]
 
         hexpand: true;
         halign: start;
-        label: "Ethernet";
       }
 
       Label device_name {
@@ -27,7 +26,6 @@ template PerformancePageNetwork: Box {
         ]
 
         halign: end;
-        label: "Intel(R) 82579LM Gigabit Network Connection";
       }
     }
 
@@ -58,8 +56,10 @@ template PerformancePageNetwork: Box {
 
     base-color: bind PerformancePageNetwork.base-color;
     data-set-count: 3;
+    scroll: true;
     auto-scale: true;
     auto-scale-pow2: true;
+
 
     PopoverMenu context_menu {
       menu-model: context_menu_model;

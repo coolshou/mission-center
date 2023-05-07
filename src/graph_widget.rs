@@ -60,7 +60,7 @@ mod imp {
         #[property(get, set)]
         vertical_line_count: Cell<u32>,
 
-        skia_context: Cell<Option<skia_safe::gpu::DirectContext>>,
+        skia_context: Cell<Option<skia::gpu::DirectContext>>,
         pub data_sets: Cell<Vec<DataSetDescriptor>>,
 
         scroll_offset: Cell<f32>,
@@ -132,9 +132,9 @@ mod imp {
 
             this.make_current();
 
-            let interface = skia_safe::gpu::gl::Interface::new_native();
+            let interface = skia::gpu::gl::Interface::new_native();
             self.skia_context.set(Some(
-                skia_safe::gpu::DirectContext::new_gl(interface, None)
+                skia::gpu::DirectContext::new_gl(interface, None)
                     .ok_or("Failed to create Skia DirectContext with OpenGL interface")?,
             ));
 
@@ -145,39 +145,29 @@ mod imp {
 
         pub fn render_graph(
             &self,
-            canvas: &mut skia_safe::Canvas,
+            canvas: &mut skia::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
         ) -> Result<(), Box<dyn std::error::Error>> {
-            use skia_safe::Paint;
+            use skia::Paint;
 
-            let data_points = self.data_sets.take();
+            let data_sets = self.data_sets.take();
             let base_color = self.base_color.get();
 
             let mut outer_paint = Paint::new(
-                skia_safe::Color4f::new(
-                    base_color.red(),
-                    base_color.green(),
-                    base_color.blue(),
-                    1.0,
-                ),
+                skia::Color4f::new(base_color.red(), base_color.green(), base_color.blue(), 1.0),
                 None,
             );
             outer_paint.set_stroke_width(scale_factor);
-            outer_paint.set_style(skia_safe::paint::Style::Stroke);
+            outer_paint.set_style(skia::paint::Style::Stroke);
 
             let mut inner_paint = Paint::new(
-                skia_safe::Color4f::new(
-                    base_color.red(),
-                    base_color.green(),
-                    base_color.blue(),
-                    0.2,
-                ),
+                skia::Color4f::new(base_color.red(), base_color.green(), base_color.blue(), 0.2),
                 None,
             );
             inner_paint.set_stroke_width(scale_factor);
-            inner_paint.set_style(skia_safe::paint::Style::Stroke);
+            inner_paint.set_style(skia::paint::Style::Stroke);
 
             self.draw_outline(canvas, width, height, scale_factor, &outer_paint);
 
@@ -187,16 +177,16 @@ mod imp {
                     width,
                     height,
                     scale_factor,
-                    data_points.len(),
+                    self.obj().data_points() as _,
                     &inner_paint,
                 );
             }
 
             outer_paint.set_anti_alias(true);
-            inner_paint.set_style(skia_safe::paint::Style::Fill);
-            for values in data_points.iter() {
+            inner_paint.set_style(skia::paint::Style::Fill);
+            for values in data_sets.iter() {
                 if values.dashed {
-                    outer_paint.set_path_effect(skia_safe::PathEffect::dash(
+                    outer_paint.set_path_effect(skia::PathEffect::dash(
                         &[scale_factor * 5., scale_factor * 2.],
                         0.,
                     ));
@@ -221,20 +211,20 @@ mod imp {
                 );
             }
 
-            self.data_sets.set(data_points);
+            self.data_sets.set(data_sets);
 
             Ok(())
         }
 
         fn draw_outline(
             &self,
-            canvas: &mut skia_safe::canvas::Canvas,
+            canvas: &mut skia::canvas::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
-            paint: &skia_safe::Paint,
+            paint: &skia::Paint,
         ) {
-            let boundary = skia_safe::Rect::new(
+            let boundary = skia::Rect::new(
                 scale_factor,
                 scale_factor,
                 width as f32 - scale_factor,
@@ -245,12 +235,12 @@ mod imp {
 
         fn draw_grid(
             &self,
-            canvas: &mut skia_safe::canvas::Canvas,
+            canvas: &mut skia::canvas::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
             data_point_count: usize,
-            paint: &skia_safe::Paint,
+            paint: &skia::Paint,
         ) {
             // Draw horizontal lines
             let horizontal_line_count = self.obj().horizontal_line_count() + 1;
@@ -296,13 +286,13 @@ mod imp {
 
         fn plot_values(
             &self,
-            canvas: &mut skia_safe::Canvas,
+            canvas: &mut skia::Canvas,
             width: i32,
             height: i32,
             scale_factor: f32,
             data_points: &Vec<f32>,
-            outer_paint: &skia_safe::Paint,
-            inner_paint: Option<&skia_safe::Paint>,
+            outer_paint: &skia::Paint,
+            inner_paint: Option<&skia::Paint>,
         ) {
             let width = width as f32;
             let height = height as f32;
@@ -319,19 +309,19 @@ mod imp {
                 )
             });
 
-            let mut path = skia_safe::Path::new();
+            let mut path = skia::Path::new();
             if let Some((x, y)) = points.next() {
                 let mut final_x = x;
 
-                path.move_to(skia_safe::Point::new(x, y));
+                path.move_to(skia::Point::new(x, y));
                 for (x, y) in points {
-                    path.line_to(skia_safe::Point::new(x, y));
+                    path.line_to(skia::Point::new(x, y));
                     final_x = x;
                 }
 
                 // Make sure to close out the path
-                path.line_to(skia_safe::Point::new(final_x, height));
-                path.line_to(skia_safe::Point::new(x, height));
+                path.line_to(skia::Point::new(final_x, height));
+                path.line_to(skia::Point::new(x, height));
 
                 path.close();
             }
@@ -373,7 +363,7 @@ mod imp {
 
     impl GLAreaImpl for GraphWidget {
         fn render(&self, _: &gdk::GLContext) -> bool {
-            use skia_safe::*;
+            use skia::*;
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
@@ -466,6 +456,10 @@ impl GraphWidget {
 
     pub fn add_data_point(&self, index: usize, value: f32) {
         fn round_up_to_next_power_of_two(num: u32) -> u32 {
+            if num == 0 {
+                return 0;
+            }
+
             let mut n = num - 1;
             n |= n >> 1;
             n |= n >> 2;
@@ -478,8 +472,25 @@ impl GraphWidget {
 
         let mut data = self.imp().data_sets.take();
         if index < data.len() {
+            data[index].data_set.push(value);
+            data[index].data_set.remove(0);
+
             if self.auto_scale() {
                 let mut max_y = value.max(self.value_range_max());
+
+                let mut value_max = value;
+                for data_set in data.iter() {
+                    for value in data_set.data_set.iter() {
+                        if value_max < *value {
+                            value_max = *value;
+                        }
+                    }
+                }
+
+                while value_max < max_y {
+                    max_y /= 2.;
+                }
+
                 if self.auto_scale_pow2() {
                     max_y = max_y.round();
                     if max_y < 0. {
@@ -492,9 +503,6 @@ impl GraphWidget {
 
                 self.set_value_range_max(max_y);
             }
-
-            data[index].data_set.push(value);
-            data[index].data_set.remove(0);
         }
         self.imp().data_sets.set(data);
 

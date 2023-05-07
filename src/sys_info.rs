@@ -1,7 +1,9 @@
+use network_interface::*;
 use sysinfo::{System, SystemExt};
 
 pub struct SysInfo {
     system: System,
+    network_interfaces: Vec<NetworkInterface>,
 
     cpu_base_frequency: Option<usize>,
     cpu_socket_count: Option<u8>,
@@ -36,8 +38,13 @@ impl SysInfo {
             None
         };
 
+        let network_interfaces =
+            NetworkInterface::show().expect("Unable to get network interfaces");
+        dbg!(&network_interfaces);
+
         Self {
             system: System::new_all(),
+            network_interfaces,
 
             cpu_base_frequency,
             cpu_socket_count: Self::load_cpu_socket_count(),
@@ -82,6 +89,8 @@ impl SysInfo {
         self.system.refresh_all();
         self.refresh_thread_count();
         self.refresh_handle_count();
+        self.network_interfaces =
+            NetworkInterface::show().expect("Unable to get network interfaces");
     }
 
     pub fn refresh_components_list(&mut self) {

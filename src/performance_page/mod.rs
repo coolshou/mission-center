@@ -249,10 +249,10 @@ mod imp {
                         ));
                     }
                     Pages::Network(pages) => {
-                        for (name, data) in sys_info.system().networks() {
+                        for (name, net_info) in sys_info.system().networks() {
                             if let Some((summary, _)) = pages.get(name) {
-                                let sent = data.transmitted() as f32;
-                                let received = data.received() as f32;
+                                let sent = net_info.transmitted() as f32;
+                                let received = net_info.received() as f32;
 
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, sent);

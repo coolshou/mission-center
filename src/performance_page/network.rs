@@ -36,6 +36,10 @@ mod imp {
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/network.ui")]
     pub struct PerformancePageNetwork {
         #[template_child]
+        pub title_connection_type: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub device_name: TemplateChild<gtk::Label>,
+        #[template_child]
         pub max_y: TemplateChild<gtk::Label>,
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
@@ -63,6 +67,8 @@ mod imp {
     impl Default for PerformancePageNetwork {
         fn default() -> Self {
             Self {
+                title_connection_type: Default::default(),
+                device_name: Default::default(),
                 max_y: Default::default(),
                 usage_graph: Default::default(),
                 interface_name_label: Default::default(),
@@ -156,10 +162,10 @@ mod imp {
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
             let interface_name = this.imp().interface_name.take();
-            for (name, data) in sys_info.system().networks() {
+            for (name, net_info) in sys_info.system().networks() {
                 if name == &interface_name {
-                    let sent = data.transmitted() as f32;
-                    let received = data.received() as f32;
+                    let sent = net_info.transmitted() as f32 * 8.;
+                    let received = net_info.received() as f32 * 8.;
 
                     this.imp().usage_graph.add_data_point(0, sent);
                     this.imp().usage_graph.add_data_point(1, received);
@@ -189,6 +195,7 @@ mod imp {
 
             self.interface_name_label.set_text(&interface_name);
             self.connection_type_label.set_text(&connection_type);
+            self.title_connection_type.set_text(&connection_type);
 
             self.interface_name.set(interface_name);
             self.connection_type.set(connection_type);
