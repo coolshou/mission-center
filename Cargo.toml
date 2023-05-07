@@ -17,11 +17,3 @@ sysinfo = { version = "0.28" }
 package = "libadwaita"
 version = "0.3"
 features = ["v1_2"]
-
-[dependencies.plotters]
-git = "https://github.com/plotters-rs/plotters"
-rev = "c34fcc0"
-
-[dependencies.plotters-backend]
-git = "https://github.com/plotters-rs/plotters"
-rev = "c34fcc0"

@@ -147,6 +147,15 @@ glib::wrapper! {
 }
 
 impl SummaryGraph {
+    pub fn new() -> Self {
+        let this: Self = unsafe {
+            glib::Object::new_internal(Self::static_type(), &mut [])
+                .downcast()
+                .unwrap()
+        };
+        this
+    }
+
     pub fn graph_widget(&self) -> GraphWidget {
         self.imp().graph_widget.clone()
     }

@@ -57,43 +57,11 @@ template PerformancePage : Box {
       ]
 
       margin-end: 20;
-
-      .SummaryGraph cpu_usage_graph {
-        name: "cpu";
-        width-request: 200;
-
-        base-color: "#117dbb";
-        heading: _("CPU");
-      }
-
-      .SummaryGraph network_graph {
-        name: "network";
-
-        base-color: "#e889c5";
-        heading: _("Network");
-        info1: "Ethernet Instance 0";
-        info2: "S: 1023 Mbps R: 1023 Mbps";
-      }
+      width-request: 220;
     }
 
-    Stack subpages {
+    Stack page_stack {
       transition-type: slide_up_down;
-
-      StackPage {
-        name: "cpu";
-        child: .PerformancePageCpu {
-          base-color: bind cpu_usage_graph.base-color;
-          refresh_interval: bind PerformancePage.refresh_interval;
-        };
-      }
-
-      StackPage {
-        name: "network";
-        child: .PerformancePageNetwork {
-          base-color: bind network_graph.base-color;
-          refresh_interval: bind PerformancePage.refresh_interval;
-        };
-      }
     }
   }
 }

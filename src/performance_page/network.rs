@@ -176,3 +176,14 @@ glib::wrapper! {
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
 }
+
+impl PerformancePageNetwork {
+    pub fn new() -> Self {
+        let this: Self = unsafe {
+            glib::Object::new_internal(Self::static_type(), &mut [])
+                .downcast()
+                .unwrap()
+        };
+        this
+    }
+}

@@ -75,7 +75,7 @@ mod imp {
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_base_color)]
         base_color: Cell<gtk::gdk::RGBA>,
 
         pub graph_widgets: Cell<Vec<GraphWidget>>,
@@ -113,13 +113,25 @@ mod imp {
     }
 
     impl PerformancePageCpu {
+        fn set_base_color(&self, base_color: gtk::gdk::RGBA) {
+            let graph_widgets = self.graph_widgets.take();
+            for graph_widget in &graph_widgets {
+                graph_widget.set_base_color(base_color.clone());
+            }
+            self.graph_widgets.set(graph_widgets);
+
+            self.base_color.set(base_color);
+        }
+    }
+
+    impl PerformancePageCpu {
         fn configure_actions(this: &super::PerformancePageCpu) {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
             let action = gio::SimpleAction::new("overall", None);
             action.connect_activate(clone!(@weak this => move |_, _| {
-                let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+                let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(true);
                 this.imp().overall_graph_labels.set_visible(true);
@@ -129,12 +141,14 @@ mod imp {
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(false);
                 }
+
+                this.imp().graph_widgets.set(graph_widgets);
             }));
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("all-processors", None);
             action.connect_activate(clone!(@weak this => move |_, _| {
-                let graph_widgets = unsafe { &*this.imp().graph_widgets.as_ptr() };
+                let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(false);
@@ -144,6 +158,8 @@ mod imp {
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(true);
                 }
+
+                this.imp().graph_widgets.set(graph_widgets);
             }));
             actions.add_action(&action);
 
@@ -192,7 +208,8 @@ mod imp {
             let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
             // Add one for overall CPU utilization
-            let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+            let mut graph_widgets = vec![];
+
             graph_widgets.push(GraphWidget::new());
             graph_widgets[0].set_base_color(&base_color);
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
@@ -220,6 +237,8 @@ mod imp {
                     1,
                 );
             }
+
+            self.graph_widgets.set(graph_widgets);
         }
 
         fn update_view(this: &super::PerformancePageCpu) {
@@ -230,7 +249,7 @@ mod imp {
                 .read()
                 .expect("Failed to read CPU information: Unable to acquire lock");
 
-            let graph_widgets = unsafe { &mut *this.imp().graph_widgets.as_ptr() };
+            let mut graph_widgets = this.imp().graph_widgets.take();
             // Update global CPU graph
             graph_widgets[0].add_data_point(sys_info.system().global_cpu_info().cpu_usage());
 
@@ -239,6 +258,8 @@ mod imp {
                 let graph_widget = &mut graph_widgets[i + 1];
                 graph_widget.add_data_point(cpu.cpu_usage());
             }
+
+            this.imp().graph_widgets.set(graph_widgets);
 
             // Update footer labels
             {
@@ -416,14 +437,6 @@ mod imp {
 
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec);
-
-            // When base-color changes, update the graph colors
-            if id == 2 {
-                let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
-                for graph_widget in graph_widgets {
-                    graph_widget.set_base_color(self.obj().base_color());
-                }
-            }
         }
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
@@ -440,10 +453,13 @@ mod imp {
 
         fn snapshot(&self, snapshot: &Snapshot) {
             self.parent_snapshot(snapshot);
-            let graph_widgets = unsafe { &mut *self.graph_widgets.as_ptr() };
+
+            let graph_widgets = self.graph_widgets.take();
 
             let graph_width = self.obj().allocated_width() as u32;
             graph_widgets[0].set_vertical_line_count(graph_width / 100);
+
+            self.graph_widgets.set(graph_widgets);
         }
     }
 
@@ -454,4 +470,15 @@ glib::wrapper! {
     pub struct PerformancePageCpu(ObjectSubclass<imp::PerformancePageCpu>)
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
+}
+
+impl PerformancePageCpu {
+    pub fn new() -> Self {
+        let this: Self = unsafe {
+            glib::Object::new_internal(Self::static_type(), &mut [])
+                .downcast()
+                .unwrap()
+        };
+        this
+    }
 }

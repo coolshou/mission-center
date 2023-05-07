@@ -29,7 +29,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::GraphWidget)]
     pub struct GraphWidget {
-        #[property(get, set)]
+        #[property(get, set = Self::set_data_set_len)]
         data_set_len: Cell<u32>,
         #[property(get, set)]
         grid_visible: Cell<bool>,
@@ -46,7 +46,6 @@ mod imp {
         pub(crate) data_points: Cell<Vec<f32>>,
 
         scroll_offset: Cell<f32>,
-        base_color_rgbf: Cell<[f32; 3]>,
     }
 
     impl Default for GraphWidget {
@@ -65,8 +64,17 @@ mod imp {
                 data_points: Cell::new(vec![0.0; DATA_SET_LEN_DEFAULT]),
 
                 scroll_offset: Cell::new(0.),
-                base_color_rgbf: Cell::new([0., 0., 0.]),
             }
+        }
+    }
+
+    impl GraphWidget {
+        fn set_data_set_len(&self, data_set_len: u32) {
+            let mut data_points = self.data_points.take();
+            data_points.resize(data_set_len as _, 0.);
+            self.data_points.set(data_points);
+
+            self.data_set_len.set(data_set_len);
         }
     }
 
@@ -97,19 +105,28 @@ mod imp {
         ) -> Result<(), Box<dyn std::error::Error>> {
             use skia_safe::Paint;
 
-            let data_points = unsafe { &*(self.data_points.as_ptr()) };
-
-            let rgbf = self.base_color_rgbf.get();
+            let data_points = self.data_points.take();
+            let base_color = self.base_color.get();
 
             let mut outer_paint = Paint::new(
-                skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 1.0),
+                skia_safe::Color4f::new(
+                    base_color.red(),
+                    base_color.green(),
+                    base_color.blue(),
+                    1.0,
+                ),
                 None,
             );
             outer_paint.set_stroke_width(scale_factor);
             outer_paint.set_style(skia_safe::paint::Style::Stroke);
 
             let mut inner_paint = Paint::new(
-                skia_safe::Color4f::new(rgbf[0], rgbf[1], rgbf[2], 0.2),
+                skia_safe::Color4f::new(
+                    base_color.red(),
+                    base_color.green(),
+                    base_color.blue(),
+                    0.2,
+                ),
                 None,
             );
             inner_paint.set_stroke_width(scale_factor);
@@ -136,10 +153,12 @@ mod imp {
                 width,
                 height,
                 scale_factor,
-                data_points,
+                &data_points,
                 &outer_paint,
                 &inner_paint,
             );
+
+            self.data_points.set(data_points);
 
             Ok(())
         }
@@ -265,16 +284,6 @@ mod imp {
 
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec);
-
-            if id == 4 {
-                let base_color = self.obj().base_color();
-                self.base_color_rgbf
-                    .set([base_color.red(), base_color.green(), base_color.blue()]);
-            } else if id == 1 {
-                let mut data_points = self.data_points.take();
-                data_points.resize(self.obj().data_set_len() as _, 0.);
-                self.data_points.set(data_points);
-            }
         }
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {

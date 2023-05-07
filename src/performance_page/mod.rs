@@ -18,9 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::{cell::Cell, collections::HashMap};
 
 use adw::subclass::prelude::*;
+use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
@@ -37,30 +38,35 @@ type Network = network::PerformancePageNetwork;
 mod imp {
     use super::*;
 
+    enum Pages {
+        Cpu((SummaryGraph, Cpu)),
+        Network(HashMap<String, (SummaryGraph, Network)>),
+    }
+
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePage)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/page.ui")]
     pub struct PerformancePage {
         #[template_child]
-        cpu_usage_graph: TemplateChild<SummaryGraph>,
-        #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
         #[template_child]
-        pub subpages: TemplateChild<gtk::Stack>,
+        pub page_stack: TemplateChild<gtk::Stack>,
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
+
+        pages: Cell<Vec<Pages>>,
     }
 
     impl Default for PerformancePage {
         fn default() -> Self {
             Self {
-                cpu_usage_graph: Default::default(),
                 sidebar: Default::default(),
-                subpages: Default::default(),
+                page_stack: Default::default(),
 
                 refresh_interval: Cell::new(1000),
+                pages: Cell::new(Vec::new()),
             }
         }
     }
@@ -117,7 +123,100 @@ mod imp {
             actions.add_action(&action);
         }
 
-        fn update_graph(this: &super::PerformancePage) {
+        fn set_up_cpu_page(&self, pages: &mut Vec<Pages>) {
+            const BASE_COLOR: [u8; 3] = [0x11, 0x7d, 0xbb];
+
+            let summary = SummaryGraph::new();
+            summary.set_widget_name("cpu");
+
+            summary.set_heading(gettext("CPU"));
+            summary.set_info1("0% 0.00 Ghz");
+
+            summary.set_base_color(gtk::gdk::RGBA::new(
+                BASE_COLOR[0] as f32 / 255.,
+                BASE_COLOR[1] as f32 / 255.,
+                BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            let page = Cpu::new();
+            page.set_base_color(gtk::gdk::RGBA::new(
+                BASE_COLOR[0] as f32 / 255.,
+                BASE_COLOR[1] as f32 / 255.,
+                BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.obj()
+                .as_ref()
+                .bind_property("refresh-interval", &page, "refresh-interval")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
+            self.sidebar.append(&summary);
+            self.page_stack.add_named(&page, Some("cpu"));
+
+            pages.push(Pages::Cpu((summary, page)));
+        }
+
+        fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
+            use crate::SYS_INFO;
+            use sysinfo::SystemExt;
+
+            const BASE_COLOR: [u8; 3] = [0xe8, 0x89, 0xc5];
+
+            let sys_info = SYS_INFO
+                .read()
+                .expect("Failed to read system information: Unable to acquire lock");
+
+            let mut networks = HashMap::new();
+            for (if_name, _net) in sys_info.system().networks() {
+                if if_name == "lo" {
+                    continue;
+                }
+
+                let conn_type = if if_name.starts_with("wl") {
+                    gettext("Wi-Fi")
+                } else {
+                    gettext("Ethernet")
+                };
+
+                let summary = SummaryGraph::new();
+                summary.set_widget_name(if_name);
+
+                summary.set_heading(conn_type.clone());
+                summary.set_info1(if_name.clone());
+                summary.set_info2("S: 0 R: 0");
+
+                summary.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+
+                let page = Network::new();
+                page.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+                self.obj()
+                    .as_ref()
+                    .bind_property("refresh-interval", &page, "refresh-interval")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                self.sidebar.append(&summary);
+                self.page_stack.add_named(&page, Some(if_name));
+
+                networks.insert(if_name.clone(), (summary, page));
+            }
+
+            pages.push(Pages::Network(networks));
+        }
+
+        fn update_graphs(this: &super::PerformancePage) {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, NetworkExt, SystemExt};
 
@@ -126,30 +225,36 @@ mod imp {
                 .expect("Failed to read system information: Unable to acquire lock");
             let cpu_info = sys_info.system().global_cpu_info();
 
-            this.imp()
-                .cpu_usage_graph
-                .get()
-                .graph_widget()
-                .add_data_point(cpu_info.cpu_usage());
-            this.imp().cpu_usage_graph.set_info1(format!(
-                "{}% {:.2} Ghz",
-                cpu_info.cpu_usage().round(),
-                cpu_info.frequency() as f32 / 1024.
-            ));
+            let pages = this.imp().pages.take();
+            for page in &pages {
+                match page {
+                    Pages::Cpu((summary, _)) => {
+                        summary.graph_widget().add_data_point(cpu_info.cpu_usage());
+                        summary.set_info1(format!(
+                            "{}% {:.2} Ghz",
+                            cpu_info.cpu_usage().round(),
+                            cpu_info.frequency() as f32 / 1024.
+                        ));
+                    }
+                    Pages::Network(_) => {
+                        for (name, data) in sys_info.system().networks() {
+                            let sent = data.transmitted();
+                            let received = data.received();
+                            dbg!(name, sent, received);
 
-            for (name, data) in sys_info.system().networks() {
-                let sent = data.transmitted();
-                let received = data.received();
-                dbg!(name, sent, received);
-
-                break;
+                            break;
+                        }
+                    }
+                }
             }
+
+            this.imp().pages.set(pages);
 
             let this = this.clone();
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_graph(&this);
+                    Self::update_graphs(&this);
                 },
             ));
         }
@@ -178,7 +283,40 @@ mod imp {
     impl ObjectImpl for PerformancePage {
         fn constructed(&self) {
             self.parent_constructed();
-            Self::configure_actions(self.obj().upcast_ref());
+
+            let this = self.obj().as_ref().clone();
+
+            Self::configure_actions(&this);
+
+            let mut pages = vec![];
+
+            self.set_up_cpu_page(&mut pages);
+            self.set_up_network_pages(&mut pages);
+
+            let row = self
+                .sidebar
+                .row_at_index(0)
+                .expect("Failed to select first row");
+            self.sidebar.select_row(Some(&row));
+
+            self.sidebar.connect_row_selected(move |_, selected_row| {
+                use glib::translate::*;
+                use std::ffi::CStr;
+
+                if let Some(row) = selected_row {
+                    let child = row.child().expect("Failed to get child of selected row");
+                    let widget_name =
+                        unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
+                    if widget_name.is_null() {
+                        return;
+                    }
+                    if let Ok(page_name) = unsafe { CStr::from_ptr(widget_name) }.to_str() {
+                        this.imp().page_stack.set_visible_child_name(page_name);
+                    }
+                }
+            });
+
+            self.pages.set(pages);
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -198,31 +336,7 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
-            let row = self
-                .sidebar
-                .row_at_index(0)
-                .expect("Failed to select first row");
-            self.sidebar.select_row(Some(&row));
-
-            let this = self.obj().upcast_ref::<super::PerformancePage>().clone();
-            self.sidebar.connect_row_selected(move |_, selected_row| {
-                use glib::translate::*;
-                use std::ffi::CStr;
-
-                if let Some(row) = selected_row {
-                    let child = row.child().expect("Failed to get child of selected row");
-                    let widget_name =
-                        unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
-                    if widget_name.is_null() {
-                        return;
-                    }
-                    if let Ok(page_name) = unsafe { CStr::from_ptr(widget_name) }.to_str() {
-                        this.imp().subpages.set_visible_child_name(page_name);
-                    }
-                }
-            });
-
-            Self::update_graph(self.obj().upcast_ref());
+            Self::update_graphs(self.obj().as_ref());
         }
     }
 
