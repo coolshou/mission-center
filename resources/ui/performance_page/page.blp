@@ -6,40 +6,42 @@ template PerformancePage : Box {
   refresh-interval: 1000;
 
   Box page_title {
+    styles [
+      "card",
+    ]
+
     margin-top: 5;
     margin-start: 10;
     margin-end: 10;
 
-    Frame {
-      hexpand: true;
+    hexpand: true;
 
-      Box {
-        margin-top: 10;
-        margin-bottom: 10;
-        margin-start: 15;
-        margin-end: 15;
+    Box {
+      margin-top: 10;
+      margin-bottom: 10;
+      margin-start: 15;
+      margin-end: 15;
 
-        Label {
-          hexpand: true;
-          halign: start;
-          label: _("Performance");
-        }
+      Label {
+        hexpand: true;
+        halign: start;
+        label: _("Performance");
+      }
 
-        Button {
-          styles [
-            "flat",
-          ]
+      Button {
+        styles [
+          "flat",
+        ]
 
-          Box {
-            spacing: 5;
+        Box {
+          spacing: 5;
 
-            Image {
-              icon-name: "plus-symbolic";
-            }
+          Image {
+            icon-name: "plus-symbolic";
+          }
 
-            Label {
-              label: _("Run new task");
-            }
+          Label {
+            label: _("Run new task");
           }
         }
       }

@@ -312,12 +312,26 @@ mod imp {
             let mut path = skia::Path::new();
             if let Some((x, y)) = points.next() {
                 let mut final_x = x;
+                let mut prev = (x, y);
 
                 path.move_to(skia::Point::new(x, y));
                 for (x, y) in points {
                     path.line_to(skia::Point::new(x, y));
                     final_x = x;
+
+                    canvas.draw_line(
+                        skia::Point::new(prev.0, prev.1),
+                        skia::Point::new(x, y),
+                        outer_paint,
+                    );
+                    prev = (x, y);
                 }
+
+                canvas.draw_line(
+                    skia::Point::new(prev.0, prev.1),
+                    skia::Point::new(final_x, height),
+                    outer_paint,
+                );
 
                 // Make sure to close out the path
                 path.line_to(skia::Point::new(final_x, height));
@@ -329,7 +343,6 @@ mod imp {
             if let Some(inner_paint) = inner_paint {
                 canvas.draw_path(&path, &inner_paint);
             }
-            canvas.draw_path(&path, &outer_paint);
         }
     }
 
