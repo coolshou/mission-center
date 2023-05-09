@@ -1,9 +1,11 @@
-use network_interface::*;
 use sysinfo::{System, SystemExt};
+
+use crate::sys_info::network::NetInfo;
+
+mod network;
 
 pub struct SysInfo {
     system: System,
-    network_interfaces: Vec<NetworkInterface>,
 
     cpu_base_frequency: Option<usize>,
     cpu_socket_count: Option<u8>,
@@ -17,6 +19,8 @@ pub struct SysInfo {
 
 impl SysInfo {
     pub fn new() -> Self {
+        use network::*;
+
         let file_nr = std::fs::OpenOptions::new()
             .read(true)
             .open("/proc/sys/fs/file-nr")
@@ -38,13 +42,11 @@ impl SysInfo {
             None
         };
 
-        let network_interfaces =
-            NetworkInterface::show().expect("Unable to get network interfaces");
-        dbg!(&network_interfaces);
+        let net = NetInfo::new().unwrap();
+        let _bla = net.load_net_info(["enp6s18"]);
 
         Self {
             system: System::new_all(),
-            network_interfaces,
 
             cpu_base_frequency,
             cpu_socket_count: Self::load_cpu_socket_count(),
@@ -89,8 +91,6 @@ impl SysInfo {
         self.system.refresh_all();
         self.refresh_thread_count();
         self.refresh_handle_count();
-        self.network_interfaces =
-            NetworkInterface::show().expect("Unable to get network interfaces");
     }
 
     pub fn refresh_components_list(&mut self) {
@@ -162,13 +162,13 @@ impl SysInfo {
 
     unsafe fn load_is_vm() -> Option<bool> {
         use gtk::gio::ffi::*;
-        use gtk::glib::ffi::*;
+        use gtk::glib::{ffi::*, gobject_ffi::*};
 
         let mut error: *mut GError = std::ptr::null_mut();
         let mut inner: *mut GVariant = std::ptr::null_mut();
 
         let systemd_proxy = g_dbus_proxy_new_for_bus_sync(
-            G_BUS_TYPE_SESSION,
+            G_BUS_TYPE_SYSTEM,
             G_DBUS_PROXY_FLAGS_NONE,
             std::ptr::null_mut(),
             b"org.freedesktop.systemd1\0".as_ptr() as _,
@@ -198,6 +198,7 @@ impl SysInfo {
         );
         if variant == std::ptr::null_mut() {
             g_error_free(error);
+            g_object_unref(systemd_proxy as _);
             return None;
         }
 
@@ -206,6 +207,7 @@ impl SysInfo {
         let is_vm = g_utf8_strlen(virt, -1) > 0;
 
         g_variant_unref(variant);
+        g_object_unref(systemd_proxy as _);
 
         Some(is_vm)
     }

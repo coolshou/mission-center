@@ -13,6 +13,8 @@ minidl = "0.1"
 network-interface = { version = "1.0" }
 skia = { package = "skia-safe", version = "0", features = ["egl", "textlayout"] }
 sysinfo = { version = "0.28" }
+libudev-sys = { version = "0.1" }
+errno-sys = { version = "0.1" }
 
 [dependencies.adw]
 package = "libadwaita"
