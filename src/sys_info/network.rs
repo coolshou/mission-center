@@ -1,29 +1,34 @@
 use gtk::glib;
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum NetDeviceType {
     Wired,
     Wireless,
     Other,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NetworkDeviceDescriptor {
     pub r#type: NetDeviceType,
     pub if_name: String,
     pub adapter_name: Option<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Address {
-    pub hw_address: String,
+    pub hw_address: Option<[u8; 6]>,
     pub ip4_address: Option<u32>,
     pub ip6_address: Option<u32>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WirelessInfo {
     pub ssid: String,
     pub connection_type: String,
     pub signal_strength: u8,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NetworkDevice {
     pub descriptor: NetworkDeviceDescriptor,
     pub address: Address,
@@ -117,7 +122,6 @@ impl NetInfo {
             let if_name = device_if.into();
 
             if let Some(device_path) = unsafe { self.nm_device_obj_path(if_name) } {
-                dbg!(&device_path);
                 let device_proxy = unsafe {
                     self.create_nm_dbus_proxy(
                         device_path.as_bytes_with_nul(),
@@ -130,8 +134,9 @@ impl NetInfo {
                 }
 
                 let r#type = Self::device_type(if_name);
-
                 let adapter_name = unsafe { self.adapter_name(device_proxy) };
+                let hw_address = Self::hw_address(device_proxy);
+
                 unsafe { g_object_unref(device_proxy as _) };
 
                 let descriptor = NetworkDeviceDescriptor {
@@ -139,6 +144,14 @@ impl NetInfo {
                     if_name: if_name.to_owned(),
                     adapter_name,
                 };
+                dbg!(descriptor);
+
+                let address = Address {
+                    hw_address,
+                    ip4_address: None,
+                    ip6_address: None,
+                };
+                dbg!(address);
             }
         }
 
@@ -155,6 +168,29 @@ impl NetInfo {
         }
     }
 
+    fn hw_address(dbus_proxy: *mut gtk::gio::ffi::GDBusProxy) -> Option<[u8; 6]> {
+        if let Some(hw_address_variant) =
+            unsafe { Self::nm_device_get_property(dbus_proxy, b"HwAddress\0") }
+        {
+            if let Some(hw_address_str) = hw_address_variant.str() {
+                let mut hw_address = [0; 6];
+
+                hw_address_str
+                    .split(':')
+                    .take(6)
+                    .enumerate()
+                    .map(|(i, s)| (i, u8::from_str_radix(s, 16).map_or(0, |v| v)))
+                    .for_each(|(i, v)| hw_address[i] = v);
+
+                Some(hw_address)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     unsafe fn adapter_name(&self, dbus_proxy: *mut gtk::gio::ffi::GDBusProxy) -> Option<String> {
         extern "C" {
             fn strerror(error: i32) -> *const i8;
@@ -166,10 +202,10 @@ impl NetInfo {
 
         use std::ffi::CStr;
 
-        if let Some(udi_variant) = self.nm_device_get_property(dbus_proxy, b"Udi\0") {
+        if let Some(udi_variant) = Self::nm_device_get_property(dbus_proxy, b"Udi\0") {
             if let Some(udi) = udi_variant.str() {
                 let udev_device = udev_device_new_from_syspath(self.udev, udi.as_ptr() as _);
-                if udev_device == std::ptr::null_mut() {
+                if udev_device.is_null() {
                     let err = *errno_location();
                     let error_message = CStr::from_ptr(strerror(err))
                         .to_str()
@@ -307,7 +343,6 @@ impl NetInfo {
     }
 
     unsafe fn nm_device_get_property(
-        &self,
         dbus_proxy: *mut gtk::gio::ffi::GDBusProxy,
         property: &[u8],
     ) -> Option<gtk::glib::Variant> {
