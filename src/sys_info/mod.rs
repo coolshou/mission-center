@@ -1,7 +1,5 @@
 use sysinfo::{System, SystemExt};
 
-use crate::sys_info::network::NetInfo;
-
 mod network;
 
 pub struct SysInfo {
@@ -43,7 +41,7 @@ impl SysInfo {
         };
 
         let net = NetInfo::new().unwrap();
-        let _bla = net.load_net_info(["enp6s18"]);
+        let _bla = net.load_devices(["enp6s18"]);
 
         Self {
             system: System::new_all(),
