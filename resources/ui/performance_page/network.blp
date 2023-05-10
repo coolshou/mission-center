@@ -103,6 +103,7 @@ template PerformancePageNetwork: Box {
       Box {
         orientation: vertical;
         spacing: 3;
+        width-request: 100;
 
         Label {
           styles [
@@ -119,7 +120,6 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          label: "234 Mbps";
         }
       }
 
@@ -142,7 +142,6 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          label: "428 Mbps";
         }
       }
     }
@@ -178,6 +177,55 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
+          visible: bind ssid.visible;
+          label: _("SSID:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          visible: bind signal_strength.visible;
+          label: _("Signal strength:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          visible: bind max_bitrate.visible;
+          label: _("Maximum Bitrate:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          visible: bind frequency.visible;
+          label: _("Frequency:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Hardware address:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
           label: _("IPv4 address:");
         }
 
@@ -204,6 +252,46 @@ template PerformancePageNetwork: Box {
         }
 
         Label connection_type_label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label ssid {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label signal_strength {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label max_bitrate {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label frequency {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label hw_address {
           styles [
             "caption",
           ]

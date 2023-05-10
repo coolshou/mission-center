@@ -52,6 +52,16 @@ mod imp {
         #[template_child]
         pub connection_type_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub ssid: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub signal_strength: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub max_bitrate: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub frequency: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub hw_address: TemplateChild<gtk::Label>,
+        #[template_child]
         pub ipv4_address: TemplateChild<gtk::Label>,
         #[template_child]
         pub ipv6_address: TemplateChild<gtk::Label>,
@@ -64,8 +74,8 @@ mod imp {
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
         pub interface_name: Cell<String>,
-        #[property(get = Self::connection_type, set = Self::set_connection_type, type = String)]
-        pub connection_type: Cell<String>,
+        #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
+        pub connection_type: Cell<crate::sys_info::NetDeviceType>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -79,6 +89,11 @@ mod imp {
                 speed_recv: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
+                ssid: Default::default(),
+                signal_strength: Default::default(),
+                max_bitrate: Default::default(),
+                frequency: Default::default(),
+                hw_address: Default::default(),
                 ipv4_address: Default::default(),
                 ipv6_address: Default::default(),
                 context_menu: Default::default(),
@@ -87,7 +102,7 @@ mod imp {
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
 
                 interface_name: Cell::new(String::new()),
-                connection_type: Cell::new(String::new()),
+                connection_type: Cell::new(crate::sys_info::NetDeviceType::Other),
             }
         }
     }
@@ -109,19 +124,30 @@ mod imp {
             self.update_static_information();
         }
 
-        fn connection_type(&self) -> String {
-            unsafe { &*self.connection_type.as_ptr() }.clone()
+        fn connection_type(&self) -> u8 {
+            self.connection_type.get() as u8
         }
 
-        fn set_connection_type(&self, connection_type: String) {
+        fn set_connection_type(&self, connection_type: u8) {
             {
-                let conn_type = unsafe { &*self.interface_name.as_ptr() };
-                if conn_type == &connection_type {
+                let if_type = self.connection_type.get();
+                if if_type as u8 == connection_type {
                     return;
                 }
             }
 
-            self.connection_type.replace(connection_type);
+            match connection_type {
+                0_u8 => self
+                    .connection_type
+                    .replace(crate::sys_info::NetDeviceType::Wired),
+                1_u8 => self
+                    .connection_type
+                    .replace(crate::sys_info::NetDeviceType::Wireless),
+                _ => self
+                    .connection_type
+                    .replace(crate::sys_info::NetDeviceType::Other),
+            };
+
             self.update_static_information();
         }
     }
@@ -182,6 +208,33 @@ mod imp {
                 this.imp().usage_graph.add_data_point(0, sent);
                 this.imp().usage_graph.add_data_point(1, received);
 
+                if let Some(wireless_info) = &net_device.wireless_info {
+                    this.imp().ssid.set_text(
+                        &wireless_info
+                            .ssid
+                            .as_ref()
+                            .map_or(gettext("Unknown"), |ssid| ssid.clone()),
+                    );
+                    this.imp().signal_strength.set_text(
+                        &wireless_info
+                            .signal_strength_percent
+                            .as_ref()
+                            .map_or(gettext("Unknown"), |ss| format!("{}%", ss)),
+                    );
+                    this.imp().max_bitrate.set_text(
+                        &wireless_info
+                            .bitrate_kbps
+                            .as_ref()
+                            .map_or(gettext("Unknown"), |kbps| format!("{} kbps", kbps)),
+                    );
+                    this.imp().frequency.set_text(
+                        &wireless_info
+                            .bitrate_kbps
+                            .as_ref()
+                            .map_or(gettext("Unknown"), |freq| format!("{} MHz", freq)),
+                    );
+                }
+
                 let max_y =
                     crate::to_human_readable(this.imp().usage_graph.value_range_max(), 1024.);
                 this.imp()
@@ -200,6 +253,20 @@ mod imp {
                     speed_recv_info.0.round(),
                     speed_recv_info.1
                 ));
+
+                this.imp()
+                    .hw_address
+                    .set_text(
+                        &net_device
+                            .address
+                            .hw_address
+                            .map_or(gettext("Unknown"), |hw| {
+                                format!(
+                                    "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
+                                    hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
+                                )
+                            }),
+                    );
 
                 this.imp()
                     .ipv4_address
@@ -246,15 +313,36 @@ mod imp {
         }
 
         fn update_static_information(&self) {
+            use crate::sys_info::NetDeviceType;
+
             let interface_name = self.interface_name.take();
-            let connection_type = self.connection_type.take();
+            let connection_type = self.connection_type.get();
 
             self.interface_name_label.set_text(&interface_name);
-            self.connection_type_label.set_text(&connection_type);
-            self.title_connection_type.set_text(&connection_type);
+
+            let conn_type = match connection_type {
+                NetDeviceType::Wired => {
+                    self.ssid.set_visible(false);
+                    self.signal_strength.set_visible(false);
+                    self.max_bitrate.set_visible(false);
+                    self.frequency.set_visible(false);
+
+                    gettext("Ethernet")
+                }
+                NetDeviceType::Wireless => gettext("Wi-Fi"),
+                NetDeviceType::Other => {
+                    self.ssid.set_visible(false);
+                    self.signal_strength.set_visible(false);
+                    self.max_bitrate.set_visible(false);
+                    self.frequency.set_visible(false);
+
+                    gettext("Other")
+                }
+            };
+            self.connection_type_label.set_text(&conn_type);
+            self.title_connection_type.set_text(&conn_type);
 
             self.interface_name.set(interface_name);
-            self.connection_type.set(connection_type);
 
             self.usage_graph.set_filled(0, false);
             self.usage_graph.set_dashed(0, true);
@@ -326,13 +414,13 @@ glib::wrapper! {
 }
 
 impl PerformancePageNetwork {
-    pub fn new(interface_name: &str, connection_type: &str) -> Self {
+    pub fn new(interface_name: &str, connection_type: crate::sys_info::NetDeviceType) -> Self {
         let this: Self = unsafe {
             glib::Object::new_internal(
                 Self::static_type(),
                 &mut [
                     ("interface-name", interface_name.into()),
-                    ("connection-type", connection_type.into()),
+                    ("connection-type", (connection_type as u8).into()),
                 ],
             )
             .downcast()

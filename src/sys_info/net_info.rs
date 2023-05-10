@@ -1,10 +1,11 @@
 use gtk::glib;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(u8)]
 pub enum NetDeviceType {
-    Wired,
-    Wireless,
-    Other,
+    Wired = 0,
+    Wireless = 1,
+    Other = 2,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,6 +35,7 @@ pub struct NetworkDevice {
     pub descriptor: NetworkDeviceDescriptor,
     pub address: NetworkAddress,
     pub wireless_info: Option<WirelessInfo>,
+
     pub bytes_sent: u64,
     pub bytes_received: u64,
 }
@@ -163,6 +165,7 @@ impl NetInfo {
                 descriptor,
                 address,
                 wireless_info,
+
                 bytes_sent: 0,
                 bytes_received: 0,
             })
