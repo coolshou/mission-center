@@ -10,7 +10,6 @@ gl-rs = { package = "gl", version = "0.14" }
 gtk = { package = "gtk4", version = "0.6", features = ["gnome_44"] }
 lazy_static = { version = "1.4" }
 minidl = "0.1"
-network-interface = { version = "1.0" }
 skia = { package = "skia-safe", version = "0", features = ["egl", "textlayout"] }
 sysinfo = { version = "0.28" }
 libudev-sys = { version = "0.1" }

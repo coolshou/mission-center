@@ -2,6 +2,7 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 
 gnome = import('gnome')
 libudev = dependency('libudev', required: true)
+clang = find_program('clang++', required: true)
 
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
