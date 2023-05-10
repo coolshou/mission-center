@@ -321,23 +321,16 @@ mod imp {
             self.interface_name_label.set_text(&interface_name);
 
             let conn_type = match connection_type {
-                NetDeviceType::Wired => {
-                    self.ssid.set_visible(false);
-                    self.signal_strength.set_visible(false);
-                    self.max_bitrate.set_visible(false);
-                    self.frequency.set_visible(false);
+                NetDeviceType::Wired => gettext("Ethernet"),
+                NetDeviceType::Wireless => {
+                    self.ssid.set_visible(true);
+                    self.signal_strength.set_visible(true);
+                    self.max_bitrate.set_visible(true);
+                    self.frequency.set_visible(true);
 
-                    gettext("Ethernet")
+                    gettext("Wi-Fi")
                 }
-                NetDeviceType::Wireless => gettext("Wi-Fi"),
-                NetDeviceType::Other => {
-                    self.ssid.set_visible(false);
-                    self.signal_strength.set_visible(false);
-                    self.max_bitrate.set_visible(false);
-                    self.frequency.set_visible(false);
-
-                    gettext("Other")
-                }
+                NetDeviceType::Other => gettext("Other"),
             };
             self.connection_type_label.set_text(&conn_type);
             self.title_connection_type.set_text(&conn_type);
