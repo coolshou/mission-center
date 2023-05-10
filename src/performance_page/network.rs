@@ -54,7 +54,7 @@ mod imp {
         #[template_child]
         pub ssid: TemplateChild<gtk::Label>,
         #[template_child]
-        pub signal_strength: TemplateChild<gtk::Label>,
+        pub signal_strength: TemplateChild<gtk::Image>,
         #[template_child]
         pub max_bitrate: TemplateChild<gtk::Label>,
         #[template_child]
@@ -215,24 +215,43 @@ mod imp {
                             .as_ref()
                             .map_or(gettext("Unknown"), |ssid| ssid.clone()),
                     );
-                    this.imp().signal_strength.set_text(
-                        &wireless_info
-                            .signal_strength_percent
-                            .as_ref()
-                            .map_or(gettext("Unknown"), |ss| format!("{}%", ss)),
-                    );
-                    this.imp().max_bitrate.set_text(
-                        &wireless_info
-                            .bitrate_kbps
-                            .as_ref()
-                            .map_or(gettext("Unknown"), |kbps| format!("{} kbps", kbps)),
-                    );
-                    this.imp().frequency.set_text(
-                        &wireless_info
-                            .bitrate_kbps
-                            .as_ref()
-                            .map_or(gettext("Unknown"), |freq| format!("{} MHz", freq)),
-                    );
+                    this.imp().signal_strength.set_icon_name(Some(
+                        if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
+                            if *percentage <= 20_u8 {
+                                "network-wireless-signal-none-symbolic"
+                            } else if *percentage <= 40_u8 {
+                                "network-wireless-signal-weak-symbolic"
+                            } else if *percentage <= 60_u8 {
+                                "network-wireless-signal-ok-symbolic"
+                            } else if *percentage <= 80_u8 {
+                                "network-wireless-signal-good-symbolic"
+                            } else {
+                                "network-wireless-signal-excellent-symbolic"
+                            }
+                        } else {
+                            "network-wireless-no-route-symbolic"
+                        },
+                    ));
+                    this.imp()
+                        .max_bitrate
+                        .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
+                            gettext("Unknown"),
+                            |kbps| {
+                                let (val, unit) =
+                                    crate::to_human_readable(*kbps as f32 * 1000., 1024.);
+                                format!("{} {}bps", val.round(), unit)
+                            },
+                        ));
+                    this.imp()
+                        .frequency
+                        .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
+                            gettext("Unknown"),
+                            |freq| {
+                                let (freq, unit) =
+                                    crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
+                                format!("{:.2} {}Hz", freq, unit)
+                            },
+                        ));
                 }
 
                 let max_y =

@@ -101,47 +101,59 @@ template PerformancePageNetwork: Box {
       spacing: 10;
 
       Box {
-        orientation: vertical;
-        spacing: 3;
-        width-request: 100;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Send");
+        Image {
+          resource: "/me/kicsyromy/MissionCenter/line-dashed";
         }
 
-        Label speed_send {
-          styles [
-            "title-4",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
 
-          halign: start;
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Send");
+          }
+
+          Label speed_send {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
       }
 
       Box {
-        orientation: vertical;
-        spacing: 3;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Receive");
+        Image {
+          resource: "/me/kicsyromy/MissionCenter/line-solid";
         }
 
-        Label speed_recv {
-          styles [
-            "title-4",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
 
-          halign: start;
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Receive");
+          }
+
+          Label speed_recv {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
       }
     }
@@ -268,7 +280,7 @@ template PerformancePageNetwork: Box {
           visible: false;
         }
 
-        Label signal_strength {
+        Image signal_strength {
           styles [
             "caption",
           ]
