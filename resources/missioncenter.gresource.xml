@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/me/kicsyromy/MissionCenter">
-        <file alias="line-dashed">line-dashed.svg</file>
-        <file alias="line-solid">line-solid.svg</file>
+        <file>line-dashed.svg</file>
+        <file>line-solid.svg</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network.ui</file>

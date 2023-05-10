@@ -44,7 +44,11 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub legend_send: TemplateChild<gtk::Picture>,
+        #[template_child]
         pub speed_send: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub legend_recv: TemplateChild<gtk::Picture>,
         #[template_child]
         pub speed_recv: TemplateChild<gtk::Label>,
         #[template_child]
@@ -85,7 +89,9 @@ mod imp {
                 device_name: Default::default(),
                 max_y: Default::default(),
                 usage_graph: Default::default(),
+                legend_send: Default::default(),
                 speed_send: Default::default(),
+                legend_recv: Default::default(),
                 speed_recv: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
@@ -353,6 +359,11 @@ mod imp {
             };
             self.connection_type_label.set_text(&conn_type);
             self.title_connection_type.set_text(&conn_type);
+
+            self.legend_send
+                .set_resource(Some("/me/kicsyromy/MissionCenter/line-dashed.svg"));
+            self.legend_recv
+                .set_resource(Some("/me/kicsyromy/MissionCenter/line-solid.svg"));
 
             self.interface_name.set(interface_name);
 
