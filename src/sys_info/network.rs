@@ -122,7 +122,8 @@ impl NetInfo {
         for device_if in devices {
             let if_name = device_if.into();
 
-            if let Some(device_path) = unsafe { self.nm_obj_path_new(if_name) } {
+            if let Some(device_path) = unsafe { self.nm_device_obj_path_new(if_name) } {
+                dbg!(&device_path);
                 let device_proxy = unsafe {
                     Self::create_nm_dbus_proxy(
                         device_path.as_bytes_with_nul(),
@@ -139,8 +140,6 @@ impl NetInfo {
                 let hw_address = Self::hw_address(device_proxy);
                 let ip4_address = unsafe { Self::ip4_address(device_proxy) };
                 let ip6_address = unsafe { Self::ip6_address(device_proxy) };
-
-                unsafe { g_object_unref(device_proxy as _) };
 
                 let descriptor = NetworkDeviceDescriptor {
                     r#type,
@@ -162,6 +161,8 @@ impl NetInfo {
                     None
                 };
                 dbg!(wireless_info);
+
+                unsafe { g_object_unref(device_proxy as _) };
             }
         }
 
@@ -390,7 +391,7 @@ impl NetInfo {
                         .map_or("Unknown error", |s| s)
                         .to_owned();
 
-                    g_error!(
+                    g_critical!(
                         "MissionCenter::NetInfo",
                         "Failed to create udev device from {:?}. {}",
                         udi,
@@ -416,7 +417,7 @@ impl NetInfo {
 
                 dev_name
             } else {
-                g_error!(
+                g_critical!(
                     "MissionCenter::NetInfo",
                     "Failed to get udev device path, cannot extract device sys path from variant: Unknown error"
                 );
@@ -450,14 +451,14 @@ impl NetInfo {
         if proxy.is_null() {
             if !error.is_null() {
                 let error: Error = from_glib_full(error);
-                g_error!(
+                g_critical!(
                     "MissionCenter::NetInfo",
                     "Failed to create dbus proxy for interface '{:?}': {}",
                     CStr::from_ptr(interface.as_ptr() as _),
                     error.message()
                 );
             } else {
-                g_error!(
+                g_critical!(
                     "MissionCenter::NetInfo",
                     "Failed to create dbus proxy for interface '{:?}': Unknown error",
                     CStr::from_ptr(interface.as_ptr() as _),
@@ -468,7 +469,7 @@ impl NetInfo {
         proxy
     }
 
-    unsafe fn nm_obj_path_new(&self, device_if: &str) -> Option<std::ffi::CString> {
+    unsafe fn nm_device_obj_path_new(&self, device_if: &str) -> Option<std::ffi::CString> {
         use gtk::gio::ffi::*;
         use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
         use std::ffi::{CStr, CString};
@@ -488,12 +489,21 @@ impl NetInfo {
                 )
             };
             if device_path_variant.is_null() {
-                let error: Error = unsafe { from_glib_full(error) };
-                g_error!(
-                    "MissionCenter::NetInfo",
-                    "Failed to get device info: {}",
-                    error.message()
-                );
+                if !error.is_null() {
+                    let error: Error = unsafe { from_glib_full(error) };
+                    g_critical!(
+                        "MissionCenter::NetInfo",
+                        "Failed to get device info for {:?}: {}",
+                        device_if,
+                        error.message()
+                    );
+                } else {
+                    g_critical!(
+                        "MissionCenter::NetInfo",
+                        "Failed to get device info for {:?}: Unknown error",
+                        device_if,
+                    );
+                }
 
                 return None;
             }
@@ -507,6 +517,11 @@ impl NetInfo {
                 )
             };
             if device_path.is_null() {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to get device info for {:?}: Variant error",
+                    device_if,
+                );
                 return None;
             }
 
@@ -545,14 +560,14 @@ impl NetInfo {
         if variant.is_null() {
             if !error.is_null() {
                 let error: Error = from_glib_full(error);
-                g_error!(
+                g_critical!(
                     "MissionCenter::NetInfo",
                     "Failed to get property {:?}: {}",
                     CStr::from_ptr(property.as_ptr() as _),
                     error.message()
                 );
             } else {
-                g_error!(
+                g_critical!(
                     "MissionCenter::NetInfo",
                     "Failed to get property {:?}: Unknown error",
                     CStr::from_ptr(property.as_ptr() as _),
@@ -567,7 +582,7 @@ impl NetInfo {
         if inner.is_null() {
             g_variant_unref(variant);
 
-            g_error!(
+            g_critical!(
                 "MissionCenter::NetInfo",
                 "Failed to get property {:?}, cannot extract inner variant: Unknown error",
                 CStr::from_ptr(property.as_ptr() as _),

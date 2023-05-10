@@ -41,7 +41,7 @@ impl SysInfo {
         };
 
         let net = NetInfo::new().unwrap();
-        let _bla = net.load_devices(["enp6s18"]);
+        let _bla = net.load_devices(["wlp0s20f3"]);
 
         Self {
             system: System::new_all(),
