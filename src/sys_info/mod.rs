@@ -1,9 +1,14 @@
-use sysinfo::{System, SystemExt};
+use sysinfo::{NetworkExt, System, SystemExt};
 
-mod network;
+pub use net_info::*;
+
+mod net_info;
 
 pub struct SysInfo {
     system: System,
+
+    net_info: Option<NetInfo>,
+    net_devices: std::collections::HashMap<String, NetworkDevice>,
 
     cpu_base_frequency: Option<usize>,
     cpu_socket_count: Option<u8>,
@@ -17,7 +22,7 @@ pub struct SysInfo {
 
 impl SysInfo {
     pub fn new() -> Self {
-        use network::*;
+        use std::collections::HashMap;
 
         let file_nr = std::fs::OpenOptions::new()
             .read(true)
@@ -40,11 +45,10 @@ impl SysInfo {
             None
         };
 
-        let net = NetInfo::new().unwrap();
-        let _bla = net.load_devices(["wlp0s20f3"]);
-
         Self {
             system: System::new_all(),
+            net_info: net_info::NetInfo::new().ok(),
+            net_devices: HashMap::new(),
 
             cpu_base_frequency,
             cpu_socket_count: Self::load_cpu_socket_count(),
@@ -85,6 +89,10 @@ impl SysInfo {
         self.handle_count
     }
 
+    pub fn network_device_info(&self, if_name: &str) -> Option<&NetworkDevice> {
+        self.net_devices.get(if_name)
+    }
+
     pub fn refresh_all(&mut self) {
         self.system.refresh_all();
         self.refresh_thread_count();
@@ -93,9 +101,19 @@ impl SysInfo {
 
     pub fn refresh_components_list(&mut self) {
         self.system.refresh_components_list();
+
+        for (name, net_info) in self.system.networks() {
+            if let Some(net_device_info) = self.net_info.as_mut() {
+                if let Some(mut net_device) = net_device_info.load_device(name.as_str()) {
+                    net_device.bytes_sent = net_info.transmitted();
+                    net_device.bytes_received = net_info.received();
+                    self.net_devices.insert(name.clone(), net_device);
+                }
+            }
+        }
     }
 
-    pub fn refresh_thread_count(&mut self) {
+    fn refresh_thread_count(&mut self) {
         self.thread_count = 0;
         for (pid, _) in self.system.processes() {
             if let Ok(entries) = std::fs::read_dir(format!("/proc/{}/task", pid)) {
@@ -104,7 +122,7 @@ impl SysInfo {
         }
     }
 
-    pub fn refresh_handle_count(&mut self) {
+    fn refresh_handle_count(&mut self) {
         if let Some(file_nr) = &mut self.file_nr {
             use std::io::*;
 

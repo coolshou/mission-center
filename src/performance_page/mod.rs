@@ -161,7 +161,7 @@ mod imp {
         }
 
         fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
-            use crate::SYS_INFO;
+            use crate::{sys_info::*, SYS_INFO};
             use sysinfo::SystemExt;
 
             const BASE_COLOR: [u8; 3] = [0xe8, 0x89, 0xc5];
@@ -176,10 +176,16 @@ mod imp {
                     continue;
                 }
 
-                let conn_type = if if_name.starts_with("wl") {
-                    gettext("Wi-Fi")
-                } else {
-                    gettext("Ethernet")
+                let net_device_info = sys_info.network_device_info(if_name);
+                if net_device_info.is_none() {
+                    continue;
+                }
+                let net_device_info = net_device_info.unwrap();
+
+                let conn_type = match &net_device_info.descriptor.r#type {
+                    NetDeviceType::Wired => gettext("Ethernet"),
+                    NetDeviceType::Wireless => gettext("Wi-Fi"),
+                    NetDeviceType::Other => gettext("Other"),
                 };
 
                 let summary = SummaryGraph::new();

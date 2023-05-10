@@ -15,7 +15,7 @@ pub struct NetworkDeviceDescriptor {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Address {
+pub struct NetworkAddress {
     pub hw_address: Option<[u8; 6]>,
     pub ip4_address: Option<u32>,
     pub ip6_address: Option<u128>,
@@ -24,22 +24,28 @@ pub struct Address {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WirelessInfo {
     pub ssid: Option<String>,
-    pub frequency: Option<u32>,
-    pub bitrate: Option<u32>,
-    pub signal_strength: Option<u8>,
+    pub frequency_mhz: Option<u32>,
+    pub bitrate_kbps: Option<u32>,
+    pub signal_strength_percent: Option<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NetworkDevice {
     pub descriptor: NetworkDeviceDescriptor,
-    pub address: Address,
+    pub address: NetworkAddress,
     pub wireless_info: Option<WirelessInfo>,
+    pub bytes_sent: u64,
+    pub bytes_received: u64,
 }
 
 pub struct NetInfo {
     udev: *mut libudev_sys::udev,
     nm_proxy: *mut gtk::gio::ffi::GDBusProxy,
 }
+
+unsafe impl Send for NetInfo {}
+
+unsafe impl Sync for NetInfo {}
 
 #[derive(Debug, Copy, Clone, glib::ErrorDomain)]
 #[error_domain(name = "Udev")]
@@ -108,65 +114,61 @@ impl NetInfo {
         Ok(Self { udev, nm_proxy })
     }
 
-    pub fn load_devices<
-        'a,
-        DeviceIf: Into<&'a str>,
-        InterfaceNames: IntoIterator<Item = DeviceIf>,
-    >(
+    pub fn load_device<'a, DeviceIfName: Into<&'a str>>(
         &self,
-        devices: InterfaceNames,
-    ) -> Vec<Option<NetworkDevice>> {
+        device: DeviceIfName,
+    ) -> Option<NetworkDevice> {
         use gtk::glib::gobject_ffi::*;
 
-        let mut result = vec![];
-        for device_if in devices {
-            let if_name = device_if.into();
+        let if_name = device.into();
 
-            if let Some(device_path) = unsafe { self.nm_device_obj_path_new(if_name) } {
-                dbg!(&device_path);
-                let device_proxy = unsafe {
-                    Self::create_nm_dbus_proxy(
-                        device_path.as_bytes_with_nul(),
-                        b"org.freedesktop.NetworkManager.Device\0",
-                    )
-                };
-                if device_proxy.is_null() {
-                    result.push(None);
-                    continue;
-                }
-
-                let r#type = Self::device_type(if_name);
-                let adapter_name = unsafe { self.adapter_name(device_proxy) };
-                let hw_address = Self::hw_address(device_proxy);
-                let ip4_address = unsafe { Self::ip4_address(device_proxy) };
-                let ip6_address = unsafe { Self::ip6_address(device_proxy) };
-
-                let descriptor = NetworkDeviceDescriptor {
-                    r#type,
-                    if_name: if_name.to_owned(),
-                    adapter_name,
-                };
-                dbg!(descriptor);
-
-                let address = Address {
-                    hw_address,
-                    ip4_address,
-                    ip6_address,
-                };
-                dbg!(address);
-
-                let wireless_info = if r#type == NetDeviceType::Wireless {
-                    unsafe { Self::wireless_info(device_proxy) }
-                } else {
-                    None
-                };
-                dbg!(wireless_info);
-
-                unsafe { g_object_unref(device_proxy as _) };
+        if let Some(device_path) = unsafe { self.nm_device_obj_path_new(if_name) } {
+            let device_proxy = unsafe {
+                Self::create_nm_dbus_proxy(
+                    device_path.as_bytes_with_nul(),
+                    b"org.freedesktop.NetworkManager.Device\0",
+                )
+            };
+            if device_proxy.is_null() {
+                return None;
             }
-        }
 
-        result
+            let r#type = Self::device_type(if_name);
+            let adapter_name = unsafe { self.adapter_name(device_proxy) };
+            let hw_address = Self::hw_address(device_proxy);
+            let ip4_address = unsafe { Self::ip4_address(device_proxy) };
+            let ip6_address = unsafe { Self::ip6_address(device_proxy) };
+
+            let descriptor = NetworkDeviceDescriptor {
+                r#type,
+                if_name: if_name.to_owned(),
+                adapter_name,
+            };
+
+            let address = NetworkAddress {
+                hw_address,
+                ip4_address,
+                ip6_address,
+            };
+
+            let wireless_info = if r#type == NetDeviceType::Wireless {
+                unsafe { Self::wireless_info(device_proxy) }
+            } else {
+                None
+            };
+
+            unsafe { g_object_unref(device_proxy as _) };
+
+            Some(NetworkDevice {
+                descriptor,
+                address,
+                wireless_info,
+                bytes_sent: 0,
+                bytes_received: 0,
+            })
+        } else {
+            None
+        }
     }
 
     fn device_type(device_if: &str) -> NetDeviceType {
@@ -354,9 +356,9 @@ impl NetInfo {
                 g_object_unref(wireless_info_proxy as _);
                 Some(WirelessInfo {
                     ssid,
-                    frequency,
-                    bitrate,
-                    signal_strength,
+                    frequency_mhz: frequency,
+                    bitrate_kbps: bitrate,
+                    signal_strength_percent: signal_strength,
                 })
             } else {
                 None

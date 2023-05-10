@@ -44,6 +44,10 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub speed_send: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub speed_recv: TemplateChild<gtk::Label>,
+        #[template_child]
         pub interface_name_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub connection_type_label: TemplateChild<gtk::Label>,
@@ -71,6 +75,8 @@ mod imp {
                 device_name: Default::default(),
                 max_y: Default::default(),
                 usage_graph: Default::default(),
+                speed_send: Default::default(),
+                speed_recv: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
                 ipv4_address: Default::default(),
@@ -156,28 +162,78 @@ mod imp {
 
         fn update_view(this: &super::PerformancePageNetwork) {
             use crate::SYS_INFO;
-            use sysinfo::{NetworkExt, SystemExt};
 
             let this = this.clone();
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
             let interface_name = this.imp().interface_name.take();
-            for (name, net_info) in sys_info.system().networks() {
-                if name == &interface_name {
-                    let sent = net_info.transmitted() as f32 * 8.;
-                    let received = net_info.received() as f32 * 8.;
+            if let Some(net_device) = sys_info.network_device_info(&interface_name) {
+                this.imp().device_name.set_text(
+                    &net_device
+                        .descriptor
+                        .adapter_name
+                        .as_ref()
+                        .map_or("", |name| name.as_str()),
+                );
 
-                    this.imp().usage_graph.add_data_point(0, sent);
-                    this.imp().usage_graph.add_data_point(1, received);
+                let sent = net_device.bytes_sent as f32 * 8.;
+                let received = net_device.bytes_received as f32 * 8.;
 
-                    let max_y =
-                        crate::to_human_readable(this.imp().usage_graph.value_range_max(), 1024.);
-                    this.imp()
-                        .max_y
-                        .set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
+                this.imp().usage_graph.add_data_point(0, sent);
+                this.imp().usage_graph.add_data_point(1, received);
 
-                    break;
-                }
+                let max_y =
+                    crate::to_human_readable(this.imp().usage_graph.value_range_max(), 1024.);
+                this.imp()
+                    .max_y
+                    .set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
+
+                let speed_send_info = crate::to_human_readable(sent, 1024.);
+                this.imp().speed_send.set_text(&gettext!(
+                    "{} {}bps",
+                    speed_send_info.0.round(),
+                    speed_send_info.1
+                ));
+                let speed_recv_info = crate::to_human_readable(received, 1024.);
+                this.imp().speed_recv.set_text(&gettext!(
+                    "{} {}bps",
+                    speed_recv_info.0.round(),
+                    speed_recv_info.1
+                ));
+
+                this.imp()
+                    .ipv4_address
+                    .set_text(
+                        &net_device.address.ip4_address.map_or(gettext("N/A"), |ip| {
+                            let ip_array = unsafe {
+                                std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
+                            };
+                            format!(
+                                "{}.{}.{}.{}",
+                                ip_array[0], ip_array[1], ip_array[2], ip_array[3]
+                            )
+                        }),
+                    );
+                this.imp()
+                    .ipv6_address
+                    .set_text(
+                        &net_device.address.ip6_address.map_or(gettext("N/A"), |ip| {
+                            let ip_array = unsafe {
+                                std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
+                            };
+                            let mut ip_address = format!("{:x}:", u16::from_le(ip_array[7]));
+                            ip_address.reserve(8 * 4);
+
+                            for i in (0..7).rev() {
+                                if ip_array[i] != 0 {
+                                    ip_address.push(':');
+                                    ip_address
+                                        .push_str(&format!("{:x}", u16::from_le(ip_array[i])));
+                                }
+                            }
+                            ip_address
+                        }),
+                    );
             }
             this.imp().interface_name.set(interface_name);
 
