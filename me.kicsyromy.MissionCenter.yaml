@@ -15,9 +15,7 @@ finish-args:
   - --system-talk-name=org.freedesktop.systemd1
   - --system-talk-name=org.freedesktop.NetworkManager
 build-options:
-  append-path:
-    - /usr/lib/sdk/llvm16/bin
-    - /usr/lib/sdk/rust-stable/bin
+  append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin
   build-args:
     - --share=network
   env:
