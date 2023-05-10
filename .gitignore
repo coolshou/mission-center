@@ -68,7 +68,7 @@ target/
 Cargo.lock
 
 # IDF
-build*
+build*/
 sdkconfig.old
 
 # VS Code
