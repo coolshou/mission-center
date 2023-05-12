@@ -41,6 +41,13 @@ mod config {
 }
 
 lazy_static! {
+    pub static ref HW_DB_DIR: String = {
+        if let Ok(path) = std::env::var("HW_DB_DIR") {
+            path
+        } else {
+            PKGDATADIR.to_owned()
+        }
+    };
     pub static ref SYS_INFO: Arc<RwLock<sys_info::SysInfo>> =
         Arc::new(RwLock::new(sys_info::SysInfo::new()));
 }

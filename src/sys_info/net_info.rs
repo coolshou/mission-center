@@ -375,6 +375,141 @@ impl NetInfo {
         result
     }
 
+    fn device_name_from_hw_db(udi: &str) -> Option<String> {
+        use gtk::glib::*;
+        use rusqlite::*;
+        use std::{fs::*, io::*, path::*};
+
+        let conn = Connection::open(Path::new(crate::HW_DB_DIR.as_str()).join("hw.db"));
+        if conn.is_err() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to open HW database from {}/hw.db",
+                crate::HW_DB_DIR.as_str()
+            );
+            return None;
+        }
+        let conn = conn.unwrap();
+
+        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'min'");
+        if stmt.is_err() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to extract min key length from {}/hw.db: Prepare query failed",
+                crate::HW_DB_DIR.as_str()
+            );
+            return None;
+        }
+        let mut stmt = stmt.unwrap();
+        let query_result = stmt.query_map([], |row| row.get::<usize, i32>(0));
+        if query_result.is_err() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to extract min key length from {}/hw.db: Query map failed",
+                crate::HW_DB_DIR.as_str()
+            );
+            return None;
+        }
+        let min_key_len = if let Some(min_len) = query_result.unwrap().next() {
+            min_len.unwrap_or(0)
+        } else {
+            0
+        };
+
+        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'max'");
+        if stmt.is_err() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to extract max key length from {}/hw.db: Prepare query failed",
+                crate::HW_DB_DIR.as_str()
+            );
+            return None;
+        }
+        let mut stmt = stmt.unwrap();
+        let query_result = stmt.query_map([], |row| row.get::<usize, i32>(0));
+        if query_result.is_err() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to extract max key length from {}/hw.db: Query map failed",
+                crate::HW_DB_DIR.as_str()
+            );
+            return None;
+        }
+        let mut max_key_len = if let Some(max_len) = query_result.unwrap().next() {
+            max_len.unwrap_or(i32::MAX)
+        } else {
+            i32::MAX
+        };
+
+        let udi = format!("{}/device", udi);
+        let mut sys_device_path = Path::new(&udi);
+        let mut modalias = String::new();
+        for _ in 0..4 {
+            if let Some(p) = sys_device_path.parent() {
+                sys_device_path = p;
+            } else {
+                break;
+            }
+
+            let modalias_path = sys_device_path.join("modalias");
+            if modalias_path.exists() {
+                if let Ok(mut modalias_file) = File::options()
+                    .create(false)
+                    .read(true)
+                    .write(false)
+                    .open(modalias_path)
+                {
+                    modalias.clear();
+
+                    if let Ok(_) = modalias_file.read_to_string(&mut modalias) {
+                        modalias = modalias.trim().to_owned();
+                        if max_key_len == i32::MAX {
+                            max_key_len = modalias.len() as i32;
+                        }
+
+                        for i in (min_key_len..max_key_len).rev() {
+                            modalias.truncate(i as usize);
+                            let stmt = conn.prepare(
+                                "SELECT value FROM models WHERE key LIKE ?1 || '%' LIMIT 1",
+                            );
+                            if stmt.is_err() {
+                                g_warning!(
+                                    "MissionCenter::NetInfo",
+                                    "Failed to find model in {}/hw.db: Prepare query failed",
+                                    crate::HW_DB_DIR.as_str()
+                                );
+                                continue;
+                            }
+                            let mut stmt = stmt.unwrap();
+                            let query_result = stmt
+                                .query_map([modalias.trim()], |row| row.get::<usize, String>(0));
+                            if query_result.is_err() {
+                                g_warning!(
+                                    "MissionCenter::NetInfo",
+                                    "Failed to find model in {}/hw.db: Query map failed",
+                                    crate::HW_DB_DIR.as_str()
+                                );
+                                continue;
+                            }
+
+                            let model_name = if let Some(model) = query_result.unwrap().next() {
+                                model.ok()
+                            } else {
+                                None
+                            };
+
+                            if let Some(model_name) = model_name {
+                                return Some(model_name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        None
+    }
+
     unsafe fn adapter_name(&self, dbus_proxy: *mut gtk::gio::ffi::GDBusProxy) -> Option<String> {
         extern "C" {
             fn strerror(error: i32) -> *const i8;
@@ -388,6 +523,7 @@ impl NetInfo {
 
         if let Some(udi_variant) = Self::nm_device_property(dbus_proxy, b"Udi\0") {
             if let Some(udi) = udi_variant.str() {
+                // Self::device_name_from_hw_db(udi);
                 let udev_device = udev_device_new_from_syspath(self.udev, udi.as_ptr() as _);
                 if udev_device.is_null() {
                     let err = *errno_location();
