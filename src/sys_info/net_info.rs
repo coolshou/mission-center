@@ -43,6 +43,9 @@ pub struct NetworkDevice {
 pub struct NetInfo {
     udev: *mut libudev_sys::udev,
     nm_proxy: *mut gtk::gio::ffi::GDBusProxy,
+
+    hwdb_conn: rusqlite::Connection,
+    device_name_cache: std::cell::Cell<std::collections::HashMap<String, String>>,
 }
 
 unsafe impl Send for NetInfo {}
@@ -54,6 +57,7 @@ unsafe impl Sync for NetInfo {}
 enum NetInfoError {
     NetworkManagerInitializationError,
     UdevInitializationError,
+    HWDBInitializationError,
 }
 
 impl Drop for NetInfo {
@@ -78,6 +82,7 @@ impl NetInfo {
         use gtk::gio::ffi::*;
         use gtk::glib::{ffi::*, translate::from_glib_full, Error};
         use libudev_sys::*;
+        use std::{cell::*, collections::*, path::*};
 
         let mut error: *mut GError = std::ptr::null_mut();
 
@@ -113,7 +118,21 @@ impl NetInfo {
             return Err(error);
         }
 
-        Ok(Self { udev, nm_proxy })
+        let conn = rusqlite::Connection::open(Path::new(crate::HW_DB_DIR.as_str()).join("hw.db"));
+        if conn.is_err() {
+            let error = Error::new::<NetInfoError>(
+                NetInfoError::HWDBInitializationError,
+                "Failed to connect to HW database",
+            );
+            return Err(error);
+        }
+
+        Ok(Self {
+            udev,
+            nm_proxy,
+            hwdb_conn: conn.unwrap(),
+            device_name_cache: Cell::new(HashMap::new()),
+        })
     }
 
     pub fn load_device<'a, DeviceIfName: Into<&'a str>>(
@@ -375,23 +394,22 @@ impl NetInfo {
         result
     }
 
-    fn device_name_from_hw_db(udi: &str) -> Option<String> {
+    fn device_name_from_hw_db(&self, udi: &str) -> Option<String> {
         use gtk::glib::*;
-        use rusqlite::*;
         use std::{fs::*, io::*, path::*};
 
-        let conn = Connection::open(Path::new(crate::HW_DB_DIR.as_str()).join("hw.db"));
-        if conn.is_err() {
-            g_critical!(
-                "MissionCenter::NetInfo",
-                "Failed to open HW database from {}/hw.db",
-                crate::HW_DB_DIR.as_str()
-            );
-            return None;
-        }
-        let conn = conn.unwrap();
+        let device_name_cache = self.device_name_cache.take();
+        if let Some(device_name) = device_name_cache.get(udi) {
+            let device_name = device_name.clone();
+            self.device_name_cache.set(device_name_cache);
 
-        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'min'");
+            return Some(device_name.clone());
+        }
+        self.device_name_cache.set(device_name_cache);
+
+        let stmt = self
+            .hwdb_conn
+            .prepare("SELECT value FROM key_len WHERE key = 'min'");
         if stmt.is_err() {
             g_critical!(
                 "MissionCenter::NetInfo",
@@ -416,7 +434,9 @@ impl NetInfo {
             0
         };
 
-        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'max'");
+        let stmt = self
+            .hwdb_conn
+            .prepare("SELECT value FROM key_len WHERE key = 'max'");
         if stmt.is_err() {
             g_critical!(
                 "MissionCenter::NetInfo",
@@ -441,8 +461,8 @@ impl NetInfo {
             i32::MAX
         };
 
-        let udi = format!("{}/device", udi);
-        let mut sys_device_path = Path::new(&udi);
+        let device_id = format!("{}/device", udi);
+        let mut sys_device_path = Path::new(&device_id);
         let mut modalias = String::new();
         for _ in 0..4 {
             if let Some(p) = sys_device_path.parent() {
@@ -469,7 +489,7 @@ impl NetInfo {
 
                         for i in (min_key_len..max_key_len).rev() {
                             modalias.truncate(i as usize);
-                            let stmt = conn.prepare(
+                            let stmt = self.hwdb_conn.prepare(
                                 "SELECT value FROM models WHERE key LIKE ?1 || '%' LIMIT 1",
                             );
                             if stmt.is_err() {
@@ -499,6 +519,10 @@ impl NetInfo {
                             };
 
                             if let Some(model_name) = model_name {
+                                let mut device_name_cache = self.device_name_cache.take();
+                                device_name_cache.insert(udi.to_owned(), model_name.clone());
+                                self.device_name_cache.set(device_name_cache);
+
                                 return Some(model_name);
                             }
                         }
@@ -523,7 +547,10 @@ impl NetInfo {
 
         if let Some(udi_variant) = Self::nm_device_property(dbus_proxy, b"Udi\0") {
             if let Some(udi) = udi_variant.str() {
-                // Self::device_name_from_hw_db(udi);
+                if let Some(device_name) = self.device_name_from_hw_db(udi) {
+                    return Some(device_name);
+                }
+
                 let udev_device = udev_device_new_from_syspath(self.udev, udi.as_ptr() as _);
                 if udev_device.is_null() {
                     let err = *errno_location();
@@ -541,18 +568,8 @@ impl NetInfo {
                     return None;
                 }
 
-                let mut dev_name = Self::get_udev_property(
-                    udev_device,
-                    b"ID_MODEL_ENC\0".as_ptr() as _,
-                    b"ID_MODEL_FROM_DATABASE\0".as_ptr() as _,
-                );
-                if dev_name.is_none() {
-                    dev_name = Self::get_udev_property(
-                        udev_device,
-                        b"ID_MODEL_ENC\0".as_ptr() as _,
-                        b"ID_PRODUCT_FROM_DATABASE\0".as_ptr() as _,
-                    );
-                }
+                let dev_name =
+                    Self::get_udev_property(udev_device, b"ID_MODEL_ENC\0".as_ptr() as _);
 
                 udev_device_unref(udev_device);
 
@@ -741,37 +758,27 @@ impl NetInfo {
     // Yanked from NetworkManager: src/libnm-client-impl/nm-device.c: _get_udev_property()
     unsafe fn get_udev_property(
         device: *mut libudev_sys::udev_device,
-        enc_prop: *const i8,
-        db_prop: *const i8,
+        property: *const i8,
     ) -> Option<String> {
         use libudev_sys::*;
         use std::ffi::CStr;
 
-        let mut enc_value: *const i8 = std::ptr::null_mut();
-        let mut db_value: *const i8 = std::ptr::null_mut();
+        let mut value: *const i8 = std::ptr::null_mut();
         let mut tmpdev: *mut udev_device = device;
 
         let mut count = 0;
-        while (count < 3) && !tmpdev.is_null() && enc_value.is_null() {
+        while (count < 3) && !tmpdev.is_null() && value.is_null() {
             count += 1;
 
-            if enc_value.is_null() {
-                enc_value = udev_device_get_property_value(tmpdev, enc_prop);
-            }
-
-            if db_value.is_null() {
-                db_value = udev_device_get_property_value(tmpdev, db_prop);
+            if value.is_null() {
+                value = udev_device_get_property_value(tmpdev, property);
             }
 
             tmpdev = udev_device_get_parent(tmpdev);
         }
 
-        if !db_value.is_null() {
-            CStr::from_ptr(db_value)
-                .to_str()
-                .map_or(None, |s| Some(s.to_owned()))
-        } else if !enc_value.is_null() {
-            CStr::from_ptr(enc_value)
+        if !value.is_null() {
+            CStr::from_ptr(value)
                 .to_str()
                 .map_or(None, |s| Some(s.to_owned()))
         } else {
