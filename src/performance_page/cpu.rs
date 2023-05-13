@@ -63,6 +63,8 @@ mod imp {
         #[template_child]
         pub virt_proc: TemplateChild<gtk::Label>,
         #[template_child]
+        pub virtualization: TemplateChild<gtk::Label>,
+        #[template_child]
         pub virt_machine: TemplateChild<gtk::Label>,
         #[template_child]
         pub l1_cache: TemplateChild<gtk::Label>,
@@ -98,6 +100,7 @@ mod imp {
                 base_speed: Default::default(),
                 sockets: Default::default(),
                 virt_proc: Default::default(),
+                virtualization: Default::default(),
                 virt_machine: Default::default(),
                 l1_cache: Default::default(),
                 l2_cache: Default::default(),
@@ -323,6 +326,18 @@ mod imp {
             self.virt_proc
                 .set_text(&format!("{}", sys_info.system().cpus().len()));
 
+            if let Some(virtualization) = sys_info.virtualization() {
+                if virtualization {
+                    self.virtualization
+                        .set_text(&gettextrs::gettext("Supported"));
+                } else {
+                    self.virtualization
+                        .set_text(&gettextrs::gettext("Unsupported"));
+                }
+            } else {
+                self.virtualization.set_text(&gettextrs::gettext("Unknown"));
+            }
+
             if let Some(is_vm) = sys_info.is_vm() {
                 if is_vm {
                     self.virt_machine.set_text(&gettextrs::gettext("Yes"));
@@ -385,7 +400,7 @@ mod imp {
             }
             let mut valid_factors = vec![];
             for (i, j) in factors {
-                if (i - j).abs() <= 1 {
+                if (i - j).abs() <= 2 {
                     valid_factors.push((i, j));
                 }
             }

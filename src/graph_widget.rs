@@ -503,6 +503,9 @@ impl GraphWidget {
                 while value_max < max_y {
                     max_y /= 2.;
                 }
+                if value_max > max_y {
+                    max_y *= 2.;
+                }
 
                 if self.auto_scale_pow2() {
                     max_y = max_y.round();

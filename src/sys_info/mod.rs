@@ -1,3 +1,4 @@
+use raw_cpuid::cpuid;
 use sysinfo::{NetworkExt, System, SystemExt};
 
 pub use net_info::*;
@@ -71,6 +72,35 @@ impl SysInfo {
 
     pub fn cpu_socket_count(&self) -> Option<u8> {
         self.cpu_socket_count
+    }
+
+    pub fn virtualization(&self) -> Option<bool> {
+        let mut signature_reg = [0u32; 3];
+        let res = Self::cpuid_ex::<1, 4>(0, &mut signature_reg);
+        if res.is_none() {
+            return None;
+        }
+
+        let mut features = [0_u32];
+        Self::cpuid_ex::<2, 3>(1, &mut features);
+
+        //Is intel? Check bit5
+        if signature_reg[0] == 0x756e6547
+            && signature_reg[1] == 0x6c65746e
+            && signature_reg[2] == 0x49656e69
+        {
+            return Some((features[0] & 0x20) > 0);
+        }
+
+        //Is AMD? check bit2
+        if signature_reg[0] == 0x68747541
+            && signature_reg[1] == 0x69746e65
+            && signature_reg[2] == 0x444d4163
+        {
+            return Some((features[0] & 0x04) > 0);
+        }
+
+        None
     }
 
     pub fn is_vm(&self) -> Option<bool> {
@@ -275,5 +305,37 @@ impl SysInfo {
         }
 
         result
+    }
+
+    fn cpuid_ex<const START: u8, const END: u8>(leaf: u32, result: &mut [u32]) -> Option<()> {
+        use raw_cpuid::*;
+
+        #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+        {
+            return None;
+        }
+
+        let x = cpuid!(leaf);
+        for (result_i, i) in (START..END).enumerate() {
+            match i {
+                0 => {
+                    result[result_i] = x.eax;
+                }
+                1 => {
+                    result[result_i] = x.ebx;
+                }
+                2 => {
+                    result[result_i] = x.ecx;
+                }
+                3 => {
+                    result[result_i] = x.edx;
+                }
+                _ => {
+                    return None;
+                }
+            }
+        }
+
+        Some(())
     }
 }
