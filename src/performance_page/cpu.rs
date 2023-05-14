@@ -32,7 +32,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageCpu)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/cpu.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/cpu.ui")]
     pub struct PerformancePageCpu {
         #[template_child]
         pub utilization_label_all: TemplateChild<gtk::Label>,

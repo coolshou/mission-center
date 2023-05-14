@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=missioncenter
 Exec=missioncenter
-Icon=me.kicsyromy.MissionCenter
+Icon=io.missioncenter.MissionCenter
 Terminal=false
 Type=Application
 Categories=GTK;

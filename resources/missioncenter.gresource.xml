@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-    <gresource prefix="/me/kicsyromy/MissionCenter">
+    <gresource prefix="/io/missioncenter/MissionCenter">
         <file>line-dashed.svg</file>
         <file>line-solid.svg</file>
 

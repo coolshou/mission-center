@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="missioncenter">
+    <schema id="io.missioncenter.MissionCenter" path="/io/missioncenter/MissionCenter/">
+    </schema>
+</schemalist>

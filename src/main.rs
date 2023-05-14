@@ -126,7 +126,7 @@ fn main() {
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
     let app = MissionCenterApplication::new(
-        "me.kicsyromy.MissionCenter",
+        "io.missioncenter.MissionCenter",
         &gio::ApplicationFlags::empty(),
     );
 

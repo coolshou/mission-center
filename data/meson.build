@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-        input: 'me.kicsyromy.MissionCenter.desktop.in',
-       output: 'me.kicsyromy.MissionCenter.desktop',
+        input: 'io.missioncenter.MissionCenter.desktop.in',
+       output: 'io.missioncenter.MissionCenter.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -13,8 +13,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-        input: 'me.kicsyromy.MissionCenter.appdata.xml.in',
-       output: 'me.kicsyromy.MissionCenter.appdata.xml',
+        input: 'io.missioncenter.MissionCenter.appdata.xml.in',
+       output: 'io.missioncenter.MissionCenter.appdata.xml',
        po_dir: '../po',
       install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
@@ -25,7 +25,7 @@ if appstream_util.found()
   test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
 endif
 
-install_data('me.kicsyromy.MissionCenter.gschema.xml',
+install_data('io.missioncenter.MissionCenter.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 

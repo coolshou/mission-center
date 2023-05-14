@@ -1,4 +1,4 @@
-application_id = 'me.kicsyromy.MissionCenter'
+application_id = 'io.missioncenter.MissionCenter'
 
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 install_data(

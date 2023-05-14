@@ -25,7 +25,7 @@ mod imp {
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/window.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,

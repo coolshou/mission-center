@@ -108,7 +108,7 @@ impl MissionCenterApplication {
         let about = adw::AboutWindow::builder()
             .transient_for(&window)
             .application_name("missioncenter")
-            .application_icon("me.kicsyromy.MissionCenter")
+            .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Romeo Calota")
             .version(VERSION)
             .developers(vec!["Romeo Calota"])

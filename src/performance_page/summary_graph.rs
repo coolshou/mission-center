@@ -30,7 +30,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::SummaryGraph)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/summary_graph.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/summary_graph.ui")]
     #[allow(dead_code)]
     pub struct SummaryGraph {
         #[template_child]

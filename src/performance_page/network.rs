@@ -33,7 +33,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageNetwork)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/network.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/network.ui")]
     pub struct PerformancePageNetwork {
         #[template_child]
         pub title_connection_type: TemplateChild<gtk::Label>,
@@ -361,9 +361,9 @@ mod imp {
             self.title_connection_type.set_text(&conn_type);
 
             self.legend_send
-                .set_resource(Some("/me/kicsyromy/MissionCenter/line-dashed.svg"));
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed.svg"));
             self.legend_recv
-                .set_resource(Some("/me/kicsyromy/MissionCenter/line-solid.svg"));
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid.svg"));
 
             self.interface_name.set(interface_name);
 

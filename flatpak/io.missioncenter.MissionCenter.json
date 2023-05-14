@@ -1,5 +1,5 @@
 {
-  "app-id": "me.kicsyromy.MissionCenter",
+  "app-id": "io.missioncenter.MissionCenter",
   "runtime": "org.gnome.Platform",
   "runtime-version": "44",
   "sdk": "org.gnome.Sdk",
@@ -24,8 +24,7 @@
       "--share=network"
     ],
     "env": {
-      "RUST_BACKTRACE": "1",
-      "RUST_LOG": "missioncenter=debug"
+      "RUST_BACKTRACE": "1"
     }
   },
   "cleanup": [

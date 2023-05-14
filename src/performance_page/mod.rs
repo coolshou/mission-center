@@ -48,7 +48,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePage)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/me/kicsyromy/MissionCenter/ui/performance_page/page.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/page.ui")]
     pub struct PerformancePage {
         #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
