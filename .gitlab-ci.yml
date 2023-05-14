@@ -8,10 +8,19 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - apt install build-essential git python3-pip libadwaita-dev python3-gi libudev-dev clang-16 desktop-file-utils
+    - echo 'deb http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse' >> /etc/apt/sources.list
+    
+    - apt-get update
+    - apt-get install build-essential git python3-pip libadwaita-dev python3-gi libudev-dev clang-16 desktop-file-utils
+    
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH=$HOME/.cargo/bin
+    
     - pip install meson ninja
+    
     - meson setup _build -Dbuildtype=debug
     - ninja -C _build
 
