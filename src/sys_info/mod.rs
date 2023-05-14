@@ -1,9 +1,15 @@
-use raw_cpuid::cpuid;
+use lazy_static::lazy_static;
 use sysinfo::{NetworkExt, System, SystemExt};
 
 pub use net_info::*;
 
 mod net_info;
+
+const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+
+lazy_static! {
+    static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
+}
 
 pub struct SysInfo {
     system: System,
@@ -17,6 +23,7 @@ pub struct SysInfo {
     is_vm: Option<bool>,
 
     file_nr: Option<std::fs::File>,
+    proc_count: usize,
     thread_count: usize,
     handle_count: usize,
 }
@@ -25,10 +32,15 @@ impl SysInfo {
     pub fn new() -> Self {
         use std::collections::HashMap;
 
-        let file_nr = std::fs::OpenOptions::new()
-            .read(true)
-            .open("/proc/sys/fs/file-nr")
-            .ok();
+        let is_flatpak = *IS_FLATPAK;
+        let file_nr = if is_flatpak {
+            None
+        } else {
+            std::fs::OpenOptions::new()
+                .read(true)
+                .open("/proc/sys/fs/file-nr")
+                .ok()
+        };
 
         let cpu_base_frequency = if let Ok(content) =
             std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency")
@@ -57,6 +69,7 @@ impl SysInfo {
             cpu_caches: Self::load_cpu_cache_info(),
 
             file_nr,
+            proc_count: 0,
             thread_count: 0,
             handle_count: 0,
         }
@@ -111,6 +124,10 @@ impl SysInfo {
         self.cpu_caches.get(&level).copied()
     }
 
+    pub fn process_count(&self) -> usize {
+        self.proc_count
+    }
+
     pub fn thread_count(&self) -> usize {
         self.thread_count
     }
@@ -125,6 +142,7 @@ impl SysInfo {
 
     pub fn refresh_all(&mut self) {
         self.system.refresh_all();
+        self.refresh_process_count();
         self.refresh_thread_count();
         self.refresh_handle_count();
     }
@@ -143,32 +161,108 @@ impl SysInfo {
         }
     }
 
-    fn refresh_thread_count(&mut self) {
-        self.thread_count = 0;
-        for (pid, _) in self.system.processes() {
-            if let Ok(entries) = std::fs::read_dir(format!("/proc/{}/task", pid)) {
-                self.thread_count += entries.count();
+    fn refresh_process_count(&mut self) {
+        let is_flatpak = *IS_FLATPAK;
+        if !is_flatpak {
+            self.proc_count = self.system.processes().len();
+            return;
+        }
+
+        let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("--host")
+            .arg("sh")
+            .arg("-c")
+            .arg("'ls -d /proc/[1-9]* | wc -l'");
+
+        if let Ok(output) = cmd.output() {
+            if output.stderr.len() > 0 {
+                return;
             }
+
+            self.proc_count = std::str::from_utf8(output.stdout.as_slice()).map_or(
+                self.system.processes().len(),
+                |s| {
+                    s.trim()
+                        .parse()
+                        .unwrap_or_else(|_| self.system.processes().len())
+                },
+            );
+        }
+    }
+
+    fn refresh_thread_count(&mut self) {
+        let is_flatpak = *IS_FLATPAK;
+        if !is_flatpak {
+            self.thread_count = 0;
+            for (pid, _) in self.system.processes() {
+                if let Ok(entries) = std::fs::read_dir(format!("/proc/{}/task", pid)) {
+                    self.thread_count += entries.count();
+                }
+            }
+
+            return;
+        }
+
+        // https://askubuntu.com/questions/88972/how-to-get-from-terminal-total-number-of-threads-per-process-and-total-for-al
+        let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("--host")
+            .arg("sh")
+            .arg("-c")
+            .arg("'count() { printf %s\\\\n \"$#\" ; } ; count /proc/[0-9]*/task/[0-9]*'");
+
+        if let Ok(output) = cmd.output() {
+            if output.stderr.len() > 0 {
+                return;
+            }
+
+            self.thread_count = std::str::from_utf8(output.stdout.as_slice())
+                .map_or(0, |s| s.trim().parse().unwrap_or_else(|_| 0));
         }
     }
 
     fn refresh_handle_count(&mut self) {
-        if let Some(file_nr) = &mut self.file_nr {
-            use std::io::*;
+        use gtk::glib::*;
 
-            let mut buf = String::new();
-            file_nr.read_to_string(&mut buf).unwrap();
+        let is_flatpak = *IS_FLATPAK;
+        if !is_flatpak {
+            if let Some(file_nr) = &mut self.file_nr {
+                use std::io::*;
 
-            let mut split = buf.split_whitespace();
-            if let Some(handle_count) = split.next() {
-                self.handle_count = if let Ok(handle_count) = handle_count.parse() {
-                    handle_count
-                } else {
-                    0
+                let mut buf = String::new();
+                if let Ok(_) = file_nr.read_to_string(&mut buf) {
+                    let mut split = buf.split_whitespace();
+                    if let Some(handle_count) = split.next() {
+                        self.handle_count = if let Ok(handle_count) = handle_count.parse() {
+                            handle_count
+                        } else {
+                            0
+                        }
+                    }
+
+                    if let Err(_) = file_nr.seek(SeekFrom::Start(0)) {
+                        g_warning!(
+                            "MissionCenter::SysInfo",
+                            "Failed to rewind 'file-nr' handle"
+                        );
+                    }
                 }
             }
+            return;
+        }
 
-            file_nr.seek(SeekFrom::Start(0)).unwrap();
+        let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("--host")
+            .arg("sh")
+            .arg("-c")
+            .arg("'cat /proc/sys/fs/file-nr'");
+
+        if let Ok(output) = cmd.output() {
+            if output.stderr.len() > 0 {
+                return;
+            }
+
+            self.handle_count = std::str::from_utf8(output.stdout.as_slice())
+                .map_or(0, |s| s.trim().parse().unwrap_or_else(|_| 0));
         }
     }
 

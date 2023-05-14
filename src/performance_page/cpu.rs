@@ -276,7 +276,7 @@ mod imp {
                 ));
                 this.imp()
                     .processes
-                    .set_text(&format!("{}", sys_info.system().processes().len()));
+                    .set_text(&format!("{}", sys_info.process_count()));
                 this.imp()
                     .threads
                     .set_text(&format!("{}", sys_info.thread_count()));

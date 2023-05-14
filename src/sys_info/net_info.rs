@@ -44,7 +44,7 @@ pub struct NetInfo {
     udev: *mut libudev_sys::udev,
     nm_proxy: *mut gtk::gio::ffi::GDBusProxy,
 
-    hwdb_conn: rusqlite::Connection,
+    hwdb_conn: Option<rusqlite::Connection>,
     device_name_cache: std::cell::Cell<std::collections::HashMap<String, String>>,
 }
 
@@ -57,7 +57,6 @@ unsafe impl Sync for NetInfo {}
 enum NetInfoError {
     NetworkManagerInitializationError,
     UdevInitializationError,
-    HWDBInitializationError,
 }
 
 impl Drop for NetInfo {
@@ -80,7 +79,7 @@ impl Drop for NetInfo {
 impl NetInfo {
     pub fn new() -> Result<Self, glib::Error> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{ffi::*, translate::from_glib_full, Error};
+        use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
         use libudev_sys::*;
         use std::{cell::*, collections::*, path::*};
 
@@ -118,19 +117,23 @@ impl NetInfo {
             return Err(error);
         }
 
-        let conn = rusqlite::Connection::open(Path::new(crate::HW_DB_DIR.as_str()).join("hw.db"));
-        if conn.is_err() {
-            let error = Error::new::<NetInfoError>(
-                NetInfoError::HWDBInitializationError,
-                "Failed to connect to HW database",
+        let conn = if let Ok(conn) =
+            rusqlite::Connection::open(Path::new(crate::HW_DB_DIR.as_str()).join("hw.db"))
+        {
+            Some(conn)
+        } else {
+            g_warning!(
+                "MissionCenter::NetInfo",
+                "Failed to load hadrware database, network devices will (probably) have missing names",
             );
-            return Err(error);
-        }
+
+            None
+        };
 
         Ok(Self {
             udev,
             nm_proxy,
-            hwdb_conn: conn.unwrap(),
+            hwdb_conn: conn,
             device_name_cache: Cell::new(HashMap::new()),
         })
     }
@@ -398,6 +401,10 @@ impl NetInfo {
         use gtk::glib::*;
         use std::{fs::*, io::*, path::*};
 
+        if self.hwdb_conn.is_none() {
+            return None;
+        }
+
         let device_name_cache = self.device_name_cache.take();
         if let Some(device_name) = device_name_cache.get(udi) {
             let device_name = device_name.clone();
@@ -407,9 +414,9 @@ impl NetInfo {
         }
         self.device_name_cache.set(device_name_cache);
 
-        let stmt = self
-            .hwdb_conn
-            .prepare("SELECT value FROM key_len WHERE key = 'min'");
+        let conn = self.hwdb_conn.as_ref().unwrap();
+
+        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'min'");
         if stmt.is_err() {
             g_critical!(
                 "MissionCenter::NetInfo",
@@ -434,9 +441,7 @@ impl NetInfo {
             0
         };
 
-        let stmt = self
-            .hwdb_conn
-            .prepare("SELECT value FROM key_len WHERE key = 'max'");
+        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'max'");
         if stmt.is_err() {
             g_critical!(
                 "MissionCenter::NetInfo",
@@ -489,7 +494,7 @@ impl NetInfo {
 
                         for i in (min_key_len..max_key_len).rev() {
                             modalias.truncate(i as usize);
-                            let stmt = self.hwdb_conn.prepare(
+                            let stmt = conn.prepare(
                                 "SELECT value FROM models WHERE key LIKE ?1 || '%' LIMIT 1",
                             );
                             if stmt.is_err() {
