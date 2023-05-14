@@ -26,7 +26,7 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - apk add git py3-pip pkgconf libadwaita-dev py3-gobject3-dev eudev-dev clang15 clang15-libclang desktop-file-utils #clang15-extra-tools
+    - apk add git py3-pip python3-dev pkgconf libadwaita-dev py3-gobject3-dev eudev-dev clang15 clang15-libclang desktop-file-utils #clang15-extra-tools
     - pip install PyGObject meson ninja
     - meson setup _build -Dbuildtype=debug
     - ninja -C _build
