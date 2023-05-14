@@ -33,6 +33,7 @@ impl SysInfo {
         use std::collections::HashMap;
 
         let is_flatpak = *IS_FLATPAK;
+
         let file_nr = if is_flatpak {
             None
         } else {
@@ -162,6 +163,8 @@ impl SysInfo {
     }
 
     fn refresh_process_count(&mut self) {
+        use gtk::glib::*;
+
         let is_flatpak = *IS_FLATPAK;
         if !is_flatpak {
             self.proc_count = self.system.processes().len();
@@ -172,10 +175,15 @@ impl SysInfo {
         cmd.arg("--host")
             .arg("sh")
             .arg("-c")
-            .arg("'ls -d /proc/[1-9]* | wc -l'");
+            .arg("ls -d /proc/[1-9]* | wc -l");
 
         if let Ok(output) = cmd.output() {
             if output.stderr.len() > 0 {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to get process count, host command execution failed: {}",
+                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
+                );
                 return;
             }
 
@@ -187,10 +195,17 @@ impl SysInfo {
                         .unwrap_or_else(|_| self.system.processes().len())
                 },
             );
+        } else {
+            g_critical!(
+                "MissionCenter::SysInfo",
+                "Failed to get process count, host command execution failed"
+            );
         }
     }
 
     fn refresh_thread_count(&mut self) {
+        use gtk::glib::*;
+
         let is_flatpak = *IS_FLATPAK;
         if !is_flatpak {
             self.thread_count = 0;
@@ -208,15 +223,25 @@ impl SysInfo {
         cmd.arg("--host")
             .arg("sh")
             .arg("-c")
-            .arg("'count() { printf %s\\\\n \"$#\" ; } ; count /proc/[0-9]*/task/[0-9]*'");
+            .arg("count() { printf %s\\\\n \"$#\" ; } ; count /proc/[0-9]*/task/[0-9]*");
 
         if let Ok(output) = cmd.output() {
             if output.stderr.len() > 0 {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to get thread count, host command execution failed: {}",
+                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
+                );
                 return;
             }
 
             self.thread_count = std::str::from_utf8(output.stdout.as_slice())
                 .map_or(0, |s| s.trim().parse().unwrap_or_else(|_| 0));
+        } else {
+            g_critical!(
+                "MissionCenter::SysInfo",
+                "Failed to get thread count, host command execution failed"
+            );
         }
     }
 
@@ -254,15 +279,28 @@ impl SysInfo {
         cmd.arg("--host")
             .arg("sh")
             .arg("-c")
-            .arg("'cat /proc/sys/fs/file-nr'");
+            .arg("cat /proc/sys/fs/file-nr");
 
         if let Ok(output) = cmd.output() {
             if output.stderr.len() > 0 {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to get thread count, host command execution failed: {}",
+                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
+                );
                 return;
             }
 
-            self.handle_count = std::str::from_utf8(output.stdout.as_slice())
-                .map_or(0, |s| s.trim().parse().unwrap_or_else(|_| 0));
+            self.handle_count = std::str::from_utf8(output.stdout.as_slice()).map_or(0, |s| {
+                s.split_whitespace()
+                    .next()
+                    .map_or(0, |s| s.trim().parse().unwrap_or_else(|_| 0))
+            });
+        } else {
+            g_critical!(
+                "MissionCenter::SysInfo",
+                "Failed to get thread count, host command execution failed"
+            );
         }
     }
 
@@ -282,9 +320,10 @@ impl SysInfo {
                                 File::open(entry.path().join("topology/physical_package_id"))
                             {
                                 buf.clear();
-                                file.read_to_string(&mut buf).unwrap();
-                                if let Ok(socket_id) = buf.trim().parse::<u8>() {
-                                    sockets.insert(socket_id);
+                                if let Ok(_) = file.read_to_string(&mut buf) {
+                                    if let Ok(socket_id) = buf.trim().parse::<u8>() {
+                                        sockets.insert(socket_id);
+                                    }
                                 }
                             }
                         }
@@ -364,9 +403,12 @@ impl SysInfo {
                     if file_type.is_dir() {
                         let level = if let Ok(mut file) = File::open(entry.path().join("level")) {
                             buf.clear();
-                            file.read_to_string(&mut buf).unwrap();
-                            if let Ok(level) = buf.trim().parse::<u8>() {
-                                Some(level)
+                            if let Ok(_) = file.read_to_string(&mut buf) {
+                                if let Ok(level) = buf.trim().parse::<u8>() {
+                                    Some(level)
+                                } else {
+                                    None
+                                }
                             } else {
                                 None
                             }
@@ -376,9 +418,12 @@ impl SysInfo {
 
                         let size = if let Ok(mut file) = File::open(entry.path().join("size")) {
                             buf.clear();
-                            file.read_to_string(&mut buf).unwrap();
-                            if let Ok(size) = buf.trim().trim_matches('K').parse::<usize>() {
-                                Some(size)
+                            if let Ok(_) = file.read_to_string(&mut buf) {
+                                if let Ok(size) = buf.trim().trim_matches('K').parse::<usize>() {
+                                    Some(size)
+                                } else {
+                                    None
+                                }
                             } else {
                                 None
                             }
