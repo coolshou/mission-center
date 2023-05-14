@@ -14,7 +14,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
     
     - apt-get update
-    - apt-get install -y build-essential curl git python3-pip libadwaita-1-dev python3-gi libudev-dev clang-16 desktop-file-utils
+    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev clang-16 desktop-file-utils
     
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
