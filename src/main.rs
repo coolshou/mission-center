@@ -32,6 +32,7 @@ use self::window::MissionCenterWindow;
 
 mod application;
 mod graph_widget;
+mod mem_composition_widget;
 mod performance_page;
 mod sys_info;
 mod window;

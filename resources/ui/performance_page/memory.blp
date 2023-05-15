@@ -61,10 +61,6 @@ template PerformancePageMemory: Box {
     base-color: bind PerformancePageMemory.base-color;
     data-set-count: 1;
     scroll: true;
-
-    PopoverMenu context_menu {
-      menu-model: context_menu_model;
-    }
   }
 
   Box {
@@ -92,6 +88,26 @@ template PerformancePageMemory: Box {
         label: "0";
       }
     }
+  }
+
+  Label {
+    styles [
+      "caption",
+    ]
+
+    hexpand: true;
+    halign: start;
+    valign: start;
+    label: _("Memory composition");
+  }
+
+  .MemoryCompositionWidget mem_consumption {
+    hexpand: true;
+    margin-bottom: 20;
+
+    height-request: 50;
+
+    base-color: bind PerformancePageMemory.base-color;
   }
 
   Box details {
@@ -329,6 +345,10 @@ template PerformancePageMemory: Box {
         }
       }
     }
+  }
+
+  PopoverMenu context_menu {
+    menu-model: context_menu_model;
   }
 }
 

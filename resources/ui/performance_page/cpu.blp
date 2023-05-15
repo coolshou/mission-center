@@ -71,10 +71,6 @@ template PerformancePageCpu : Box {
 
     row-homogeneous: true;
     column-homogeneous: true;
-
-    PopoverMenu context_menu {
-      menu-model: context_menu_model;
-    }
   }
 
   Box {
@@ -403,6 +399,10 @@ template PerformancePageCpu : Box {
         }
       }
     }
+  }
+
+  PopoverMenu context_menu {
+    menu-model: context_menu_model;
   }
 }
 

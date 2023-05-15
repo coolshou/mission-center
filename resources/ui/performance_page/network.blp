@@ -59,11 +59,6 @@ template PerformancePageNetwork: Box {
     scroll: true;
     auto-scale: true;
     auto-scale-pow2: true;
-
-
-    PopoverMenu context_menu {
-      menu-model: context_menu_model;
-    }
   }
 
   Box {
@@ -334,6 +329,10 @@ template PerformancePageNetwork: Box {
         }
       }
     }
+  }
+
+  PopoverMenu context_menu {
+    menu-model: context_menu_model;
   }
 }
 

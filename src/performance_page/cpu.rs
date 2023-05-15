@@ -190,9 +190,7 @@ mod imp {
                     this.imp().context_menu.popup();
                 }),
             );
-            this.imp()
-                .usage_graphs
-                .add_controller(right_click_controller);
+            this.add_controller(right_click_controller);
         }
 
         fn populate_usage_graphs(&self) {

@@ -187,9 +187,7 @@ mod imp {
                     this.imp().context_menu.popup();
                 }),
             );
-            this.imp()
-                .usage_graph
-                .add_controller(right_click_controller);
+            this.add_controller(right_click_controller);
         }
 
         fn update_view(this: &super::PerformancePageNetwork) {

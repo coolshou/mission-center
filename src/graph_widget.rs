@@ -143,7 +143,7 @@ mod imp {
             Ok(())
         }
 
-        pub fn render_graph(
+        fn render_graph(
             &self,
             canvas: &mut skia::Canvas,
             width: i32,

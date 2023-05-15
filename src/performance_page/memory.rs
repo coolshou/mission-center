@@ -24,7 +24,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*, Snapshot};
 
-use crate::graph_widget::GraphWidget;
+use crate::{graph_widget::GraphWidget, mem_composition_widget::MemoryCompositionWidget};
 
 mod imp {
     use super::*;
@@ -38,6 +38,8 @@ mod imp {
         pub total_ram: TemplateChild<gtk::Label>,
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub mem_consumption: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
         pub in_use: TemplateChild<gtk::Label>,
         #[template_child]
@@ -72,6 +74,7 @@ mod imp {
             Self {
                 total_ram: Default::default(),
                 usage_graph: Default::default(),
+                mem_consumption: Default::default(),
                 in_use: Default::default(),
                 available: Default::default(),
                 committed: Default::default(),
@@ -115,9 +118,7 @@ mod imp {
                     this.imp().context_menu.popup();
                 }),
             );
-            this.imp()
-                .usage_graph
-                .add_controller(right_click_controller);
+            this.add_controller(right_click_controller);
         }
 
         fn update_view(this: &super::PerformancePageMemory) {
@@ -145,6 +146,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            MemoryCompositionWidget::ensure_type();
             klass.bind_template();
         }
 

@@ -98,8 +98,12 @@ mod imp {
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("memory", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let row= this.imp()
+                    .sidebar
+                    .row_at_index(1)
+                    .expect("Failed to select Memory row");
+                this.imp().sidebar.select_row(Some(&row));
             }));
             actions.add_action(&action);
 
@@ -110,8 +114,18 @@ mod imp {
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("network", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let pages = this.imp().pages.take();
+                pages.iter().for_each(|page| {
+                    if let Pages::Network(network) = page {
+                        if let Some((summary_graph, _)) = network.values().next() {
+                            if let Some(row) = summary_graph.parent() {
+                                this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+                            }
+                        }
+                    }
+                });
+                this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
 
