@@ -304,7 +304,7 @@ mod imp {
             let spacing_x = width / (data_points.len() - 1) as f32;
             let mut points = (0..).zip(data_points).map(|(x, y)| {
                 (
-                    x as f32 * spacing_x - 2. * scale_factor,
+                    x as f32 * spacing_x - scale_factor,
                     height - ((y.clamp(val_min, val_max) / val_max) * (height - 2. * scale_factor)),
                 )
             });

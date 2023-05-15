@@ -3,6 +3,7 @@ use sysinfo::{NetworkExt, System, SystemExt};
 
 pub use net_info::*;
 
+mod mem_info;
 mod net_info;
 
 const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
@@ -13,6 +14,8 @@ lazy_static! {
 
 pub struct SysInfo {
     system: System,
+
+    mem_info: mem_info::MemInfo,
 
     net_info: Option<NetInfo>,
     net_devices: std::collections::HashMap<String, NetworkDevice>,
@@ -61,7 +64,8 @@ impl SysInfo {
 
         Self {
             system: System::new_all(),
-            net_info: net_info::NetInfo::new().ok(),
+            mem_info: mem_info::MemInfo::new(),
+            net_info: NetInfo::new().ok(),
             net_devices: HashMap::new(),
 
             cpu_base_frequency,
@@ -137,12 +141,17 @@ impl SysInfo {
         self.handle_count
     }
 
+    pub fn memory_info(&self) -> &mem_info::MemInfo {
+        &self.mem_info
+    }
+
     pub fn network_device_info(&self, if_name: &str) -> Option<&NetworkDevice> {
         self.net_devices.get(if_name)
     }
 
     pub fn refresh_all(&mut self) {
         self.system.refresh_all();
+        self.mem_info.refresh();
         self.refresh_process_count();
         self.refresh_thread_count();
         self.refresh_handle_count();

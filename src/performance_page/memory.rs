@@ -125,8 +125,42 @@ mod imp {
             use crate::SYS_INFO;
 
             let this = this.clone();
+            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
 
-            let _sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            {
+                let this = this.imp();
+                let used = sys_info.memory_info().mem_total - sys_info.memory_info().mem_available;
+                this.usage_graph.add_data_point(0, used as _);
+
+                let used = crate::to_human_readable(used as _, 1024.);
+                this.in_use.set_text(&format!("{:.2} {}iB", used.0, used.1));
+
+                let available =
+                    crate::to_human_readable(sys_info.memory_info().mem_available as _, 1024.);
+                this.available
+                    .set_text(&format!("{:.2} {}iB", available.0, available.1));
+
+                let committed =
+                    crate::to_human_readable(sys_info.memory_info().committed_as as _, 1024.);
+                this.committed
+                    .set_text(&format!("{:.2} {}iB", committed.0, committed.1));
+
+                let cached = crate::to_human_readable(sys_info.memory_info().cached as _, 1024.);
+                this.cached
+                    .set_text(&format!("{:.2} {}iB", cached.0, cached.1));
+
+                let swap_available =
+                    crate::to_human_readable(sys_info.memory_info().swap_total as _, 1024.);
+                this.swap_available
+                    .set_text(&format!("{:.2} {}iB", swap_available.0, swap_available.1));
+
+                let swap_used = crate::to_human_readable(
+                    (sys_info.memory_info().swap_total - sys_info.memory_info().swap_free) as _,
+                    1024.,
+                );
+                this.swap_used
+                    .set_text(&format!("{:.2} {}iB", swap_used.0, swap_used.1));
+            }
 
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
@@ -136,7 +170,18 @@ mod imp {
             ));
         }
 
-        fn update_static_information(&self) {}
+        fn update_static_information(&self) {
+            let total_mem = crate::SYS_INFO
+                .read()
+                .expect("Failed to acquire read lock")
+                .memory_info()
+                .mem_total;
+            self.usage_graph.set_value_range_max(total_mem as f32);
+
+            let total_mem = crate::to_human_readable(total_mem as _, 1024.);
+            self.total_ram
+                .set_text(&format!("{:.2} {}iB", total_mem.0.round(), total_mem.1));
+        }
     }
 
     #[glib::object_subclass]

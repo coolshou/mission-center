@@ -38,8 +38,6 @@ type Memory = memory::PerformancePageMemory;
 type Network = network::PerformancePageNetwork;
 
 mod imp {
-    use crate::to_human_readable;
-
     use super::*;
 
     enum Pages {
@@ -178,14 +176,12 @@ mod imp {
         }
 
         fn set_up_memory_page(&self, pages: &mut Vec<Pages>) {
-            use sysinfo::SystemExt;
-
             const BASE_COLOR: [u8; 3] = [0x76, 0x8D, 0xF1];
             let total_memory = crate::SYS_INFO
                 .read()
                 .expect("Failed to read system information: Unable to acquire lock")
-                .system()
-                .total_memory();
+                .memory_info()
+                .mem_total;
 
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
@@ -319,15 +315,12 @@ mod imp {
                     }
                     Pages::Memory((summary, _)) => {
                         let total =
-                            crate::to_human_readable(sys_info.system().total_memory() as _, 1024.);
+                            crate::to_human_readable(sys_info.memory_info().mem_total as _, 1024.);
                         let used =
-                            crate::to_human_readable(sys_info.system().used_memory() as _, 1024.);
-                        let _free =
-                            crate::to_human_readable(sys_info.system().free_memory() as _, 1024.);
+                            sys_info.memory_info().mem_total - sys_info.memory_info().mem_available;
+                        summary.graph_widget().add_data_point(0, used as _);
+                        let used = crate::to_human_readable(used as _, 1024.);
 
-                        summary
-                            .graph_widget()
-                            .add_data_point(0, sys_info.system().used_memory() as _);
                         summary.set_info1(format!(
                             "{:.2} {}iB/{} {}iB ({}%)",
                             used.0,
@@ -347,8 +340,8 @@ mod imp {
                                 graph_widget.add_data_point(0, sent);
                                 graph_widget.add_data_point(1, received);
 
-                                let sent = to_human_readable(sent * 8., 1024.);
-                                let received = to_human_readable(received * 8., 1024.);
+                                let sent = crate::to_human_readable(sent * 8., 1024.);
+                                let received = crate::to_human_readable(received * 8., 1024.);
                                 summary.set_info2(gettext!(
                                     "{}: {} {}bps {}: {} {}bps",
                                     "S",
