@@ -178,13 +178,24 @@ mod imp {
         }
 
         fn set_up_memory_page(&self, pages: &mut Vec<Pages>) {
+            use sysinfo::SystemExt;
+
             const BASE_COLOR: [u8; 3] = [0x76, 0x8D, 0xF1];
+            let total_memory = crate::SYS_INFO
+                .read()
+                .expect("Failed to read system information: Unable to acquire lock")
+                .system()
+                .total_memory();
 
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
 
             summary.set_heading(gettext("Memory"));
             summary.set_info1("0/0 GiB (100%)");
+
+            summary
+                .graph_widget()
+                .set_value_range_max(total_memory as f32);
 
             summary.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
@@ -306,7 +317,26 @@ mod imp {
                             cpu_info.frequency() as f32 / 1024.
                         ));
                     }
-                    Pages::Memory((_summary, _)) => {}
+                    Pages::Memory((summary, _)) => {
+                        let total =
+                            crate::to_human_readable(sys_info.system().total_memory() as _, 1024.);
+                        let used =
+                            crate::to_human_readable(sys_info.system().used_memory() as _, 1024.);
+                        let _free =
+                            crate::to_human_readable(sys_info.system().free_memory() as _, 1024.);
+
+                        summary
+                            .graph_widget()
+                            .add_data_point(0, sys_info.system().used_memory() as _);
+                        summary.set_info1(format!(
+                            "{:.2} {}iB/{} {}iB ({}%)",
+                            used.0,
+                            used.1,
+                            total.0.round(),
+                            total.1,
+                            ((used.0 / total.0) * 100.).round()
+                        ));
+                    }
                     Pages::Network(pages) => {
                         for (name, net_info) in sys_info.system().networks() {
                             if let Some((summary, _)) = pages.get(name) {
