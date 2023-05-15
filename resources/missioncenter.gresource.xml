@@ -5,6 +5,7 @@
         <file>line-solid.svg</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/memory.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/page.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/summary_graph.ui</file>

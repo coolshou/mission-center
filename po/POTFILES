@@ -3,6 +3,7 @@ data/io.missioncenter.MissionCenter.appdata.xml.in
 data/io.missioncenter.MissionCenter.gschema.xml
 resources/ui/window.blp
 resources/ui/performance_page/cpu.blp
+resources/ui/performance_page/memory.blp
 resources/ui/performance_page/network.blp
 resources/ui/performance_page/page.blp
 resources/ui/performance_page/summary_graph.blp

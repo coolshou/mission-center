@@ -6,6 +6,7 @@ blueprints = custom_target('blueprints',
   input: files(
     'ui/gtk/help-overlay.blp',
     'ui/performance_page/cpu.blp',
+    'ui/performance_page/memory.blp',
     'ui/performance_page/network.blp',
     'ui/performance_page/page.blp',
     'ui/performance_page/summary_graph.blp',

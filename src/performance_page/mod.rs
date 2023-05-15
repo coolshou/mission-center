@@ -28,11 +28,13 @@ use gtk::{gio, glib, prelude::*};
 use crate::graph_widget::GraphWidget;
 
 mod cpu;
+mod memory;
 mod network;
 mod summary_graph;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type Cpu = cpu::PerformancePageCpu;
+type Memory = memory::PerformancePageMemory;
 type Network = network::PerformancePageNetwork;
 
 mod imp {
@@ -42,6 +44,7 @@ mod imp {
 
     enum Pages {
         Cpu((SummaryGraph, Cpu)),
+        Memory((SummaryGraph, Memory)),
         Network(HashMap<String, (SummaryGraph, Network)>),
     }
 
@@ -160,6 +163,41 @@ mod imp {
             pages.push(Pages::Cpu((summary, page)));
         }
 
+        fn set_up_memory_page(&self, pages: &mut Vec<Pages>) {
+            const BASE_COLOR: [u8; 3] = [0x76, 0x8D, 0xF1];
+
+            let summary = SummaryGraph::new();
+            summary.set_widget_name("memory");
+
+            summary.set_heading(gettext("Memory"));
+            summary.set_info1("0/0 GiB (100%)");
+
+            summary.set_base_color(gtk::gdk::RGBA::new(
+                BASE_COLOR[0] as f32 / 255.,
+                BASE_COLOR[1] as f32 / 255.,
+                BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            let page = Memory::new();
+            page.set_base_color(gtk::gdk::RGBA::new(
+                BASE_COLOR[0] as f32 / 255.,
+                BASE_COLOR[1] as f32 / 255.,
+                BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.obj()
+                .as_ref()
+                .bind_property("refresh-interval", &page, "refresh-interval")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
+            self.sidebar.append(&summary);
+            self.page_stack.add_named(&page, Some("memory"));
+
+            pages.push(Pages::Memory((summary, page)));
+        }
+
         fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
             use crate::{sys_info::*, SYS_INFO};
             use sysinfo::SystemExt;
@@ -254,6 +292,7 @@ mod imp {
                             cpu_info.frequency() as f32 / 1024.
                         ));
                     }
+                    Pages::Memory((_summary, _)) => {}
                     Pages::Network(pages) => {
                         for (name, net_info) in sys_info.system().networks() {
                             if let Some((summary, _)) = pages.get(name) {
@@ -324,6 +363,7 @@ mod imp {
             let mut pages = vec![];
 
             self.set_up_cpu_page(&mut pages);
+            self.set_up_memory_page(&mut pages);
             self.set_up_network_pages(&mut pages);
 
             let row = self
