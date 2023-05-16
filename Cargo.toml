@@ -19,5 +19,5 @@ errno-sys = { version = "0.1" }
 
 [dependencies.adw]
 package = "libadwaita"
-version = "0.3"
-features = ["v1_2"]
+version = "0.4"
+features = ["v1_3"]

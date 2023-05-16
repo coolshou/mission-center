@@ -1,10 +1,17 @@
 using Gtk 4.0;
+using Adw 1;
 
 template PerformancePageMemory: Box {
   orientation: vertical;
 
+  Adw.Banner admin_banner {
+    title: _("Some information requires administrative privileges");
+    button-label: _("_Authenticate");
+  }
+
   Box description {
     orientation: vertical;
+    margin-top: 10;
     spacing: 7;
     hexpand: true;
 
@@ -271,6 +278,7 @@ template PerformancePageMemory: Box {
 
     Box system_info {
       spacing: 10;
+      visible: false;
 
       Box labels {
         orientation: vertical;

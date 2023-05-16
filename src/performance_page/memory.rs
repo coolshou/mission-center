@@ -20,6 +20,7 @@
 
 use std::cell::Cell;
 
+use adw;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*, Snapshot};
@@ -34,6 +35,8 @@ mod imp {
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/memory.ui")]
     pub struct PerformancePageMemory {
+        #[template_child]
+        pub admin_banner: TemplateChild<adw::Banner>,
         #[template_child]
         pub total_ram: TemplateChild<gtk::Label>,
         #[template_child]
@@ -72,6 +75,7 @@ mod imp {
     impl Default for PerformancePageMemory {
         fn default() -> Self {
             Self {
+                admin_banner: Default::default(),
                 total_ram: Default::default(),
                 usage_graph: Default::default(),
                 mem_consumption: Default::default(),
@@ -210,6 +214,12 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
             self.update_static_information();
+
+            self.admin_banner
+                .connect_button_clicked(clone!(@weak this => move |_| {
+                    this.imp().admin_banner.set_revealed(false);
+                    crate::sys_info::MemInfo::load_memory_device_info();
+                }));
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -228,6 +238,14 @@ mod imp {
     impl WidgetImpl for PerformancePageMemory {
         fn realize(&self) {
             self.parent_realize();
+
+            let this = self
+                .obj()
+                .upcast_ref::<super::PerformancePageMemory>()
+                .clone();
+            glib::timeout_add_local_once(std::time::Duration::from_millis(500), move || {
+                this.imp().admin_banner.set_revealed(true);
+            });
 
             Self::update_view(self.obj().upcast_ref());
         }

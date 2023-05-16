@@ -42,7 +42,7 @@
     {
       "name": "eudev",
       "buildsystem": "autotools",
-      "config-opts": null,
+      "config-opts": [],
       "cleanup": [
         "/bin",
         "/sbin",
@@ -54,6 +54,34 @@
           "type": "git",
           "url": "https://github.com/eudev-project/eudev.git",
           "commit": "39979ddf46e75d1b75bf381e1c73914c226c4302"
+        }
+      ]
+    },
+    {
+      "name": "musl-libc",
+      "buildsystem": "autotools",
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://musl.libc.org/releases/musl-1.2.4.tar.gz",
+          "sha256": "7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039"
+        }
+      ]
+    },
+    {
+      "name": "dmidecode",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make CC=musl-gcc CFLAGS=-static LDFLAGS=-static install-bin prefix=/app",
+        "rm -rf /app/bin/musl-gcc /app/bin/udevadm",
+        "mv /app/sbin/dmidecode /app/bin/dmidecode",
+        "rm -rf /app/sbin"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://download.savannah.gnu.org/releases/dmidecode/dmidecode-3.5.tar.xz",
+          "sha256": "79d76735ee8e25196e2a722964cf9683f5a09581503537884b256b01389cc073"
         }
       ]
     },

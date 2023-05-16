@@ -1,4 +1,15 @@
 #[derive(Default, Debug, Eq, PartialEq)]
+pub struct MemoryDevice {
+    size: usize,
+    form_factor: String,
+    locator: String,
+    bank_locator: String,
+    ram_type: String,
+    speed: usize,
+    rank: u8,
+}
+
+#[derive(Default, Debug, Eq, PartialEq)]
 pub struct MemInfo {
     pub mem_total: usize,
     pub mem_free: usize,
@@ -190,5 +201,182 @@ impl MemInfo {
                 _ => (),
             }
         }
+    }
+
+    pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
+        use gtk::glib::*;
+        use std::{env::*, fs::*, process::*};
+
+        /*
+        Memory Device
+        Array Handle: 0x1000
+        Error Information Handle: Not Provided
+        Total Width: 64 bits
+        Data Width: 64 bits
+        Size: 16 GB
+        Form Factor: SODIMM
+        Set: None
+        Locator: DIMM A
+        Bank Locator: BANK 0
+        Type: DDR5
+        Type Detail: Synchronous
+        Speed: 4800 MT/s
+        Manufacturer: 80AD000080AD
+        Serial Number: 5539D34F
+        Asset Tag: 01221800
+        Part Number: HMCG78MEBSA095N
+        Rank: 1
+        Configured Memory Speed: 4800 MT/s
+        Minimum Voltage: Unknown
+        Maximum Voltage: Unknown
+        Configured Voltage: 1.1 V
+        Memory Technology: DRAM
+        Memory Operating Mode Capability: Volatile memory
+        Firmware Version: Not Specified
+        Module Manufacturer ID: Bank 1, Hex 0xAD
+        Module Product ID: Unknown
+        Memory Subsystem Controller Manufacturer ID: Unknown
+        Memory Subsystem Controller Product ID: Unknown
+        Non-Volatile Size: None
+        Volatile Size: 16 GB
+        Cache Size: None
+        Logical Size: None
+         */
+
+        let is_flatpak = *super::IS_FLATPAK;
+        let mut cmd = if !is_flatpak {
+            let mut cmd = Command::new("pkexec");
+            cmd.arg("dmidecode").arg("--type").arg("17");
+            cmd
+        } else {
+            if let Ok(mut cache_dir) = var("XDG_CACHE_HOME") {
+                cache_dir.push_str("/io.missioncenter.MissionCenter");
+                match create_dir_all(&cache_dir) {
+                    Err(err) => {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Failed to read memory device information: {:?}",
+                            err
+                        );
+                        return None;
+                    }
+                    _ => {}
+                }
+
+                cache_dir.push_str("/dmidecode");
+                let dmidecode_path = cache_dir;
+                match copy("/app/bin/dmidecode", &dmidecode_path) {
+                    Err(err) => {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Failed to read memory device information: {:?}",
+                            err
+                        );
+                        return None;
+                    }
+                    _ => {}
+                }
+
+                let mut cmd = Command::new(super::FLATPAK_SPAWN_CMD);
+                cmd.arg("--host")
+                    .arg("sh")
+                    .arg("-c")
+                    .arg(format!("pkexec {} --type 17", dmidecode_path));
+                cmd
+            } else {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read memory device information: Could not read $XDG_CACHE_HOME",
+                );
+                return None;
+            }
+        };
+
+        let cmd_output = match cmd.output() {
+            Ok(output) => {
+                if output.stderr.len() > 0 {
+                    g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read memory device information, host command execution failed: {}",
+                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
+                );
+                    return None;
+                }
+
+                match std::str::from_utf8(output.stdout.as_slice()) {
+                    Ok(out) => out.to_owned(),
+                    Err(err) => {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Failed to read memory device information, host command execution failed: {:?}",
+                            err
+                        );
+                        return None;
+                    }
+                }
+            }
+            Err(err) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read memory device information, host command execution failed: {:?}",
+                    err
+                );
+                return None;
+            }
+        };
+
+        let mut result = vec![];
+        let mem_dev_str = "Memory Device";
+        let mut index = match cmd_output.find(mem_dev_str) {
+            None => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read memory device information: Failed to parse output from 'dmidecode'",
+                );
+                return None;
+            }
+            Some(index) => index,
+        };
+        index += mem_dev_str.len();
+
+        let mut mem_dev = MemoryDevice::default();
+        for line in cmd_output[index..].trim().lines() {
+            let mut split = line.split_whitespace();
+            let key = split.next().map_or("", |s| s);
+            let value = split.next().map_or("", |s| s);
+
+            match key {
+                "Size:" => {
+                    if let Some(unit) = split.next() {
+                        match unit.trim() {
+                            "TB" => {
+                                mem_dev.size =
+                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
+                            }
+                            "GB" => {
+                                mem_dev.size =
+                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
+                            }
+                            "MB" => {
+                                mem_dev.size = value.parse::<usize>().map_or(0, |s| s * 1024 * 1024)
+                            }
+                            "KB" => mem_dev.size = value.parse::<usize>().map_or(0, |s| s * 1024),
+                            _ => mem_dev.size = value.parse::<usize>().map_or(0, |s| s),
+                        }
+                    }
+                }
+                "Form Factor:" => mem_dev.form_factor = value.to_owned(),
+                "Locator:" => mem_dev.locator = value.to_owned(),
+                "Bank Locator:" => mem_dev.bank_locator = value.to_owned(),
+                "Type:" => mem_dev.ram_type = value.to_owned(),
+                "Speed:" => mem_dev.speed = value.parse::<usize>().map_or(0, |s| s),
+                "Rank:" => mem_dev.rank = value.parse::<u8>().map_or(0, |s| s),
+                _ => (),
+            }
+        }
+        dbg!(mem_dev);
+        result.push(mem_dev);
+
+        Some(result)
     }
 }

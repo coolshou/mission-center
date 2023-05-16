@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use sysinfo::{NetworkExt, System, SystemExt};
 
+pub use mem_info::*;
 pub use net_info::*;
 
 mod mem_info;
@@ -15,7 +16,7 @@ lazy_static! {
 pub struct SysInfo {
     system: System,
 
-    mem_info: mem_info::MemInfo,
+    mem_info: MemInfo,
 
     net_info: Option<NetInfo>,
     net_devices: std::collections::HashMap<String, NetworkDevice>,
