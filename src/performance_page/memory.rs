@@ -82,7 +82,7 @@ mod imp {
                 admin_banner: Default::default(),
                 total_ram: Default::default(),
                 usage_graph: Default::default(),
-                mem_consumption: Default::default(),
+                mem_composition: Default::default(),
                 toast_overlay: Default::default(),
                 in_use: Default::default(),
                 available: Default::default(),
