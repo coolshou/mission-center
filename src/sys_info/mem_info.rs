@@ -1,12 +1,12 @@
 #[derive(Default, Debug, Eq, PartialEq)]
 pub struct MemoryDevice {
-    size: usize,
-    form_factor: String,
-    locator: String,
-    bank_locator: String,
-    ram_type: String,
-    speed: usize,
-    rank: u8,
+    pub size: usize,
+    pub form_factor: String,
+    pub locator: String,
+    pub bank_locator: String,
+    pub ram_type: String,
+    pub speed: usize,
+    pub rank: u8,
 }
 
 #[derive(Default, Debug, Eq, PartialEq)]
@@ -326,28 +326,41 @@ impl MemInfo {
         };
 
         let mut result = vec![];
-        let mem_dev_str = "Memory Device";
-        let mut index = match cmd_output.find(mem_dev_str) {
-            None => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read memory device information: Failed to parse output from 'dmidecode'",
-                );
-                return None;
-            }
-            Some(index) => index,
-        };
-        index += mem_dev_str.len();
 
-        let mut mem_dev = MemoryDevice::default();
-        for line in cmd_output[index..].trim().lines() {
-            let mut split = line.split_whitespace();
-            let key = split.next().map_or("", |s| s);
-            let value = split.next().map_or("", |s| s);
+        let mut index = 0;
+        let mut output_str = cmd_output.as_str();
+        loop {
+            let to_parse = output_str[index..].trim();
+            let mem_dev_str = "Memory Device";
+            index = match to_parse.find(mem_dev_str) {
+                None => {
+                    break;
+                }
+                Some(index) => index,
+            };
+            index += mem_dev_str.len();
+            output_str = output_str[index..].trim();
 
-            match key {
-                "Size:" => {
-                    if let Some(unit) = split.next() {
+            let mut mem_dev = MemoryDevice::default();
+
+            for line in to_parse[index..].trim().lines() {
+                let mut split = line.trim().split(":");
+                let key = split.next().map_or("", |s| s).trim();
+                let value = split.next().map_or("", |s| s).trim();
+
+                if key == mem_dev_str && value == "" {
+                    break;
+                }
+
+                match key {
+                    "Size" => {
+                        let (value, unit) = {
+                            let mut split = value.trim().split_whitespace();
+                            (
+                                split.next().map_or("", |s| s),
+                                split.next().map_or("", |s| s),
+                            )
+                        };
                         match unit.trim() {
                             "TB" => {
                                 mem_dev.size =
@@ -364,18 +377,20 @@ impl MemInfo {
                             _ => mem_dev.size = value.parse::<usize>().map_or(0, |s| s),
                         }
                     }
+                    "Form Factor" => mem_dev.form_factor = value.to_owned(),
+                    "Locator" => mem_dev.locator = value.to_owned(),
+                    "Bank Locator" => mem_dev.bank_locator = value.to_owned(),
+                    "Type" => mem_dev.ram_type = value.to_owned(),
+                    "Speed" => {
+                        let value = value.trim_end_matches("MT/s").trim();
+                        mem_dev.speed = value.parse::<usize>().map_or(0, |s| s)
+                    }
+                    "Rank" => mem_dev.rank = value.parse::<u8>().map_or(0, |s| s),
+                    _ => (),
                 }
-                "Form Factor:" => mem_dev.form_factor = value.to_owned(),
-                "Locator:" => mem_dev.locator = value.to_owned(),
-                "Bank Locator:" => mem_dev.bank_locator = value.to_owned(),
-                "Type:" => mem_dev.ram_type = value.to_owned(),
-                "Speed:" => mem_dev.speed = value.parse::<usize>().map_or(0, |s| s),
-                "Rank:" => mem_dev.rank = value.parse::<u8>().map_or(0, |s| s),
-                _ => (),
             }
+            result.push(mem_dev);
         }
-        dbg!(mem_dev);
-        result.push(mem_dev);
 
         Some(result)
     }

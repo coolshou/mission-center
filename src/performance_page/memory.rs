@@ -44,6 +44,8 @@ mod imp {
         #[template_child]
         pub mem_consumption: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
+        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        #[template_child]
         pub in_use: TemplateChild<gtk::Label>,
         #[template_child]
         pub available: TemplateChild<gtk::Label>,
@@ -56,13 +58,15 @@ mod imp {
         #[template_child]
         pub swap_used: TemplateChild<gtk::Label>,
         #[template_child]
+        pub system_info: TemplateChild<gtk::Box>,
+        #[template_child]
         pub speed: TemplateChild<gtk::Label>,
         #[template_child]
         pub slots_used: TemplateChild<gtk::Label>,
         #[template_child]
         pub form_factor: TemplateChild<gtk::Label>,
         #[template_child]
-        pub hw_reserved: TemplateChild<gtk::Label>,
+        pub ram_type: TemplateChild<gtk::Label>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
@@ -79,16 +83,18 @@ mod imp {
                 total_ram: Default::default(),
                 usage_graph: Default::default(),
                 mem_consumption: Default::default(),
+                toast_overlay: Default::default(),
                 in_use: Default::default(),
                 available: Default::default(),
                 committed: Default::default(),
                 cached: Default::default(),
                 swap_available: Default::default(),
                 swap_used: Default::default(),
+                system_info: Default::default(),
                 speed: Default::default(),
                 slots_used: Default::default(),
                 form_factor: Default::default(),
-                hw_reserved: Default::default(),
+                ram_type: Default::default(),
                 context_menu: Default::default(),
 
                 refresh_interval: Cell::new(1000),
@@ -206,6 +212,8 @@ mod imp {
 
     impl ObjectImpl for PerformancePageMemory {
         fn constructed(&self) {
+            use gettextrs::*;
+
             self.parent_constructed();
 
             let obj = self.obj();
@@ -217,8 +225,38 @@ mod imp {
 
             self.admin_banner
                 .connect_button_clicked(clone!(@weak this => move |_| {
-                    this.imp().admin_banner.set_revealed(false);
-                    crate::sys_info::MemInfo::load_memory_device_info();
+                    let ptr = this.as_ptr() as usize;
+                    let _ = std::thread::spawn(move || {
+                        let memory_device_info = crate::sys_info::MemInfo::load_memory_device_info();
+                        glib::idle_add_once(move || {
+                            use glib::translate::from_glib_none;
+
+                            let this: gtk::Widget = unsafe { from_glib_none(ptr as *mut gtk::ffi::GtkWidget) };
+                            let this = this.downcast_ref::<super::PerformancePageMemory>().unwrap();
+
+                            match memory_device_info {
+                                Some(memory_device_info) => {
+                                    this.imp().admin_banner.set_revealed(false);
+                                    this.imp().system_info.set_visible(true);
+
+                                    let mem_module_count = memory_device_info.len();
+                                    if mem_module_count > 0 {
+                                        this.imp().speed.set_text(&format!("{} MT/s", memory_device_info[0].speed));
+                                        this.imp().slots_used.set_text(&format!("{}", mem_module_count));
+                                        this.imp().form_factor.set_text(&format!("{}", memory_device_info[0].form_factor));
+                                        this.imp().ram_type.set_text(&format!("{}", memory_device_info[0].ram_type));
+                                    } else {
+                                        let unknown = gettext("Unknown");
+                                        this.imp().speed.set_text(&unknown);
+                                        this.imp().slots_used.set_text(&unknown);
+                                        this.imp().form_factor.set_text(&unknown);
+                                        this.imp().ram_type.set_text(&unknown);
+                                    }
+                                }
+                                _ => this.imp().toast_overlay.add_toast(adw::Toast::new("Authentication failed"))
+                            }
+                        });
+                    });
                 }));
         }
 

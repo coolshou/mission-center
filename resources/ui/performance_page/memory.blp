@@ -117,244 +117,246 @@ template PerformancePageMemory: Box {
     base-color: bind PerformancePageMemory.base-color;
   }
 
-  Box details {
-    spacing: 20;
+  Adw.ToastOverlay toast_overlay {
+    Box details {
+      spacing: 20;
 
-    Box dynamic_data {
-      orientation: vertical;
-      spacing: 10;
-
-      Box top_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("In use");
-          }
-
-          Label in_use {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Available");
-          }
-
-          Label available {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box mid_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Committed");
-          }
-
-          Label committed {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Cached");
-          }
-
-          Label cached {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box bottom_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Swap available");
-          }
-
-          Label swap_available {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Swap used");
-          }
-
-          Label swap_used {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-    }
-
-    Box system_info {
-      spacing: 10;
-      visible: false;
-
-      Box labels {
+      Box dynamic_data {
         orientation: vertical;
-        spacing: 3;
+        spacing: 10;
 
-        Label {
-          styles [
-            "caption",
-          ]
+        Box top_row {
+          spacing: 15;
 
-          halign: start;
-          label: _("Speed:");
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
+
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("In use");
+            }
+
+            Label in_use {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
+
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Available");
+            }
+
+            Label available {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
         }
 
-        Label {
-          styles [
-            "caption",
-          ]
+        Box mid_row {
+          spacing: 15;
 
-          halign: start;
-          label: _("Slots used:");
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
+
+            Label {
+
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Committed");
+            }
+
+            Label committed {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
+
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Cached");
+            }
+
+            Label cached {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
         }
 
-        Label {
-          styles [
-            "caption",
-          ]
+        Box bottom_row {
+          spacing: 15;
 
-          halign: start;
-          label: _("Form factor:");
-        }
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
 
-        Label {
-          styles [
-            "caption",
-          ]
+            Label {
+              styles [
+                "caption",
+              ]
 
-          halign: start;
-          label: _("Hardware reserved:");
+              halign: start;
+              label: _("Swap available");
+            }
+
+            Label swap_available {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
+
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Swap used");
+            }
+
+            Label swap_used {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
+          }
         }
       }
 
-      Box values {
-        orientation: vertical;
-        spacing: 3;
+      Box system_info {
+        spacing: 10;
+        visible: false;
 
-        Label speed {
-          styles [
-            "caption",
-          ]
+        Box labels {
+          orientation: vertical;
+          spacing: 3;
 
-          halign: start;
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Speed:");
+          }
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Slots used:");
+          }
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Form factor:");
+          }
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Type:");
+          }
         }
 
-        Label slots_used {
-          styles [
-            "caption",
-          ]
+        Box values {
+          orientation: vertical;
+          spacing: 3;
 
-          halign: start;
-        }
+          Label speed {
+            styles [
+              "caption",
+            ]
 
-        Label form_factor {
-          styles [
-            "caption",
-          ]
+            halign: start;
+          }
 
-          halign: start;
-        }
+          Label slots_used {
+            styles [
+              "caption",
+            ]
 
-        Label hw_reserved {
-          styles [
-            "caption",
-          ]
+            halign: start;
+          }
 
-          halign: start;
+          Label form_factor {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+          }
+
+          Label ram_type {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+          }
         }
       }
     }
