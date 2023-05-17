@@ -42,7 +42,7 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
-        pub mem_consumption: TemplateChild<MemoryCompositionWidget>,
+        pub mem_composition: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]

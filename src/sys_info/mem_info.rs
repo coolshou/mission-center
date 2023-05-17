@@ -207,42 +207,6 @@ impl MemInfo {
         use gtk::glib::*;
         use std::{env::*, fs::*, process::*};
 
-        /*
-        Memory Device
-        Array Handle: 0x1000
-        Error Information Handle: Not Provided
-        Total Width: 64 bits
-        Data Width: 64 bits
-        Size: 16 GB
-        Form Factor: SODIMM
-        Set: None
-        Locator: DIMM A
-        Bank Locator: BANK 0
-        Type: DDR5
-        Type Detail: Synchronous
-        Speed: 4800 MT/s
-        Manufacturer: 80AD000080AD
-        Serial Number: 5539D34F
-        Asset Tag: 01221800
-        Part Number: HMCG78MEBSA095N
-        Rank: 1
-        Configured Memory Speed: 4800 MT/s
-        Minimum Voltage: Unknown
-        Maximum Voltage: Unknown
-        Configured Voltage: 1.1 V
-        Memory Technology: DRAM
-        Memory Operating Mode Capability: Volatile memory
-        Firmware Version: Not Specified
-        Module Manufacturer ID: Bank 1, Hex 0xAD
-        Module Product ID: Unknown
-        Memory Subsystem Controller Manufacturer ID: Unknown
-        Memory Subsystem Controller Product ID: Unknown
-        Non-Volatile Size: None
-        Volatile Size: 16 GB
-        Cache Size: None
-        Logical Size: None
-         */
-
         let is_flatpak = *super::IS_FLATPAK;
         let mut cmd = if !is_flatpak {
             let mut cmd = Command::new("pkexec");

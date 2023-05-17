@@ -266,7 +266,7 @@ mod imp {
                 vertical_line_count += 1;
 
                 let mut x_offset = self.scroll_offset.get();
-                x_offset += (width as f32 / scale_factor) / data_point_count as f32;
+                x_offset += width as f32 / data_point_count as f32;
                 x_offset %= col_width;
                 self.scroll_offset.set(x_offset);
 
