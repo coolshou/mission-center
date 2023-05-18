@@ -3,62 +3,64 @@ using Gtk 4.0;
 template PerformancePageCpu : Box {
   orientation: vertical;
 
-  Box description {
-    orientation: vertical;
-    spacing: 7;
-    hexpand: true;
+  WindowHandle {
+    child: Box description {
+      orientation: vertical;
+      spacing: 7;
+      hexpand: true;
 
-    Box {
-      spacing: 200;
+      Box {
+        spacing: 200;
 
-      Label {
-        styles [
-          "title-1",
-        ]
+        Label {
+          styles [
+            "title-1",
+          ]
 
-        hexpand: true;
-        halign: start;
-        label: _("CPU");
+          hexpand: true;
+          halign: start;
+          label: _("CPU");
+        }
+
+        Label cpu_name {
+          styles [
+            "title-3",
+          ]
+
+          halign: end;
+        }
       }
 
-      Label cpu_name {
-        styles [
-          "title-3",
-        ]
+      Box {
+        Label utilization_label_all {
+          styles [
+            "caption",
+          ]
 
-        halign: end;
+          hexpand: true;
+          halign: start;
+          label: _("% Utilization over 60 seconds");
+        }
+
+        Label utilization_label_overall {
+          styles [
+            "caption",
+          ]
+
+          hexpand: true;
+          halign: start;
+          label: _("% Utilization");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          label: _("100%");
+        }
       }
-    }
-
-    Box {
-      Label utilization_label_all {
-        styles [
-          "caption",
-        ]
-
-        hexpand: true;
-        halign: start;
-        label: _("% Utilization over 60 seconds");
-      }
-
-      Label utilization_label_overall {
-        styles [
-          "caption",
-        ]
-
-        hexpand: true;
-        halign: start;
-        label: _("% Utilization");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        label: _("100%");
-      }
-    }
+    };
   }
 
   Grid usage_graphs {
@@ -102,6 +104,8 @@ template PerformancePageCpu : Box {
 
   Box details {
     spacing: 20;
+
+    visible: bind-property PerformancePageCpu.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;

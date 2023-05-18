@@ -79,6 +79,8 @@ mod imp {
         refresh_interval: Cell<u32>,
         #[property(get, set = Self::set_base_color)]
         base_color: Cell<gtk::gdk::RGBA>,
+        #[property(get, set)]
+        summary_mode: Cell<bool>,
 
         pub graph_widgets: Cell<Vec<GraphWidget>>,
     }
@@ -109,6 +111,7 @@ mod imp {
 
                 refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
+                summary_mode: Cell::new(false),
 
                 graph_widgets: Cell::new(Vec::new()),
             }

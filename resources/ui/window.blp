@@ -14,7 +14,7 @@ template MissionCenterWindow : Adw.ApplicationWindow {
       ]
 
       [start]
-      Box {
+      Box header_content {
         vexpand: true;
 
         StackSwitcher title {
@@ -51,6 +51,7 @@ template MissionCenterWindow : Adw.ApplicationWindow {
           icon-name: "speedometer-symbolic";
           title: "Performance";
           child: .PerformancePage {
+            summary-mode: bind-property header_bar.visible bidirectional inverted;
           };
         }
 

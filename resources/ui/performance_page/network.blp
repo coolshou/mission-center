@@ -3,49 +3,51 @@ using Gtk 4.0;
 template PerformancePageNetwork: Box {
   orientation: vertical;
 
-  Box description {
-    orientation: vertical;
-    spacing: 7;
-    hexpand: true;
+  WindowHandle {
+    child: Box description {
+      orientation: vertical;
+      spacing: 7;
+      hexpand: true;
 
-    Box {
-      spacing: 200;
+      Box {
+        spacing: 200;
 
-      Label title_connection_type{
-        styles [
-          "title-1",
-        ]
+        Label title_connection_type{
+          styles [
+            "title-1",
+          ]
 
-        hexpand: true;
-        halign: start;
+          hexpand: true;
+          halign: start;
+        }
+
+        Label device_name {
+          styles [
+            "title-3",
+          ]
+
+          halign: end;
+        }
       }
 
-      Label device_name {
-        styles [
-          "title-3",
-        ]
+      Box {
+        Label {
+          styles [
+            "caption",
+          ]
 
-        halign: end;
+          hexpand: true;
+          halign: start;
+          label: _("Throughput");
+        }
+
+        Label max_y {
+          styles [
+            "caption",
+          ]
+        }
       }
-    }
-
-    Box {
-      Label {
-        styles [
-          "caption",
-        ]
-
-        hexpand: true;
-        halign: start;
-        label: _("Throughput");
-      }
-
-      Label max_y {
-        styles [
-          "caption",
-        ]
-      }
-    }
+    };
   }
 
   .GraphWidget usage_graph {
@@ -54,7 +56,7 @@ template PerformancePageNetwork: Box {
 
     height-request: 120;
 
-    base-color: bind PerformancePageNetwork.base-color;
+    base-color: bind-property PerformancePageNetwork.base-color;
     data-set-count: 3;
     scroll: true;
     auto-scale: true;
@@ -90,6 +92,8 @@ template PerformancePageNetwork: Box {
 
   Box details {
     spacing: 20;
+
+    visible: bind-property PerformancePageNetwork.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;
@@ -186,7 +190,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind ssid.visible;
+          visible: bind-property ssid.visible;
           label: _("SSID:");
         }
 
@@ -196,7 +200,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind signal_strength.visible;
+          visible: bind-property signal_strength.visible;
           label: _("Signal strength:");
         }
 
@@ -206,7 +210,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind max_bitrate.visible;
+          visible: bind-property max_bitrate.visible;
           label: _("Maximum Bitrate:");
         }
 
@@ -216,7 +220,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind frequency.visible;
+          visible: bind-property frequency.visible;
           label: _("Frequency:");
         }
 

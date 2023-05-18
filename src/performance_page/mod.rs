@@ -58,6 +58,8 @@ mod imp {
 
         #[property(get, set)]
         refresh_interval: Cell<u32>,
+        #[property(get, set)]
+        summary_mode: Cell<bool>,
 
         pages: Cell<Vec<Pages>>,
     }
@@ -69,6 +71,7 @@ mod imp {
                 page_stack: Default::default(),
 
                 refresh_interval: Cell::new(1000),
+                summary_mode: Cell::new(false),
                 pages: Cell::new(Vec::new()),
             }
         }
@@ -80,8 +83,8 @@ mod imp {
             this.insert_action_group("graph", Some(&actions));
 
             let action = gio::SimpleAction::new("summary", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                this.set_summary_mode(!this.summary_mode());
             }));
             actions.add_action(&action);
 
@@ -169,6 +172,12 @@ mod imp {
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
             self.sidebar.append(&summary);
             self.page_stack.add_named(&page, Some("cpu"));
 
@@ -210,6 +219,12 @@ mod imp {
             self.obj()
                 .as_ref()
                 .bind_property("refresh-interval", &page, "refresh-interval")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
@@ -279,6 +294,12 @@ mod imp {
                 self.obj()
                     .as_ref()
                     .bind_property("refresh-interval", &page, "refresh-interval")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                self.obj()
+                    .as_ref()
+                    .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
 

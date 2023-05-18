@@ -26,16 +26,11 @@ mod imp {
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
-    pub struct MissionCenterWindow {
-        #[template_child]
-        pub header_bar: TemplateChild<adw::HeaderBar>,
-    }
+    pub struct MissionCenterWindow {}
 
     impl Default for MissionCenterWindow {
         fn default() -> Self {
-            Self {
-                header_bar: Default::default(),
-            }
+            Self {}
         }
     }
 

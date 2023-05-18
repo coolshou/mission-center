@@ -11,15 +11,16 @@ template PerformancePage : Box {
     margin-end: 20;
 
     ListBox sidebar {
+      visible: bind-property PerformancePage.summary-mode inverted;
       styles [
         "navigation-sidebar",
       ]
 
-      margin-end: 20;
       width-request: 220;
     }
 
     Stack page_stack {
+      margin-start: 20;
       transition-type: slide_up_down;
     }
   }

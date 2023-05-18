@@ -7,56 +7,60 @@ template PerformancePageMemory: Box {
   Adw.Banner admin_banner {
     title: _("Some information requires administrative privileges");
     button-label: _("_Authenticate");
+
+    visible: bind-property PerformancePageMemory.summary-mode inverted;
   }
 
-  Box description {
-    orientation: vertical;
-    margin-top: 10;
-    spacing: 7;
-    hexpand: true;
+  WindowHandle {
+    child: Box description {
+      orientation: vertical;
+      margin-top: 10;
+      spacing: 7;
+      hexpand: true;
 
-    Box {
-      spacing: 200;
+      Box {
+        spacing: 200;
 
-      Label {
-        styles [
-          "title-1",
-        ]
+        Label {
+          styles [
+            "title-1",
+          ]
 
-        hexpand: true;
-        halign: start;
+          hexpand: true;
+          halign: start;
 
-        label: _("Memory");
+          label: _("Memory");
+        }
+
+        Label total_ram {
+          styles [
+            "title-3",
+          ]
+
+          halign: end;
+        }
       }
 
-      Label total_ram {
-        styles [
-          "title-3",
-        ]
+      Box {
+        Label {
+          styles [
+            "caption",
+          ]
 
-        halign: end;
+          hexpand: true;
+          halign: start;
+          label: _("Memory usage");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          label: bind-property total_ram.label;
+        }
       }
-    }
-
-    Box {
-      Label {
-        styles [
-          "caption",
-        ]
-
-        hexpand: true;
-        halign: start;
-        label: _("Memory usage");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        label: bind total_ram.label;
-      }
-    }
+    };
   }
 
   .GraphWidget usage_graph {
@@ -65,7 +69,7 @@ template PerformancePageMemory: Box {
 
     height-request: 120;
 
-    base-color: bind PerformancePageMemory.base-color;
+    base-color: bind-property PerformancePageMemory.base-color;
     data-set-count: 1;
     scroll: true;
   }
@@ -114,12 +118,14 @@ template PerformancePageMemory: Box {
 
     height-request: 50;
 
-    base-color: bind PerformancePageMemory.base-color;
+    base-color: bind-property PerformancePageMemory.base-color;
   }
 
   Adw.ToastOverlay toast_overlay {
     Box details {
       spacing: 20;
+
+      visible: bind-property PerformancePageMemory.summary-mode inverted;
 
       Box dynamic_data {
         orientation: vertical;
