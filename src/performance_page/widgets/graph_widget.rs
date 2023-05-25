@@ -1,4 +1,4 @@
-/* graph_widget.rs
+/* performance_page/widgets/graph_widget.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -240,10 +240,10 @@ mod imp {
                 .skip_while(|(_, y)| **y <= scale_factor)
                 .map(|(x, y)| {
                     (
-                        x as f32 * spacing_x - scale_factor,
+                        x as f32 * spacing_x - scale_factor / 2.,
                         height
                             - ((y.clamp(val_min, val_max) / val_max)
-                                * (height - 2. * scale_factor)),
+                                * (height - scale_factor / 2.)),
                     )
                 });
 
@@ -252,13 +252,6 @@ mod imp {
                 (color.green() * 255.) as u8,
                 (color.blue() * 255.) as u8,
                 255,
-            )));
-
-            canvas.set_fill_style(FillStyle::Color(ColorU::new(
-                (color.red() * 255.) as u8,
-                (color.green() * 255.) as u8,
-                (color.blue() * 255.) as u8,
-                51,
             )));
 
             if let Some((x, y)) = points.next() {
@@ -278,11 +271,19 @@ mod imp {
                 path.close_path();
 
                 if data_points.fill {
+                    canvas.set_fill_style(FillStyle::Color(ColorU::new(
+                        (color.red() * 255.) as u8,
+                        (color.green() * 255.) as u8,
+                        (color.blue() * 255.) as u8,
+                        51,
+                    )));
                     canvas.fill_path(path.clone(), FillRule::Winding);
                 }
 
                 if data_points.dashed {
                     canvas.set_line_dash(vec![scale_factor * 5., scale_factor * 2.]);
+                } else {
+                    canvas.set_line_dash(vec![]);
                 }
 
                 canvas.stroke_path(path);
@@ -338,8 +339,6 @@ mod imp {
 
             canvas.set_line_width(scale_factor as f32);
 
-            self.draw_outline(&mut canvas, width, height, scale_factor, &base_color);
-
             if self.obj().grid_visible() {
                 self.draw_grid(
                     &mut canvas,
@@ -361,6 +360,8 @@ mod imp {
                     &base_color,
                 );
             }
+
+            self.draw_outline(&mut canvas, width, height, scale_factor, &base_color);
 
             canvas.into_canvas().into_scene().build_and_render(
                 &mut renderer,

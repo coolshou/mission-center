@@ -1,4 +1,4 @@
-/* mem_composition_widget.rs
+/* performance_page/widgets/mem_composition_widget.rs
  *
  * Copyright 2023 Romeo Calota
  *
