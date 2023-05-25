@@ -24,6 +24,9 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
 mod imp {
+    use pathfinder_gl::GLDevice;
+    use pathfinder_renderer::gpu::renderer::Renderer;
+
     use super::*;
 
     #[derive(Clone)]
@@ -60,7 +63,9 @@ mod imp {
         #[property(get, set)]
         vertical_line_count: Cell<u32>,
 
-        skia_context: Cell<Option<skia::gpu::DirectContext>>,
+        renderer: Cell<Option<Renderer<GLDevice>>>,
+        render_function: Cell<fn(&Self, width: i32, height: i32, scale_factor: f32)>,
+
         pub data_sets: Cell<Vec<DataSetDescriptor>>,
 
         scroll_offset: Cell<f32>,
@@ -83,7 +88,9 @@ mod imp {
                 horizontal_line_count: Cell::new(9),
                 vertical_line_count: Cell::new(6),
 
-                skia_context: Cell::new(None),
+                renderer: Cell::new(None),
+                render_function: Cell::new(Self::render_init_pathfinder),
+
                 data_sets: Cell::new(vec![
                     DataSetDescriptor {
                         dashed: false,
@@ -126,122 +133,48 @@ mod imp {
     }
 
     impl GraphWidget {
-        fn realize(&self) -> Result<(), Box<dyn std::error::Error>> {
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::GraphWidget>();
-
-            this.make_current();
-
-            let interface = skia::gpu::gl::Interface::new_native();
-            self.skia_context.set(Some(
-                skia::gpu::DirectContext::new_gl(interface, None)
-                    .ok_or("Failed to create Skia DirectContext with OpenGL interface")?,
-            ));
-
-            this.set_auto_render(false);
-
-            Ok(())
-        }
-
-        fn render_graph(
-            &self,
-            canvas: &mut skia::Canvas,
-            width: i32,
-            height: i32,
-            scale_factor: f32,
-        ) -> Result<(), Box<dyn std::error::Error>> {
-            use skia::Paint;
-
-            let data_sets = self.data_sets.take();
-            let base_color = self.base_color.get();
-
-            let mut outer_paint = Paint::new(
-                skia::Color4f::new(base_color.red(), base_color.green(), base_color.blue(), 1.0),
-                None,
-            );
-            outer_paint.set_stroke_width(scale_factor);
-            outer_paint.set_style(skia::paint::Style::Stroke);
-
-            let mut inner_paint = Paint::new(
-                skia::Color4f::new(base_color.red(), base_color.green(), base_color.blue(), 0.2),
-                None,
-            );
-            inner_paint.set_stroke_width(scale_factor);
-            inner_paint.set_style(skia::paint::Style::Stroke);
-
-            self.draw_outline(canvas, width, height, scale_factor, &outer_paint);
-
-            if self.obj().grid_visible() {
-                self.draw_grid(
-                    canvas,
-                    width,
-                    height,
-                    scale_factor,
-                    self.obj().data_points() as _,
-                    &inner_paint,
-                );
-            }
-
-            outer_paint.set_anti_alias(true);
-            inner_paint.set_style(skia::paint::Style::Fill);
-            for values in data_sets.iter() {
-                if values.dashed {
-                    outer_paint.set_path_effect(skia::PathEffect::dash(
-                        &[scale_factor * 5., scale_factor * 2.],
-                        0.,
-                    ));
-                } else {
-                    outer_paint.set_path_effect(None);
-                }
-
-                let inner_paint = if values.fill {
-                    Some(&inner_paint)
-                } else {
-                    None
-                };
-
-                self.plot_values(
-                    canvas,
-                    width,
-                    height,
-                    scale_factor,
-                    &values.data_set,
-                    &outer_paint,
-                    inner_paint,
-                );
-            }
-
-            self.data_sets.set(data_sets);
-
-            Ok(())
-        }
-
+        #[inline]
         fn draw_outline(
             &self,
-            canvas: &mut skia::canvas::Canvas,
+            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
             width: i32,
             height: i32,
             scale_factor: f32,
-            paint: &skia::Paint,
+            color: &gdk::RGBA,
         ) {
-            let boundary = skia::Rect::new(
-                scale_factor,
-                scale_factor,
-                width as f32 - scale_factor,
-                height as f32 - scale_factor,
-            );
-            canvas.draw_rect(&boundary, &paint);
+            use pathfinder_canvas::*;
+
+            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
+                (color.red() * 255.) as u8,
+                (color.green() * 255.) as u8,
+                (color.blue() * 255.) as u8,
+                255,
+            )));
+            canvas.stroke_rect(RectF::new(
+                vec2f(scale_factor / 2., scale_factor / 2.),
+                vec2f(width as f32 - scale_factor, height as f32 - scale_factor),
+            ));
         }
 
+        #[inline]
         fn draw_grid(
             &self,
-            canvas: &mut skia::canvas::Canvas,
+            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
             width: i32,
             height: i32,
             scale_factor: f32,
             data_point_count: usize,
-            paint: &skia::Paint,
+            color: &gdk::RGBA,
         ) {
+            use pathfinder_canvas::*;
+
+            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
+                (color.red() * 255.) as u8,
+                (color.green() * 255.) as u8,
+                (color.blue() * 255.) as u8,
+                51,
+            )));
+
             // Draw horizontal lines
             let horizontal_line_count = self.obj().horizontal_line_count() + 1;
 
@@ -249,11 +182,10 @@ mod imp {
             let col_height = height as f32 / horizontal_line_count as f32;
 
             for i in 1..horizontal_line_count {
-                canvas.draw_line(
-                    (scale_factor, col_height * i as f32),
-                    (col_width, col_height * i as f32),
-                    &paint,
-                );
+                let mut path = Path2D::new();
+                path.move_to(vec2f(scale_factor / 2., col_height * i as f32));
+                path.line_to(vec2f(col_width, col_height * i as f32));
+                canvas.stroke_path(path);
             }
 
             // Draw vertical lines
@@ -276,24 +208,25 @@ mod imp {
             };
 
             for i in 1..vertical_line_count {
-                canvas.draw_line(
-                    (col_width * i as f32 - x_offset, scale_factor),
-                    (col_width * i as f32 - x_offset, col_height),
-                    &paint,
-                );
+                let mut path = Path2D::new();
+                path.move_to(vec2f(col_width * i as f32 - x_offset, scale_factor / 2.));
+                path.line_to(vec2f(col_width * i as f32 - x_offset, col_height));
+                canvas.stroke_path(path);
             }
         }
 
+        #[inline]
         fn plot_values(
             &self,
-            canvas: &mut skia::Canvas,
+            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
             width: i32,
             height: i32,
             scale_factor: f32,
-            data_points: &Vec<f32>,
-            outer_paint: &skia::Paint,
-            inner_paint: Option<&skia::Paint>,
+            data_points: &DataSetDescriptor,
+            color: &gdk::RGBA,
         ) {
+            use pathfinder_canvas::*;
+
             let width = width as f32;
             let height = height as f32;
 
@@ -301,48 +234,142 @@ mod imp {
             let val_max = self.value_range_max.get() - offset;
             let val_min = self.value_range_min.get() - offset;
 
-            let spacing_x = width / (data_points.len() - 1) as f32;
-            let mut points = (0..).zip(data_points).map(|(x, y)| {
-                (
-                    x as f32 * spacing_x - scale_factor,
-                    height - ((y.clamp(val_min, val_max) / val_max) * (height - 2. * scale_factor)),
-                )
-            });
+            let spacing_x = width / (data_points.data_set.len() - 1) as f32;
+            let mut points = (0..)
+                .zip(&data_points.data_set)
+                .skip_while(|(_, y)| **y <= scale_factor)
+                .map(|(x, y)| {
+                    (
+                        x as f32 * spacing_x - scale_factor,
+                        height
+                            - ((y.clamp(val_min, val_max) / val_max)
+                                * (height - 2. * scale_factor)),
+                    )
+                });
 
-            let mut path = skia::Path::new();
+            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
+                (color.red() * 255.) as u8,
+                (color.green() * 255.) as u8,
+                (color.blue() * 255.) as u8,
+                255,
+            )));
+
+            canvas.set_fill_style(FillStyle::Color(ColorU::new(
+                (color.red() * 255.) as u8,
+                (color.green() * 255.) as u8,
+                (color.blue() * 255.) as u8,
+                51,
+            )));
+
             if let Some((x, y)) = points.next() {
                 let mut final_x = x;
-                let mut prev = (x, y);
 
-                path.move_to(skia::Point::new(x, y));
+                let mut path = Path2D::new();
+                path.move_to(vec2f(x, y));
+
                 for (x, y) in points {
-                    path.line_to(skia::Point::new(x, y));
+                    path.line_to(vec2f(x, y));
                     final_x = x;
-
-                    canvas.draw_line(
-                        skia::Point::new(prev.0, prev.1),
-                        skia::Point::new(x, y),
-                        outer_paint,
-                    );
-                    prev = (x, y);
                 }
 
-                canvas.draw_line(
-                    skia::Point::new(prev.0, prev.1),
-                    skia::Point::new(final_x, height),
-                    outer_paint,
-                );
-
                 // Make sure to close out the path
-                path.line_to(skia::Point::new(final_x, height));
-                path.line_to(skia::Point::new(x, height));
+                path.line_to(vec2f(final_x, height));
+                path.line_to(vec2f(x, height));
+                path.close_path();
 
-                path.close();
+                if data_points.fill {
+                    canvas.fill_path(path.clone(), FillRule::Winding);
+                }
+
+                if data_points.dashed {
+                    canvas.set_line_dash(vec![scale_factor * 5., scale_factor * 2.]);
+                }
+
+                canvas.stroke_path(path);
+            }
+        }
+
+        fn render_init_pathfinder(&self, width: i32, height: i32, scale_factor: f32) {
+            use pathfinder_canvas::*;
+            use pathfinder_gl::*;
+            use pathfinder_renderer::gpu::{options::*, renderer::*};
+            use pathfinder_resources::embedded::*;
+
+            let mut fboid: gl::types::GLint = 0;
+            unsafe {
+                gl::GetIntegerv(gl::FRAMEBUFFER_BINDING, &mut fboid);
             }
 
-            if let Some(inner_paint) = inner_paint {
-                canvas.draw_path(&path, &inner_paint);
+            let device = GLDevice::new(GLVersion::GL3, fboid as _);
+            let mode = RendererMode::default_for_device(&device);
+
+            let framebuffer_size = Vector2I::new(width, height);
+            let options = RendererOptions {
+                dest: DestFramebuffer::full_window(framebuffer_size.clone()),
+                background_color: None,
+                ..RendererOptions::default()
+            };
+
+            self.renderer.set(Some(Renderer::new(
+                device,
+                &EmbeddedResourceLoader::new(),
+                mode,
+                options,
+            )));
+
+            self.render_function.set(Self::render_all);
+            self.render_all(width, height, scale_factor);
+        }
+
+        fn render_all(&self, width: i32, height: i32, scale_factor: f32) {
+            use pathfinder_canvas::*;
+            use pathfinder_renderer::{concurrent::*, gpu::options::*, options::*};
+
+            let framebuffer_size = Vector2I::new(width, height);
+
+            let mut renderer = self.renderer.take().expect("Uninitialized renderer");
+            renderer.options_mut().dest = DestFramebuffer::full_window(framebuffer_size);
+
+            let mut canvas =
+                Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});
+
+            let data_sets = self.data_sets.take();
+            let base_color = self.base_color.get();
+
+            canvas.set_line_width(scale_factor as f32);
+
+            self.draw_outline(&mut canvas, width, height, scale_factor, &base_color);
+
+            if self.obj().grid_visible() {
+                self.draw_grid(
+                    &mut canvas,
+                    width,
+                    height,
+                    scale_factor,
+                    self.obj().data_points() as _,
+                    &base_color,
+                );
             }
+
+            for values in data_sets.iter() {
+                self.plot_values(
+                    &mut canvas,
+                    width,
+                    height,
+                    scale_factor,
+                    &values,
+                    &base_color,
+                );
+            }
+
+            canvas.into_canvas().into_scene().build_and_render(
+                &mut renderer,
+                BuildOptions::default(),
+                executor::SequentialExecutor,
+            );
+
+            self.data_sets.set(data_sets);
+            self.renderer.set(Some(renderer));
         }
     }
 
@@ -369,68 +396,37 @@ mod imp {
 
     impl WidgetImpl for GraphWidget {
         fn realize(&self) {
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::GraphWidget>();
+
             self.parent_realize();
-            self.realize().expect("Failed to realize widget");
+
+            this.set_has_stencil_buffer(true);
+            this.set_auto_render(false);
         }
     }
 
     impl GLAreaImpl for GraphWidget {
         fn render(&self, _: &gdk::GLContext) -> bool {
-            use skia::*;
-
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
-            let native = this.native().expect("Failed to get scale factor");
-
-            let mut viewport_info: [gl_rs::types::GLint; 4] = [0; 4];
+            let scale_factor = this.scale_factor();
+            let mut viewport_info: [gl::types::GLint; 4] = [0; 4];
             unsafe {
-                gl_rs::GetIntegerv(gl_rs::VIEWPORT, &mut viewport_info[0]);
+                gl::GetIntegerv(gl::VIEWPORT, &mut viewport_info[0]);
             }
             let width = viewport_info[2];
             let height = viewport_info[3];
 
             unsafe {
-                gl_rs::ClearColor(0.0, 0.0, 0.0, 0.0);
-                gl_rs::Clear(gl_rs::COLOR_BUFFER_BIT);
+                gl::ClearColor(0.0, 0.0, 0.0, 0.0);
+                gl::Clear(gl::COLOR_BUFFER_BIT);
             }
 
-            let framebuffer_info = {
-                use gl_rs::{types::*, *};
+            (self.render_function.get())(self, width, height, scale_factor as f32);
 
-                let mut fboid: GLint = 0;
-                unsafe { GetIntegerv(FRAMEBUFFER_BINDING, &mut fboid) };
-
-                gpu::gl::FramebufferInfo {
-                    fboid: fboid.try_into().unwrap(),
-                    format: gpu::gl::Format::RGBA8.into(),
-                }
-            };
-
-            let skia_render_target =
-                gpu::BackendRenderTarget::new_gl((width, height), 0, 8, framebuffer_info);
-
-            let skia_context = unsafe {
-                (&mut *self.skia_context.as_ptr())
-                    .as_mut()
-                    .unwrap_unchecked()
-            };
-            let mut surface = Surface::from_backend_render_target(
-                skia_context,
-                &skia_render_target,
-                gpu::SurfaceOrigin::BottomLeft,
-                ColorType::RGBA8888,
-                None,
-                None,
-            )
-            .expect("Failed to create Skia surface");
-
-            self.render_graph(surface.canvas(), width, height, native.scale_factor() as _)
-                .expect("Failed to render");
-
-            skia_context.flush_and_submit();
-
-            return true;
+            true
         }
     }
 }

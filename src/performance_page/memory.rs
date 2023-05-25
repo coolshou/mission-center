@@ -25,7 +25,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*, Snapshot};
 
-use crate::{graph_widget::GraphWidget, mem_composition_widget::MemoryCompositionWidget};
+use super::widgets::{GraphWidget, MemoryCompositionWidget};
 
 mod imp {
     use super::*;
