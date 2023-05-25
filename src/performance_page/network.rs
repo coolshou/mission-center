@@ -25,7 +25,7 @@ use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*, Snapshot};
 
-use crate::graph_widget::GraphWidget;
+use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;

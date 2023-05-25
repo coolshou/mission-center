@@ -22,7 +22,7 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, glib, prelude::*};
 
-use crate::graph_widget::GraphWidget;
+use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;

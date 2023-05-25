@@ -31,8 +31,6 @@ use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
 mod application;
-mod graph_widget;
-mod mem_composition_widget;
 mod performance_page;
 mod sys_info;
 mod window;
@@ -87,14 +85,11 @@ fn main() {
     gio::resources_register(&resources);
 
     // Initialize GL
-    #[cfg(target_os = "linux")]
-    {
-        let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
-        gl_rs::load_with(move |symbol| {
-            let symbol_name = format!("{}\0", symbol);
-            unsafe { lib.sym(&symbol_name).unwrap() }
-        });
-    }
+    let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
+    gl::load_with(move |symbol| {
+        let symbol_name = format!("{}\0", symbol);
+        unsafe { lib.sym(&symbol_name).unwrap() }
+    });
 
     // Take an initial measurement
     {

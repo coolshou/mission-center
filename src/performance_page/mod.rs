@@ -25,12 +25,13 @@ use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use crate::graph_widget::GraphWidget;
+use widgets::GraphWidget;
 
 mod cpu;
 mod memory;
 mod network;
 mod summary_graph;
+mod widgets;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type Cpu = cpu::PerformancePageCpu;
