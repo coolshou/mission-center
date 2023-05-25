@@ -63,6 +63,8 @@ mod imp {
         summary_mode: Cell<bool>,
 
         pages: Cell<Vec<Pages>>,
+        context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
+        current_view_action: Cell<gio::SimpleAction>,
     }
 
     impl Default for PerformancePage {
@@ -73,7 +75,10 @@ mod imp {
 
                 refresh_interval: Cell::new(1000),
                 summary_mode: Cell::new(false),
+
                 pages: Cell::new(Vec::new()),
+                context_menu_view_actions: Cell::new(HashMap::new()),
+                current_view_action: Cell::new(gio::SimpleAction::new("", None)),
             }
         }
     }
@@ -83,46 +88,76 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            let action = gio::SimpleAction::new("summary", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
-                this.set_summary_mode(!this.summary_mode());
+            let mut view_actions = HashMap::new();
+
+            let action = gio::SimpleAction::new_stateful(
+                "summary",
+                None,
+                glib::Variant::from(this.imp().summary_mode.get()),
+            );
+            action.connect_activate(clone!(@weak this => move |action, _| {
+                let new_state = !this.summary_mode();
+                action.set_state(glib::Variant::from(new_state));
+                this.set_summary_mode(new_state);
             }));
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new("cpu", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
+            let action = gio::SimpleAction::new_stateful("cpu", None, glib::Variant::from(true));
+            action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
                     .sidebar
                     .row_at_index(0)
                     .expect("Failed to select CPU row");
                 this.imp().sidebar.select_row(Some(&row));
+
+                let prev_action = this.imp().current_view_action.replace(action.clone());
+                prev_action.set_state(glib::Variant::from(false));
+                action.set_state(glib::Variant::from(true));
             }));
             actions.add_action(&action);
+            view_actions.insert("cpu".to_string(), action.clone());
+            this.imp().current_view_action.set(action);
 
-            let action = gio::SimpleAction::new("memory", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
+            let action =
+                gio::SimpleAction::new_stateful("memory", None, glib::Variant::from(false));
+            action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
                     .sidebar
                     .row_at_index(1)
                     .expect("Failed to select Memory row");
                 this.imp().sidebar.select_row(Some(&row));
+
+                let prev_action = this.imp().current_view_action.replace(action.clone());
+                prev_action.set_state(glib::Variant::from(false));
+                action.set_state(glib::Variant::from(true));
             }));
             actions.add_action(&action);
+            view_actions.insert("memory".to_string(), action);
 
-            let action = gio::SimpleAction::new("disk", None);
+            let action = gio::SimpleAction::new_stateful("disk", None, glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, parameter| {
                 dbg!(action, parameter);
+
+                let prev_action = this.imp().current_view_action.replace(action.clone());
+                prev_action.set_state(glib::Variant::from(false));
+                action.set_state(glib::Variant::from(true));
             }));
             actions.add_action(&action);
+            view_actions.insert("disk".to_string(), action);
 
-            let action = gio::SimpleAction::new("network", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
+            let action =
+                gio::SimpleAction::new_stateful("network", None, glib::Variant::from(false));
+            action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
                 pages.iter().for_each(|page| {
                     if let Pages::Network(network) = page {
                         if let Some((summary_graph, _)) = network.values().next() {
                             if let Some(row) = summary_graph.parent() {
                                 this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                                let prev_action = this.imp().current_view_action.replace(action.clone());
+                                prev_action.set_state(glib::Variant::from(false));
+                                action.set_state(glib::Variant::from(true));
                             }
                         }
                     }
@@ -130,18 +165,26 @@ mod imp {
                 this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
+            view_actions.insert("network".to_string(), action);
 
-            let action = gio::SimpleAction::new("gpu", None);
+            let action = gio::SimpleAction::new_stateful("gpu", None, glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, parameter| {
                 dbg!(action, parameter);
+
+                let prev_action = this.imp().current_view_action.replace(action.clone());
+                prev_action.set_state(glib::Variant::from(false));
+                action.set_state(glib::Variant::from(true));
             }));
             actions.add_action(&action);
+            view_actions.insert("gpu".to_string(), action);
 
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate(clone!(@weak this => move |action, parameter| {
                 dbg!(action, parameter);
             }));
             actions.add_action(&action);
+
+            this.imp().context_menu_view_actions.set(view_actions);
         }
 
         fn set_up_cpu_page(&self, pages: &mut Vec<Pages>) {
@@ -251,6 +294,7 @@ mod imp {
 
         fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
             use crate::{sys_info::*, SYS_INFO};
+            use glib::g_critical;
             use sysinfo::SystemExt;
 
             const BASE_COLOR: [u8; 3] = [0xe8, 0x89, 0xc5];
@@ -329,6 +373,21 @@ mod imp {
 
                 self.sidebar.append(&summary);
                 self.page_stack.add_named(&page, Some(if_name));
+
+                let mut actions = self.context_menu_view_actions.take();
+                match actions.get("network") {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to wire up network action for {}, logic bug?",
+                            if_name.as_str()
+                        );
+                    }
+                    Some(action) => {
+                        actions.insert(if_name.clone(), action.clone());
+                    }
+                }
+                self.context_menu_view_actions.set(actions);
 
                 networks.insert(if_name.clone(), (summary, page));
             }
@@ -466,7 +525,17 @@ mod imp {
                         return;
                     }
                     if let Ok(page_name) = unsafe { CStr::from_ptr(widget_name) }.to_str() {
-                        this.imp().page_stack.set_visible_child_name(page_name);
+                        let imp = this.imp();
+
+                        let actions = imp.context_menu_view_actions.take();
+                        if let Some(new_action) = actions.get(page_name) {
+                            new_action.set_state(glib::Variant::from(true));
+                            let prev_action = imp.current_view_action.replace(new_action.clone());
+                            prev_action.set_state(glib::Variant::from(false));
+                        }
+                        imp.context_menu_view_actions.set(actions);
+
+                        imp.page_stack.set_visible_child_name(page_name);
                     }
                 }
             });

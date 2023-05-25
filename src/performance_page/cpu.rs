@@ -135,8 +135,14 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            let action = gio::SimpleAction::new("overall", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
+            // TODO: Read these from GSettings
+            let overall_action =
+                gio::SimpleAction::new_stateful("overall", None, glib::Variant::from(false));
+            let all_processors_action =
+                gio::SimpleAction::new_stateful("all-processors", None, glib::Variant::from(true));
+
+            let apa = all_processors_action.clone();
+            overall_action.connect_activate(clone!(@weak this => move |action, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(true);
@@ -148,12 +154,15 @@ mod imp {
                     graph_widget.set_visible(false);
                 }
 
+                action.set_state(glib::Variant::from(true));
+                apa.set_state(glib::Variant::from(false));
+
                 this.imp().graph_widgets.set(graph_widgets);
             }));
-            actions.add_action(&action);
+            actions.add_action(&overall_action);
 
-            let action = gio::SimpleAction::new("all-processors", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
+            let ova = overall_action.clone();
+            all_processors_action.connect_activate(clone!(@weak this => move |action, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(false);
@@ -165,11 +174,15 @@ mod imp {
                     graph_widget.set_visible(true);
                 }
 
+                action.set_state(glib::Variant::from(true));
+                ova.set_state(glib::Variant::from(false));
+
                 this.imp().graph_widgets.set(graph_widgets);
             }));
-            actions.add_action(&action);
+            actions.add_action(&all_processors_action);
 
-            let action = gio::SimpleAction::new("kernel-times", None);
+            let action =
+                gio::SimpleAction::new_stateful("kernel-times", None, glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, parameter| {
                 dbg!(action, parameter);
             }));
