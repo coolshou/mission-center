@@ -4,8 +4,7 @@
   "runtime-version": "44",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.rust-stable",
-    "org.freedesktop.Sdk.Extension.llvm16"
+    "org.freedesktop.Sdk.Extension.rust-stable"
   ],
   "command": "missioncenter",
   "finish-args": [
@@ -19,7 +18,7 @@
     "--system-talk-name=org.freedesktop.NetworkManager"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin",
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
     "build-args": [
       "--share=network"
     ],
@@ -90,6 +89,9 @@
     {
       "name": "missioncenter",
       "buildsystem": "meson",
+      "config-opts": [
+        "-Dbuildtype=release"
+      ],
       "sources": [
         {
           "type": "dir",

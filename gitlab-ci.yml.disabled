@@ -14,9 +14,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev clang-16 desktop-file-utils
-    - ln -sf /usr/bin/clang-16 /usr/local/bin/clang
-    - ln -sf /usr/bin/clang++-16 /usr/local/bin/clang++
+    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev desktop-file-utils
     - ln -sf /usr/bin/python3 /usr/local/bin/python
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -24,13 +22,17 @@ build-job:       # This job runs in the build stage, which runs first.
 
     - pip install meson ninja --break-system-packages
 
-    - meson setup _build -Dbuildtype=debug
+    - meson setup _build -Dbuildtype=release
     - ninja -C _build
+    - mv _build/src/missioncenter missioncenter.bin
+    - strip missioncenter.bin
+    - mv _build/resources/missioncenter.gresource missioncenter.gresource
+    - mv _build/data/hwdb/hw.db hw.db
   artifacts:
     paths:
-      - _build/src/missioncenter
-      - _build/resources/missioncenter.gresource
-      - _build/data/hwdb/hw.db
+      - missioncenter.bin
+      - missioncenter.gresource
+      - hw.db
 
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
@@ -51,7 +53,7 @@ package-job:
     - apt-get update
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.llvm16//22.08 org.freedesktop.Sdk.Extension.rust-stable//22.08
+    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.rust-stable//22.08
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
