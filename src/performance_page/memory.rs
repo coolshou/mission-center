@@ -145,6 +145,8 @@ mod imp {
                 let used = sys_info.memory_info().mem_total - sys_info.memory_info().mem_available;
                 this.usage_graph.add_data_point(0, used as _);
 
+                this.mem_composition.queue_render();
+
                 let used = crate::to_human_readable(used as _, 1024.);
                 this.in_use.set_text(&format!("{:.2} {}iB", used.0, used.1));
 
@@ -228,9 +230,11 @@ mod imp {
 
             self.admin_banner
                 .connect_button_clicked(clone!(@weak this => move |_| {
+                    use crate::sys_info::MemInfo;
+
                     let ptr = this.as_ptr() as usize;
                     let _ = std::thread::spawn(move || {
-                        let memory_device_info = crate::sys_info::MemInfo::load_memory_device_info();
+                        let memory_device_info = MemInfo::load_memory_device_info();
                         glib::idle_add_once(move || {
                             use glib::translate::from_glib_none;
 

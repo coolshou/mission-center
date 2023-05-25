@@ -41,6 +41,8 @@ mod imp {
 
         renderer: Cell<Option<Renderer<GLDevice>>>,
         render_function: Cell<fn(&Self, width: i32, height: i32, scale_factor: f32)>,
+
+        tooltip_texts: Cell<Vec<(f32, String)>>,
     }
 
     impl Default for MemoryCompositionWidget {
@@ -52,11 +54,36 @@ mod imp {
 
                 renderer: Cell::new(None),
                 render_function: Cell::new(Self::render_init_pathfinder),
+
+                tooltip_texts: Cell::new(vec![]),
             }
         }
     }
 
     impl MemoryCompositionWidget {
+        #[inline]
+        fn render_bar(
+            &self,
+            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
+            x: f32,
+            width: f32,
+            height: i32,
+            fill: bool,
+        ) -> f32 {
+            use pathfinder_canvas::*;
+
+            let mut path = Path2D::new();
+            path.move_to(vec2f(x, 0.));
+            path.line_to(vec2f(x, height as f32));
+            canvas.stroke_path(path);
+
+            if fill {
+                canvas.fill_rect(RectF::new(vec2f(x, 0.), vec2f(width, height as f32)));
+            }
+
+            x + width
+        }
+
         #[inline]
         fn render_outline(
             &self,
@@ -67,18 +94,41 @@ mod imp {
         ) {
             use pathfinder_canvas::*;
 
-            let base_color = self.base_color.get();
-            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
-                (base_color.red() * 255.) as u8,
-                (base_color.green() * 255.) as u8,
-                (base_color.blue() * 255.) as u8,
-                255,
-            )));
-            canvas.set_line_width(scale_factor as f32);
             canvas.stroke_rect(RectF::new(
                 vec2f(scale_factor / 2., scale_factor / 2.),
                 vec2f(width as f32 - scale_factor, height as f32 - scale_factor),
             ));
+        }
+
+        fn configure_tooltips(&self) {
+            let this = self.obj();
+            let this = this.upcast_ref::<super::MemoryCompositionWidget>();
+
+            this.set_has_tooltip(true);
+            this.set_tooltip_text(Some("Memory Composition"));
+            this.connect_query_tooltip(|this, x, _, keyboard, tooltip| {
+                if keyboard {
+                    tooltip.set_text(Some("Memory Composition"));
+                    return true;
+                }
+
+                let tooltip_texts = this.imp().tooltip_texts.take();
+
+                let x = x as f32 * this.scale_factor() as f32;
+                let mut text_pos = tooltip_texts.len() - 1;
+                for (i, (pos, _)) in tooltip_texts.iter().enumerate().rev() {
+                    if x <= *pos {
+                        text_pos = i;
+                    } else {
+                        break;
+                    }
+                }
+
+                tooltip.set_text(Some(&tooltip_texts[text_pos].1));
+                this.imp().tooltip_texts.set(tooltip_texts);
+
+                true
+            });
         }
 
         fn render_init_pathfinder(&self, width: i32, height: i32, scale_factor: f32) {
@@ -122,8 +172,86 @@ mod imp {
             let mut renderer = self.renderer.take().expect("Uninitialized renderer");
             renderer.options_mut().dest = DestFramebuffer::full_window(framebuffer_size);
 
+            let this = self.obj();
+            let this = this.upcast_ref::<super::MemoryCompositionWidget>();
+
+            let sys_info = crate::SYS_INFO.read().expect("Failed to acquire read lock");
+            let total = sys_info.memory_info().mem_total as f32;
+
             let mut canvas =
                 Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});
+
+            let base_color = this.imp().base_color.get();
+            canvas.set_fill_style(FillStyle::Color(ColorU::new(
+                (base_color.red() * 255.) as u8,
+                (base_color.green() * 255.) as u8,
+                (base_color.blue() * 255.) as u8,
+                50,
+            )));
+            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
+                (base_color.red() * 255.) as u8,
+                (base_color.green() * 255.) as u8,
+                (base_color.blue() * 255.) as u8,
+                255,
+            )));
+            canvas.set_line_width(scale_factor as f32);
+
+            let mut tooltip_texts = self.tooltip_texts.take();
+            tooltip_texts.clear();
+
+            let used =
+                (sys_info.memory_info().mem_total - sys_info.memory_info().mem_available) as f32;
+            let x = self.render_bar(&mut canvas, 0., width as f32 * (used / total), height, true);
+            let used_hr = crate::to_human_readable(used, 1024.);
+
+            let modified = sys_info.memory_info().dirty as f32;
+            let bar_width = width as f32 * (modified / total);
+            let x = self.render_bar(&mut canvas, x - bar_width, bar_width, height, false);
+            let modified = crate::to_human_readable(modified, 1024.);
+            tooltip_texts.push((
+                x - bar_width,
+                gettextrs::gettext!(
+                    "In use ({}iB)\n\nMemory used by the operating system and running applications",
+                    format!("{:.2} {}", used_hr.0, used_hr.1)
+                ),
+            ));
+            tooltip_texts.push((
+                x,
+                gettextrs::gettext!(
+                    "Modified ({}iB)\n\nMemory whose contents must be written to disk before it can be used by another process",
+                    format!("{:.2} {}", modified.0, modified.1)
+               )
+            ));
+
+            self.render_bar(&mut canvas, x, 1., height, false);
+
+            let free = sys_info.memory_info().mem_free as f32;
+            let bar_width = width as f32 * (free / total);
+            self.render_bar(
+                &mut canvas,
+                width as f32 - bar_width,
+                bar_width,
+                height,
+                false,
+            );
+
+            let standby = crate::to_human_readable(used - free, 1024.);
+            tooltip_texts.push((
+                width as f32 - bar_width,
+                gettextrs::gettext!(
+                    "Standby ({}iB)\n\nMemory that contains cached data and code that is not actively in use",
+                    format!("{:.2} {}", standby.0, standby.1)
+                )
+            ));
+
+            let free = crate::to_human_readable(free, 1024.);
+            tooltip_texts.push((
+                width as f32 + 1.,
+                gettextrs::gettext!(
+                    "Free ({}iB)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
+                    format!("{:.2} {}", free.0, free.1)
+                ),
+            ));
 
             self.render_outline(&mut canvas, width, height, scale_factor);
 
@@ -133,6 +261,7 @@ mod imp {
                 executor::SequentialExecutor,
             );
 
+            self.tooltip_texts.set(tooltip_texts);
             self.renderer.set(Some(renderer));
         }
     }
@@ -145,6 +274,12 @@ mod imp {
     }
 
     impl ObjectImpl for MemoryCompositionWidget {
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            self.configure_tooltips();
+        }
+
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -166,7 +301,7 @@ mod imp {
             self.parent_realize();
 
             this.set_has_stencil_buffer(true);
-            this.set_auto_render(true);
+            this.set_auto_render(false);
         }
     }
 

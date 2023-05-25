@@ -277,7 +277,7 @@ mod imp {
                         (color.red() * 255.) as u8,
                         (color.green() * 255.) as u8,
                         (color.blue() * 255.) as u8,
-                        51,
+                        100,
                     )));
                     canvas.fill_path(path.clone(), FillRule::Winding);
                 }
