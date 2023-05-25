@@ -318,4 +318,8 @@ impl PerformancePageMemory {
 
         this
     }
+
+    pub fn set_initial_values(&self, values: Vec<f32>) {
+        self.imp().usage_graph.set_data(0, values);
+    }
 }

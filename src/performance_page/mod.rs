@@ -179,6 +179,13 @@ mod imp {
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
+            let summary_graph = summary.graph_widget();
+            page.connect_realize(move |page| {
+                if let Some(values) = summary_graph.data(0) {
+                    page.set_initial_values(values);
+                }
+            });
+
             self.sidebar.append(&summary);
             self.page_stack.add_named(&page, Some("cpu"));
 
@@ -228,6 +235,13 @@ mod imp {
                 .bind_property("summary-mode", &page, "summary-mode")
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
+
+            let summary_graph = summary.graph_widget();
+            page.connect_realize(move |page| {
+                if let Some(memory_data) = summary_graph.data(0) {
+                    page.set_initial_values(memory_data);
+                }
+            });
 
             self.sidebar.append(&summary);
             self.page_stack.add_named(&page, Some("memory"));
@@ -303,6 +317,15 @@ mod imp {
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
+
+                let summary_graph = summary.graph_widget();
+                page.connect_realize(move |page| {
+                    if let Some(send_data) = summary_graph.data(0) {
+                        if let Some(recv_data) = summary_graph.data(1) {
+                            page.set_initial_values(send_data, recv_data);
+                        }
+                    }
+                });
 
                 self.sidebar.append(&summary);
                 self.page_stack.add_named(&page, Some(if_name));

@@ -23,6 +23,8 @@ use std::cell::Cell;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
+use crate::performance_page::widgets::graph_widget::imp::DataSetDescriptor;
+
 mod imp {
     use pathfinder_gl::GLDevice;
     use pathfinder_renderer::gpu::renderer::Renderer;
@@ -75,6 +77,9 @@ mod imp {
         fn default() -> Self {
             const DATA_SET_LEN_DEFAULT: usize = 60;
 
+            let mut data_set = vec![0.0; DATA_SET_LEN_DEFAULT];
+            data_set.reserve(1);
+
             Self {
                 data_points: Cell::new(DATA_SET_LEN_DEFAULT as _),
                 data_set_count: Cell::new(1),
@@ -91,14 +96,11 @@ mod imp {
                 renderer: Cell::new(None),
                 render_function: Cell::new(Self::render_init_pathfinder),
 
-                data_sets: Cell::new(vec![
-                    DataSetDescriptor {
-                        dashed: false,
-                        fill: true,
-                        data_set: vec![0.0; DATA_SET_LEN_DEFAULT],
-                    };
-                    1
-                ]),
+                data_sets: Cell::new(vec![DataSetDescriptor {
+                    dashed: false,
+                    fill: true,
+                    data_set,
+                }]),
 
                 scroll_offset: Cell::new(0.),
             }
@@ -465,6 +467,60 @@ impl GraphWidget {
     }
 
     pub fn add_data_point(&self, index: usize, value: f32) {
+        let mut data = self.imp().data_sets.take();
+        if index < data.len() {
+            data[index].data_set.push(value);
+            data[index].data_set.remove(0);
+
+            if self.auto_scale() {
+                self.scale(&mut data, value);
+            }
+        }
+        self.imp().data_sets.set(data);
+
+        if self.is_visible() {
+            self.queue_render();
+        }
+    }
+
+    pub fn set_data(&self, index: usize, mut values: Vec<f32>) {
+        use std::cmp::Ordering;
+
+        let imp = self.imp();
+
+        let mut data = imp.data_sets.take();
+        if index < data.len() {
+            values.truncate(data[index].data_set.len());
+            data[index].data_set = values;
+
+            if self.auto_scale() {
+                let max = *data[index]
+                    .data_set
+                    .iter()
+                    .max_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                    .unwrap_or(&0.0);
+                self.scale(&mut data, max);
+            }
+        }
+
+        imp.data_sets.set(data);
+    }
+
+    pub fn data(&self, index: usize) -> Option<Vec<f32>> {
+        let imp = self.imp();
+
+        let data = imp.data_sets.take();
+        let result = if index < data.len() {
+            Some(data[index].data_set.clone())
+        } else {
+            None
+        };
+        imp.data_sets.set(data);
+
+        result
+    }
+
+    fn scale(&self, data: &mut Vec<DataSetDescriptor>, value: f32) {
         fn round_up_to_next_power_of_two(num: u32) -> u32 {
             if num == 0 {
                 return 0;
@@ -480,45 +536,34 @@ impl GraphWidget {
             n + 1
         }
 
-        let mut data = self.imp().data_sets.take();
-        if index < data.len() {
-            data[index].data_set.push(value);
-            data[index].data_set.remove(0);
+        let mut max_y = value.max(self.value_range_max());
 
-            if self.auto_scale() {
-                let mut max_y = value.max(self.value_range_max());
-
-                let mut value_max = value;
-                for data_set in data.iter() {
-                    for value in data_set.data_set.iter() {
-                        if value_max < *value {
-                            value_max = *value;
-                        }
-                    }
+        let mut value_max = value;
+        for data_set in data.iter() {
+            for value in data_set.data_set.iter() {
+                if value_max < *value {
+                    value_max = *value;
                 }
-
-                while value_max < max_y {
-                    max_y /= 2.;
-                }
-                if value_max > max_y {
-                    max_y *= 2.;
-                }
-
-                if self.auto_scale_pow2() {
-                    max_y = max_y.round();
-                    if max_y < 0. {
-                        max_y = -max_y;
-                        max_y = round_up_to_next_power_of_two(max_y as u32) as f32 * -1.;
-                    } else {
-                        max_y = round_up_to_next_power_of_two(max_y as u32) as f32;
-                    }
-                }
-
-                self.set_value_range_max(max_y);
             }
         }
-        self.imp().data_sets.set(data);
 
-        self.queue_render();
+        while value_max < max_y {
+            max_y /= 2.;
+        }
+        if value_max > max_y {
+            max_y *= 2.;
+        }
+
+        if self.auto_scale_pow2() {
+            max_y = max_y.round();
+            if max_y < 0. {
+                max_y = -max_y;
+                max_y = round_up_to_next_power_of_two(max_y as u32) as f32 * -1.;
+            } else {
+                max_y = round_up_to_next_power_of_two(max_y as u32) as f32;
+            }
+        }
+
+        self.set_value_range_max(max_y);
     }
 }

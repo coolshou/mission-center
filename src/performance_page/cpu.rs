@@ -497,4 +497,16 @@ impl PerformancePageCpu {
         };
         this
     }
+
+    pub fn set_initial_values(&self, values: Vec<f32>) {
+        let imp = self.imp();
+
+        let graph_widgets = imp.graph_widgets.take();
+        for i in 0..(graph_widgets.len() - 1) {
+            graph_widgets[i].set_data(0, values.clone());
+        }
+        graph_widgets[graph_widgets.len() - 1].set_data(0, values);
+
+        imp.graph_widgets.set(graph_widgets);
+    }
 }

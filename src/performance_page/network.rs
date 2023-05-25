@@ -453,4 +453,11 @@ impl PerformancePageNetwork {
 
         this
     }
+
+    pub fn set_initial_values(&self, values_send: Vec<f32>, values_receive: Vec<f32>) {
+        let imp = self.imp();
+
+        imp.usage_graph.set_data(0, values_send);
+        imp.usage_graph.set_data(1, values_receive);
+    }
 }
