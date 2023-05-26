@@ -40,8 +40,16 @@ mod imp {
         #[template_child]
         pub disk_transfer_rate_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub capacity: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub formatted: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub disk_type: TemplateChild<gtk::Label>,
+        #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
+        #[property(get = Self::name, set = Self::set_name, type = String)]
+        name: Cell<String>,
         #[property(get, set)]
         refresh_interval: Cell<u32>,
         #[property(get, set)]
@@ -55,8 +63,12 @@ mod imp {
             Self {
                 usage_graph: Default::default(),
                 disk_transfer_rate_graph: Default::default(),
+                capacity: Default::default(),
+                formatted: Default::default(),
+                disk_type: Default::default(),
                 context_menu: Default::default(),
 
+                name: Cell::new(String::new()),
                 refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
@@ -64,7 +76,23 @@ mod imp {
         }
     }
 
-    impl PerformancePageDisk {}
+    impl PerformancePageDisk {
+        fn name(&self) -> String {
+            unsafe { &*self.name.as_ptr() }.clone()
+        }
+
+        fn set_name(&self, name: String) {
+            {
+                let if_name = unsafe { &*self.name.as_ptr() };
+                if if_name == &name {
+                    return;
+                }
+            }
+
+            self.name.replace(name);
+            self.update_static_information();
+        }
+    }
 
     impl PerformancePageDisk {
         fn configure_actions(this: &super::PerformancePageDisk) {
@@ -106,7 +134,31 @@ mod imp {
             ));
         }
 
-        fn update_static_information(&self) {}
+        fn update_static_information(&self) {
+            use crate::{sys_info::*, SYS_INFO};
+
+            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            let disk_info = sys_info.disk_info();
+            if let Some(disk) = disk_info
+                .disks()
+                .iter()
+                .filter(|d| d.name == self.obj().upcast_ref::<super::PerformancePageDisk>().name())
+                .take(1)
+                .next()
+            {
+                let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
+                self.capacity
+                    .set_text(&format!("{:.2} {}iB", capacity.0, capacity.1));
+
+                self.disk_type.set_text(match disk.r#type {
+                    DiskType::HDD => "HDD",
+                    DiskType::SSD => "SSD",
+                    DiskType::NVMe => "NVMe",
+                    DiskType::iSCSI => "iSCSI",
+                    DiskType::Unknown => "Unknown",
+                });
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -178,9 +230,9 @@ glib::wrapper! {
 }
 
 impl PerformancePageDisk {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         let this: Self = unsafe {
-            glib::Object::new_internal(Self::static_type(), &mut [])
+            glib::Object::new_internal(Self::static_type(), &mut [("name", name.into())])
                 .downcast()
                 .unwrap()
         };

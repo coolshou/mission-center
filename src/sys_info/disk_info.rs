@@ -110,6 +110,18 @@ impl DiskInfo {
                 continue;
             }
 
+            let mut found = false;
+            for i in 0..self.disks.len() {
+                if self.disks[i].name == dir_name {
+                    found = true;
+                    break;
+                }
+            }
+
+            if found {
+                continue;
+            }
+
             let r#type = if let Ok(v) =
                 fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
             {
@@ -130,27 +142,25 @@ impl DiskInfo {
                 DiskType::Unknown
             };
 
-            let mut found = false;
-            for i in 0..self.disks.len() {
-                if self.disks[i].name == dir_name {
-                    found = true;
-                    break;
-                }
-            }
+            let capacity =
+                if let Ok(v) = fs::read_to_string(format!("/sys/block/{}/size", dir_name)) {
+                    v.trim().parse::<u64>().ok().map_or(u64::MAX, |v| v * 512)
+                } else {
+                    u64::MAX
+                };
 
-            if !found {
-                self.disks.push(Disk {
-                    name: dir_name,
-                    r#type,
-                    capacity: 0,
-                    formatted: 0,
-                    system_disk: false,
-                    busy_percent: 0.0,
-                    response_time_ms: 0,
-                    read_speed: 0,
-                    write_speed: 0,
-                });
-            }
+            self.disks.push(Disk {
+                name: dir_name,
+                r#type,
+                capacity,
+                formatted: 0,
+                system_disk: false,
+                busy_percent: 0.0,
+
+                response_time_ms: 0,
+                read_speed: 0,
+                write_speed: 0,
+            });
         }
     }
 

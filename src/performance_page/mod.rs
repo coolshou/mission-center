@@ -340,7 +340,7 @@ mod imp {
                     1.,
                 ));
 
-                let page = DiskPage::new();
+                let page = DiskPage::new(&disk.name);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -515,15 +515,6 @@ mod imp {
                             cpu_info.frequency() as f32 / 1024.
                         ));
                     }
-                    Pages::Disk(pages) => {
-                        for disk in sys_info.disk_info().disks() {
-                            if let Some((summary, _)) = pages.get(&disk.name) {
-                                let graph_widget = summary.graph_widget();
-                                graph_widget.add_data_point(0, disk.busy_percent);
-                                summary.set_info2(format!("{:.2}%", disk.busy_percent));
-                            }
-                        }
-                    }
                     Pages::Memory((summary, _)) => {
                         let total =
                             crate::to_human_readable(sys_info.memory_info().mem_total as _, 1024.);
@@ -540,6 +531,15 @@ mod imp {
                             total.1,
                             ((used.0 / total.0) * 100.).round()
                         ));
+                    }
+                    Pages::Disk(pages) => {
+                        for disk in sys_info.disk_info().disks() {
+                            if let Some((summary, _)) = pages.get(&disk.name) {
+                                let graph_widget = summary.graph_widget();
+                                graph_widget.add_data_point(0, disk.busy_percent);
+                                summary.set_info2(format!("{:.2}%", disk.busy_percent));
+                            }
+                        }
                     }
                     Pages::Network(pages) => {
                         for (name, net_info) in sys_info.system().networks() {

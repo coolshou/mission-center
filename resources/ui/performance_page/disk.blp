@@ -117,7 +117,7 @@ template PerformancePageDisk: Box {
   }
 
   Box {
-    margin-bottom: 20;
+    margin-bottom: 10;
 
     Label {
       styles [
@@ -161,10 +161,10 @@ template PerformancePageDisk: Box {
             ]
 
             halign: start;
-            label: _("In use");
+            label: _("Active time");
           }
 
-          Label in_use {
+          Label active_time {
             styles [
               "title-4",
             ]
@@ -184,10 +184,10 @@ template PerformancePageDisk: Box {
             ]
 
             halign: start;
-            label: _("Available");
+            label: _("Average response time");
           }
 
-          Label available {
+          Label avg_response_time {
             styles [
               "title-4",
             ]
@@ -201,99 +201,63 @@ template PerformancePageDisk: Box {
         spacing: 15;
 
         Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
+          spacing: 5;
 
-          Label {
-
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Committed");
+          Picture legend_read {
           }
 
-          Label committed {
-            styles [
-              "title-4",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
 
-            halign: start;
-          }
-        }
+            Label {
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
+              styles [
+                "caption",
+              ]
 
-          Label {
-            styles [
-              "caption",
-            ]
+              halign: start;
+              label: _("Read speed");
+            }
 
-            halign: start;
-            label: _("Cached");
-          }
+            Label read_speed {
+              styles [
+                "title-4",
+              ]
 
-          Label cached {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box bottom_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Swap available");
-          }
-
-          Label swap_available {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
+              halign: start;
+            }
           }
         }
 
         Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
+          spacing: 5;
 
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Swap used");
+          Picture legend_write {
           }
 
-          Label swap_used {
-            styles [
-              "title-4",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            width-request: 100;
 
-            halign: start;
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Write speed");
+            }
+
+            Label write_speed {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
           }
         }
       }
@@ -301,7 +265,6 @@ template PerformancePageDisk: Box {
 
     Box system_info {
       spacing: 10;
-      visible: false;
 
       Box labels {
         orientation: vertical;
@@ -313,7 +276,7 @@ template PerformancePageDisk: Box {
           ]
 
           halign: start;
-          label: _("Speed:");
+          label: _("Capacity:");
         }
 
         Label {
@@ -322,7 +285,7 @@ template PerformancePageDisk: Box {
           ]
 
           halign: start;
-          label: _("Slots used:");
+          label: _("Formatted:");
         }
 
         Label {
@@ -331,7 +294,7 @@ template PerformancePageDisk: Box {
           ]
 
           halign: start;
-          label: _("Form factor:");
+          label: _("System disk:");
         }
 
         Label {
@@ -348,7 +311,7 @@ template PerformancePageDisk: Box {
         orientation: vertical;
         spacing: 3;
 
-        Label speed {
+        Label capacity {
           styles [
             "caption",
           ]
@@ -356,7 +319,7 @@ template PerformancePageDisk: Box {
           halign: start;
         }
 
-        Label slots_used {
+        Label formatted {
           styles [
             "caption",
           ]
@@ -364,7 +327,7 @@ template PerformancePageDisk: Box {
           halign: start;
         }
 
-        Label form_factor {
+        Label system_disk {
           styles [
             "caption",
           ]
@@ -372,7 +335,7 @@ template PerformancePageDisk: Box {
           halign: start;
         }
 
-        Label ram_type {
+        Label disk_type {
           styles [
             "caption",
           ]
