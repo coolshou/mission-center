@@ -1,9 +1,11 @@
 use lazy_static::lazy_static;
 use sysinfo::{NetworkExt, System, SystemExt};
 
+pub use disk_info::*;
 pub use mem_info::*;
 pub use net_info::*;
 
+mod disk_info;
 mod mem_info;
 mod net_info;
 
@@ -20,6 +22,8 @@ pub struct SysInfo {
 
     net_info: Option<NetInfo>,
     net_devices: std::collections::HashMap<String, NetworkDevice>,
+
+    disk_info: DiskInfo,
 
     cpu_base_frequency: Option<usize>,
     cpu_socket_count: Option<u8>,
@@ -65,9 +69,13 @@ impl SysInfo {
 
         Self {
             system: System::new_all(),
-            mem_info: mem_info::MemInfo::new(),
+
+            mem_info: MemInfo::new(),
+
             net_info: NetInfo::new().ok(),
             net_devices: HashMap::new(),
+
+            disk_info: DiskInfo::new(),
 
             cpu_base_frequency,
             cpu_socket_count: Self::load_cpu_socket_count(),
@@ -142,8 +150,12 @@ impl SysInfo {
         self.handle_count
     }
 
-    pub fn memory_info(&self) -> &mem_info::MemInfo {
+    pub fn memory_info(&self) -> &MemInfo {
         &self.mem_info
+    }
+
+    pub fn disk_info(&self) -> &DiskInfo {
+        &self.disk_info
     }
 
     pub fn network_device_info(&self, if_name: &str) -> Option<&NetworkDevice> {
@@ -153,6 +165,7 @@ impl SysInfo {
     pub fn refresh_all(&mut self) {
         self.system.refresh_all();
         self.mem_info.refresh();
+        self.disk_info.refresh();
         self.refresh_process_count();
         self.refresh_thread_count();
         self.refresh_handle_count();

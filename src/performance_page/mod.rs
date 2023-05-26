@@ -28,23 +28,26 @@ use gtk::{gio, glib, prelude::*};
 use widgets::GraphWidget;
 
 mod cpu;
+mod disk;
 mod memory;
 mod network;
 mod summary_graph;
 mod widgets;
 
 type SummaryGraph = summary_graph::SummaryGraph;
-type Cpu = cpu::PerformancePageCpu;
-type Memory = memory::PerformancePageMemory;
-type Network = network::PerformancePageNetwork;
+type CpuPage = cpu::PerformancePageCpu;
+type DiskPage = disk::PerformancePageDisk;
+type MemoryPage = memory::PerformancePageMemory;
+type NetworkPage = network::PerformancePageNetwork;
 
 mod imp {
     use super::*;
 
     enum Pages {
-        Cpu((SummaryGraph, Cpu)),
-        Memory((SummaryGraph, Memory)),
-        Network(HashMap<String, (SummaryGraph, Network)>),
+        Cpu((SummaryGraph, CpuPage)),
+        Memory((SummaryGraph, MemoryPage)),
+        Disk(HashMap<String, (SummaryGraph, DiskPage)>),
+        Network(HashMap<String, (SummaryGraph, NetworkPage)>),
     }
 
     #[derive(Properties)]
@@ -135,12 +138,24 @@ mod imp {
             view_actions.insert("memory".to_string(), action);
 
             let action = gio::SimpleAction::new_stateful("disk", None, glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |action, _| {
+                let pages = this.imp().pages.take();
+                pages.iter().for_each(|page| {
+                    if let Pages::Disk(disk) = page {
+                        if let Some((summary_graph, _)) = disk.values().next() {
+                            if let Some(row) = summary_graph.parent() {
+                                this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
-                let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(glib::Variant::from(false));
-                action.set_state(glib::Variant::from(true));
+                                let prev_action = this.imp().current_view_action.replace(action.clone());
+                                prev_action.set_state(glib::Variant::from(false));
+                                action.set_state(glib::Variant::from(true));
+
+                                return;
+                            }
+                        }
+                    }
+                });
+                this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
             view_actions.insert("disk".to_string(), action);
@@ -158,6 +173,8 @@ mod imp {
                                 let prev_action = this.imp().current_view_action.replace(action.clone());
                                 prev_action.set_state(glib::Variant::from(false));
                                 action.set_state(glib::Variant::from(true));
+
+                                return;
                             }
                         }
                     }
@@ -203,7 +220,7 @@ mod imp {
                 1.,
             ));
 
-            let page = Cpu::new();
+            let page = CpuPage::new();
             page.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
                 BASE_COLOR[1] as f32 / 255.,
@@ -260,7 +277,7 @@ mod imp {
                 1.,
             ));
 
-            let page = Memory::new();
+            let page = MemoryPage::new();
             page.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
                 BASE_COLOR[1] as f32 / 255.,
@@ -290,6 +307,87 @@ mod imp {
             self.page_stack.add_named(&page, Some("memory"));
 
             pages.push(Pages::Memory((summary, page)));
+        }
+
+        fn set_up_disk_pages(&self, pages: &mut Vec<Pages>) {
+            use crate::{sys_info::*, SYS_INFO};
+            use glib::g_critical;
+
+            const BASE_COLOR: [u8; 3] = [0x21, 0x8A, 0x8A];
+
+            let sys_info = SYS_INFO
+                .read()
+                .expect("Failed to read system information: Unable to acquire lock");
+
+            let mut disks = HashMap::new();
+            for (i, disk) in sys_info.disk_info().disks().iter().enumerate() {
+                let summary = SummaryGraph::new();
+                summary.set_widget_name(&disk.name);
+
+                summary.set_heading(gettext!("Disk {} ({})", i, &disk.name));
+                summary.set_info1(match disk.r#type {
+                    DiskType::HDD => gettext("HDD"),
+                    DiskType::SSD => gettext("SSD"),
+                    DiskType::NVMe => gettext("NVMe"),
+                    DiskType::iSCSI => gettext("iSCSI"),
+                    DiskType::Unknown => gettext("Unknown"),
+                });
+                summary.set_info2(format!("{:.2}%", disk.busy_percent));
+                summary.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+
+                let page = DiskPage::new();
+                page.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+                self.obj()
+                    .as_ref()
+                    .bind_property("refresh-interval", &page, "refresh-interval")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                self.obj()
+                    .as_ref()
+                    .bind_property("summary-mode", &page, "summary-mode")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                let summary_graph = summary.graph_widget();
+                page.connect_realize(move |page| {
+                    if let Some(data) = summary_graph.data(0) {
+                        page.set_initial_values(data);
+                    }
+                });
+
+                self.sidebar.append(&summary);
+                self.page_stack.add_named(&page, Some(&disk.name));
+
+                let mut actions = self.context_menu_view_actions.take();
+                match actions.get("disk") {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to wire up disk action for {}, logic bug?",
+                            &disk.name
+                        );
+                    }
+                    Some(action) => {
+                        actions.insert(disk.name.clone(), action.clone());
+                    }
+                }
+                self.context_menu_view_actions.set(actions);
+
+                disks.insert(disk.name.clone(), (summary, page));
+            }
+
+            pages.push(Pages::Disk(disks));
         }
 
         fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
@@ -343,7 +441,7 @@ mod imp {
                     ));
                 }
 
-                let page = Network::new(&if_name, net_device_info.descriptor.r#type);
+                let page = NetworkPage::new(&if_name, net_device_info.descriptor.r#type);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -417,6 +515,15 @@ mod imp {
                             cpu_info.frequency() as f32 / 1024.
                         ));
                     }
+                    Pages::Disk(pages) => {
+                        for disk in sys_info.disk_info().disks() {
+                            if let Some((summary, _)) = pages.get(&disk.name) {
+                                let graph_widget = summary.graph_widget();
+                                graph_widget.add_data_point(0, disk.busy_percent);
+                                summary.set_info2(format!("{:.2}%", disk.busy_percent));
+                            }
+                        }
+                    }
                     Pages::Memory((summary, _)) => {
                         let total =
                             crate::to_human_readable(sys_info.memory_info().mem_total as _, 1024.);
@@ -482,8 +589,8 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             SummaryGraph::ensure_type();
             GraphWidget::ensure_type();
-            Cpu::ensure_type();
-            Network::ensure_type();
+            CpuPage::ensure_type();
+            NetworkPage::ensure_type();
 
             klass.bind_template();
         }
@@ -505,6 +612,7 @@ mod imp {
 
             self.set_up_cpu_page(&mut pages);
             self.set_up_memory_page(&mut pages);
+            self.set_up_disk_pages(&mut pages);
             self.set_up_network_pages(&mut pages);
 
             let row = self

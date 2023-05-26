@@ -1,18 +1,20 @@
 using Gtk 4.0;
+using Adw 1;
 
-template PerformancePageNetwork: Box {
+template PerformancePageDisk: Box {
   orientation: vertical;
 
   WindowHandle {
     child: Box description {
       orientation: vertical;
+      margin-top: 10;
       spacing: 7;
       hexpand: true;
 
       Box {
         spacing: 200;
 
-        Label title_connection_type{
+        Label disk_id {
           styles [
             "title-1",
           ]
@@ -21,7 +23,7 @@ template PerformancePageNetwork: Box {
           halign: start;
         }
 
-        Label device_name {
+        Label disk_name {
           styles [
             "title-3",
           ]
@@ -38,13 +40,15 @@ template PerformancePageNetwork: Box {
 
           hexpand: true;
           halign: start;
-          label: _("Throughput");
+          label: _("Active time");
         }
 
-        Label max_y {
+        Label {
           styles [
             "caption",
           ]
+
+          label: "100%";
         }
       }
     };
@@ -56,11 +60,9 @@ template PerformancePageNetwork: Box {
 
     height-request: 120;
 
-    base-color: bind-property PerformancePageNetwork.base-color;
-    data-set-count: 3;
+    base-color: bind-property PerformancePageDisk.base-color;
+    data-set-count: 1;
     scroll: true;
-    auto-scale: true;
-    auto-scale-pow2: true;
   }
 
   Box {
@@ -87,19 +89,88 @@ template PerformancePageNetwork: Box {
     }
   }
 
+  Box {
+    margin-top: 10;
+
+    Label {
+      styles [
+        "caption",
+      ]
+
+      hexpand: true;
+      halign: start;
+      label: _("Disk transfer rate");
+    }
+
+    Label max_y {
+      styles [
+        "caption",
+      ]
+    }
+  }
+
+  .GraphWidget disk_transfer_rate_graph {
+    hexpand: true;
+    height-request: 50;
+
+    base-color: bind-property PerformancePageDisk.base-color;
+  }
+
+  Box {
+    margin-bottom: 20;
+
+    Label {
+      styles [
+        "caption",
+      ]
+
+      hexpand: true;
+      halign: start;
+      label: _("60 seconds");
+    }
+
+    Label {
+      styles [
+        "caption",
+      ]
+
+      label: "0";
+    }
+  }
+
   Box details {
     spacing: 20;
 
-    visible: bind-property PerformancePageNetwork.summary-mode inverted;
+    visible: bind-property PerformancePageDisk.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;
       spacing: 10;
 
-      Box {
-        spacing: 5;
+      Box top_row {
+        spacing: 15;
 
-        Picture legend_send {
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("In use");
+          }
+
+          Label in_use {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
 
         Box {
@@ -113,10 +184,10 @@ template PerformancePageNetwork: Box {
             ]
 
             halign: start;
-            label: _("Send");
+            label: _("Available");
           }
 
-          Label speed_send {
+          Label available {
             styles [
               "title-4",
             ]
@@ -126,15 +197,37 @@ template PerformancePageNetwork: Box {
         }
       }
 
-      Box {
-        spacing: 5;
+      Box mid_row {
+        spacing: 15;
 
-        Picture legend_recv {
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Committed");
+          }
+
+          Label committed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
 
         Box {
           orientation: vertical;
           spacing: 3;
+          width-request: 100;
 
           Label {
             styles [
@@ -142,10 +235,60 @@ template PerformancePageNetwork: Box {
             ]
 
             halign: start;
-            label: _("Receive");
+            label: _("Cached");
           }
 
-          Label speed_recv {
+          Label cached {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+      }
+
+      Box bottom_row {
+        spacing: 15;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Swap available");
+          }
+
+          Label swap_available {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Swap used");
+          }
+
+          Label swap_used {
             styles [
               "title-4",
             ]
@@ -156,8 +299,9 @@ template PerformancePageNetwork: Box {
       }
     }
 
-    Box interface_info {
+    Box system_info {
       spacing: 10;
+      visible: false;
 
       Box labels {
         orientation: vertical;
@@ -169,7 +313,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          label: _("Interface name:");
+          label: _("Speed:");
         }
 
         Label {
@@ -178,7 +322,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          label: _("Connection type:");
+          label: _("Slots used:");
         }
 
         Label {
@@ -187,8 +331,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property ssid.visible;
-          label: _("SSID:");
+          label: _("Form factor:");
         }
 
         Label {
@@ -197,55 +340,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property signal_strength.visible;
-          label: _("Signal strength:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: bind-property max_bitrate.visible;
-          label: _("Maximum Bitrate:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: bind-property frequency.visible;
-          label: _("Frequency:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Hardware address:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("IPv4 address:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("IPv6 address:");
+          label: _("Type:");
         }
       }
 
@@ -253,7 +348,7 @@ template PerformancePageNetwork: Box {
         orientation: vertical;
         spacing: 3;
 
-        Label interface_name_label {
+        Label speed {
           styles [
             "caption",
           ]
@@ -261,7 +356,7 @@ template PerformancePageNetwork: Box {
           halign: start;
         }
 
-        Label connection_type_label {
+        Label slots_used {
           styles [
             "caption",
           ]
@@ -269,43 +364,7 @@ template PerformancePageNetwork: Box {
           halign: start;
         }
 
-        Label ssid {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: false;
-        }
-
-        Image signal_strength {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: false;
-        }
-
-        Label max_bitrate {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: false;
-        }
-
-        Label frequency {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          visible: false;
-        }
-
-        Label hw_address {
+        Label form_factor {
           styles [
             "caption",
           ]
@@ -313,15 +372,7 @@ template PerformancePageNetwork: Box {
           halign: start;
         }
 
-        Label ipv4_address {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-        }
-
-        Label ipv6_address {
+        Label ram_type {
           styles [
             "caption",
           ]
@@ -353,7 +404,7 @@ menu context_menu_model {
       }
 
       item {
-        label: _("_Memory");
+        label: _("_Disk");
         action: "graph.memory";
       }
 
@@ -371,11 +422,6 @@ menu context_menu_model {
         label: _("_GPU");
         action: "graph.gpu";
       }
-    }
-
-    item {
-        label: _("_View network details");
-        action: "graph.network-details";
     }
   }
 
