@@ -1,3 +1,5 @@
+use std::fs;
+
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(u8)]
@@ -33,18 +35,123 @@ impl DiskInfo {
     }
 
     pub fn refresh(&mut self) {
-        self.disks.clear();
-        self.disks.push(Disk {
-            name: "/dev/disk0".to_string(),
-            r#type: DiskType::SSD,
-            capacity: 100_000_000_000,
-            formatted: 100_000_000_000,
-            system_disk: true,
-            busy_percent: 40.0,
-            response_time_ms: 10,
-            read_speed: 124_200_934,
-            write_speed: 28_234_989,
-        });
+        use gtk::glib::*;
+
+        let entries = std::fs::read_dir("/sys/block");
+        if entries.is_err() {
+            g_critical!(
+                "MissionCenter::SysInfo",
+                "Failed to refresh disk information, failed to read disk entries: {:?}",
+                entries.err()
+            );
+            return;
+        }
+
+        for entry in entries.unwrap() {
+            if entry.is_err() {
+                g_warning!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read disk entry: {:?}",
+                    entry.err()
+                );
+                continue;
+            }
+
+            let entry = entry.unwrap();
+            let file_type = entry.file_type();
+            if file_type.is_err() {
+                g_warning!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read disk entry file type: {:?}",
+                    file_type.err()
+                );
+                continue;
+            }
+
+            let file_type = file_type.unwrap();
+
+            let dir_name = if file_type.is_symlink() {
+                let path = entry.path().read_link();
+                if path.is_err() {
+                    g_warning!(
+                        "MissionCenter::SysInfo",
+                        "Failed to read disk entry symlink: {:?}",
+                        path.err()
+                    );
+                    continue;
+                }
+
+                let path = std::path::Path::new("/sys/block").join(path.unwrap());
+                if !path.is_dir() {
+                    continue;
+                }
+
+                let dir_name = path.file_name();
+                if dir_name.is_none() {
+                    continue;
+                }
+
+                dir_name.unwrap().to_string_lossy().into_owned()
+            } else if file_type.is_dir() {
+                entry.file_name().to_string_lossy().into_owned()
+            } else {
+                continue;
+            };
+
+            if dir_name.starts_with("loop")
+                || dir_name.starts_with("ram")
+                || dir_name.starts_with("zram")
+                || dir_name.starts_with("sr")
+                || dir_name.starts_with("fd")
+                || dir_name.starts_with("md")
+                || dir_name.starts_with("dm")
+                || dir_name.starts_with("zd")
+            {
+                continue;
+            }
+
+            let r#type = if let Ok(v) =
+                fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
+            {
+                let v = v.trim().parse::<u8>().ok().map_or(u8::MAX, |v| v);
+                if v == 0 {
+                    if dir_name.starts_with("nvme") {
+                        DiskType::NVMe
+                    } else {
+                        DiskType::SSD
+                    }
+                } else {
+                    match v {
+                        1 => DiskType::HDD,
+                        _ => DiskType::Unknown,
+                    }
+                }
+            } else {
+                DiskType::Unknown
+            };
+
+            let mut found = false;
+            for i in 0..self.disks.len() {
+                if self.disks[i].name == dir_name {
+                    found = true;
+                    break;
+                }
+            }
+
+            if !found {
+                self.disks.push(Disk {
+                    name: dir_name,
+                    r#type,
+                    capacity: 0,
+                    formatted: 0,
+                    system_disk: false,
+                    busy_percent: 0.0,
+                    response_time_ms: 0,
+                    read_speed: 0,
+                    write_speed: 0,
+                });
+            }
+        }
     }
 
     pub fn disks(&self) -> &[Disk] {
