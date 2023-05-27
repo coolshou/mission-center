@@ -44,6 +44,8 @@ mod imp {
         #[template_child]
         pub formatted: TemplateChild<gtk::Label>,
         #[template_child]
+        pub system_disk: TemplateChild<gtk::Label>,
+        #[template_child]
         pub disk_type: TemplateChild<gtk::Label>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
@@ -65,6 +67,7 @@ mod imp {
                 disk_transfer_rate_graph: Default::default(),
                 capacity: Default::default(),
                 formatted: Default::default(),
+                system_disk: Default::default(),
                 disk_type: Default::default(),
                 context_menu: Default::default(),
 
@@ -146,9 +149,22 @@ mod imp {
                 .take(1)
                 .next()
             {
+                use gettextrs::gettext;
+
                 let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
                 self.capacity
                     .set_text(&format!("{:.2} {}iB", capacity.0, capacity.1));
+
+                let formatted = crate::to_human_readable(disk.formatted as f32, 1024.);
+                self.formatted
+                    .set_text(&format!("{:.2} {}iB", formatted.0, formatted.1));
+
+                let is_system_disk = if disk.system_disk {
+                    gettext("Yes")
+                } else {
+                    gettext("No")
+                };
+                self.system_disk.set_text(&is_system_disk);
 
                 self.disk_type.set_text(match disk.r#type {
                     DiskType::HDD => "HDD",

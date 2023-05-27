@@ -1,3 +1,23 @@
+/* sys_info/mod.rs
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 use lazy_static::lazy_static;
 use sysinfo::{NetworkExt, System, SystemExt};
 
@@ -380,7 +400,7 @@ impl SysInfo {
             &mut error,
         );
 
-        if systemd_proxy == std::ptr::null_mut() {
+        if systemd_proxy.is_null() {
             g_error_free(error);
             return None;
         }
@@ -398,7 +418,7 @@ impl SysInfo {
             std::ptr::null_mut(),
             &mut error,
         );
-        if variant == std::ptr::null_mut() {
+        if variant.is_null() {
             g_error_free(error);
             g_object_unref(systemd_proxy as _);
             return None;
