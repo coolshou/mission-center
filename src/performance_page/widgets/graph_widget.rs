@@ -60,9 +60,9 @@ mod imp {
         scroll: Cell<bool>,
         #[property(get, set)]
         base_color: Cell<gdk::RGBA>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_horizontal_line_count)]
         horizontal_line_count: Cell<u32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_vertical_line_count)]
         vertical_line_count: Cell<u32>,
 
         renderer: Cell<Option<Renderer<GLDevice>>>,
@@ -131,6 +131,20 @@ mod imp {
             self.data_sets.set(data_points);
 
             self.data_set_count.set(count);
+        }
+
+        fn set_horizontal_line_count(&self, count: u32) {
+            if self.horizontal_line_count.get() != count {
+                self.horizontal_line_count.set(count);
+                self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
+            }
+        }
+
+        fn set_vertical_line_count(&self, count: u32) {
+            if self.vertical_line_count.get() != count {
+                self.vertical_line_count.set(count);
+                self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
+            }
         }
     }
 

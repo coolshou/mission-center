@@ -114,6 +114,10 @@ template PerformancePageDisk: Box {
     height-request: 50;
 
     base-color: bind-property PerformancePageDisk.base-color;
+    data-set-count: 3;
+    scroll: true;
+    auto-scale: true;
+    auto-scale-pow2: true;
   }
 
   Box {
@@ -197,7 +201,7 @@ template PerformancePageDisk: Box {
         }
       }
 
-      Box mid_row {
+      Box bottom_row {
         spacing: 15;
 
         Box {
@@ -209,7 +213,7 @@ template PerformancePageDisk: Box {
           Box {
             orientation: vertical;
             spacing: 3;
-            width-request: 100;
+            width-request: 92;
 
             Label {
 

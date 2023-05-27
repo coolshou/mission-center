@@ -134,11 +134,13 @@ mod imp {
             this.add_controller(right_click_controller);
         }
 
-        fn update_view(this: &super::PerformancePageMemory) {
+        fn update_view(&self, this: &super::PerformancePageMemory) {
             use crate::SYS_INFO;
 
             let this = this.clone();
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+
+            self.update_graphs_grid_layout();
 
             {
                 let this = this.imp();
@@ -180,7 +182,7 @@ mod imp {
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_view(&this);
+                    Self::update_view(this.imp(), &this);
                 },
             ));
         }
@@ -196,6 +198,21 @@ mod imp {
             let total_mem = crate::to_human_readable(total_mem as _, 1024.);
             self.total_ram
                 .set_text(&format!("{:.2} {}iB", total_mem.0.round(), total_mem.1));
+        }
+
+        fn update_graphs_grid_layout(&self) {
+            let width = self.usage_graph.allocated_width() as f32;
+            let height = self.usage_graph.allocated_height() as f32;
+
+            let mut a = width;
+            let mut b = height;
+            if width > height {
+                a = height;
+                b = width;
+            }
+
+            self.usage_graph
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
         }
     }
 
@@ -292,14 +309,12 @@ mod imp {
                 this.imp().admin_banner.set_revealed(true);
             });
 
-            Self::update_view(self.obj().upcast_ref());
+            self.update_view(self.obj().upcast_ref());
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {
             self.parent_snapshot(snapshot);
-
-            let graph_width = self.obj().allocated_width() as u32;
-            self.usage_graph.set_vertical_line_count(graph_width / 100);
+            self.update_graphs_grid_layout();
         }
     }
 

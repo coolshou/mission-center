@@ -20,6 +20,18 @@
 
 use serde::Deserialize;
 
+#[derive(Debug, Deserialize)]
+struct LSBLKBlockDevice {
+    name: String,
+    mountpoints: Vec<Option<String>>,
+    children: Option<Vec<Option<LSBLKBlockDevice>>>,
+}
+
+#[derive(Debug, Deserialize)]
+struct LSBLKOutput {
+    blockdevices: Vec<Option<LSBLKBlockDevice>>,
+}
+
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(u8)]
@@ -43,6 +55,10 @@ pub struct Disk {
     pub response_time_ms: u64,
     pub read_speed: u64,
     pub write_speed: u64,
+
+    sectors_read: u64,
+    sectors_written: u64,
+    read_time_ms: std::time::Instant,
 }
 
 pub struct DiskInfo {
@@ -130,16 +146,12 @@ impl DiskInfo {
                 continue;
             }
 
-            let mut found = false;
+            let mut disk_index = None;
             for i in 0..self.disks.len() {
                 if self.disks[i].name == dir_name {
-                    found = true;
+                    disk_index = Some(i);
                     break;
                 }
-            }
-
-            if found {
-                continue;
             }
 
             let r#type = if let Ok(v) =
@@ -172,18 +184,77 @@ impl DiskInfo {
             let fs_info = Self::filesystem_info(&dir_name);
             let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
 
-            self.disks.push(Disk {
-                name: dir_name,
-                r#type,
-                capacity,
-                formatted,
-                system_disk,
-                busy_percent: 0.0,
+            let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
+            let stats = if stats.is_err() {
+                g_warning!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read disk stat: {:?}",
+                    stats.err()
+                );
+                ""
+            } else {
+                stats.as_ref().unwrap().trim()
+            };
 
-                response_time_ms: 0,
-                read_speed: 0,
-                write_speed: 0,
-            });
+            let mut iter = stats.split_whitespace().skip(2);
+            let sectors_read = iter
+                .next()
+                .unwrap_or("0")
+                .trim()
+                .parse::<u64>()
+                .unwrap_or(0);
+            let sectors_written = iter
+                .skip(4)
+                .next()
+                .unwrap_or("0")
+                .trim()
+                .parse::<u64>()
+                .unwrap_or(0);
+            let read_time_ms = std::time::Instant::now();
+
+            if let Some(disk_index) = disk_index {
+                let disk = &mut self.disks[disk_index];
+
+                let sectors_read_prev = if sectors_read < disk.sectors_read {
+                    sectors_read
+                } else {
+                    disk.sectors_read
+                };
+
+                let sectors_written_prev = if sectors_written < disk.sectors_written {
+                    sectors_written
+                } else {
+                    disk.sectors_written
+                };
+
+                let elapsed = read_time_ms.duration_since(disk.read_time_ms).as_secs_f32();
+                let read_speed = (sectors_read - sectors_read_prev) as f32 / elapsed;
+                let write_speed = (sectors_written - sectors_written_prev) as f32 / elapsed;
+
+                disk.read_speed = (read_speed * 512.0).round() as _;
+                disk.write_speed = (write_speed * 512.0).round() as _;
+
+                disk.sectors_read = sectors_read;
+                disk.sectors_written = sectors_written;
+                disk.read_time_ms = read_time_ms;
+            } else {
+                self.disks.push(Disk {
+                    name: dir_name,
+                    r#type,
+                    capacity,
+                    formatted,
+                    system_disk,
+
+                    busy_percent: 0.0,
+                    response_time_ms: 0,
+                    read_speed: 0,
+                    write_speed: 0,
+
+                    sectors_read,
+                    sectors_written,
+                    read_time_ms,
+                });
+            }
         }
     }
 
@@ -205,8 +276,6 @@ impl DiskInfo {
 
             return None;
         }
-
-        let _mount_points = Self::mount_points(&device_name);
 
         let is_root_device = Self::mount_points(&device_name)
             .iter()
@@ -331,16 +400,4 @@ impl DiskInfo {
 
         mount_points
     }
-}
-
-#[derive(Debug, Deserialize)]
-struct LSBLKBlockDevice {
-    name: String,
-    mountpoints: Vec<Option<String>>,
-    children: Option<Vec<Option<LSBLKBlockDevice>>>,
-}
-
-#[derive(Debug, Deserialize)]
-struct LSBLKOutput {
-    blockdevices: Vec<Option<LSBLKBlockDevice>>,
 }

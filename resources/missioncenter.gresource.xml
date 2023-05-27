@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/io/missioncenter/MissionCenter">
-        <file>line-dashed.svg</file>
-        <file>line-solid.svg</file>
+        <file>line-dashed-disk.svg</file>
+        <file>line-dashed-net.svg</file>
+        <file>line-solid-disk.svg</file>
+        <file>line-solid-net.svg</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk.ui</file>

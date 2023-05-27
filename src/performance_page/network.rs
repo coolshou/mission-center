@@ -193,10 +193,12 @@ mod imp {
             this.add_controller(right_click_controller);
         }
 
-        fn update_view(this: &super::PerformancePageNetwork) {
+        fn update_view(&self, this: &super::PerformancePageNetwork) {
             use crate::SYS_INFO;
 
             let this = this.clone();
+
+            self.update_graphs_grid_layout();
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
             let interface_name = this.imp().interface_name.take();
@@ -333,7 +335,7 @@ mod imp {
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_view(&this);
+                    Self::update_view(this.imp(), &this);
                 },
             ));
         }
@@ -362,14 +364,29 @@ mod imp {
             self.title_connection_type.set_text(&conn_type);
 
             self.legend_send
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed.svg"));
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
             self.legend_recv
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid.svg"));
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
 
             self.interface_name.set(interface_name);
 
             self.usage_graph.set_filled(0, false);
             self.usage_graph.set_dashed(0, true);
+        }
+
+        fn update_graphs_grid_layout(&self) {
+            let width = self.usage_graph.allocated_width() as f32;
+            let height = self.usage_graph.allocated_height() as f32;
+
+            let mut a = width;
+            let mut b = height;
+            if width > height {
+                a = height;
+                b = width;
+            }
+
+            self.usage_graph
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
         }
     }
 
@@ -417,14 +434,12 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
-            Self::update_view(self.obj().upcast_ref());
+            self.update_view(self.obj().upcast_ref());
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {
             self.parent_snapshot(snapshot);
-
-            let graph_width = self.obj().allocated_width() as u32;
-            self.usage_graph.set_vertical_line_count(graph_width / 100);
+            self.update_graphs_grid_layout();
         }
     }
 

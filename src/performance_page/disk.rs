@@ -38,7 +38,17 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub max_y: TemplateChild<gtk::Label>,
+        #[template_child]
         pub disk_transfer_rate_graph: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub legend_read: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub read_speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub legend_write: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub write_speed: TemplateChild<gtk::Label>,
         #[template_child]
         pub capacity: TemplateChild<gtk::Label>,
         #[template_child]
@@ -64,7 +74,12 @@ mod imp {
         fn default() -> Self {
             Self {
                 usage_graph: Default::default(),
+                max_y: Default::default(),
                 disk_transfer_rate_graph: Default::default(),
+                legend_read: Default::default(),
+                read_speed: Default::default(),
+                legend_write: Default::default(),
+                write_speed: Default::default(),
                 capacity: Default::default(),
                 formatted: Default::default(),
                 system_disk: Default::default(),
@@ -123,16 +138,55 @@ mod imp {
             this.add_controller(right_click_controller);
         }
 
-        fn update_view(this: &super::PerformancePageDisk) {
+        fn update_view(&self, this: &super::PerformancePageDisk) {
             use crate::SYS_INFO;
+            use gettextrs::gettext;
 
             let this = this.clone();
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
 
+            self.update_graphs_grid_layout();
+
+            let name = unsafe { &*self.name.as_ptr() };
+            for disk in sys_info.disk_info().disks() {
+                if name == &disk.name {
+                    let max_y = crate::to_human_readable(
+                        this.imp().disk_transfer_rate_graph.value_range_max(),
+                        1024.,
+                    );
+                    let i = if max_y.1.is_empty() { "" } else { "i" };
+                    this.imp()
+                        .max_y
+                        .set_text(&gettext!("{} {}{}B/s", max_y.0.round(), max_y.1, i));
+
+                    self.disk_transfer_rate_graph
+                        .add_data_point(0, disk.read_speed as f32);
+                    let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
+                    let i = if read_speed.1.is_empty() { "" } else { "i" };
+                    self.read_speed.set_text(&gettext!(
+                        "{} {}{}B/s",
+                        read_speed.0.round(),
+                        read_speed.1,
+                        i,
+                    ));
+
+                    self.disk_transfer_rate_graph
+                        .add_data_point(1, disk.write_speed as f32);
+                    let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
+                    let i = if write_speed.1.is_empty() { "" } else { "i" };
+                    self.write_speed.set_text(&gettext!(
+                        "{} {}{}B/s",
+                        write_speed.0.round(),
+                        write_speed.1,
+                        i,
+                    ));
+                }
+            }
+
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
-                    Self::update_view(&this);
+                    Self::update_view(this.imp(), &this);
                 },
             ));
         }
@@ -150,6 +204,14 @@ mod imp {
                 .next()
             {
                 use gettextrs::gettext;
+
+                self.disk_transfer_rate_graph.set_dashed(0, true);
+                self.disk_transfer_rate_graph.set_filled(0, false);
+
+                self.legend_read
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
+                self.legend_write
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
 
                 let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
                 self.capacity
@@ -174,6 +236,21 @@ mod imp {
                     DiskType::Unknown => "Unknown",
                 });
             }
+        }
+
+        fn update_graphs_grid_layout(&self) {
+            let width = self.usage_graph.allocated_width() as f32;
+            let height = self.usage_graph.allocated_height() as f32;
+
+            let mut a = width;
+            let mut b = height;
+            if width > height {
+                a = height;
+                b = width;
+            }
+
+            self.usage_graph
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
         }
     }
 
@@ -221,18 +298,12 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
-            Self::update_view(self.obj().upcast_ref());
+            self.update_view(self.obj().upcast_ref());
         }
 
         fn snapshot(&self, snapshot: &Snapshot) {
             self.parent_snapshot(snapshot);
-
-            let graph_width = self.obj().allocated_width() as u32;
-            self.usage_graph.set_vertical_line_count(graph_width / 50);
-            self.disk_transfer_rate_graph
-                .set_vertical_line_count(graph_width / 40);
-            self.disk_transfer_rate_graph
-                .set_horizontal_line_count(graph_width / 70);
+            self.update_graphs_grid_layout();
         }
     }
 

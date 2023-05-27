@@ -267,6 +267,9 @@ mod imp {
                 .expect("Failed to read CPU information: Unable to acquire lock");
 
             let mut graph_widgets = this.imp().graph_widgets.take();
+
+            Self::update_grid_layout(&mut graph_widgets);
+
             // Update global CPU graph
             graph_widgets[0].add_data_point(0, sys_info.system().global_cpu_info().cpu_usage());
 
@@ -430,6 +433,36 @@ mod imp {
 
             (result.0 as usize, result.1 as usize)
         }
+
+        fn update_grid_layout(graph_widgets: &Vec<GraphWidget>) {
+            let width = graph_widgets[0].allocated_width() as f32;
+            let height = graph_widgets[0].allocated_height() as f32;
+
+            let mut a = width;
+            let mut b = height;
+            if width > height {
+                a = height;
+                b = width;
+            }
+
+            graph_widgets[0]
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+            for graph_widget in graph_widgets.iter().skip(1) {
+                let width = graph_widget.allocated_width() as f32;
+                let height = graph_widget.allocated_height() as f32;
+
+                let mut a = width;
+                let mut b = height;
+                if width > height {
+                    a = height;
+                    b = width;
+                }
+
+                graph_widget
+                    .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -484,10 +517,7 @@ mod imp {
             self.parent_snapshot(snapshot);
 
             let graph_widgets = self.graph_widgets.take();
-
-            let graph_width = self.obj().allocated_width() as u32;
-            graph_widgets[0].set_vertical_line_count(graph_width / 100);
-
+            Self::update_grid_layout(&graph_widgets);
             self.graph_widgets.set(graph_widgets);
         }
     }
