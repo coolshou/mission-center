@@ -177,7 +177,7 @@ mod imp {
                         .set_text(&format!("{}%", disk.busy_percent.round() as u8));
 
                     self.avg_response_time
-                        .set_text(&gettext!("{} ms", disk.response_time_ms));
+                        .set_text(&format!("{:.2} ms", disk.response_time_ms));
 
                     self.disk_transfer_rate_graph
                         .add_data_point(0, disk.read_speed as f32);

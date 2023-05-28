@@ -54,13 +54,17 @@ pub struct Disk {
     pub system_disk: bool,
 
     pub busy_percent: f32,
-    pub response_time_ms: u64,
+    pub response_time_ms: f32,
     pub read_speed: u64,
     pub write_speed: u64,
 
     sectors_read: u64,
     sectors_written: u64,
 
+    read_ios: u64,
+    write_ios: u64,
+    discard_ios: u64,
+    flush_ios: u64,
     io_total_time_ms: u64,
 
     read_ticks_weighted_ms: u64,
@@ -200,47 +204,6 @@ impl DiskInfo {
                 .ok()
                 .unwrap_or("".to_string());
 
-            let proc_stats = std::fs::read_to_string("/proc/diskstats");
-            let empty_string = "".to_string();
-            let proc_stats = proc_stats
-                .as_ref()
-                .unwrap_or(&empty_string)
-                .trim()
-                .lines()
-                .filter(|line| line.contains(&format!(" {} ", dir_name)))
-                .take(1)
-                .next()
-                .unwrap_or("")
-                .trim();
-
-            if proc_stats.is_empty() {
-                g_warning!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read disk stats from /proc/diskstats",
-                );
-            }
-
-            let mut io_in_progress: u64 = 0;
-            let mut io_total_time_ms: u64 = 12;
-
-            const IDX_IO_IN_PROGRESS: usize = 11;
-            const IDX_IO_TOTAL_TIME_MS: usize = 12;
-            for (i, entry) in proc_stats
-                .split_whitespace()
-                .enumerate()
-                .skip(IDX_IO_IN_PROGRESS)
-                .map(|(i, v)| (i, v.trim()))
-            {
-                match i {
-                    IDX_IO_IN_PROGRESS => io_in_progress = entry.parse::<u64>().unwrap_or(0),
-                    IDX_IO_TOTAL_TIME_MS => {
-                        io_total_time_ms = entry.parse::<u64>().unwrap_or(0);
-                        break;
-                    }
-                    _ => (),
-                }
-            }
-
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
             let stats = if stats.is_err() {
                 g_warning!(
@@ -255,33 +218,49 @@ impl DiskInfo {
 
             let read_time_ms = std::time::Instant::now();
 
+            let mut read_ios = 0;
             let mut sectors_read = 0;
             let mut read_ticks_weighted_ms = 0;
+            let mut write_ios = 0;
             let mut sectors_written = 0;
             let mut write_ticks_weighted_ms = 0;
+            let mut io_total_time_ms: u64 = 0;
+            let mut discard_ios = 0;
             let mut discard_ticks_weighted_ms = 0;
+            let mut flush_ios = 0;
             let mut flush_ticks_weighted_ms = 0;
 
+            const IDX_READ_IOS: usize = 0;
             const IDX_READ_SECTORS: usize = 2;
             const IDX_READ_TICKS: usize = 3;
+            const IDX_WRITE_IOS: usize = 4;
             const IDX_WRITE_SECTORS: usize = 6;
             const IDX_WRITE_TICKS: usize = 7;
+            const IDX_IO_TICKS: usize = 9;
+            const IDX_DISCARD_IOS: usize = 11;
             const IDX_DISCARD_TICKS: usize = 14;
+            const IDX_FLUSH_IOS: usize = 15;
             const IDX_FLUSH_TICKS: usize = 16;
             for (i, entry) in stats
                 .split_whitespace()
                 .enumerate()
-                .skip(IDX_READ_SECTORS)
                 .map(|(i, v)| (i, v.trim()))
             {
                 match i {
+                    IDX_READ_IOS => read_ios = entry.parse::<u64>().unwrap_or(0),
                     IDX_READ_SECTORS => sectors_read = entry.parse::<u64>().unwrap_or(0),
                     IDX_READ_TICKS => read_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0),
+                    IDX_WRITE_IOS => write_ios = entry.parse::<u64>().unwrap_or(0),
                     IDX_WRITE_SECTORS => sectors_written = entry.parse::<u64>().unwrap_or(0),
                     IDX_WRITE_TICKS => write_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0),
+                    IDX_IO_TICKS => {
+                        io_total_time_ms = entry.parse::<u64>().unwrap_or(0);
+                    }
+                    IDX_DISCARD_IOS => discard_ios = entry.parse::<u64>().unwrap_or(0),
                     IDX_DISCARD_TICKS => {
                         discard_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0)
                     }
+                    IDX_FLUSH_IOS => flush_ios = entry.parse::<u64>().unwrap_or(0),
                     IDX_FLUSH_TICKS => {
                         flush_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0);
                         break;
@@ -351,13 +330,48 @@ impl DiskInfo {
                     disk.io_total_time_ms
                 };
 
-                let delta_io_time_ms = io_total_time_ms - io_time_ms_prev;
-                disk.response_time_ms = if io_in_progress > 0 {
-                    (delta_io_time_ms as f32 / io_in_progress as f32).round() as u64
+                let read_ios_prev = if read_ios < disk.read_ios {
+                    read_ios
                 } else {
-                    0
+                    disk.read_ios
                 };
 
+                let write_ios_prev = if write_ios < disk.write_ios {
+                    write_ios
+                } else {
+                    disk.write_ios
+                };
+
+                let discard_ios_prev = if discard_ios < disk.discard_ios {
+                    discard_ios
+                } else {
+                    disk.discard_ios
+                };
+
+                let flush_ios_prev = if flush_ios < disk.flush_ios {
+                    flush_ios
+                } else {
+                    disk.flush_ios
+                };
+
+                let delta_io_time_ms = io_total_time_ms - io_time_ms_prev;
+                let delta_read_ios = read_ios - read_ios_prev;
+                let delta_write_ios = write_ios - write_ios_prev;
+                let delta_discard_ios = discard_ios - discard_ios_prev;
+                let delta_flush_ios = flush_ios - flush_ios_prev;
+
+                let delta_ios =
+                    delta_read_ios + delta_write_ios + delta_discard_ios + delta_flush_ios;
+                disk.response_time_ms = if delta_ios > 0 {
+                    delta_io_time_ms as f32 / delta_ios as f32
+                } else {
+                    0.
+                };
+
+                disk.read_ios = read_ios;
+                disk.write_ios = write_ios;
+                disk.discard_ios = discard_ios;
+                disk.flush_ios = flush_ios;
                 disk.io_total_time_ms = io_total_time_ms;
 
                 let sectors_read_prev = if sectors_read < disk.sectors_read {
@@ -391,14 +405,18 @@ impl DiskInfo {
                     formatted,
                     system_disk,
 
-                    busy_percent: 0.0,
-                    response_time_ms: 0,
+                    busy_percent: 0.,
+                    response_time_ms: 0.,
                     read_speed: 0,
                     write_speed: 0,
 
                     sectors_read,
                     sectors_written,
 
+                    read_ios,
+                    write_ios,
+                    discard_ios,
+                    flush_ios,
                     io_total_time_ms,
 
                     read_ticks_weighted_ms,
