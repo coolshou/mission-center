@@ -322,13 +322,14 @@ mod imp {
             let mut disks = HashMap::new();
             for (i, disk) in sys_info.disk_info().disks().iter().enumerate() {
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(&disk.name);
+                summary.set_widget_name(&disk.id);
 
-                summary.set_heading(gettext!("Disk {} ({})", i, &disk.name));
+                summary.set_heading(gettext!("Disk {} ({})", i, &disk.id));
                 summary.set_info1(match disk.r#type {
                     DiskType::HDD => gettext("HDD"),
                     DiskType::SSD => gettext("SSD"),
                     DiskType::NVMe => gettext("NVMe"),
+                    DiskType::eMMC => gettext("eMMC"),
                     DiskType::iSCSI => gettext("iSCSI"),
                     DiskType::Unknown => gettext("Unknown"),
                 });
@@ -340,7 +341,7 @@ mod imp {
                     1.,
                 ));
 
-                let page = DiskPage::new(&disk.name);
+                let page = DiskPage::new(&disk.id);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -367,7 +368,7 @@ mod imp {
                 });
 
                 self.sidebar.append(&summary);
-                self.page_stack.add_named(&page, Some(&disk.name));
+                self.page_stack.add_named(&page, Some(&disk.id));
 
                 let mut actions = self.context_menu_view_actions.take();
                 match actions.get("disk") {
@@ -375,16 +376,16 @@ mod imp {
                         g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up disk action for {}, logic bug?",
-                            &disk.name
+                            &disk.id
                         );
                     }
                     Some(action) => {
-                        actions.insert(disk.name.clone(), action.clone());
+                        actions.insert(disk.id.clone(), action.clone());
                     }
                 }
                 self.context_menu_view_actions.set(actions);
 
-                disks.insert(disk.name.clone(), (summary, page));
+                disks.insert(disk.id.clone(), (summary, page));
             }
 
             pages.push(Pages::Disk(disks));
@@ -534,7 +535,7 @@ mod imp {
                     }
                     Pages::Disk(pages) => {
                         for disk in sys_info.disk_info().disks() {
-                            if let Some((summary, _)) = pages.get(&disk.name) {
+                            if let Some((summary, _)) = pages.get(&disk.id) {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.2}%", disk.busy_percent));

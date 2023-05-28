@@ -40,12 +40,14 @@ pub enum DiskType {
     HDD,
     SSD,
     NVMe,
+    eMMC,
     iSCSI,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Disk {
-    pub name: String,
+    pub id: String,
+    pub model: String,
     pub r#type: DiskType,
     pub capacity: u64,
     pub formatted: u64,
@@ -58,6 +60,14 @@ pub struct Disk {
 
     sectors_read: u64,
     sectors_written: u64,
+
+    io_total_time_ms: u64,
+
+    read_ticks_weighted_ms: u64,
+    write_ticks_weighted_ms: u64,
+    discard_ticks_weighted_ms: u64,
+    flush_ticks_weighted_ms: u64,
+
     read_time_ms: std::time::Instant,
 }
 
@@ -148,7 +158,7 @@ impl DiskInfo {
 
             let mut disk_index = None;
             for i in 0..self.disks.len() {
-                if self.disks[i].name == dir_name {
+                if self.disks[i].id == dir_name {
                     disk_index = Some(i);
                     break;
                 }
@@ -161,6 +171,8 @@ impl DiskInfo {
                 if v == 0 {
                     if dir_name.starts_with("nvme") {
                         DiskType::NVMe
+                    } else if dir_name.starts_with("mmc") {
+                        DiskType::eMMC
                     } else {
                         DiskType::SSD
                     }
@@ -184,6 +196,51 @@ impl DiskInfo {
             let fs_info = Self::filesystem_info(&dir_name);
             let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
 
+            let model = std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
+                .ok()
+                .unwrap_or("".to_string());
+
+            let proc_stats = std::fs::read_to_string("/proc/diskstats");
+            let empty_string = "".to_string();
+            let proc_stats = proc_stats
+                .as_ref()
+                .unwrap_or(&empty_string)
+                .trim()
+                .lines()
+                .filter(|line| line.contains(&format!(" {} ", dir_name)))
+                .take(1)
+                .next()
+                .unwrap_or("")
+                .trim();
+
+            if proc_stats.is_empty() {
+                g_warning!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read disk stats from /proc/diskstats",
+                );
+            }
+
+            let mut io_in_progress: u64 = 0;
+            let mut io_total_time_ms: u64 = 12;
+
+            const IDX_IO_IN_PROGRESS: usize = 11;
+            const IDX_IO_TOTAL_TIME_MS: usize = 12;
+            for (i, entry) in proc_stats
+                .split_whitespace()
+                .enumerate()
+                .skip(IDX_IO_IN_PROGRESS)
+                .map(|(i, v)| (i, v.trim()))
+            {
+                match i {
+                    IDX_IO_IN_PROGRESS => io_in_progress = entry.parse::<u64>().unwrap_or(0),
+                    IDX_IO_TOTAL_TIME_MS => {
+                        io_total_time_ms = entry.parse::<u64>().unwrap_or(0);
+                        break;
+                    }
+                    _ => (),
+                }
+            }
+
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
             let stats = if stats.is_err() {
                 g_warning!(
@@ -196,24 +253,112 @@ impl DiskInfo {
                 stats.as_ref().unwrap().trim()
             };
 
-            let mut iter = stats.split_whitespace().skip(2);
-            let sectors_read = iter
-                .next()
-                .unwrap_or("0")
-                .trim()
-                .parse::<u64>()
-                .unwrap_or(0);
-            let sectors_written = iter
-                .skip(4)
-                .next()
-                .unwrap_or("0")
-                .trim()
-                .parse::<u64>()
-                .unwrap_or(0);
             let read_time_ms = std::time::Instant::now();
+
+            let mut sectors_read = 0;
+            let mut read_ticks_weighted_ms = 0;
+            let mut sectors_written = 0;
+            let mut write_ticks_weighted_ms = 0;
+            let mut discard_ticks_weighted_ms = 0;
+            let mut flush_ticks_weighted_ms = 0;
+
+            const IDX_READ_SECTORS: usize = 2;
+            const IDX_READ_TICKS: usize = 3;
+            const IDX_WRITE_SECTORS: usize = 6;
+            const IDX_WRITE_TICKS: usize = 7;
+            const IDX_DISCARD_TICKS: usize = 14;
+            const IDX_FLUSH_TICKS: usize = 16;
+            for (i, entry) in stats
+                .split_whitespace()
+                .enumerate()
+                .skip(IDX_READ_SECTORS)
+                .map(|(i, v)| (i, v.trim()))
+            {
+                match i {
+                    IDX_READ_SECTORS => sectors_read = entry.parse::<u64>().unwrap_or(0),
+                    IDX_READ_TICKS => read_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0),
+                    IDX_WRITE_SECTORS => sectors_written = entry.parse::<u64>().unwrap_or(0),
+                    IDX_WRITE_TICKS => write_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0),
+                    IDX_DISCARD_TICKS => {
+                        discard_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0)
+                    }
+                    IDX_FLUSH_TICKS => {
+                        flush_ticks_weighted_ms = entry.parse::<u64>().unwrap_or(0);
+                        break;
+                    }
+                    _ => (),
+                }
+            }
 
             if let Some(disk_index) = disk_index {
                 let disk = &mut self.disks[disk_index];
+
+                let read_ticks_weighted_ms_prev =
+                    if read_ticks_weighted_ms < disk.read_ticks_weighted_ms {
+                        read_ticks_weighted_ms
+                    } else {
+                        disk.read_ticks_weighted_ms
+                    };
+
+                let write_ticks_weighted_ms_prev =
+                    if write_ticks_weighted_ms < disk.write_ticks_weighted_ms {
+                        write_ticks_weighted_ms
+                    } else {
+                        disk.write_ticks_weighted_ms
+                    };
+
+                let discard_ticks_weighted_ms_prev =
+                    if discard_ticks_weighted_ms < disk.discard_ticks_weighted_ms {
+                        discard_ticks_weighted_ms
+                    } else {
+                        disk.discard_ticks_weighted_ms
+                    };
+
+                let flush_ticks_weighted_ms_prev =
+                    if flush_ticks_weighted_ms < disk.flush_ticks_weighted_ms {
+                        flush_ticks_weighted_ms
+                    } else {
+                        disk.flush_ticks_weighted_ms
+                    };
+
+                let elapsed = read_time_ms.duration_since(disk.read_time_ms).as_secs_f32();
+
+                let delta_read_ticks_weighted_ms =
+                    read_ticks_weighted_ms - read_ticks_weighted_ms_prev;
+                let delta_write_ticks_weighted_ms =
+                    write_ticks_weighted_ms - write_ticks_weighted_ms_prev;
+                let delta_discard_ticks_weighted_ms =
+                    discard_ticks_weighted_ms - discard_ticks_weighted_ms_prev;
+                let delta_flush_ticks_weighted_ms =
+                    flush_ticks_weighted_ms - flush_ticks_weighted_ms_prev;
+                let delta_ticks_weighted_ms = delta_read_ticks_weighted_ms
+                    + delta_write_ticks_weighted_ms
+                    + delta_discard_ticks_weighted_ms
+                    + delta_flush_ticks_weighted_ms;
+
+                // Arbitrary math is arbitrary
+                disk.busy_percent =
+                    (delta_ticks_weighted_ms as f32 / (elapsed * 100.) / 10.0).min(100.);
+
+                disk.read_ticks_weighted_ms = read_ticks_weighted_ms;
+                disk.write_ticks_weighted_ms = write_ticks_weighted_ms;
+                disk.discard_ticks_weighted_ms = discard_ticks_weighted_ms;
+                disk.flush_ticks_weighted_ms = flush_ticks_weighted_ms;
+
+                let io_time_ms_prev = if io_total_time_ms < disk.io_total_time_ms {
+                    io_total_time_ms
+                } else {
+                    disk.io_total_time_ms
+                };
+
+                let delta_io_time_ms = io_total_time_ms - io_time_ms_prev;
+                disk.response_time_ms = if io_in_progress > 0 {
+                    (delta_io_time_ms as f32 / io_in_progress as f32).round() as u64
+                } else {
+                    0
+                };
+
+                disk.io_total_time_ms = io_total_time_ms;
 
                 let sectors_read_prev = if sectors_read < disk.sectors_read {
                     sectors_read
@@ -227,7 +372,6 @@ impl DiskInfo {
                     disk.sectors_written
                 };
 
-                let elapsed = read_time_ms.duration_since(disk.read_time_ms).as_secs_f32();
                 let read_speed = (sectors_read - sectors_read_prev) as f32 / elapsed;
                 let write_speed = (sectors_written - sectors_written_prev) as f32 / elapsed;
 
@@ -236,11 +380,13 @@ impl DiskInfo {
 
                 disk.sectors_read = sectors_read;
                 disk.sectors_written = sectors_written;
+
                 disk.read_time_ms = read_time_ms;
             } else {
                 self.disks.push(Disk {
-                    name: dir_name,
+                    id: dir_name,
                     r#type,
+                    model: model.trim().to_string(),
                     capacity,
                     formatted,
                     system_disk,
@@ -252,6 +398,14 @@ impl DiskInfo {
 
                     sectors_read,
                     sectors_written,
+
+                    io_total_time_ms,
+
+                    read_ticks_weighted_ms,
+                    write_ticks_weighted_ms,
+                    discard_ticks_weighted_ms,
+                    flush_ticks_weighted_ms,
+
                     read_time_ms,
                 });
             }

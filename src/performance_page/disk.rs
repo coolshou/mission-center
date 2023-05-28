@@ -36,11 +36,19 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk.ui")]
     pub struct PerformancePageDisk {
         #[template_child]
+        pub disk_id: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub model: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub max_y: TemplateChild<gtk::Label>,
         #[template_child]
         pub disk_transfer_rate_graph: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub active_time: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub avg_response_time: TemplateChild<gtk::Label>,
         #[template_child]
         pub legend_read: TemplateChild<gtk::Picture>,
         #[template_child]
@@ -73,9 +81,13 @@ mod imp {
     impl Default for PerformancePageDisk {
         fn default() -> Self {
             Self {
+                disk_id: Default::default(),
+                model: Default::default(),
                 usage_graph: Default::default(),
                 max_y: Default::default(),
                 disk_transfer_rate_graph: Default::default(),
+                active_time: Default::default(),
+                avg_response_time: Default::default(),
                 legend_read: Default::default(),
                 read_speed: Default::default(),
                 legend_write: Default::default(),
@@ -149,7 +161,7 @@ mod imp {
 
             let name = unsafe { &*self.name.as_ptr() };
             for disk in sys_info.disk_info().disks() {
-                if name == &disk.name {
+                if name == &disk.id {
                     let max_y = crate::to_human_readable(
                         this.imp().disk_transfer_rate_graph.value_range_max(),
                         1024.,
@@ -159,27 +171,27 @@ mod imp {
                         .max_y
                         .set_text(&gettext!("{} {}{}B/s", max_y.0.round(), max_y.1, i));
 
+                    self.usage_graph.add_data_point(0, disk.busy_percent as f32);
+
+                    self.active_time
+                        .set_text(&format!("{}%", disk.busy_percent.round() as u8));
+
+                    self.avg_response_time
+                        .set_text(&gettext!("{} ms", disk.response_time_ms));
+
                     self.disk_transfer_rate_graph
                         .add_data_point(0, disk.read_speed as f32);
                     let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
                     let i = if read_speed.1.is_empty() { "" } else { "i" };
-                    self.read_speed.set_text(&gettext!(
-                        "{} {}{}B/s",
-                        read_speed.0.round(),
-                        read_speed.1,
-                        i,
-                    ));
+                    self.read_speed
+                        .set_text(&format!("{:.2} {}{}B/s", read_speed.0, read_speed.1, i,));
 
                     self.disk_transfer_rate_graph
                         .add_data_point(1, disk.write_speed as f32);
                     let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
                     let i = if write_speed.1.is_empty() { "" } else { "i" };
-                    self.write_speed.set_text(&gettext!(
-                        "{} {}{}B/s",
-                        write_speed.0.round(),
-                        write_speed.1,
-                        i,
-                    ));
+                    self.write_speed
+                        .set_text(&format!("{:.2} {}{}B/s", write_speed.0, write_speed.1, i,));
                 }
             }
 
@@ -196,14 +208,21 @@ mod imp {
 
             let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
             let disk_info = sys_info.disk_info();
-            if let Some(disk) = disk_info
+            if let Some((i, disk)) = disk_info
                 .disks()
                 .iter()
-                .filter(|d| d.name == self.obj().upcast_ref::<super::PerformancePageDisk>().name())
+                .enumerate()
+                .filter(|(_, d)| {
+                    d.id == self.obj().upcast_ref::<super::PerformancePageDisk>().name()
+                })
                 .take(1)
                 .next()
             {
                 use gettextrs::gettext;
+
+                self.disk_id
+                    .set_text(&gettext!("Disk {} ({})", i, &disk.id));
+                self.model.set_text(&disk.model);
 
                 self.disk_transfer_rate_graph.set_dashed(0, true);
                 self.disk_transfer_rate_graph.set_filled(0, false);
@@ -232,6 +251,7 @@ mod imp {
                     DiskType::HDD => "HDD",
                     DiskType::SSD => "SSD",
                     DiskType::NVMe => "NVMe",
+                    DiskType::eMMC => "eMMC",
                     DiskType::iSCSI => "iSCSI",
                     DiskType::Unknown => "Unknown",
                 });
@@ -251,6 +271,9 @@ mod imp {
 
             self.usage_graph
                 .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+            self.disk_transfer_rate_graph
+                .set_vertical_line_count((width / 40.).round() as u32);
         }
     }
 

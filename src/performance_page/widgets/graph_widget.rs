@@ -166,6 +166,7 @@ mod imp {
                 (color.blue() * 255.) as u8,
                 255,
             )));
+            canvas.set_line_dash(vec![]);
             canvas.stroke_rect(RectF::new(
                 vec2f(scale_factor / 2., scale_factor / 2.),
                 vec2f(width as f32 - scale_factor, height as f32 - scale_factor),
@@ -535,7 +536,7 @@ impl GraphWidget {
     }
 
     fn scale(&self, data: &mut Vec<DataSetDescriptor>, value: f32) {
-        fn round_up_to_next_power_of_two(num: u32) -> u32 {
+        fn round_up_to_next_power_of_two(num: u64) -> u64 {
             if num == 0 {
                 return 0;
             }
@@ -572,9 +573,9 @@ impl GraphWidget {
             max_y = max_y.round();
             if max_y < 0. {
                 max_y = -max_y;
-                max_y = round_up_to_next_power_of_two(max_y as u32) as f32 * -1.;
+                max_y = round_up_to_next_power_of_two(max_y as u64) as f32 * -1.;
             } else {
-                max_y = round_up_to_next_power_of_two(max_y as u32) as f32;
+                max_y = round_up_to_next_power_of_two(max_y as u64) as f32;
             }
         }
 

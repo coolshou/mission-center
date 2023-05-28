@@ -235,7 +235,7 @@ mod imp {
                 false,
             );
 
-            let standby = crate::to_human_readable(used - free, 1024.);
+            let standby = crate::to_human_readable(total - (used + free), 1024.);
             tooltip_texts.push((
                 width as f32 - bar_width,
                 gettextrs::gettext!(
