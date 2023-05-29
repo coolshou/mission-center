@@ -26,6 +26,7 @@ pub use mem_info::*;
 pub use net_info::*;
 
 mod disk_info;
+mod gpu_info;
 mod mem_info;
 mod net_info;
 
@@ -59,6 +60,8 @@ pub struct SysInfo {
 impl SysInfo {
     pub fn new() -> Self {
         use std::collections::HashMap;
+
+        unsafe { gpu_info::print_gpus() };
 
         let is_flatpak = *IS_FLATPAK;
 
