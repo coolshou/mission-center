@@ -1,0 +1,59 @@
+diff --git a/meson.build b/meson.build
+new file mode 100644
+index 0000000..73baf63
+--- /dev/null
++++ b/meson.build
+@@ -0,0 +1,53 @@
++project('libnvtop', 'c', version: '3.0.1')
++
++conf = configuration_data()
++conf.set('nvtop_VERSION_MAJOR', '3')
++conf.set('nvtop_VERSION_MINOR', '0')
++conf.set('nvtop_VERSION_PATCH', '1')
++
++version_header = configure_file(
++    input: 'include/nvtop/version.h.in',
++    output: 'version.h',
++    configuration: conf
++)
++
++cc = meson.get_compiler('c')
++libmath = cc.find_library('m', required : false)
++
++libdrm = dependency('libdrm', required: true)
++libudev = dependency('libudev', required: true)
++
++sources = [
++    'src/get_process_info_linux.c',
++    'src/extract_gpuinfo.c',
++    'src/extract_processinfo_fdinfo.c',
++    'src/info_messages_linux.c',
++    'src/extract_gpuinfo_nvidia.c',
++    'src/device_discovery_linux.c',
++    'src/extract_gpuinfo_amdgpu.c',
++    'src/extract_gpuinfo_amdgpu_utils.c',
++    'src/extract_gpuinfo_intel.c',
++    'src/time.c',
++]
++
++libnvtop = static_library(
++    'nvtop',
++    sources, version_header,
++    include_directories: [
++        'include',
++        'src',
++    ],
++    c_args: [
++        '-DUSING_LIBUDEV',
++        '-D_GNU_SOURCE'
++    ],
++    dependencies: [
++        libdrm,
++        libudev,
++        libmath
++    ]
++)
++
++nvtop = declare_dependency(
++    link_with : libnvtop
++)
