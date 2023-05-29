@@ -76,3 +76,5 @@ compile_commands.json
 
 # Project specific
 /subprojects/blueprint-compiler
+/subprojects/packagecache
+/subprojects/nvtop-*/**
