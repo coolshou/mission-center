@@ -58,58 +58,75 @@ mod ffi {
 }
 
 fn main() {
-    let shm_file_link = if let Ok(mut cache_dir) = std::env::var("XDG_CACHE_HOME") {
-        cache_dir.push_str("/io.missioncenter.MissionCenter/gpud_shm");
-        cache_dir
-    } else if let Ok(mut cache_dir) = std::env::var("HOME") {
-        cache_dir.push_str("/.cache/io.missioncenter.MissionCenter/gpud_shm");
-        cache_dir
-    } else {
-        eprintln!("Unable to find cache directory");
-        return;
-    };
+    let shm_file_link = std::env::args().nth(1).unwrap_or_else(|| {
+        eprintln!("Usage: gpud <shm_file_link>");
+        std::process::exit(1);
+    });
 
     std::fs::create_dir_all(std::path::Path::new(&shm_file_link).parent().unwrap())
         .expect("Unable to create cache directory");
 
     let shared_memory =
-        SharedMemory::new(&shm_file_link, true).expect("Unable to open shared memory");
-    {
-        let write_lock = shared_memory.write().expect("Unable to acquire write lock");
+        SharedMemory::new(&shm_file_link, false).expect("Unable to open shared memory");
 
-        let mut gpu_count: u32 = 0;
-        let mut gpu_list: ffi::ListHead = ffi::ListHead {
-            next: std::ptr::null_mut(),
-            prev: std::ptr::null_mut(),
-        };
-        gpu_list.next = &mut gpu_list;
-        gpu_list.prev = &mut gpu_list;
+    let mut gpu_list: ffi::ListHead = ffi::ListHead {
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
+    };
+    gpu_list.next = &mut gpu_list;
+    gpu_list.prev = &mut gpu_list;
 
-        unsafe {
-            ffi::gpuinfo_init_info_extraction(&mut gpu_count, &mut gpu_list);
-            ffi::gpuinfo_populate_static_infos(&mut gpu_list);
-            ffi::gpuinfo_refresh_dynamic_info(&mut gpu_list);
-        }
-
-        let mut device: *mut ffi::ListHead = gpu_list.next;
-        let mut i = 0;
-        while device != (&mut gpu_list) {
-            let dev: &ffi::GPUInfo = unsafe { core::mem::transmute(device) };
-
-            *write_lock.data.0 = gpu_count as usize;
-            let shared_data = &mut write_lock.data.1[i];
-            shared_data.static_info = dev.static_info;
-            shared_data.dynamic_info = dev.dynamic_info;
-
-            device = unsafe { (*device).next };
-            i += 1;
-        }
+    let mut gpu_count: u32 = 0;
+    unsafe {
+        ffi::gpuinfo_init_info_extraction(&mut gpu_count, &mut gpu_list);
+        ffi::gpuinfo_populate_static_infos(&mut gpu_list);
     }
 
-    {
-        let read_lock = shared_memory.read().expect("Unable to acquire read lock");
-        for i in 0..read_lock.data.len() {
-            dbg!(&read_lock.data[i]);
+    loop {
+        let refresh_interval_ms = {
+            let reader = match shared_memory.read(raw_sync::Timeout::Infinite) {
+                None => {
+                    eprintln!("Unable to acquire read lock");
+                    continue;
+                }
+                Some(reader) => reader,
+            };
+
+            if reader.stop_daemon {
+                break;
+            }
+
+            reader.refresh_interval_ms
+        };
+
+        {
+            let writer = match shared_memory.write(raw_sync::Timeout::Infinite) {
+                None => {
+                    eprintln!("Unable to acquire write lock");
+                    continue;
+                }
+                Some(writer) => writer,
+            };
+
+            unsafe {
+                ffi::gpuinfo_refresh_dynamic_info(&mut gpu_list);
+            }
+
+            let mut device: *mut ffi::ListHead = gpu_list.next;
+            let mut i = 0;
+            while device != (&mut gpu_list) {
+                let dev: &ffi::GPUInfo = unsafe { core::mem::transmute(device) };
+
+                *writer.gpu_info.0 = gpu_count as usize;
+                let shared_data = &mut writer.gpu_info.1[i];
+                shared_data.static_info = dev.static_info;
+                shared_data.dynamic_info = dev.dynamic_info;
+
+                device = unsafe { (*device).next };
+                i += 1;
+            }
         }
+
+        std::thread::sleep(std::time::Duration::from_millis(refresh_interval_ms as _));
     }
 }

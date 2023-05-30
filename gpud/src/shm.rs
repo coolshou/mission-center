@@ -1,12 +1,9 @@
-use std::fmt::Display;
-
-use raw_sync::Timeout;
-
 use shm::*;
 pub use shm::{
     GPUInfo, GPUInfoDynamicInfo, GPUInfoDynamicInfoValid, GPUInfoStaticInfo, GPUInfoStaticInfoValid,
 };
 
+#[allow(unused)]
 mod shm {
     const MAX_DEVICE_NAME: usize = 128;
     const MAX_GPU_COUNT: usize = 8;
@@ -112,7 +109,7 @@ mod shm {
     pub struct SharedMemoryHeader {
         pub is_initialized: std::sync::atomic::AtomicU8,
         pub rw_lock: raw_sync::locks::RwLock,
-        _padding: [u8; 64],
+        _reserved: [u8; 128],
     }
 
     #[derive(Debug, Copy, Clone)]
@@ -123,19 +120,27 @@ mod shm {
 
     pub struct SharedMemoryData {
         pub header: SharedMemoryHeader,
+
         pub gpu_count: usize,
         pub gpu_info: [GPUInfo; MAX_GPU_COUNT],
+
+        pub refresh_interval_ms: u32,
+        pub stop_daemon: bool,
     }
 }
 
 pub struct SharedMemoryReadGuard<'a> {
     _lock: raw_sync::locks::ReadLockGuard<'a>,
-    pub data: &'a [GPUInfo],
+    pub gpu_info: &'a [GPUInfo],
+    pub refresh_interval_ms: u32,
+    pub stop_daemon: bool,
 }
 
 pub struct SharedMemoryWriteGuard<'a> {
     _lock: raw_sync::locks::LockGuard<'a>,
-    pub data: (&'a mut usize, &'a mut [GPUInfo]),
+    pub gpu_info: (&'a mut usize, &'a mut [GPUInfo]),
+    pub refresh_interval_ms: &'a mut u32,
+    pub stop_daemon: &'a mut bool,
 }
 
 pub struct SharedMemory {
@@ -145,12 +150,10 @@ pub struct SharedMemory {
 }
 
 impl SharedMemory {
-    pub fn new<P: AsRef<std::path::Path> + Display>(file_link: P, force_new: bool) -> Option<Self> {
-        use raw_sync::locks::*;
+    pub fn new<P: AsRef<std::path::Path>>(file_link: P, force_new: bool) -> Option<Self> {
+        use raw_sync::{locks::*, *};
         use shared_memory::*;
         use std::sync::atomic::*;
-
-        assert_eq!(core::mem::align_of::<SharedMemoryHeader>(), 8);
 
         let shm_handle = match ShmemConf::new()
             .size(core::mem::size_of::<SharedMemoryData>())
@@ -171,7 +174,8 @@ impl SharedMemory {
                         Err(err) => {
                             eprintln!(
                                 "Unable to create shared memory file link {} : {}",
-                                file_link, err
+                                file_link.as_ref().to_string_lossy(),
+                                err
                             );
                             return None;
                         }
@@ -183,7 +187,8 @@ impl SharedMemory {
             Err(e) => {
                 eprintln!(
                     "Unable to create or open shared memory file link {} : {}",
-                    file_link, e
+                    file_link.as_ref().to_string_lossy(),
+                    e
                 );
                 return None;
             }
@@ -196,22 +201,19 @@ impl SharedMemory {
             shm_data.header.is_initialized.store(0, Ordering::Relaxed);
             let (lock, bytes_used) = unsafe {
                 RwLock::new(
-                    (&mut shm_data.header.rw_lock) as *mut _ as *mut u8, // Base address of the lock
-                    (&mut shm_data.gpu_info) as *mut _ as *mut u8, // Address of data protected by lock
+                    (&mut shm_data.header.rw_lock) as *mut _ as *mut u8,
+                    (&mut shm_data.gpu_info) as *mut _ as *mut u8,
                 )
                 .expect("Unable to create lock")
             };
-            assert!(
-                bytes_used
-                    < (core::mem::size_of::<SharedMemoryHeader>()
-                        - core::mem::size_of::<AtomicU8>())
-            );
+            assert!(bytes_used < (core::mem::size_of::<SharedMemoryHeader>() - 8));
 
             {
                 let l = lock
                     .try_lock(Timeout::Infinite)
                     .expect("Unable to lock shared memory");
                 shm_data.gpu_count = 0;
+                shm_data.refresh_interval_ms = 1000;
                 drop(l);
             }
             shm_data.header.is_initialized.store(1, Ordering::Relaxed);
@@ -221,16 +223,12 @@ impl SharedMemory {
             while shm_data.header.is_initialized.load(Ordering::Relaxed) != 1 {}
             let (lock, bytes_used) = unsafe {
                 RwLock::from_existing(
-                    (&mut shm_data.header.rw_lock) as *mut _ as *mut u8, // Base address of the lock
-                    (&mut shm_data.gpu_info) as *mut _ as *mut u8, // Address of data protected by lock
+                    (&mut shm_data.header.rw_lock) as *mut _ as *mut u8,
+                    (&mut shm_data.gpu_info) as *mut _ as *mut u8,
                 )
                 .expect("Unable to obtain existing lock")
             };
-            assert!(
-                bytes_used
-                    < (core::mem::size_of::<SharedMemoryHeader>()
-                        - core::mem::size_of::<AtomicU8>())
-            );
+            assert!(bytes_used < (core::mem::size_of::<SharedMemoryHeader>() - 8));
             lock
         };
 
@@ -241,25 +239,26 @@ impl SharedMemory {
         })
     }
 
-    pub fn read(&self) -> Option<SharedMemoryReadGuard> {
-        let lock = self.lock.try_rlock(raw_sync::Timeout::Infinite);
+    pub fn read(&self, timeout: raw_sync::Timeout) -> Option<SharedMemoryReadGuard> {
+        let lock = self.lock.try_rlock(timeout);
         if lock.is_err() {
             eprintln!("Unable to obtain read lock: {}", lock.err().unwrap());
             return None;
         }
 
         let data = unsafe { &*self.data };
-        let gpu_info =
-            unsafe { core::slice::from_raw_parts(data.gpu_info.as_ptr(), data.gpu_count) };
+        let gpu_info = &data.gpu_info[0..data.gpu_count];
 
         Some(SharedMemoryReadGuard {
             _lock: lock.unwrap(),
-            data: gpu_info,
+            gpu_info,
+            refresh_interval_ms: data.refresh_interval_ms,
+            stop_daemon: data.stop_daemon,
         })
     }
 
-    pub fn write(&self) -> Option<SharedMemoryWriteGuard> {
-        let lock = self.lock.try_lock(raw_sync::Timeout::Infinite);
+    pub fn write(&self, timeout: raw_sync::Timeout) -> Option<SharedMemoryWriteGuard> {
+        let lock = self.lock.try_lock(timeout);
         if lock.is_err() {
             eprintln!("Unable to obtain write lock: {}", lock.err().unwrap());
             return None;
@@ -269,7 +268,12 @@ impl SharedMemory {
 
         Some(SharedMemoryWriteGuard {
             _lock: lock.unwrap(),
-            data: (&mut data.gpu_count, data.gpu_info.as_mut_slice()),
+            gpu_info: (&mut data.gpu_count, data.gpu_info.as_mut_slice()),
+            refresh_interval_ms: &mut data.refresh_interval_ms,
+            stop_daemon: &mut data.stop_daemon,
         })
     }
 }
+
+unsafe impl Send for SharedMemory {}
+unsafe impl Sync for SharedMemory {}

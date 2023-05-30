@@ -22,6 +22,7 @@ use lazy_static::lazy_static;
 use sysinfo::{NetworkExt, System, SystemExt};
 
 pub use disk_info::*;
+pub use gpu_info::*;
 pub use mem_info::*;
 pub use net_info::*;
 
@@ -41,10 +42,12 @@ pub struct SysInfo {
 
     mem_info: MemInfo,
 
+    disk_info: DiskInfo,
+
     net_info: Option<NetInfo>,
     net_devices: std::collections::HashMap<String, NetworkDevice>,
 
-    disk_info: DiskInfo,
+    gpu_info: Option<GPUInfo>,
 
     cpu_base_frequency: Option<usize>,
     cpu_socket_count: Option<u8>,
@@ -60,8 +63,6 @@ pub struct SysInfo {
 impl SysInfo {
     pub fn new() -> Self {
         use std::collections::HashMap;
-
-        unsafe { gpu_info::print_gpus() };
 
         let is_flatpak = *IS_FLATPAK;
 
@@ -95,10 +96,12 @@ impl SysInfo {
 
             mem_info: MemInfo::new(),
 
+            disk_info: DiskInfo::new(),
+
             net_info: NetInfo::new().ok(),
             net_devices: HashMap::new(),
 
-            disk_info: DiskInfo::new(),
+            gpu_info: GPUInfo::new(),
 
             cpu_base_frequency,
             cpu_socket_count: Self::load_cpu_socket_count(),
@@ -185,13 +188,22 @@ impl SysInfo {
         self.net_devices.get(if_name)
     }
 
+    pub fn gpu_info(&self) -> Option<&GPUInfo> {
+        self.gpu_info.as_ref()
+    }
+
     pub fn refresh_all(&mut self) {
         self.system.refresh_all();
-        self.mem_info.refresh();
-        self.disk_info.refresh();
         self.refresh_process_count();
         self.refresh_thread_count();
         self.refresh_handle_count();
+
+        self.mem_info.refresh();
+        self.disk_info.refresh();
+        self.gpu_info
+            .as_ref()
+            .ok_or(())
+            .and_then(|gpu_info| Ok(gpu_info.print_gpu_info().unwrap_or(())));
     }
 
     pub fn refresh_components_list(&mut self) {

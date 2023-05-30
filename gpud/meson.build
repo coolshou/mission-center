@@ -21,7 +21,7 @@ cargo_build = custom_target(
   'cargo-build',
   build_by_default: true,
   build_always_stale: true,
-  output: meson.project_name() + '_gpud',
+  output: 'gpud',
   console: true,
   install: true,
   install_dir: get_option('bindir'),
