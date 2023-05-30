@@ -213,7 +213,7 @@ impl SharedMemory {
                     .try_lock(Timeout::Infinite)
                     .expect("Unable to lock shared memory");
                 shm_data.gpu_count = 0;
-                shm_data.refresh_interval_ms = 1000;
+                shm_data.refresh_interval_ms = 200;
                 drop(l);
             }
             shm_data.header.is_initialized.store(1, Ordering::Relaxed);
@@ -242,7 +242,6 @@ impl SharedMemory {
     pub fn read(&self, timeout: raw_sync::Timeout) -> Option<SharedMemoryReadGuard> {
         let lock = self.lock.try_rlock(timeout);
         if lock.is_err() {
-            eprintln!("Unable to obtain read lock: {}", lock.err().unwrap());
             return None;
         }
 
@@ -260,7 +259,6 @@ impl SharedMemory {
     pub fn write(&self, timeout: raw_sync::Timeout) -> Option<SharedMemoryWriteGuard> {
         let lock = self.lock.try_lock(timeout);
         if lock.is_err() {
-            eprintln!("Unable to obtain write lock: {}", lock.err().unwrap());
             return None;
         }
 
@@ -276,4 +274,5 @@ impl SharedMemory {
 }
 
 unsafe impl Send for SharedMemory {}
+
 unsafe impl Sync for SharedMemory {}

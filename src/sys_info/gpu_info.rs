@@ -1,25 +1,30 @@
-use std::sync::{Arc, Mutex};
-
 #[allow(unused)]
 mod shm {
     include!("../../gpud/src/shm.rs");
 }
 
+#[derive(Debug, Clone)]
+pub struct GPU {
+    pub device_name: String,
+    pub temp_celsius: u32,
+    pub fan_speed_percent: u32,
+    pub util_percent: u32,
+    pub power_draw_watts: f32,
+    pub clock_speed_mhz: u32,
+    pub mem_speed_mhz: u32,
+    pub total_memory: u64,
+    pub free_memory: u64,
+    pub used_memory: u64,
+    pub encoder_percent: u32,
+    pub decoder_percent: u32,
+}
+
 pub struct GPUInfo {
     shm: shm::SharedMemory,
     shm_file: String,
-    gpud_process: Arc<Mutex<std::process::Child>>,
-}
+    gpud_process: subprocess::Popen,
 
-impl Drop for GPUInfo {
-    fn drop(&mut self) {
-        if let Ok(mut gpud_process) = self.gpud_process.lock() {
-            let _ = gpud_process.kill();
-            gpud_process
-                .wait()
-                .expect("Unable to wait for gpud process rto exit");
-        }
-    }
+    gpus: Vec<GPU>,
 }
 
 impl GPUInfo {
@@ -52,9 +57,10 @@ impl GPUInfo {
             false => "gpud",
         };
 
-        let child = std::process::Command::new(gpud_executable)
+        let child = subprocess::Exec::cmd(gpud_executable)
             .arg(&cache_dir)
-            .spawn();
+            .detached()
+            .popen();
         if child.is_err() {
             g_critical!(
                 "MissionCenter::SysInfo",
@@ -64,10 +70,11 @@ impl GPUInfo {
             return None;
         }
 
-        let this = Self {
+        let mut this = Self {
             shm,
             shm_file: cache_dir,
-            gpud_process: Arc::new(Mutex::new(child.unwrap())),
+            gpud_process: child.unwrap(),
+            gpus: vec![],
         };
 
         // Wait a bit in case the process fails to start
@@ -80,12 +87,14 @@ impl GPUInfo {
         Some(this)
     }
 
-    pub fn print_gpu_info(&self) -> Option<()> {
+    pub fn refresh(&mut self) {
         use gtk::glib::*;
+        use raw_sync::Timeout;
+        use std::time::Duration;
 
         match self.has_gpud_exited() {
             None => {
-                return None;
+                return;
             }
             Some(true) => {
                 let gpud_executable = match *super::IS_FLATPAK {
@@ -93,95 +102,78 @@ impl GPUInfo {
                     false => "gpud",
                 };
 
-                let child = std::process::Command::new(gpud_executable)
+                let child = subprocess::Exec::cmd(gpud_executable)
                     .arg(&self.shm_file)
-                    .spawn();
-
+                    .detached()
+                    .popen();
                 if child.is_err() {
                     g_critical!(
                         "MissionCenter::SysInfo",
                         "Unable to respawn gpud process: {}",
                         child.err().unwrap()
                     );
-                    return None;
+                    return;
                 }
-                let child = child.unwrap();
-
-                if let Ok(mut gpud_process) = self.gpud_process.lock() {
-                    *gpud_process = child;
-                } else {
-                    g_critical!("MissionCenter::SysInfo", "Unable to lock gpud process");
-                    return None;
+                // Wait a bit in case the process fails to start
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                match self.has_gpud_exited() {
+                    None | Some(true) => return,
+                    _ => {}
                 }
+                self.gpud_process = child.unwrap();
             }
             _ => {}
         }
 
-        let reader = self.shm.read(raw_sync::Timeout::Infinite).unwrap();
+        if let Some(reader) = self.shm.read(Timeout::Val(Duration::from_secs(1))) {
+            self.gpus.clear();
 
-        for gpu in reader.gpu_info {
-            println!(
-                "GPU: {}",
-                unsafe { std::ffi::CStr::from_ptr(gpu.static_info.device_name.as_ptr()) }
+            for gpu in reader.gpu_info {
+                self.gpus.push(GPU {
+                    device_name: unsafe {
+                        std::ffi::CStr::from_ptr(gpu.static_info.device_name.as_ptr())
+                    }
                     .to_string_lossy()
-            );
-            println!("    Temperature: {}°C", gpu.dynamic_info.gpu_temp);
-            println!("    Fan speed: {}%", gpu.dynamic_info.fan_speed);
-            println!(
-                "    Power usage: {}W",
-                gpu.dynamic_info.power_draw as f32 / 1000.
-            );
-            println!(
-                "    Memory usage: {}",
-                crate::to_human_readable(gpu.dynamic_info.used_memory as f32, 1024.).0
-            );
-            println!("    Utilization: {}%", gpu.dynamic_info.gpu_util_rate);
-        }
-
-        Some(())
-    }
-
-    pub fn stop_gpud(&self) {
-        use gtk::glib::*;
-
-        if let Ok(mut gpud_process) = self.gpud_process.lock() {
-            let _ = gpud_process.kill();
-            gpud_process
-                .wait()
-                .expect("Unable to wait for gpud process to exit");
-        } else {
-            g_critical!("MissionCenter::SysInfo", "Unable to lock gpud process");
-        }
-    }
-
-    fn has_gpud_exited(&self) -> Option<bool> {
-        use gtk::glib::*;
-
-        if let Ok(mut gpud_process) = self.gpud_process.lock() {
-            match gpud_process.try_wait() {
-                Ok(Some(status)) => {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "gpud process exited with status: {}",
-                        status
-                    );
-
-                    Some(true)
-                }
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Unable to wait for gpud process: {}",
-                        e
-                    );
-
-                    Some(true)
-                }
-                Ok(None) => Some(false),
+                    .to_string(),
+                    temp_celsius: gpu.dynamic_info.gpu_temp,
+                    fan_speed_percent: gpu.dynamic_info.fan_speed,
+                    util_percent: gpu.dynamic_info.gpu_util_rate,
+                    power_draw_watts: gpu.dynamic_info.power_draw as f32 / 1000.,
+                    clock_speed_mhz: gpu.dynamic_info.gpu_clock_speed,
+                    mem_speed_mhz: gpu.dynamic_info.mem_clock_speed,
+                    total_memory: gpu.dynamic_info.total_memory,
+                    free_memory: gpu.dynamic_info.free_memory,
+                    used_memory: gpu.dynamic_info.used_memory,
+                    encoder_percent: gpu.dynamic_info.encoder_rate,
+                    decoder_percent: gpu.dynamic_info.decoder_rate,
+                });
             }
         } else {
-            g_critical!("MissionCenter::SysInfo", "Unable to lock gpud process");
-            None
+            g_warning!(
+                "MissionCenter::SysInfo",
+                "Unable to read shared memory: Timoout while waiting for lock"
+            );
+        }
+    }
+
+    pub fn gpus(&self) -> &[GPU] {
+        &self.gpus
+    }
+
+    fn has_gpud_exited(&mut self) -> Option<bool> {
+        use gtk::glib::*;
+
+        match self.gpud_process.poll() {
+            Some(status) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "gpud process exited with status: {:?}",
+                    status
+                );
+
+                Some(true)
+            }
+            None => Some(false),
         }
     }
 }

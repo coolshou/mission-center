@@ -200,10 +200,9 @@ impl SysInfo {
 
         self.mem_info.refresh();
         self.disk_info.refresh();
-        self.gpu_info
-            .as_ref()
-            .ok_or(())
-            .and_then(|gpu_info| Ok(gpu_info.print_gpu_info().unwrap_or(())));
+        if let Some(gpu_info) = self.gpu_info.as_mut() {
+            gpu_info.refresh();
+        }
     }
 
     pub fn refresh_components_list(&mut self) {

@@ -116,14 +116,6 @@ fn main() {
                 sys_info.refresh_all();
             }
         }
-
-        let mut sys_info = SYS_INFO
-            .write()
-            .expect("System information refresh failed: Unable to acquire lock");
-
-        if let Some(gpu_info) = sys_info.gpu_info() {
-            gpu_info.stop_gpud();
-        }
     });
 
     // Create a new GtkApplication. The application manages our main loop,

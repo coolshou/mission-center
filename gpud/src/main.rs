@@ -82,6 +82,13 @@ fn main() {
         ffi::gpuinfo_populate_static_infos(&mut gpu_list);
     }
 
+    {
+        let writer = shared_memory
+            .write(raw_sync::Timeout::Infinite)
+            .expect("Unable to acquire write lock");
+        *writer.gpu_info.0 = gpu_count as usize;
+    }
+
     loop {
         let refresh_interval_ms = {
             let reader = match shared_memory.read(raw_sync::Timeout::Infinite) {
@@ -117,7 +124,6 @@ fn main() {
             while device != (&mut gpu_list) {
                 let dev: &ffi::GPUInfo = unsafe { core::mem::transmute(device) };
 
-                *writer.gpu_info.0 = gpu_count as usize;
                 let shared_data = &mut writer.gpu_info.1[i];
                 shared_data.static_info = dev.static_info;
                 shared_data.dynamic_info = dev.dynamic_info;
