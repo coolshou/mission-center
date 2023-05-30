@@ -215,7 +215,7 @@ impl MemInfo {
 
     pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
         use gtk::glib::*;
-        use std::{env::*, fs::*, process::*};
+        use std::{fs::*, process::*};
 
         let is_flatpak = *super::IS_FLATPAK;
         let mut cmd = if !is_flatpak {
@@ -223,7 +223,7 @@ impl MemInfo {
             cmd.arg("dmidecode").arg("--type").arg("17");
             cmd
         } else {
-            if let Ok(mut cache_dir) = var("XDG_CACHE_HOME") {
+            if let Ok(mut cache_dir) = std::env::var("XDG_CACHE_HOME") {
                 cache_dir.push_str("/io.missioncenter.MissionCenter");
                 match create_dir_all(&cache_dir) {
                     Err(err) => {
