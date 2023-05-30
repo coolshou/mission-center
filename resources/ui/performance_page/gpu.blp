@@ -1,14 +1,14 @@
 using Gtk 4.0;
 using Adw 1;
 
-template PerformancePageMemory: Box {
+template PerformancePageGpu: Box {
   orientation: vertical;
 
   Adw.Banner admin_banner {
     title: _("Some information requires administrative privileges");
     button-label: _("_Authenticate");
 
-    visible: bind-property PerformancePageMemory.summary-mode inverted;
+    visible: bind-property PerformancePageGpu.summary-mode inverted;
   }
 
   WindowHandle {
@@ -29,10 +29,10 @@ template PerformancePageMemory: Box {
           hexpand: true;
           halign: start;
 
-          label: _("Memory");
+          label: _("GPU");
         }
 
-        Label total_ram {
+        Label device_name {
           styles [
             "title-3",
           ]
@@ -40,6 +40,52 @@ template PerformancePageMemory: Box {
           halign: end;
         }
       }
+    };
+  }
+
+  Box graph_top {
+    orientation: vertical;
+
+    margin-top: 10;
+
+    Box {
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        label: _("Overall utilization");
+      }
+
+      Label overall_percent {
+        styles [
+          "caption",
+        ]
+      }
+    }
+
+    .GraphWidget usage_graph_overall {
+      vexpand: true;
+      hexpand: true;
+
+      height-request: 120;
+
+      base-color: bind-property PerformancePageGpu.base-color;
+      data-set-count: 1;
+      scroll: true;
+    }
+  }
+
+  Box decode_encode_graphs {
+    orientation: horizontal;
+
+    margin-top: 10;
+    spacing: 10;
+
+    Box encode_graph {
+      orientation: vertical;
 
       Box {
         Label {
@@ -49,81 +95,102 @@ template PerformancePageMemory: Box {
 
           hexpand: true;
           halign: start;
-          label: _("Memory usage");
+          label: _("Video encode");
         }
 
+        Label encode_percent {
+          styles [
+            "caption",
+          ]
+        }
+      }
+
+      .GraphWidget usage_graph_encode {
+        vexpand: true;
+        hexpand: true;
+
+        height-request: 120;
+
+        base-color: bind-property PerformancePageGpu.base-color;
+        data-set-count: 1;
+        scroll: true;
+      }
+    }
+
+    Box decode_graph {
+      orientation: vertical;
+
+      Box {
         Label {
           styles [
             "caption",
           ]
 
-          label: bind-property total_ram.label;
+          hexpand: true;
+          halign: start;
+          label: _("Video decode");
+        }
+
+        Label decode_percent {
+          styles [
+            "caption",
+          ]
         }
       }
-    };
+
+      .GraphWidget usage_graph_decode {
+        vexpand: true;
+        hexpand: true;
+
+        height-request: 120;
+
+        base-color: bind-property PerformancePageGpu.base-color;
+        data-set-count: 1;
+        scroll: true;
+      }
+    }
   }
 
-  .GraphWidget usage_graph {
-    vexpand: true;
-    hexpand: true;
+  Box memory_graph {
+    orientation: vertical;
 
-    height-request: 120;
-
-    base-color: bind-property PerformancePageMemory.base-color;
-    data-set-count: 1;
-    scroll: true;
-  }
-
-  Box {
-    margin-top: 2;
+    margin-top: 10;
     margin-bottom: 10;
 
-    Label {
-      styles [
-        "caption",
-      ]
+    Box {
+      Label {
+        styles [
+          "caption",
+        ]
 
+        hexpand: true;
+        halign: start;
+        label: _("Memory usage");
+      }
+
+      Label total_memory {
+        styles [
+          "caption",
+        ]
+      }
+    }
+
+    .GraphWidget usage_graph_memory {
       hexpand: true;
-      halign: start;
-      valign: start;
-      label: _("60 seconds");
+
+      height-request: 70;
+
+      base-color: bind-property PerformancePageGpu.base-color;
+      data-set-count: 1;
+      scroll: true;
     }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      valign: start;
-      label: "0";
-    }
-  }
-
-  Label {
-    styles [
-      "caption",
-    ]
-
-    hexpand: true;
-    halign: start;
-    valign: start;
-    label: _("Memory composition");
-  }
-
-  .MemoryCompositionWidget mem_composition {
-    hexpand: true;
-    margin-bottom: 20;
-
-    height-request: 50;
-
-    base-color: bind-property PerformancePageMemory.base-color;
   }
 
   Adw.ToastOverlay toast_overlay {
     Box details {
       spacing: 20;
 
-      visible: bind-property PerformancePageMemory.summary-mode inverted;
+      visible: bind-property PerformancePageGpu.summary-mode inverted;
 
       Box dynamic_data {
         orientation: vertical;
@@ -143,10 +210,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("In use");
+              label: _("Utilization");
             }
 
-            Label in_use {
+            Label utilization {
               styles [
                 "title-4",
               ]
@@ -166,10 +233,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("Available");
+              label: _("Memory usage");
             }
 
-            Label available {
+            Label memory_usage {
               styles [
                 "title-4",
               ]
@@ -194,10 +261,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("Committed");
+              label: _("Clock Speed");
             }
 
-            Label committed {
+            Label clock_speed {
               styles [
                 "title-4",
               ]
@@ -217,10 +284,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("Cached");
+              label: _("Memory speed");
             }
 
-            Label cached {
+            Label memory_speed {
               styles [
                 "title-4",
               ]
@@ -244,10 +311,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("Swap available");
+              label: _("Power draw");
             }
 
-            Label swap_available {
+            Label power_draw {
               styles [
                 "title-4",
               ]
@@ -267,10 +334,10 @@ template PerformancePageMemory: Box {
               ]
 
               halign: start;
-              label: _("Swap used");
+              label: _("Temperature");
             }
 
-            Label swap_used {
+            Label temperature {
               styles [
                 "title-4",
               ]
@@ -283,7 +350,6 @@ template PerformancePageMemory: Box {
 
       Box system_info {
         spacing: 10;
-        visible: false;
 
         Box labels {
           orientation: vertical;

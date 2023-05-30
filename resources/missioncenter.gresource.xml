@@ -8,6 +8,7 @@
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/gpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/memory.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/page.ui</file>

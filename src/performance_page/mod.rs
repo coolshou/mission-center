@@ -29,6 +29,7 @@ use widgets::GraphWidget;
 
 mod cpu;
 mod disk;
+mod gpu;
 mod memory;
 mod network;
 mod summary_graph;
@@ -39,6 +40,7 @@ type CpuPage = cpu::PerformancePageCpu;
 type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
+type GpuPage = gpu::PerformancePageGpu;
 
 mod imp {
     use super::*;
@@ -48,6 +50,7 @@ mod imp {
         Memory((SummaryGraph, MemoryPage)),
         Disk(HashMap<String, (SummaryGraph, DiskPage)>),
         Network(HashMap<String, (SummaryGraph, NetworkPage)>),
+        Gpu(HashMap<String, (SummaryGraph, GpuPage)>),
     }
 
     #[derive(Properties)]
@@ -494,6 +497,86 @@ mod imp {
             pages.push(Pages::Network(networks));
         }
 
+        fn set_up_gpu_pages(&self, pages: &mut Vec<Pages>) {
+            use crate::SYS_INFO;
+
+            const BASE_COLOR: [u8; 3] = [0x89, 0x99, 0xDA];
+
+            let sys_info = SYS_INFO
+                .read()
+                .expect("Failed to read system information: Unable to acquire lock");
+
+            let mut gpus = HashMap::new();
+            let gpu_info = sys_info.gpu_info();
+            if gpu_info.is_none() {
+                return;
+            }
+            let gpu_info = gpu_info.unwrap();
+
+            for (i, gpu) in gpu_info.gpus().iter().enumerate() {
+                let summary = SummaryGraph::new();
+                summary.set_widget_name(&gpu.device_name);
+
+                summary.set_heading(gettext!("GPU {}", i));
+                summary.set_info1(gpu.device_name.clone());
+                summary.set_info2(format!("{}% ({} °C)", gpu.util_percent, gpu.temp_celsius));
+                summary.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+
+                let page = GpuPage::new(&gpu.device_name);
+                page.set_base_color(gtk::gdk::RGBA::new(
+                    BASE_COLOR[0] as f32 / 255.,
+                    BASE_COLOR[1] as f32 / 255.,
+                    BASE_COLOR[2] as f32 / 255.,
+                    1.,
+                ));
+                self.obj()
+                    .as_ref()
+                    .bind_property("refresh-interval", &page, "refresh-interval")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                self.obj()
+                    .as_ref()
+                    .bind_property("summary-mode", &page, "summary-mode")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
+                let summary_graph = summary.graph_widget();
+                page.connect_realize(move |page| {
+                    if let Some(data) = summary_graph.data(0) {
+                        page.set_initial_values(data);
+                    }
+                });
+
+                self.sidebar.append(&summary);
+                self.page_stack.add_named(&page, Some(&gpu.device_name));
+
+                // let mut actions = self.context_menu_view_actions.take();
+                // match actions.get("gpu") {
+                //     None => {
+                //         g_critical!(
+                //             "MissionCenter::PerformancePage",
+                //             "Failed to wire up gpu action for {}, logic bug?",
+                //             &gpu.device_name
+                //         );
+                //     }
+                //     Some(action) => {
+                //         actions.insert(gpu.device_name.clone(), action.clone());
+                //     }
+                // }
+                // self.context_menu_view_actions.set(actions);
+
+                gpus.insert(gpu.device_name.clone(), (summary, page));
+            }
+
+            pages.push(Pages::Gpu(gpus));
+        }
+
         fn update_graphs(this: &super::PerformancePage) {
             use crate::SYS_INFO;
             use sysinfo::{CpuExt, NetworkExt, SystemExt};
@@ -566,6 +649,20 @@ mod imp {
                             }
                         }
                     }
+                    Pages::Gpu(pages) => {
+                        if let Some(gpu_info) = sys_info.gpu_info() {
+                            for gpu in gpu_info.gpus() {
+                                if let Some((summary, _)) = pages.get(&gpu.device_name) {
+                                    let graph_widget = summary.graph_widget();
+                                    graph_widget.add_data_point(0, gpu.util_percent as f32);
+                                    summary.set_info2(format!(
+                                        "{}% ({} °C)",
+                                        gpu.util_percent, gpu.temp_celsius
+                                    ));
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -615,6 +712,7 @@ mod imp {
             self.set_up_memory_page(&mut pages);
             self.set_up_disk_pages(&mut pages);
             self.set_up_network_pages(&mut pages);
+            self.set_up_gpu_pages(&mut pages);
 
             let row = self
                 .sidebar
