@@ -11,6 +11,7 @@ subdir('data')
 subdir('po')
 subdir('resources')
 subdir('src')
+subdir('gpud')
 
 gnome.post_install(
      glib_compile_schemas: true,

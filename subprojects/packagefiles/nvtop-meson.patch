@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..73baf63
 --- /dev/null
 +++ b/meson.build
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,54 @@
 +project('libnvtop', 'c', version: '3.0.1')
 +
 +conf = configuration_data()
@@ -55,5 +55,6 @@ index 0000000..73baf63
 +)
 +
 +nvtop = declare_dependency(
-+    link_with : libnvtop
++    link_with : libnvtop,
++    dependencies: [ libdrm, libudev, libmath ]
 +)
