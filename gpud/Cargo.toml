@@ -5,6 +5,7 @@ edition = "2021"
 build = "build/build.rs"
 
 [dependencies]
+libc = { version = "0.2" }
 raw_sync = { version = "0.1" }
 shared_memory = { version = "0.12" }
 

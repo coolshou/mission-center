@@ -27,6 +27,7 @@ pub use shm::{
 mod shm {
     const MAX_DEVICE_NAME: usize = 128;
     const MAX_GPU_COUNT: usize = 8;
+    const MAX_DRI_PATH: usize = 64;
 
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
@@ -136,6 +137,7 @@ mod shm {
     pub struct GPUInfo {
         pub static_info: GPUInfoStaticInfo,
         pub dynamic_info: GPUInfoDynamicInfo,
+        pub dri_path: [u8; MAX_DRI_PATH],
     }
 
     pub struct SharedMemoryData {

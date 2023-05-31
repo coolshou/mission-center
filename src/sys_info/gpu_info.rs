@@ -26,6 +26,7 @@ mod shm {
 #[derive(Debug, Clone)]
 pub struct GPU {
     pub device_name: String,
+    pub dri_path: String,
     pub temp_celsius: u32,
     pub fan_speed_percent: u32,
     pub util_percent: u32,
@@ -72,28 +73,15 @@ impl GPUInfo {
         }
         let shm = shm.unwrap();
 
-        let gpud_executable = match *super::IS_FLATPAK {
-            true => "/app/gpud",
-            false => "gpud",
+        let child = match Self::start_gpud(&cache_dir) {
+            Some(child) => child,
+            None => return None,
         };
-
-        let child = subprocess::Exec::cmd(gpud_executable)
-            .arg(&cache_dir)
-            .detached()
-            .popen();
-        if child.is_err() {
-            g_critical!(
-                "MissionCenter::SysInfo",
-                "Unable to spawn gpud process: {}",
-                child.err().unwrap()
-            );
-            return None;
-        }
 
         let mut this = Self {
             shm,
             shm_file: cache_dir,
-            gpud_process: child.unwrap(),
+            gpud_process: child,
             gpus: vec![],
         };
 
@@ -107,6 +95,30 @@ impl GPUInfo {
         Some(this)
     }
 
+    fn start_gpud(shm_file_link: &str) -> Option<subprocess::Popen> {
+        use gtk::glib::*;
+
+        let gpud_executable = match *super::IS_FLATPAK {
+            true => "/app/gpud",
+            false => "gpud",
+        };
+
+        let child = subprocess::Exec::cmd(gpud_executable)
+            .arg(&shm_file_link)
+            .detached()
+            .popen();
+        if child.is_err() {
+            g_critical!(
+                "MissionCenter::SysInfo",
+                "Unable to spawn gpud process: {}",
+                child.err().unwrap()
+            );
+            return None;
+        }
+
+        Some(child.unwrap())
+    }
+
     pub fn refresh(&mut self) {
         use gtk::glib::*;
         use raw_sync::Timeout;
@@ -117,30 +129,18 @@ impl GPUInfo {
                 return;
             }
             Some(true) => {
-                let gpud_executable = match *super::IS_FLATPAK {
-                    true => "/app/gpud",
-                    false => "gpud",
-                };
-
-                let child = subprocess::Exec::cmd(gpud_executable)
-                    .arg(&self.shm_file)
-                    .detached()
-                    .popen();
-                if child.is_err() {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Unable to respawn gpud process: {}",
-                        child.err().unwrap()
-                    );
+                let child = Self::start_gpud(&self.shm_file);
+                if child.is_none() {
                     return;
                 }
+                self.gpud_process = child.unwrap();
+
                 // Wait a bit in case the process fails to start
                 std::thread::sleep(std::time::Duration::from_millis(100));
                 match self.has_gpud_exited() {
                     None | Some(true) => return,
                     _ => {}
                 }
-                self.gpud_process = child.unwrap();
             }
             _ => {}
         }
@@ -152,6 +152,11 @@ impl GPUInfo {
                 self.gpus.push(GPU {
                     device_name: unsafe {
                         std::ffi::CStr::from_ptr(gpu.static_info.device_name.as_ptr())
+                    }
+                    .to_string_lossy()
+                    .to_string(),
+                    dri_path: unsafe {
+                        std::ffi::CStr::from_ptr(gpu.dri_path.as_ptr() as *const i8)
                     }
                     .to_string_lossy()
                     .to_string(),
@@ -171,7 +176,7 @@ impl GPUInfo {
         } else {
             g_warning!(
                 "MissionCenter::SysInfo",
-                "Unable to read shared memory: Timoout while waiting for lock"
+                "Unable to read shared memory: Timeout while waiting for lock"
             );
         }
     }
