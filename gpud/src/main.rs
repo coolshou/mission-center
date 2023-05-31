@@ -159,8 +159,11 @@ fn main() {
     std::fs::create_dir_all(std::path::Path::new(&shm_file_link).parent().unwrap())
         .expect("Unable to create cache directory");
 
+    dbg!(&shm_file_link);
+
     let shared_memory =
         SharedMemory::new(&shm_file_link, false).expect("Unable to open shared memory");
+    dbg!("Shared memory opened");
 
     let mut gpu_list: ffi::ListHead = ffi::ListHead {
         next: std::ptr::null_mut(),
@@ -184,12 +187,15 @@ fn main() {
         }
     }
 
+    dbg!(gpu_count);
+
     {
         let writer = shared_memory
             .write(raw_sync::Timeout::Infinite)
             .expect("Unable to acquire write lock");
         *writer.gpu_info.0 = gpu_count as usize;
     }
+    dbg!("written gpu count");
 
     loop {
         // If the parent process is no longer running, i.e. the parent PID changes, exit.
@@ -213,6 +219,7 @@ fn main() {
 
             reader.refresh_interval_ms
         };
+        dbg!(refresh_interval_ms);
 
         {
             let writer = match shared_memory.write(raw_sync::Timeout::Infinite) {
@@ -222,6 +229,7 @@ fn main() {
                 }
                 Some(writer) => writer,
             };
+            dbg!("got writer lock");
 
             let result = unsafe { ffi::gpuinfo_refresh_dynamic_info(&mut gpu_list) };
             if result == 0 {
@@ -245,6 +253,7 @@ fn main() {
             let mut i = 0;
             while device != (&mut gpu_list) {
                 let dev: &ffi::GPUInfo = unsafe { core::mem::transmute(device) };
+                dbg!(dev);
 
                 let shared_data = &mut writer.gpu_info.1[i];
                 shared_data.static_info = dev.static_info;

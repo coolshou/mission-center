@@ -129,7 +129,7 @@ mod shm {
 
     pub struct SharedMemoryHeader {
         pub is_initialized: std::sync::atomic::AtomicU8,
-        pub rw_lock: raw_sync::locks::RwLock,
+        pub rw_lock: raw_sync::locks::Mutex,
         _reserved: [u8; 128],
     }
 
@@ -222,7 +222,7 @@ impl SharedMemory {
         let rw_lock = if shm_handle.is_owner() {
             shm_data.header.is_initialized.store(0, Ordering::Relaxed);
             let (lock, bytes_used) = unsafe {
-                RwLock::new(
+                Mutex::new(
                     (&mut shm_data.header.rw_lock) as *mut _ as *mut u8,
                     (&mut shm_data.gpu_info) as *mut _ as *mut u8,
                 )
@@ -244,7 +244,7 @@ impl SharedMemory {
         } else {
             while shm_data.header.is_initialized.load(Ordering::Relaxed) != 1 {}
             let (lock, bytes_used) = unsafe {
-                RwLock::from_existing(
+                Mutex::from_existing(
                     (&mut shm_data.header.rw_lock) as *mut _ as *mut u8,
                     (&mut shm_data.gpu_info) as *mut _ as *mut u8,
                 )

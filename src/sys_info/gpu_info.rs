@@ -99,7 +99,7 @@ impl GPUInfo {
         use gtk::glib::*;
 
         let gpud_executable = match *super::IS_FLATPAK {
-            true => "/app/gpud",
+            true => "/app/bin/gpud",
             false => "gpud",
         };
 
