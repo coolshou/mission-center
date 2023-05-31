@@ -40,9 +40,35 @@ mod imp {
         #[template_child]
         pub device_name: TemplateChild<gtk::Label>,
         #[template_child]
+        pub overall_percent: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graph_overall: TemplateChild<GraphWidget>,
         #[template_child]
+        pub encode_percent: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub usage_graph_encode: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub decode_percent: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub usage_graph_decode: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub total_memory: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub usage_graph_memory: TemplateChild<GraphWidget>,
+        #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        #[template_child]
+        pub utilization: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub memory_usage: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub clock_speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub memory_speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub power_draw: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub temperature: TemplateChild<gtk::Label>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
@@ -61,8 +87,21 @@ mod imp {
             Self {
                 admin_banner: Default::default(),
                 device_name: Default::default(),
+                overall_percent: Default::default(),
                 usage_graph_overall: Default::default(),
+                encode_percent: Default::default(),
+                usage_graph_encode: Default::default(),
+                decode_percent: Default::default(),
+                usage_graph_decode: Default::default(),
+                total_memory: Default::default(),
+                usage_graph_memory: Default::default(),
                 toast_overlay: Default::default(),
+                utilization: Default::default(),
+                memory_usage: Default::default(),
+                clock_speed: Default::default(),
+                memory_speed: Default::default(),
+                power_draw: Default::default(),
+                temperature: Default::default(),
                 context_menu: Default::default(),
 
                 name: Cell::new(String::new()),
@@ -120,11 +159,67 @@ mod imp {
         fn update_view(&self, this: &super::PerformancePageGpu) {
             use crate::SYS_INFO;
 
-            let this = this.clone();
-            let _sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-
             self.update_graphs_grid_layout();
 
+            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            let gpu_info = sys_info.gpu_info();
+            if gpu_info.is_none() {
+                return;
+            }
+            let gpu_info = gpu_info.unwrap();
+            if let Some(gpu) = gpu_info
+                .gpus()
+                .iter()
+                .filter(|d| {
+                    d.device_name == self.obj().upcast_ref::<super::PerformancePageGpu>().name()
+                })
+                .take(1)
+                .next()
+            {
+                self.overall_percent
+                    .set_text(&format!("{}%", gpu.util_percent));
+                self.usage_graph_overall
+                    .add_data_point(0, gpu.util_percent as f32);
+                self.utilization.set_text(&format!("{}%", gpu.util_percent));
+
+                self.encode_percent
+                    .set_text(&format!("{}%", gpu.encoder_percent));
+                self.usage_graph_encode
+                    .add_data_point(0, gpu.encoder_percent as f32);
+
+                self.decode_percent
+                    .set_text(&format!("{}%", gpu.decoder_percent));
+                self.usage_graph_decode
+                    .add_data_point(0, gpu.decoder_percent as f32);
+
+                self.usage_graph_memory
+                    .add_data_point(0, gpu.used_memory as f32);
+
+                let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
+                let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
+                self.memory_usage.set_text(&format!(
+                    "{:.2} {}iB / {:.2} {}iB",
+                    used_memory.0, used_memory.1, total_memory.0, total_memory.1
+                ));
+
+                let clock_speed =
+                    crate::to_human_readable(gpu.clock_speed_mhz as f32 * 1_000_000., 1000.);
+                self.clock_speed
+                    .set_text(&format!("{:.2} {}Hz", clock_speed.0, clock_speed.1));
+                let memory_speed =
+                    crate::to_human_readable(gpu.mem_speed_mhz as f32 * 1_000_000., 1000.);
+                self.memory_speed
+                    .set_text(&format!("{:.2} {}Hz", memory_speed.0, memory_speed.1));
+
+                let power_draw = crate::to_human_readable(gpu.power_draw_watts as f32, 1000.);
+                self.power_draw
+                    .set_text(&format!("{:.2} {}W", power_draw.0, power_draw.1));
+
+                self.temperature
+                    .set_text(&format!("{}°C", gpu.temp_celsius));
+            }
+
+            let this = this.clone();
             Some(glib::source::timeout_add_local_once(
                 std::time::Duration::from_millis(this.refresh_interval() as _),
                 move || {
@@ -134,7 +229,35 @@ mod imp {
         }
 
         fn update_static_information(&self) {
+            use crate::SYS_INFO;
+
             self.device_name.set_text(&self.name());
+
+            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            let gpu_info = sys_info.gpu_info();
+            if gpu_info.is_none() {
+                return;
+            }
+            let gpu_info = gpu_info.unwrap();
+            if let Some(gpu) = gpu_info
+                .gpus()
+                .iter()
+                .filter(|d| {
+                    d.device_name == self.obj().upcast_ref::<super::PerformancePageGpu>().name()
+                })
+                .take(1)
+                .next()
+            {
+                self.usage_graph_memory
+                    .set_value_range_max(gpu.total_memory as f32);
+
+                let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
+                self.total_memory.set_text(&format!(
+                    "{} {}iB",
+                    total_memory.0.round(),
+                    total_memory.1
+                ));
+            }
         }
 
         fn update_graphs_grid_layout(&self) {
@@ -149,6 +272,23 @@ mod imp {
             }
 
             self.usage_graph_overall
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+            self.usage_graph_memory
+                .set_vertical_line_count((width / 40.).round() as u32);
+
+            let width = self.usage_graph_encode.allocated_width() as f32;
+            let height = self.usage_graph_encode.allocated_height() as f32;
+
+            let mut a = width;
+            let mut b = height;
+            if width > height {
+                a = height;
+                b = width;
+            }
+            self.usage_graph_encode
+                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            self.usage_graph_decode
                 .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
         }
     }

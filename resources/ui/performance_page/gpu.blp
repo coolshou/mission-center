@@ -225,7 +225,7 @@ template PerformancePageGpu: Box {
           Box {
             orientation: vertical;
             spacing: 3;
-            width-request: 100;
+            width-request: 200;
 
             Label {
               styles [
@@ -361,7 +361,7 @@ template PerformancePageGpu: Box {
             ]
 
             halign: start;
-            label: _("Speed:");
+            label: _("OpenGL version:");
           }
 
           Label {
@@ -370,7 +370,7 @@ template PerformancePageGpu: Box {
             ]
 
             halign: start;
-            label: _("Slots used:");
+            label: _("Vulkan version:");
           }
 
           Label {
@@ -379,7 +379,7 @@ template PerformancePageGpu: Box {
             ]
 
             halign: start;
-            label: _("Form factor:");
+            label: _("PCIExpress speed:");
           }
 
           Label {
@@ -388,7 +388,7 @@ template PerformancePageGpu: Box {
             ]
 
             halign: start;
-            label: _("Type:");
+            label: _("PCI bus address:");
           }
         }
 
@@ -396,7 +396,7 @@ template PerformancePageGpu: Box {
           orientation: vertical;
           spacing: 3;
 
-          Label speed {
+          Label opengl_version {
             styles [
               "caption",
             ]
@@ -404,7 +404,7 @@ template PerformancePageGpu: Box {
             halign: start;
           }
 
-          Label slots_used {
+          Label vulkan_version {
             styles [
               "caption",
             ]
@@ -412,7 +412,7 @@ template PerformancePageGpu: Box {
             halign: start;
           }
 
-          Label form_factor {
+          Label pci_speed {
             styles [
               "caption",
             ]
@@ -420,7 +420,7 @@ template PerformancePageGpu: Box {
             halign: start;
           }
 
-          Label ram_type {
+          Label pci_addr {
             styles [
               "caption",
             ]
