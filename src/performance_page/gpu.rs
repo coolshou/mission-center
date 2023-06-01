@@ -36,8 +36,6 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/gpu.ui")]
     pub struct PerformancePageGpu {
         #[template_child]
-        pub admin_banner: TemplateChild<adw::Banner>,
-        #[template_child]
         pub device_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub overall_percent: TemplateChild<gtk::Label>,
@@ -56,8 +54,6 @@ mod imp {
         #[template_child]
         pub usage_graph_memory: TemplateChild<GraphWidget>,
         #[template_child]
-        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
-        #[template_child]
         pub utilization: TemplateChild<gtk::Label>,
         #[template_child]
         pub memory_usage: TemplateChild<gtk::Label>,
@@ -69,6 +65,14 @@ mod imp {
         pub power_draw: TemplateChild<gtk::Label>,
         #[template_child]
         pub temperature: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub opengl_version: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub vulkan_version: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub pcie_speed: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub pci_addr: TemplateChild<gtk::Label>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
@@ -85,7 +89,6 @@ mod imp {
     impl Default for PerformancePageGpu {
         fn default() -> Self {
             Self {
-                admin_banner: Default::default(),
                 device_name: Default::default(),
                 overall_percent: Default::default(),
                 usage_graph_overall: Default::default(),
@@ -95,13 +98,16 @@ mod imp {
                 usage_graph_decode: Default::default(),
                 total_memory: Default::default(),
                 usage_graph_memory: Default::default(),
-                toast_overlay: Default::default(),
                 utilization: Default::default(),
                 memory_usage: Default::default(),
                 clock_speed: Default::default(),
                 memory_speed: Default::default(),
                 power_draw: Default::default(),
                 temperature: Default::default(),
+                opengl_version: Default::default(),
+                vulkan_version: Default::default(),
+                pcie_speed: Default::default(),
+                pci_addr: Default::default(),
                 context_menu: Default::default(),
 
                 name: Cell::new(String::new()),
@@ -204,16 +210,28 @@ mod imp {
 
                 let clock_speed =
                     crate::to_human_readable(gpu.clock_speed_mhz as f32 * 1_000_000., 1000.);
-                self.clock_speed
-                    .set_text(&format!("{:.2} {}Hz", clock_speed.0, clock_speed.1));
+                let clock_speed_max =
+                    crate::to_human_readable(gpu.clock_speed_max_mhz as f32 * 1_000_000., 1000.);
+                self.clock_speed.set_text(&format!(
+                    "{:.2} {}Hz / {:.2} {}Hz",
+                    clock_speed.0, clock_speed.1, clock_speed_max.0, clock_speed_max.1
+                ));
+
                 let memory_speed =
                     crate::to_human_readable(gpu.mem_speed_mhz as f32 * 1_000_000., 1000.);
-                self.memory_speed
-                    .set_text(&format!("{:.2} {}Hz", memory_speed.0, memory_speed.1));
+                let memory_speed_max =
+                    crate::to_human_readable(gpu.mem_speed_max_mhz as f32 * 1_000_000., 1000.);
+                self.memory_speed.set_text(&format!(
+                    "{:.2} {}Hz / {:.2} {}Hz",
+                    memory_speed.0, memory_speed.1, memory_speed_max.0, memory_speed_max.1
+                ));
 
                 let power_draw = crate::to_human_readable(gpu.power_draw_watts as f32, 1000.);
-                self.power_draw
-                    .set_text(&format!("{:.2} {}W", power_draw.0, power_draw.1));
+                let power_limit = crate::to_human_readable(gpu.power_draw_max_watts as f32, 1000.);
+                self.power_draw.set_text(&format!(
+                    "{:.2} {}W / {:.2} {}W",
+                    power_draw.0, power_draw.1, power_limit.0, power_limit.1
+                ));
 
                 self.temperature
                     .set_text(&format!("{}°C", gpu.temp_celsius));
@@ -257,6 +275,23 @@ mod imp {
                     total_memory.0.round(),
                     total_memory.1
                 ));
+
+                let pcie_info_known = if let Some(pcie_gen) = gpu.pcie_gen {
+                    if let Some(pcie_lanes) = gpu.pcie_lanes {
+                        self.pcie_speed
+                            .set_text(&format!("{}x Gen {}", pcie_lanes, pcie_gen));
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                };
+                if !pcie_info_known {
+                    self.pcie_speed.set_text("Unknown");
+                }
+
+                self.pci_addr.set_text(&gpu.pci_bus_id);
             }
         }
 
@@ -318,21 +353,6 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
             self.update_static_information();
-
-            self.admin_banner
-                .connect_button_clicked(clone!(@weak this => move |_| {
-                    let ptr = this.as_ptr() as usize;
-                    let _ = std::thread::spawn(move || {
-                        glib::idle_add_once(move || {
-                            use glib::translate::from_glib_none;
-
-                            let this: gtk::Widget = unsafe { from_glib_none(ptr as *mut gtk::ffi::GtkWidget) };
-                            let this = this.downcast_ref::<super::PerformancePageGpu>().unwrap();
-                            this.imp().admin_banner.set_revealed(false);
-                            // _ => this.imp().toast_overlay.add_toast(adw::Toast::new("Authentication failed"))
-                        });
-                    });
-                }));
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -351,11 +371,6 @@ mod imp {
     impl WidgetImpl for PerformancePageGpu {
         fn realize(&self) {
             self.parent_realize();
-
-            let this = self.obj().upcast_ref::<super::PerformancePageGpu>().clone();
-            glib::timeout_add_local_once(std::time::Duration::from_millis(500), move || {
-                this.imp().admin_banner.set_revealed(true);
-            });
 
             self.update_view(self.obj().upcast_ref());
         }

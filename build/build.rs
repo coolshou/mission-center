@@ -1,7 +1,13 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let build_root = std::env::var("BUILD_ROOT")?;
+    let build_root =
+        std::env::var("BUILD_ROOT").unwrap_or(std::env::var("CARGO_MANIFEST_DIR")? + "/build");
 
-    for dir in std::fs::read_dir(format!("{}/subprojects", build_root))? {
+    let subprojects_dir = std::fs::read_dir(format!("{}/subprojects", build_root));
+    if subprojects_dir.is_err() {
+        return Ok(());
+    }
+
+    for dir in subprojects_dir.unwrap() {
         let dir = dir?;
         let dir_name = dir.file_name();
         let dir_name = dir_name.as_os_str().to_string_lossy();

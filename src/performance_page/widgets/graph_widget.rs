@@ -420,7 +420,6 @@ mod imp {
             self.parent_realize();
 
             this.set_has_stencil_buffer(true);
-            this.set_auto_render(false);
         }
     }
 

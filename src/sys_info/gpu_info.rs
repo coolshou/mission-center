@@ -217,13 +217,20 @@ mod nvtop {
 #[derive(Debug, Clone)]
 pub struct GPU {
     pub device_name: String,
+    pub pci_bus_id: String,
     pub dri_path: String,
+    pub pcie_gen: Option<u8>,
+    pub pcie_lanes: Option<u8>,
+
     pub temp_celsius: u32,
     pub fan_speed_percent: u32,
     pub util_percent: u32,
     pub power_draw_watts: f32,
+    pub power_draw_max_watts: f32,
     pub clock_speed_mhz: u32,
+    pub clock_speed_max_mhz: u32,
     pub mem_speed_mhz: u32,
+    pub mem_speed_max_mhz: u32,
     pub total_memory: u64,
     pub free_memory: u64,
     pub used_memory: u64,
@@ -335,13 +342,20 @@ impl GPUInfo {
                 }
                 .to_string_lossy()
                 .to_string(),
+                pci_bus_id: pdev.to_string(),
                 dri_path: format!("/dev/dri/by-path/pci-{}-card", pdev),
+                pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
+                pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
+
                 temp_celsius: dev.dynamic_info.gpu_temp,
                 fan_speed_percent: dev.dynamic_info.fan_speed,
                 util_percent: dev.dynamic_info.gpu_util_rate,
                 power_draw_watts: dev.dynamic_info.power_draw as f32 / 1000.,
+                power_draw_max_watts: dev.dynamic_info.power_draw_max as f32 / 1000.,
                 clock_speed_mhz: dev.dynamic_info.gpu_clock_speed,
+                clock_speed_max_mhz: dev.dynamic_info.gpu_clock_speed_max,
                 mem_speed_mhz: dev.dynamic_info.mem_clock_speed,
+                mem_speed_max_mhz: dev.dynamic_info.mem_clock_speed_max,
                 total_memory: dev.dynamic_info.total_memory,
                 free_memory: dev.dynamic_info.free_memory,
                 used_memory: dev.dynamic_info.used_memory,

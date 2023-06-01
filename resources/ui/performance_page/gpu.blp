@@ -1,15 +1,28 @@
+/* ui/performance_page/gpu.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 using Gtk 4.0;
 using Adw 1;
 
 template PerformancePageGpu: Box {
   orientation: vertical;
-
-  Adw.Banner admin_banner {
-    title: _("Some information requires administrative privileges");
-    button-label: _("_Authenticate");
-
-    visible: bind-property PerformancePageGpu.summary-mode inverted;
-  }
 
   WindowHandle {
     child: Box description {
@@ -186,247 +199,245 @@ template PerformancePageGpu: Box {
     }
   }
 
-  Adw.ToastOverlay toast_overlay {
-    Box details {
-      spacing: 20;
+  Box details {
+    spacing: 20;
 
-      visible: bind-property PerformancePageGpu.summary-mode inverted;
+    visible: bind-property PerformancePageGpu.summary-mode inverted;
 
-      Box dynamic_data {
-        orientation: vertical;
-        spacing: 10;
+    Box dynamic_data {
+      orientation: vertical;
+      spacing: 10;
 
-        Box top_row {
-          spacing: 15;
+      Box top_row {
+        spacing: 15;
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 230;
 
-            Label {
-              styles [
-                "caption",
-              ]
+          Label {
+            styles [
+              "caption",
+            ]
 
-              halign: start;
-              label: _("Utilization");
-            }
-
-            Label utilization {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
+            halign: start;
+            label: _("Utilization");
           }
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 200;
+          Label utilization {
+            styles [
+              "title-4",
+            ]
 
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Memory usage");
-            }
-
-            Label memory_usage {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
+            halign: start;
           }
         }
 
-        Box mid_row {
-          spacing: 15;
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 200;
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
+          Label {
+            styles [
+              "caption",
+            ]
 
-            Label {
-
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Clock Speed");
-            }
-
-            Label clock_speed {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
+            halign: start;
+            label: _("Memory usage");
           }
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
+          Label memory_usage {
+            styles [
+              "title-4",
+            ]
 
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Memory speed");
-            }
-
-            Label memory_speed {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-        }
-
-        Box bottom_row {
-          spacing: 15;
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Power draw");
-            }
-
-            Label power_draw {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Temperature");
-            }
-
-            Label temperature {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
+            halign: start;
           }
         }
       }
 
-      Box system_info {
-        spacing: 10;
+      Box mid_row {
+        spacing: 15;
 
-        Box labels {
+        Box {
           orientation: vertical;
           spacing: 3;
+          width-request: 230;
 
           Label {
+
             styles [
               "caption",
             ]
 
             halign: start;
-            label: _("OpenGL version:");
+            label: _("Clock Speed");
           }
 
-          Label {
+          Label clock_speed {
             styles [
-              "caption",
+              "title-4",
             ]
 
             halign: start;
-            label: _("Vulkan version:");
-          }
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("PCIExpress speed:");
-          }
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("PCI bus address:");
           }
         }
 
-        Box values {
+        Box {
           orientation: vertical;
           spacing: 3;
+          width-request: 230;
 
-          Label opengl_version {
+          Label {
             styles [
               "caption",
             ]
 
             halign: start;
+            label: _("Memory speed");
           }
 
-          Label vulkan_version {
+          Label memory_speed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+      }
+
+      Box bottom_row {
+        spacing: 15;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 230;
+
+          Label {
             styles [
               "caption",
             ]
 
             halign: start;
+            label: _("Power draw");
           }
 
-          Label pci_speed {
+          Label power_draw {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
             styles [
               "caption",
             ]
 
             halign: start;
+            label: _("Temperature");
           }
 
-          Label pci_addr {
+          Label temperature {
             styles [
-              "caption",
+              "title-4",
             ]
 
             halign: start;
           }
+        }
+      }
+    }
+
+    Box system_info {
+      spacing: 10;
+
+      Box labels {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("OpenGL version:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Vulkan version:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("PCI Express speed:");
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("PCI bus address:");
+        }
+      }
+
+      Box values {
+        orientation: vertical;
+        spacing: 3;
+
+        Label opengl_version {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label vulkan_version {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label pcie_speed {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+        }
+
+        Label pci_addr {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
         }
       }
     }
