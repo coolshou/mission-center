@@ -6,6 +6,9 @@ build = "build/build.rs"
 
 [dependencies]
 adw = { package = "libadwaita", version = "0.4", features = ["v1_3"] }
+drm = { version = "0.9" }
+egl = { version = "0.2" }
+gbm = { version = "0.12" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
 gtk = { package = "gtk4", version = "0.6", features = ["gnome_44"] }

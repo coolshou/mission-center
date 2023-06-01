@@ -277,6 +277,18 @@ mod imp {
                     total_memory.1
                 ));
 
+                let opengl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
+                    format!(
+                        "{}{}.{}",
+                        if opengl_version.2 { "ES " } else { "" },
+                        opengl_version.0,
+                        opengl_version.1
+                    )
+                } else {
+                    gettext("Unknown")
+                };
+                self.opengl_version.set_text(&opengl_version);
+
                 let vulkan_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
                     format!(
                         "{}.{}.{}",

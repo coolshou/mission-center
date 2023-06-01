@@ -18,8 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use adw::glib::g_critical;
-
 #[allow(unused)]
 mod nvtop {
     const MAX_DEVICE_NAME: usize = 128;
@@ -218,12 +216,14 @@ mod nvtop {
 
 #[derive(Debug, Clone)]
 pub struct GPU {
+    pub id: u32,
     pub device_name: String,
     pub pci_slot_name: String,
     pub dri_path: String,
-    pub vendor_id: Option<u16>,
-    pub device_id: Option<u16>,
+    pub vendor_id: u16,
+    pub device_id: u16,
 
+    pub opengl_version: Option<(u8, u8, bool)>,
     pub vulkan_version: Option<(u16, u16, u16)>,
     pub pcie_gen: Option<u8>,
     pub pcie_lanes: Option<u8>,
@@ -244,8 +244,227 @@ pub struct GPU {
     pub decoder_percent: u32,
 }
 
+struct VulkanInfo {
+    vk_instance: *mut std::ffi::c_void,
+    vk_destroy_instance_fn:
+        extern "C" fn(instance: *mut std::ffi::c_void, allocator: *const std::ffi::c_void),
+    vk_enumerate_physical_devices_fn: extern "C" fn(
+        instance: *mut std::ffi::c_void,
+        device_count: *mut u32,
+        devices: *mut *mut std::ffi::c_void,
+    ) -> i32,
+    vk_get_physical_device_properties_fn:
+        extern "C" fn(device: *mut std::ffi::c_void, properties: *mut std::ffi::c_void),
+}
+
+unsafe impl Send for VulkanInfo {}
+
+unsafe impl Sync for VulkanInfo {}
+
+impl Drop for VulkanInfo {
+    fn drop(&mut self) {
+        (self.vk_destroy_instance_fn)(self.vk_instance, std::ptr::null());
+    }
+}
+
+impl VulkanInfo {
+    #[allow(non_snake_case)]
+    unsafe fn new() -> Option<Self> {
+        use gtk::glib::*;
+
+        type Void = std::ffi::c_void;
+
+        let lib = minidl::Library::load("libvulkan.so.1\0");
+        if lib.is_err() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: Could not load 'libvulkan.so.1'; {}",
+                lib.err().unwrap(),
+            );
+            return None;
+        }
+        let lib = lib.unwrap();
+
+        let vkGetInstanceProcAddr = lib.sym::<*const Void>("vkGetInstanceProcAddr\0");
+        if vkGetInstanceProcAddr.is_err() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: Could not find 'vkGetInstanceProcAddr' in 'libvulkan.so.1'; {}", vkGetInstanceProcAddr.err().unwrap(),
+            );
+            return None;
+        }
+        let vkGetInstanceProcAddr: extern "C" fn(
+            vk_instance: *mut Void,
+            name: *const u8,
+        ) -> *mut Void = core::mem::transmute(vkGetInstanceProcAddr.unwrap());
+
+        let vkCreateInstance =
+            vkGetInstanceProcAddr(std::ptr::null_mut(), b"vkCreateInstance\0".as_ptr());
+        if vkCreateInstance.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: vkCreateInstance not found",
+            );
+            return None;
+        }
+
+        let vkCreateInstance: extern "C" fn(
+            create_info: *const i32,
+            allocator: *const Void,
+            instance: *mut *mut Void,
+        ) -> i32 = core::mem::transmute(vkCreateInstance);
+
+        let mut create_info = [0; 16];
+        create_info[0] = 1;
+        let allocator = std::ptr::null_mut();
+        let mut instance = std::ptr::null_mut();
+        let result = vkCreateInstance(create_info.as_ptr(), allocator, &mut instance);
+        if result != 0 || instance.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: vkCreateInstance failed ({})",
+                result
+            );
+            return None;
+        }
+
+        let vkDestroyInstance = vkGetInstanceProcAddr(instance, b"vkDestroyInstance\0".as_ptr());
+        if vkDestroyInstance.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: vkDestroyInstance not found, leaking instance",
+            );
+            return None;
+        }
+
+        let vkDestroyInstance: extern "C" fn(instance: *mut Void, allocator: *const Void) =
+            core::mem::transmute(vkDestroyInstance);
+
+        let vkEnumeratePhysicalDevices =
+            vkGetInstanceProcAddr(instance, b"vkEnumeratePhysicalDevices\0".as_ptr());
+        if vkEnumeratePhysicalDevices.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: vkEnumeratePhysicalDevices not found",
+            );
+            return None;
+        }
+
+        let vkEnumeratePhysicalDevices: extern "C" fn(
+            instance: *mut Void,
+            device_count: *mut u32,
+            devices: *mut *mut Void,
+        ) -> i32 = core::mem::transmute(vkEnumeratePhysicalDevices);
+
+        let vkGetPhysicalDeviceProperties =
+            vkGetInstanceProcAddr(instance, b"vkGetPhysicalDeviceProperties\0".as_ptr());
+        if vkGetPhysicalDeviceProperties.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: vkGetPhysicalDeviceProperties not found",
+            );
+            return None;
+        }
+
+        let vkGetPhysicalDeviceProperties: extern "C" fn(device: *mut Void, properties: *mut Void) =
+            core::mem::transmute(vkGetPhysicalDeviceProperties);
+
+        Some(Self {
+            vk_instance: instance,
+            vk_destroy_instance_fn: vkDestroyInstance,
+            vk_enumerate_physical_devices_fn: vkEnumeratePhysicalDevices,
+            vk_get_physical_device_properties_fn: vkGetPhysicalDeviceProperties,
+        })
+    }
+
+    #[allow(non_snake_case)]
+    unsafe fn supported_vulkan_versions(
+        &self,
+    ) -> Option<std::collections::HashMap<u32, (u16, u16, u16)>> {
+        use gtk::glib::*;
+
+        const VK_MAX_PHYSICAL_DEVICE_NAME_SIZE: usize = 256;
+        const VK_UUID_SIZE: usize = 16;
+        const SIZE_OF_LIMITS_STRUCT: usize = 504;
+        const SIZE_OF_SPARSE_PROPERTIES_STRUCT: usize = 20;
+
+        #[repr(C)]
+        #[derive(Debug, Copy, Clone)]
+        struct VkPhysicalDeviceProperties {
+            apiVersion: u32,
+            driverVersion: u32,
+            vendorID: u32,
+            deviceID: u32,
+            deviceType: i32,
+            deviceName: [i8; VK_MAX_PHYSICAL_DEVICE_NAME_SIZE],
+            pipelineCacheUUID: [u8; VK_UUID_SIZE],
+            limits: [u8; SIZE_OF_LIMITS_STRUCT],
+            sparseProperties: [u8; SIZE_OF_SPARSE_PROPERTIES_STRUCT],
+        }
+
+        let mut device_count = 0;
+        let result = (self.vk_enumerate_physical_devices_fn)(
+            self.vk_instance,
+            &mut device_count,
+            std::ptr::null_mut(),
+        );
+        if result != 0 || device_count == 0 {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: No Vulkan capable devices found ({})",
+                result
+            );
+            return None;
+        }
+
+        let mut devices = vec![std::ptr::null_mut(); device_count as usize];
+        let result = (self.vk_enumerate_physical_devices_fn)(
+            self.vk_instance,
+            &mut device_count,
+            devices.as_mut_ptr(),
+        );
+        if result != 0 || device_count == 0 {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get Vulkan information: No Vulkan capable devices found ({})",
+                result
+            );
+            return None;
+        }
+
+        let mut supported_versions = std::collections::HashMap::new();
+        for device in devices {
+            let mut properties: VkPhysicalDeviceProperties = core::mem::zeroed();
+
+            (self.vk_get_physical_device_properties_fn)(
+                device,
+                &mut properties as *mut VkPhysicalDeviceProperties as *mut _,
+            );
+            g_info!(
+                "MissionCenter::GPUInfo",
+                "Found Vulkan device: {:?}",
+                std::ffi::CStr::from_ptr(properties.deviceName.as_ptr())
+            );
+
+            let version = properties.apiVersion;
+            let major = (version >> 22) as u16;
+            let minor = ((version >> 12) & 0x3ff) as u16;
+            let patch = (version & 0xfff) as u16;
+
+            let vendor_id = properties.vendorID & 0xffff;
+            let device_id = properties.deviceID & 0xffff;
+
+            supported_versions.insert((vendor_id << 16) | device_id, (major, minor, patch));
+        }
+
+        Some(supported_versions)
+    }
+}
+
 pub struct GPUInfo {
     gpu_list: Box<nvtop::ListHead>,
+    vulkan_info: Option<VulkanInfo>,
+
     gpus: Vec<GPU>,
 }
 
@@ -297,6 +516,7 @@ impl GPUInfo {
 
         Some(Self {
             gpu_list,
+            vulkan_info: unsafe { VulkanInfo::new() },
             gpus: vec![],
         })
     }
@@ -329,8 +549,11 @@ impl GPUInfo {
             return;
         }
 
-        let vulkan_versions = unsafe { Self::supported_vulkan_versions() };
-        self.gpus.clear();
+        let vulkan_versions = if let Some(vulkan_info) = self.vulkan_info.as_ref() {
+            unsafe { vulkan_info.supported_vulkan_versions() }
+        } else {
+            None
+        };
 
         let mut device: *mut nvtop::ListHead = self.gpu_list.next;
         while device != self.gpu_list.as_mut() {
@@ -368,28 +591,65 @@ impl GPUInfo {
                 (None, None)
             };
 
-            let vulkan_version = if vendor_id.is_some() && device_id.is_some() {
-                let key = ((vendor_id.unwrap() as u32) << 16) | (device_id.unwrap() as u32);
-                if let Some(vulkan_versions) = vulkan_versions.as_ref() {
-                    vulkan_versions.get(&key).cloned()
-                } else {
-                    None
-                }
+            if vendor_id.is_none() || device_id.is_none() {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Unable to read PCI id information for device {}",
+                    pdev
+                );
+
+                device = unsafe { (*device).next };
+                continue;
+            }
+
+            let (vendor_id, device_id) = (vendor_id.unwrap(), device_id.unwrap());
+
+            let device_pci_id = (vendor_id as u32) << 16 | device_id as u32;
+            let vulkan_version = if let Some(vulkan_versions) = vulkan_versions.as_ref() {
+                vulkan_versions.get(&device_pci_id).cloned()
             } else {
                 None
             };
 
+            let existing_gpu = self.gpus.iter_mut().find(|gpu| gpu.id == device_pci_id);
+            if existing_gpu.is_some() {
+                let existing_gpu = existing_gpu.unwrap();
+
+                existing_gpu.temp_celsius = dev.dynamic_info.gpu_temp;
+                existing_gpu.fan_speed_percent = dev.dynamic_info.fan_speed;
+                existing_gpu.util_percent = dev.dynamic_info.gpu_util_rate;
+                existing_gpu.power_draw_watts = dev.dynamic_info.power_draw as f32 / 1000.;
+                existing_gpu.power_draw_max_watts = dev.dynamic_info.power_draw_max as f32 / 1000.;
+                existing_gpu.clock_speed_mhz = dev.dynamic_info.gpu_clock_speed;
+                existing_gpu.clock_speed_max_mhz = dev.dynamic_info.gpu_clock_speed_max;
+                existing_gpu.mem_speed_mhz = dev.dynamic_info.mem_clock_speed;
+                existing_gpu.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
+                existing_gpu.total_memory = dev.dynamic_info.total_memory;
+                existing_gpu.free_memory = dev.dynamic_info.free_memory;
+                existing_gpu.used_memory = dev.dynamic_info.used_memory;
+                existing_gpu.encoder_percent = dev.dynamic_info.encoder_rate;
+                existing_gpu.decoder_percent = dev.dynamic_info.decoder_rate;
+
+                device = unsafe { (*device).next };
+                continue;
+            }
+
+            let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev);
+            let opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
+            let device_name =
+                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
+                    .to_string_lossy()
+                    .to_string();
+
             self.gpus.push(GPU {
-                device_name: unsafe {
-                    std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr())
-                }
-                .to_string_lossy()
-                .to_string(),
+                id: device_pci_id,
+                device_name,
                 pci_slot_name: pdev.to_string(),
-                dri_path: format!("/dev/dri/by-path/pci-{}-card", pdev),
+                dri_path,
                 vendor_id,
                 device_id,
 
+                opengl_version,
                 vulkan_version,
                 pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
                 pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
@@ -419,160 +679,226 @@ impl GPUInfo {
     }
 
     #[allow(non_snake_case)]
-    unsafe fn supported_vulkan_versions() -> Option<std::collections::HashMap<u32, (u16, u16, u16)>>
-    {
+    unsafe fn supported_opengl_version(dri_path: &str) -> Option<(u8, u8, bool)> {
+        use gbm::AsRaw;
         use gtk::glib::*;
+        use std::os::fd::*;
 
         type Void = std::ffi::c_void;
 
-        const VK_MAX_PHYSICAL_DEVICE_NAME_SIZE: usize = 256;
-        const VK_UUID_SIZE: usize = 16;
-        const SIZE_OF_LIMITS_STRUCT: usize = 504;
-        const SIZE_OF_SPARSE_PROPERTIES_STRUCT: usize = 20;
+        pub struct DrmDevice(std::fs::File);
 
-        #[repr(C)]
-        #[derive(Debug, Copy, Clone)]
-        struct VkPhysicalDeviceProperties {
-            apiVersion: u32,
-            driverVersion: u32,
-            vendorID: u32,
-            deviceID: u32,
-            deviceType: i32,
-            deviceName: [i8; VK_MAX_PHYSICAL_DEVICE_NAME_SIZE],
-            pipelineCacheUUID: [u8; VK_UUID_SIZE],
-            limits: [u8; SIZE_OF_LIMITS_STRUCT],
-            sparseProperties: [u8; SIZE_OF_SPARSE_PROPERTIES_STRUCT],
+        impl AsFd for DrmDevice {
+            fn as_fd(&self) -> BorrowedFd<'_> {
+                self.0.as_fd()
+            }
         }
 
-        let lib = minidl::Library::load("libvulkan.so.1\0");
-        if lib.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: Could not load 'libvulkan.so.1'; {}",
-                lib.err().unwrap(),
-            );
-            return None;
-        }
-        let lib = lib.unwrap();
+        impl DrmDevice {
+            pub fn open(path: &str) -> std::io::Result<Self> {
+                let mut options = std::fs::OpenOptions::new();
+                options.read(true);
+                options.write(true);
 
-        let vkGetInstanceProcAddr = lib.sym::<*const Void>("vkGetInstanceProcAddr\0");
-        if vkGetInstanceProcAddr.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: Could not find 'vkGetInstanceProcAddr' in 'libvulkan.so.1'; {}", vkGetInstanceProcAddr.err().unwrap(),
-            );
-            return None;
+                Ok(Self(options.open(path)?))
+            }
         }
-        let vkGetInstanceProcAddr: extern "C" fn(
-            vk_instance: *mut Void,
-            name: *const u8,
-        ) -> *mut Void = core::mem::transmute(vkGetInstanceProcAddr.unwrap());
 
-        let vkCreateInstance =
-            vkGetInstanceProcAddr(std::ptr::null_mut(), b"vkCreateInstance\0".as_ptr());
-        if vkCreateInstance.is_null() {
+        impl drm::Device for DrmDevice {}
+
+        let drm_device = DrmDevice::open(dri_path);
+        if drm_device.is_err() {
             g_critical!(
                 "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: vkCreateInstance not found",
+                "Failed to get OpenGL information: {}",
+                drm_device.err().unwrap(),
             );
             return None;
         }
 
-        let vkCreateInstance: extern "C" fn(
-            create_info: *const i32,
-            allocator: *const Void,
-            instance: *mut *mut Void,
-        ) -> i32 = core::mem::transmute(vkCreateInstance);
-
-        let mut create_info = [0; 16];
-        create_info[0] = 1;
-        let allocator = std::ptr::null_mut();
-        let mut instance = std::ptr::null_mut();
-        let result = vkCreateInstance(create_info.as_ptr(), allocator, &mut instance);
-        if result != 0 || instance.is_null() {
+        let gbm_device = gbm::Device::new(drm_device.unwrap());
+        if gbm_device.is_err() {
             g_critical!(
                 "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: vkCreateInstance failed ({})",
-                result
+                "Failed to get OpenGL information: {}",
+                gbm_device.err().unwrap(),
+            );
+            return None;
+        }
+        let gbm_device = gbm_device.unwrap();
+
+        const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::EGLint = 0x3098;
+        const EGL_CONTEXT_MINOR_VERSION_KHR: egl::EGLint = 0x30FB;
+        const EGL_PLATFORM_GBM_KHR: egl::EGLenum = 0x31D7;
+        const EGL_OPENGL_ES3_BIT: egl::EGLint = 0x0040;
+
+        let eglGetPlatformDisplayEXT =
+            egl::get_proc_address("eglGetPlatformDisplayEXT") as *const Void;
+        let egl_display = if !eglGetPlatformDisplayEXT.is_null() {
+            let eglGetPlatformDisplayEXT: extern "C" fn(
+                egl::EGLenum,
+                *mut Void,
+                *const egl::EGLint,
+            ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplayEXT);
+            eglGetPlatformDisplayEXT(
+                EGL_PLATFORM_GBM_KHR,
+                gbm_device.as_raw() as *mut Void,
+                std::ptr::null(),
+            )
+        } else {
+            let eglGetPlatformDisplay =
+                egl::get_proc_address("eglGetPlatformDisplay") as *const Void;
+            if !eglGetPlatformDisplay.is_null() {
+                let eglGetPlatformDisplay: extern "C" fn(
+                    egl::EGLenum,
+                    *mut Void,
+                    *const egl::EGLint,
+                ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplay);
+                eglGetPlatformDisplay(
+                    EGL_PLATFORM_GBM_KHR,
+                    gbm_device.as_raw() as *mut Void,
+                    std::ptr::null(),
+                )
+            } else {
+                egl::get_display(gbm_device.as_raw() as *mut Void)
+                    .map_or(std::ptr::null_mut(), |d| d)
+            }
+        };
+        if egl_display.is_null() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                egl::get_error()
             );
             return None;
         }
 
-        let vkEnumeratePhysicalDevices =
-            vkGetInstanceProcAddr(instance, b"vkEnumeratePhysicalDevices\0".as_ptr());
-        if vkEnumeratePhysicalDevices.is_null() {
+        let mut egl_major = 0;
+        let mut egl_minor = 0;
+        if !egl::initialize(egl_display, &mut egl_major, &mut egl_minor) {
             g_critical!(
                 "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: vkEnumeratePhysicalDevices not found",
+                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                egl::get_error()
             );
             return None;
         }
 
-        let vkEnumeratePhysicalDevices: extern "C" fn(
-            instance: *mut Void,
-            device_count: *mut u32,
-            devices: *mut *mut Void,
-        ) -> i32 = core::mem::transmute(vkEnumeratePhysicalDevices);
-
-        let mut device_count = 0;
-        let result = vkEnumeratePhysicalDevices(instance, &mut device_count, std::ptr::null_mut());
-        if result != 0 || device_count == 0 {
+        if egl_major < 1 || (egl_major == 1 && egl_minor < 4) {
             g_critical!(
                 "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: No Vulkan capable devices found ({})",
-                result
+                "Failed to get OpenGL information: EGL version 1.4 or higher is required to test OpenGL support"
             );
             return None;
         }
 
-        let mut devices = vec![std::ptr::null_mut(); device_count as usize];
-        let result = vkEnumeratePhysicalDevices(instance, &mut device_count, devices.as_mut_ptr());
-        if result != 0 || device_count == 0 {
+        let mut gl_api = egl::EGL_OPENGL_API;
+        if !egl::bind_api(gl_api) {
+            gl_api = egl::EGL_OPENGL_ES_API;
+            if !egl::bind_api(gl_api) {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get OpenGL information: Failed to bind an EGL API ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        }
+
+        let egl_config = if gl_api == egl::EGL_OPENGL_ES_API {
+            let mut config_attribs = [
+                egl::EGL_SURFACE_TYPE,
+                egl::EGL_WINDOW_BIT,
+                egl::EGL_RENDERABLE_TYPE,
+                EGL_OPENGL_ES3_BIT,
+                egl::EGL_NONE,
+            ];
+
+            let mut egl_config = egl::choose_config(egl_display, &config_attribs, 1);
+            if egl_config.is_some() {
+                egl_config
+            } else {
+                config_attribs[3] = egl::EGL_OPENGL_ES2_BIT;
+                egl_config = egl::choose_config(egl_display, &config_attribs, 1);
+                if egl_config.is_some() {
+                    egl_config
+                } else {
+                    config_attribs[3] = egl::EGL_OPENGL_ES_BIT;
+                    egl::choose_config(egl_display, &config_attribs, 1)
+                }
+            }
+        } else {
+            let config_attribs = [
+                egl::EGL_SURFACE_TYPE,
+                egl::EGL_WINDOW_BIT,
+                egl::EGL_RENDERABLE_TYPE,
+                egl::EGL_OPENGL_BIT,
+                egl::EGL_NONE,
+            ];
+
+            egl::choose_config(egl_display, &config_attribs, 1)
+        };
+
+        if egl_config.is_none() {
             g_critical!(
                 "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: No Vulkan capable devices found ({})",
-                result
+                "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
+                egl::get_error()
+            );
+
+            return None;
+        }
+
+        let mut ver_major = if gl_api == egl::EGL_OPENGL_API { 4 } else { 3 };
+        let mut ver_minor = if gl_api == egl::EGL_OPENGL_API { 6 } else { 0 };
+
+        let mut context_attribs = [
+            EGL_CONTEXT_MAJOR_VERSION_KHR,
+            ver_major,
+            EGL_CONTEXT_MINOR_VERSION_KHR,
+            ver_minor,
+            egl::EGL_NONE,
+        ];
+
+        #[allow(unused_assignments)]
+        let mut egl_context = None;
+        loop {
+            egl_context = egl::create_context(
+                egl_display,
+                egl_config.unwrap(),
+                egl::EGL_NO_CONTEXT,
+                &context_attribs,
+            );
+
+            if egl_context.is_some() || (ver_major == 1 && ver_minor == 0) {
+                break;
+            }
+
+            if ver_minor > 0 {
+                ver_minor -= 1;
+            } else {
+                ver_major -= 1;
+                ver_minor = 9;
+            }
+
+            context_attribs[1] = ver_major;
+            context_attribs[3] = ver_minor;
+        }
+        if egl_context.is_none() {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
+                egl::get_error()
             );
             return None;
         }
 
-        let vkGetPhysicalDeviceProperties =
-            vkGetInstanceProcAddr(instance, b"vkGetPhysicalDeviceProperties\0".as_ptr());
-        if vkGetPhysicalDeviceProperties.is_null() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to create Vulkan instance: vkGetPhysicalDeviceProperties not found",
-            );
-            return None;
-        }
+        egl::destroy_context(egl_display, egl_context.unwrap());
 
-        let vkGetPhysicalDeviceProperties: extern "C" fn(
-            device: *mut Void,
-            properties: *mut VkPhysicalDeviceProperties,
-        ) = core::mem::transmute(vkGetPhysicalDeviceProperties);
-
-        let mut supported_versions = std::collections::HashMap::new();
-        for device in devices {
-            let mut properties = core::mem::zeroed();
-
-            vkGetPhysicalDeviceProperties(device, &mut properties);
-            g_info!(
-                "MissionCenter::GPUInfo",
-                "Found Vulkan device: {:?}",
-                std::ffi::CStr::from_ptr(properties.deviceName.as_ptr())
-            );
-
-            let version = properties.apiVersion;
-            let major = (version >> 22) as u16;
-            let minor = ((version >> 12) & 0x3ff) as u16;
-            let patch = (version & 0xfff) as u16;
-
-            let vendor_id = properties.vendorID & 0xffff;
-            let device_id = properties.deviceID & 0xffff;
-
-            supported_versions.insert((vendor_id << 16) | device_id, (major, minor, patch));
-        }
-
-        Some(supported_versions)
+        Some((
+            ver_major as u8,
+            ver_minor as u8,
+            gl_api != egl::EGL_OPENGL_API,
+        ))
     }
 }
