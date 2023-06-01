@@ -248,6 +248,7 @@ mod imp {
 
         fn update_static_information(&self) {
             use crate::SYS_INFO;
+            use gettextrs::gettext;
 
             self.device_name.set_text(&self.name());
 
@@ -276,10 +277,20 @@ mod imp {
                     total_memory.1
                 ));
 
+                let vulkan_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
+                    format!(
+                        "{}.{}.{}",
+                        vulkan_version.0, vulkan_version.1, vulkan_version.2
+                    )
+                } else {
+                    gettext("Unsupported")
+                };
+                self.vulkan_version.set_text(&vulkan_version);
+
                 let pcie_info_known = if let Some(pcie_gen) = gpu.pcie_gen {
                     if let Some(pcie_lanes) = gpu.pcie_lanes {
                         self.pcie_speed
-                            .set_text(&format!("{}x Gen {}", pcie_lanes, pcie_gen));
+                            .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
                         true
                     } else {
                         false
@@ -291,7 +302,7 @@ mod imp {
                     self.pcie_speed.set_text("Unknown");
                 }
 
-                self.pci_addr.set_text(&gpu.pci_bus_id);
+                self.pci_addr.set_text(&gpu.pci_slot_name);
             }
         }
 
