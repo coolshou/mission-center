@@ -10,6 +10,7 @@ gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
 gtk = { package = "gtk4", version = "0.6", features = ["gnome_44"] }
 lazy_static = { version = "1.4" }
+libc = { version = "0.2" }
 libudev-sys = { version = "0.1" }
 minidl = { version = "0.1" }
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
@@ -20,11 +21,9 @@ pathfinder_gpu = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa93
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_resources = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 raw-cpuid = { version = "11.0", default-features = false }
-raw_sync = { version = "0.1" }
 rusqlite = { version = "0.29", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
-shared_memory = { version = "0.12" }
 subprocess = { version = "0.2" }
 sysinfo = { version = "0.29" }
 errno-sys = { version = "0.1" }
