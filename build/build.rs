@@ -16,9 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "cargo:rustc-link-search=native={}/subprojects/{}",
                 build_root, dir_name
             );
-            println!("cargo:rustc-link-arg=-Wl,--whole-archive");
             println!("cargo:rustc-link-arg=-lnvtop");
-            println!("cargo:rustc-link-arg=-Wl,--no-whole-archive");
 
             break;
         }

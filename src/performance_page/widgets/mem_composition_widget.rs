@@ -39,6 +39,8 @@ mod imp {
         #[property(get, set)]
         range_max: Cell<f32>,
 
+        pub(crate) mem_info: Cell<crate::sys_info_v2::MemInfo>,
+
         renderer: Cell<Option<Renderer<GLDevice>>>,
         render_function: Cell<fn(&Self, width: i32, height: i32, scale_factor: f32)>,
 
@@ -51,6 +53,8 @@ mod imp {
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
                 range_min: Cell::new(0.0),
                 range_max: Cell::new(100.0),
+
+                mem_info: Cell::new(crate::sys_info_v2::MemInfo::default()),
 
                 renderer: Cell::new(None),
                 render_function: Cell::new(Self::render_init_pathfinder),
@@ -175,8 +179,9 @@ mod imp {
             let this = self.obj();
             let this = this.upcast_ref::<super::MemoryCompositionWidget>();
 
-            let sys_info = crate::SYS_INFO.read().expect("Failed to acquire read lock");
-            let total = sys_info.memory_info().mem_total as f32;
+            let mem_info = self.mem_info.get();
+
+            let total = mem_info.mem_total as f32;
 
             let mut canvas =
                 Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});
@@ -199,12 +204,11 @@ mod imp {
             let mut tooltip_texts = self.tooltip_texts.take();
             tooltip_texts.clear();
 
-            let used =
-                (sys_info.memory_info().mem_total - sys_info.memory_info().mem_available) as f32;
+            let used = (mem_info.mem_total - mem_info.mem_available) as f32;
             let x = self.render_bar(&mut canvas, 0., width as f32 * (used / total), height, true);
             let used_hr = crate::to_human_readable(used, 1024.);
 
-            let modified = sys_info.memory_info().dirty as f32;
+            let modified = mem_info.dirty as f32;
             let bar_width = width as f32 * (modified / total);
             let x = self.render_bar(&mut canvas, x - bar_width, bar_width, height, false);
             let modified = crate::to_human_readable(modified, 1024.);
@@ -225,7 +229,7 @@ mod imp {
 
             self.render_bar(&mut canvas, x, 1., height, false);
 
-            let free = sys_info.memory_info().mem_free as f32;
+            let free = mem_info.mem_free as f32;
             let bar_width = width as f32 * (free / total);
             self.render_bar(
                 &mut canvas,
@@ -301,7 +305,7 @@ mod imp {
             self.parent_realize();
 
             this.set_has_stencil_buffer(true);
-            this.set_auto_render(false);
+            this.set_auto_render(true);
         }
     }
 
@@ -344,5 +348,10 @@ impl MemoryCompositionWidget {
                 .unwrap()
         };
         this
+    }
+
+    pub fn update_memory_information(&self, mem_info: &crate::sys_info_v2::MemInfo) {
+        self.imp().mem_info.set(mem_info.clone());
+        self.queue_render();
     }
 }

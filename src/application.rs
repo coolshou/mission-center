@@ -18,12 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use adw::glib::g_critical;
 use adw::subclass::prelude::*;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 
 use crate::config::VERSION;
-use crate::MissionCenterWindow;
 
 mod imp {
     use super::*;
@@ -58,7 +58,7 @@ mod imp {
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = MissionCenterWindow::new(&*application);
+                let window = crate::MissionCenterWindow::new(&*application);
                 window.upcast()
             };
 
@@ -91,6 +91,32 @@ impl MissionCenterApplication {
             .downcast()
             .unwrap()
         }
+    }
+
+    pub fn refresh_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        use crate::MissionCenterWindow;
+        use gtk::glib::*;
+
+        let window = self.active_window();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return false;
+        }
+
+        let window = window.unwrap();
+        let window = window.downcast_ref::<MissionCenterWindow>();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "Active window is not a MissionCenterWindow",
+            );
+            return false;
+        }
+
+        window.unwrap().update_readings(readings)
     }
 
     fn setup_gactions(&self) {

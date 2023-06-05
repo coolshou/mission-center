@@ -22,7 +22,7 @@ use std::cell::Cell;
 
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*, Snapshot};
+use gtk::{gio, glib, prelude::*};
 
 use super::widgets::GraphWidget;
 
@@ -75,8 +75,6 @@ mod imp {
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
-        #[property(get, set)]
-        refresh_interval: Cell<u32>,
         #[property(get, set = Self::set_base_color)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
@@ -109,7 +107,6 @@ mod imp {
                 l3_cache: Default::default(),
                 context_menu: Default::default(),
 
-                refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
@@ -208,19 +205,154 @@ mod imp {
             );
             this.add_controller(right_click_controller);
         }
+    }
 
-        fn populate_usage_graphs(&self) {
-            use crate::SYS_INFO;
-            use sysinfo::SystemExt;
+    impl PerformancePageCpu {
+        pub fn set_static_information(
+            this: &super::PerformancePageCpu,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
+            let this = this.imp();
 
+            let static_cpu_info = &readings.cpu_info.static_info;
+
+            this.cpu_name.set_text(&static_cpu_info.name);
+
+            this.populate_usage_graphs(static_cpu_info.logical_cpu_count as usize);
+
+            if let Some(base_frequency) = static_cpu_info.base_frequency_khz {
+                this.base_speed.set_text(&format!(
+                    "{:.2} GHz",
+                    base_frequency as f32 / (1000. * 1000.)
+                ));
+            } else {
+                this.base_speed.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            this.virt_proc
+                .set_text(&format!("{}", static_cpu_info.logical_cpu_count));
+
+            if let Some(virtualization) = static_cpu_info.virtualization {
+                if virtualization {
+                    this.virtualization
+                        .set_text(&gettextrs::gettext("Supported"));
+                } else {
+                    this.virtualization
+                        .set_text(&gettextrs::gettext("Unsupported"));
+                }
+            } else {
+                this.virtualization.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            if let Some(is_vm) = static_cpu_info.virtual_machine {
+                if is_vm {
+                    this.virt_machine.set_text(&gettextrs::gettext("Yes"));
+                } else {
+                    this.virt_machine.set_text(&gettextrs::gettext("No"));
+                }
+            } else {
+                this.virt_machine.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            if let Some(socket_count) = static_cpu_info.socket_count {
+                this.sockets.set_text(&format!("{}", socket_count));
+            } else {
+                this.sockets.set_text(&gettextrs::gettext("Unknown"));
+            }
+
+            let l1_cache_size = if let Some(size) = static_cpu_info.l1_cache {
+                let size = crate::to_human_readable(size as f32, 1024.);
+                format!("{:.1} {}iB", size.0, size.1)
+            } else {
+                format!("N/A")
+            };
+            this.l1_cache.set_text(&l1_cache_size);
+
+            let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache {
+                let size = crate::to_human_readable(size as f32, 1024.);
+                format!("{:.1} {}iB", size.0, size.1)
+            } else {
+                format!("N/A")
+            };
+            this.l2_cache.set_text(&l2_cache_size);
+
+            let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache {
+                let size = crate::to_human_readable(size as f32, 1024.);
+                format!("{:.1} {}iB", size.0, size.1)
+            } else {
+                format!("N/A")
+            };
+            this.l3_cache.set_text(&l3_cache_size);
+
+            let _ = if let Some(size) = static_cpu_info.l4_cache {
+                let size = crate::to_human_readable(size as f32, 1024.);
+                format!("{:.1} {}iB", size.0, size.1)
+            } else {
+                format!("N/A")
+            };
+
+            true
+        }
+
+        pub fn update_readings(
+            this: &super::PerformancePageCpu,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
+            let mut graph_widgets = this.imp().graph_widgets.take();
+
+            let dynamic_cpu_info = &readings.cpu_info.dynamic_info;
+
+            // Update global CPU graph
+            graph_widgets[0].add_data_point(0, dynamic_cpu_info.utilization_percent);
+
+            // Update per-core graphs
+            for (i, percent) in dynamic_cpu_info
+                .utilization_percent_per_core
+                .iter()
+                .enumerate()
+            {
+                let graph_widget = &mut graph_widgets[i + 1];
+                graph_widget.add_data_point(0, *percent);
+            }
+
+            this.imp().graph_widgets.set(graph_widgets);
+
+            // Update footer labels
+            {
+                this.imp().utilization.set_text(&format!(
+                    "{}%",
+                    dynamic_cpu_info.utilization_percent.round()
+                ));
+                this.imp().speed.set_text(&format!(
+                    "{:.2} GHz",
+                    readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
+                ));
+                this.imp()
+                    .processes
+                    .set_text(&format!("{}", dynamic_cpu_info.process_count));
+                this.imp()
+                    .threads
+                    .set_text(&format!("{}", dynamic_cpu_info.thread_count));
+                this.imp()
+                    .handles
+                    .set_text(&format!("{}", dynamic_cpu_info.handle_count));
+
+                let uptime = dynamic_cpu_info.uptime_seconds;
+                let days = uptime / 86400;
+                let hours = (uptime % 86400) / 3600;
+                let minutes = (uptime % 3600) / 60;
+                let seconds = uptime % 60;
+                this.imp().uptime.set_text(&format!(
+                    "{:02}:{:02}:{:02}:{:02}",
+                    days, hours, minutes, seconds
+                ));
+            }
+
+            true
+        }
+
+        fn populate_usage_graphs(&self, cpu_count: usize) {
             let base_color = self.obj().base_color();
-
-            let cpu_count = SYS_INFO
-                .read()
-                .expect("Failed to read CPU count: Unable to acquire lock")
-                .system()
-                .cpus()
-                .len();
 
             let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
@@ -234,6 +366,26 @@ mod imp {
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_visible(false);
 
+            let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
+            graph_widgets[0].connect_resize(move |_, _, _| {
+                let graph_widgets = this.imp().graph_widgets.take();
+
+                let width = graph_widgets[0].allocated_width() as f32;
+                let height = graph_widgets[0].allocated_height() as f32;
+
+                let mut a = width;
+                let mut b = height;
+                if width > height {
+                    a = height;
+                    b = width;
+                }
+
+                graph_widgets[0]
+                    .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                this.imp().graph_widgets.set(graph_widgets);
+            });
+
             self.overall_graph_labels.set_visible(false);
             self.utilization_label_overall.set_visible(false);
 
@@ -244,6 +396,30 @@ mod imp {
                 let graph_widget_index = graph_widgets.len();
 
                 graph_widgets.push(GraphWidget::new());
+                if graph_widget_index == 1 {
+                    let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
+                    graph_widgets[graph_widget_index].connect_resize(move |_, _, _| {
+                        let graph_widgets = this.imp().graph_widgets.take();
+
+                        for graph_widget in graph_widgets.iter().skip(1) {
+                            let width = graph_widget.allocated_width() as f32;
+                            let height = graph_widget.allocated_height() as f32;
+
+                            let mut a = width;
+                            let mut b = height;
+                            if width > height {
+                                a = height;
+                                b = width;
+                            }
+
+                            graph_widget.set_vertical_line_count(
+                                (width * (a / b) / 30.).round().max(5.) as u32,
+                            );
+                        }
+
+                        this.imp().graph_widgets.set(graph_widgets);
+                    });
+                }
                 graph_widgets[graph_widget_index].set_data_points(60);
                 graph_widgets[graph_widget_index].set_base_color(&base_color);
                 self.usage_graphs.attach(
@@ -256,153 +432,6 @@ mod imp {
             }
 
             self.graph_widgets.set(graph_widgets);
-        }
-
-        fn update_view(this: &super::PerformancePageCpu) {
-            use crate::SYS_INFO;
-            use sysinfo::{CpuExt, SystemExt};
-
-            let sys_info = SYS_INFO
-                .read()
-                .expect("Failed to read CPU information: Unable to acquire lock");
-
-            let mut graph_widgets = this.imp().graph_widgets.take();
-
-            Self::update_grid_layout(&mut graph_widgets);
-
-            // Update global CPU graph
-            graph_widgets[0].add_data_point(0, sys_info.system().global_cpu_info().cpu_usage());
-
-            // Update per-core graphs
-            for (i, cpu) in sys_info.system().cpus().iter().enumerate() {
-                let graph_widget = &mut graph_widgets[i + 1];
-                graph_widget.add_data_point(0, cpu.cpu_usage());
-            }
-
-            this.imp().graph_widgets.set(graph_widgets);
-
-            // Update footer labels
-            {
-                let global_cpu_info = sys_info.system().global_cpu_info();
-                this.imp()
-                    .utilization
-                    .set_text(&format!("{}%", global_cpu_info.cpu_usage().round()));
-                this.imp().speed.set_text(&format!(
-                    "{:.2} GHz",
-                    global_cpu_info.frequency() as f32 / 1024.
-                ));
-                this.imp()
-                    .processes
-                    .set_text(&format!("{}", sys_info.process_count()));
-                this.imp()
-                    .threads
-                    .set_text(&format!("{}", sys_info.thread_count()));
-                this.imp()
-                    .handles
-                    .set_text(&format!("{}", sys_info.handle_count()));
-
-                let uptime = sys_info.system().uptime();
-                let days = uptime / 86400;
-                let hours = (uptime % 86400) / 3600;
-                let minutes = (uptime % 3600) / 60;
-                let seconds = uptime % 60;
-                this.imp().uptime.set_text(&format!(
-                    "{:02}:{:02}:{:02}:{:02}",
-                    days, hours, minutes, seconds
-                ));
-            }
-
-            let this = this.clone();
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(&this);
-                },
-            ));
-        }
-
-        fn update_static_information(&self) {
-            use sysinfo::{CpuExt, SystemExt};
-
-            let sys_info = crate::SYS_INFO
-                .read()
-                .expect("Failed to read CPU information: Unable to acquire lock");
-
-            self.cpu_name
-                .set_text(sys_info.system().global_cpu_info().brand());
-
-            if let Some(base_frequency) = sys_info.cpu_base_frequency() {
-                self.base_speed.set_text(&format!(
-                    "{:.2} GHz",
-                    base_frequency as f32 / (1000. * 1000.)
-                ));
-            } else {
-                self.base_speed.set_text(&gettextrs::gettext("Unknown"));
-            }
-
-            self.virt_proc
-                .set_text(&format!("{}", sys_info.system().cpus().len()));
-
-            if let Some(virtualization) = sys_info.virtualization() {
-                if virtualization {
-                    self.virtualization
-                        .set_text(&gettextrs::gettext("Supported"));
-                } else {
-                    self.virtualization
-                        .set_text(&gettextrs::gettext("Unsupported"));
-                }
-            } else {
-                self.virtualization.set_text(&gettextrs::gettext("Unknown"));
-            }
-
-            if let Some(is_vm) = sys_info.is_vm() {
-                if is_vm {
-                    self.virt_machine.set_text(&gettextrs::gettext("Yes"));
-                } else {
-                    self.virt_machine.set_text(&gettextrs::gettext("No"));
-                }
-            } else {
-                self.virt_machine.set_text(&gettextrs::gettext("Unknown"));
-            }
-
-            if let Some(socket_count) = sys_info.cpu_socket_count() {
-                self.sockets.set_text(&format!("{}", socket_count));
-            } else {
-                self.sockets.set_text(&gettextrs::gettext("Unknown"));
-            }
-
-            let l1_cache_size = if let Some(size) = sys_info.cpu_cache_size(1) {
-                if size > 1024 {
-                    format!("{:.1} MiB", size as f32 / 1024.)
-                } else {
-                    format!("{} KiB", size)
-                }
-            } else {
-                format!("N/A")
-            };
-            self.l1_cache.set_text(&l1_cache_size);
-
-            let l2_cache_size = if let Some(size) = sys_info.cpu_cache_size(2) {
-                if size > 1024 {
-                    format!("{:.1} MiB", size as f32 / 1024.)
-                } else {
-                    format!("{} KiB", size)
-                }
-            } else {
-                format!("N/A")
-            };
-            self.l2_cache.set_text(&l2_cache_size);
-
-            let l3_cache_size = if let Some(size) = sys_info.cpu_cache_size(3) {
-                if size > 1024 {
-                    format!("{:.1} MiB", size as f32 / 1024.)
-                } else {
-                    format!("{} KiB", size)
-                }
-            } else {
-                format!("N/A")
-            };
-            self.l3_cache.set_text(&l3_cache_size);
         }
 
         fn compute_row_column_count(item_count: usize) -> (usize, usize) {
@@ -433,36 +462,6 @@ mod imp {
 
             (result.0 as usize, result.1 as usize)
         }
-
-        fn update_grid_layout(graph_widgets: &Vec<GraphWidget>) {
-            let width = graph_widgets[0].allocated_width() as f32;
-            let height = graph_widgets[0].allocated_height() as f32;
-
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
-
-            graph_widgets[0]
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-
-            for graph_widget in graph_widgets.iter().skip(1) {
-                let width = graph_widget.allocated_width() as f32;
-                let height = graph_widget.allocated_height() as f32;
-
-                let mut a = width;
-                let mut b = height;
-                if width > height {
-                    a = height;
-                    b = width;
-                }
-
-                graph_widget
-                    .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-            }
-        }
     }
 
     #[glib::object_subclass]
@@ -489,8 +488,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-            self.populate_usage_graphs();
-            self.update_static_information();
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -506,21 +503,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformancePageCpu {
-        fn realize(&self) {
-            self.parent_realize();
-
-            Self::update_view(self.obj().upcast_ref());
-        }
-
-        fn snapshot(&self, snapshot: &Snapshot) {
-            self.parent_snapshot(snapshot);
-
-            let graph_widgets = self.graph_widgets.take();
-            Self::update_grid_layout(&graph_widgets);
-            self.graph_widgets.set(graph_widgets);
-        }
-    }
+    impl WidgetImpl for PerformancePageCpu {}
 
     impl BoxImpl for PerformancePageCpu {}
 }
@@ -541,15 +524,11 @@ impl PerformancePageCpu {
         this
     }
 
-    pub fn set_initial_values(&self, values: Vec<f32>) {
-        let imp = self.imp();
+    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePageCpu::set_static_information(self, readings)
+    }
 
-        let graph_widgets = imp.graph_widgets.take();
-        for i in 0..(graph_widgets.len() - 1) {
-            graph_widgets[i].set_data(0, values.clone());
-        }
-        graph_widgets[graph_widgets.len() - 1].set_data(0, values);
-
-        imp.graph_widgets.set(graph_widgets);
+    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePageCpu::update_readings(self, readings)
     }
 }
