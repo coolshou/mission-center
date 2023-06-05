@@ -29,7 +29,7 @@ pub struct MemoryDevice {
     pub rank: u8,
 }
 
-#[derive(Default, Debug, Eq, PartialEq)]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct MemInfo {
     pub mem_total: usize,
     pub mem_free: usize,
@@ -90,56 +90,30 @@ pub struct MemInfo {
 }
 
 impl MemInfo {
-    pub fn new() -> Self {
-        let mut this: Self = Default::default();
-        this.refresh();
-
-        this
-    }
-
-    pub fn refresh(&mut self) {
+    pub fn load() -> Option<Self> {
         use gtk::glib::*;
 
-        let is_flatpak = *super::IS_FLATPAK;
-        let meminfo = if !is_flatpak {
-            match std::fs::read_to_string("/proc/meminfo") {
-                Ok(meminfo) => meminfo,
-                Err(err) => {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Failed to refresh memory information, failed to read from file: {:?}",
-                        err
-                    );
-                    return;
-                }
-            }
-        } else {
-            let mut cmd = std::process::Command::new(super::FLATPAK_SPAWN_CMD);
-            cmd.arg("--host")
-                .arg("sh")
-                .arg("-c")
-                .arg("cat /proc/meminfo");
-
-            if let Ok(output) = cmd.output() {
-                if output.stderr.len() > 0 {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Failed to refresh memory information, host command execution failed: {}",
-                        std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
-                    );
-                    return;
-                }
-
-                String::from_utf8_lossy(output.stdout.as_slice()).into_owned()
-            } else {
+        let meminfo = if let Ok(output) = cmd!("cat /proc/meminfo").output() {
+            if output.stderr.len() > 0 {
                 g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Failed to refresh memory information, host command execution failed"
+                    "MissionCenter::MemInfo",
+                    "Failed to refresh memory information, host command execution failed: {}",
+                    String::from_utf8_lossy(output.stderr.as_slice())
                 );
-
-                return;
+                return None;
             }
+
+            String::from_utf8_lossy(output.stdout.as_slice()).into_owned()
+        } else {
+            g_critical!(
+                "MissionCenter::MemInfo",
+                "Failed to refresh memory information, host command execution failed"
+            );
+
+            return None;
         };
+
+        let mut this = Self::default();
 
         for line in meminfo.trim().lines() {
             let mut split = line.split_whitespace();
@@ -152,65 +126,67 @@ impl MemInfo {
                 * 1024;
 
             match key {
-                "MemTotal:" => self.mem_total = value,
-                "MemFree:" => self.mem_free = value,
-                "MemAvailable:" => self.mem_available = value,
-                "Buffers:" => self.buffers = value,
-                "Cached:" => self.cached = value,
-                "SwapCached:" => self.swap_cached = value,
-                "Active:" => self.active = value,
-                "Inactive:" => self.inactive = value,
-                "Active(anon):" => self.active_anon = value,
-                "Inactive(anon):" => self.inactive_anon = value,
-                "Active(file):" => self.active_file = value,
-                "Inactive(file):" => self.inactive_file = value,
-                "Unevictable:" => self.unevictable = value,
-                "Mlocked:" => self.m_locked = value,
-                "SwapTotal:" => self.swap_total = value,
-                "SwapFree:" => self.swap_free = value,
-                "ZSwap:" => self.zswap = value,
-                "ZSwapTotal:" => self.zswapped = value,
-                "Dirty:" => self.dirty = value,
-                "Writeback:" => self.writeback = value,
-                "AnonPages:" => self.anon_pages = value,
-                "Mapped:" => self.mapped = value,
-                "Shmem:" => self.sh_mem = value,
-                "KReclaimable:" => self.k_reclaimable = value,
-                "Slab:" => self.slab = value,
-                "SReclaimable:" => self.s_reclaimable = value,
-                "SUnreclaim:" => self.s_unreclaim = value,
-                "KernelStack:" => self.kernel_stack = value,
-                "PageTables:" => self.page_tables = value,
-                "SecMemTables:" => self.sec_page_tables = value,
-                "NFS_Unstable:" => self.nfs_unstable = value,
-                "Bounce:" => self.bounce = value,
-                "WritebackTmp:" => self.writeback_tmp = value,
-                "CommitLimit:" => self.commit_limit = value,
-                "Committed_AS:" => self.committed_as = value,
-                "VmallocTotal:" => self.vmalloc_total = value,
-                "VmallocUsed:" => self.vmalloc_used = value,
-                "VmallocChunk:" => self.vmalloc_chunk = value,
-                "Percpu:" => self.percpu = value,
-                "HardwareCorrupted:" => self.hardware_corrupted = value,
-                "AnonHugePages:" => self.anon_huge_pages = value,
-                "ShmemHugePages:" => self.shmem_huge_pages = value,
-                "ShmemPmdMapped:" => self.shmem_pmd_mapped = value,
-                "FileHugePages:" => self.file_huge_pages = value,
-                "FilePmdMapped:" => self.file_pmd_mapped = value,
-                "CmaTotal:" => self.cma_total = value,
-                "CmaFree:" => self.cma_free = value,
-                "HugePages_Total:" => self.huge_pages_total = value / 1024,
-                "HugePages_Free:" => self.huge_pages_free = value / 1024,
-                "HugePages_Rsvd:" => self.huge_pages_rsvd = value / 1024,
-                "HugePages_Surp:" => self.huge_pages_surp = value / 1024,
-                "Hugepagesize:" => self.hugepagesize = value,
-                "Hugetlb:" => self.hugetlb = value,
-                "DirectMap4k:" => self.direct_map4k = value,
-                "DirectMap2M:" => self.direct_map2m = value,
-                "DirectMap1G:" => self.direct_map1g = value,
+                "MemTotal:" => this.mem_total = value,
+                "MemFree:" => this.mem_free = value,
+                "MemAvailable:" => this.mem_available = value,
+                "Buffers:" => this.buffers = value,
+                "Cached:" => this.cached = value,
+                "SwapCached:" => this.swap_cached = value,
+                "Active:" => this.active = value,
+                "Inactive:" => this.inactive = value,
+                "Active(anon):" => this.active_anon = value,
+                "Inactive(anon):" => this.inactive_anon = value,
+                "Active(file):" => this.active_file = value,
+                "Inactive(file):" => this.inactive_file = value,
+                "Unevictable:" => this.unevictable = value,
+                "Mlocked:" => this.m_locked = value,
+                "SwapTotal:" => this.swap_total = value,
+                "SwapFree:" => this.swap_free = value,
+                "ZSwap:" => this.zswap = value,
+                "ZSwapTotal:" => this.zswapped = value,
+                "Dirty:" => this.dirty = value,
+                "Writeback:" => this.writeback = value,
+                "AnonPages:" => this.anon_pages = value,
+                "Mapped:" => this.mapped = value,
+                "Shmem:" => this.sh_mem = value,
+                "KReclaimable:" => this.k_reclaimable = value,
+                "Slab:" => this.slab = value,
+                "SReclaimable:" => this.s_reclaimable = value,
+                "SUnreclaim:" => this.s_unreclaim = value,
+                "KernelStack:" => this.kernel_stack = value,
+                "PageTables:" => this.page_tables = value,
+                "SecMemTables:" => this.sec_page_tables = value,
+                "NFS_Unstable:" => this.nfs_unstable = value,
+                "Bounce:" => this.bounce = value,
+                "WritebackTmp:" => this.writeback_tmp = value,
+                "CommitLimit:" => this.commit_limit = value,
+                "Committed_AS:" => this.committed_as = value,
+                "VmallocTotal:" => this.vmalloc_total = value,
+                "VmallocUsed:" => this.vmalloc_used = value,
+                "VmallocChunk:" => this.vmalloc_chunk = value,
+                "Percpu:" => this.percpu = value,
+                "HardwareCorrupted:" => this.hardware_corrupted = value,
+                "AnonHugePages:" => this.anon_huge_pages = value,
+                "ShmemHugePages:" => this.shmem_huge_pages = value,
+                "ShmemPmdMapped:" => this.shmem_pmd_mapped = value,
+                "FileHugePages:" => this.file_huge_pages = value,
+                "FilePmdMapped:" => this.file_pmd_mapped = value,
+                "CmaTotal:" => this.cma_total = value,
+                "CmaFree:" => this.cma_free = value,
+                "HugePages_Total:" => this.huge_pages_total = value / 1024,
+                "HugePages_Free:" => this.huge_pages_free = value / 1024,
+                "HugePages_Rsvd:" => this.huge_pages_rsvd = value / 1024,
+                "HugePages_Surp:" => this.huge_pages_surp = value / 1024,
+                "Hugepagesize:" => this.hugepagesize = value,
+                "Hugetlb:" => this.hugetlb = value,
+                "DirectMap4k:" => this.direct_map4k = value,
+                "DirectMap2M:" => this.direct_map2m = value,
+                "DirectMap1G:" => this.direct_map1g = value,
                 _ => (),
             }
         }
+
+        Some(this)
     }
 
     pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
@@ -251,11 +227,7 @@ impl MemInfo {
                     _ => {}
                 }
 
-                let mut cmd = Command::new(super::FLATPAK_SPAWN_CMD);
-                cmd.arg("--host")
-                    .arg("sh")
-                    .arg("-c")
-                    .arg(format!("pkexec {} --type 17", dmidecode_path));
+                let cmd = cmd!(format!("pkexec {} --type 17", dmidecode_path));
                 cmd
             } else {
                 g_critical!(

@@ -207,6 +207,13 @@ mod nvtop {
             devices: *mut ListHead,
         ) -> u8;
 
+        pub fn gpuinfo_shutdown_info_extraction(devices: *mut ListHead) -> u8;
+
+        pub fn init_extract_gpuinfo_amdgpu();
+        pub fn init_extract_gpuinfo_intel();
+        pub fn init_extract_gpuinfo_msm();
+        pub fn init_extract_gpuinfo_nvidia();
+
         pub fn gpuinfo_populate_static_infos(devices: *mut ListHead) -> u8;
         pub fn gpuinfo_refresh_dynamic_info(devices: *mut ListHead) -> u8;
         pub fn gpuinfo_refresh_processes(devices: *mut ListHead) -> u8;
@@ -215,8 +222,8 @@ mod nvtop {
 }
 
 #[derive(Debug, Clone)]
-pub struct GPU {
-    pub id: u32,
+pub struct StaticInfo {
+    pub id: String,
     pub device_name: String,
     pub pci_slot_name: String,
     pub dri_path: String,
@@ -227,7 +234,10 @@ pub struct GPU {
     pub vulkan_version: Option<(u16, u16, u16)>,
     pub pcie_gen: Option<u8>,
     pub pcie_lanes: Option<u8>,
+}
 
+#[derive(Debug, Clone)]
+pub struct DynamicInfo {
     pub temp_celsius: u32,
     pub fan_speed_percent: u32,
     pub util_percent: u32,
@@ -244,6 +254,12 @@ pub struct GPU {
     pub decoder_percent: u32,
 }
 
+#[derive(Debug, Clone)]
+pub struct GPU {
+    pub static_info: StaticInfo,
+    pub dynamic_info: DynamicInfo,
+}
+
 struct VulkanInfo {
     vk_instance: *mut std::ffi::c_void,
     vk_destroy_instance_fn:
@@ -256,10 +272,6 @@ struct VulkanInfo {
     vk_get_physical_device_properties_fn:
         extern "C" fn(device: *mut std::ffi::c_void, properties: *mut std::ffi::c_void),
 }
-
-unsafe impl Send for VulkanInfo {}
-
-unsafe impl Sync for VulkanInfo {}
 
 impl Drop for VulkanInfo {
     fn drop(&mut self) {
@@ -440,7 +452,7 @@ impl VulkanInfo {
                 device,
                 &mut properties as *mut VkPhysicalDeviceProperties as *mut _,
             );
-            g_info!(
+            g_debug!(
                 "MissionCenter::GPUInfo",
                 "Found Vulkan device: {:?}",
                 std::ffi::CStr::from_ptr(properties.deviceName.as_ptr())
@@ -462,29 +474,27 @@ impl VulkanInfo {
 }
 
 pub struct GPUInfo {
-    gpu_list: Box<nvtop::ListHead>,
     vulkan_info: Option<VulkanInfo>,
-
-    gpus: Vec<GPU>,
+    static_info_cache: Vec<StaticInfo>,
 }
+
+unsafe impl Send for GPUInfo {}
 
 impl GPUInfo {
     pub fn new() -> Option<Self> {
+        unsafe {
+            nvtop::init_extract_gpuinfo_amdgpu();
+            nvtop::init_extract_gpuinfo_nvidia();
+        }
+
+        Some(Self {
+            vulkan_info: unsafe { VulkanInfo::new() },
+            static_info_cache: vec![],
+        })
+    }
+
+    pub fn load_gpus(&mut self) -> Vec<GPU> {
         use gtk::glib::*;
-
-        let mut cache_dir = if let Ok(mut cache_dir) = std::env::var("XDG_CACHE_HOME") {
-            cache_dir.push_str("/io.missioncenter.MissionCenter");
-
-            cache_dir
-        } else {
-            let mut cache_dir = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
-            cache_dir.push_str("/.cache/io.missioncenter.MissionCenter");
-
-            cache_dir
-        };
-
-        std::fs::create_dir_all(&cache_dir).expect("Unable to create cache directory");
-        cache_dir.push_str("/gpud_shm");
 
         let mut gpu_list = Box::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
@@ -501,52 +511,49 @@ impl GPUInfo {
                     "MissionCenter::GPUInfo",
                     "Unable to initialize GPU info extraction"
                 );
-                return None;
+                return vec![];
             }
 
             let result = nvtop::gpuinfo_populate_static_infos(gpu_list.as_mut());
             if result == 0 {
+                nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut());
+
                 g_critical!(
                     "MissionCenter::GPUInfo",
                     "Unable to populate static GPU info"
                 );
-                return None;
+                return vec![];
             }
         }
 
-        Some(Self {
-            gpu_list,
-            vulkan_info: unsafe { VulkanInfo::new() },
-            gpus: vec![],
-        })
-    }
-
-    pub fn refresh(&mut self) {
-        use gtk::glib::*;
-
-        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(self.gpu_list.as_mut()) };
+        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list.as_mut()) };
         if result == 0 {
+            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
+
             g_critical!(
                 "MissionCenter::GPUInfo",
                 "Unable to refresh dynamic GPU info"
             );
-            return;
+            return vec![];
         }
 
-        let result = unsafe { nvtop::gpuinfo_refresh_processes(self.gpu_list.as_mut()) };
+        let result = unsafe { nvtop::gpuinfo_refresh_processes(gpu_list.as_mut()) };
         if result == 0 {
+            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
+
             g_critical!("MissionCenter::GPUInfo", "Unable to refresh GPU processes");
-            return;
+            return vec![];
         }
 
         let result =
-            unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(self.gpu_list.as_mut()) };
+            unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(gpu_list.as_mut()) };
         if result == 0 {
+            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
             g_critical!(
                 "MissionCenter::GPUInfo",
                 "Unable to fix dynamic GPU info from process info"
             );
-            return;
+            return vec![];
         }
 
         let vulkan_versions = if let Some(vulkan_info) = self.vulkan_info.as_ref() {
@@ -555,16 +562,14 @@ impl GPUInfo {
             None
         };
 
-        let mut device: *mut nvtop::ListHead = self.gpu_list.next;
-        while device != self.gpu_list.as_mut() {
+        let mut result = vec![];
+        result.reserve(gpu_count as usize);
+
+        let mut device: *mut nvtop::ListHead = gpu_list.next;
+        while device != gpu_list.as_mut() {
             let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
 
             let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) }.to_string_lossy();
-            // Skip Intel integrated graphics, stats for them are utterly broken
-            if pdev == "0000:00:02.0" {
-                device = unsafe { (*device).next };
-                continue;
-            }
 
             let uevent = std::fs::read_to_string(format!("/sys/bus/pci/devices/{}/uevent", pdev));
             let (vendor_id, device_id) = if let Ok(uevent) = uevent {
@@ -611,49 +616,7 @@ impl GPUInfo {
                 None
             };
 
-            let existing_gpu = self.gpus.iter_mut().find(|gpu| gpu.id == device_pci_id);
-            if existing_gpu.is_some() {
-                let existing_gpu = existing_gpu.unwrap();
-
-                existing_gpu.temp_celsius = dev.dynamic_info.gpu_temp;
-                existing_gpu.fan_speed_percent = dev.dynamic_info.fan_speed;
-                existing_gpu.util_percent = dev.dynamic_info.gpu_util_rate;
-                existing_gpu.power_draw_watts = dev.dynamic_info.power_draw as f32 / 1000.;
-                existing_gpu.power_draw_max_watts = dev.dynamic_info.power_draw_max as f32 / 1000.;
-                existing_gpu.clock_speed_mhz = dev.dynamic_info.gpu_clock_speed;
-                existing_gpu.clock_speed_max_mhz = dev.dynamic_info.gpu_clock_speed_max;
-                existing_gpu.mem_speed_mhz = dev.dynamic_info.mem_clock_speed;
-                existing_gpu.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
-                existing_gpu.total_memory = dev.dynamic_info.total_memory;
-                existing_gpu.free_memory = dev.dynamic_info.free_memory;
-                existing_gpu.used_memory = dev.dynamic_info.used_memory;
-                existing_gpu.encoder_percent = dev.dynamic_info.encoder_rate;
-                existing_gpu.decoder_percent = dev.dynamic_info.decoder_rate;
-
-                device = unsafe { (*device).next };
-                continue;
-            }
-
-            let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev);
-            let opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
-            let device_name =
-                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
-                    .to_string_lossy()
-                    .to_string();
-
-            self.gpus.push(GPU {
-                id: device_pci_id,
-                device_name,
-                pci_slot_name: pdev.to_string(),
-                dri_path,
-                vendor_id,
-                device_id,
-
-                opengl_version,
-                vulkan_version,
-                pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
-                pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
-
+            let gpu_dynamic_info = DynamicInfo {
                 temp_celsius: dev.dynamic_info.gpu_temp,
                 fan_speed_percent: dev.dynamic_info.fan_speed,
                 util_percent: dev.dynamic_info.gpu_util_rate,
@@ -668,14 +631,53 @@ impl GPUInfo {
                 used_memory: dev.dynamic_info.used_memory,
                 encoder_percent: dev.dynamic_info.encoder_rate,
                 decoder_percent: dev.dynamic_info.decoder_rate,
+            };
+
+            let device_unique_id = format!("{}-{}", device_pci_id, pdev);
+            let cached_info = self
+                .static_info_cache
+                .iter_mut()
+                .find(|gpu| gpu.id == device_unique_id.as_str());
+            if cached_info.is_some() {
+                let cached_info = cached_info.unwrap();
+
+                result.push(GPU {
+                    static_info: cached_info.clone(),
+                    dynamic_info: gpu_dynamic_info,
+                });
+
+                device = unsafe { (*device).next };
+                continue;
+            }
+
+            let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev);
+            let opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
+            let device_name =
+                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
+                    .to_string_lossy()
+                    .to_string();
+
+            result.push(GPU {
+                static_info: StaticInfo {
+                    id: device_unique_id,
+                    device_name,
+                    pci_slot_name: pdev.to_string(),
+                    dri_path,
+                    vendor_id,
+                    device_id,
+
+                    opengl_version,
+                    vulkan_version,
+                    pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
+                    pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
+                },
+                dynamic_info: gpu_dynamic_info,
             });
 
             device = unsafe { (*device).next };
         }
-    }
 
-    pub fn gpus(&self) -> &[GPU] {
-        &self.gpus
+        result
     }
 
     #[allow(non_snake_case)]

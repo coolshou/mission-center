@@ -23,7 +23,7 @@ use std::cell::Cell;
 use adw::subclass::prelude::*;
 use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*, Snapshot};
+use gtk::{gio, glib, prelude::*};
 
 use super::widgets::GraphWidget;
 
@@ -73,15 +73,13 @@ mod imp {
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get, set)]
-        refresh_interval: Cell<u32>,
-        #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
         pub interface_name: Cell<String>,
         #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
-        pub connection_type: Cell<crate::sys_info::NetDeviceType>,
+        pub connection_type: Cell<crate::sys_info_v2::NetDeviceType>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -106,12 +104,11 @@ mod imp {
                 ipv6_address: Default::default(),
                 context_menu: Default::default(),
 
-                refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
                 interface_name: Cell::new(String::new()),
-                connection_type: Cell::new(crate::sys_info::NetDeviceType::Other),
+                connection_type: Cell::new(crate::sys_info_v2::NetDeviceType::Other),
             }
         }
     }
@@ -130,7 +127,6 @@ mod imp {
             }
 
             self.interface_name.replace(interface_name);
-            self.update_static_information();
         }
 
         fn connection_type(&self) -> u8 {
@@ -148,16 +144,14 @@ mod imp {
             match connection_type {
                 0_u8 => self
                     .connection_type
-                    .replace(crate::sys_info::NetDeviceType::Wired),
+                    .replace(crate::sys_info_v2::NetDeviceType::Wired),
                 1_u8 => self
                     .connection_type
-                    .replace(crate::sys_info::NetDeviceType::Wireless),
+                    .replace(crate::sys_info_v2::NetDeviceType::Wireless),
                 _ => self
                     .connection_type
-                    .replace(crate::sys_info::NetDeviceType::Other),
+                    .replace(crate::sys_info_v2::NetDeviceType::Other),
             };
-
-            self.update_static_information();
         }
     }
 
@@ -192,114 +186,158 @@ mod imp {
             );
             this.add_controller(right_click_controller);
         }
+    }
 
-        fn update_view(&self, this: &super::PerformancePageNetwork) {
-            use crate::SYS_INFO;
+    impl PerformancePageNetwork {
+        pub fn set_static_information(
+            this: &super::PerformancePageNetwork,
+            network_device: &crate::sys_info_v2::NetworkDevice,
+        ) -> bool {
+            use crate::sys_info_v2::NetDeviceType;
 
-            let this = this.clone();
+            let this = this.imp();
 
-            self.update_graphs_grid_layout();
+            let interface_name = this.interface_name.take();
+            let connection_type = this.connection_type.get();
 
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-            let interface_name = this.imp().interface_name.take();
-            if let Some(net_device) = sys_info.network_device_info(&interface_name) {
-                this.imp().device_name.set_text(
-                    &net_device
-                        .descriptor
-                        .adapter_name
-                        .as_ref()
-                        .map_or("", |name| name.as_str()),
-                );
+            if let Some(adapter_name) = network_device.descriptor.adapter_name.as_ref() {
+                this.device_name.set_text(adapter_name.as_str());
+            }
 
-                let sent = net_device.bytes_sent as f32 * 8.;
-                let received = net_device.bytes_received as f32 * 8.;
+            this.usage_graph.connect_resize(|graph, width, height| {
+                let width = width as f32;
+                let height = height as f32;
 
-                this.imp().usage_graph.add_data_point(0, sent);
-                this.imp().usage_graph.add_data_point(1, received);
-
-                if let Some(wireless_info) = &net_device.wireless_info {
-                    this.imp().ssid.set_text(
-                        &wireless_info
-                            .ssid
-                            .as_ref()
-                            .map_or(gettext("Unknown"), |ssid| ssid.clone()),
-                    );
-                    this.imp().signal_strength.set_icon_name(Some(
-                        if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
-                            if *percentage <= 20_u8 {
-                                "network-wireless-signal-none-symbolic"
-                            } else if *percentage <= 40_u8 {
-                                "network-wireless-signal-weak-symbolic"
-                            } else if *percentage <= 60_u8 {
-                                "network-wireless-signal-ok-symbolic"
-                            } else if *percentage <= 80_u8 {
-                                "network-wireless-signal-good-symbolic"
-                            } else {
-                                "network-wireless-signal-excellent-symbolic"
-                            }
-                        } else {
-                            "network-wireless-no-route-symbolic"
-                        },
-                    ));
-                    this.imp()
-                        .max_bitrate
-                        .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
-                            gettext("Unknown"),
-                            |kbps| {
-                                let (val, unit) =
-                                    crate::to_human_readable(*kbps as f32 * 1000., 1024.);
-                                format!("{} {}bps", val.round(), unit)
-                            },
-                        ));
-                    this.imp()
-                        .frequency
-                        .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
-                            gettext("Unknown"),
-                            |freq| {
-                                let (freq, unit) =
-                                    crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
-                                format!("{:.2} {}Hz", freq, unit)
-                            },
-                        ));
+                let mut a = width;
+                let mut b = height;
+                if width > height {
+                    a = height;
+                    b = width;
                 }
 
-                let max_y =
-                    crate::to_human_readable(this.imp().usage_graph.value_range_max(), 1024.);
-                this.imp()
-                    .max_y
-                    .set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
+                graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            });
 
-                let speed_send_info = crate::to_human_readable(sent, 1024.);
-                this.imp().speed_send.set_text(&gettext!(
-                    "{} {}bps",
-                    speed_send_info.0.round(),
-                    speed_send_info.1
+            this.interface_name_label.set_text(&interface_name);
+
+            let conn_type = match connection_type {
+                NetDeviceType::Wired => gettext("Ethernet"),
+                NetDeviceType::Wireless => {
+                    this.ssid.set_visible(true);
+                    this.signal_strength.set_visible(true);
+                    this.max_bitrate.set_visible(true);
+                    this.frequency.set_visible(true);
+
+                    gettext("Wi-Fi")
+                }
+                NetDeviceType::Other => gettext("Other"),
+            };
+            this.connection_type_label.set_text(&conn_type);
+            this.title_connection_type.set_text(&conn_type);
+
+            this.legend_send
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
+            this.legend_recv
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
+
+            this.interface_name.set(interface_name);
+
+            this.usage_graph.set_filled(0, false);
+            this.usage_graph.set_dashed(0, true);
+
+            true
+        }
+
+        pub fn update_readings(
+            this: &super::PerformancePageNetwork,
+            network_device: &crate::sys_info_v2::NetworkDevice,
+        ) -> bool {
+            let this = this.imp();
+
+            let sent = network_device.send_bps as f32 * 8.;
+            let received = network_device.recv_bps as f32 * 8.;
+
+            this.usage_graph.add_data_point(0, sent);
+            this.usage_graph.add_data_point(1, received);
+
+            if let Some(wireless_info) = &network_device.wireless_info {
+                this.ssid.set_text(
+                    &wireless_info
+                        .ssid
+                        .as_ref()
+                        .map_or(gettext("Unknown"), |ssid| ssid.clone()),
+                );
+                this.signal_strength.set_icon_name(Some(
+                    if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
+                        if *percentage <= 20_u8 {
+                            "network-wireless-signal-none-symbolic"
+                        } else if *percentage <= 40_u8 {
+                            "network-wireless-signal-weak-symbolic"
+                        } else if *percentage <= 60_u8 {
+                            "network-wireless-signal-ok-symbolic"
+                        } else if *percentage <= 80_u8 {
+                            "network-wireless-signal-good-symbolic"
+                        } else {
+                            "network-wireless-signal-excellent-symbolic"
+                        }
+                    } else {
+                        "network-wireless-no-route-symbolic"
+                    },
                 ));
-                let speed_recv_info = crate::to_human_readable(received, 1024.);
-                this.imp().speed_recv.set_text(&gettext!(
-                    "{} {}bps",
-                    speed_recv_info.0.round(),
-                    speed_recv_info.1
-                ));
+                this.max_bitrate
+                    .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
+                        gettext("Unknown"),
+                        |kbps| {
+                            let (val, unit) = crate::to_human_readable(*kbps as f32 * 1000., 1024.);
+                            format!("{} {}bps", val.round(), unit)
+                        },
+                    ));
+                this.frequency
+                    .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
+                        gettext("Unknown"),
+                        |freq| {
+                            let (freq, unit) =
+                                crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
+                            format!("{:.2} {}Hz", freq, unit)
+                        },
+                    ));
+            }
 
-                this.imp()
-                    .hw_address
-                    .set_text(
-                        &net_device
-                            .address
-                            .hw_address
-                            .map_or(gettext("Unknown"), |hw| {
-                                format!(
-                                    "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
-                                    hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
-                                )
-                            }),
-                    );
+            let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
+            this.max_y.set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
 
-                this.imp()
-                    .ipv4_address
-                    .set_text(
-                        &net_device.address.ip4_address.map_or(gettext("N/A"), |ip| {
+            let speed_send_info = crate::to_human_readable(sent, 1024.);
+            this.speed_send.set_text(&gettext!(
+                "{} {}bps",
+                speed_send_info.0.round(),
+                speed_send_info.1
+            ));
+            let speed_recv_info = crate::to_human_readable(received, 1024.);
+            this.speed_recv.set_text(&gettext!(
+                "{} {}bps",
+                speed_recv_info.0.round(),
+                speed_recv_info.1
+            ));
+
+            this.hw_address
+                .set_text(
+                    &network_device
+                        .address
+                        .hw_address
+                        .map_or(gettext("Unknown"), |hw| {
+                            format!(
+                                "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
+                                hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
+                            )
+                        }),
+                );
+
+            this.ipv4_address
+                .set_text(
+                    &network_device
+                        .address
+                        .ip4_address
+                        .map_or(gettext("N/A"), |ip| {
                             let ip_array = unsafe {
                                 std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
                             };
@@ -308,11 +346,14 @@ mod imp {
                                 ip_array[0], ip_array[1], ip_array[2], ip_array[3]
                             )
                         }),
-                    );
-                this.imp()
-                    .ipv6_address
-                    .set_text(
-                        &net_device.address.ip6_address.map_or(gettext("N/A"), |ip| {
+                );
+
+            this.ipv6_address
+                .set_text(
+                    &network_device
+                        .address
+                        .ip6_address
+                        .map_or(gettext("N/A"), |ip| {
                             let ip_array = unsafe {
                                 std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
                             };
@@ -328,65 +369,9 @@ mod imp {
                             }
                             ip_address
                         }),
-                    );
-            }
-            this.imp().interface_name.set(interface_name);
+                );
 
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(this.imp(), &this);
-                },
-            ));
-        }
-
-        fn update_static_information(&self) {
-            use crate::sys_info::NetDeviceType;
-
-            let interface_name = self.interface_name.take();
-            let connection_type = self.connection_type.get();
-
-            self.interface_name_label.set_text(&interface_name);
-
-            let conn_type = match connection_type {
-                NetDeviceType::Wired => gettext("Ethernet"),
-                NetDeviceType::Wireless => {
-                    self.ssid.set_visible(true);
-                    self.signal_strength.set_visible(true);
-                    self.max_bitrate.set_visible(true);
-                    self.frequency.set_visible(true);
-
-                    gettext("Wi-Fi")
-                }
-                NetDeviceType::Other => gettext("Other"),
-            };
-            self.connection_type_label.set_text(&conn_type);
-            self.title_connection_type.set_text(&conn_type);
-
-            self.legend_send
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
-            self.legend_recv
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
-
-            self.interface_name.set(interface_name);
-
-            self.usage_graph.set_filled(0, false);
-            self.usage_graph.set_dashed(0, true);
-        }
-
-        fn update_graphs_grid_layout(&self) {
-            let width = self.usage_graph.allocated_width() as f32;
-            let height = self.usage_graph.allocated_height() as f32;
-
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
-
-            self.usage_graph
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            true
         }
     }
 
@@ -414,7 +399,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-            self.update_static_information();
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -430,18 +414,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformancePageNetwork {
-        fn realize(&self) {
-            self.parent_realize();
-
-            self.update_view(self.obj().upcast_ref());
-        }
-
-        fn snapshot(&self, snapshot: &Snapshot) {
-            self.parent_snapshot(snapshot);
-            self.update_graphs_grid_layout();
-        }
-    }
+    impl WidgetImpl for PerformancePageNetwork {}
 
     impl BoxImpl for PerformancePageNetwork {}
 }
@@ -453,7 +426,7 @@ glib::wrapper! {
 }
 
 impl PerformancePageNetwork {
-    pub fn new(interface_name: &str, connection_type: crate::sys_info::NetDeviceType) -> Self {
+    pub fn new(interface_name: &str, connection_type: crate::sys_info_v2::NetDeviceType) -> Self {
         let this: Self = unsafe {
             glib::Object::new_internal(
                 Self::static_type(),
@@ -469,10 +442,14 @@ impl PerformancePageNetwork {
         this
     }
 
-    pub fn set_initial_values(&self, values_send: Vec<f32>, values_receive: Vec<f32>) {
-        let imp = self.imp();
+    pub fn set_static_information(
+        &self,
+        network_device: &crate::sys_info_v2::NetworkDevice,
+    ) -> bool {
+        imp::PerformancePageNetwork::set_static_information(self, network_device)
+    }
 
-        imp.usage_graph.set_data(0, values_send);
-        imp.usage_graph.set_data(1, values_receive);
+    pub fn update_readings(&self, network_device: &crate::sys_info_v2::NetworkDevice) -> bool {
+        imp::PerformancePageNetwork::update_readings(self, network_device)
     }
 }

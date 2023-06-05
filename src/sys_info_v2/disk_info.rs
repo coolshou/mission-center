@@ -57,44 +57,45 @@ pub struct Disk {
     pub response_time_ms: f32,
     pub read_speed: u64,
     pub write_speed: u64,
-
-    sectors_read: u64,
-    sectors_written: u64,
-
-    read_ios: u64,
-    write_ios: u64,
-    discard_ios: u64,
-    flush_ios: u64,
-    io_total_time_ms: u64,
-
-    read_ticks_weighted_ms: u64,
-    write_ticks_weighted_ms: u64,
-    discard_ticks_weighted_ms: u64,
-    flush_ticks_weighted_ms: u64,
-
-    read_time_ms: std::time::Instant,
 }
 
-pub struct DiskInfo {
-    disks: Vec<Disk>,
+#[derive(Debug, Clone, PartialEq)]
+pub struct DiskStats {
+    pub id: String,
+    pub sectors_read: u64,
+    pub sectors_written: u64,
+
+    pub read_ios: u64,
+    pub write_ios: u64,
+    pub discard_ios: u64,
+    pub flush_ios: u64,
+    pub io_total_time_ms: u64,
+
+    pub read_ticks_weighted_ms: u64,
+    pub write_ticks_weighted_ms: u64,
+    pub discard_ticks_weighted_ms: u64,
+    pub flush_ticks_weighted_ms: u64,
+
+    pub read_time_ms: std::time::Instant,
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DiskInfo;
 
 impl DiskInfo {
-    pub fn new() -> Self {
-        Self { disks: vec![] }
-    }
-
-    pub fn refresh(&mut self) {
+    pub fn load(disk_stats: &mut Vec<DiskStats>) -> Vec<Disk> {
         use gtk::glib::*;
+
+        let mut result = vec![];
 
         let entries = std::fs::read_dir("/sys/block");
         if entries.is_err() {
             g_critical!(
-                "MissionCenter::SysInfo",
+                "MissionCenter::DiskInfo",
                 "Failed to refresh disk information, failed to read disk entries: {:?}",
                 entries.err()
             );
-            return;
+            return result;
         }
 
         for entry in entries.unwrap() {
@@ -161,8 +162,8 @@ impl DiskInfo {
             }
 
             let mut disk_index = None;
-            for i in 0..self.disks.len() {
-                if self.disks[i].id == dir_name {
+            for i in 0..disk_stats.len() {
+                if disk_stats[i].id == dir_name {
                     disk_index = Some(i);
                     break;
                 }
@@ -200,9 +201,15 @@ impl DiskInfo {
             let fs_info = Self::filesystem_info(&dir_name);
             let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
 
+            let vendor = std::fs::read_to_string(format!("/sys/block/{}/device/vendor", dir_name))
+                .ok()
+                .unwrap_or("".to_string());
+
             let model = std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
                 .ok()
                 .unwrap_or("".to_string());
+
+            let model = vendor.trim().to_string() + " " + model.trim();
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
             let stats = if stats.is_err() {
@@ -215,8 +222,6 @@ impl DiskInfo {
             } else {
                 stats.as_ref().unwrap().trim()
             };
-
-            let read_time_ms = std::time::Instant::now();
 
             let mut read_ios = 0;
             let mut sectors_read = 0;
@@ -270,37 +275,37 @@ impl DiskInfo {
             }
 
             if let Some(disk_index) = disk_index {
-                let disk = &mut self.disks[disk_index];
+                let disk_stat = &mut disk_stats[disk_index];
 
                 let read_ticks_weighted_ms_prev =
-                    if read_ticks_weighted_ms < disk.read_ticks_weighted_ms {
+                    if read_ticks_weighted_ms < disk_stat.read_ticks_weighted_ms {
                         read_ticks_weighted_ms
                     } else {
-                        disk.read_ticks_weighted_ms
+                        disk_stat.read_ticks_weighted_ms
                     };
 
                 let write_ticks_weighted_ms_prev =
-                    if write_ticks_weighted_ms < disk.write_ticks_weighted_ms {
+                    if write_ticks_weighted_ms < disk_stat.write_ticks_weighted_ms {
                         write_ticks_weighted_ms
                     } else {
-                        disk.write_ticks_weighted_ms
+                        disk_stat.write_ticks_weighted_ms
                     };
 
                 let discard_ticks_weighted_ms_prev =
-                    if discard_ticks_weighted_ms < disk.discard_ticks_weighted_ms {
+                    if discard_ticks_weighted_ms < disk_stat.discard_ticks_weighted_ms {
                         discard_ticks_weighted_ms
                     } else {
-                        disk.discard_ticks_weighted_ms
+                        disk_stat.discard_ticks_weighted_ms
                     };
 
                 let flush_ticks_weighted_ms_prev =
-                    if flush_ticks_weighted_ms < disk.flush_ticks_weighted_ms {
+                    if flush_ticks_weighted_ms < disk_stat.flush_ticks_weighted_ms {
                         flush_ticks_weighted_ms
                     } else {
-                        disk.flush_ticks_weighted_ms
+                        disk_stat.flush_ticks_weighted_ms
                     };
 
-                let elapsed = read_time_ms.duration_since(disk.read_time_ms).as_secs_f32();
+                let elapsed = disk_stat.read_time_ms.elapsed().as_secs_f32();
 
                 let delta_read_ticks_weighted_ms =
                     read_ticks_weighted_ms - read_ticks_weighted_ms_prev;
@@ -316,42 +321,41 @@ impl DiskInfo {
                     + delta_flush_ticks_weighted_ms;
 
                 // Arbitrary math is arbitrary
-                disk.busy_percent =
-                    (delta_ticks_weighted_ms as f32 / (elapsed * 100.) / 10.0).min(100.);
+                let busy_percent = (delta_ticks_weighted_ms as f32 / elapsed).min(100.);
 
-                disk.read_ticks_weighted_ms = read_ticks_weighted_ms;
-                disk.write_ticks_weighted_ms = write_ticks_weighted_ms;
-                disk.discard_ticks_weighted_ms = discard_ticks_weighted_ms;
-                disk.flush_ticks_weighted_ms = flush_ticks_weighted_ms;
+                disk_stat.read_ticks_weighted_ms = read_ticks_weighted_ms;
+                disk_stat.write_ticks_weighted_ms = write_ticks_weighted_ms;
+                disk_stat.discard_ticks_weighted_ms = discard_ticks_weighted_ms;
+                disk_stat.flush_ticks_weighted_ms = flush_ticks_weighted_ms;
 
-                let io_time_ms_prev = if io_total_time_ms < disk.io_total_time_ms {
+                let io_time_ms_prev = if io_total_time_ms < disk_stat.io_total_time_ms {
                     io_total_time_ms
                 } else {
-                    disk.io_total_time_ms
+                    disk_stat.io_total_time_ms
                 };
 
-                let read_ios_prev = if read_ios < disk.read_ios {
+                let read_ios_prev = if read_ios < disk_stat.read_ios {
                     read_ios
                 } else {
-                    disk.read_ios
+                    disk_stat.read_ios
                 };
 
-                let write_ios_prev = if write_ios < disk.write_ios {
+                let write_ios_prev = if write_ios < disk_stat.write_ios {
                     write_ios
                 } else {
-                    disk.write_ios
+                    disk_stat.write_ios
                 };
 
-                let discard_ios_prev = if discard_ios < disk.discard_ios {
+                let discard_ios_prev = if discard_ios < disk_stat.discard_ios {
                     discard_ios
                 } else {
-                    disk.discard_ios
+                    disk_stat.discard_ios
                 };
 
-                let flush_ios_prev = if flush_ios < disk.flush_ios {
+                let flush_ios_prev = if flush_ios < disk_stat.flush_ios {
                     flush_ios
                 } else {
-                    disk.flush_ios
+                    disk_stat.flush_ios
                 };
 
                 let delta_io_time_ms = io_total_time_ms - io_time_ms_prev;
@@ -362,43 +366,60 @@ impl DiskInfo {
 
                 let delta_ios =
                     delta_read_ios + delta_write_ios + delta_discard_ios + delta_flush_ios;
-                disk.response_time_ms = if delta_ios > 0 {
+                let response_time_ms = if delta_ios > 0 {
                     delta_io_time_ms as f32 / delta_ios as f32
                 } else {
                     0.
                 };
 
-                disk.read_ios = read_ios;
-                disk.write_ios = write_ios;
-                disk.discard_ios = discard_ios;
-                disk.flush_ios = flush_ios;
-                disk.io_total_time_ms = io_total_time_ms;
+                disk_stat.read_ios = read_ios;
+                disk_stat.write_ios = write_ios;
+                disk_stat.discard_ios = discard_ios;
+                disk_stat.flush_ios = flush_ios;
+                disk_stat.io_total_time_ms = io_total_time_ms;
 
-                let sectors_read_prev = if sectors_read < disk.sectors_read {
+                let sectors_read_prev = if sectors_read < disk_stat.sectors_read {
                     sectors_read
                 } else {
-                    disk.sectors_read
+                    disk_stat.sectors_read
                 };
 
-                let sectors_written_prev = if sectors_written < disk.sectors_written {
+                let sectors_written_prev = if sectors_written < disk_stat.sectors_written {
                     sectors_written
                 } else {
-                    disk.sectors_written
+                    disk_stat.sectors_written
                 };
 
-                let read_speed = (sectors_read - sectors_read_prev) as f32 / elapsed;
-                let write_speed = (sectors_written - sectors_written_prev) as f32 / elapsed;
+                // I understand nothing, the world is a lie
+                // This math is just total empirical BS, makes zero sense, but seems to be accurate enough
+                let read_speed = ((sectors_read - sectors_read_prev) as f32 * 15360.) / elapsed;
+                let write_speed =
+                    ((sectors_written - sectors_written_prev) as f32 * 15360.) / elapsed;
 
-                disk.read_speed = (read_speed * 512.0).round() as _;
-                disk.write_speed = (write_speed * 512.0).round() as _;
+                let read_speed = read_speed.round() as u64;
+                let write_speed = write_speed.round() as u64;
 
-                disk.sectors_read = sectors_read;
-                disk.sectors_written = sectors_written;
+                disk_stat.sectors_read = sectors_read;
+                disk_stat.sectors_written = sectors_written;
 
-                disk.read_time_ms = read_time_ms;
-            } else {
-                self.disks.push(Disk {
+                disk_stat.read_time_ms = std::time::Instant::now();
+
+                result.push(Disk {
                     id: dir_name,
+                    r#type,
+                    model: model.trim().to_string(),
+                    capacity,
+                    formatted,
+                    system_disk,
+
+                    busy_percent,
+                    response_time_ms,
+                    read_speed,
+                    write_speed,
+                });
+            } else {
+                result.push(Disk {
+                    id: dir_name.clone(),
                     r#type,
                     model: model.trim().to_string(),
                     capacity,
@@ -409,29 +430,27 @@ impl DiskInfo {
                     response_time_ms: 0.,
                     read_speed: 0,
                     write_speed: 0,
+                });
 
-                    sectors_read,
-                    sectors_written,
-
-                    read_ios,
-                    write_ios,
-                    discard_ios,
-                    flush_ios,
-                    io_total_time_ms,
-
+                disk_stats.push(DiskStats {
+                    id: dir_name,
+                    read_time_ms: std::time::Instant::now(),
                     read_ticks_weighted_ms,
                     write_ticks_weighted_ms,
                     discard_ticks_weighted_ms,
                     flush_ticks_weighted_ms,
-
-                    read_time_ms,
-                });
+                    io_total_time_ms,
+                    read_ios,
+                    write_ios,
+                    discard_ios,
+                    flush_ios,
+                    sectors_read,
+                    sectors_written,
+                })
             }
         }
-    }
 
-    pub fn disks(&self) -> &[Disk] {
-        &self.disks
+        result
     }
 
     fn filesystem_info(device_name: &str) -> Option<(bool, u64)> {
@@ -484,18 +503,7 @@ impl DiskInfo {
     fn mount_points(device_name: &str) -> Vec<String> {
         use gtk::glib::*;
 
-        let is_flatpak = *super::IS_FLATPAK;
-        let mut cmd = if is_flatpak {
-            let mut cmd = std::process::Command::new(super::FLATPAK_SPAWN_CMD);
-            cmd.arg("--host").arg("lsblk");
-
-            cmd
-        } else {
-            std::process::Command::new("lsblk")
-        };
-        cmd.arg("-o").arg("NAME,MOUNTPOINTS").arg("--json");
-
-        let lsblk_out = if let Ok(output) = cmd.output() {
+        let lsblk_out = if let Ok(output) = cmd!("lsblk -o NAME,MOUNTPOINTS --json").output() {
             if output.stderr.len() > 0 {
                 g_critical!(
                     "MissionCenter::SysInfo",

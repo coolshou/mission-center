@@ -23,7 +23,7 @@ use std::cell::Cell;
 use adw;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*, Snapshot};
+use gtk::{gio, glib, prelude::*};
 
 use super::widgets::{GraphWidget, MemoryCompositionWidget};
 
@@ -71,8 +71,6 @@ mod imp {
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get, set)]
-        refresh_interval: Cell<u32>,
-        #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
@@ -99,7 +97,6 @@ mod imp {
                 ram_type: Default::default(),
                 context_menu: Default::default(),
 
-                refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
             }
@@ -133,86 +130,81 @@ mod imp {
             );
             this.add_controller(right_click_controller);
         }
+    }
 
-        fn update_view(&self, this: &super::PerformancePageMemory) {
-            use crate::SYS_INFO;
+    impl PerformancePageMemory {
+        pub fn set_static_information(
+            this: &super::PerformancePageMemory,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
+            let this = this.imp();
 
-            let this = this.clone();
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            this.usage_graph
+                .set_value_range_max(readings.mem_info.mem_total as f32);
+            this.usage_graph
+                .connect_resize(|graph_widget, width, height| {
+                    let width = width as f32;
+                    let height = height as f32;
 
-            self.update_graphs_grid_layout();
+                    let mut a = width;
+                    let mut b = height;
+                    if width > height {
+                        a = height;
+                        b = width;
+                    }
+
+                    graph_widget
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+                });
+
+            let total_mem = crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
+            this.total_ram
+                .set_text(&format!("{:.2} {}iB", total_mem.0.round(), total_mem.1));
+
+            true
+        }
+
+        pub fn update_readings(
+            this: &super::PerformancePageMemory,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
+            let this = this.imp();
+            let mem_info = &readings.mem_info;
 
             {
-                let this = this.imp();
-                let used = sys_info.memory_info().mem_total - sys_info.memory_info().mem_available;
+                let used = mem_info.mem_total - mem_info.mem_available;
                 this.usage_graph.add_data_point(0, used as _);
 
-                this.mem_composition.queue_render();
+                this.mem_composition.update_memory_information(mem_info);
 
                 let used = crate::to_human_readable(used as _, 1024.);
                 this.in_use.set_text(&format!("{:.2} {}iB", used.0, used.1));
 
-                let available =
-                    crate::to_human_readable(sys_info.memory_info().mem_available as _, 1024.);
+                let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
                 this.available
                     .set_text(&format!("{:.2} {}iB", available.0, available.1));
 
-                let committed =
-                    crate::to_human_readable(sys_info.memory_info().committed_as as _, 1024.);
+                let committed = crate::to_human_readable(mem_info.committed_as as _, 1024.);
                 this.committed
                     .set_text(&format!("{:.2} {}iB", committed.0, committed.1));
 
-                let cached = crate::to_human_readable(sys_info.memory_info().cached as _, 1024.);
+                let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
                 this.cached
                     .set_text(&format!("{:.2} {}iB", cached.0, cached.1));
 
-                let swap_available =
-                    crate::to_human_readable(sys_info.memory_info().swap_total as _, 1024.);
+                let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
                 this.swap_available
                     .set_text(&format!("{:.2} {}iB", swap_available.0, swap_available.1));
 
                 let swap_used = crate::to_human_readable(
-                    (sys_info.memory_info().swap_total - sys_info.memory_info().swap_free) as _,
+                    (mem_info.swap_total - mem_info.swap_free) as _,
                     1024.,
                 );
                 this.swap_used
                     .set_text(&format!("{:.2} {}iB", swap_used.0, swap_used.1));
             }
 
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(this.imp(), &this);
-                },
-            ));
-        }
-
-        fn update_static_information(&self) {
-            let total_mem = crate::SYS_INFO
-                .read()
-                .expect("Failed to acquire read lock")
-                .memory_info()
-                .mem_total;
-            self.usage_graph.set_value_range_max(total_mem as f32);
-
-            let total_mem = crate::to_human_readable(total_mem as _, 1024.);
-            self.total_ram
-                .set_text(&format!("{:.2} {}iB", total_mem.0.round(), total_mem.1));
-        }
-
-        fn update_graphs_grid_layout(&self) {
-            let width = self.usage_graph.allocated_width() as f32;
-            let height = self.usage_graph.allocated_height() as f32;
-
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
-
-            self.usage_graph
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            true
         }
     }
 
@@ -243,14 +235,13 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-            self.update_static_information();
 
             self.admin_banner
                 .connect_button_clicked(clone!(@weak this => move |_| {
-                    use crate::sys_info::MemInfo;
-
                     let ptr = this.as_ptr() as usize;
                     let _ = std::thread::spawn(move || {
+                        use crate::sys_info_v2::MemInfo;
+
                         let memory_device_info = MemInfo::load_memory_device_info();
                         glib::idle_add_once(move || {
                             use glib::translate::from_glib_none;
@@ -308,13 +299,6 @@ mod imp {
             glib::timeout_add_local_once(std::time::Duration::from_millis(500), move || {
                 this.imp().admin_banner.set_revealed(true);
             });
-
-            self.update_view(self.obj().upcast_ref());
-        }
-
-        fn snapshot(&self, snapshot: &Snapshot) {
-            self.parent_snapshot(snapshot);
-            self.update_graphs_grid_layout();
         }
     }
 
@@ -338,7 +322,11 @@ impl PerformancePageMemory {
         this
     }
 
-    pub fn set_initial_values(&self, values: Vec<f32>) {
-        self.imp().usage_graph.set_data(0, values);
+    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePageMemory::set_static_information(self, readings)
+    }
+
+    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePageMemory::update_readings(self, readings)
     }
 }

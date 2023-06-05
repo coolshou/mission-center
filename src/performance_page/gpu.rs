@@ -23,7 +23,7 @@ use std::cell::Cell;
 use adw;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*, Snapshot};
+use gtk::{gio, glib, prelude::*};
 
 use super::widgets::GraphWidget;
 
@@ -79,8 +79,6 @@ mod imp {
         #[property(get = Self::name, set = Self::set_name, type = String)]
         name: Cell<String>,
         #[property(get, set)]
-        refresh_interval: Cell<u32>,
-        #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
@@ -111,7 +109,6 @@ mod imp {
                 context_menu: Default::default(),
 
                 name: Cell::new(String::new()),
-                refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
             }
@@ -132,7 +129,6 @@ mod imp {
             }
 
             self.name.replace(name);
-            self.update_static_information();
         }
     }
 
@@ -161,123 +157,65 @@ mod imp {
             );
             this.add_controller(right_click_controller);
         }
+    }
 
-        fn update_view(&self, this: &super::PerformancePageGpu) {
-            use crate::SYS_INFO;
-
-            self.update_graphs_grid_layout();
-
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-            let gpu_info = sys_info.gpu_info();
-            if gpu_info.is_none() {
-                return;
-            }
-            let gpu_info = gpu_info.unwrap();
-            if let Some(gpu) = gpu_info
-                .gpus()
-                .iter()
-                .filter(|d| {
-                    d.device_name == self.obj().upcast_ref::<super::PerformancePageGpu>().name()
-                })
-                .take(1)
-                .next()
-            {
-                self.overall_percent
-                    .set_text(&format!("{}%", gpu.util_percent));
-                self.usage_graph_overall
-                    .add_data_point(0, gpu.util_percent as f32);
-                self.utilization.set_text(&format!("{}%", gpu.util_percent));
-
-                self.encode_percent
-                    .set_text(&format!("{}%", gpu.encoder_percent));
-                self.usage_graph_encode
-                    .add_data_point(0, gpu.encoder_percent as f32);
-
-                self.decode_percent
-                    .set_text(&format!("{}%", gpu.decoder_percent));
-                self.usage_graph_decode
-                    .add_data_point(0, gpu.decoder_percent as f32);
-
-                self.usage_graph_memory
-                    .add_data_point(0, gpu.used_memory as f32);
-
-                let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
-                let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
-                self.memory_usage.set_text(&format!(
-                    "{:.2} {}iB / {:.2} {}iB",
-                    used_memory.0, used_memory.1, total_memory.0, total_memory.1
-                ));
-
-                let clock_speed =
-                    crate::to_human_readable(gpu.clock_speed_mhz as f32 * 1_000_000., 1000.);
-                let clock_speed_max =
-                    crate::to_human_readable(gpu.clock_speed_max_mhz as f32 * 1_000_000., 1000.);
-                self.clock_speed.set_text(&format!(
-                    "{:.2} {}Hz / {:.2} {}Hz",
-                    clock_speed.0, clock_speed.1, clock_speed_max.0, clock_speed_max.1
-                ));
-
-                let memory_speed =
-                    crate::to_human_readable(gpu.mem_speed_mhz as f32 * 1_000_000., 1000.);
-                let memory_speed_max =
-                    crate::to_human_readable(gpu.mem_speed_max_mhz as f32 * 1_000_000., 1000.);
-                self.memory_speed.set_text(&format!(
-                    "{:.2} {}Hz / {:.2} {}Hz",
-                    memory_speed.0, memory_speed.1, memory_speed_max.0, memory_speed_max.1
-                ));
-
-                let power_draw = crate::to_human_readable(gpu.power_draw_watts as f32, 1000.);
-                let power_limit = crate::to_human_readable(gpu.power_draw_max_watts as f32, 1000.);
-                self.power_draw.set_text(&format!(
-                    "{:.2} {}W / {:.2} {}W",
-                    power_draw.0, power_draw.1, power_limit.0, power_limit.1
-                ));
-
-                self.temperature
-                    .set_text(&format!("{}°C", gpu.temp_celsius));
-            }
-
-            let this = this.clone();
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(this.imp(), &this);
-                },
-            ));
-        }
-
-        fn update_static_information(&self) {
-            use crate::SYS_INFO;
+    impl PerformancePageGpu {
+        pub fn set_static_information(
+            this: &super::PerformancePageGpu,
+            gpu: &crate::sys_info_v2::GPU,
+        ) -> bool {
             use gettextrs::gettext;
 
-            self.device_name.set_text(&self.name());
+            this.imp()
+                .usage_graph_overall
+                .connect_resize(clone!(@weak this => move |_, _, _| {
+                    let this = this.imp();
 
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-            let gpu_info = sys_info.gpu_info();
-            if gpu_info.is_none() {
-                return;
-            }
-            let gpu_info = gpu_info.unwrap();
-            if let Some(gpu) = gpu_info
-                .gpus()
-                .iter()
-                .filter(|d| {
-                    d.device_name == self.obj().upcast_ref::<super::PerformancePageGpu>().name()
-                })
-                .take(1)
-                .next()
-            {
-                self.usage_graph_memory
-                    .set_value_range_max(gpu.total_memory as f32);
+                    let width = this.usage_graph_overall.allocated_width() as f32;
+                    let height = this.usage_graph_overall.allocated_height() as f32;
 
-                let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
-                self.total_memory.set_text(&format!(
-                    "{} {}iB",
-                    total_memory.0.round(),
-                    total_memory.1
-                ));
+                    let mut a = width;
+                    let mut b = height;
+                    if width > height {
+                        a = height;
+                        b = width;
+                    }
 
-                let opengl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
+                    this.usage_graph_overall
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                    this.usage_graph_memory
+                        .set_vertical_line_count((width / 40.).round() as u32);
+
+                    let width = this.usage_graph_encode.allocated_width() as f32;
+                    let height = this.usage_graph_encode.allocated_height() as f32;
+
+                    let mut a = width;
+                    let mut b = height;
+                    if width > height {
+                        a = height;
+                        b = width;
+                    }
+                    this.usage_graph_encode
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+                    this.usage_graph_decode
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+                }));
+
+            let this = this.imp();
+
+            this.device_name.set_text(&gpu.static_info.device_name);
+
+            this.usage_graph_memory
+                .set_value_range_max(gpu.dynamic_info.total_memory as f32);
+
+            let total_memory =
+                crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
+            this.total_memory
+                .set_text(&format!("{} {}iB", total_memory.0.round(), total_memory.1));
+
+            let opengl_version =
+                if let Some(opengl_version) = gpu.static_info.opengl_version.as_ref() {
                     format!(
                         "{}{}.{}",
                         if opengl_version.2 { "ES " } else { "" },
@@ -287,9 +225,10 @@ mod imp {
                 } else {
                     gettext("Unknown")
                 };
-                self.opengl_version.set_text(&opengl_version);
+            this.opengl_version.set_text(&opengl_version);
 
-                let vulkan_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
+            let vulkan_version =
+                if let Some(vulkan_version) = gpu.static_info.vulkan_version.as_ref() {
                     format!(
                         "{}.{}.{}",
                         vulkan_version.0, vulkan_version.1, vulkan_version.2
@@ -297,57 +236,99 @@ mod imp {
                 } else {
                     gettext("Unsupported")
                 };
-                self.vulkan_version.set_text(&vulkan_version);
+            this.vulkan_version.set_text(&vulkan_version);
 
-                let pcie_info_known = if let Some(pcie_gen) = gpu.pcie_gen {
-                    if let Some(pcie_lanes) = gpu.pcie_lanes {
-                        self.pcie_speed
-                            .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
-                        true
-                    } else {
-                        false
-                    }
+            let pcie_info_known = if let Some(pcie_gen) = gpu.static_info.pcie_gen {
+                if let Some(pcie_lanes) = gpu.static_info.pcie_lanes {
+                    this.pcie_speed
+                        .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
+                    true
                 } else {
                     false
-                };
-                if !pcie_info_known {
-                    self.pcie_speed.set_text("Unknown");
                 }
-
-                self.pci_addr.set_text(&gpu.pci_slot_name);
+            } else {
+                false
+            };
+            if !pcie_info_known {
+                this.pcie_speed.set_text("Unknown");
             }
+
+            this.pci_addr.set_text(&gpu.static_info.pci_slot_name);
+
+            true
         }
 
-        fn update_graphs_grid_layout(&self) {
-            let width = self.usage_graph_overall.allocated_width() as f32;
-            let height = self.usage_graph_overall.allocated_height() as f32;
+        pub(crate) fn update_readings(
+            this: &super::PerformancePageGpu,
+            gpu: &crate::sys_info_v2::GPU,
+        ) -> bool {
+            let this = this.imp();
 
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
+            this.overall_percent
+                .set_text(&format!("{}%", gpu.dynamic_info.util_percent));
+            this.usage_graph_overall
+                .add_data_point(0, gpu.dynamic_info.util_percent as f32);
+            this.utilization
+                .set_text(&format!("{}%", gpu.dynamic_info.util_percent));
 
-            self.usage_graph_overall
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            this.encode_percent
+                .set_text(&format!("{}%", gpu.dynamic_info.encoder_percent));
+            this.usage_graph_encode
+                .add_data_point(0, gpu.dynamic_info.encoder_percent as f32);
 
-            self.usage_graph_memory
-                .set_vertical_line_count((width / 40.).round() as u32);
+            this.decode_percent
+                .set_text(&format!("{}%", gpu.dynamic_info.decoder_percent));
+            this.usage_graph_decode
+                .add_data_point(0, gpu.dynamic_info.decoder_percent as f32);
 
-            let width = self.usage_graph_encode.allocated_width() as f32;
-            let height = self.usage_graph_encode.allocated_height() as f32;
+            this.usage_graph_memory
+                .add_data_point(0, gpu.dynamic_info.used_memory as f32);
 
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
-            self.usage_graph_encode
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-            self.usage_graph_decode
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            let used_memory = crate::to_human_readable(gpu.dynamic_info.used_memory as f32, 1024.);
+            let total_memory =
+                crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
+            this.memory_usage.set_text(&format!(
+                "{:.2} {}iB / {:.2} {}iB",
+                used_memory.0, used_memory.1, total_memory.0, total_memory.1
+            ));
+
+            let clock_speed = crate::to_human_readable(
+                gpu.dynamic_info.clock_speed_mhz as f32 * 1_000_000.,
+                1000.,
+            );
+            let clock_speed_max = crate::to_human_readable(
+                gpu.dynamic_info.clock_speed_max_mhz as f32 * 1_000_000.,
+                1000.,
+            );
+            this.clock_speed.set_text(&format!(
+                "{:.2} {}Hz / {:.2} {}Hz",
+                clock_speed.0, clock_speed.1, clock_speed_max.0, clock_speed_max.1
+            ));
+
+            let memory_speed =
+                crate::to_human_readable(gpu.dynamic_info.mem_speed_mhz as f32 * 1_000_000., 1000.);
+            let memory_speed_max = crate::to_human_readable(
+                gpu.dynamic_info.mem_speed_max_mhz as f32 * 1_000_000.,
+                1000.,
+            );
+            this.memory_speed.set_text(&format!(
+                "{:.2} {}Hz / {:.2} {}Hz",
+                memory_speed.0, memory_speed.1, memory_speed_max.0, memory_speed_max.1
+            ));
+
+            let power_draw =
+                crate::to_human_readable(gpu.dynamic_info.power_draw_watts as f32, 1000.);
+            let power_limit =
+                crate::to_human_readable(gpu.dynamic_info.power_draw_max_watts as f32, 1000.);
+            this.power_draw.set_text(&format!(
+                "{:.2} {}W / {:.2} {}W",
+                power_draw.0, power_draw.1, power_limit.0, power_limit.1
+            ));
+
+            this.temperature
+                .set_text(&format!("{}°C", gpu.dynamic_info.temp_celsius));
+
+            true
         }
     }
 
@@ -375,7 +356,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-            self.update_static_information();
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -391,18 +371,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformancePageGpu {
-        fn realize(&self) {
-            self.parent_realize();
-
-            self.update_view(self.obj().upcast_ref());
-        }
-
-        fn snapshot(&self, snapshot: &Snapshot) {
-            self.parent_snapshot(snapshot);
-            self.update_graphs_grid_layout();
-        }
-    }
+    impl WidgetImpl for PerformancePageGpu {}
 
     impl BoxImpl for PerformancePageGpu {}
 }
@@ -424,7 +393,11 @@ impl PerformancePageGpu {
         this
     }
 
-    pub fn set_initial_values(&self, values: Vec<f32>) {
-        self.imp().usage_graph_overall.set_data(0, values);
+    pub fn set_static_information(&self, gpu: &crate::sys_info_v2::GPU) -> bool {
+        imp::PerformancePageGpu::set_static_information(self, gpu)
+    }
+
+    pub fn update_readings(&self, gpu: &crate::sys_info_v2::GPU) -> bool {
+        imp::PerformancePageGpu::update_readings(self, gpu)
     }
 }

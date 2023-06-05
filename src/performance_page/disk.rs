@@ -23,7 +23,7 @@ use std::cell::Cell;
 use adw;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*, Snapshot};
+use gtk::{gio, glib, prelude::*};
 
 use super::widgets::GraphWidget;
 
@@ -71,8 +71,6 @@ mod imp {
         #[property(get = Self::name, set = Self::set_name, type = String)]
         name: Cell<String>,
         #[property(get, set)]
-        refresh_interval: Cell<u32>,
-        #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
@@ -99,7 +97,6 @@ mod imp {
                 context_menu: Default::default(),
 
                 name: Cell::new(String::new()),
-                refresh_interval: Cell::new(1000),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
             }
@@ -120,7 +117,6 @@ mod imp {
             }
 
             self.name.replace(name);
-            self.update_static_information();
         }
     }
 
@@ -149,131 +145,117 @@ mod imp {
             );
             this.add_controller(right_click_controller);
         }
+    }
 
-        fn update_view(&self, this: &super::PerformancePageDisk) {
-            use crate::SYS_INFO;
+    impl PerformancePageDisk {
+        pub fn set_static_information(
+            this: &super::PerformancePageDisk,
+            index: usize,
+            disk: &crate::sys_info_v2::Disk,
+        ) -> bool {
+            use crate::sys_info_v2::DiskType;
             use gettextrs::gettext;
 
-            let this = this.clone();
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
+            let t = this.clone();
+            this.imp()
+                .usage_graph
+                .connect_resize(move |graph_widget, width, height| {
+                    let width = width as f32;
+                    let height = height as f32;
 
-            self.update_graphs_grid_layout();
+                    let mut a = width;
+                    let mut b = height;
+                    if width > height {
+                        a = height;
+                        b = width;
+                    }
 
-            let name = unsafe { &*self.name.as_ptr() };
-            for disk in sys_info.disk_info().disks() {
-                if name == &disk.id {
-                    let max_y = crate::to_human_readable(
-                        this.imp().disk_transfer_rate_graph.value_range_max(),
-                        1024.,
-                    );
-                    let i = if max_y.1.is_empty() { "" } else { "i" };
-                    this.imp()
-                        .max_y
-                        .set_text(&gettext!("{} {}{}B/s", max_y.0.round(), max_y.1, i));
+                    graph_widget
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
-                    self.usage_graph.add_data_point(0, disk.busy_percent as f32);
-
-                    self.active_time
-                        .set_text(&format!("{}%", disk.busy_percent.round() as u8));
-
-                    self.avg_response_time
-                        .set_text(&format!("{:.2} ms", disk.response_time_ms));
-
-                    self.disk_transfer_rate_graph
-                        .add_data_point(0, disk.read_speed as f32);
-                    let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
-                    let i = if read_speed.1.is_empty() { "" } else { "i" };
-                    self.read_speed
-                        .set_text(&format!("{:.2} {}{}B/s", read_speed.0, read_speed.1, i,));
-
-                    self.disk_transfer_rate_graph
-                        .add_data_point(1, disk.write_speed as f32);
-                    let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
-                    let i = if write_speed.1.is_empty() { "" } else { "i" };
-                    self.write_speed
-                        .set_text(&format!("{:.2} {}{}B/s", write_speed.0, write_speed.1, i,));
-                }
-            }
-
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_view(this.imp(), &this);
-                },
-            ));
-        }
-
-        fn update_static_information(&self) {
-            use crate::{sys_info::*, SYS_INFO};
-
-            let sys_info = SYS_INFO.read().expect("Failed to acquire read lock");
-            let disk_info = sys_info.disk_info();
-            if let Some((i, disk)) = disk_info
-                .disks()
-                .iter()
-                .enumerate()
-                .filter(|(_, d)| {
-                    d.id == self.obj().upcast_ref::<super::PerformancePageDisk>().name()
-                })
-                .take(1)
-                .next()
-            {
-                use gettextrs::gettext;
-
-                self.disk_id
-                    .set_text(&gettext!("Disk {} ({})", i, &disk.id));
-                self.model.set_text(&disk.model);
-
-                self.disk_transfer_rate_graph.set_dashed(0, true);
-                self.disk_transfer_rate_graph.set_filled(0, false);
-
-                self.legend_read
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
-                self.legend_write
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
-
-                let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
-                self.capacity
-                    .set_text(&format!("{:.2} {}iB", capacity.0, capacity.1));
-
-                let formatted = crate::to_human_readable(disk.formatted as f32, 1024.);
-                self.formatted
-                    .set_text(&format!("{:.2} {}iB", formatted.0, formatted.1));
-
-                let is_system_disk = if disk.system_disk {
-                    gettext("Yes")
-                } else {
-                    gettext("No")
-                };
-                self.system_disk.set_text(&is_system_disk);
-
-                self.disk_type.set_text(match disk.r#type {
-                    DiskType::HDD => "HDD",
-                    DiskType::SSD => "SSD",
-                    DiskType::NVMe => "NVMe",
-                    DiskType::eMMC => "eMMC",
-                    DiskType::iSCSI => "iSCSI",
-                    DiskType::Unknown => "Unknown",
+                    t.imp()
+                        .disk_transfer_rate_graph
+                        .set_vertical_line_count((width / 40.).round() as u32);
                 });
-            }
+
+            let this = this.imp();
+
+            this.disk_id
+                .set_text(&gettext!("Disk {} ({})", index, &disk.id));
+            this.model.set_text(&disk.model);
+
+            this.disk_transfer_rate_graph.set_dashed(0, true);
+            this.disk_transfer_rate_graph.set_filled(0, false);
+
+            this.legend_read
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
+            this.legend_write
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
+
+            let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
+            this.capacity
+                .set_text(&format!("{:.2} {}iB", capacity.0, capacity.1));
+
+            let formatted = crate::to_human_readable(disk.formatted as f32, 1024.);
+            this.formatted
+                .set_text(&format!("{:.2} {}iB", formatted.0, formatted.1));
+
+            let is_system_disk = if disk.system_disk {
+                gettext("Yes")
+            } else {
+                gettext("No")
+            };
+            this.system_disk.set_text(&is_system_disk);
+
+            this.disk_type.set_text(match disk.r#type {
+                DiskType::HDD => "HDD",
+                DiskType::SSD => "SSD",
+                DiskType::NVMe => "NVMe",
+                DiskType::eMMC => "eMMC",
+                DiskType::iSCSI => "iSCSI",
+                DiskType::Unknown => "Unknown",
+            });
+
+            true
         }
 
-        fn update_graphs_grid_layout(&self) {
-            let width = self.usage_graph.allocated_width() as f32;
-            let height = self.usage_graph.allocated_height() as f32;
+        pub fn update_readings(
+            this: &super::PerformancePageDisk,
+            disk: &crate::sys_info_v2::Disk,
+        ) -> bool {
+            use gettextrs::gettext;
 
-            let mut a = width;
-            let mut b = height;
-            if width > height {
-                a = height;
-                b = width;
-            }
+            let this = this.imp();
 
-            self.usage_graph
-                .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+            let max_y =
+                crate::to_human_readable(this.disk_transfer_rate_graph.value_range_max(), 1024.);
+            let i = if max_y.1.is_empty() { "" } else { "i" };
+            this.max_y
+                .set_text(&gettext!("{} {}{}B/s", max_y.0.round(), max_y.1, i));
 
-            self.disk_transfer_rate_graph
-                .set_vertical_line_count((width / 40.).round() as u32);
+            this.usage_graph.add_data_point(0, disk.busy_percent as f32);
+
+            this.active_time
+                .set_text(&format!("{}%", disk.busy_percent.round() as u8));
+
+            this.avg_response_time
+                .set_text(&format!("{:.2} ms", disk.response_time_ms));
+
+            this.disk_transfer_rate_graph
+                .add_data_point(0, disk.read_speed as f32);
+            let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
+            let i = if read_speed.1.is_empty() { "" } else { "i" };
+            this.read_speed
+                .set_text(&format!("{:.2} {}{}B/s", read_speed.0, read_speed.1, i,));
+
+            this.disk_transfer_rate_graph
+                .add_data_point(1, disk.write_speed as f32);
+            let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
+            let i = if write_speed.1.is_empty() { "" } else { "i" };
+            this.write_speed
+                .set_text(&format!("{:.2} {}{}B/s", write_speed.0, write_speed.1, i,));
+
+            true
         }
     }
 
@@ -301,7 +283,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-            self.update_static_information();
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -317,18 +298,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformancePageDisk {
-        fn realize(&self) {
-            self.parent_realize();
-
-            self.update_view(self.obj().upcast_ref());
-        }
-
-        fn snapshot(&self, snapshot: &Snapshot) {
-            self.parent_snapshot(snapshot);
-            self.update_graphs_grid_layout();
-        }
-    }
+    impl WidgetImpl for PerformancePageDisk {}
 
     impl BoxImpl for PerformancePageDisk {}
 }
@@ -350,7 +320,11 @@ impl PerformancePageDisk {
         this
     }
 
-    pub fn set_initial_values(&self, values: Vec<f32>) {
-        self.imp().usage_graph.set_data(0, values);
+    pub fn set_static_information(&self, index: usize, disk: &crate::sys_info_v2::Disk) -> bool {
+        imp::PerformancePageDisk::set_static_information(self, index, disk)
+    }
+
+    pub fn update_readings(&self, disk: &crate::sys_info_v2::Disk) -> bool {
+        imp::PerformancePageDisk::update_readings(self, disk)
     }
 }

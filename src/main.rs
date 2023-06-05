@@ -18,8 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::{Arc, RwLock};
-
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::gio;
 use gtk::prelude::*;
@@ -32,7 +30,7 @@ use self::window::MissionCenterWindow;
 
 mod application;
 mod performance_page;
-mod sys_info;
+mod sys_info_v2;
 mod window;
 
 mod config {
@@ -47,8 +45,6 @@ lazy_static! {
             PKGDATADIR.to_owned()
         }
     };
-    pub static ref SYS_INFO: Arc<RwLock<sys_info::SysInfo>> =
-        Arc::new(RwLock::new(sys_info::SysInfo::new()));
 }
 
 pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str) {
@@ -91,32 +87,32 @@ fn main() {
         unsafe { lib.sym(&symbol_name).unwrap() }
     });
 
-    // Take an initial measurement
-    {
-        let mut sys_info = SYS_INFO
-            .write()
-            .expect("System information refresh failed: Unable to acquire lock");
-        sys_info.refresh_components_list();
-        sys_info.refresh_all();
-    }
+    // // Take an initial measurement
+    // {
+    //     let mut sys_info = SYS_INFO
+    //         .write()
+    //         .expect("System information refresh failed: Unable to acquire lock");
+    //     sys_info.refresh_components_list();
+    //     sys_info.refresh_all();
+    // }
 
-    // Set up the system information refresh thread
-    let sysinfo_refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
-    let sysinfo_refresh_thread_running_clone = Arc::clone(&sysinfo_refresh_thread_running);
-    let sysinfo_refresh_thread = std::thread::spawn(move || {
-        while sysinfo_refresh_thread_running_clone.load(std::sync::atomic::Ordering::Acquire) {
-            std::thread::sleep(std::time::Duration::from_secs(1));
-
-            {
-                let mut sys_info = SYS_INFO
-                    .write()
-                    .expect("System information refresh failed: Unable to acquire lock");
-
-                sys_info.refresh_components_list();
-                sys_info.refresh_all();
-            }
-        }
-    });
+    // // Set up the system information refresh thread
+    // let sysinfo_refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
+    // let sysinfo_refresh_thread_running_clone = Arc::clone(&sysinfo_refresh_thread_running);
+    // let sysinfo_refresh_thread = std::thread::spawn(move || {
+    //     while sysinfo_refresh_thread_running_clone.load(std::sync::atomic::Ordering::Acquire) {
+    //         std::thread::sleep(std::time::Duration::from_secs(1));
+    //
+    //         {
+    //             let mut sys_info = SYS_INFO
+    //                 .write()
+    //                 .expect("System information refresh failed: Unable to acquire lock");
+    //
+    //             sys_info.refresh_components_list();
+    //             sys_info.refresh_all();
+    //         }
+    //     }
+    // });
 
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
@@ -125,6 +121,7 @@ fn main() {
         "io.missioncenter.MissionCenter",
         &gio::ApplicationFlags::empty(),
     );
+    gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
     // Run the application. This function will block until the application
     // exits. Upon return, we have our exit code to return to the shell. (This
@@ -133,10 +130,10 @@ fn main() {
     let exit_code = app.run();
 
     // Ask the system information refresh thread to stop
-    sysinfo_refresh_thread_running.store(false, std::sync::atomic::Ordering::Release);
-    sysinfo_refresh_thread
-        .join()
-        .expect("Unable to stop the system information refresh thread");
+    // sysinfo_refresh_thread_running.store(false, std::sync::atomic::Ordering::Release);
+    // sysinfo_refresh_thread
+    //     .join()
+    //     .expect("Unable to stop the system information refresh thread");
 
     std::process::exit(exit_code.into());
 }

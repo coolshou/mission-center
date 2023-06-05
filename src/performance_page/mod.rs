@@ -207,7 +207,7 @@ mod imp {
             this.imp().context_menu_view_actions.set(view_actions);
         }
 
-        fn set_up_cpu_page(&self, pages: &mut Vec<Pages>) {
+        fn set_up_cpu_page(&self, pages: &mut Vec<Pages>, readings: &crate::sys_info_v2::Readings) {
             const BASE_COLOR: [u8; 3] = [0x11, 0x7d, 0xbb];
 
             let summary = SummaryGraph::new();
@@ -230,11 +230,7 @@ mod imp {
                 BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.obj()
-                .as_ref()
-                .bind_property("refresh-interval", &page, "refresh-interval")
-                .flags(glib::BindingFlags::SYNC_CREATE)
-                .build();
+            page.set_static_information(readings);
 
             self.obj()
                 .as_ref()
@@ -242,36 +238,28 @@ mod imp {
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
-            let summary_graph = summary.graph_widget();
-            page.connect_realize(move |page| {
-                if let Some(values) = summary_graph.data(0) {
-                    page.set_initial_values(values);
-                }
-            });
-
             self.sidebar.append(&summary);
             self.page_stack.add_named(&page, Some("cpu"));
 
             pages.push(Pages::Cpu((summary, page)));
         }
 
-        fn set_up_memory_page(&self, pages: &mut Vec<Pages>) {
+        fn set_up_memory_page(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::sys_info_v2::Readings,
+        ) {
             const BASE_COLOR: [u8; 3] = [0x76, 0x8D, 0xF1];
-            let total_memory = crate::SYS_INFO
-                .read()
-                .expect("Failed to read system information: Unable to acquire lock")
-                .memory_info()
-                .mem_total;
 
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
 
-            summary.set_heading(gettext("Memory"));
-            summary.set_info1("0/0 GiB (100%)");
-
             summary
                 .graph_widget()
-                .set_value_range_max(total_memory as f32);
+                .set_value_range_max(readings.mem_info.mem_total as f32);
+
+            summary.set_heading(gettext("Memory"));
+            summary.set_info1("0/0 GiB (100%)");
 
             summary.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
@@ -287,11 +275,7 @@ mod imp {
                 BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.obj()
-                .as_ref()
-                .bind_property("refresh-interval", &page, "refresh-interval")
-                .flags(glib::BindingFlags::SYNC_CREATE)
-                .build();
+            page.set_static_information(readings);
 
             self.obj()
                 .as_ref()
@@ -299,31 +283,24 @@ mod imp {
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
-            let summary_graph = summary.graph_widget();
-            page.connect_realize(move |page| {
-                if let Some(memory_data) = summary_graph.data(0) {
-                    page.set_initial_values(memory_data);
-                }
-            });
-
             self.sidebar.append(&summary);
             self.page_stack.add_named(&page, Some("memory"));
 
             pages.push(Pages::Memory((summary, page)));
         }
 
-        fn set_up_disk_pages(&self, pages: &mut Vec<Pages>) {
-            use crate::{sys_info::*, SYS_INFO};
+        fn set_up_disk_pages(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::sys_info_v2::Readings,
+        ) {
+            use crate::sys_info_v2::DiskType;
             use glib::g_critical;
 
             const BASE_COLOR: [u8; 3] = [0x21, 0x8A, 0x8A];
 
-            let sys_info = SYS_INFO
-                .read()
-                .expect("Failed to read system information: Unable to acquire lock");
-
             let mut disks = HashMap::new();
-            for (i, disk) in sys_info.disk_info().disks().iter().enumerate() {
+            for (i, disk) in readings.disks.iter().enumerate() {
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(&disk.id);
 
@@ -351,24 +328,13 @@ mod imp {
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                self.obj()
-                    .as_ref()
-                    .bind_property("refresh-interval", &page, "refresh-interval")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+                page.set_static_information(i, disk);
 
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
-
-                let summary_graph = summary.graph_widget();
-                page.connect_realize(move |page| {
-                    if let Some(data) = summary_graph.data(0) {
-                        page.set_initial_values(data);
-                    }
-                });
 
                 self.sidebar.append(&summary);
                 self.page_stack.add_named(&page, Some(&disk.id));
@@ -394,30 +360,21 @@ mod imp {
             pages.push(Pages::Disk(disks));
         }
 
-        fn set_up_network_pages(&self, pages: &mut Vec<Pages>) {
-            use crate::{sys_info::*, SYS_INFO};
+        fn set_up_network_pages(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::sys_info_v2::Readings,
+        ) {
+            use crate::sys_info_v2::NetDeviceType;
             use glib::g_critical;
-            use sysinfo::SystemExt;
 
             const BASE_COLOR: [u8; 3] = [0xe8, 0x89, 0xc5];
 
-            let sys_info = SYS_INFO
-                .read()
-                .expect("Failed to read system information: Unable to acquire lock");
-
             let mut networks = HashMap::new();
-            for (if_name, _net) in sys_info.system().networks() {
-                if if_name == "lo" {
-                    continue;
-                }
+            for network_device in &readings.network_devices {
+                let if_name = network_device.descriptor.if_name.as_str();
 
-                let net_device_info = sys_info.network_device_info(if_name);
-                if net_device_info.is_none() {
-                    continue;
-                }
-                let net_device_info = net_device_info.unwrap();
-
-                let conn_type = match &net_device_info.descriptor.r#type {
+                let conn_type = match network_device.descriptor.r#type {
                     NetDeviceType::Wired => gettext("Ethernet"),
                     NetDeviceType::Wireless => gettext("Wi-Fi"),
                     NetDeviceType::Other => gettext("Other"),
@@ -427,7 +384,7 @@ mod imp {
                 summary.set_widget_name(if_name);
 
                 summary.set_heading(conn_type.clone());
-                summary.set_info1(if_name.clone());
+                summary.set_info1(if_name.to_string());
 
                 {
                     let graph_widget = summary.graph_widget();
@@ -445,33 +402,20 @@ mod imp {
                     ));
                 }
 
-                let page = NetworkPage::new(&if_name, net_device_info.descriptor.r#type);
+                let page = NetworkPage::new(if_name, network_device.descriptor.r#type);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                self.obj()
-                    .as_ref()
-                    .bind_property("refresh-interval", &page, "refresh-interval")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+                page.set_static_information(network_device);
 
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
-
-                let summary_graph = summary.graph_widget();
-                page.connect_realize(move |page| {
-                    if let Some(send_data) = summary_graph.data(0) {
-                        if let Some(recv_data) = summary_graph.data(1) {
-                            page.set_initial_values(send_data, recv_data);
-                        }
-                    }
-                });
 
                 self.sidebar.append(&summary);
                 self.page_stack.add_named(&page, Some(if_name));
@@ -482,44 +426,40 @@ mod imp {
                         g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up network action for {}, logic bug?",
-                            if_name.as_str()
+                            if_name
                         );
                     }
                     Some(action) => {
-                        actions.insert(if_name.clone(), action.clone());
+                        actions.insert(if_name.to_owned(), action.clone());
                     }
                 }
                 self.context_menu_view_actions.set(actions);
 
-                networks.insert(if_name.clone(), (summary, page));
+                networks.insert(if_name.to_owned(), (summary, page));
             }
 
             pages.push(Pages::Network(networks));
         }
 
-        fn set_up_gpu_pages(&self, pages: &mut Vec<Pages>) {
-            use crate::SYS_INFO;
-
+        fn set_up_gpu_pages(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::sys_info_v2::Readings,
+        ) {
             const BASE_COLOR: [u8; 3] = [0x89, 0x99, 0xDA];
 
-            let sys_info = SYS_INFO
-                .read()
-                .expect("Failed to read system information: Unable to acquire lock");
-
             let mut gpus = HashMap::new();
-            let gpu_info = sys_info.gpu_info();
-            if gpu_info.is_none() {
-                return;
-            }
-            let gpu_info = gpu_info.unwrap();
 
-            for (i, gpu) in gpu_info.gpus().iter().enumerate() {
+            for (i, gpu) in readings.gpus.iter().enumerate() {
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(&gpu.device_name);
+                summary.set_widget_name(&gpu.static_info.device_name);
 
                 summary.set_heading(gettext!("GPU {}", i));
-                summary.set_info1(gpu.device_name.clone());
-                summary.set_info2(format!("{}% ({} °C)", gpu.util_percent, gpu.temp_celsius));
+                summary.set_info1(gpu.static_info.device_name.clone());
+                summary.set_info2(format!(
+                    "{}% ({} °C)",
+                    gpu.dynamic_info.util_percent, gpu.dynamic_info.temp_celsius
+                ));
                 summary.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -527,18 +467,14 @@ mod imp {
                     1.,
                 ));
 
-                let page = GpuPage::new(&gpu.device_name);
+                let page = GpuPage::new(&gpu.static_info.device_name);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                self.obj()
-                    .as_ref()
-                    .bind_property("refresh-interval", &page, "refresh-interval")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+                page.set_static_information(gpu);
 
                 self.obj()
                     .as_ref()
@@ -546,15 +482,9 @@ mod imp {
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
 
-                let summary_graph = summary.graph_widget();
-                page.connect_realize(move |page| {
-                    if let Some(data) = summary_graph.data(0) {
-                        page.set_initial_values(data);
-                    }
-                });
-
                 self.sidebar.append(&summary);
-                self.page_stack.add_named(&page, Some(&gpu.device_name));
+                self.page_stack
+                    .add_named(&page, Some(&gpu.static_info.device_name));
 
                 // let mut actions = self.context_menu_view_actions.take();
                 // match actions.get("gpu") {
@@ -571,39 +501,63 @@ mod imp {
                 // }
                 // self.context_menu_view_actions.set(actions);
 
-                gpus.insert(gpu.device_name.clone(), (summary, page));
+                gpus.insert(gpu.static_info.device_name.clone(), (summary, page));
             }
 
             pages.push(Pages::Gpu(gpus));
         }
+    }
 
-        fn update_graphs(this: &super::PerformancePage) {
-            use crate::SYS_INFO;
-            use sysinfo::{CpuExt, NetworkExt, SystemExt};
+    impl PerformancePage {
+        pub fn set_up_pages(
+            this: &super::PerformancePage,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
+            let this = this.imp();
 
-            let sys_info = SYS_INFO
-                .read()
-                .expect("Failed to read system information: Unable to acquire lock");
-            let cpu_info = sys_info.system().global_cpu_info();
+            let mut pages = vec![];
+            this.set_up_cpu_page(&mut pages, &readings);
+            this.set_up_memory_page(&mut pages, &readings);
+            this.set_up_disk_pages(&mut pages, &readings);
+            this.set_up_network_pages(&mut pages, &readings);
+            this.set_up_gpu_pages(&mut pages, &readings);
+            this.pages.set(pages);
 
+            let row = this
+                .sidebar
+                .row_at_index(0)
+                .expect("Failed to select first row");
+            this.sidebar.select_row(Some(&row));
+
+            true
+        }
+
+        pub fn update_readings(
+            this: &super::PerformancePage,
+            readings: &crate::sys_info_v2::Readings,
+        ) -> bool {
             let pages = this.imp().pages.take();
+
+            let mut result = true;
+
             for page in &pages {
                 match page {
-                    Pages::Cpu((summary, _)) => {
+                    Pages::Cpu((summary, page)) => {
                         summary
                             .graph_widget()
-                            .add_data_point(0, cpu_info.cpu_usage());
+                            .add_data_point(0, readings.cpu_info.dynamic_info.utilization_percent);
                         summary.set_info1(format!(
                             "{}% {:.2} Ghz",
-                            cpu_info.cpu_usage().round(),
-                            cpu_info.frequency() as f32 / 1024.
+                            readings.cpu_info.dynamic_info.utilization_percent.round(),
+                            readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
+
+                        result &= page.update_readings(readings);
                     }
-                    Pages::Memory((summary, _)) => {
+                    Pages::Memory((summary, page)) => {
                         let total =
-                            crate::to_human_readable(sys_info.memory_info().mem_total as _, 1024.);
-                        let used =
-                            sys_info.memory_info().mem_total - sys_info.memory_info().mem_available;
+                            crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
+                        let used = readings.mem_info.mem_total - readings.mem_info.mem_available;
                         summary.graph_widget().add_data_point(0, used as _);
                         let used = crate::to_human_readable(used as _, 1024.);
 
@@ -615,21 +569,29 @@ mod imp {
                             total.1,
                             ((used.0 / total.0) * 100.).round()
                         ));
+
+                        result &= page.update_readings(readings);
                     }
-                    Pages::Disk(pages) => {
-                        for disk in sys_info.disk_info().disks() {
-                            if let Some((summary, _)) = pages.get(&disk.id) {
+                    Pages::Disk(disks_pages) => {
+                        for disk in &readings.disks {
+                            if let Some((summary, page)) = disks_pages.get(&disk.id) {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.2}%", disk.busy_percent));
+
+                                result &= page.update_readings(disk);
+                            } else {
+                                // New page? How to detect disk was removed?
                             }
                         }
                     }
                     Pages::Network(pages) => {
-                        for (name, net_info) in sys_info.system().networks() {
-                            if let Some((summary, _)) = pages.get(name) {
-                                let sent = net_info.transmitted() as f32;
-                                let received = net_info.received() as f32;
+                        for network_device in &readings.network_devices {
+                            if let Some((summary, page)) =
+                                pages.get(&network_device.descriptor.if_name)
+                            {
+                                let sent = network_device.send_bps as f32;
+                                let received = network_device.recv_bps as f32;
 
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, sent);
@@ -646,20 +608,23 @@ mod imp {
                                     received.0.round(),
                                     received.1
                                 ));
+
+                                result &= page.update_readings(network_device);
                             }
                         }
                     }
                     Pages::Gpu(pages) => {
-                        if let Some(gpu_info) = sys_info.gpu_info() {
-                            for gpu in gpu_info.gpus() {
-                                if let Some((summary, _)) = pages.get(&gpu.device_name) {
-                                    let graph_widget = summary.graph_widget();
-                                    graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                    summary.set_info2(format!(
-                                        "{}% ({} °C)",
-                                        gpu.util_percent, gpu.temp_celsius
-                                    ));
-                                }
+                        for gpu in &readings.gpus {
+                            if let Some((summary, page)) = pages.get(&gpu.static_info.device_name) {
+                                let graph_widget = summary.graph_widget();
+                                graph_widget
+                                    .add_data_point(0, gpu.dynamic_info.util_percent as f32);
+                                summary.set_info2(format!(
+                                    "{}% ({} °C)",
+                                    gpu.dynamic_info.util_percent, gpu.dynamic_info.temp_celsius
+                                ));
+
+                                result &= page.update_readings(gpu);
                             }
                         }
                     }
@@ -668,13 +633,7 @@ mod imp {
 
             this.imp().pages.set(pages);
 
-            let this = this.clone();
-            Some(glib::source::timeout_add_local_once(
-                std::time::Duration::from_millis(this.refresh_interval() as _),
-                move || {
-                    Self::update_graphs(&this);
-                },
-            ));
+            result
         }
     }
 
@@ -706,20 +665,6 @@ mod imp {
 
             Self::configure_actions(&this);
 
-            let mut pages = vec![];
-
-            self.set_up_cpu_page(&mut pages);
-            self.set_up_memory_page(&mut pages);
-            self.set_up_disk_pages(&mut pages);
-            self.set_up_network_pages(&mut pages);
-            self.set_up_gpu_pages(&mut pages);
-
-            let row = self
-                .sidebar
-                .row_at_index(0)
-                .expect("Failed to select first row");
-            self.sidebar.select_row(Some(&row));
-
             self.sidebar.connect_row_selected(move |_, selected_row| {
                 use glib::translate::*;
                 use std::ffi::CStr;
@@ -746,8 +691,6 @@ mod imp {
                     }
                 }
             });
-
-            self.pages.set(pages);
         }
 
         fn properties() -> &'static [ParamSpec] {
@@ -763,13 +706,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PerformancePage {
-        fn realize(&self) {
-            self.parent_realize();
-
-            Self::update_graphs(self.obj().as_ref());
-        }
-    }
+    impl WidgetImpl for PerformancePage {}
 
     impl BoxImpl for PerformancePage {}
 }
@@ -778,4 +715,14 @@ glib::wrapper! {
     pub struct PerformancePage(ObjectSubclass<imp::PerformancePage>)
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
+}
+
+impl PerformancePage {
+    pub fn set_up_pages(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePage::set_up_pages(self, readings)
+    }
+
+    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        imp::PerformancePage::update_readings(self, readings)
+    }
 }

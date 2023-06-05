@@ -1,4 +1,39 @@
-use gtk::glib;
+/* sys_info/net_info.rs
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+#[allow(non_camel_case_types)]
+mod if_nameindex {
+    #[derive(Debug, Copy, Clone)]
+    #[repr(C)]
+    pub struct if_nameindex {
+        pub if_index: u32,
+        pub if_name: *mut i8,
+    }
+
+    extern "C" {
+        #[link_name = "if_freenameindex"]
+        pub fn free(ptr: *mut if_nameindex);
+        #[link_name = "if_nameindex"]
+        pub fn new() -> *mut if_nameindex;
+    }
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
@@ -30,34 +65,38 @@ pub struct WirelessInfo {
     pub signal_strength_percent: Option<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct NetworkDevice {
     pub descriptor: NetworkDeviceDescriptor,
     pub address: NetworkAddress,
     pub wireless_info: Option<WirelessInfo>,
 
-    pub bytes_sent: u64,
-    pub bytes_received: u64,
+    pub send_bps: f32,
+    pub recv_bps: f32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct NetworkDeviceCacheEntry {
+    pub descriptor: NetworkDeviceDescriptor,
+    pub hw_address: Option<[u8; 6]>,
+
+    pub tx_bytes: u64,
+    pub rx_bytes: u64,
+
+    pub update_timestamp: std::time::Instant,
 }
 
 pub struct NetInfo {
     udev: *mut libudev_sys::udev,
     nm_proxy: *mut gtk::gio::ffi::GDBusProxy,
 
+    device_cache: std::collections::HashMap<String, NetworkDeviceCacheEntry>,
+
     hwdb_conn: Option<rusqlite::Connection>,
-    device_name_cache: std::cell::Cell<std::collections::HashMap<String, String>>,
+    device_name_cache: std::collections::HashMap<String, String>,
 }
 
 unsafe impl Send for NetInfo {}
-
-unsafe impl Sync for NetInfo {}
-
-#[derive(Debug, Copy, Clone, glib::ErrorDomain)]
-#[error_domain(name = "Udev")]
-enum NetInfoError {
-    NetworkManagerInitializationError,
-    UdevInitializationError,
-}
 
 impl Drop for NetInfo {
     fn drop(&mut self) {
@@ -77,11 +116,11 @@ impl Drop for NetInfo {
 }
 
 impl NetInfo {
-    pub fn new() -> Result<Self, glib::Error> {
+    pub fn new() -> Option<Self> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use libudev_sys::*;
-        use std::{cell::*, collections::*, path::*};
+        use std::{collections::*, path::*};
 
         let mut error: *mut GError = std::ptr::null_mut();
 
@@ -99,22 +138,25 @@ impl NetInfo {
         };
         if nm_proxy.is_null() {
             if !error.is_null() {
-                let error = unsafe { from_glib_full(error) };
-                return Err(error);
+                let error: Error = unsafe { from_glib_full(error) };
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to connect to NetworkManager: {}",
+                    error.message()
+                );
+            } else {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to connect to NetworkManager: Unknown error"
+                );
             }
-            return Err(Error::new::<NetInfoError>(
-                NetInfoError::NetworkManagerInitializationError,
-                "Failed to create NetworkManager proxy",
-            ));
+            return None;
         }
 
         let udev = unsafe { udev_new() };
         if nm_proxy == std::ptr::null_mut() {
-            let error = Error::new::<NetInfoError>(
-                NetInfoError::UdevInitializationError,
-                "Failed to create udev context",
-            );
-            return Err(error);
+            g_critical!("MissionCenter::NetInfo", "Failed to create udev context");
+            return None;
         }
 
         let conn = if let Ok(conn) =
@@ -124,29 +166,72 @@ impl NetInfo {
         } else {
             g_warning!(
                 "MissionCenter::NetInfo",
-                "Failed to load hadrware database, network devices will (probably) have missing names",
+                "Failed to load hardware database, network devices will (probably) have missing names",
             );
 
             None
         };
 
-        Ok(Self {
+        Some(Self {
             udev,
             nm_proxy,
+
+            device_cache: HashMap::new(),
+
             hwdb_conn: conn,
-            device_name_cache: Cell::new(HashMap::new()),
+            device_name_cache: HashMap::new(),
         })
     }
 
-    pub fn load_device<'a, DeviceIfName: Into<&'a str>>(
-        &self,
-        device: DeviceIfName,
-    ) -> Option<NetworkDevice> {
-        use gtk::glib::gobject_ffi::*;
+    pub fn load_devices(&mut self) -> Vec<NetworkDevice> {
+        use gtk::glib::{gobject_ffi::*, *};
 
-        let if_name = device.into();
+        let mut result = vec![];
 
-        if let Some(device_path) = unsafe { self.nm_device_obj_path_new(if_name) } {
+        let if_list = unsafe { if_nameindex::new() };
+        if if_list.is_null() {
+            g_warning!(
+                "MissionCenter::NetInfo",
+                "Failed to list network interfaces"
+            );
+
+            return result;
+        }
+
+        let mut if_list_it = unsafe { if_list.offset(-1) };
+        loop {
+            unsafe {
+                if_list_it = if_list_it.offset(1);
+            }
+
+            let if_entry = unsafe { &*if_list_it };
+            if if_entry.if_index == 0 || if_entry.if_name.is_null() {
+                break;
+            }
+
+            let if_name = unsafe { std::ffi::CStr::from_ptr(if_entry.if_name) };
+
+            let if_name_str = if_name.to_string_lossy();
+            if if_name_str.starts_with("lo")
+                || if_name_str.starts_with("docker")
+                || if_name_str.starts_with("tun")
+                || if_name_str.starts_with("tap")
+            {
+                continue;
+            }
+
+            let device_path = unsafe { self.nm_device_obj_path_new(if_name) };
+            if device_path.is_none() {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to get device path for {}",
+                    if_name_str
+                );
+
+                continue;
+            }
+            let device_path = device_path.unwrap();
+
             let device_proxy = unsafe {
                 Self::create_nm_dbus_proxy(
                     device_path.as_bytes_with_nul(),
@@ -154,20 +239,83 @@ impl NetInfo {
                 )
             };
             if device_proxy.is_null() {
-                return None;
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to create dbus proxy for {}",
+                    if_name_str
+                );
+
+                continue;
             }
 
-            let r#type = Self::device_type(if_name);
-            let adapter_name = unsafe { self.adapter_name(device_proxy) };
-            let hw_address = Self::hw_address(device_proxy);
+            let if_name = if_name_str.to_string();
+
+            let (tx_bytes, rx_bytes) = Self::tx_rx_bytes(&if_name);
+
+            let (descriptor, hw_address, send_bps, recv_bps) =
+                if let Some(cached_device) = self.device_cache.get_mut(&if_name) {
+                    let prev_tx_bytes = if cached_device.tx_bytes > tx_bytes {
+                        tx_bytes
+                    } else {
+                        cached_device.tx_bytes
+                    };
+
+                    let prev_rx_bytes = if cached_device.rx_bytes > rx_bytes {
+                        rx_bytes
+                    } else {
+                        cached_device.rx_bytes
+                    };
+
+                    let elapsed = cached_device.update_timestamp.elapsed().as_secs_f32();
+                    let send_bps = (tx_bytes - prev_tx_bytes) as f32 / elapsed;
+                    let recv_bps = (rx_bytes - prev_rx_bytes) as f32 / elapsed;
+
+                    cached_device.tx_bytes = tx_bytes;
+                    cached_device.rx_bytes = rx_bytes;
+                    cached_device.update_timestamp = std::time::Instant::now();
+
+                    (
+                        cached_device.descriptor.clone(),
+                        cached_device.hw_address.clone(),
+                        send_bps,
+                        recv_bps,
+                    )
+                } else {
+                    let r#type = Self::device_type(&if_name);
+                    let adapter_name = unsafe { self.adapter_name(device_proxy) };
+                    let hw_address = Self::hw_address(device_proxy);
+
+                    self.device_cache.insert(
+                        if_name.clone(),
+                        NetworkDeviceCacheEntry {
+                            descriptor: NetworkDeviceDescriptor {
+                                r#type,
+                                if_name: if_name.clone(),
+                                adapter_name: adapter_name.clone(),
+                            },
+                            hw_address: hw_address.clone(),
+
+                            tx_bytes,
+                            rx_bytes,
+
+                            update_timestamp: std::time::Instant::now(),
+                        },
+                    );
+
+                    (
+                        NetworkDeviceDescriptor {
+                            r#type,
+                            if_name,
+                            adapter_name,
+                        },
+                        hw_address,
+                        0.,
+                        0.,
+                    )
+                };
+
             let ip4_address = unsafe { Self::ip4_address(device_proxy) };
             let ip6_address = unsafe { Self::ip6_address(device_proxy) };
-
-            let descriptor = NetworkDeviceDescriptor {
-                r#type,
-                if_name: if_name.to_owned(),
-                adapter_name,
-            };
 
             let address = NetworkAddress {
                 hw_address,
@@ -175,7 +323,7 @@ impl NetInfo {
                 ip6_address,
             };
 
-            let wireless_info = if r#type == NetDeviceType::Wireless {
+            let wireless_info = if descriptor.r#type == NetDeviceType::Wireless {
                 unsafe { Self::wireless_info(device_proxy) }
             } else {
                 None
@@ -183,17 +331,21 @@ impl NetInfo {
 
             unsafe { g_object_unref(device_proxy as _) };
 
-            Some(NetworkDevice {
+            result.push(NetworkDevice {
                 descriptor,
                 address,
                 wireless_info,
 
-                bytes_sent: 0,
-                bytes_received: 0,
-            })
-        } else {
-            None
+                send_bps,
+                recv_bps,
+            });
         }
+
+        unsafe {
+            if_nameindex::free(if_list);
+        }
+
+        result
     }
 
     fn device_type(device_if: &str) -> NetDeviceType {
@@ -397,7 +549,28 @@ impl NetInfo {
         result
     }
 
-    fn device_name_from_hw_db(&self, udi: &str) -> Option<String> {
+    fn tx_rx_bytes(if_name: &str) -> (u64, u64) {
+        let tx_bytes =
+            std::fs::read_to_string(format!("/sys/class/net/{}/statistics/tx_bytes", if_name));
+        let rx_bytes =
+            std::fs::read_to_string(format!("/sys/class/net/{}/statistics/rx_bytes", if_name));
+
+        let tx_bytes = if let Ok(str) = tx_bytes {
+            str.trim().parse::<u64>().unwrap_or(0)
+        } else {
+            0
+        };
+
+        let rx_bytes = if let Ok(str) = rx_bytes {
+            str.trim().parse::<u64>().unwrap_or(0)
+        } else {
+            0
+        };
+
+        (tx_bytes, rx_bytes)
+    }
+
+    fn device_name_from_hw_db(&mut self, udi: &str) -> Option<String> {
         use gtk::glib::*;
         use std::{fs::*, io::*, path::*};
 
@@ -405,14 +578,10 @@ impl NetInfo {
             return None;
         }
 
-        let device_name_cache = self.device_name_cache.take();
+        let device_name_cache = &mut self.device_name_cache;
         if let Some(device_name) = device_name_cache.get(udi) {
-            let device_name = device_name.clone();
-            self.device_name_cache.set(device_name_cache);
-
             return Some(device_name.clone());
         }
-        self.device_name_cache.set(device_name_cache);
 
         let conn = self.hwdb_conn.as_ref().unwrap();
 
@@ -524,10 +693,8 @@ impl NetInfo {
                             };
 
                             if let Some(model_name) = model_name {
-                                let mut device_name_cache = self.device_name_cache.take();
+                                let device_name_cache = &mut self.device_name_cache;
                                 device_name_cache.insert(udi.to_owned(), model_name.clone());
-                                self.device_name_cache.set(device_name_cache);
-
                                 return Some(model_name);
                             }
                         }
@@ -539,7 +706,10 @@ impl NetInfo {
         None
     }
 
-    unsafe fn adapter_name(&self, dbus_proxy: *mut gtk::gio::ffi::GDBusProxy) -> Option<String> {
+    unsafe fn adapter_name(
+        &mut self,
+        dbus_proxy: *mut gtk::gio::ffi::GDBusProxy,
+    ) -> Option<String> {
         extern "C" {
             fn strerror(error: i32) -> *const i8;
         }
@@ -596,7 +766,7 @@ impl NetInfo {
         interface: &[u8],
     ) -> *mut gtk::gio::ffi::GDBusProxy {
         use gtk::gio::ffi::*;
-        use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();
@@ -632,69 +802,68 @@ impl NetInfo {
         proxy
     }
 
-    unsafe fn nm_device_obj_path_new(&self, device_if: &str) -> Option<std::ffi::CString> {
+    unsafe fn nm_device_obj_path_new(
+        &self,
+        device_if: &std::ffi::CStr,
+    ) -> Option<std::ffi::CString> {
         use gtk::gio::ffi::*;
         use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
-        use std::ffi::{CStr, CString};
+        use std::ffi::CStr;
 
-        if let Ok(device_name) = CString::new(device_if) {
-            let mut error: *mut GError = std::ptr::null_mut();
+        let mut error: *mut GError = std::ptr::null_mut();
 
-            let device_path_variant = unsafe {
-                g_dbus_proxy_call_sync(
-                    self.nm_proxy,
-                    b"GetDeviceByIpIface\0".as_ptr() as _,
-                    g_variant_new(b"(s)\0".as_ptr() as _, device_name.as_c_str().as_ptr()),
-                    G_DBUS_CALL_FLAGS_NONE,
-                    -1,
-                    std::ptr::null_mut(),
-                    &mut error,
-                )
-            };
-            if device_path_variant.is_null() {
-                if !error.is_null() {
-                    let error: Error = unsafe { from_glib_full(error) };
-                    g_critical!(
-                        "MissionCenter::NetInfo",
-                        "Failed to get device info for {:?}: {}",
-                        device_if,
-                        error.message()
-                    );
-                } else {
-                    g_critical!(
-                        "MissionCenter::NetInfo",
-                        "Failed to get device info for {:?}: Unknown error",
-                        device_if,
-                    );
-                }
-
-                return None;
-            }
-
-            let mut device_path: *mut i8 = std::ptr::null_mut();
-            unsafe {
-                g_variant_get(
-                    device_path_variant,
-                    b"(&o)\0".as_ptr() as _,
-                    &mut device_path,
-                )
-            };
-            if device_path.is_null() {
+        let device_path_variant = unsafe {
+            g_dbus_proxy_call_sync(
+                self.nm_proxy,
+                b"GetDeviceByIpIface\0".as_ptr() as _,
+                g_variant_new(b"(s)\0".as_ptr() as _, device_if.as_ptr()),
+                G_DBUS_CALL_FLAGS_NONE,
+                -1,
+                std::ptr::null_mut(),
+                &mut error,
+            )
+        };
+        if device_path_variant.is_null() {
+            if !error.is_null() {
+                let error: Error = unsafe { from_glib_full(error) };
                 g_critical!(
                     "MissionCenter::NetInfo",
-                    "Failed to get device info for {:?}: Variant error",
+                    "Failed to get device info for {:?}: {}",
+                    device_if,
+                    error.message()
+                );
+            } else {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to get device info for {:?}: Unknown error",
                     device_if,
                 );
-                return None;
             }
 
-            let device_path = CStr::from_ptr(device_path).to_owned();
-            let _: Variant = from_glib_full(device_path_variant);
-
-            Some(device_path)
-        } else {
-            None
+            return None;
         }
+
+        let mut device_path: *mut i8 = std::ptr::null_mut();
+        unsafe {
+            g_variant_get(
+                device_path_variant,
+                b"(&o)\0".as_ptr() as _,
+                &mut device_path,
+            )
+        };
+        if device_path.is_null() {
+            g_critical!(
+                "MissionCenter::NetInfo",
+                "Failed to get device info for {:?}: Variant error",
+                device_if,
+            );
+            return None;
+        }
+
+        let device_path = CStr::from_ptr(device_path).to_owned();
+        let _: Variant = from_glib_full(device_path_variant);
+
+        Some(device_path)
     }
 
     unsafe fn nm_device_property(
@@ -702,7 +871,7 @@ impl NetInfo {
         property: &[u8],
     ) -> Option<gtk::glib::Variant> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();

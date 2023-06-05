@@ -5,7 +5,7 @@ source_url = https://github.com/Syllo/nvtop/archive/04721e38f9b87bc640f68332d49e
 source_filename = 04721e38f9b87bc640f68332d49e6473ede45e9f.tar.gz
 source_hash = 4fd564c47d64584892cfeed875c327d3b6d7b54a5f86e9ed9e9ed5a00bb6540a
 
-diff_files = nvtop-meson.patch, nvtop-amdgpu-h.patch, nvtop-amdgpu_drm-h.patch
+diff_files = nvtop-meson.patch, nvtop-amdgpu-h.patch, nvtop-amdgpu_drm-h.patch, nvtop-constructors.patch
 
 [provide]
 dependency_names = nvtop

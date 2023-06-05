@@ -70,7 +70,7 @@ template MissionCenterWindow : Adw.ApplicationWindow {
           name: "performance";
           icon-name: "speedometer-symbolic";
           title: "Performance";
-          child: .PerformancePage {
+          child: .PerformancePage performance_page {
             summary-mode: bind-property header_bar.visible bidirectional inverted;
           };
         }

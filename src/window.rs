@@ -26,11 +26,21 @@ mod imp {
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
-    pub struct MissionCenterWindow {}
+    pub struct MissionCenterWindow {
+        #[template_child]
+        pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
+
+        #[allow(dead_code)]
+        pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
+    }
 
     impl Default for MissionCenterWindow {
         fn default() -> Self {
-            Self {}
+            Self {
+                performance_page: TemplateChild::default(),
+
+                sys_info: std::cell::Cell::new(None),
+            }
         }
     }
 
@@ -71,6 +81,8 @@ glib::wrapper! {
 
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
+        use gtk::glib::*;
+
         let this: MissionCenterWindow = unsafe {
             glib::Object::new_internal(
                 MissionCenterWindow::static_type(),
@@ -79,6 +91,26 @@ impl MissionCenterWindow {
             .downcast()
             .unwrap()
         };
+
+        let (sys_info, initial_readings) = crate::sys_info_v2::SysInfoV2::new();
+        this.imp().sys_info.set(Some(sys_info));
+
+        let ok = this.imp().performance_page.set_up_pages(&initial_readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for performance page"
+            );
+        }
+
         this
+    }
+
+    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        let mut result = true;
+
+        result &= self.imp().performance_page.update_readings(readings);
+
+        result
     }
 }
