@@ -63,8 +63,8 @@
       "sources": [
         {
           "type": "archive",
-          "url": "https://download.savannah.gnu.org/releases/dmidecode/dmidecode-3.5.tar.xz",
-          "sha256": "79d76735ee8e25196e2a722964cf9683f5a09581503537884b256b01389cc073"
+          "url": "https://git.savannah.nongnu.org/cgit/dmidecode.git/snapshot/dmidecode-3-5.tar.gz",
+          "sha256": "8b1465a1afa71f9ffb0206ba5ffc435c46c0281d089552578f600879728a1b23"
         }
       ]
     },
