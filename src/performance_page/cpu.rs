@@ -177,13 +177,6 @@ mod imp {
                 this.imp().graph_widgets.set(graph_widgets);
             }));
             actions.add_action(&all_processors_action);
-
-            let action =
-                gio::SimpleAction::new_stateful("kernel-times", None, glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
-            }));
-            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageCpu) {

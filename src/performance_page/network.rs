@@ -160,9 +160,18 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            let action = gio::SimpleAction::new("network-details", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            let action = gio::SimpleAction::new("network-settings", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                use crate::sys_info_v2::NetDeviceType;
+                unsafe {
+                    PerformancePageNetwork::gnome_settings_activate_action(
+                        if this.connection_type() == NetDeviceType::Wireless as u8 {
+                            "('launch-panel', [<('wifi', [<''>])>], {})"
+                        } else {
+                            "('launch-panel', [<('network', [<''>])>], {})"
+                        }
+                    )
+                }
             }));
             actions.add_action(&action);
         }
@@ -185,6 +194,88 @@ mod imp {
                 }),
             );
             this.add_controller(right_click_controller);
+        }
+
+        unsafe fn gnome_settings_activate_action(variant_str: &str) {
+            use gtk::gio::ffi::*;
+            use gtk::glib::{ffi::*, gobject_ffi::*, translate::from_glib_full, *};
+
+            let mut error: *mut GError = std::ptr::null_mut();
+
+            let gnome_settings_proxy = g_dbus_proxy_new_for_bus_sync(
+                G_BUS_TYPE_SESSION,
+                G_DBUS_PROXY_FLAGS_NONE,
+                std::ptr::null_mut(),
+                b"org.gnome.Settings\0".as_ptr() as _,
+                b"/org/gnome/Settings\0".as_ptr() as _,
+                b"org.freedesktop.Application\0".as_ptr() as _,
+                std::ptr::null_mut(),
+                &mut error,
+            );
+
+            if gnome_settings_proxy.is_null() {
+                if !error.is_null() {
+                    let error: Error = from_glib_full(error);
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to open settings panel, failed connect to 'org.gnome.Settings': {}",
+                        error.message()
+                    );
+                } else {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to open settings panel, failed connect to 'org.gnome.Settings': Unknown error",
+                    );
+                }
+                return;
+            }
+
+            let method_params =
+                Variant::parse(Some(VariantTy::new("(sava{sv})").unwrap()), variant_str);
+            if method_params.is_err() {
+                g_object_unref(gnome_settings_proxy as _);
+
+                g_critical!(
+                    "MissionCenter",
+                    "Failed to open settings panel, failed set-up D-Bus call parameters: {}",
+                    method_params.err().unwrap().message()
+                );
+
+                return;
+            }
+            let method_params = method_params.unwrap();
+
+            let variant = g_dbus_proxy_call_sync(
+                gnome_settings_proxy,
+                b"org.freedesktop.Application.ActivateAction\0".as_ptr() as _,
+                method_params.as_ptr(),
+                G_DBUS_CALL_FLAGS_NONE,
+                -1,
+                std::ptr::null_mut(),
+                &mut error,
+            );
+            if variant.is_null() {
+                g_object_unref(gnome_settings_proxy as _);
+
+                if !error.is_null() {
+                    let error: Error = from_glib_full(error);
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to open settings panel, failed to call 'org.freedesktop.Application.ActivateAction': {}",
+                        error.message()
+                    );
+                } else {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to open settings panel, failed to call 'org.freedesktop.Application.ActivateAction': Unknown error",
+                    );
+                }
+
+                return;
+            }
+
+            g_variant_unref(variant);
+            g_object_unref(gnome_settings_proxy as _);
         }
     }
 

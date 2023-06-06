@@ -133,13 +133,30 @@ impl MissionCenterApplication {
         let window = self.active_window().unwrap();
         let about = adw::AboutWindow::builder()
             .transient_for(&window)
-            .application_name("missioncenter")
+            .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Romeo Calota")
+            .developers(["Romeo Calota"])
             .version(VERSION)
-            .developers(vec!["Romeo Calota"])
-            .copyright("© 2023 Romeo Calota")
+            .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
+            .copyright("© 2023 Mission Center Developers")
+            .license_type(gtk::License::Gpl30)
+            .website("https://missioncenter.io")
             .build();
+
+        about.add_credit_section(
+            Some("Standing on the shoulders of giants"),
+            &[
+                "GTK https://www.gtk.org/",
+                "GNOME https://www.gnome.org/",
+                "Libadwaita https://gitlab.gnome.org/GNOME/libadwaita",
+                "Pathfinder 3 https://github.com/servo/pathfinder",
+                "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
+                "NVTOP https://github.com/Syllo/nvtop",
+                "serde https://serde.rs/",
+                "And many more... Thank you all!",
+            ],
+        );
 
         about.present();
     }
