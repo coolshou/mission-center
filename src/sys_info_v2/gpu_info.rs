@@ -476,25 +476,28 @@ impl VulkanInfo {
 pub struct GPUInfo {
     vulkan_info: Option<VulkanInfo>,
     static_info_cache: Vec<StaticInfo>,
+
+    gpu_list: Box<nvtop::ListHead>,
 }
 
 unsafe impl Send for GPUInfo {}
 
+impl Drop for GPUInfo {
+    fn drop(&mut self) {
+        unsafe {
+            nvtop::gpuinfo_shutdown_info_extraction(self.gpu_list.as_mut());
+        }
+    }
+}
+
 impl GPUInfo {
     pub fn new() -> Option<Self> {
+        use gtk::glib::*;
+
         unsafe {
             nvtop::init_extract_gpuinfo_amdgpu();
             nvtop::init_extract_gpuinfo_nvidia();
         }
-
-        Some(Self {
-            vulkan_info: unsafe { VulkanInfo::new() },
-            static_info_cache: vec![],
-        })
-    }
-
-    pub fn load_gpus(&mut self) -> Vec<GPU> {
-        use gtk::glib::*;
 
         let mut gpu_list = Box::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
@@ -504,32 +507,44 @@ impl GPUInfo {
         gpu_list.prev = gpu_list.as_mut();
 
         let mut gpu_count: u32 = 0;
-        unsafe {
-            let result = nvtop::gpuinfo_init_info_extraction(&mut gpu_count, gpu_list.as_mut());
-            if result == 0 {
-                g_critical!(
-                    "MissionCenter::GPUInfo",
-                    "Unable to initialize GPU info extraction"
-                );
-                return vec![];
-            }
-
-            let result = nvtop::gpuinfo_populate_static_infos(gpu_list.as_mut());
-            if result == 0 {
-                nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut());
-
-                g_critical!(
-                    "MissionCenter::GPUInfo",
-                    "Unable to populate static GPU info"
-                );
-                return vec![];
-            }
+        let result =
+            unsafe { nvtop::gpuinfo_init_info_extraction(&mut gpu_count, gpu_list.as_mut()) };
+        if result == 0 {
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Unable to initialize GPU info extraction"
+            );
+            return None;
         }
 
-        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list.as_mut()) };
+        let result = unsafe { nvtop::gpuinfo_populate_static_infos(gpu_list.as_mut()) };
         if result == 0 {
             unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
 
+            g_critical!(
+                "MissionCenter::GPUInfo",
+                "Unable to populate static GPU info"
+            );
+            return None;
+        }
+
+        let mut static_info_cache = vec![];
+        static_info_cache.reserve(gpu_count as usize);
+
+        Some(Self {
+            vulkan_info: unsafe { VulkanInfo::new() },
+            static_info_cache,
+            gpu_list,
+        })
+    }
+
+    pub fn load_gpus(&mut self) -> Vec<GPU> {
+        use gtk::glib::*;
+
+        let gpu_list = &mut self.gpu_list;
+
+        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list.as_mut()) };
+        if result == 0 {
             g_critical!(
                 "MissionCenter::GPUInfo",
                 "Unable to refresh dynamic GPU info"
@@ -539,8 +554,6 @@ impl GPUInfo {
 
         let result = unsafe { nvtop::gpuinfo_refresh_processes(gpu_list.as_mut()) };
         if result == 0 {
-            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
-
             g_critical!("MissionCenter::GPUInfo", "Unable to refresh GPU processes");
             return vec![];
         }
@@ -548,7 +561,6 @@ impl GPUInfo {
         let result =
             unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(gpu_list.as_mut()) };
         if result == 0 {
-            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list.as_mut()) };
             g_critical!(
                 "MissionCenter::GPUInfo",
                 "Unable to fix dynamic GPU info from process info"
@@ -563,7 +575,7 @@ impl GPUInfo {
         };
 
         let mut result = vec![];
-        result.reserve(gpu_count as usize);
+        result.reserve(self.static_info_cache.capacity());
 
         let mut device: *mut nvtop::ListHead = gpu_list.next;
         while device != gpu_list.as_mut() {
@@ -657,22 +669,26 @@ impl GPUInfo {
                     .to_string_lossy()
                     .to_string();
 
-            result.push(GPU {
-                static_info: StaticInfo {
-                    id: device_unique_id,
-                    device_name,
-                    pci_slot_name: pdev.to_string(),
-                    dri_path,
-                    vendor_id,
-                    device_id,
+            let static_info = StaticInfo {
+                id: device_unique_id,
+                device_name,
+                pci_slot_name: pdev.to_string(),
+                dri_path,
+                vendor_id,
+                device_id,
 
-                    opengl_version,
-                    vulkan_version,
-                    pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
-                    pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
-                },
+                opengl_version,
+                vulkan_version,
+                pcie_gen: Some(dev.dynamic_info.pcie_link_gen as u8),
+                pcie_lanes: Some(dev.dynamic_info.pcie_link_width as u8),
+            };
+
+            result.push(GPU {
+                static_info: static_info.clone(),
                 dynamic_info: gpu_dynamic_info,
             });
+
+            self.static_info_cache.push(static_info);
 
             device = unsafe { (*device).next };
         }

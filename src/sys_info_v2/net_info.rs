@@ -807,7 +807,7 @@ impl NetInfo {
         device_if: &std::ffi::CStr,
     ) -> Option<std::ffi::CString> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{ffi::*, translate::from_glib_full, Error, *};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();

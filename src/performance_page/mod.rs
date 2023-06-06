@@ -143,21 +143,34 @@ mod imp {
             let action = gio::SimpleAction::new_stateful("disk", None, glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
-                pages.iter().for_each(|page| {
-                    if let Pages::Disk(disk) = page {
-                        if let Some((summary_graph, _)) = disk.values().next() {
-                            if let Some(row) = summary_graph.parent() {
-                                this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                                let prev_action = this.imp().current_view_action.replace(action.clone());
-                                prev_action.set_state(glib::Variant::from(false));
-                                action.set_state(glib::Variant::from(true));
-
-                                return;
-                            }
+                for page in &pages {
+                    let disk_pages = match page {
+                        Pages::Disk(disk_pages) => {
+                            disk_pages
                         }
+                        _ => continue,
+                    };
+
+                    let disk_page = disk_pages.values().next();
+                    if disk_page.is_none() {
+                        continue;
                     }
-                });
+                    let disk_page = disk_page.unwrap();
+
+                    let row = disk_page.0.parent();
+                    if row.is_none() {
+                        continue;
+                    }
+                    let row = row.unwrap();
+
+                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                    let prev_action = this.imp().current_view_action.replace(action.clone());
+                    prev_action.set_state(glib::Variant::from(false));
+                    action.set_state(glib::Variant::from(true));
+
+                    break;
+                }
                 this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
@@ -167,33 +180,71 @@ mod imp {
                 gio::SimpleAction::new_stateful("network", None, glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
-                pages.iter().for_each(|page| {
-                    if let Pages::Network(network) = page {
-                        if let Some((summary_graph, _)) = network.values().next() {
-                            if let Some(row) = summary_graph.parent() {
-                                this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                                let prev_action = this.imp().current_view_action.replace(action.clone());
-                                prev_action.set_state(glib::Variant::from(false));
-                                action.set_state(glib::Variant::from(true));
-
-                                return;
-                            }
+                for page in &pages {
+                    let network_pages= match page {
+                        Pages::Network(network_pages) => {
+                            network_pages
                         }
+                        _ => continue,
+                    };
+
+                    let network_page = network_pages.values().next();
+                    if network_page.is_none() {
+                        continue;
                     }
-                });
+                    let network_page = network_page.unwrap();
+
+                    let row = network_page.0.parent();
+                    if row.is_none() {
+                        continue;
+                    }
+                    let row = row.unwrap();
+
+                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                    let prev_action = this.imp().current_view_action.replace(action.clone());
+                    prev_action.set_state(glib::Variant::from(false));
+                    action.set_state(glib::Variant::from(true));
+
+                    break;
+                }
                 this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
             view_actions.insert("network".to_string(), action);
 
             let action = gio::SimpleAction::new_stateful("gpu", None, glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
+            action.connect_activate(clone!(@weak this => move |action, _| {
+                let pages = this.imp().pages.take();
+                for page in &pages {
+                    let gpu_pages= match page {
+                        Pages::Gpu(gpu_pages) => {
+                            gpu_pages
+                        }
+                        _ => continue,
+                    };
 
-                let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(glib::Variant::from(false));
-                action.set_state(glib::Variant::from(true));
+                    let gpu_page = gpu_pages.values().next();
+                    if gpu_page.is_none() {
+                        continue;
+                    }
+                    let gpu_page = gpu_page.unwrap();
+
+                    let row = gpu_page.0.parent();
+                    if row.is_none() {
+                        continue;
+                    }
+                    let row = row.unwrap();
+
+                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                    let prev_action = this.imp().current_view_action.replace(action.clone());
+                    prev_action.set_state(glib::Variant::from(false));
+                    action.set_state(glib::Variant::from(true));
+
+                    break;
+                }
+                this.imp().pages.set(pages);
             }));
             actions.add_action(&action);
             view_actions.insert("gpu".to_string(), action);
@@ -446,13 +497,15 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
+            use gtk::glib::*;
+
             const BASE_COLOR: [u8; 3] = [0x89, 0x99, 0xDA];
 
             let mut gpus = HashMap::new();
 
             for (i, gpu) in readings.gpus.iter().enumerate() {
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(&gpu.static_info.device_name);
+                summary.set_widget_name(&gpu.static_info.id);
 
                 summary.set_heading(gettext!("GPU {}", i));
                 summary.set_info1(gpu.static_info.device_name.clone());
@@ -483,23 +536,22 @@ mod imp {
                     .build();
 
                 self.sidebar.append(&summary);
-                self.page_stack
-                    .add_named(&page, Some(&gpu.static_info.device_name));
+                self.page_stack.add_named(&page, Some(&gpu.static_info.id));
 
-                // let mut actions = self.context_menu_view_actions.take();
-                // match actions.get("gpu") {
-                //     None => {
-                //         g_critical!(
-                //             "MissionCenter::PerformancePage",
-                //             "Failed to wire up gpu action for {}, logic bug?",
-                //             &gpu.device_name
-                //         );
-                //     }
-                //     Some(action) => {
-                //         actions.insert(gpu.device_name.clone(), action.clone());
-                //     }
-                // }
-                // self.context_menu_view_actions.set(actions);
+                let mut actions = self.context_menu_view_actions.take();
+                match actions.get("gpu") {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to wire up GPU action for {}, logic bug?",
+                            &gpu.static_info.device_name
+                        );
+                    }
+                    Some(action) => {
+                        actions.insert(gpu.static_info.id.clone(), action.clone());
+                    }
+                }
+                self.context_menu_view_actions.set(actions);
 
                 gpus.insert(gpu.static_info.device_name.clone(), (summary, page));
             }
@@ -681,9 +733,9 @@ mod imp {
 
                         let actions = imp.context_menu_view_actions.take();
                         if let Some(new_action) = actions.get(page_name) {
-                            new_action.set_state(glib::Variant::from(true));
                             let prev_action = imp.current_view_action.replace(new_action.clone());
                             prev_action.set_state(glib::Variant::from(false));
+                            new_action.set_state(glib::Variant::from(true));
                         }
                         imp.context_menu_view_actions.set(actions);
 
