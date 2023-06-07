@@ -61,10 +61,6 @@ mod imp {
     }
 
     impl ApplicationImpl for MissionCenterApplication {
-        // We connect to the activate callback to create a window when the application
-        // has been launched. Additionally, this callback notifies us when the user
-        // tries to launch a "second instance" of the application. When they try
-        // to do that, we'll just present any existing window.
         fn activate(&self) {
             use gtk::glib::*;
 
@@ -112,7 +108,6 @@ mod imp {
                 window.upcast()
             };
 
-            // Ask the window manager/compositor to present the window
             window.present();
         }
     }

@@ -253,12 +253,6 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("gpu".to_string(), action);
 
-            let action = gio::SimpleAction::new("copy", None);
-            action.connect_activate(clone!(@weak this => move |action, parameter| {
-                dbg!(action, parameter);
-            }));
-            actions.add_action(&action);
-
             this.imp().context_menu_view_actions.set(view_actions);
         }
 
@@ -531,7 +525,7 @@ mod imp {
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                page.set_static_information(gpu);
+                page.set_static_information(i, gpu);
 
                 self.obj()
                     .as_ref()

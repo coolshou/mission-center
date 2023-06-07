@@ -221,6 +221,13 @@ mod imp {
                 this.imp().graph_widgets.set(graph_widgets);
             }));
             actions.add_action(&all_processors_action);
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let clipboard = this.clipboard();
+                clipboard.set_text(this.imp().data_summary().as_str());
+            }));
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageCpu) {
@@ -386,6 +393,45 @@ mod imp {
             }
 
             true
+        }
+
+        fn data_summary(&self) -> String {
+            format!(
+                r#"CPU
+
+    {}
+
+    Base speed:         {}
+    Sockets:            {}
+    Virtual processors: {}
+    Virtualization:     {}
+    Virtual machine:    {}
+    L1 cache:           {}
+    L2 cache:           {}
+    L3 cache:           {}
+
+    Utilization: {}
+    Speed:       {}
+    Processes:   {}
+    Threads:     {}
+    Handles:     {}
+    Up time:     {}"#,
+                self.cpu_name.label(),
+                self.base_speed.label(),
+                self.sockets.label(),
+                self.virt_proc.label(),
+                self.virtualization.label(),
+                self.virt_machine.label(),
+                self.l1_cache.label(),
+                self.l2_cache.label(),
+                self.l3_cache.label(),
+                self.utilization.label(),
+                self.speed.label(),
+                self.processes.label(),
+                self.threads.label(),
+                self.handles.label(),
+                self.uptime.label()
+            )
         }
 
         fn populate_usage_graphs(&self, cpu_count: usize) {

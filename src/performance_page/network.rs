@@ -76,10 +76,13 @@ mod imp {
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
+
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
         pub interface_name: Cell<String>,
         #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
         pub connection_type: Cell<crate::sys_info_v2::NetDeviceType>,
+
+        signal_strength_percent: Cell<Option<u8>>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -109,6 +112,8 @@ mod imp {
 
                 interface_name: Cell::new(String::new()),
                 connection_type: Cell::new(crate::sys_info_v2::NetDeviceType::Other),
+
+                signal_strength_percent: Cell::new(None),
             }
         }
     }
@@ -172,6 +177,13 @@ mod imp {
                         }
                     )
                 }
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let clipboard = this.clipboard();
+                clipboard.set_text(this.imp().data_summary().as_str());
             }));
             actions.add_action(&action);
         }
@@ -358,6 +370,8 @@ mod imp {
                         .as_ref()
                         .map_or(gettext("Unknown"), |ssid| ssid.clone()),
                 );
+                this.signal_strength_percent
+                    .set(wireless_info.signal_strength_percent.clone());
                 this.signal_strength.set_icon_name(Some(
                     if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
                         if *percentage <= 20_u8 {
@@ -463,6 +477,49 @@ mod imp {
                 );
 
             true
+        }
+
+        fn data_summary(&self) -> String {
+            format!(
+                r#"{}
+
+    {}
+
+    Interface name:   {}
+    Connection type:  {}{}
+    Hardware address: {}
+    IPv4 address:     {}
+    IPv6 address:     {}
+
+    Send:            {}
+    Receive:         {}"#,
+                self.title_connection_type.label(),
+                self.device_name.label(),
+                self.interface_name_label.label(),
+                self.connection_type_label.label(),
+                if self.connection_type.get() == crate::sys_info_v2::NetDeviceType::Wireless {
+                    format!(
+                        r#"
+    SSID:             {}
+    Signal strength:  {}
+    Max bitrate:      {}
+    Frequency:        {}"#,
+                        self.ssid.label(),
+                        self.signal_strength_percent
+                            .get()
+                            .map_or(gettext("Unknown"), |percent| format!("{}%", percent)),
+                        self.max_bitrate.label(),
+                        self.frequency.label(),
+                    )
+                } else {
+                    "".to_owned()
+                },
+                self.hw_address.label(),
+                self.ipv4_address.label(),
+                self.ipv6_address.label(),
+                self.speed_send.label(),
+                self.speed_recv.label(),
+            )
         }
     }
 

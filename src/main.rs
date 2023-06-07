@@ -63,45 +63,33 @@ pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str) {
 }
 
 fn main() {
-    // Set up gettext translations
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8")
         .expect("Unable to set the text domain encoding");
     textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
 
-    // Find the GSETTINGS_SCHEMA_DIR environment variable
     let gresource_dir = if let Ok(gresource_dir) = std::env::var("MC_RESOURCE_DIR") {
         gresource_dir
     } else {
         PKGDATADIR.to_owned()
     };
 
-    // Load resources
     let resources = gio::Resource::load(gresource_dir + "/missioncenter.gresource")
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
-    // Initialize GL
     let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
     gl::load_with(move |symbol| {
         let symbol_name = format!("{}\0", symbol);
         unsafe { lib.sym(&symbol_name).unwrap() }
     });
 
-    // Create a new GtkApplication. The application manages our main loop,
-    // application windows, integration with the window manager/compositor, and
-    // desktop features such as file opening and single-instance applications.
     let app = MissionCenterApplication::new(
         "io.missioncenter.MissionCenter",
         &gio::ApplicationFlags::empty(),
     );
     gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
-    // Run the application. This function will block until the application
-    // exits. Upon return, we have our exit code to return to the shell. (This
-    // is the code you see when you do `echo $?` after running a command in a
-    // terminal.
     let exit_code = app.run();
-
     std::process::exit(exit_code.into());
 }

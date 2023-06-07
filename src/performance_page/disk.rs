@@ -124,6 +124,13 @@ mod imp {
         fn configure_actions(this: &super::PerformancePageDisk) {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let clipboard = this.clipboard();
+                clipboard.set_text(this.imp().data_summary().as_str());
+            }));
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageDisk) {
@@ -256,6 +263,34 @@ mod imp {
                 .set_text(&format!("{:.2} {}{}B/s", write_speed.0, write_speed.1, i,));
 
             true
+        }
+
+        fn data_summary(&self) -> String {
+            format!(
+                r#"{}
+
+    {}
+
+    Capacity:    {}
+    Formatted:   {}
+    System disk: {}
+    Type:        {}
+
+    Read speed:            {}
+    Write speed:           {}
+    Active time:           {}
+    Average response time: {}"#,
+                self.disk_id.label(),
+                self.model.label(),
+                self.capacity.label(),
+                self.formatted.label(),
+                self.system_disk.label(),
+                self.disk_type.label(),
+                self.read_speed.label(),
+                self.write_speed.label(),
+                self.active_time.label(),
+                self.avg_response_time.label(),
+            )
         }
     }
 

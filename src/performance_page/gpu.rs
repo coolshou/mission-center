@@ -36,6 +36,8 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/gpu.ui")]
     pub struct PerformancePageGpu {
         #[template_child]
+        pub gpu_id: TemplateChild<gtk::Label>,
+        #[template_child]
         pub device_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub overall_percent: TemplateChild<gtk::Label>,
@@ -87,6 +89,7 @@ mod imp {
     impl Default for PerformancePageGpu {
         fn default() -> Self {
             Self {
+                gpu_id: Default::default(),
                 device_name: Default::default(),
                 overall_percent: Default::default(),
                 usage_graph_overall: Default::default(),
@@ -136,6 +139,13 @@ mod imp {
         fn configure_actions(this: &super::PerformancePageGpu) {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let clipboard = this.clipboard();
+                clipboard.set_text(this.imp().data_summary().as_str());
+            }));
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageGpu) {
@@ -162,6 +172,7 @@ mod imp {
     impl PerformancePageGpu {
         pub fn set_static_information(
             this: &super::PerformancePageGpu,
+            index: usize,
             gpu: &crate::sys_info_v2::GPU,
         ) -> bool {
             use gettextrs::gettext;
@@ -203,6 +214,8 @@ mod imp {
                 }));
 
             let this = this.imp();
+
+            this.gpu_id.set_text(&format!("GPU {}", index));
 
             this.device_name.set_text(&gpu.static_info.device_name);
 
@@ -330,6 +343,38 @@ mod imp {
 
             true
         }
+
+        fn data_summary(&self) -> String {
+            format!(
+                r#"{}
+
+    {}
+
+    OpenGL version:    {}
+    Vulkan version:    {}
+    PCI Express speed: {}
+    PCI bus address:   {}
+
+    Utilization:  {}
+    Memory usage: {}
+    Clock speed:  {}
+    Memory speed: {}
+    Power draw:   {}
+    Temperature:  {}"#,
+                self.gpu_id.label(),
+                self.device_name.label(),
+                self.opengl_version.label(),
+                self.vulkan_version.label(),
+                self.pcie_speed.label(),
+                self.pci_addr.label(),
+                self.overall_percent.label(),
+                self.memory_usage.label(),
+                self.clock_speed.label(),
+                self.memory_speed.label(),
+                self.power_draw.label(),
+                self.temperature.label(),
+            )
+        }
     }
 
     #[glib::object_subclass]
@@ -393,8 +438,8 @@ impl PerformancePageGpu {
         this
     }
 
-    pub fn set_static_information(&self, gpu: &crate::sys_info_v2::GPU) -> bool {
-        imp::PerformancePageGpu::set_static_information(self, gpu)
+    pub fn set_static_information(&self, index: usize, gpu: &crate::sys_info_v2::GPU) -> bool {
+        imp::PerformancePageGpu::set_static_information(self, index, gpu)
     }
 
     pub fn update_readings(&self, gpu: &crate::sys_info_v2::GPU) -> bool {

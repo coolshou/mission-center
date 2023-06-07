@@ -109,6 +109,13 @@ mod imp {
         fn configure_actions(this: &super::PerformancePageMemory) {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
+
+            let action = gio::SimpleAction::new("copy", None);
+            action.connect_activate(clone!(@weak this => move |_, _| {
+                let clipboard = this.clipboard();
+                clipboard.set_text(this.imp().data_summary().as_str());
+            }));
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageMemory) {
@@ -205,6 +212,37 @@ mod imp {
             }
 
             true
+        }
+
+        fn data_summary(&self) -> String {
+            format!(
+                r#"Memory
+
+    {}
+
+    Speed:       {}
+    Slots used:  {}
+    Form factor: {}
+    Type:        {}
+
+    In use:         {}
+    Available:      {}
+    Committed:      {}
+    Cached:         {}
+    Swap available: {}
+    Swap used:      {}"#,
+                self.total_ram.label(),
+                self.speed.label(),
+                self.slots_used.label(),
+                self.form_factor.label(),
+                self.ram_type.label(),
+                self.in_use.label(),
+                self.available.label(),
+                self.committed.label(),
+                self.cached.label(),
+                self.swap_available.label(),
+                self.swap_used.label(),
+            )
         }
     }
 
