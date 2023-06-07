@@ -51,6 +51,10 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
+
+            self.settings
+                .set(Some(gio::Settings::new("io.missioncenter.MissionCenter")));
+
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
         }
@@ -70,6 +74,8 @@ mod imp {
                 window
             } else {
                 let settings = self.settings.take();
+                self.settings.set(settings.clone());
+
                 let window = crate::MissionCenterWindow::new(&*application, settings.as_ref());
                 window.connect_default_height_notify(clone!(@weak self as this => move |window| {
                     let settings = this.settings.take();
@@ -103,7 +109,6 @@ mod imp {
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
-                self.settings.set(Some(settings));
                 window.upcast()
             };
 
@@ -137,10 +142,6 @@ impl MissionCenterApplication {
             .unwrap()
         };
 
-        this.imp()
-            .settings
-            .set(Some(gio::Settings::new(application_id)));
-
         this
     }
 
@@ -168,6 +169,25 @@ impl MissionCenterApplication {
         }
 
         window.unwrap().update_readings(readings)
+    }
+
+    pub fn default_instance() -> Option<Self> {
+        let app = gio::Application::default();
+        if app.is_none() {
+            g_critical!(
+                "MissionCenter",
+                "Unable to get the default MissionCenterApplication instance"
+            );
+        }
+        let app = app.unwrap();
+        app.downcast_ref::<crate::MissionCenterApplication>()
+            .cloned()
+    }
+
+    pub fn settings(&self) -> Option<gio::Settings> {
+        let imp = self.imp();
+        let settings = unsafe { &*self.imp().settings.as_ptr() };
+        settings.clone()
     }
 
     fn setup_gactions(&self) {

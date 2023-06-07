@@ -29,6 +29,9 @@ use super::widgets::GraphWidget;
 mod imp {
     use super::*;
 
+    const GRAPH_SELECTION_OVERALL: i32 = 1;
+    const GRAPH_SELECTION_ALL: i32 = 2;
+
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageCpu)]
     #[derive(gtk::CompositeTemplate)]
@@ -81,6 +84,8 @@ mod imp {
         summary_mode: Cell<bool>,
 
         pub graph_widgets: Cell<Vec<GraphWidget>>,
+
+        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PerformancePageCpu {
@@ -111,6 +116,8 @@ mod imp {
                 summary_mode: Cell::new(false),
 
                 graph_widgets: Cell::new(Vec::new()),
+
+                settings: Cell::new(None),
             }
         }
     }
@@ -129,17 +136,36 @@ mod imp {
 
     impl PerformancePageCpu {
         fn configure_actions(this: &super::PerformancePageCpu) {
+            use gtk::glib::*;
+
+            let settings = this.imp().settings.take();
+            let graph_selection = if settings.is_none() {
+                GRAPH_SELECTION_OVERALL
+            } else {
+                let settings = settings.unwrap();
+                let v = settings.int("performance-page-cpu-graph");
+                this.imp().settings.set(Some(settings));
+
+                v
+            };
+
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            // TODO: Read these from GSettings
-            let overall_action =
-                gio::SimpleAction::new_stateful("overall", None, glib::Variant::from(false));
-            let all_processors_action =
-                gio::SimpleAction::new_stateful("all-processors", None, glib::Variant::from(true));
-
+            let overall_action = gio::SimpleAction::new_stateful(
+                "overall",
+                None,
+                glib::Variant::from(graph_selection == GRAPH_SELECTION_OVERALL),
+            );
+            let all_processors_action = gio::SimpleAction::new_stateful(
+                "all-processors",
+                None,
+                glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
+            );
             let apa = all_processors_action.clone();
             overall_action.connect_activate(clone!(@weak this => move |action, _| {
+                use gtk::glib::*;
+
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(true);
@@ -153,6 +179,15 @@ mod imp {
 
                 action.set_state(glib::Variant::from(true));
                 apa.set_state(glib::Variant::from(false));
+
+                let settings = this.imp().settings.take();
+                if settings.is_some() {
+                    let settings = settings.unwrap();
+                    settings.set_int("performance-page-cpu-graph", GRAPH_SELECTION_OVERALL).unwrap_or_else(|_| {
+                        g_critical!("MissionCenter::PerformancePage", "Failed to save selected CPU graph");
+                    });
+                    this.imp().settings.set(Some(settings));
+                }
 
                 this.imp().graph_widgets.set(graph_widgets);
             }));
@@ -173,6 +208,15 @@ mod imp {
 
                 action.set_state(glib::Variant::from(true));
                 ova.set_state(glib::Variant::from(false));
+
+                let settings = this.imp().settings.take();
+                if settings.is_some() {
+                    let settings = settings.unwrap();
+                    settings.set_int("performance-page-cpu-graph", GRAPH_SELECTION_ALL).unwrap_or_else(|_| {
+                        g_critical!("MissionCenter::PerformancePage", "Failed to save selected CPU graph");
+                    });
+                    this.imp().settings.set(Some(settings));
+                }
 
                 this.imp().graph_widgets.set(graph_widgets);
             }));
@@ -349,6 +393,17 @@ mod imp {
 
             let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
+            let settings = self.settings.take();
+            let graph_selection = if settings.is_none() {
+                GRAPH_SELECTION_OVERALL
+            } else {
+                let settings = settings.unwrap();
+                let v = settings.int("performance-page-cpu-graph");
+                self.settings.set(Some(settings));
+
+                v
+            };
+
             // Add one for overall CPU utilization
             let mut graph_widgets = vec![];
 
@@ -357,7 +412,7 @@ mod imp {
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_points(60);
             graph_widgets[0].set_scroll(true);
-            graph_widgets[0].set_visible(false);
+            graph_widgets[0].set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
 
             let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
             graph_widgets[0].connect_resize(move |_, _, _| {
@@ -379,8 +434,10 @@ mod imp {
                 this.imp().graph_widgets.set(graph_widgets);
             });
 
-            self.overall_graph_labels.set_visible(false);
-            self.utilization_label_overall.set_visible(false);
+            self.overall_graph_labels
+                .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
+            self.utilization_label_overall
+                .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
 
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
@@ -415,6 +472,8 @@ mod imp {
                 }
                 graph_widgets[graph_widget_index].set_data_points(60);
                 graph_widgets[graph_widget_index].set_base_color(&base_color);
+                graph_widgets[graph_widget_index]
+                    .set_visible(graph_selection == GRAPH_SELECTION_ALL);
                 self.usage_graphs.attach(
                     &graph_widgets[graph_widget_index],
                     col_idx as i32,
@@ -478,6 +537,10 @@ mod imp {
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePageCpu>().clone();
+
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);

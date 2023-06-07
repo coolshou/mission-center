@@ -231,18 +231,7 @@ impl SysInfoV2 {
                         idle_add_once(move || {
                             use gtk::glib::*;
 
-                            let app = gtk::gio::Application::default();
-                            if app.is_none() {
-                                g_critical!(
-                                    "MissionCenter::SysInfo",
-                                    "Unable to get the default GtkApplication"
-                                );
-                                return;
-                            }
-
-                            let app = app.unwrap();
-                            if let Some(app) = app.downcast_ref::<crate::MissionCenterApplication>()
-                            {
+                            if let Some(app) = crate::MissionCenterApplication::default_instance() {
                                 let now = std::time::Instant::now();
 
                                 if !app.refresh_readings(&readings) {
