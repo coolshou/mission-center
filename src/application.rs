@@ -62,6 +62,8 @@ mod imp {
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
         fn activate(&self) {
+            use gtk::glib::*;
+
             let application = self.obj();
             // Get the current window or create one if necessary
             let window = if let Some(window) = application.active_window() {
@@ -69,7 +71,39 @@ mod imp {
             } else {
                 let settings = self.settings.take();
                 let window = crate::MissionCenterWindow::new(&*application, settings.as_ref());
-                self.settings.set(settings);
+                window.connect_default_height_notify(clone!(@weak self as this => move |window| {
+                    let settings = this.settings.take();
+                    if settings.is_none() {
+                        return;
+                    }
+                    let settings = settings.unwrap();
+                    settings.set_int("window-height", window.default_height()).unwrap_or_else(|err|{
+                        g_critical!("MissionCenter", "Failed to save window height: {}", err);
+                    });
+
+                    this.settings.set(Some(settings));
+                }));
+                window.connect_default_width_notify(clone!(@weak self as this => move|window| {
+                    let settings = this.settings.take();
+                    if settings.is_none() {
+                        return;
+                    }
+                    let settings = settings.unwrap();
+                    settings.set_int("window-width", window.default_width()).unwrap_or_else(|err|{
+                        g_critical!("MissionCenter", "Failed to save window width: {}", err);
+                    });
+
+                    this.settings.set(Some(settings));
+                }));
+
+                if settings.is_none() {
+                    g_critical!("MissionCenter", "Failed to load application settings");
+                }
+                let settings = settings.unwrap();
+                window
+                    .set_default_size(settings.int("window-width"), settings.int("window-height"));
+
+                self.settings.set(Some(settings));
                 window.upcast()
             };
 
@@ -103,12 +137,9 @@ impl MissionCenterApplication {
             .unwrap()
         };
 
-        let settings = gio::Settings::new(application_id);
-        dbg!(settings.int("update-speed"));
-        settings.connect_changed(Some("update-speed"), move |settings, _| {
-            dbg!(settings.int("update-speed"));
-        });
-        this.imp().settings.set(Some(settings));
+        this.imp()
+            .settings
+            .set(Some(gio::Settings::new(application_id)));
 
         this
     }
