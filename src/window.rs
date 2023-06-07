@@ -30,7 +30,6 @@ mod imp {
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
 
-        #[allow(dead_code)]
         pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
     }
 
@@ -80,11 +79,14 @@ glib::wrapper! {
 }
 
 impl MissionCenterWindow {
-    pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: IsA<gtk::Application>>(
+        application: &P,
+        settings: Option<&gio::Settings>,
+    ) -> Self {
         use gtk::glib::*;
 
-        let this: MissionCenterWindow = unsafe {
-            glib::Object::new_internal(
+        let this: Self = unsafe {
+            Object::new_internal(
                 MissionCenterWindow::static_type(),
                 &mut [("application", application.into())],
             )
@@ -93,7 +95,6 @@ impl MissionCenterWindow {
         };
 
         let (sys_info, initial_readings) = crate::sys_info_v2::SysInfoV2::new();
-        this.imp().sys_info.set(Some(sys_info));
 
         let ok = this.imp().performance_page.set_up_pages(&initial_readings);
         if !ok {
@@ -102,6 +103,30 @@ impl MissionCenterWindow {
                 "Failed to set initial readings for performance page"
             );
         }
+
+        if let Some(settings) = settings {
+            sys_info.set_update_speed(settings.int("update-speed").into());
+
+            settings.connect_changed(
+                Some("update-speed"),
+                clone!(@weak this => move |settings, _| {
+                    use crate::sys_info_v2::UpdateSpeed;
+
+                    let update_speed: UpdateSpeed = settings.int("update-speed").into();
+                    let sys_info = this.imp().sys_info.take();
+                    if sys_info.is_none() {
+                        g_critical!("MissionCenter", "SysInfo is not initialized, how is this application still running?");
+                    }
+                    let sys_info = sys_info.unwrap();
+
+                    sys_info.set_update_speed(update_speed);
+
+                    this.imp().sys_info.set(Some(sys_info));
+                }),
+            );
+        }
+
+        this.imp().sys_info.set(Some(sys_info));
 
         this
     }

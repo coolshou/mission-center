@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="missioncenter">
     <schema id="io.missioncenter.MissionCenter" path="/io/missioncenter/MissionCenter/">
+        <key name="window-width" type="i">
+            <default>600</default>
+        </key>
+
+        <key name="window-height" type="i">
+            <default>400</default>
+        </key>
+
+        <key name="update-speed" type="i">
+            <range min="1" max="4"/>
+            <default>3</default>
+            <summary>How fast should the data be refreshed and the UI updated</summary>
+        </key>
+
+        <key name="performance-page-cpu-graph" type="i">
+            <range min="1" max="2"/>
+            <default>1</default>
+            <summary>Which graph is shown on the CPU performance page</summary>
+        </key>
+
+        <key name="performance-selected-page" type="i">
+            <range min="1" max="5"/>
+            <default>1</default>
+            <summary>Which page is shown on application startup, in the performance tab</summary>
+        </key>
     </schema>
 </schemalist>

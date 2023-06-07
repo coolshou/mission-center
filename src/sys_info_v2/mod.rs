@@ -81,11 +81,32 @@ lazy_static! {
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RefreshInterval {
-    VerySlow = 0,
+pub enum UpdateSpeed {
+    VerySlow = 1,
     Slow,
     Normal,
     Fast,
+}
+
+impl From<i32> for UpdateSpeed {
+    fn from(value: i32) -> Self {
+        use gtk::glib::*;
+
+        match value {
+            1 => Self::VerySlow,
+            2 => Self::Slow,
+            3 => Self::Normal,
+            4 => Self::Fast,
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Invalid update speed value: {}, defaulting to Normal",
+                    value
+                );
+                Self::Normal
+            }
+        }
+    }
 }
 
 const REFRESH_INTERVALS: [u16; 4] = [2000, 1500, 1000, 500];
@@ -158,7 +179,7 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let refresh_interval = Arc::new(AtomicU8::new(RefreshInterval::Normal as u8));
+        let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
@@ -276,9 +297,8 @@ impl SysInfoV2 {
         )
     }
 
-    #[allow(dead_code)]
-    pub fn set_refresh_interval(&self, interval: RefreshInterval) {
+    pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
-            .store(interval as u8, std::sync::atomic::Ordering::Release);
+            .store(speed as u8 - 1, std::sync::atomic::Ordering::Release);
     }
 }

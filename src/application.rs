@@ -28,8 +28,17 @@ use crate::config::VERSION;
 mod imp {
     use super::*;
 
-    #[derive(Debug, Default)]
-    pub struct MissionCenterApplication {}
+    pub struct MissionCenterApplication {
+        pub settings: std::cell::Cell<Option<gio::Settings>>,
+    }
+
+    impl Default for MissionCenterApplication {
+        fn default() -> Self {
+            Self {
+                settings: std::cell::Cell::new(None),
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for MissionCenterApplication {
@@ -58,7 +67,9 @@ mod imp {
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = crate::MissionCenterWindow::new(&*application);
+                let settings = self.settings.take();
+                let window = crate::MissionCenterWindow::new(&*application, settings.as_ref());
+                self.settings.set(settings);
                 window.upcast()
             };
 
@@ -80,7 +91,7 @@ glib::wrapper! {
 
 impl MissionCenterApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        unsafe {
+        let this: Self = unsafe {
             glib::Object::new_internal(
                 MissionCenterApplication::static_type(),
                 &mut [
@@ -90,7 +101,16 @@ impl MissionCenterApplication {
             )
             .downcast()
             .unwrap()
-        }
+        };
+
+        let settings = gio::Settings::new(application_id);
+        dbg!(settings.int("update-speed"));
+        settings.connect_changed(Some("update-speed"), move |settings, _| {
+            dbg!(settings.int("update-speed"));
+        });
+        this.imp().settings.set(Some(settings));
+
+        this
     }
 
     pub fn refresh_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
@@ -123,10 +143,25 @@ impl MissionCenterApplication {
         let quit_action = gio::ActionEntry::builder("quit")
             .activate(move |app: &Self, _, _| app.quit())
             .build();
+        let preferences_action = gio::ActionEntry::builder("preferences")
+            .activate(move |app: &Self, _, _| {
+                app.show_preferences();
+            })
+            .build();
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
-        self.add_action_entries([quit_action, about_action]);
+        self.add_action_entries([quit_action, preferences_action, about_action]);
+    }
+
+    fn show_preferences(&self) {
+        let window = self.active_window().unwrap();
+        let settings = self.imp().settings.take();
+
+        let preferences = crate::preferences::PreferencesWindow::new(&window, settings.as_ref());
+        preferences.present();
+
+        self.imp().settings.set(settings);
     }
 
     fn show_about(&self) {
@@ -153,7 +188,8 @@ impl MissionCenterApplication {
                 "Pathfinder 3 https://github.com/servo/pathfinder",
                 "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
                 "NVTOP https://github.com/Syllo/nvtop",
-                "serde https://serde.rs/",
+                "musl libc https://musl.libc.org/",
+                "Dmidecode https://www.nongnu.org/dmidecode/",
                 "And many more... Thank you all!",
             ],
         );

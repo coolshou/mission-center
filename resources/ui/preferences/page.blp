@@ -1,0 +1,33 @@
+using Gtk 4.0;
+using Adw 1;
+
+template PreferencesPage : Adw.PreferencesPage {
+  Adw.PreferencesGroup {
+    title: _("General Settings");
+
+    Adw.ExpanderRow expander {
+      title: _("Update Speed");
+      subtitle: _("How fast should the readings be refreshed");
+
+      $CheckedRow update_very_slow {
+        title: _("Very Slow");
+        subtitle: _("Refresh every 2 seconds");
+      }
+
+      $CheckedRow update_slow {
+        title: _("Slow");
+        subtitle: _("Refresh every second and a half");
+      }
+
+      $CheckedRow update_normal {
+        title: _("Normal");
+        subtitle: _("Refresh every second");
+      }
+
+      $CheckedRow update_fast {
+        title: _("Fast");
+        subtitle: _("Refresh every half second");
+      }
+    }
+  }
+}

@@ -30,6 +30,7 @@ use self::window::MissionCenterWindow;
 
 mod application;
 mod performance_page;
+mod preferences;
 mod sys_info_v2;
 mod window;
 
@@ -69,14 +70,14 @@ fn main() {
     textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
 
     // Find the GSETTINGS_SCHEMA_DIR environment variable
-    let gschema_dir = if let Ok(gschema_dir) = std::env::var("GSETTINGS_SCHEMA_DIR") {
-        gschema_dir
+    let gresource_dir = if let Ok(gresource_dir) = std::env::var("MC_RESOURCE_DIR") {
+        gresource_dir
     } else {
         PKGDATADIR.to_owned()
     };
 
     // Load resources
-    let resources = gio::Resource::load(gschema_dir + "/missioncenter.gresource")
+    let resources = gio::Resource::load(gresource_dir + "/missioncenter.gresource")
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
@@ -86,33 +87,6 @@ fn main() {
         let symbol_name = format!("{}\0", symbol);
         unsafe { lib.sym(&symbol_name).unwrap() }
     });
-
-    // // Take an initial measurement
-    // {
-    //     let mut sys_info = SYS_INFO
-    //         .write()
-    //         .expect("System information refresh failed: Unable to acquire lock");
-    //     sys_info.refresh_components_list();
-    //     sys_info.refresh_all();
-    // }
-
-    // // Set up the system information refresh thread
-    // let sysinfo_refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
-    // let sysinfo_refresh_thread_running_clone = Arc::clone(&sysinfo_refresh_thread_running);
-    // let sysinfo_refresh_thread = std::thread::spawn(move || {
-    //     while sysinfo_refresh_thread_running_clone.load(std::sync::atomic::Ordering::Acquire) {
-    //         std::thread::sleep(std::time::Duration::from_secs(1));
-    //
-    //         {
-    //             let mut sys_info = SYS_INFO
-    //                 .write()
-    //                 .expect("System information refresh failed: Unable to acquire lock");
-    //
-    //             sys_info.refresh_components_list();
-    //             sys_info.refresh_all();
-    //         }
-    //     }
-    // });
 
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
@@ -128,12 +102,6 @@ fn main() {
     // is the code you see when you do `echo $?` after running a command in a
     // terminal.
     let exit_code = app.run();
-
-    // Ask the system information refresh thread to stop
-    // sysinfo_refresh_thread_running.store(false, std::sync::atomic::Ordering::Release);
-    // sysinfo_refresh_thread
-    //     .join()
-    //     .expect("Unable to stop the system information refresh thread");
 
     std::process::exit(exit_code.into());
 }
