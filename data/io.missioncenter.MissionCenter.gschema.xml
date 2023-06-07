@@ -21,9 +21,8 @@
             <summary>Which graph is shown on the CPU performance page</summary>
         </key>
 
-        <key name="performance-selected-page" type="i">
-            <range min="1" max="5"/>
-            <default>1</default>
+        <key name="performance-selected-page" type="s">
+            <default>"cpu"</default>
             <summary>Which page is shown on application startup, in the performance tab</summary>
         </key>
     </schema>

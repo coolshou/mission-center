@@ -181,7 +181,11 @@ mod imp {
 
             let mem_info = self.mem_info.get();
 
-            let total = mem_info.mem_total as f32;
+            let total = if mem_info.mem_total > 0 {
+                mem_info.mem_total as f32
+            } else {
+                1.
+            };
 
             let mut canvas =
                 Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});

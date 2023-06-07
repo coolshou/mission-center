@@ -185,7 +185,6 @@ impl MissionCenterApplication {
     }
 
     pub fn settings(&self) -> Option<gio::Settings> {
-        let imp = self.imp();
         let settings = unsafe { &*self.imp().settings.as_ptr() };
         settings.clone()
     }

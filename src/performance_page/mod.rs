@@ -71,6 +71,8 @@ mod imp {
         pages: Cell<Vec<Pages>>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
+
+        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PerformancePage {
@@ -85,6 +87,8 @@ mod imp {
                 pages: Cell::new(Vec::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
+
+                settings: Cell::new(None),
             }
         }
     }
@@ -575,11 +579,20 @@ mod imp {
             this.set_up_gpu_pages(&mut pages, &readings);
             this.pages.set(pages);
 
-            let row = this
-                .sidebar
-                .row_at_index(0)
-                .expect("Failed to select first row");
-            this.sidebar.select_row(Some(&row));
+            if let Some(settings) = this.settings.take() {
+                let view_actions = this.context_menu_view_actions.take();
+                let action = if let Some(action) =
+                    view_actions.get(settings.string("performance-selected-page").as_str())
+                {
+                    action
+                } else {
+                    view_actions.get("cpu").expect("All computers have a CPU")
+                };
+                action.activate(None);
+
+                this.context_menu_view_actions.set(view_actions);
+                this.settings.set(Some(settings));
+            }
 
             true
         }
@@ -715,31 +728,56 @@ mod imp {
 
             let this = self.obj().as_ref().clone();
 
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
+
             Self::configure_actions(&this);
 
             self.sidebar.connect_row_selected(move |_, selected_row| {
-                use glib::translate::*;
+                use glib::{translate::*, *};
                 use std::ffi::CStr;
 
                 if let Some(row) = selected_row {
-                    let child = row.child().expect("Failed to get child of selected row");
+                    let child = row.child();
+                    if child.is_none() {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to get child of selected row"
+                        );
+                    }
+                    let child = child.unwrap();
+
                     let widget_name =
                         unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
                     if widget_name.is_null() {
                         return;
                     }
-                    if let Ok(page_name) = unsafe { CStr::from_ptr(widget_name) }.to_str() {
-                        let imp = this.imp();
+                    let page_name = unsafe { CStr::from_ptr(widget_name) }.to_string_lossy();
+                    let page_name = page_name.as_ref();
 
-                        let actions = imp.context_menu_view_actions.take();
-                        if let Some(new_action) = actions.get(page_name) {
-                            let prev_action = imp.current_view_action.replace(new_action.clone());
-                            prev_action.set_state(glib::Variant::from(false));
-                            new_action.set_state(glib::Variant::from(true));
-                        }
-                        imp.context_menu_view_actions.set(actions);
+                    let imp = this.imp();
 
-                        imp.page_stack.set_visible_child_name(page_name);
+                    let actions = imp.context_menu_view_actions.take();
+                    if let Some(new_action) = actions.get(page_name) {
+                        let prev_action = imp.current_view_action.replace(new_action.clone());
+                        prev_action.set_state(glib::Variant::from(false));
+                        new_action.set_state(glib::Variant::from(true));
+                    }
+
+                    imp.context_menu_view_actions.set(actions);
+                    imp.page_stack.set_visible_child_name(page_name);
+
+                    if let Some(settings) = imp.settings.take() {
+                        settings
+                            .set_string("performance-selected-page", page_name)
+                            .unwrap_or_else(|_| {
+                                g_warning!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to set performance-selected-page setting"
+                                );
+                            });
+                        imp.settings.set(Some(settings));
                     }
                 }
             });
