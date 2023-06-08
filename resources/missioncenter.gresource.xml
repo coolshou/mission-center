@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/io/missioncenter/MissionCenter">
+        <file>check-plain-symbolic.svg</file>
         <file>line-dashed-disk.svg</file>
         <file>line-dashed-net.svg</file>
         <file>line-solid-disk.svg</file>

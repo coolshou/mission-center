@@ -20,6 +20,7 @@
 
 use std::cell::Cell;
 
+use crate::i18n::*;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
@@ -270,7 +271,7 @@ mod imp {
                     base_frequency as f32 / (1000. * 1000.)
                 ));
             } else {
-                this.base_speed.set_text(&gettextrs::gettext("Unknown"));
+                this.base_speed.set_text(&i18n("Unknown"));
             }
 
             this.virt_proc
@@ -278,30 +279,28 @@ mod imp {
 
             if let Some(virtualization) = static_cpu_info.virtualization {
                 if virtualization {
-                    this.virtualization
-                        .set_text(&gettextrs::gettext("Supported"));
+                    this.virtualization.set_text(&i18n("Supported"));
                 } else {
-                    this.virtualization
-                        .set_text(&gettextrs::gettext("Unsupported"));
+                    this.virtualization.set_text(&i18n("Unsupported"));
                 }
             } else {
-                this.virtualization.set_text(&gettextrs::gettext("Unknown"));
+                this.virtualization.set_text(&i18n("Unknown"));
             }
 
             if let Some(is_vm) = static_cpu_info.virtual_machine {
                 if is_vm {
-                    this.virt_machine.set_text(&gettextrs::gettext("Yes"));
+                    this.virt_machine.set_text(&i18n("Yes"));
                 } else {
-                    this.virt_machine.set_text(&gettextrs::gettext("No"));
+                    this.virt_machine.set_text(&i18n("No"));
                 }
             } else {
-                this.virt_machine.set_text(&gettextrs::gettext("Unknown"));
+                this.virt_machine.set_text(&i18n("Unknown"));
             }
 
             if let Some(socket_count) = static_cpu_info.socket_count {
                 this.sockets.set_text(&format!("{}", socket_count));
             } else {
-                this.sockets.set_text(&gettextrs::gettext("Unknown"));
+                this.sockets.set_text(&i18n("Unknown"));
             }
 
             let l1_cache_size = if let Some(size) = static_cpu_info.l1_cache {

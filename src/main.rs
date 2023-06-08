@@ -29,6 +29,7 @@ use self::application::MissionCenterApplication;
 use self::window::MissionCenterWindow;
 
 mod application;
+mod i18n;
 mod performance_page;
 mod preferences;
 mod sys_info_v2;

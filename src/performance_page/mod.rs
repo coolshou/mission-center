@@ -21,11 +21,12 @@
 use std::{cell::Cell, collections::HashMap};
 
 use adw::subclass::prelude::*;
-use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use widgets::GraphWidget;
+
+use crate::i18n::*;
 
 mod cpu;
 mod disk;
@@ -262,7 +263,7 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name("cpu");
 
-            summary.set_heading(gettext("CPU"));
+            summary.set_heading(i18n("CPU"));
             summary.set_info1("0% 0.00 Ghz");
 
             summary.set_base_color(gtk::gdk::RGBA::new(
@@ -307,7 +308,7 @@ mod imp {
                 .graph_widget()
                 .set_value_range_max(readings.mem_info.mem_total as f32);
 
-            summary.set_heading(gettext("Memory"));
+            summary.set_heading(i18n("Memory"));
             summary.set_info1("0/0 GiB (100%)");
 
             summary.set_base_color(gtk::gdk::RGBA::new(
@@ -353,14 +354,17 @@ mod imp {
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(&disk.id);
 
-                summary.set_heading(gettext!("Disk {} ({})", i, &disk.id));
+                summary.set_heading(i18n_f(
+                    "Disk {} ({})",
+                    &[&format!("{}", i), &format!("{}", &disk.id)],
+                ));
                 summary.set_info1(match disk.r#type {
-                    DiskType::HDD => gettext("HDD"),
-                    DiskType::SSD => gettext("SSD"),
-                    DiskType::NVMe => gettext("NVMe"),
-                    DiskType::eMMC => gettext("eMMC"),
-                    DiskType::iSCSI => gettext("iSCSI"),
-                    DiskType::Unknown => gettext("Unknown"),
+                    DiskType::HDD => i18n("HDD"),
+                    DiskType::SSD => i18n("SSD"),
+                    DiskType::NVMe => i18n("NVMe"),
+                    DiskType::eMMC => i18n("eMMC"),
+                    DiskType::iSCSI => i18n("iSCSI"),
+                    DiskType::Unknown => i18n("Unknown"),
                 });
                 summary.set_info2(format!("{:.2}%", disk.busy_percent));
                 summary.set_base_color(gtk::gdk::RGBA::new(
@@ -424,9 +428,9 @@ mod imp {
                 let if_name = network_device.descriptor.if_name.as_str();
 
                 let conn_type = match network_device.descriptor.r#type {
-                    NetDeviceType::Wired => gettext("Ethernet"),
-                    NetDeviceType::Wireless => gettext("Wi-Fi"),
-                    NetDeviceType::Other => gettext("Other"),
+                    NetDeviceType::Wired => i18n("Ethernet"),
+                    NetDeviceType::Wireless => i18n("Wi-Fi"),
+                    NetDeviceType::Other => i18n("Other"),
                 };
 
                 let summary = SummaryGraph::new();
@@ -505,7 +509,7 @@ mod imp {
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(&gpu.static_info.id);
 
-                summary.set_heading(gettext!("GPU {}", i));
+                summary.set_heading(i18n_f("GPU {}", &[&format!("{}", i)]));
                 summary.set_info1(gpu.static_info.device_name.clone());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
@@ -658,14 +662,16 @@ mod imp {
 
                                 let sent = crate::to_human_readable(sent * 8., 1024.);
                                 let received = crate::to_human_readable(received * 8., 1024.);
-                                summary.set_info2(gettext!(
+                                summary.set_info2(i18n_f(
                                     "{}: {} {}bps {}: {} {}bps",
-                                    "S",
-                                    sent.0.round(),
-                                    sent.1,
-                                    "R",
-                                    received.0.round(),
-                                    received.1
+                                    &[
+                                        "S",
+                                        &format!("{}", sent.0.round()),
+                                        &format!("{}", sent.1),
+                                        "R",
+                                        &format!("{}", received.0.round()),
+                                        &format!("{}", received.1),
+                                    ],
                                 ));
 
                                 result &= page.update_readings(network_device);

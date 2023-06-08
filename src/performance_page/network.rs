@@ -21,9 +21,10 @@
 use std::cell::Cell;
 
 use adw::subclass::prelude::*;
-use gettextrs::gettext;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
+
+use crate::i18n::*;
 
 use super::widgets::GraphWidget;
 
@@ -324,16 +325,16 @@ mod imp {
             this.interface_name_label.set_text(&interface_name);
 
             let conn_type = match connection_type {
-                NetDeviceType::Wired => gettext("Ethernet"),
+                NetDeviceType::Wired => i18n("Ethernet"),
                 NetDeviceType::Wireless => {
                     this.ssid.set_visible(true);
                     this.signal_strength.set_visible(true);
                     this.max_bitrate.set_visible(true);
                     this.frequency.set_visible(true);
 
-                    gettext("Wi-Fi")
+                    i18n("Wi-Fi")
                 }
-                NetDeviceType::Other => gettext("Other"),
+                NetDeviceType::Other => i18n("Other"),
             };
             this.connection_type_label.set_text(&conn_type);
             this.title_connection_type.set_text(&conn_type);
@@ -368,7 +369,7 @@ mod imp {
                     &wireless_info
                         .ssid
                         .as_ref()
-                        .map_or(gettext("Unknown"), |ssid| ssid.clone()),
+                        .map_or(i18n("Unknown"), |ssid| ssid.clone()),
                 );
                 this.signal_strength_percent
                     .set(wireless_info.signal_strength_percent.clone());
@@ -391,7 +392,7 @@ mod imp {
                 ));
                 this.max_bitrate
                     .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
-                        gettext("Unknown"),
+                        i18n("Unknown"),
                         |kbps| {
                             let (val, unit) = crate::to_human_readable(*kbps as f32 * 1000., 1024.);
                             format!("{} {}bps", val.round(), unit)
@@ -399,7 +400,7 @@ mod imp {
                     ));
                 this.frequency
                     .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
-                        gettext("Unknown"),
+                        i18n("Unknown"),
                         |freq| {
                             let (freq, unit) =
                                 crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
@@ -409,19 +410,26 @@ mod imp {
             }
 
             let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
-            this.max_y.set_text(&gettext!("{} {}bps", max_y.0, max_y.1));
+            this.max_y.set_text(&i18n_f(
+                "{} {}bps",
+                &[&format!("{}", max_y.0), &format!("{}", max_y.1)],
+            ));
 
             let speed_send_info = crate::to_human_readable(sent, 1024.);
-            this.speed_send.set_text(&gettext!(
+            this.speed_send.set_text(&i18n_f(
                 "{} {}bps",
-                speed_send_info.0.round(),
-                speed_send_info.1
+                &[
+                    &format!("{}", speed_send_info.0.round()),
+                    &format!("{}", speed_send_info.1),
+                ],
             ));
             let speed_recv_info = crate::to_human_readable(received, 1024.);
-            this.speed_recv.set_text(&gettext!(
+            this.speed_recv.set_text(&i18n_f(
                 "{} {}bps",
-                speed_recv_info.0.round(),
-                speed_recv_info.1
+                &[
+                    &format!("{}", speed_recv_info.0.round()),
+                    &format!("{}", speed_recv_info.1),
+                ],
             ));
 
             this.hw_address
@@ -429,7 +437,7 @@ mod imp {
                     &network_device
                         .address
                         .hw_address
-                        .map_or(gettext("Unknown"), |hw| {
+                        .map_or(i18n("Unknown"), |hw| {
                             format!(
                                 "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
                                 hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
@@ -442,7 +450,7 @@ mod imp {
                     &network_device
                         .address
                         .ip4_address
-                        .map_or(gettext("N/A"), |ip| {
+                        .map_or(i18n("N/A"), |ip| {
                             let ip_array = unsafe {
                                 std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
                             };
@@ -458,7 +466,7 @@ mod imp {
                     &network_device
                         .address
                         .ip6_address
-                        .map_or(gettext("N/A"), |ip| {
+                        .map_or(i18n("N/A"), |ip| {
                             let ip_array = unsafe {
                                 std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
                             };
@@ -507,7 +515,7 @@ mod imp {
                         self.ssid.label(),
                         self.signal_strength_percent
                             .get()
-                            .map_or(gettext("Unknown"), |percent| format!("{}%", percent)),
+                            .map_or(i18n("Unknown"), |percent| format!("{}%", percent)),
                         self.max_bitrate.label(),
                         self.frequency.label(),
                     )

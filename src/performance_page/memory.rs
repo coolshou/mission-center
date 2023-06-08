@@ -25,6 +25,8 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use crate::i18n::*;
+
 use super::widgets::{GraphWidget, MemoryCompositionWidget};
 
 mod imp {
@@ -264,8 +266,6 @@ mod imp {
 
     impl ObjectImpl for PerformancePageMemory {
         fn constructed(&self) {
-            use gettextrs::*;
-
             self.parent_constructed();
 
             let obj = self.obj();
@@ -299,7 +299,7 @@ mod imp {
                                         this.imp().form_factor.set_text(&format!("{}", memory_device_info[0].form_factor));
                                         this.imp().ram_type.set_text(&format!("{}", memory_device_info[0].ram_type));
                                     } else {
-                                        let unknown = gettext("Unknown");
+                                        let unknown = i18n("Unknown");
                                         this.imp().speed.set_text(&unknown);
                                         this.imp().slots_used.set_text(&unknown);
                                         this.imp().form_factor.set_text(&unknown);

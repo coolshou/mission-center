@@ -25,6 +25,8 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use crate::i18n::*;
+
 use super::widgets::GraphWidget;
 
 mod imp {
@@ -175,8 +177,6 @@ mod imp {
             index: usize,
             gpu: &crate::sys_info_v2::GPU,
         ) -> bool {
-            use gettextrs::gettext;
-
             this.imp()
                 .usage_graph_overall
                 .connect_resize(clone!(@weak this => move |_, _, _| {
@@ -236,7 +236,7 @@ mod imp {
                         opengl_version.1
                     )
                 } else {
-                    gettext("Unknown")
+                    i18n("Unknown")
                 };
             this.opengl_version.set_text(&opengl_version);
 
@@ -247,7 +247,7 @@ mod imp {
                         vulkan_version.0, vulkan_version.1, vulkan_version.2
                     )
                 } else {
-                    gettext("Unsupported")
+                    i18n("Unsupported")
                 };
             this.vulkan_version.set_text(&vulkan_version);
 

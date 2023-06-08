@@ -23,6 +23,8 @@ use std::cell::Cell;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
 
+use crate::i18n::*;
+
 mod imp {
     use pathfinder_gl::GLDevice;
     use pathfinder_renderer::gpu::renderer::Renderer;
@@ -218,17 +220,17 @@ mod imp {
             let modified = crate::to_human_readable(modified, 1024.);
             tooltip_texts.push((
                 x - bar_width,
-                gettextrs::gettext!(
+                i18n_f(
                     "In use ({}iB)\n\nMemory used by the operating system and running applications",
-                    format!("{:.2} {}", used_hr.0, used_hr.1)
+                    &[&format!("{:.2} {}", used_hr.0, used_hr.1)],
                 ),
             ));
             tooltip_texts.push((
                 x,
-                gettextrs::gettext!(
+                i18n_f(
                     "Modified ({}iB)\n\nMemory whose contents must be written to disk before it can be used by another process",
-                    format!("{:.2} {}", modified.0, modified.1)
-               )
+                    &[&format!("{:.2} {}", modified.0, modified.1)],
+                )
             ));
 
             self.render_bar(&mut canvas, x, 1., height, false);
@@ -246,18 +248,18 @@ mod imp {
             let standby = crate::to_human_readable(total - (used + free), 1024.);
             tooltip_texts.push((
                 width as f32 - bar_width,
-                gettextrs::gettext!(
+                i18n_f(
                     "Standby ({}iB)\n\nMemory that contains cached data and code that is not actively in use",
-                    format!("{:.2} {}", standby.0, standby.1)
+                    &[&format!("{:.2} {}", standby.0, standby.1)],
                 )
             ));
 
             let free = crate::to_human_readable(free, 1024.);
             tooltip_texts.push((
                 width as f32 + 1.,
-                gettextrs::gettext!(
+                i18n_f(
                     "Free ({}iB)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
-                    format!("{:.2} {}", free.0, free.1)
+                    &[&format!("{:.2} {}", free.0, free.1)]
                 ),
             ));
 

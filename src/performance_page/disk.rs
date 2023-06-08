@@ -25,6 +25,8 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use crate::i18n::*;
+
 use super::widgets::GraphWidget;
 
 mod imp {
@@ -161,7 +163,6 @@ mod imp {
             disk: &crate::sys_info_v2::Disk,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
-            use gettextrs::gettext;
 
             let t = this.clone();
             this.imp()
@@ -188,7 +189,7 @@ mod imp {
             let this = this.imp();
 
             this.disk_id
-                .set_text(&gettext!("Disk {} ({})", index, &disk.id));
+                .set_text(&i18n_f("Disk {} ({})", &[&format!("{}", index), &disk.id]));
             this.model.set_text(&disk.model);
 
             this.disk_transfer_rate_graph.set_dashed(0, true);
@@ -208,9 +209,9 @@ mod imp {
                 .set_text(&format!("{:.2} {}iB", formatted.0, formatted.1));
 
             let is_system_disk = if disk.system_disk {
-                gettext("Yes")
+                i18n("Yes")
             } else {
-                gettext("No")
+                i18n("No")
             };
             this.system_disk.set_text(&is_system_disk);
 
@@ -230,15 +231,19 @@ mod imp {
             this: &super::PerformancePageDisk,
             disk: &crate::sys_info_v2::Disk,
         ) -> bool {
-            use gettextrs::gettext;
-
             let this = this.imp();
 
             let max_y =
                 crate::to_human_readable(this.disk_transfer_rate_graph.value_range_max(), 1024.);
             let i = if max_y.1.is_empty() { "" } else { "i" };
-            this.max_y
-                .set_text(&gettext!("{} {}{}B/s", max_y.0.round(), max_y.1, i));
+            this.max_y.set_text(&i18n_f(
+                "{} {}{}B/s",
+                &[
+                    &format!("{}", max_y.0.round()),
+                    &format!("{}", max_y.1),
+                    &format!("{}", i),
+                ],
+            ));
 
             this.usage_graph.add_data_point(0, disk.busy_percent as f32);
 
