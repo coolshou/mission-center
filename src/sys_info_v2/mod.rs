@@ -20,8 +20,6 @@
 
 use lazy_static::lazy_static;
 
-use crate::sys_info_v2::disk_info::DiskInfo;
-
 macro_rules! cmd {
     ($cmd: expr) => {{
         use std::process::Command;
@@ -44,11 +42,13 @@ macro_rules! cmd {
     }};
 }
 
+mod app_info;
 mod cpu_info;
 mod disk_info;
 mod gpu_info;
 mod mem_info;
 mod net_info;
+mod proc_info;
 
 #[allow(dead_code)]
 pub type CpuInfo = cpu_info::CpuInfo;
@@ -62,6 +62,7 @@ pub type MemInfo = mem_info::MemInfo;
 pub type MemoryDevice = mem_info::MemoryDevice;
 
 pub type Disk = disk_info::Disk;
+pub type DiskInfo = disk_info::DiskInfo;
 pub type DiskType = disk_info::DiskType;
 
 pub type NetInfo = net_info::NetInfo;
@@ -122,6 +123,14 @@ pub struct Readings {
 
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
+        let installed_apps = app_info::App::installed();
+        // dbg!(&installed_apps);
+        let _running_apps = app_info::App::running(system, &installed_apps);
+        // dbg!(&running_apps);
+
+        let pstree = proc_info::Process::process_hierarchy(system);
+        dbg!(&pstree);
+
         Self {
             cpu_info: CpuInfo::new(system),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
