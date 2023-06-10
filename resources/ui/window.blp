@@ -67,20 +67,19 @@ template MissionCenterWindow : Adw.ApplicationWindow {
         transition-type: crossfade;
 
         StackPage {
-          name: "performance";
-          icon-name: "speedometer-symbolic";
-          title: "Performance";
-          child: .PerformancePage performance_page {
-            summary-mode: bind-property header_bar.visible bidirectional inverted;
+          name: "processes";
+          icon-name: "system-run-symbolic";
+          title: "Apps";
+          child: $AppsPage apps_page {
           };
         }
 
         StackPage {
-          name: "processes";
-          icon-name: "system-run-symbolic";
-          title: "Processes";
-          child: Adw.StatusPage {
-            title: "Processes Page";
+          name: "performance";
+          icon-name: "speedometer-symbolic";
+          title: "Performance";
+          child: $PerformancePage performance_page {
+            summary-mode: bind-property header_bar.visible bidirectional inverted;
           };
         }
       }

@@ -50,9 +50,11 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
-            use crate::performance_page::PerformancePage;
+            use crate::{apps_page::AppsPage, performance_page::PerformancePage};
 
             PerformancePage::ensure_type();
+            AppsPage::ensure_type();
+
             klass.bind_template();
         }
 

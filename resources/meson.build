@@ -4,7 +4,8 @@ gnome = import('gnome')
 
 blueprints = custom_target('blueprints',
   input: files(
-    'ui/gtk/help-overlay.blp',
+    'ui/apps_page/page.blp',
+
     'ui/performance_page/cpu.blp',
     'ui/performance_page/disk.blp',
     'ui/performance_page/gpu.blp',
@@ -12,10 +13,14 @@ blueprints = custom_target('blueprints',
     'ui/performance_page/network.blp',
     'ui/performance_page/page.blp',
     'ui/performance_page/summary_graph.blp',
+
     'ui/preferences/checked_row.blp',
     'ui/preferences/page.blp',
     'ui/preferences/window.blp',
+
     'ui/window.blp',
+
+    'ui/gtk/help-overlay.blp',
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
