@@ -10,12 +10,13 @@ pub struct Process {
     pub children: Vec<Process>,
 }
 
-type ThisProcess = Process;
-
 impl Process {
     pub fn process_hierarchy(system: &mut sysinfo::System) -> Option<Process> {
+        use gtk::glib::g_debug;
         use std::collections::*;
-        use sysinfo::*;
+        use sysinfo::{PidExt, ProcessExt, ProcessRefreshKind, SystemExt};
+
+        type SIPid = sysinfo::Pid;
 
         system.refresh_processes_specifics(ProcessRefreshKind::everything());
         let processes = system.processes();
@@ -24,7 +25,7 @@ impl Process {
 
         let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
         let root_process = processes.get(pids.first().unwrap()).map_or(None, |p| {
-            Some(ThisProcess {
+            Some(Process {
                 name: p.name().to_owned(),
                 cmd: p.cmd().iter().map(|s| s.to_owned()).collect::<Vec<_>>(),
                 exe: p.exe().to_owned(),
@@ -39,13 +40,13 @@ impl Process {
         let mut root_process = root_process.unwrap();
 
         let mut process_tree = BTreeMap::new();
-        process_tree.insert(Pid::from(root_process.pid as usize), 0_usize);
+        process_tree.insert(SIPid::from(root_process.pid as usize), 0_usize);
 
         let mut children = Vec::with_capacity(pids.len());
         children.push(vec![]);
 
         let mut visited = HashSet::new();
-        visited.insert(Pid::from(root_process.pid as usize));
+        visited.insert(SIPid::from(root_process.pid as usize));
 
         for pid in pids.iter().skip(1).rev() {
             if visited.contains(pid) {
@@ -69,25 +70,25 @@ impl Process {
 
                 if visited.contains(&parent_process.pid()) {
                     let mut index = *process_tree.get(&parent_process.pid()).unwrap();
-                    while let Some(process) = stack.pop() {
-                        let p = ThisProcess {
-                            name: process.name().to_owned(),
-                            cmd: process
+                    while let Some(a_parent) = stack.pop() {
+                        let p = Process {
+                            name: a_parent.name().to_owned(),
+                            cmd: a_parent
                                 .cmd()
                                 .iter()
                                 .map(|s| s.to_owned())
                                 .collect::<Vec<_>>(),
-                            exe: process.exe().to_owned(),
-                            pid: process.pid().as_u32() as libc::pid_t,
+                            exe: a_parent.exe().to_owned(),
+                            pid: a_parent.pid().as_u32() as libc::pid_t,
                             parent: Some(parent_process.pid().as_u32() as libc::pid_t),
                             children: vec![],
                         };
                         children[index].push(p);
 
-                        visited.insert(process.pid());
+                        visited.insert(a_parent.pid());
 
                         index = children.len();
-                        process_tree.insert(process.pid(), index);
+                        process_tree.insert(a_parent.pid(), index);
                         children.push(vec![]);
                     }
 
@@ -100,11 +101,11 @@ impl Process {
         }
 
         fn gather_descendants(
-            process: &mut ThisProcess,
-            process_tree: &BTreeMap<Pid, usize>,
-            children: &mut Vec<Vec<ThisProcess>>,
+            process: &mut Process,
+            process_tree: &BTreeMap<SIPid, usize>,
+            children: &mut Vec<Vec<Process>>,
         ) {
-            let pid = Pid::from(process.pid as usize);
+            let pid = SIPid::from(process.pid as usize);
 
             let index = match process_tree.get(&pid) {
                 Some(index) => *index,
@@ -128,7 +129,8 @@ impl Process {
             gather_descendants(child, &process_tree, &mut children);
         }
 
-        println!(
+        g_debug!(
+            "MissionCenter::ProcInfo",
             "[{}:{}] Loading process hierarchy took {}ms",
             file!(),
             line!(),

@@ -123,13 +123,11 @@ pub struct Readings {
 
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
-        let installed_apps = app_info::App::installed();
-        // dbg!(&installed_apps);
-        let _running_apps = app_info::App::running(system, &installed_apps);
-        // dbg!(&running_apps);
-
         let pstree = proc_info::Process::process_hierarchy(system);
-        dbg!(&pstree);
+
+        let installed_apps = app_info::App::installed_apps();
+        let running_apps = app_info::App::running_apps(&pstree.unwrap(), &installed_apps);
+        dbg!(&running_apps);
 
         Self {
             cpu_info: CpuInfo::new(system),

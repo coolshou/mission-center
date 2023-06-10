@@ -9,7 +9,7 @@ pub struct App {
     pub app_id: Option<String>,
     pub is_flatpak: bool,
 
-    pub pid: Option<sysinfo::Pid>,
+    pub pid: crate::sys_info_v2::proc_info::Pid,
 }
 
 lazy_static! {
@@ -44,7 +44,9 @@ lazy_static! {
 }
 
 impl App {
-    pub fn installed() -> Vec<App> {
+    pub fn installed_apps() -> Vec<App> {
+        use gtk::glib::*;
+
         let mut apps = vec![];
 
         let start = std::time::Instant::now();
@@ -57,7 +59,8 @@ impl App {
             }
         }
 
-        eprintln!(
+        g_debug!(
+            "MissionCenter::AppInfo",
             "[{}:{}] Found all installed in {}ms",
             file!(),
             line!(),
@@ -67,76 +70,62 @@ impl App {
         apps
     }
 
-    pub fn running(system: &mut sysinfo::System, apps: &[App]) -> Vec<App> {
-        use std::collections::*;
-        use sysinfo::*;
+    pub fn running_apps(
+        root_process: &crate::sys_info_v2::proc_info::Process,
+        apps: &[App],
+    ) -> Vec<App> {
+        use crate::sys_info_v2::proc_info::*;
+        use gtk::glib::*;
 
-        let start = std::time::Instant::now();
-
-        system.refresh_processes_specifics(ProcessRefreshKind::everything());
-        let processes = system.processes();
-        let mut pids = BTreeSet::new();
-        for pid in processes.keys() {
-            pids.insert(*pid);
-        }
-
-        eprintln!(
-            "[{}:{}] Refreshed process list in {}ms",
-            file!(),
-            line!(),
-            start.elapsed().as_millis()
-        );
-
-        let start = std::time::Instant::now();
-        let mut running_apps = vec![];
-        for app in apps {
-            let mut remove_pid = None;
-            'pid_for: for pid in &pids {
-                let process = processes.get(pid).unwrap();
+        fn find_app(app: &App, processes: &[Process], result: &mut Vec<App>) {
+            for process in processes {
                 if app.is_flatpak {
-                    if process.name() == "bwrap" {
-                        for arg in process.cmd() {
+                    if process.name == "bwrap" {
+                        for arg in &process.cmd {
                             if arg.contains(&app.command) {
                                 let mut app = app.clone();
-                                app.pid = Some(*pid);
+                                app.pid = process.pid;
 
-                                running_apps.push(app);
-                                remove_pid = Some(*pid);
-
-                                break 'pid_for;
+                                result.push(app);
+                                return;
                             }
                         }
                     }
                 } else {
-                    if process.exe() == std::path::Path::new(&app.command) {
+                    if process.exe == std::path::Path::new(&app.command) {
                         let mut app = app.clone();
-                        app.pid = Some(*pid);
+                        app.pid = process.pid;
 
-                        running_apps.push(app);
-                        remove_pid = Some(*pid);
-
-                        break 'pid_for;
+                        result.push(app);
+                        return;
                     } else {
-                        if let Some(cmd) = process.cmd().first() {
+                        if let Some(cmd) = process.cmd.first() {
                             if cmd.ends_with(&app.command) {
                                 let mut app = app.clone();
-                                app.pid = Some(*pid);
+                                app.pid = process.pid;
 
-                                running_apps.push(app);
-                                remove_pid = Some(*pid);
-
-                                break 'pid_for;
+                                result.push(app);
+                                return;
                             }
                         }
                     }
                 }
             }
-            if let Some(pid) = remove_pid {
-                pids.remove(&pid);
+
+            for processes in processes {
+                find_app(app, &processes.children, result);
             }
         }
 
-        eprintln!(
+        let start = std::time::Instant::now();
+
+        let mut running_apps = vec![];
+        for app in apps {
+            find_app(app, &root_process.children, &mut running_apps);
+        }
+
+        g_debug!(
+            "MissionCenter::AppInfo",
             "[{}:{}] Found running apps in {}ms",
             file!(),
             line!(),
@@ -265,7 +254,7 @@ impl App {
             app_id,
             is_flatpak,
 
-            pid: None,
+            pid: 0,
         })
     }
 
