@@ -21,6 +21,7 @@
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 mod column_header;
+mod list_item;
 mod model_entry;
 
 mod imp {
@@ -31,16 +32,12 @@ mod imp {
     pub struct AppsPage {
         #[template_child]
         column_view: TemplateChild<gtk::ColumnView>,
-
-        #[template_child]
-        name_column: TemplateChild<gtk::ColumnViewColumn>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
             Self {
                 column_view: TemplateChild::default(),
-                name_column: TemplateChild::default(),
             }
         }
     }
@@ -52,8 +49,9 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            model_entry::ModelEntry::ensure_type();
+            list_item::ListItem::ensure_type();
             column_header::ColumnHeader::ensure_type();
+            model_entry::ModelEntry::ensure_type();
 
             klass.bind_template();
         }
@@ -69,12 +67,44 @@ mod imp {
         fn realize(&self) {
             use model_entry::ModelEntry;
 
+            #[allow(dead_code)]
+            fn find_child(parent: &gtk::Widget, name: &str) -> Option<gtk::Widget> {
+                let mut child = parent.first_child();
+                while child.is_some() {
+                    // Direct descendants
+                    let child_widget = child.unwrap();
+                    let child_widget_name = unsafe {
+                        std::ffi::CStr::from_ptr(gtk::ffi::gtk_widget_get_name(
+                            child_widget.as_ptr(),
+                        ))
+                        .to_string_lossy()
+                    };
+                    if child_widget_name == name {
+                        return Some(child_widget);
+                    }
+
+                    let grandchild = find_child(&child_widget, name);
+                    if grandchild.is_some() {
+                        return grandchild;
+                    }
+
+                    child = child_widget.next_sibling();
+                }
+
+                return None;
+            }
+
             self.parent_realize();
 
+            let apps_section_header = ModelEntry::new("Apps", 0);
+            apps_section_header.set_is_section_header(true);
+
+            let processes_section_header = ModelEntry::new("Processes", 0);
+            processes_section_header.set_is_section_header(true);
+
             let model = gio::ListStore::new(ModelEntry::static_type());
-            model.append(&ModelEntry::new("Item 1", 2));
-            model.append(&ModelEntry::new("Item 2", 3));
-            model.append(&ModelEntry::new("Item 3", 1));
+            model.append(&apps_section_header);
+            model.append(&processes_section_header);
 
             let treemodel = gtk::TreeListModel::new(model, false, false, |_| {
                 let model = gio::ListStore::new(ModelEntry::static_type());

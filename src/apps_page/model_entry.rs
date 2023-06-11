@@ -35,6 +35,10 @@ mod imp {
         name: Cell<glib::GString>,
         #[property(get = Self::cpu_usage, set = Self::set_cpu_usage, type = glib::GString)]
         cpu_usage: Cell<glib::GString>,
+        #[property(get, set)]
+        is_section_header: Cell<bool>,
+        #[property(get, set)]
+        is_regular_entry: Cell<bool>,
     }
 
     impl Default for ModelEntry {
@@ -42,6 +46,8 @@ mod imp {
             Self {
                 name: Cell::new(glib::GString::default()),
                 cpu_usage: Cell::new(glib::GString::default()),
+                is_section_header: Cell::new(false),
+                is_regular_entry: Cell::new(true),
             }
         }
     }
@@ -91,6 +97,20 @@ mod imp {
     }
 
     impl ObjectImpl for ModelEntry {
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            self.obj()
+                .as_ref()
+                .bind_property("is-section-header", self.obj().as_ref(), "is-regular-entry")
+                .flags(
+                    glib::BindingFlags::SYNC_CREATE
+                        | glib::BindingFlags::BIDIRECTIONAL
+                        | glib::BindingFlags::INVERT_BOOLEAN,
+                )
+                .build();
+        }
+
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }

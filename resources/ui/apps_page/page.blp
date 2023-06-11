@@ -29,6 +29,10 @@ template $AppsPage : Box {
     hexpand: true;
 
     ColumnView column_view {
+      styles [
+        "rich-list"
+      ]
+
       show-row-separators: true;
       show-column-separators: true;
 
@@ -38,9 +42,14 @@ template $AppsPage : Box {
 
         factory: BuilderListItemFactory {
           template ListItem {
+            // focusable: false;
             child: TreeExpander expander {
+              hide-expander: bind (expander.item as <$ModelEntry>).is-section-header;
+              indent-for-icon: bind (expander.item as <$ModelEntry>).is-regular-entry;
+
               list-row: bind template.item as <ListItem>;
-              child: Label {
+              child: $ListItem {
+                is-section-header: bind (expander.item as <$ModelEntry>).is-section-header;
                 label: bind (expander.item as <$ModelEntry>).name;
               };
             };
@@ -54,6 +63,7 @@ template $AppsPage : Box {
 
         factory: BuilderListItemFactory {
           template ListItem {
+            // focusable: false;
             child: TreeExpander expander {
               list-row: bind template.item as <ListItem>;
               hide-expander: true;
@@ -62,8 +72,9 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: Label {
+              child: $ListItem {
                 label: bind (expander.item as <$ModelEntry>).cpu-usage;
+                visible: bind (expander.item as <$ModelEntry>).is-regular-entry;
               };
             };
           }

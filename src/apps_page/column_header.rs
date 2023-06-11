@@ -19,7 +19,7 @@
  */
 
 use gtk::{
-    gio, glib,
+    glib,
     glib::{prelude::*, ParamSpec, Properties, Value},
     prelude::*,
     subclass::prelude::*,
@@ -131,7 +131,7 @@ mod imp {
 glib::wrapper! {
     pub struct ColumnHeader(ObjectSubclass<imp::ColumnHeader>)
         @extends gtk::Box, gtk::Widget,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
 impl ColumnHeader {
