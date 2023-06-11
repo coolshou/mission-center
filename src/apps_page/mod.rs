@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 mod column_header;
@@ -32,12 +34,17 @@ mod imp {
     pub struct AppsPage {
         #[template_child]
         column_view: TemplateChild<gtk::ColumnView>,
+
+        pub apps: Cell<Vec<crate::sys_info_v2::App>>,
+        pub process_tree: Cell<crate::sys_info_v2::Process>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
             Self {
                 column_view: TemplateChild::default(),
+                apps: Cell::new(Vec::new()),
+                process_tree: Cell::new(crate::sys_info_v2::Process::default()),
             }
         }
     }
@@ -67,52 +74,62 @@ mod imp {
         fn realize(&self) {
             use model_entry::ModelEntry;
 
-            #[allow(dead_code)]
-            fn find_child(parent: &gtk::Widget, name: &str) -> Option<gtk::Widget> {
-                let mut child = parent.first_child();
-                while child.is_some() {
-                    // Direct descendants
-                    let child_widget = child.unwrap();
-                    let child_widget_name = unsafe {
-                        std::ffi::CStr::from_ptr(gtk::ffi::gtk_widget_get_name(
-                            child_widget.as_ptr(),
-                        ))
-                        .to_string_lossy()
-                    };
-                    if child_widget_name == name {
-                        return Some(child_widget);
-                    }
-
-                    let grandchild = find_child(&child_widget, name);
-                    if grandchild.is_some() {
-                        return grandchild;
-                    }
-
-                    child = child_widget.next_sibling();
-                }
-
-                return None;
-            }
-
             self.parent_realize();
 
-            let apps_section_header = ModelEntry::new("Apps", 0);
+            let apps_section_header = ModelEntry::new("Apps");
             apps_section_header.set_is_section_header(true);
 
-            let processes_section_header = ModelEntry::new("Processes", 0);
+            let processes_section_header = ModelEntry::new("Processes");
             processes_section_header.set_is_section_header(true);
 
             let model = gio::ListStore::new(ModelEntry::static_type());
             model.append(&apps_section_header);
             model.append(&processes_section_header);
 
-            let treemodel = gtk::TreeListModel::new(model, false, false, |_| {
-                let model = gio::ListStore::new(ModelEntry::static_type());
-                model.append(&ModelEntry::new("Subitem 1", 4));
-                model.append(&ModelEntry::new("Subitem 2", 5));
-                model.append(&ModelEntry::new("Subitem 3", 0));
+            let this = self.obj().downgrade();
+            let treemodel = gtk::TreeListModel::new(model, false, false, move |model_entry| {
+                let this = this.upgrade();
+                if this.is_none() {
+                    return None;
+                }
+                let this = this.unwrap();
+                let this = this.imp();
 
-                Some(model.into())
+                let model_entry = model_entry.downcast_ref::<ModelEntry>();
+                if model_entry.is_none() {
+                    return None;
+                }
+                let model_entry = model_entry.unwrap();
+
+                if !model_entry.is_section_header() {
+                    return None;
+                }
+
+                if model_entry.name() == "Apps" {
+                    let model = gio::ListStore::new(ModelEntry::static_type());
+
+                    let apps = this.apps.take();
+                    for app in &apps {
+                        let model_entry = ModelEntry::new(&app.name);
+                        model.append(&model_entry);
+                    }
+                    this.apps.set(apps);
+
+                    Some(model.into())
+                } else if model_entry.name() == "Processes" {
+                    let model = gio::ListStore::new(ModelEntry::static_type());
+
+                    let process_tree = this.process_tree.take();
+                    for process in &process_tree.children {
+                        let model_entry = ModelEntry::new(&process.name);
+                        model.append(&model_entry);
+                    }
+                    this.process_tree.set(process_tree);
+
+                    Some(model.into())
+                } else {
+                    None
+                }
             });
             let selection = gtk::SingleSelection::new(Some(treemodel));
             self.column_view.set_model(Some(&selection));
@@ -156,4 +173,18 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl AppsPage {}
+impl AppsPage {
+    pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+        let this = self.imp();
+
+        let mut apps = vec![];
+        std::mem::swap(&mut apps, &mut readings.running_apps);
+        this.apps.set(apps);
+
+        let mut process_tree = crate::sys_info_v2::Process::default();
+        std::mem::swap(&mut process_tree, &mut readings.process_tree);
+        this.process_tree.set(process_tree);
+
+        true
+    }
+}

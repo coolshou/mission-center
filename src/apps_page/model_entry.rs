@@ -25,6 +25,12 @@ use gtk::{
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EntryType {
+    App,
+    Process,
+}
+
 mod imp {
     use super::*;
 
@@ -39,6 +45,8 @@ mod imp {
         is_section_header: Cell<bool>,
         #[property(get, set)]
         is_regular_entry: Cell<bool>,
+
+        pub(crate) entry_type: Cell<Option<EntryType>>,
     }
 
     impl Default for ModelEntry {
@@ -48,6 +56,7 @@ mod imp {
                 cpu_usage: Cell::new(glib::GString::default()),
                 is_section_header: Cell::new(false),
                 is_regular_entry: Cell::new(true),
+                entry_type: Cell::new(None),
             }
         }
     }
@@ -128,17 +137,31 @@ glib::wrapper! {
 }
 
 impl ModelEntry {
-    pub fn new(name: &str, cpu_usage: u8) -> Self {
-        let cpu_usage_str = format!("{}%", cpu_usage);
-
+    pub fn new(name: &str) -> Self {
         let this: Self = unsafe {
             glib::Object::new_internal(
                 ModelEntry::static_type(),
-                &mut [("name", name.into()), ("cpu-usage", cpu_usage_str.into())],
+                &mut [("name", name.into()), ("cpu-usage", "0%".into())],
             )
             .downcast()
             .unwrap()
         };
         this
+    }
+
+    pub fn entry_type(&self) -> Option<EntryType> {
+        if self.is_section_header() {
+            None
+        } else {
+            self.imp().entry_type.get()
+        }
+    }
+
+    pub fn set_entry_type(&self, entry_type: EntryType) {
+        if self.is_section_header() {
+            return;
+        }
+
+        self.imp().entry_type.set(Some(entry_type));
     }
 }

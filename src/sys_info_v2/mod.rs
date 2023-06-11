@@ -76,6 +76,9 @@ pub type GPUDynamicInformation = gpu_info::DynamicInfo;
 pub type GPU = gpu_info::GPU;
 pub type GPUInfo = gpu_info::GPUInfo;
 
+pub type App = app_info::App;
+pub type Process = proc_info::Process;
+
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
 }
@@ -119,22 +122,22 @@ pub struct Readings {
     pub disks: Vec<Disk>,
     pub network_devices: Vec<NetworkDevice>,
     pub gpus: Vec<GPU>,
+
+    pub running_apps: Vec<App>,
+    pub process_tree: Process,
 }
 
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
-        let pstree = proc_info::Process::process_hierarchy(system);
-
-        let installed_apps = app_info::App::installed_apps();
-        let running_apps = app_info::App::running_apps(&pstree.unwrap(), &installed_apps);
-        dbg!(&running_apps);
-
         Self {
             cpu_info: CpuInfo::new(system),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
             disks: vec![],
             network_devices: vec![],
             gpus: vec![],
+
+            running_apps: vec![],
+            process_tree: Process::default(),
         }
     }
 }
@@ -164,7 +167,7 @@ impl SysInfoV2 {
     pub fn new() -> (Self, Readings) {
         use gtk::glib::*;
         use std::sync::{atomic::*, *};
-        use sysinfo::*;
+        use sysinfo::{System, SystemExt};
 
         let mut system = System::new();
         let mut readings = Readings::new(&mut system);
@@ -185,6 +188,9 @@ impl SysInfoV2 {
         } else {
             vec![]
         };
+
+        readings.process_tree = Process::process_hierarchy(&mut system).unwrap_or_default();
+        readings.running_apps = App::running_apps(&readings.process_tree, &App::installed_apps());
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
@@ -218,7 +224,11 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let readings = Readings {
+                        let process_tree =
+                            Process::process_hierarchy(&mut system).unwrap_or_default();
+                        let running_apps = App::running_apps(&process_tree, &App::installed_apps());
+
+                        let mut readings = Readings {
                             cpu_info: CpuInfo {
                                 static_info: cpu_static_info.clone(),
                                 dynamic_info: cpu_info,
@@ -227,6 +237,9 @@ impl SysInfoV2 {
                             disks,
                             network_devices,
                             gpus,
+
+                            running_apps,
+                            process_tree,
                         };
 
                         g_debug!(
@@ -241,7 +254,7 @@ impl SysInfoV2 {
                             if let Some(app) = crate::MissionCenterApplication::default_instance() {
                                 let now = std::time::Instant::now();
 
-                                if !app.refresh_readings(&readings) {
+                                if !app.refresh_readings(&mut readings) {
                                     g_critical!(
                                         "MissionCenter::SysInfo",
                                         "Readings were not completely refreshed, stale readings will be displayed"

@@ -1,6 +1,6 @@
 pub type Pid = libc::pid_t;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Process {
     pub name: String,
     pub cmd: Vec<String>,

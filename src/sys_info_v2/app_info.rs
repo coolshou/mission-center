@@ -225,10 +225,11 @@ impl App {
 
         let cmd = Self::parse_command(command);
         if cmd.is_none() {
-            g_critical!(
+            g_debug!(
                 "MissionCenter::AppInfo",
-                "Failed to load desktop file from {}: Failed to parse \"Exec\" key",
-                path.display()
+                "Failed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
+                path.display(),
+                command
             );
             return None;
         }

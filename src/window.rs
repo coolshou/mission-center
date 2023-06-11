@@ -29,6 +29,8 @@ mod imp {
     pub struct MissionCenterWindow {
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
+        #[template_child]
+        pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
 
         pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
     }
@@ -37,6 +39,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 performance_page: TemplateChild::default(),
+                apps_page: TemplateChild::default(),
 
                 sys_info: std::cell::Cell::new(None),
             }
@@ -96,13 +99,24 @@ impl MissionCenterWindow {
             .unwrap()
         };
 
-        let (sys_info, initial_readings) = crate::sys_info_v2::SysInfoV2::new();
+        let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new();
 
         let ok = this.imp().performance_page.set_up_pages(&initial_readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
                 "Failed to set initial readings for performance page"
+            );
+        }
+
+        let ok = this
+            .imp()
+            .apps_page
+            .set_initial_readings(&mut initial_readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for apps page"
             );
         }
 
@@ -133,7 +147,7 @@ impl MissionCenterWindow {
         this
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         let mut result = true;
 
         result &= self.imp().performance_page.update_readings(readings);
