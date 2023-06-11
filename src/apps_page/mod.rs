@@ -18,8 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+
+mod column_header;
+mod model_entry;
 
 mod imp {
     use super::*;
@@ -29,15 +31,16 @@ mod imp {
     pub struct AppsPage {
         #[template_child]
         column_view: TemplateChild<gtk::ColumnView>,
-        // #[template_child]
-        // name_column_factory: TemplateChild<gtk::BuilderListItemFactory>,
+
+        #[template_child]
+        name_column: TemplateChild<gtk::ColumnViewColumn>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
             Self {
                 column_view: TemplateChild::default(),
-                // name_column_factory: TemplateChild::default(),
+                name_column: TemplateChild::default(),
             }
         }
     }
@@ -49,6 +52,9 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            model_entry::ModelEntry::ensure_type();
+            column_header::ColumnHeader::ensure_type();
+
             klass.bind_template();
         }
 
@@ -61,14 +67,53 @@ mod imp {
 
     impl WidgetImpl for AppsPage {
         fn realize(&self) {
+            use model_entry::ModelEntry;
+
             self.parent_realize();
 
-            let model = gtk::StringList::new(&["Item 1", "Item 2", "Item 3"]);
+            let model = gio::ListStore::new(ModelEntry::static_type());
+            model.append(&ModelEntry::new("Item 1", 2));
+            model.append(&ModelEntry::new("Item 2", 3));
+            model.append(&ModelEntry::new("Item 3", 1));
+
             let treemodel = gtk::TreeListModel::new(model, false, false, |_| {
-                Some(gtk::StringList::new(&["Item 3", "Item 4", "Item 5"]).into())
+                let model = gio::ListStore::new(ModelEntry::static_type());
+                model.append(&ModelEntry::new("Subitem 1", 4));
+                model.append(&ModelEntry::new("Subitem 2", 5));
+                model.append(&ModelEntry::new("Subitem 3", 0));
+
+                Some(model.into())
             });
-            let selection = gtk::NoSelection::new(Some(treemodel));
+            let selection = gtk::SingleSelection::new(Some(treemodel));
             self.column_view.set_model(Some(&selection));
+
+            let list_item_widget = self.column_view.first_child().unwrap();
+            let column_view_title = list_item_widget.first_child().unwrap();
+            let column_view_box = column_view_title
+                .first_child()
+                .unwrap()
+                .downcast::<gtk::Box>()
+                .unwrap();
+
+            column_view_box.first_child().unwrap().set_visible(false);
+            column_view_box.prepend(&column_header::ColumnHeader::new(
+                "",
+                "Name",
+                gtk::Align::Start,
+            ));
+
+            let column_view_title = column_view_title.next_sibling().unwrap();
+            let column_view_box = column_view_title
+                .first_child()
+                .unwrap()
+                .downcast::<gtk::Box>()
+                .unwrap();
+            column_view_box.first_child().unwrap().set_visible(false);
+            column_view_box.prepend(&column_header::ColumnHeader::new(
+                "34%",
+                "CPU",
+                gtk::Align::End,
+            ));
         }
     }
 

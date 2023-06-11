@@ -19,26 +19,56 @@
  */
 
 using Gtk 4.0;
+using Adw 1;
 
 template $AppsPage : Box {
   orientation: vertical;
-    ColumnView column_view {
-      hexpand: true;
 
-      ColumnViewColumn {
-        title: "Name";
+  ScrolledWindow {
+    vexpand: true;
+    hexpand: true;
+
+    ColumnView column_view {
+      show-row-separators: true;
+      show-column-separators: true;
+
+      ColumnViewColumn name_column {
+        resizable: true;
         expand: true;
-        factory: BuilderListItemFactory name_column_factory {
+
+        factory: BuilderListItemFactory {
           template ListItem {
             child: TreeExpander expander {
               list-row: bind template.item as <ListItem>;
               child: Label {
-                label: bind (expander.item as <StringObject>).string;
+                label: bind (expander.item as <$ModelEntry>).name;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn cpu_column {
+        resizable: true;
+        fixed-width: 70;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: Label {
+                label: bind (expander.item as <$ModelEntry>).cpu-usage;
               };
             };
           }
         };
       }
     }
-
+  }
 }

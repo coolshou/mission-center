@@ -2,6 +2,7 @@ data/io.missioncenter.MissionCenter.desktop.in
 data/io.missioncenter.MissionCenter.appdata.xml.in
 data/io.missioncenter.MissionCenter.gschema.xml
 
+resources/ui/apps_page/column_header.blp
 resources/ui/apps_page/page.blp
 
 resources/ui/performance_page/cpu.blp
