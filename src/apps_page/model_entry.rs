@@ -21,7 +21,7 @@
 use std::cell::Cell;
 
 use gtk::{
-    glib,
+    gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
 
@@ -48,6 +48,8 @@ mod imp {
 
         pub id: Cell<Option<isize>>,
         pub entry_type: Cell<Option<EntryType>>,
+
+        pub children: Cell<Option<gio::ListStore>>,
     }
 
     impl Default for ModelEntry {
@@ -60,6 +62,8 @@ mod imp {
 
                 id: Cell::new(None),
                 entry_type: Cell::new(None),
+
+                children: Cell::new(None),
             }
         }
     }
@@ -170,5 +174,13 @@ impl ModelEntry {
         }
 
         self.imp().entry_type.set(Some(entry_type));
+    }
+
+    pub fn children(&self) -> Option<&gio::ListStore> {
+        unsafe { &*self.imp().children.as_ptr() }.as_ref()
+    }
+
+    pub fn set_children(&self, children: gio::ListStore) {
+        self.imp().children.set(Some(children));
     }
 }

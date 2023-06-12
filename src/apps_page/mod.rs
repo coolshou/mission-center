@@ -43,12 +43,7 @@ mod imp {
         pub column_view: TemplateChild<gtk::ColumnView>,
 
         pub apps_model: Cell<gio::ListStore>,
-        pub process_models: Cell<
-            std::collections::BTreeMap<
-                crate::sys_info_v2::Pid,
-                (Vec<crate::sys_info_v2::Pid>, gio::ListStore),
-            >,
-        >,
+        pub processes_root_model: Cell<gio::ListStore>,
 
         pub apps: Cell<std::collections::HashMap<String, crate::sys_info_v2::App>>,
         pub process_tree: Cell<crate::sys_info_v2::Process>,
@@ -57,13 +52,15 @@ mod imp {
     impl Default for AppsPage {
         fn default() -> Self {
             use crate::sys_info_v2::Process;
-            use std::collections::{BTreeMap, HashMap};
+            use std::collections::HashMap;
 
             Self {
                 column_view: TemplateChild::default(),
 
                 apps_model: Cell::new(gio::ListStore::new(model_entry::ModelEntry::static_type())),
-                process_models: Cell::new(BTreeMap::new()),
+                processes_root_model: Cell::new(gio::ListStore::new(
+                    model_entry::ModelEntry::static_type(),
+                )),
 
                 apps: Cell::new(HashMap::new()),
                 process_tree: Cell::new(Process::default()),
@@ -105,15 +102,19 @@ mod imp {
                     continue;
                 }
 
-                let pos = model.find_with_equal_func(|current| {
-                    let current = current.downcast_ref::<ModelEntry>();
-                    if current.is_none() {
-                        return false;
-                    }
-                    let current = current.unwrap();
+                let pos = if model.n_items() > 0 {
+                    model.find_with_equal_func(|current| {
+                        let current = current.downcast_ref::<ModelEntry>();
+                        if current.is_none() {
+                            return false;
+                        }
+                        let current = current.unwrap();
 
-                    current.name().as_str() == name
-                });
+                        current.name().as_str() == name
+                    })
+                } else {
+                    None
+                };
 
                 if pos.is_none() {
                     let model_entry = ModelEntry::new(&app.name);
@@ -126,100 +127,78 @@ mod imp {
         }
 
         pub fn update_processes_models(&self) {
-            use gtk::glib::*;
             use model_entry::ModelEntry;
-            use std::collections::{BTreeSet, HashMap, HashSet};
 
-            let mut processes_models = self.process_models.take();
+            fn update_model(model: Option<&gio::ListStore>, process: &crate::sys_info_v2::Process) {
+                if model.is_none() {
+                    return;
+                }
+                let model = model.unwrap();
+
+                let mut to_remove = Vec::new();
+                for i in 0..model.n_items() {
+                    let current = model.item(i).unwrap().downcast::<ModelEntry>();
+                    if current.is_err() {
+                        continue;
+                    }
+                    let current = current.unwrap();
+
+                    if !process
+                        .children
+                        .contains_key(&(current.id().unwrap_or(0) as _))
+                    {
+                        to_remove.push(i);
+                    }
+                }
+
+                for (i, to_remove_i) in to_remove.iter().enumerate() {
+                    model.remove((*to_remove_i as usize - i) as _);
+                }
+
+                for (pid, child) in &process.children {
+                    let pos = if model.n_items() > 0 {
+                        model.find_with_equal_func(|current| {
+                            let current = current.downcast_ref::<ModelEntry>();
+                            if current.is_none() {
+                                return false;
+                            }
+                            let current = current.unwrap();
+
+                            current.id().unwrap_or(0) == *pid as isize
+                        })
+                    } else {
+                        None
+                    };
+
+                    let mut model_entry = ModelEntry::new(&child.name);
+                    let child_model = if pos.is_none() {
+                        model_entry.set_id(*pid as _);
+                        model_entry.set_children(gio::ListStore::new(ModelEntry::static_type()));
+                        model.append(&model_entry);
+
+                        model_entry.children()
+                    } else {
+                        let model: gio::ListModel = model.clone().into();
+                        model_entry = model
+                            .item(pos.unwrap())
+                            .unwrap()
+                            .downcast::<ModelEntry>()
+                            .unwrap();
+
+                        model_entry.children()
+                    };
+
+                    update_model(child_model, child);
+                }
+            }
+
             let process_tree = self.process_tree.take();
+            let processes_root_model = self.processes_root_model.take();
 
-            let mut new_processes = HashMap::new();
-            let mut removed_processes = HashSet::new();
+            update_model(Some(&processes_root_model), &process_tree);
 
-            for (pid, (ancestors, model)) in &mut processes_models {
-                let mut parent_process = &process_tree;
-                for ancestor_pid in ancestors.iter() {
-                    let ancestor = parent_process.children.get(ancestor_pid);
-                    if ancestor.is_none() {
-                        break;
-                    }
-                    parent_process = ancestor.unwrap();
-                }
-
-                let process = if *pid == 1 {
-                    Some(parent_process)
-                } else {
-                    parent_process.children.get(pid)
-                };
-                if let Some(process) = process {
-                    let mut to_remove = BTreeSet::new();
-                    for i in 0..model.n_items() {
-                        let current = model.item(i).unwrap().downcast::<ModelEntry>();
-                        if current.is_err() {
-                            continue;
-                        }
-                        let current = current.unwrap();
-
-                        if current.is_section_header() {
-                            continue;
-                        }
-
-                        let current_pid = current.id().unwrap_or(0);
-                        if !process.children.contains_key(&(current_pid as _)) {
-                            removed_processes.insert(current_pid as _);
-                            to_remove.insert(i);
-                        }
-                    }
-
-                    for (i, to_remove_i) in to_remove.iter().enumerate() {
-                        let to_remove_i = *to_remove_i as usize - i;
-                        model.remove(to_remove_i as _);
-                    }
-
-                    for child_proc in process.children.values() {
-                        let pos = if model.n_items() > 0 {
-                            model.find_with_equal_func(|current| {
-                                let current = current.downcast_ref::<ModelEntry>();
-                                if current.is_none() {
-                                    return false;
-                                }
-                                let current = current.unwrap();
-
-                                let current_pid = current.id().unwrap_or(0);
-                                current_pid as crate::sys_info_v2::Pid == child_proc.pid
-                            })
-                        } else {
-                            None
-                        };
-
-                        if pos.is_none() {
-                            let mut ancestors = ancestors.clone();
-                            ancestors.push(process.pid);
-
-                            let model_entry = ModelEntry::new(&child_proc.name);
-                            model_entry.set_id(child_proc.pid as _);
-                            model.append(&model_entry);
-                            new_processes.insert(
-                                child_proc.pid,
-                                (ancestors, gio::ListStore::new(ModelEntry::static_type())),
-                            );
-                        }
-                    }
-                } else {
-                    g_critical!("MissionCenter::AppsPage", "Process {} not found", pid);
-                }
-            }
-
-            for pid in removed_processes {
-                processes_models.remove(&pid);
-            }
-
-            for (pid, (ancestors, model)) in new_processes {
-                processes_models.insert(pid, (ancestors, model));
-            }
-
+            self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
-            self.process_models.set(processes_models);
         }
     }
 
@@ -290,7 +269,7 @@ glib::wrapper! {
 impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         use model_entry::ModelEntry;
-        use std::collections::{BTreeMap, HashMap};
+        use std::collections::HashMap;
 
         let this = self.imp();
 
@@ -300,11 +279,6 @@ impl AppsPage {
 
         let mut process_tree = crate::sys_info_v2::Process::default();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
-
-        let mut process_models = BTreeMap::new();
-        let root_process_model = gio::ListStore::new(model_entry::ModelEntry::static_type());
-        process_models.insert(process_tree.pid, (vec![], root_process_model));
-        this.process_models.set(process_models);
         this.process_tree.set(process_tree);
 
         this.update_processes_models();
@@ -316,6 +290,8 @@ impl AppsPage {
         let processes_section_header = ModelEntry::new(&i18n("Processes"));
         processes_section_header.set_id(PROCESSES_SECTION_HEADER_ID);
         processes_section_header.set_is_section_header(true);
+        processes_section_header
+            .set_children(unsafe { &*this.processes_root_model.as_ptr() }.clone());
 
         let root_model = gio::ListStore::new(ModelEntry::static_type());
         root_model.append(&apps_section_header);
@@ -344,26 +320,9 @@ impl AppsPage {
 
                 Some(model.into())
             } else if model_entry.id() == Some(PROCESSES_SECTION_HEADER_ID) {
-                let process_tree = this.process_tree.take();
-                let root_model_pid = process_tree.pid;
-                this.process_tree.set(process_tree);
-
-                let processes_models = this.process_models.take();
-                let model = processes_models
-                    .get(&root_model_pid)
-                    .map(|x| x.1.clone().into());
-                this.process_models.set(processes_models);
-
-                model
+                model_entry.children().map(|model| model.clone().into())
             } else {
-                let process_id = model_entry.id().unwrap_or(0) as crate::sys_info_v2::Pid;
-                let processes_models = this.process_models.take();
-                let model = processes_models
-                    .get(&process_id)
-                    .map(|x| x.1.clone().into());
-                this.process_models.set(processes_models);
-
-                model
+                model_entry.children().map(|model| model.clone().into())
             }
         });
         let selection = gtk::SingleSelection::new(Some(treemodel));
