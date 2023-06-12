@@ -151,6 +151,7 @@ impl MissionCenterWindow {
         let mut result = true;
 
         result &= self.imp().performance_page.update_readings(readings);
+        result &= self.imp().apps_page.update_readings(readings);
 
         result
     }

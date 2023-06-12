@@ -7,7 +7,7 @@ pub struct Process {
     pub exe: std::path::PathBuf,
     pub pid: Pid,
     pub parent: Option<Pid>,
-    pub children: Vec<Process>,
+    pub children: std::collections::HashMap<Pid, Process>,
 }
 
 impl Process {
@@ -31,7 +31,7 @@ impl Process {
                 exe: p.exe().to_owned(),
                 pid: p.pid().as_u32() as libc::pid_t,
                 parent: None,
-                children: vec![],
+                children: HashMap::new(),
             })
         });
         if root_process.is_none() {
@@ -43,7 +43,7 @@ impl Process {
         process_tree.insert(SIPid::from(root_process.pid as usize), 0_usize);
 
         let mut children = Vec::with_capacity(pids.len());
-        children.push(vec![]);
+        children.push(HashMap::new());
 
         let mut visited = HashSet::new();
         visited.insert(SIPid::from(root_process.pid as usize));
@@ -81,15 +81,15 @@ impl Process {
                             exe: a_parent.exe().to_owned(),
                             pid: a_parent.pid().as_u32() as libc::pid_t,
                             parent: Some(parent_process.pid().as_u32() as libc::pid_t),
-                            children: vec![],
+                            children: HashMap::new(),
                         };
-                        children[index].push(p);
+                        children[index].insert(p.pid, p);
 
                         visited.insert(a_parent.pid());
 
                         index = children.len();
                         process_tree.insert(a_parent.pid(), index);
-                        children.push(vec![]);
+                        children.push(HashMap::new());
                     }
 
                     break;
@@ -103,7 +103,7 @@ impl Process {
         fn gather_descendants(
             process: &mut Process,
             process_tree: &BTreeMap<SIPid, usize>,
-            children: &mut Vec<Vec<Process>>,
+            children: &mut Vec<HashMap<Pid, Process>>,
         ) {
             let pid = SIPid::from(process.pid as usize);
 
@@ -118,14 +118,14 @@ impl Process {
 
             std::mem::swap(&mut process.children, &mut children[index]);
 
-            for child in &mut process.children {
+            for (_, child) in &mut process.children {
                 gather_descendants(child, process_tree, children);
             }
         }
 
         let process = &mut root_process;
         std::mem::swap(&mut process.children, &mut children[0]);
-        for child in &mut process.children {
+        for (_, child) in &mut process.children {
             gather_descendants(child, &process_tree, &mut children);
         }
 

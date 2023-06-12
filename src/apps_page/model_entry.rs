@@ -46,7 +46,8 @@ mod imp {
         #[property(get, set)]
         is_regular_entry: Cell<bool>,
 
-        pub(crate) entry_type: Cell<Option<EntryType>>,
+        pub id: Cell<Option<isize>>,
+        pub entry_type: Cell<Option<EntryType>>,
     }
 
     impl Default for ModelEntry {
@@ -56,6 +57,8 @@ mod imp {
                 cpu_usage: Cell::new(glib::GString::default()),
                 is_section_header: Cell::new(false),
                 is_regular_entry: Cell::new(true),
+
+                id: Cell::new(None),
                 entry_type: Cell::new(None),
             }
         }
@@ -138,15 +141,19 @@ glib::wrapper! {
 
 impl ModelEntry {
     pub fn new(name: &str) -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(
-                ModelEntry::static_type(),
-                &mut [("name", name.into()), ("cpu-usage", "0%".into())],
-            )
-            .downcast()
-            .unwrap()
-        };
+        let this: Self = glib::Object::builder()
+            .property("name", name)
+            .property("cpu-usage", "0%")
+            .build();
         this
+    }
+
+    pub fn id(&self) -> Option<isize> {
+        self.imp().id.get()
+    }
+
+    pub fn set_id(&self, id: isize) {
+        self.imp().id.set(Some(id));
     }
 
     pub fn entry_type(&self) -> Option<EntryType> {

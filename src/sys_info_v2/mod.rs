@@ -78,6 +78,7 @@ pub type GPUInfo = gpu_info::GPUInfo;
 
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
+pub type Pid = proc_info::Pid;
 
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
@@ -123,12 +124,14 @@ pub struct Readings {
     pub network_devices: Vec<NetworkDevice>,
     pub gpus: Vec<GPU>,
 
-    pub running_apps: Vec<App>,
+    pub running_apps: std::collections::HashMap<String, App>,
     pub process_tree: Process,
 }
 
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
+        use std::collections::HashMap;
+
         Self {
             cpu_info: CpuInfo::new(system),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
@@ -136,7 +139,7 @@ impl Readings {
             network_devices: vec![],
             gpus: vec![],
 
-            running_apps: vec![],
+            running_apps: HashMap::new(),
             process_tree: Process::default(),
         }
     }
