@@ -24,7 +24,6 @@ pathfinder_gl = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933
 pathfinder_gpu = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_resources = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
-rand = { version = "0.8" }
 raw-cpuid = { version = "11.0", default-features = false }
 regex = { version = "1.8" }
 rust-ini = { version = "0.19" }

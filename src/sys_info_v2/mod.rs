@@ -195,7 +195,8 @@ impl SysInfoV2 {
             vec![]
         };
 
-        readings.process_tree = Process::process_hierarchy(&mut system).unwrap_or_default();
+        let processes = proc_info::load_process_list(std::collections::HashMap::new());
+        readings.process_tree = Process::process_hierarchy(&processes).unwrap_or_default();
         readings.running_apps = App::running_apps(&readings.process_tree, &App::installed_apps());
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
@@ -212,6 +213,7 @@ impl SysInfoV2 {
                     let mut previous_disk_stats = disk_stats;
                     let mut net_info = net_info;
                     let mut gpu_info = gpu_info;
+                    let mut processes = processes;
 
                     'read_loop: while run.load(Ordering::Acquire) {
                         let start_load_readings = std::time::Instant::now();
@@ -230,8 +232,9 @@ impl SysInfoV2 {
                             vec![]
                         };
 
+                        processes = proc_info::load_process_list(processes);
                         let process_tree =
-                            Process::process_hierarchy(&mut system).unwrap_or_default();
+                            Process::process_hierarchy(&processes).unwrap_or_default();
                         let running_apps = App::running_apps(&process_tree, &App::installed_apps());
 
                         let mut readings = Readings {
