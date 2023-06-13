@@ -84,10 +84,6 @@ mod imp {
                 }
                 let current = current.unwrap();
 
-                if current.is_section_header() {
-                    continue;
-                }
-
                 if !apps.contains_key(current.name().as_str()) {
                     to_remove.insert(i);
                 }
@@ -118,6 +114,15 @@ mod imp {
 
                 if pos.is_none() {
                     let model_entry = ModelEntry::new(&app.name);
+                    model_entry.set_hide_expander(true);
+                    model_entry.set_indent(false);
+                    model_entry.set_icon(
+                        app.icon
+                            .as_ref()
+                            .unwrap_or(&"application-x-executable".to_string())
+                            .as_str(),
+                    );
+                    model_entry.set_icon_size(24);
                     model.append(&model_entry);
                 }
             }
@@ -174,6 +179,7 @@ mod imp {
                     let child_model = if pos.is_none() {
                         model_entry.set_id(*pid as _);
                         model_entry.set_children(gio::ListStore::new(ModelEntry::static_type()));
+                        model_entry.set_icon("application-x-executable-symbolic");
                         model.append(&model_entry);
 
                         model_entry.children()
@@ -199,6 +205,55 @@ mod imp {
 
             self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
+        }
+
+        pub fn set_up_view_model(&self) {
+            use model_entry::ModelEntry;
+
+            let apps_section_header = ModelEntry::new(&i18n("Apps"));
+            apps_section_header.set_id(APPS_SECTION_HEADER_ID);
+            apps_section_header.set_is_section_header(true);
+
+            let processes_section_header = ModelEntry::new(&i18n("Processes"));
+            processes_section_header.set_id(PROCESSES_SECTION_HEADER_ID);
+            processes_section_header.set_is_section_header(true);
+            processes_section_header
+                .set_children(unsafe { &*self.processes_root_model.as_ptr() }.clone());
+
+            let root_model = gio::ListStore::new(ModelEntry::static_type());
+            root_model.append(&apps_section_header);
+            root_model.append(&processes_section_header);
+
+            let this = self.obj().downgrade();
+            let treemodel = gtk::TreeListModel::new(root_model, false, false, move |model_entry| {
+                let this = this.upgrade();
+                if this.is_none() {
+                    return None;
+                }
+                let this = this.unwrap();
+                let this = this.imp();
+
+                let model_entry = model_entry.downcast_ref::<ModelEntry>();
+                if model_entry.is_none() {
+                    return None;
+                }
+                let model_entry = model_entry.unwrap();
+
+                if model_entry.id() == Some(APPS_SECTION_HEADER_ID) {
+                    this.update_app_model();
+
+                    let model = this.apps_model.take();
+                    this.apps_model.set(model.clone());
+
+                    Some(model.into())
+                } else if model_entry.id() == Some(PROCESSES_SECTION_HEADER_ID) {
+                    model_entry.children().map(|model| model.clone().into())
+                } else {
+                    model_entry.children().map(|model| model.clone().into())
+                }
+            });
+            let selection = gtk::SingleSelection::new(Some(treemodel));
+            self.column_view.set_model(Some(&selection));
         }
     }
 
@@ -268,7 +323,6 @@ glib::wrapper! {
 
 impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
-        use model_entry::ModelEntry;
         use std::collections::HashMap;
 
         let this = self.imp();
@@ -283,50 +337,7 @@ impl AppsPage {
 
         this.update_processes_models();
 
-        let apps_section_header = ModelEntry::new(&i18n("Apps"));
-        apps_section_header.set_id(APPS_SECTION_HEADER_ID);
-        apps_section_header.set_is_section_header(true);
-
-        let processes_section_header = ModelEntry::new(&i18n("Processes"));
-        processes_section_header.set_id(PROCESSES_SECTION_HEADER_ID);
-        processes_section_header.set_is_section_header(true);
-        processes_section_header
-            .set_children(unsafe { &*this.processes_root_model.as_ptr() }.clone());
-
-        let root_model = gio::ListStore::new(ModelEntry::static_type());
-        root_model.append(&apps_section_header);
-        root_model.append(&processes_section_header);
-
-        let this = self.downgrade();
-        let treemodel = gtk::TreeListModel::new(root_model, false, false, move |model_entry| {
-            let this = this.upgrade();
-            if this.is_none() {
-                return None;
-            }
-            let this = this.unwrap();
-            let this = this.imp();
-
-            let model_entry = model_entry.downcast_ref::<ModelEntry>();
-            if model_entry.is_none() {
-                return None;
-            }
-            let model_entry = model_entry.unwrap();
-
-            if model_entry.id() == Some(APPS_SECTION_HEADER_ID) {
-                this.update_app_model();
-
-                let model = this.apps_model.take();
-                this.apps_model.set(model.clone());
-
-                Some(model.into())
-            } else if model_entry.id() == Some(PROCESSES_SECTION_HEADER_ID) {
-                model_entry.children().map(|model| model.clone().into())
-            } else {
-                model_entry.children().map(|model| model.clone().into())
-            }
-        });
-        let selection = gtk::SingleSelection::new(Some(treemodel));
-        self.imp().column_view.set_model(Some(&selection));
+        this.set_up_view_model();
 
         true
     }

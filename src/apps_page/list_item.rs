@@ -37,8 +37,16 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/list_item.ui")]
     pub struct ListItem {
         #[template_child]
+        icon_image: TemplateChild<gtk::Image>,
+        #[template_child]
         text_label: TemplateChild<gtk::Label>,
 
+        #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        #[allow(dead_code)]
+        icon: [u8; 0],
+        #[property(get = Self::icon_size, set = Self::set_icon_size, type = i32)]
+        #[allow(dead_code)]
+        icon_size: [u8; 0],
         #[property(get = Self::label, set = Self::set_label, type = glib::GString)]
         #[allow(dead_code)]
         label: [u8; 0],
@@ -49,7 +57,10 @@ mod imp {
     impl Default for ListItem {
         fn default() -> Self {
             Self {
+                icon_image: TemplateChild::default(),
                 text_label: TemplateChild::default(),
+                icon: [0; 0],
+                icon_size: [0; 0],
                 label: [0; 0],
                 is_section_header: Cell::new(false),
             }
@@ -57,12 +68,28 @@ mod imp {
     }
 
     impl ListItem {
+        fn label(&self) -> glib::GString {
+            self.text_label.text()
+        }
+
         fn set_label(&self, label: &str) {
             self.text_label.set_text(label);
         }
 
-        fn label(&self) -> glib::GString {
-            self.text_label.text()
+        fn icon(&self) -> glib::GString {
+            self.icon_image.icon_name().unwrap_or_else(|| "".into())
+        }
+
+        fn set_icon(&self, icon: &str) {
+            self.icon_image.set_icon_name(Some(icon));
+        }
+
+        fn icon_size(&self) -> i32 {
+            self.icon_image.pixel_size()
+        }
+
+        fn set_icon_size(&self, icon_size: i32) {
+            self.icon_image.set_pixel_size(icon_size);
         }
     }
 
@@ -85,9 +112,11 @@ mod imp {
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
+
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec)
         }
+
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
         }
@@ -103,6 +132,7 @@ mod imp {
                 return;
             }
 
+            self.icon_image.set_visible(false);
             self.text_label.add_css_class("heading");
 
             self.obj().set_margin_top(5);
@@ -120,6 +150,9 @@ mod imp {
                 return;
             }
             let parent = parent.unwrap();
+            parent.set_hide_expander(true);
+            parent.set_indent_for_depth(false);
+            parent.set_indent_for_icon(false);
             let _ = parent.activate_action("listitem.expand", None);
         }
     }

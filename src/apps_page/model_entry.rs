@@ -20,16 +20,11 @@
 
 use std::cell::Cell;
 
+use gtk::glib::g_critical;
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EntryType {
-    App,
-    Process,
-}
 
 mod imp {
     use super::*;
@@ -39,15 +34,21 @@ mod imp {
     pub struct ModelEntry {
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         name: Cell<glib::GString>,
+        #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        icon: Cell<glib::GString>,
+        #[property(get, set)]
+        icon_size: Cell<i32>,
         #[property(get = Self::cpu_usage, set = Self::set_cpu_usage, type = glib::GString)]
         cpu_usage: Cell<glib::GString>,
+
+        #[property(get, set)]
+        hide_expander: Cell<bool>,
+        #[property(get, set)]
+        indent: Cell<bool>,
         #[property(get, set)]
         is_section_header: Cell<bool>,
-        #[property(get, set)]
-        is_regular_entry: Cell<bool>,
 
         pub id: Cell<Option<isize>>,
-        pub entry_type: Cell<Option<EntryType>>,
 
         pub children: Cell<Option<gio::ListStore>>,
     }
@@ -56,12 +57,15 @@ mod imp {
         fn default() -> Self {
             Self {
                 name: Cell::new(glib::GString::default()),
+                icon: Cell::new(glib::GString::default()),
+                icon_size: Cell::new(16),
                 cpu_usage: Cell::new(glib::GString::default()),
+
+                hide_expander: Cell::new(false),
+                indent: Cell::new(true),
                 is_section_header: Cell::new(false),
-                is_regular_entry: Cell::new(true),
 
                 id: Cell::new(None),
-                entry_type: Cell::new(None),
 
                 children: Cell::new(None),
             }
@@ -85,6 +89,24 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn icon(&self) -> glib::GString {
+            let icon = self.icon.take();
+            let result = icon.clone();
+            self.icon.set(icon);
+
+            result
+        }
+
+        pub fn set_icon(&self, icon: &str) {
+            let current_icon = self.icon.take();
+            if current_icon == icon {
+                self.icon.set(current_icon);
+                return;
+            }
+
+            self.icon.set(glib::GString::from(icon));
         }
 
         pub fn cpu_usage(&self) -> glib::GString {
@@ -115,24 +137,16 @@ mod imp {
     impl ObjectImpl for ModelEntry {
         fn constructed(&self) {
             self.parent_constructed();
-
-            self.obj()
-                .as_ref()
-                .bind_property("is-section-header", self.obj().as_ref(), "is-regular-entry")
-                .flags(
-                    glib::BindingFlags::SYNC_CREATE
-                        | glib::BindingFlags::BIDIRECTIONAL
-                        | glib::BindingFlags::INVERT_BOOLEAN,
-                )
-                .build();
         }
 
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
+
         fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
             self.derived_set_property(id, value, pspec)
         }
+
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
         }
@@ -145,10 +159,7 @@ glib::wrapper! {
 
 impl ModelEntry {
     pub fn new(name: &str) -> Self {
-        let this: Self = glib::Object::builder()
-            .property("name", name)
-            .property("cpu-usage", "0%")
-            .build();
+        let this: Self = glib::Object::builder().property("name", name).build();
         this
     }
 
@@ -160,27 +171,36 @@ impl ModelEntry {
         self.imp().id.set(Some(id));
     }
 
-    pub fn entry_type(&self) -> Option<EntryType> {
-        if self.is_section_header() {
-            None
-        } else {
-            self.imp().entry_type.get()
-        }
-    }
-
-    pub fn set_entry_type(&self, entry_type: EntryType) {
-        if self.is_section_header() {
-            return;
-        }
-
-        self.imp().entry_type.set(Some(entry_type));
-    }
-
     pub fn children(&self) -> Option<&gio::ListStore> {
         unsafe { &*self.imp().children.as_ptr() }.as_ref()
     }
 
     pub fn set_children(&self, children: gio::ListStore) {
+        use glib::*;
+        use gtk::prelude::*;
+
+        if unsafe { &*self.imp().children.as_ptr() }.is_some() {
+            g_critical!(
+                "MissionCenter::AppsPage",
+                "Attempted to set children on a ModelEntry that already has children"
+            );
+            return;
+        }
+
+        children.connect_items_changed(glib::clone!(@weak self as this => move |_, _, _, _| {
+            if this.is_section_header() {
+                return;
+            }
+
+            let children = this.imp().children.take();
+            if children.is_some() {
+                let children = children.unwrap();
+                this.set_hide_expander(children.n_items() == 0);
+                this.imp().children.set(Some(children));
+            }
+        }));
+
+        self.set_hide_expander(children.n_items() == 0);
         self.imp().children.set(Some(children));
     }
 }

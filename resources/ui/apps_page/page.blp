@@ -44,12 +44,14 @@ template $AppsPage : Box {
           template ListItem {
             // focusable: false;
             child: TreeExpander expander {
-              hide-expander: bind (expander.item as <$ModelEntry>).is-section-header;
-              indent-for-icon: bind (expander.item as <$ModelEntry>).is-regular-entry;
+              hide-expander: bind (expander.item as <$ModelEntry>).hide-expander;
+              indent-for-depth: bind (expander.item as <$ModelEntry>).indent;
 
               list-row: bind template.item as <ListItem>;
               child: $ListItem {
                 is-section-header: bind (expander.item as <$ModelEntry>).is-section-header;
+                icon: bind (expander.item as <$ModelEntry>).icon;
+                icon-size: bind (expander.item as <$ModelEntry>).icon-size;
                 label: bind (expander.item as <$ModelEntry>).name;
               };
             };
@@ -72,9 +74,8 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $ListItem {
+              child: Label {
                 label: bind (expander.item as <$ModelEntry>).cpu-usage;
-                visible: bind (expander.item as <$ModelEntry>).is-regular-entry;
               };
             };
           }
