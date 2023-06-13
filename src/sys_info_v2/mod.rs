@@ -79,6 +79,8 @@ pub type GPUInfo = gpu_info::GPUInfo;
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
 #[allow(dead_code)]
+pub type ProcessStats = proc_info::ProcessStats;
+#[allow(dead_code)]
 pub type Pid = proc_info::Pid;
 
 lazy_static! {

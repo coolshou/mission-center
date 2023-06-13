@@ -5,6 +5,7 @@ data/io.missioncenter.MissionCenter.gschema.xml
 resources/ui/apps_page/column_header.blp
 resources/ui/apps_page/list_item.blp
 resources/ui/apps_page/page.blp
+resources/ui/apps_page/stat_list_item.blp
 
 resources/ui/performance_page/cpu.blp
 resources/ui/performance_page/disk.blp

@@ -38,8 +38,17 @@ mod imp {
         icon: Cell<glib::GString>,
         #[property(get, set)]
         icon_size: Cell<i32>,
-        #[property(get = Self::cpu_usage, set = Self::set_cpu_usage, type = glib::GString)]
-        cpu_usage: Cell<glib::GString>,
+
+        #[property(get, set)]
+        cpu_usage: Cell<f32>,
+        #[property(get, set)]
+        memory_usage: Cell<f32>,
+        #[property(get, set)]
+        disk_usage: Cell<f32>,
+        #[property(get, set)]
+        network_usage: Cell<f32>,
+        #[property(get, set)]
+        gpu_usage: Cell<f32>,
 
         #[property(get, set)]
         hide_expander: Cell<bool>,
@@ -59,7 +68,12 @@ mod imp {
                 name: Cell::new(glib::GString::default()),
                 icon: Cell::new(glib::GString::default()),
                 icon_size: Cell::new(16),
-                cpu_usage: Cell::new(glib::GString::default()),
+
+                cpu_usage: Cell::new(0.),
+                memory_usage: Cell::new(0.),
+                disk_usage: Cell::new(0.),
+                network_usage: Cell::new(0.),
+                gpu_usage: Cell::new(0.),
 
                 hide_expander: Cell::new(false),
                 indent: Cell::new(true),
@@ -107,24 +121,6 @@ mod imp {
             }
 
             self.icon.set(glib::GString::from(icon));
-        }
-
-        pub fn cpu_usage(&self) -> glib::GString {
-            let cpu_usage = self.cpu_usage.take();
-            let result = cpu_usage.clone();
-            self.cpu_usage.set(cpu_usage);
-
-            result
-        }
-
-        pub fn set_cpu_usage(&self, cpu_usage: &str) {
-            let current_cpu_usage = self.cpu_usage.take();
-            if current_cpu_usage == cpu_usage {
-                self.cpu_usage.set(current_cpu_usage);
-                return;
-            }
-
-            self.cpu_usage.set(glib::GString::from(cpu_usage));
         }
     }
 

@@ -1,18 +1,40 @@
 pub type Pid = libc::pid_t;
 
+#[allow(dead_code)]
+#[derive(Debug, Clone, Default)]
+pub struct ProcessStats {
+    pub cpu_usage: f32,
+    pub memory_usage: f32,
+    pub disk_usage: f32,
+    pub network_usage: f32,
+    pub gpu_usage: f32,
+
+    mem_used_bytes: u64,
+
+    disk_read_bytes: u64,
+    disk_write_bytes: u64,
+
+    net_bytes_sent: u64,
+    net_bytes_recv: u64,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Process {
     pub name: String,
     pub cmd: Vec<String>,
     pub exe: std::path::PathBuf,
     pub pid: Pid,
+
     pub parent: Option<Pid>,
     pub children: std::collections::HashMap<Pid, Process>,
+
+    pub process_stats: ProcessStats,
 }
 
 impl Process {
     pub fn process_hierarchy(system: &mut sysinfo::System) -> Option<Process> {
         use gtk::glib::g_debug;
+        use rand::Rng;
         use std::collections::*;
         use sysinfo::{PidExt, ProcessExt, ProcessRefreshKind, SystemExt};
 
@@ -23,6 +45,8 @@ impl Process {
 
         let now = std::time::Instant::now();
 
+        let mut rng = rand::thread_rng();
+
         let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
         let root_process = processes.get(pids.first().unwrap()).map_or(None, |p| {
             Some(Process {
@@ -30,8 +54,25 @@ impl Process {
                 cmd: p.cmd().iter().map(|s| s.to_owned()).collect::<Vec<_>>(),
                 exe: p.exe().to_owned(),
                 pid: p.pid().as_u32() as libc::pid_t,
+
                 parent: None,
                 children: HashMap::new(),
+
+                process_stats: ProcessStats {
+                    cpu_usage: p.cpu_usage(),
+                    memory_usage: rng.gen_range(0.0..34359738368.0),
+                    disk_usage: rng.gen_range(0.0..34359738368.0),
+                    network_usage: rng.gen_range(0.0..34359738368.0),
+                    gpu_usage: rng.gen_range(0.0..100.0),
+
+                    mem_used_bytes: 0,
+
+                    disk_read_bytes: 0,
+                    disk_write_bytes: 0,
+
+                    net_bytes_sent: 0,
+                    net_bytes_recv: 0,
+                },
             })
         });
         if root_process.is_none() {
@@ -70,25 +111,44 @@ impl Process {
 
                 if visited.contains(&parent_process.pid()) {
                     let mut index = *process_tree.get(&parent_process.pid()).unwrap();
-                    while let Some(a_parent) = stack.pop() {
+                    let mut parent_pid = parent_process.pid().as_u32() as Pid;
+                    while let Some(ancestor) = stack.pop() {
                         let p = Process {
-                            name: a_parent.name().to_owned(),
-                            cmd: a_parent
+                            name: ancestor.name().to_owned(),
+                            cmd: ancestor
                                 .cmd()
                                 .iter()
                                 .map(|s| s.to_owned())
                                 .collect::<Vec<_>>(),
-                            exe: a_parent.exe().to_owned(),
-                            pid: a_parent.pid().as_u32() as libc::pid_t,
-                            parent: Some(parent_process.pid().as_u32() as libc::pid_t),
+                            exe: ancestor.exe().to_owned(),
+                            pid: ancestor.pid().as_u32() as Pid,
+
+                            parent: Some(parent_pid),
                             children: HashMap::new(),
+
+                            process_stats: ProcessStats {
+                                cpu_usage: ancestor.cpu_usage(),
+                                memory_usage: rng.gen_range(0.0..34359738368.0),
+                                disk_usage: rng.gen_range(0.0..34359738368.0),
+                                network_usage: rng.gen_range(0.0..34359738368.0),
+                                gpu_usage: rng.gen_range(0.0..100.0),
+
+                                mem_used_bytes: 0,
+
+                                disk_read_bytes: 0,
+                                disk_write_bytes: 0,
+
+                                net_bytes_sent: 0,
+                                net_bytes_recv: 0,
+                            },
                         };
+                        parent_pid = p.pid;
                         children[index].insert(p.pid, p);
 
-                        visited.insert(a_parent.pid());
+                        visited.insert(ancestor.pid());
 
                         index = children.len();
-                        process_tree.insert(a_parent.pid(), index);
+                        process_tree.insert(ancestor.pid(), index);
                         children.push(HashMap::new());
                     }
 

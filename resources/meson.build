@@ -7,6 +7,7 @@ blueprints = custom_target('blueprints',
     'ui/apps_page/column_header.blp',
     'ui/apps_page/list_item.blp',
     'ui/apps_page/page.blp',
+    'ui/apps_page/stat_list_item.blp',
 
     'ui/performance_page/cpu.blp',
     'ui/performance_page/disk.blp',

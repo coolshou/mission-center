@@ -27,6 +27,7 @@ use crate::i18n::*;
 mod column_header;
 mod list_item;
 mod model_entry;
+mod stat_list_item;
 
 const APPS_SECTION_HEADER_ID: isize = isize::MIN;
 const PROCESSES_SECTION_HEADER_ID: isize = isize::MIN + 1;
@@ -175,7 +176,13 @@ mod imp {
                         None
                     };
 
-                    let mut model_entry = ModelEntry::new(&child.name);
+                    let entry_name = if child.exe != std::path::Path::new("") {
+                        child.exe.as_path().file_name().unwrap().to_str().unwrap()
+                    } else {
+                        child.name.as_str()
+                    };
+
+                    let mut model_entry = ModelEntry::new(entry_name);
                     let child_model = if pos.is_none() {
                         model_entry.set_id(*pid as _);
                         model_entry.set_children(gio::ListStore::new(ModelEntry::static_type()));
@@ -193,6 +200,11 @@ mod imp {
 
                         model_entry.children()
                     };
+                    model_entry.set_cpu_usage(child.process_stats.cpu_usage);
+                    model_entry.set_memory_usage(child.process_stats.memory_usage);
+                    model_entry.set_disk_usage(child.process_stats.disk_usage);
+                    model_entry.set_network_usage(child.process_stats.network_usage);
+                    model_entry.set_gpu_usage(child.process_stats.gpu_usage);
 
                     update_model(child_model, child);
                 }
@@ -255,6 +267,24 @@ mod imp {
             let selection = gtk::SingleSelection::new(Some(treemodel));
             self.column_view.set_model(Some(&selection));
         }
+
+        pub fn configure_column_header(
+            &self,
+            column_header: &gtk::Widget,
+            name: &str,
+            heading: &str,
+            align: gtk::Align,
+        ) -> Option<gtk::Widget> {
+            let column_view_box = column_header
+                .first_child()
+                .unwrap()
+                .downcast::<gtk::Box>()
+                .unwrap();
+            column_view_box.first_child().unwrap().set_visible(false);
+            column_view_box.prepend(&column_header::ColumnHeader::new(heading, name, align));
+
+            column_header.next_sibling()
+        }
     }
 
     #[glib::object_subclass]
@@ -267,6 +297,7 @@ mod imp {
             list_item::ListItem::ensure_type();
             column_header::ColumnHeader::ensure_type();
             model_entry::ModelEntry::ensure_type();
+            stat_list_item::StatListItem::ensure_type();
 
             klass.bind_template();
         }
@@ -283,32 +314,29 @@ mod imp {
             self.parent_realize();
 
             let list_item_widget = self.column_view.first_child().unwrap();
-            let column_view_title = list_item_widget.first_child().unwrap();
-            let column_view_box = column_view_title
-                .first_child()
-                .unwrap()
-                .downcast::<gtk::Box>()
-                .unwrap();
 
-            column_view_box.first_child().unwrap().set_visible(false);
-            column_view_box.prepend(&column_header::ColumnHeader::new(
-                "",
-                &i18n("Name"),
-                gtk::Align::Start,
-            ));
-
-            let column_view_title = column_view_title.next_sibling().unwrap();
-            let column_view_box = column_view_title
-                .first_child()
-                .unwrap()
-                .downcast::<gtk::Box>()
+            let mut column_view_title = list_item_widget.first_child().unwrap();
+            column_view_title = self
+                .configure_column_header(&column_view_title, &i18n("Name"), "", gtk::Align::Start)
                 .unwrap();
-            column_view_box.first_child().unwrap().set_visible(false);
-            column_view_box.prepend(&column_header::ColumnHeader::new(
-                "34%",
-                &i18n("CPU"),
-                gtk::Align::End,
-            ));
+            column_view_title = self
+                .configure_column_header(&column_view_title, &i18n("CPU"), "0%", gtk::Align::End)
+                .unwrap();
+            column_view_title = self
+                .configure_column_header(&column_view_title, &i18n("Memory"), "0%", gtk::Align::End)
+                .unwrap();
+            column_view_title = self
+                .configure_column_header(&column_view_title, &i18n("Disk"), "0%", gtk::Align::End)
+                .unwrap();
+            column_view_title = self
+                .configure_column_header(
+                    &column_view_title,
+                    &i18n("Network"),
+                    "0%",
+                    gtk::Align::End,
+                )
+                .unwrap();
+            self.configure_column_header(&column_view_title, &i18n("GPU"), "0%", gtk::Align::End);
         }
     }
 

@@ -61,7 +61,7 @@ template $AppsPage : Box {
 
       ColumnViewColumn cpu_column {
         resizable: true;
-        fixed-width: 70;
+        fixed-width: 90;
 
         factory: BuilderListItemFactory {
           template ListItem {
@@ -74,8 +74,105 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: Label {
-                label: bind (expander.item as <$ModelEntry>).cpu-usage;
+              child: $StatListItem {
+                value: bind (expander.item as <$ModelEntry>).cpu-usage;
+                unit: "%";
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn memory_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatListItem {
+                value: bind (expander.item as <$ModelEntry>).memory-usage;
+                unit: "B";
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn disk_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatListItem {
+                value: bind (expander.item as <$ModelEntry>).disk-usage;
+                unit: "B/s";
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn net_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatListItem {
+                value: bind (expander.item as <$ModelEntry>).network-usage;
+                unit: "bps";
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn gpu_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatListItem {
+                value: bind (expander.item as <$ModelEntry>).gpu-usage;
+                unit: "%";
               };
             };
           }
