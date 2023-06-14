@@ -1,0 +1,14 @@
+[package]
+name = "missioncenter_proc_reader"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.3", features = ["derive"] }
+lazy_static = { version = "1.4" }
+libc = { version = "0.2" }
+num_cpus = { version = "1" }
+
+[profile.release]
+opt-level = 3
+lto = true
