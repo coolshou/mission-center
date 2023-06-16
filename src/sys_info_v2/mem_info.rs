@@ -227,7 +227,7 @@ impl MemInfo {
                     _ => {}
                 }
 
-                let cmd = cmd!(format!("pkexec {} --type 17", dmidecode_path));
+                let cmd = cmd_flatpak_host!(format!("pkexec {} --type 17", dmidecode_path));
                 cmd
             } else {
                 g_critical!(

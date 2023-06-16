@@ -1,20 +1,9 @@
 use clap::Parser;
 use lazy_static::lazy_static;
 
-macro_rules! g_critical {
-    ($prefix:literal, $format_str:literal, $($arg:tt)*) => {
-        eprintln!(concat!($prefix, "-CRITICAL ", $format_str), $($arg)*);
-    };
-}
-
-macro_rules! g_debug {
-    ($prefix:literal, $format_str:literal, $($arg:tt)*) => {
-        eprintln!(concat!($prefix, "-DEBUG ", $format_str), $($arg)*);
-    };
-}
-
 lazy_static! {
     static ref PAGE_SIZE: usize = unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize };
+    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
 }
 
 const PROC_PID_STAT_TCOMM: usize = 1;
@@ -88,17 +77,6 @@ impl Stats {
 
         Ok(())
     }
-
-    fn deserialize<R: std::io::Read>(input: &mut R) -> std::io::Result<Self> {
-        let mut stats = Self::default();
-        input.read_exact(to_binary_mut(&mut stats.cpu_usage))?;
-        input.read_exact(to_binary_mut(&mut stats.memory_usage))?;
-        input.read_exact(to_binary_mut(&mut stats.disk_usage))?;
-        input.read_exact(to_binary_mut(&mut stats.network_usage))?;
-        input.read_exact(to_binary_mut(&mut stats.gpu_usage))?;
-
-        Ok(stats)
-    }
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -159,64 +137,6 @@ impl Process {
         self.process_stats.serialize(out)?;
 
         Ok(())
-    }
-
-    fn deserialize<R: std::io::Read>(input: &mut R) -> std::io::Result<Self> {
-        use std::io::Read;
-
-        let mut process = Self::default();
-
-        let mut len = 0;
-
-        input.read_exact(to_binary_mut(&mut len))?;
-        let mut name = vec![0; len];
-        input.read_exact(&mut name)?;
-        process.name = unsafe { String::from_utf8_unchecked(name) };
-
-        input.read_exact(to_binary_mut(&mut len))?;
-        for _ in 0..len {
-            input.read_exact(to_binary_mut(&mut len))?;
-            let mut arg = vec![0; len];
-            input.read_exact(&mut arg)?;
-            process
-                .cmd
-                .push(unsafe { String::from_utf8_unchecked(arg) });
-        }
-
-        input.read_exact(to_binary_mut(&mut len))?;
-        let mut exe = vec![0; len];
-        input.read_exact(&mut exe)?;
-        process.exe = std::path::PathBuf::from(unsafe { String::from_utf8_unchecked(exe) });
-
-        let mut state = 0_u8;
-        input.read_exact(to_binary_mut(&mut state))?;
-        process.state = match state {
-            0 => ProcessState::Running,
-            1 => ProcessState::Sleeping,
-            2 => ProcessState::SleepingUninterruptible,
-            3 => ProcessState::Zombie,
-            4 => ProcessState::Stopped,
-            5 => ProcessState::Tracing,
-            6 => ProcessState::Dead,
-            7 => ProcessState::Wakekill,
-            8 => ProcessState::Waking,
-            9 => ProcessState::Parked,
-            _ => ProcessState::Unknown,
-        };
-
-        input.read_exact(to_binary_mut(&mut process.pid))?;
-
-        input.read_exact(to_binary_mut(&mut process.parent))?;
-
-        input.read_exact(to_binary_mut(&mut len))?;
-        for _ in 0..len {
-            let child = Process::deserialize(input)?;
-            process.children.insert(child.pid, child);
-        }
-
-        process.process_stats = Stats::deserialize(input)?;
-
-        Ok(process)
     }
 }
 
@@ -309,11 +229,7 @@ pub fn load_process_list(
 
     let proc = std::fs::read_dir("/proc");
     if proc.is_err() {
-        g_critical!(
-            "MissionCenter::ProcInfo",
-            "Failed to read /proc directory: {}",
-            proc.err().unwrap()
-        );
+        // eprintln!("Failed to read /proc directory: {}", proc.err().unwrap());
         return previous;
     }
     let proc_entries = proc
@@ -323,12 +239,11 @@ pub fn load_process_list(
     for entry in proc_entries {
         let pid = entry.file_name().to_string_lossy().parse::<Pid>();
         if pid.is_err() {
-            g_debug!(
-                "MissionCenter::ProcInfo",
-                "Skipping non-numeric directory in /proc: {}: {}",
-                entry.path().display(),
-                pid.err().unwrap()
-            );
+            // eprintln!(
+            //     "Skipping non-numeric directory in /proc: {}: {}",
+            //     entry.path().display(),
+            //     pid.err().unwrap()
+            // );
             continue;
         }
         let pid = pid.unwrap();
@@ -336,21 +251,19 @@ pub fn load_process_list(
 
         let output = std::fs::read_to_string(entry_path.join("stat"));
         if output.is_err() {
-            g_critical!(
-                "MissionCenter::ProcInfo",
-                "Failed to read stat information for process {}, skipping: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to read stat information for process {}, skipping: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
             continue;
         }
         let stat_file_content = output.unwrap();
         if stat_file_content.is_empty() {
-            g_critical!(
-                "MissionCenter::ProcInfo",
-                "Failed to read stat information for process {}, skipping",
-                pid
-            );
+            // eprintln!(
+            //     "Failed to read stat information for process {}, skipping",
+            //     pid
+            // );
             continue;
         }
         let mut stat_parsed = [""; 52];
@@ -362,12 +275,11 @@ pub fn load_process_list(
         let mut io_parsed = [0; 7];
         let output = std::fs::read_to_string(entry_path.join("io"));
         if output.is_err() {
-            g_critical!(
-                "MissionCenter::ProcInfo",
-                "Failed to read I/O information for process {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to read I/O information for process {}: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
         } else {
             parse_io_file(output.unwrap().as_str(), &mut io_parsed);
         }
@@ -376,12 +288,11 @@ pub fn load_process_list(
         let mut total_net_recv = 0_u64;
         let output = std::fs::read_to_string(entry_path.join("/net/dev"));
         if output.is_err() {
-            g_critical!(
-                "MissionCenter::ProcInfo",
-                "Failed to read network information for process {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to read network information for process {}: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
         } else {
             let output = output.unwrap();
             let mut lines = output.lines();
@@ -416,10 +327,11 @@ pub fn load_process_list(
             let prev_utime = process.process_stats.user_jiffies;
             let prev_stime = process.process_stats.kernel_jiffies;
 
+            let delta_utime = ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
+            let delta_stime = ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
+
             process.process_stats.cpu_usage =
-                ((utime.saturating_sub(prev_utime) + stime.saturating_sub(prev_stime)) as f32
-                    / delta_time.as_secs_f32()
-                    * 100.)
+                (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
                     .min(100. * num_cpus::get() as f32);
 
             let prev_read_bytes = process.process_stats.disk_read_bytes;
@@ -450,12 +362,11 @@ pub fn load_process_list(
 
         let output = std::fs::read_to_string(entry_path.join("cmdline"));
         let cmd = if output.is_err() {
-            g_critical!(
-                "MissionCenter::ProcInfo",
-                "Failed to parse commandline for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to parse commandline for {}: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
             vec![]
         } else {
             output
@@ -467,12 +378,11 @@ pub fn load_process_list(
 
         let output = entry_path.join("exe").read_link();
         let exe = if output.is_err() {
-            g_debug!(
-                "MissionCenter::ProcInfo",
-                "Failed to read executable path for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to read executable path for {}: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
 
             std::path::PathBuf::new()
         } else {
@@ -482,12 +392,11 @@ pub fn load_process_list(
         let mut statm_parsed = [0; 7];
         let output = std::fs::read_to_string(entry_path.join("statm"));
         if output.is_err() {
-            g_debug!(
-                "MissionCenter::ProcInfo",
-                "Failed to read memory information for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            // eprintln!(
+            //     "Failed to read memory information for {}: {}",
+            //     pid,
+            //     output.err().unwrap()
+            // );
         } else {
             let statm_file_content = output.unwrap();
             parse_statm_file(&statm_file_content, &mut statm_parsed);

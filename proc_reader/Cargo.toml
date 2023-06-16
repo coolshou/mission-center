@@ -1,5 +1,5 @@
 [package]
-name = "missioncenter_proc_reader"
+name = "proc_reader"
 version = "0.1.0"
 edition = "2021"
 

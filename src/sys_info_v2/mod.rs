@@ -42,6 +42,20 @@ macro_rules! cmd {
     }};
 }
 
+macro_rules! cmd_flatpak_host {
+    ($cmd: expr) => {{
+        use std::process::Command;
+
+        const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+
+        let mut cmd = Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("--host").arg("sh").arg("-c");
+        cmd.arg($cmd);
+
+        cmd
+    }};
+}
+
 mod app_info;
 mod cpu_info;
 mod disk_info;
@@ -79,12 +93,22 @@ pub type GPUInfo = gpu_info::GPUInfo;
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
 #[allow(dead_code)]
-pub type ProcessStats = proc_info::ProcessStats;
+pub type ProcessStats = proc_info::Stats;
 #[allow(dead_code)]
 pub type Pid = proc_info::Pid;
 
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
+    static ref CACHE_DIR: String = {
+        let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
+            std::env::var("HOME")
+                .and_then(|v| Ok(v + "/.cache"))
+                .unwrap_or("/tmp".to_string()),
+        );
+        cache_dir.push_str("/io.missioncenter.MissionCenter");
+        std::fs::create_dir_all(cache_dir.as_str()).unwrap_or(());
+        cache_dir
+    };
 }
 
 #[allow(dead_code)]
@@ -195,7 +219,7 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let processes = proc_info::load_process_list(std::collections::HashMap::new());
+        let processes = proc_info::load_process_list();
         readings.process_tree = Process::process_hierarchy(&processes).unwrap_or_default();
         readings.running_apps = App::running_apps(&readings.process_tree, &App::installed_apps());
 
@@ -213,7 +237,6 @@ impl SysInfoV2 {
                     let mut previous_disk_stats = disk_stats;
                     let mut net_info = net_info;
                     let mut gpu_info = gpu_info;
-                    let mut processes = processes;
 
                     'read_loop: while run.load(Ordering::Acquire) {
                         let start_load_readings = std::time::Instant::now();
@@ -232,7 +255,7 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        processes = proc_info::load_process_list(processes);
+                        let processes = proc_info::load_process_list();
                         let process_tree =
                             Process::process_hierarchy(&processes).unwrap_or_default();
                         let running_apps = App::running_apps(&process_tree, &App::installed_apps());
