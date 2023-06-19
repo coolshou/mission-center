@@ -219,9 +219,9 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let processes = proc_info::load_process_list();
-        readings.process_tree = Process::process_hierarchy(&processes).unwrap_or_default();
-        readings.running_apps = App::running_apps(&readings.process_tree, &App::installed_apps());
+        let (apps, processes) = proc_info::load_app_and_process_list();
+        readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
+        readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
@@ -255,10 +255,10 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let processes = proc_info::load_process_list();
+                        let (apps, processes) = proc_info::load_app_and_process_list();
                         let process_tree =
-                            Process::process_hierarchy(&processes).unwrap_or_default();
-                        let running_apps = App::running_apps(&process_tree, &App::installed_apps());
+                            proc_info::process_hierarchy(&processes).unwrap_or_default();
+                        let running_apps = app_info::running_apps(&process_tree, &apps);
 
                         let mut readings = Readings {
                             cpu_info: CpuInfo {

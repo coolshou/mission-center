@@ -8,6 +8,7 @@ clap = { version = "4.3", features = ["derive"] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 num_cpus = { version = "1" }
+rust-ini = { version = "0.19" }
 
 [profile.release]
 opt-level = 3
