@@ -4,6 +4,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let subprojects_dir = std::fs::read_dir(format!("{}/subprojects", build_root));
     if subprojects_dir.is_err() {
+        eprintln!("cargo:warning=No subprojects directory found, skip linking to nvtop");
         return Ok(());
     }
 

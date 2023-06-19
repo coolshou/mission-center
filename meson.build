@@ -10,7 +10,6 @@ gnome = import('gnome')
 subdir('data')
 subdir('po')
 subdir('resources')
-subdir('proc_reader')
 subdir('src')
 
 gnome.post_install(

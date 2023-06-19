@@ -88,9 +88,9 @@ pub fn load_process_list() -> std::collections::HashMap<Pid, Process> {
             _ => {}
         }
 
-        let proc_reader_path = CACHE_DIR.clone() + "/proc_reader";
+        let proxy_bin_path = CACHE_DIR.clone() + "/missioncenter_proxy";
 
-        match std::fs::copy("/app/bin/missioncenter_proc_reader", &proc_reader_path) {
+        match std::fs::copy("/app/bin/missioncenter_proxy", &proxy_bin_path) {
             Err(err) => {
                 g_critical!(
                     "MissionCenter::ProcInfo",
@@ -104,12 +104,12 @@ pub fn load_process_list() -> std::collections::HashMap<Pid, Process> {
 
         cmd_flatpak_host!(&format!(
             "{} --process-cache {}/proc_cache.bin",
-            proc_reader_path,
+            proxy_bin_path,
             CACHE_DIR.as_str()
         ))
     } else {
         cmd!(&format!(
-            "missioncenter_proc_reader --process-cache {}/proc_cache.bin",
+            "missioncenter_proxy --process-cache {}/proc_cache.bin",
             CACHE_DIR.as_str()
         ))
     };
@@ -118,7 +118,7 @@ pub fn load_process_list() -> std::collections::HashMap<Pid, Process> {
     if output.is_err() {
         g_critical!(
             "MissionCenter::ProcInfo",
-            "Failed to load process information, failed to spawn 'proc_reader': {}",
+            "Failed to load process information, failed to spawn proxy process: {}",
             output.err().unwrap()
         );
         return result;

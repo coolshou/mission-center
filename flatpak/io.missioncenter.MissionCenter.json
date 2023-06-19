@@ -91,7 +91,8 @@
       "name": "missioncenter",
       "buildsystem": "meson",
       "config-opts": [
-        "-Dbuildtype=release"
+        "-Dbuildtype=release",
+        "-Db_lto=true"
       ],
       "sources": [
         {
