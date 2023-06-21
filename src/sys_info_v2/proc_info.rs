@@ -6,7 +6,7 @@ pub fn load_app_and_process_list() -> (
     std::collections::HashMap<Pid, Process>,
 ) {
     use super::{App, CACHE_DIR, IS_FLATPAK};
-    use gtk::glib::g_critical;
+    use gtk::glib::{g_critical, g_debug};
     use std::{
         collections::HashMap,
         io::{Cursor, Read},
@@ -68,7 +68,31 @@ pub fn load_app_and_process_list() -> (
     let output = output.unwrap();
 
     let stderr = String::from_utf8(output.stderr);
-    dbg!(&stderr);
+    if stderr.is_err() {
+        g_critical!(
+            "MissionCenter::ProcInfo",
+            "Failed to load process information, failed to read stderr: {}",
+            stderr.err().unwrap()
+        );
+        return (apps, processes);
+    }
+    let stderr = stderr.unwrap();
+
+    for line in stderr.lines() {
+        if line.starts_with("CRT") {
+            g_critical!(
+                "MissionCenter::ProcInfo",
+                "{}",
+                line.trim_start_matches("CRT")
+            );
+        } else if line.starts_with("DBG") {
+            g_debug!(
+                "MissionCenter::ProcInfo",
+                "{}",
+                line.trim_start_matches("DBG")
+            );
+        }
+    }
 
     let mut cursor = Cursor::new(output.stdout);
 
@@ -85,12 +109,10 @@ pub fn load_app_and_process_list() -> (
 
     let mut app_count = 0_usize;
     cursor.read(to_binary_mut(&mut app_count)).unwrap();
-    dbg!(app_count);
     apps.reserve(app_count);
     for _ in 0..app_count {
         App::deserialize(&mut cursor)
             .map(|app| {
-                dbg!(&app);
                 apps.push(app);
             })
             .unwrap();

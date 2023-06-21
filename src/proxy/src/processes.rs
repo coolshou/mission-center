@@ -126,7 +126,7 @@ pub fn load_process_list(
 
     let proc = std::fs::read_dir("/proc");
     if proc.is_err() {
-        // eprintln!("Failed to read /proc directory: {}", proc.err().unwrap());
+        eprintln!("CRTFailed to read /proc directory: {}", proc.err().unwrap());
         return previous;
     }
     let proc_entries = proc
@@ -136,11 +136,11 @@ pub fn load_process_list(
     for entry in proc_entries {
         let pid = entry.file_name().to_string_lossy().parse::<Pid>();
         if pid.is_err() {
-            // eprintln!(
-            //     "Skipping non-numeric directory in /proc: {}: {}",
-            //     entry.path().display(),
-            //     pid.err().unwrap()
-            // );
+            eprintln!(
+                "DBGSkipping non-numeric directory in /proc: {}: {}",
+                entry.path().display(),
+                pid.err().unwrap()
+            );
             continue;
         }
         let pid = pid.unwrap();
@@ -148,19 +148,19 @@ pub fn load_process_list(
 
         let output = std::fs::read_to_string(entry_path.join("stat"));
         if output.is_err() {
-            // eprintln!(
-            //     "Failed to read stat information for process {}, skipping: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to read stat information for process {}, skipping: {}",
+                pid,
+                output.err().unwrap()
+            );
             continue;
         }
         let stat_file_content = output.unwrap();
         if stat_file_content.is_empty() {
-            // eprintln!(
-            //     "Failed to read stat information for process {}, skipping",
-            //     pid
-            // );
+            eprintln!(
+                "DBGFailed to read stat information for process {}, skipping",
+                pid
+            );
             continue;
         }
         let mut stat_parsed = [""; 52];
@@ -172,11 +172,11 @@ pub fn load_process_list(
         let mut io_parsed = [0; 7];
         let output = std::fs::read_to_string(entry_path.join("io"));
         if output.is_err() {
-            // eprintln!(
-            //     "Failed to read I/O information for process {}: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to read I/O information for process {}: {}",
+                pid,
+                output.err().unwrap()
+            );
         } else {
             parse_io_file(output.unwrap().as_str(), &mut io_parsed);
         }
@@ -185,11 +185,11 @@ pub fn load_process_list(
         let mut total_net_recv = 0_u64;
         let output = std::fs::read_to_string(entry_path.join("/net/dev"));
         if output.is_err() {
-            // eprintln!(
-            //     "Failed to read network information for process {}: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to read network information for process {}: {}",
+                pid,
+                output.err().unwrap()
+            );
         } else {
             let output = output.unwrap();
             let mut lines = output.lines();
@@ -259,11 +259,11 @@ pub fn load_process_list(
 
         let output = std::fs::read_to_string(entry_path.join("cmdline"));
         let cmd = if output.is_err() {
-            // eprintln!(
-            //     "Failed to parse commandline for {}: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to parse commandline for {}: {}",
+                pid,
+                output.err().unwrap()
+            );
             vec![]
         } else {
             output
@@ -275,11 +275,11 @@ pub fn load_process_list(
 
         let output = entry_path.join("exe").read_link();
         let exe = if output.is_err() {
-            // eprintln!(
-            //     "Failed to read executable path for {}: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to read executable path for {}: {}",
+                pid,
+                output.err().unwrap()
+            );
 
             std::path::PathBuf::new()
         } else {
@@ -289,11 +289,11 @@ pub fn load_process_list(
         let mut statm_parsed = [0; 7];
         let output = std::fs::read_to_string(entry_path.join("statm"));
         if output.is_err() {
-            // eprintln!(
-            //     "Failed to read memory information for {}: {}",
-            //     pid,
-            //     output.err().unwrap()
-            // );
+            eprintln!(
+                "DBGFailed to read memory information for {}: {}",
+                pid,
+                output.err().unwrap()
+            );
         } else {
             let statm_file_content = output.unwrap();
             parse_statm_file(&statm_file_content, &mut statm_parsed);

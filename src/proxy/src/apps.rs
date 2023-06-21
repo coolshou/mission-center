@@ -52,12 +52,11 @@ fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<App>) {
     let path = path.as_ref();
     let dir = std::fs::read_dir(path);
     if dir.is_err() {
-        // g_critical!(
-        //     "MissionCenter::AppInfo",
-        //     "Failed to load apps from {}: {}",
-        //     path.display(),
-        //     dir.err().unwrap()
-        // );
+        eprintln!(
+            "CRTFailed to load apps from {}: {}",
+            path.display(),
+            dir.err().unwrap()
+        );
         return;
     }
     let dir = dir.unwrap();
@@ -83,23 +82,21 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
     let path = path.as_ref();
     let ini = Ini::load_from_file(path);
     if ini.is_err() {
-        // g_critical!(
-        //     "MissionCenter::AppInfo",
-        //     "Failed to load desktop file from {}: {}",
-        //     path.display(),
-        //     ini.err().unwrap()
-        // );
+        eprintln!(
+            "CRTFailed to load desktop file from {}: {}",
+            path.display(),
+            ini.err().unwrap()
+        );
         return None;
     }
     let ini = ini.unwrap();
 
     let section = ini.section(Some("Desktop Entry"));
     if section.is_none() {
-        // g_critical!(
-        //         "MissionCenter::AppInfo",
-        //         "Failed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
-        //         path.display()
-        //     );
+        eprintln!(
+                 "CRTFailed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
+                 path.display()
+             );
         return None;
     }
     let section = section.unwrap();
@@ -113,34 +110,31 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
 
     let name = section.get("Name");
     if name.is_none() {
-        // g_critical!(
-        //     "MissionCenter::AppInfo",
-        //     "Failed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
-        //     path.display()
-        // );
+        eprintln!(
+            "CRTFailed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
+            path.display()
+        );
         return None;
     }
     let name = name.unwrap();
 
     let command = section.get("Exec");
     if command.is_none() {
-        // g_critical!(
-        //     "MissionCenter::AppInfo",
-        //     "Failed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
-        //     path.display()
-        // );
+        eprintln!(
+            "CRTFailed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
+            path.display()
+        );
         return None;
     }
     let command = command.unwrap();
 
     let cmd = parse_command(command);
     if cmd.is_none() {
-        // g_debug!(
-        //         "MissionCenter::AppInfo",
-        //         "Failed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
-        //         path.display(),
-        //         command
-        //     );
+        eprintln!(
+                "DBGFailed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
+                path.display(),
+                command
+            );
         return None;
     }
     let (cmd, is_flatpak) = cmd.unwrap();
