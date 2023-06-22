@@ -30,9 +30,9 @@ pub fn load_app_and_process_list() -> (
             _ => {}
         }
 
-        let proxy_bin_path = CACHE_DIR.clone() + "/missioncenter_proxy";
+        let proxy_bin_path = CACHE_DIR.clone() + "/missioncenter-proxy";
 
-        match std::fs::copy("/app/bin/missioncenter_proxy", &proxy_bin_path) {
+        match std::fs::copy("/app/bin/missioncenter-proxy", &proxy_bin_path) {
             Err(err) => {
                 g_critical!(
                     "MissionCenter::ProcInfo",
@@ -51,7 +51,7 @@ pub fn load_app_and_process_list() -> (
         ))
     } else {
         cmd!(&format!(
-            "missioncenter_proxy apps-processes --process-cache {}/proc_cache.bin",
+            "missioncenter-proxy-static apps-processes --process-cache {}/proc_cache.bin",
             CACHE_DIR.as_str()
         ))
     };

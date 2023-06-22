@@ -6,14 +6,6 @@ cargo_opt  = [ '--manifest-path', meson.project_source_root() / project_path / '
 cargo_opt += [ '--target-dir', meson.project_build_root()  / project_path / 'src' ]
 cargo_env  = [ 'CARGO_HOME=' + meson.project_build_root()  / project_path/ 'cargo-home' ]
 
-target = ''
-if get_option('flatpak') == true
-  cargo_opt += [ '--target', 'x86_64-unknown-linux-gnu' ]
-  cargo_env += [ 'RUSTFLAGS=' + '-C' + 'target-feature=+crt-static' ]
-
-  target = 'x86_64-unknown-linux-gnu'
-endif
-
 if get_option('buildtype') == 'release'
   cargo_opt += [ '--release' ]
   rust_target = 'release'
@@ -25,13 +17,13 @@ cargo_build = custom_target(
   'cargo-build',
   build_by_default: true,
   build_always_stale: true,
-  output: 'missioncenter_' + project_name,
+  output: 'missioncenter-' + project_name,
   console: true,
   install: true,
   install_dir: get_option('bindir'),
   command: [
     'env', cargo_env,
     cargo_bin, 'build',
-    cargo_opt, '&&', 'cp', project_path / 'src' / target / rust_target / project_name, '@OUTPUT@',
+    cargo_opt, '&&', 'cp', project_path / 'src' / rust_target / project_name, '@OUTPUT@',
   ]
 )

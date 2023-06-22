@@ -1,6 +1,8 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 
-subdir('proxy')
+if get_option('flatpak') == false
+  subdir('proxy')
+endif
 
 gnome = import('gnome')
 libudev = dependency('libudev', required: true)
