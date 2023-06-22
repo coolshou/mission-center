@@ -13,7 +13,12 @@
     "--talk-name=org.freedesktop.Flatpak",
     "--talk-name=org.gnome.Settings",
     "--system-talk-name=org.freedesktop.systemd1",
-    "--system-talk-name=org.freedesktop.NetworkManager"
+    "--system-talk-name=org.freedesktop.NetworkManager",
+    "--filesystem=xdg-data/flatpak/exports/share:ro",
+    "--filesystem=/var/lib/flatpak/exports/share:ro",
+    "--filesystem=xdg-data/flatpak/app:ro",
+    "--filesystem=/var/lib/flatpak/app:ro",
+    "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:~/.local/share/flatpak/exports/share"
   ],
   "build-options": {
     "append-path": "/app/tmp/rust/cargo/bin",
@@ -45,17 +50,14 @@
         "curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable --profile minimal --no-modify-path --target x86_64-unknown-linux-musl",
         "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' /app/tmp/rust/cargo/bin/cargo build --release --target x86_64-unknown-linux-musl",
         "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy",
-
         "mv /app/lib/libudev* /app",
         "mv /app/lib/pkgconfig /app",
         "rm -rf /app/bin/musl-gcc /app/bin/udevadm /app/etc /app/include /app/sbin /app/lib",
         "mkdir -p /app/lib/",
         "mv /app/libudev* /app/lib/",
         "mv /app/pkgconfig /app/lib/",
-
         "rustup default stable-x86_64-unknown-linux-gnu",
         "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Db_lto=true -Dflatpak=true && ninja -C _flatpak_build install",
-        
         "rm -rf /app/tmp"
       ],
       "sources": [
