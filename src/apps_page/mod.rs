@@ -32,8 +32,6 @@ mod stat_list_item;
 const APPS_SECTION_HEADER_ID: isize = isize::MIN;
 const PROCESSES_SECTION_HEADER_ID: isize = isize::MIN + 1;
 
-const APP_BLACKLIST: &[&'static str] = &["fish", "Fish"];
-
 mod imp {
     use super::*;
 
@@ -95,10 +93,6 @@ mod imp {
             }
 
             for (name, app) in &apps {
-                if APP_BLACKLIST.contains(&name.as_str()) {
-                    continue;
-                }
-
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
                         let current = current.downcast_ref::<ModelEntry>();

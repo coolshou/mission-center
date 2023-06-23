@@ -1,6 +1,8 @@
 include!("../common/util.rs");
 include!("../common/app.rs");
 
+const APP_BLACKLIST: &[&'static str] = &["fish", "Fish", "Guake Preferences"];
+
 pub fn running_apps(
     root_process: &crate::sys_info_v2::proc_info::Process,
     apps: &[App],
@@ -42,10 +44,18 @@ pub fn running_apps(
                     update_or_insert_app(app, process, result);
                     return;
                 } else {
-                    if let Some(cmd) = process.cmd.first() {
+                    let mut iter = process.cmd.iter();
+                    if let Some(cmd) = iter.next() {
                         if cmd.ends_with(&app.command) {
                             update_or_insert_app(app, process, result);
                             return;
+                        }
+                        // The app might use a runtime (bash, python, node, mono, dotnet, etc.) so check the second argument
+                        else if let Some(cmd) = iter.next() {
+                            if cmd.ends_with(&app.command) {
+                                update_or_insert_app(app, process, result);
+                                return;
+                            }
                         }
                     }
                 }
@@ -66,6 +76,10 @@ pub fn running_apps(
 
     let mut running_apps = HashMap::new();
     for app in apps {
+        if APP_BLACKLIST.contains(&app.name.as_str()) {
+            continue;
+        }
+
         find_app(
             app,
             root_process.children.values(),

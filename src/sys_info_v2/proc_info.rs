@@ -51,7 +51,7 @@ pub fn load_app_and_process_list() -> (
         ))
     } else {
         cmd!(&format!(
-            "missioncenter-proxy-static apps-processes --process-cache {}/proc_cache.bin",
+            "missioncenter-proxy apps-processes --process-cache {}/proc_cache.bin",
             CACHE_DIR.as_str()
         ))
     };
