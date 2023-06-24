@@ -258,7 +258,8 @@ mod imp {
         }
 
         fn set_up_cpu_page(&self, pages: &mut Vec<Pages>, readings: &crate::sys_info_v2::Readings) {
-            const BASE_COLOR: [u8; 3] = [0x11, 0x7d, 0xbb];
+            // GNOME color palette: Blue 4
+            const BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
 
             let summary = SummaryGraph::new();
             summary.set_widget_name("cpu");
@@ -299,7 +300,8 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            const BASE_COLOR: [u8; 3] = [0x76, 0x8D, 0xF1];
+            // GNOME color palette: Blue 2
+            const BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
 
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
@@ -347,7 +349,8 @@ mod imp {
             use crate::sys_info_v2::DiskType;
             use glib::g_critical;
 
-            const BASE_COLOR: [u8; 3] = [0x21, 0x8A, 0x8A];
+            // GNOME color palette: Green 5
+            const BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
 
             let mut disks = HashMap::new();
             for (i, disk) in readings.disks.iter().enumerate() {
@@ -421,7 +424,8 @@ mod imp {
             use crate::sys_info_v2::NetDeviceType;
             use glib::g_critical;
 
-            const BASE_COLOR: [u8; 3] = [0xe8, 0x89, 0xc5];
+            // GNOME color palette: Purple 1
+            const BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
 
             let mut networks = HashMap::new();
             for network_device in &readings.network_devices {
@@ -501,7 +505,8 @@ mod imp {
         ) {
             use gtk::glib::*;
 
-            const BASE_COLOR: [u8; 3] = [0x89, 0x99, 0xDA];
+            // GNOME color palette: Red 1
+            const BASE_COLOR: [u8; 3] = [0xf6, 0x61, 0x51];
 
             let mut gpus = HashMap::new();
 

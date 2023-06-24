@@ -1,4 +1,4 @@
-/* ui/performance_page/page.blp
+/* ui/apps_page/section_header_entry.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -17,35 +17,3 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
-using Gtk 4.0;
-
-template PerformancePage : Box {
-  orientation: vertical;
-
-  refresh-interval: 1000;
-
-  Box page_content {
-    margin-top: 10;
-    margin-bottom: 15;
-    margin-end: 20;
-
-    ScrolledWindow {
-      visible: bind-property PerformancePage.summary-mode inverted;
-      width-request: 220;
-
-      hscrollbar-policy: never;
-
-      ListBox sidebar {
-        styles [
-          "navigation-sidebar",
-        ]
-      }
-    }
-
-    Stack page_stack {
-      margin-start: 20;
-      transition-type: slide_up_down;
-    }
-  }
-}
