@@ -17,3 +17,17 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+using Gtk 4.0;
+using Adw 1;
+
+template $ProcessEntry: Box {
+  Image {
+    margin-end: 10;
+    pixel-size: 16;
+    icon-name: "application-x-executable-symbolic";
+  }
+
+  Label name {
+  }
+}

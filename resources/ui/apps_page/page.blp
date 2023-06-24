@@ -44,15 +44,11 @@ template $AppsPage : Box {
           template ListItem {
             // focusable: false;
             child: TreeExpander expander {
-              hide-expander: bind (expander.item as <$ModelEntry>).hide-expander;
-              indent-for-depth: bind (expander.item as <$ModelEntry>).indent;
-
               list-row: bind template.item as <ListItem>;
               child: $ListItem {
-                is-section-header: bind (expander.item as <$ModelEntry>).is-section-header;
-                icon: bind (expander.item as <$ModelEntry>).icon;
-                icon-size: bind (expander.item as <$ModelEntry>).icon-size;
-                label: bind (expander.item as <$ModelEntry>).name;
+                name: bind (expander.item as <$ViewModel>).name;
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -75,7 +71,7 @@ template $AppsPage : Box {
               halign: end;
 
               child: $StatListItem {
-                value: bind (expander.item as <$ModelEntry>).cpu-usage;
+                value: 0;//bind (expander.item as <$ViewModel>).cpu-usage;
                 unit: "%";
               };
             };
@@ -99,7 +95,7 @@ template $AppsPage : Box {
               halign: end;
 
               child: $StatListItem {
-                value: bind (expander.item as <$ModelEntry>).memory-usage;
+                value: 0;//bind (expander.item as <$ViewModel>).memory-usage;
                 unit: "B";
               };
             };
@@ -123,7 +119,7 @@ template $AppsPage : Box {
               halign: end;
 
               child: $StatListItem {
-                value: bind (expander.item as <$ModelEntry>).disk-usage;
+                value: 0;//bind (expander.item as <$ViewModel>).disk-usage;
                 unit: "B/s";
               };
             };
@@ -147,7 +143,7 @@ template $AppsPage : Box {
               halign: end;
 
               child: $StatListItem {
-                value: bind (expander.item as <$ModelEntry>).network-usage;
+                value: 0;//bind (expander.item as <$ViewModel>).network-usage;
                 unit: "bps";
               };
             };
@@ -171,7 +167,7 @@ template $AppsPage : Box {
               halign: end;
 
               child: $StatListItem {
-                value: bind (expander.item as <$ModelEntry>).gpu-usage;
+                value: 0;//bind (expander.item as <$ViewModel>).gpu-usage;
                 unit: "%";
               };
             };

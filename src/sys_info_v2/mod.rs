@@ -1,4 +1,4 @@
-/* sys_info/mod.rs
+/* sys_info/view_models
  *
  * Copyright 2023 Romeo Calota
  *

@@ -1,4 +1,4 @@
-/* apps_page/mod.rs
+/* apps_page/view_models
  *
  * Copyright 2023 Romeo Calota
  *
@@ -25,12 +25,9 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use crate::i18n::*;
 
 mod column_header;
-mod list_item;
-mod model_entry;
+mod list_items;
 mod stat_list_item;
-
-const APPS_SECTION_HEADER_ID: isize = isize::MIN;
-const PROCESSES_SECTION_HEADER_ID: isize = isize::MIN + 1;
+mod view_models;
 
 mod imp {
     use super::*;
@@ -56,9 +53,9 @@ mod imp {
             Self {
                 column_view: TemplateChild::default(),
 
-                apps_model: Cell::new(gio::ListStore::new(model_entry::ModelEntry::static_type())),
+                apps_model: Cell::new(gio::ListStore::new(view_models::ViewModel::static_type())),
                 processes_root_model: Cell::new(gio::ListStore::new(
-                    model_entry::ModelEntry::static_type(),
+                    view_models::ViewModel::static_type(),
                 )),
 
                 apps: Cell::new(HashMap::new()),
@@ -69,15 +66,15 @@ mod imp {
 
     impl AppsPage {
         pub fn update_app_model(&self) {
-            use model_entry::ModelEntry;
             use std::collections::BTreeSet;
+            use view_models::{AppModel, ContentVariant, ViewModel};
 
             let model = self.apps_model.take();
             let apps = self.apps.take();
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
-                let current = model.item(i).unwrap().downcast::<ModelEntry>();
+                let current = model.item(i).unwrap().downcast::<ViewModel>();
                 if current.is_err() {
                     continue;
                 }
@@ -95,7 +92,7 @@ mod imp {
             for (name, app) in &apps {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
-                        let current = current.downcast_ref::<ModelEntry>();
+                        let current = current.downcast_ref::<ViewModel>();
                         if current.is_none() {
                             return false;
                         }
@@ -108,17 +105,21 @@ mod imp {
                 };
 
                 if pos.is_none() {
-                    let model_entry = ModelEntry::new(&app.name);
-                    model_entry.set_hide_expander(true);
-                    model_entry.set_indent(false);
-                    model_entry.set_icon(
-                        app.icon
-                            .as_ref()
-                            .unwrap_or(&"application-x-executable".to_string())
-                            .as_str(),
+                    let view_model = ViewModel::new(
+                        &app.name,
+                        ContentVariant::App(AppModel::new(
+                            app.icon
+                                .as_ref()
+                                .unwrap_or(&"application-x-executable".to_string())
+                                .as_str(),
+                            0.,
+                            0.,
+                            0.,
+                            0.,
+                            0.,
+                        )),
                     );
-                    model_entry.set_icon_size(24);
-                    model.append(&model_entry);
+                    model.append(&view_model);
                 }
             }
 
@@ -127,26 +128,21 @@ mod imp {
         }
 
         pub fn update_processes_models(&self) {
-            use model_entry::ModelEntry;
+            use glib::translate::*;
+            use view_models::{ContentVariant, ProcessModel, ViewModel};
 
-            fn update_model(model: Option<&gio::ListStore>, process: &crate::sys_info_v2::Process) {
-                if model.is_none() {
-                    return;
-                }
-                let model = model.unwrap();
-
+            fn update_model(model: &gio::ListStore, process: &crate::sys_info_v2::Process) {
                 let mut to_remove = Vec::new();
                 for i in 0..model.n_items() {
-                    let current = model.item(i).unwrap().downcast::<ModelEntry>();
+                    let current = model.item(i).unwrap().downcast::<ViewModel>();
                     if current.is_err() {
                         continue;
                     }
                     let current = current.unwrap();
+                    let process_model: ProcessModel =
+                        unsafe { from_glib_none(current.content() as *mut _) };
 
-                    if !process
-                        .children
-                        .contains_key(&(current.id().unwrap_or(0) as _))
-                    {
+                    if !process.children.contains_key(&(process_model.pid())) {
                         to_remove.push(i);
                     }
                 }
@@ -158,13 +154,15 @@ mod imp {
                 for (pid, child) in &process.children {
                     let pos = if model.n_items() > 0 {
                         model.find_with_equal_func(|current| {
-                            let current = current.downcast_ref::<ModelEntry>();
+                            let current = current.downcast_ref::<ViewModel>();
                             if current.is_none() {
                                 return false;
                             }
                             let current = current.unwrap();
+                            let process_model: ProcessModel =
+                                unsafe { from_glib_none(current.content() as *mut _) };
 
-                            current.id().unwrap_or(0) == *pid as isize
+                            process_model.pid() == *pid
                         })
                     } else {
                         None
@@ -176,29 +174,46 @@ mod imp {
                         child.name.as_str()
                     };
 
-                    let mut model_entry = ModelEntry::new(entry_name);
+                    #[allow(unused_assignments)]
+                    let mut process_model = None;
                     let child_model = if pos.is_none() {
-                        model_entry.set_id(*pid as _);
-                        model_entry.set_children(gio::ListStore::new(ModelEntry::static_type()));
-                        model_entry.set_icon("application-x-executable-symbolic");
-                        model.append(&model_entry);
+                        let view_model = ViewModel::new(
+                            entry_name,
+                            ContentVariant::Process(ProcessModel::new(
+                                *pid,
+                                child.process_stats.cpu_usage,
+                                child.process_stats.memory_usage,
+                                child.process_stats.disk_usage,
+                                child.process_stats.network_usage,
+                                child.process_stats.gpu_usage,
+                            )),
+                        );
+                        model.append(&view_model);
+                        let model: ProcessModel =
+                            unsafe { from_glib_none(view_model.content() as *mut _) };
+                        process_model = Some(model);
 
-                        model_entry.children()
+                        process_model.as_ref().unwrap().children()
                     } else {
                         let model: gio::ListModel = model.clone().into();
-                        model_entry = model
+                        let view_model = model
                             .item(pos.unwrap())
                             .unwrap()
-                            .downcast::<ModelEntry>()
+                            .downcast::<ViewModel>()
                             .unwrap();
 
-                        model_entry.children()
+                        let model: ProcessModel =
+                            unsafe { from_glib_none(view_model.content() as *mut _) };
+
+                        model.set_cpu_usage(child.process_stats.cpu_usage);
+                        model.set_memory_usage(child.process_stats.memory_usage);
+                        model.set_disk_usage(child.process_stats.disk_usage);
+                        model.set_network_usage(child.process_stats.network_usage);
+                        model.set_gpu_usage(child.process_stats.gpu_usage);
+
+                        process_model = Some(model);
+                        process_model.as_ref().unwrap().children()
                     };
-                    model_entry.set_cpu_usage(child.process_stats.cpu_usage);
-                    model_entry.set_memory_usage(child.process_stats.memory_usage);
-                    model_entry.set_disk_usage(child.process_stats.disk_usage);
-                    model_entry.set_network_usage(child.process_stats.network_usage);
-                    model_entry.set_gpu_usage(child.process_stats.gpu_usage);
 
                     update_model(child_model, child);
                 }
@@ -207,31 +222,38 @@ mod imp {
             let process_tree = self.process_tree.take();
             let processes_root_model = self.processes_root_model.take();
 
-            update_model(Some(&processes_root_model), &process_tree);
+            update_model(&processes_root_model, &process_tree);
 
             self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
         }
 
         pub fn set_up_view_model(&self) {
-            use model_entry::ModelEntry;
+            use glib::translate::*;
+            use view_models::{ContentVariant, SectionHeaderModel, SectionType, ViewModel};
 
-            let apps_section_header = ModelEntry::new(&i18n("Apps"));
-            apps_section_header.set_id(APPS_SECTION_HEADER_ID);
-            apps_section_header.set_is_section_header(true);
+            let apps_section_header = ViewModel::new(
+                &i18n("Apps"),
+                ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Apps)),
+            );
 
-            let processes_section_header = ModelEntry::new(&i18n("Processes"));
-            processes_section_header.set_id(PROCESSES_SECTION_HEADER_ID);
-            processes_section_header.set_is_section_header(true);
-            processes_section_header
+            let processes_section_header = ViewModel::new(
+                &i18n("Processes"),
+                ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Processes)),
+            );
+            let section_header_model: SectionHeaderModel =
+                unsafe { from_glib_none(apps_section_header.content() as *mut _) };
+            section_header_model
                 .set_children(unsafe { &*self.processes_root_model.as_ptr() }.clone());
 
-            let root_model = gio::ListStore::new(ModelEntry::static_type());
+            let root_model = gio::ListStore::new(ViewModel::static_type());
             root_model.append(&apps_section_header);
             root_model.append(&processes_section_header);
 
             let this = self.obj().downgrade();
             let treemodel = gtk::TreeListModel::new(root_model, false, false, move |model_entry| {
+                use view_models::{ContentType, ProcessModel};
+
                 let this = this.upgrade();
                 if this.is_none() {
                     return None;
@@ -239,23 +261,36 @@ mod imp {
                 let this = this.unwrap();
                 let this = this.imp();
 
-                let model_entry = model_entry.downcast_ref::<ModelEntry>();
-                if model_entry.is_none() {
+                let view_model = model_entry.downcast_ref::<ViewModel>();
+                if view_model.is_none() {
                     return None;
                 }
-                let model_entry = model_entry.unwrap();
+                let view_model = view_model.unwrap();
 
-                if model_entry.id() == Some(APPS_SECTION_HEADER_ID) {
-                    this.update_app_model();
+                match view_model.real_content_type() {
+                    ContentType::None => None,
+                    ContentType::SectionHeader => {
+                        let section_header_model: SectionHeaderModel =
+                            unsafe { from_glib_none(view_model.content() as *mut _) };
 
-                    let model = this.apps_model.take();
-                    this.apps_model.set(model.clone());
+                        if section_header_model.section_type() == SectionType::Apps {
+                            this.update_app_model();
 
-                    Some(model.into())
-                } else if model_entry.id() == Some(PROCESSES_SECTION_HEADER_ID) {
-                    model_entry.children().map(|model| model.clone().into())
-                } else {
-                    model_entry.children().map(|model| model.clone().into())
+                            let model = this.apps_model.take();
+                            this.apps_model.set(model.clone());
+
+                            Some(model.into())
+                        } else {
+                            Some(section_header_model.children().clone().into())
+                        }
+                    }
+                    ContentType::App => None,
+                    ContentType::Process => {
+                        let process_model: ProcessModel =
+                            unsafe { from_glib_none(view_model.content() as *mut _) };
+
+                        Some(process_model.children().clone().into())
+                    }
                 }
             });
             let selection = gtk::SingleSelection::new(Some(treemodel));
@@ -288,9 +323,17 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            list_item::ListItem::ensure_type();
+            list_items::ListItem::ensure_type();
+            list_items::AppEntry::ensure_type();
+            list_items::ProcessEntry::ensure_type();
+            list_items::SectionHeaderEntry::ensure_type();
+
+            view_models::ViewModel::ensure_type();
+            view_models::AppModel::ensure_type();
+            view_models::ProcessModel::ensure_type();
+            view_models::SectionHeaderModel::ensure_type();
+
             column_header::ColumnHeader::ensure_type();
-            model_entry::ModelEntry::ensure_type();
             stat_list_item::StatListItem::ensure_type();
 
             klass.bind_template();

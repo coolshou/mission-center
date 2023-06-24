@@ -1,4 +1,4 @@
-/* performance_page/mod.rs
+/* performance_page/view_models
  *
  * Copyright 2023 Romeo Calota
  *
