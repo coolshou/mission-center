@@ -7,7 +7,7 @@ resources/ui/apps_page/column_header.blp
 resources/ui/apps_page/page.blp
 resources/ui/apps_page/process_entry.blp
 resources/ui/apps_page/section_header_entry.blp
-resources/ui/apps_page/stat_list_item.blp
+resources/ui/apps_page/stat_column.blp
 
 resources/ui/performance_page/cpu.blp
 resources/ui/performance_page/disk.blp

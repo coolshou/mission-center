@@ -12,7 +12,7 @@
         <file preprocess="xml-stripblanks">ui/apps_page/page.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/process_entry.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/section_header_entry.ui</file>
-        <file preprocess="xml-stripblanks">ui/apps_page/stat_list_item.ui</file>
+        <file preprocess="xml-stripblanks">ui/apps_page/stat_column.ui</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk.ui</file>

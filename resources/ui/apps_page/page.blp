@@ -70,9 +70,11 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $StatListItem {
-                value: 0;//bind (expander.item as <$ViewModel>).cpu-usage;
+              child: $StatColumn {
                 unit: "%";
+                property-name: "cpu-usage";
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -94,9 +96,11 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $StatListItem {
-                value: 0;//bind (expander.item as <$ViewModel>).memory-usage;
+              child: $StatColumn {
                 unit: "B";
+                property-name: "memory-usage";
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -118,9 +122,11 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $StatListItem {
-                value: 0;//bind (expander.item as <$ViewModel>).disk-usage;
+              child: $StatColumn {
                 unit: "B/s";
+                property-name: "disk-usage";
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -142,9 +148,11 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $StatListItem {
-                value: 0;//bind (expander.item as <$ViewModel>).network-usage;
+              child: $StatColumn {
                 unit: "bps";
+                property-name: "network-usage";
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -166,9 +174,11 @@ template $AppsPage : Box {
 
               halign: end;
 
-              child: $StatListItem {
-                value: 0;//bind (expander.item as <$ViewModel>).gpu-usage;
+              child: $StatColumn {
                 unit: "%";
+                property-name: "gpu-usage";
+                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }

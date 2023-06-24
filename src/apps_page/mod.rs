@@ -26,7 +26,7 @@ use crate::i18n::*;
 
 mod column_header;
 mod list_items;
-mod stat_list_item;
+mod stat_column;
 mod view_models;
 
 mod imp {
@@ -345,7 +345,7 @@ mod imp {
             view_models::SectionHeaderModel::ensure_type();
 
             column_header::ColumnHeader::ensure_type();
-            stat_list_item::StatListItem::ensure_type();
+            stat_column::StatColumn::ensure_type();
 
             klass.bind_template();
         }
