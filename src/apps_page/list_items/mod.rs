@@ -43,8 +43,6 @@ mod imp {
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::ListItem)]
-    #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/list_item.ui")]
     pub struct ListItem {
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         name: Cell<glib::GString>,
@@ -167,13 +165,9 @@ mod imp {
         type Type = super::ListItem;
         type ParentType = gtk::Box;
 
-        fn class_init(klass: &mut Self::Class) {
-            klass.bind_template();
-        }
+        fn class_init(_klass: &mut Self::Class) {}
 
-        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-            obj.init_template();
-        }
+        fn instance_init(_obj: &glib::subclass::InitializingObject<Self>) {}
     }
 
     impl ObjectImpl for ListItem {
