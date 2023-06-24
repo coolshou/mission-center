@@ -77,11 +77,18 @@ impl ProcessEntry {
         name: &str,
         model: &crate::apps_page::view_models::ProcessModel,
     ) -> Self {
+        use gtk::prelude::*;
+
         let this: Self = glib::Object::builder().build();
         this.imp().name.set_text(name);
         this.imp().tree_expander.set(tree_expander.clone());
 
-        tree_expander.set_hide_expander(model.hide_expander());
+        tree_expander.set_hide_expander(model.children().n_items() == 0);
+        model.children().connect_items_changed(
+            glib::clone!(@weak tree_expander => move |model, _, _, _| {
+                tree_expander.set_hide_expander(model.n_items() == 0);
+            }),
+        );
         this
     }
 }

@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
 use gtk::{
     glib,
@@ -49,7 +49,7 @@ mod imp {
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         name: Cell<glib::GString>,
         #[property(set = Self::set_content)]
-        pub content: Cell<u64>,
+        pub content: RefCell<Option<glib::Object>>,
         #[property(set = Self::set_content_type, type = i32)]
         pub content_type: Cell<ContentType>,
     }
@@ -58,7 +58,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 name: Cell::new(glib::GString::default()),
-                content: Cell::new(0),
+                content: RefCell::new(None),
                 content_type: Cell::new(ContentType::None),
             }
         }
@@ -83,14 +83,8 @@ mod imp {
             self.name.set(glib::GString::from(name));
         }
 
-        fn set_content(&self, content: u64) {
+        fn set_content(&self, content: Option<glib::Object>) {
             self.content.set(content);
-
-            if content == 0 {
-                return;
-            }
-
-            self.update_child(content);
         }
 
         fn set_content_type(&self, v: i32) {
@@ -103,18 +97,17 @@ mod imp {
             };
 
             self.content_type.set(content_type);
-
-            if self.content.get() == 0 {
-                return;
-            }
-
-            self.update_child(self.content.get());
         }
     }
 
     impl ListItem {
-        fn update_child(&self, content: u64) {
-            use glib::{translate::*, *};
+        fn update_child(&self) {
+            use glib::*;
+
+            let name = unsafe { &*self.name.as_ptr() }.as_str();
+            if name.is_empty() {
+                return;
+            }
 
             let parent = self
                 .obj()
@@ -129,17 +122,38 @@ mod imp {
             }
             let parent = parent.unwrap();
 
-            let name = unsafe { &*self.name.as_ptr() }.as_str();
+            let content = self.content.borrow();
+            let content = content.as_ref();
+            if content.is_none() {
+                g_critical!("MissionCenter::AppsPage", "Model has no content");
+                return;
+            }
+            let content = content.unwrap();
+
             let internal_widget: gtk::Widget = match self.content_type.get() {
                 ContentType::None => return,
                 ContentType::SectionHeader => SectionHeaderEntry::new(&parent, name).upcast(),
                 ContentType::App => {
-                    let model: AppModel = unsafe { from_glib_none(content as *mut _) };
-                    AppEntry::new(&parent, name, &model).upcast()
+                    let model = content.downcast_ref::<AppModel>();
+                    if model.is_none() {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to get AppModel from content"
+                        );
+                        return;
+                    }
+                    AppEntry::new(&parent, name, model.unwrap()).upcast()
                 }
                 ContentType::Process => {
-                    let model: ProcessModel = unsafe { from_glib_none(content as *mut _) };
-                    ProcessEntry::new(&parent, name, &model).upcast()
+                    let model = content.downcast_ref::<ProcessModel>();
+                    if model.is_none() {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to get AppModel from content"
+                        );
+                        return;
+                    }
+                    ProcessEntry::new(&parent, name, model.unwrap()).upcast()
                 }
             };
             self.obj().first_child().map(|c| self.obj().remove(&c));
@@ -176,7 +190,12 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ListItem {}
+    impl WidgetImpl for ListItem {
+        fn realize(&self) {
+            self.parent_realize();
+            self.update_child();
+        }
+    }
 
     impl BoxImpl for ListItem {}
 }

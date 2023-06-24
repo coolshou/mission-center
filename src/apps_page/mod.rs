@@ -128,7 +128,6 @@ mod imp {
         }
 
         pub fn update_processes_models(&self) {
-            use glib::translate::*;
             use view_models::{ContentVariant, ProcessModel, ViewModel};
 
             fn update_model(model: &gio::ListStore, process: &crate::sys_info_v2::Process) {
@@ -139,8 +138,11 @@ mod imp {
                         continue;
                     }
                     let current = current.unwrap();
-                    let process_model: ProcessModel =
-                        unsafe { from_glib_none(current.content() as *mut _) };
+                    let process_model = current.content_model::<ProcessModel>();
+                    if process_model.is_none() {
+                        continue;
+                    }
+                    let process_model = process_model.unwrap();
 
                     if !process.children.contains_key(&(process_model.pid())) {
                         to_remove.push(i);
@@ -159,10 +161,11 @@ mod imp {
                                 return false;
                             }
                             let current = current.unwrap();
-                            let process_model: ProcessModel =
-                                unsafe { from_glib_none(current.content() as *mut _) };
-
-                            process_model.pid() == *pid
+                            let process_model = current.content_model::<ProcessModel>();
+                            if process_model.is_none() {
+                                return false;
+                            }
+                            process_model.unwrap().pid() == *pid
                         })
                     } else {
                         None
@@ -189,9 +192,9 @@ mod imp {
                             )),
                         );
                         model.append(&view_model);
-                        let model: ProcessModel =
-                            unsafe { from_glib_none(view_model.content() as *mut _) };
-                        process_model = Some(model);
+                        let model = view_model.content_model::<ProcessModel>();
+                        assert!(model.is_some());
+                        process_model = Some(model.unwrap());
 
                         process_model.as_ref().unwrap().children()
                     } else {
@@ -202,8 +205,9 @@ mod imp {
                             .downcast::<ViewModel>()
                             .unwrap();
 
-                        let model: ProcessModel =
-                            unsafe { from_glib_none(view_model.content() as *mut _) };
+                        let model = view_model.content_model::<ProcessModel>();
+                        assert!(model.is_some());
+                        let model = model.unwrap();
 
                         model.set_cpu_usage(child.process_stats.cpu_usage);
                         model.set_memory_usage(child.process_stats.memory_usage);
@@ -229,7 +233,6 @@ mod imp {
         }
 
         pub fn set_up_view_model(&self) {
-            use glib::translate::*;
             use view_models::{ContentVariant, SectionHeaderModel, SectionType, ViewModel};
 
             let apps_section_header = ViewModel::new(
@@ -241,10 +244,13 @@ mod imp {
                 &i18n("Processes"),
                 ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Processes)),
             );
-            let section_header_model: SectionHeaderModel =
-                unsafe { from_glib_none(apps_section_header.content() as *mut _) };
-            section_header_model
-                .set_children(unsafe { &*self.processes_root_model.as_ptr() }.clone());
+            let section_header_model =
+                processes_section_header.content_model::<SectionHeaderModel>();
+            if section_header_model.is_some() {
+                section_header_model
+                    .unwrap()
+                    .set_children(unsafe { &*self.processes_root_model.as_ptr() }.clone());
+            }
 
             let root_model = gio::ListStore::new(ViewModel::static_type());
             root_model.append(&apps_section_header);
@@ -270,8 +276,11 @@ mod imp {
                 match view_model.real_content_type() {
                     ContentType::None => None,
                     ContentType::SectionHeader => {
-                        let section_header_model: SectionHeaderModel =
-                            unsafe { from_glib_none(view_model.content() as *mut _) };
+                        let section_header_model = view_model.content_model::<SectionHeaderModel>();
+                        if section_header_model.is_none() {
+                            return None;
+                        }
+                        let section_header_model = section_header_model.unwrap();
 
                         if section_header_model.section_type() == SectionType::Apps {
                             this.update_app_model();
@@ -286,9 +295,11 @@ mod imp {
                     }
                     ContentType::App => None,
                     ContentType::Process => {
-                        let process_model: ProcessModel =
-                            unsafe { from_glib_none(view_model.content() as *mut _) };
-
+                        let process_model = view_model.content_model::<ProcessModel>();
+                        if process_model.is_none() {
+                            return None;
+                        }
+                        let process_model = process_model.unwrap();
                         Some(process_model.children().clone().into())
                     }
                 }

@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
 use gtk::{
     glib,
@@ -43,20 +43,18 @@ mod imp {
         name: Cell<glib::GString>,
 
         #[property(get)]
-        pub content: Cell<u64>,
+        pub content: RefCell<Option<glib::Object>>,
         #[property(get, type = i32)]
         pub content_type: Cell<ContentType>,
-        pub content_instance: Cell<Option<ContentVariant>>,
     }
 
     impl Default for ViewModel {
         fn default() -> Self {
             Self {
+                content: RefCell::new(None),
                 name: Cell::new(glib::GString::default()),
 
-                content: Cell::new(0),
                 content_type: Cell::new(ContentType::None),
-                content_instance: Cell::new(None),
             }
         }
     }
@@ -106,7 +104,7 @@ mod imp {
     }
 }
 
-pub trait ViewModelContent: ObjectType {}
+pub trait ViewModelContent: IsA<glib::Object> + Clone {}
 
 pub enum ContentVariant {
     SectionHeader(SectionHeaderModel),
@@ -142,21 +140,28 @@ impl ViewModel {
     pub fn set_content(&self, content: ContentVariant) {
         let this = self.imp();
 
-        this.content.set(match &content {
+        this.content.replace(match &content {
             ContentVariant::SectionHeader(c) => {
                 this.content_type.set(ContentType::SectionHeader);
-                c.as_ptr() as _
+                Some(c.clone().upcast::<glib::Object>())
             }
             ContentVariant::App(c) => {
                 this.content_type.set(ContentType::App);
-                c.as_ptr() as _
+                Some(c.clone().upcast())
             }
             ContentVariant::Process(c) => {
                 this.content_type.set(ContentType::Process);
-                c.as_ptr() as _
+                Some(c.clone().upcast())
             }
         });
+    }
 
-        this.content_instance.set(Some(content));
+    pub fn content_model<M: ViewModelContent>(&self) -> Option<M> {
+        self.imp()
+            .content
+            .borrow()
+            .as_ref()
+            .and_then(|c| c.downcast_ref::<M>())
+            .cloned()
     }
 }

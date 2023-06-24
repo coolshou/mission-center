@@ -45,8 +45,6 @@ mod imp {
         network_usage: Cell<f32>,
         #[property(get, set)]
         gpu_usage: Cell<f32>,
-        #[property(get, set)]
-        hide_expander: Cell<bool>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -60,7 +58,6 @@ mod imp {
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
-                hide_expander: Cell::new(false),
 
                 children: Cell::new(gio::ListStore::new(super::super::ViewModel::static_type())),
             }
@@ -125,13 +122,6 @@ impl ProcessModel {
     }
 
     pub fn set_children(&self, children: gio::ListStore) {
-        use gtk::prelude::*;
-
-        children.connect_items_changed(glib::clone!(@weak self as this => move |_, _, _, _| {
-            this.set_hide_expander(this.children().n_items() == 0);
-        }));
-
-        self.set_hide_expander(children.n_items() == 0);
         self.imp().children.set(children);
     }
 }
