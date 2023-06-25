@@ -23,6 +23,7 @@ use std::cell::Cell;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::i18n::*;
+use crate::sys_info_v2::Readings;
 
 mod column_header;
 mod list_items;
@@ -38,6 +39,12 @@ mod imp {
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
 
+        pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
+
         pub apps_model: Cell<gio::ListStore>,
         pub processes_root_model: Cell<gio::ListStore>,
 
@@ -52,6 +59,12 @@ mod imp {
 
             Self {
                 column_view: TemplateChild::default(),
+
+                column_header_name: Cell::new(None),
+                column_header_cpu: Cell::new(None),
+                column_header_memory: Cell::new(None),
+                column_header_disk: Cell::new(None),
+                column_header_gpu: Cell::new(None),
 
                 apps_model: Cell::new(gio::ListStore::new(view_models::ViewModel::static_type())),
                 processes_root_model: Cell::new(gio::ListStore::new(
@@ -329,16 +342,77 @@ mod imp {
             name: &str,
             heading: &str,
             align: gtk::Align,
-        ) -> Option<gtk::Widget> {
+        ) -> (Option<gtk::Widget>, column_header::ColumnHeader) {
             let column_view_box = column_header
                 .first_child()
                 .unwrap()
                 .downcast::<gtk::Box>()
                 .unwrap();
             column_view_box.first_child().unwrap().set_visible(false);
-            column_view_box.prepend(&column_header::ColumnHeader::new(heading, name, align));
 
-            column_header.next_sibling()
+            let header = column_header::ColumnHeader::new(heading, name, align);
+            column_view_box.prepend(&header);
+
+            (column_header.next_sibling(), header)
+        }
+
+        pub fn update_column_headers(&self, readings: &Readings) {
+            let column_header_cpu = self.column_header_cpu.take();
+            if let Some(column_header_cpu) = &column_header_cpu {
+                column_header_cpu.set_heading(format!(
+                    "{}%",
+                    readings.cpu_info.dynamic_info.utilization_percent.round()
+                ));
+            }
+            self.column_header_cpu.set(column_header_cpu);
+
+            let column_header_memory = self.column_header_memory.take();
+            if let Some(column_header_memory) = &column_header_memory {
+                let used = readings.mem_info.mem_total - readings.mem_info.mem_available;
+                column_header_memory.set_heading(format!(
+                    "{}%",
+                    ((used * 100) as f32 / readings.mem_info.mem_total as f32).round()
+                ));
+            }
+            self.column_header_memory.set(column_header_memory);
+
+            let column_header_disk = self.column_header_disk.take();
+            if let Some(column_header_disk) = &column_header_disk {
+                let total_busy_percent = readings
+                    .disks
+                    .iter()
+                    .map(|disk| disk.busy_percent)
+                    .sum::<f32>();
+
+                if readings.disks.len() == 0 {
+                    column_header_disk.set_heading("0%");
+                } else {
+                    column_header_disk.set_heading(format!(
+                        "{}%",
+                        (total_busy_percent / readings.disks.len() as f32).round()
+                    ));
+                }
+            }
+            self.column_header_disk.set(column_header_disk);
+
+            let column_header_gpu = self.column_header_gpu.take();
+            if let Some(column_header_gpu) = &column_header_gpu {
+                let total_busy_percent = readings
+                    .gpus
+                    .iter()
+                    .map(|gpu| gpu.dynamic_info.util_percent as f32)
+                    .sum::<f32>();
+
+                if readings.gpus.len() == 0 {
+                    column_header_gpu.set_heading("0%");
+                } else {
+                    column_header_gpu.set_heading(format!(
+                        "{}%",
+                        (total_busy_percent / readings.gpus.len() as f32).round()
+                    ));
+                }
+            }
+            self.column_header_gpu.set(column_header_gpu);
         }
     }
 
@@ -378,20 +452,43 @@ mod imp {
 
             let list_item_widget = self.column_view.first_child().unwrap();
 
-            let mut column_view_title = list_item_widget.first_child().unwrap();
-            column_view_title = self
-                .configure_column_header(&column_view_title, &i18n("Name"), "", gtk::Align::Start)
-                .unwrap();
-            column_view_title = self
-                .configure_column_header(&column_view_title, &i18n("CPU"), "0%", gtk::Align::End)
-                .unwrap();
-            column_view_title = self
-                .configure_column_header(&column_view_title, &i18n("Memory"), "0%", gtk::Align::End)
-                .unwrap();
-            column_view_title = self
-                .configure_column_header(&column_view_title, &i18n("Disk"), "0%", gtk::Align::End)
-                .unwrap();
-            self.configure_column_header(&column_view_title, &i18n("GPU"), "0%", gtk::Align::End);
+            let column_view_title = list_item_widget.first_child().unwrap();
+            let (column_view_title, column_header_name) = self.configure_column_header(
+                &column_view_title,
+                &i18n("Name"),
+                "",
+                gtk::Align::Start,
+            );
+            let (column_view_title, column_header_cpu) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("CPU"),
+                "0%",
+                gtk::Align::End,
+            );
+            let (column_view_title, column_header_memory) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("Memory"),
+                "0%",
+                gtk::Align::End,
+            );
+            let (column_view_title, column_header_disk) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("Disk"),
+                "0%",
+                gtk::Align::End,
+            );
+            let (_, column_header_gpu) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("GPU"),
+                "0%",
+                gtk::Align::End,
+            );
+
+            self.column_header_name.set(Some(column_header_name));
+            self.column_header_cpu.set(Some(column_header_cpu));
+            self.column_header_memory.set(Some(column_header_memory));
+            self.column_header_disk.set(Some(column_header_disk));
+            self.column_header_gpu.set(Some(column_header_gpu));
         }
     }
 
@@ -421,6 +518,7 @@ impl AppsPage {
         this.process_tree.set(process_tree);
 
         this.update_processes_models();
+        this.update_column_headers(readings);
 
         this.set_up_view_model();
 
@@ -441,6 +539,7 @@ impl AppsPage {
         this.process_tree.set(process_tree);
 
         this.update_processes_models();
+        this.update_column_headers(readings);
 
         true
     }

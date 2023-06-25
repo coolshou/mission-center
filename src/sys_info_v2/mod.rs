@@ -348,11 +348,11 @@ impl SysInfoV2 {
                         let elapsed = start_load_readings.elapsed();
                         if elapsed > refresh_interval {
                             g_warning!(
-                            "MissionCenter::SysInfo",
-                            "Refresh took {}ms, which is longer than the refresh interval of {}ms",
-                            elapsed.as_millis(),
-                            refresh_interval.as_millis()
-                        );
+                                "MissionCenter::SysInfo",
+                                "Refresh took {}ms, which is longer than the refresh interval of {}ms",
+                                elapsed.as_millis(),
+                                refresh_interval.as_millis()
+                            );
                             continue;
                         }
 

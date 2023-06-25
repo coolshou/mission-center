@@ -31,6 +31,12 @@ mod imp {
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
+        #[template_child]
+        pub header_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub search_button: TemplateChild<gtk::ToggleButton>,
 
         pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
     }
@@ -40,6 +46,9 @@ mod imp {
             Self {
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
+                header_stack: TemplateChild::default(),
+                search_entry: TemplateChild::default(),
+                search_button: TemplateChild::default(),
 
                 sys_info: std::cell::Cell::new(None),
             }
@@ -66,7 +75,56 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MissionCenterWindow {}
+    impl ObjectImpl for MissionCenterWindow {
+        fn constructed(&self) {
+            use glib::*;
+
+            self.parent_constructed();
+
+            let toggle_search =
+                gio::SimpleAction::new_stateful("toggle-search", None, false.to_variant());
+            toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
+                let current_state = action.state();
+                if current_state.is_none() {
+                    g_critical!("MissionCenter", "Failed to get search action state");
+                    action.set_state(false.to_variant());
+                    return;
+                }
+                let current_state = current_state.unwrap();
+
+                let new_state = !current_state.get::<bool>().unwrap_or(false);
+                action.set_state(new_state.to_variant());
+                this.search_button.set_active(new_state);
+
+                if new_state {
+                    this.header_stack.set_visible_child_name("search-entry");
+                    this.search_entry.grab_focus();
+                } else {
+                    this.header_stack.set_visible_child_name("view-switcher");
+                }
+            }));
+
+            let escape_controller = gtk::EventControllerKey::new();
+            let this = self.obj().clone();
+            escape_controller.connect_key_pressed(move |_, key, _, _| {
+                if key == gtk::gdk::Key::Escape && this.imp().search_button.is_active() {
+                    // TODO: Fix
+                    unsafe {
+                        gtk::ffi::gtk_widget_activate_action(
+                            this.as_ptr() as *mut _,
+                            b"win.toggle-search\0".as_ptr() as *const _,
+                            std::ptr::null_mut(),
+                        );
+                    }
+
+                    return signal::Inhibit(true);
+                }
+                signal::Inhibit(false)
+            });
+            self.search_entry.add_controller(escape_controller.clone());
+            self.obj().add_action(&toggle_search);
+        }
+    }
 
     impl WidgetImpl for MissionCenterWindow {}
 
@@ -90,14 +148,9 @@ impl MissionCenterWindow {
     ) -> Self {
         use gtk::glib::*;
 
-        let this: Self = unsafe {
-            Object::new_internal(
-                MissionCenterWindow::static_type(),
-                &mut [("application", application.into())],
-            )
-            .downcast()
-            .unwrap()
-        };
+        let this: Self = Object::builder()
+            .property("application", application)
+            .build();
 
         let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new();
 
