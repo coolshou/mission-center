@@ -190,8 +190,9 @@ impl MemInfo {
     }
 
     pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
+        use super::FLATPAK_APP_PATH;
         use gtk::glib::*;
-        use std::{fs::*, process::*};
+        use std::process::*;
 
         let is_flatpak = *super::IS_FLATPAK;
         let mut cmd = if !is_flatpak {
@@ -199,43 +200,11 @@ impl MemInfo {
             cmd.arg("dmidecode").arg("--type").arg("17");
             cmd
         } else {
-            if let Ok(mut cache_dir) = std::env::var("XDG_CACHE_HOME") {
-                cache_dir.push_str("/io.missioncenter.MissionCenter");
-                match create_dir_all(&cache_dir) {
-                    Err(err) => {
-                        g_critical!(
-                            "MissionCenter::SysInfo",
-                            "Failed to read memory device information: {:?}",
-                            err
-                        );
-                        return None;
-                    }
-                    _ => {}
-                }
-
-                cache_dir.push_str("/dmidecode");
-                let dmidecode_path = cache_dir;
-                match copy("/app/bin/dmidecode", &dmidecode_path) {
-                    Err(err) => {
-                        g_critical!(
-                            "MissionCenter::SysInfo",
-                            "Failed to read memory device information: {:?}",
-                            err
-                        );
-                        return None;
-                    }
-                    _ => {}
-                }
-
-                let cmd = cmd_flatpak_host!(format!("pkexec {} --type 17", dmidecode_path));
-                cmd
-            } else {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read memory device information: Could not read $XDG_CACHE_HOME",
-                );
-                return None;
-            }
+            let cmd = cmd_flatpak_host!(format!(
+                "pkexec {}/bin/dmidecode --type 17",
+                &*FLATPAK_APP_PATH
+            ));
+            cmd
         };
 
         let cmd_output = match cmd.output() {

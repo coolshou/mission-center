@@ -51,7 +51,9 @@ const PROC_PID_STATM_RES: usize = 1;
 const PROC_PID_IO_READ_BYTES: usize = 4;
 const PROC_PID_IO_WRITE_BYTES: usize = 5;
 
+#[allow(dead_code)]
 const PROC_PID_NET_DEV_RECV_BYTES: usize = 0;
+#[allow(dead_code)]
 const PROC_PID_NET_DEV_SENT_BYTES: usize = 8;
 
 include!("../../common/util.rs");
@@ -93,15 +95,6 @@ pub fn load_process_list(
 
         for entry in data.lines() {
             let entry = entry.split_whitespace().last().unwrap();
-            output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
-            part_index += 1;
-        }
-    }
-
-    fn parse_net_dev_line(line: &str, output: &mut [u64; 16]) {
-        let mut part_index = 0;
-
-        for entry in line.split_whitespace().skip(1) {
             output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
             part_index += 1;
         }
@@ -201,37 +194,8 @@ pub fn load_process_list(
             parse_io_file(output.unwrap().as_str(), &mut io_parsed);
         }
 
-        let mut total_net_sent = 0_u64;
-        let mut total_net_recv = 0_u64;
-        let output = std::fs::read_to_string(entry_path.join("/net/dev"));
-        if output.is_err() {
-            eprintln!(
-                "DBGFailed to read network information for process {}: {}",
-                pid,
-                output.err().unwrap()
-            );
-        } else {
-            let output = output.unwrap();
-            let mut lines = output.lines();
-            lines.next();
-            lines.next();
-            for line in lines {
-                let line = line.trim();
-                if line.is_empty() || line.starts_with("lo") {
-                    continue;
-                }
-
-                let mut dev_parsed = [0; 16];
-                parse_net_dev_line(line, &mut dev_parsed);
-
-                total_net_sent = total_net_sent
-                    .overflowing_add(dev_parsed[PROC_PID_NET_DEV_SENT_BYTES])
-                    .0;
-                total_net_recv = total_net_recv
-                    .overflowing_add(dev_parsed[PROC_PID_NET_DEV_RECV_BYTES])
-                    .0;
-            }
-        };
+        let total_net_sent = 0_u64;
+        let total_net_recv = 0_u64;
 
         let mut process;
 
@@ -239,20 +203,20 @@ pub fn load_process_list(
         if prev_process.is_some() {
             process = prev_process.unwrap();
 
-            let delta_time = now - process.process_stats.timestamp;
+            let delta_time = now - process.stats.timestamp;
 
-            let prev_utime = process.process_stats.user_jiffies;
-            let prev_stime = process.process_stats.kernel_jiffies;
+            let prev_utime = process.stats.user_jiffies;
+            let prev_stime = process.stats.kernel_jiffies;
 
             let delta_utime = ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
             let delta_stime = ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
 
-            process.process_stats.cpu_usage =
+            process.stats.cpu_usage =
                 (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
                     .min(100. * num_cpus::get() as f32);
 
-            let prev_read_bytes = process.process_stats.disk_read_bytes;
-            let prev_write_bytes = process.process_stats.disk_write_bytes;
+            let prev_read_bytes = process.stats.disk_read_bytes;
+            let prev_write_bytes = process.stats.disk_write_bytes;
 
             let read_speed = (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes))
                 as f32
@@ -260,19 +224,7 @@ pub fn load_process_list(
             let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES].saturating_sub(prev_write_bytes))
                 as f32
                 / delta_time.as_secs_f32();
-            process.process_stats.disk_usage = (read_speed + write_speed) / 2.;
-
-            let prev_bytes_recv = process.process_stats.net_bytes_recv;
-            let prev_bytes_sent = process.process_stats.net_bytes_sent;
-
-            let bytes_recv_speed = ((total_net_recv.saturating_sub(prev_bytes_recv)) as f32
-                / delta_time.as_secs_f32())
-                * 8.; // bps
-            let bytes_sent_speed = ((total_net_sent.saturating_sub(prev_bytes_sent)) as f32
-                / delta_time.as_secs_f32())
-                * 8.; // bps
-
-            process.process_stats.network_usage = (bytes_recv_speed + bytes_sent_speed) / 2.;
+            process.stats.disk_usage = (read_speed + write_speed) / 2.;
         } else {
             process = Process::default();
         }
@@ -322,20 +274,20 @@ pub fn load_process_list(
         }
 
         process.pid = pid;
-        process.process_stats.timestamp = now;
+        process.stats.timestamp = now;
         process.name = stat_name(&stat_parsed);
         process.cmd = cmd;
         process.exe = exe;
         process.state = stat_state(&stat_parsed);
         process.parent = stat_parent_pid(&stat_parsed);
-        process.process_stats.memory_usage =
+        process.stats.memory_usage =
             (statm_parsed[PROC_PID_STATM_RES] * (*PAGE_SIZE) as u64) as f32;
-        process.process_stats.user_jiffies = utime;
-        process.process_stats.kernel_jiffies = stime;
-        process.process_stats.disk_read_bytes = io_parsed[PROC_PID_IO_READ_BYTES];
-        process.process_stats.disk_write_bytes = io_parsed[PROC_PID_IO_WRITE_BYTES];
-        process.process_stats.net_bytes_sent = total_net_sent;
-        process.process_stats.net_bytes_recv = total_net_recv;
+        process.stats.user_jiffies = utime;
+        process.stats.kernel_jiffies = stime;
+        process.stats.disk_read_bytes = io_parsed[PROC_PID_IO_READ_BYTES];
+        process.stats.disk_write_bytes = io_parsed[PROC_PID_IO_WRITE_BYTES];
+        process.stats.net_bytes_sent = total_net_sent;
+        process.stats.net_bytes_recv = total_net_recv;
 
         result.insert(pid, process);
     }
@@ -356,13 +308,13 @@ pub fn save_stats_to_cache<'a, P: AsRef<std::path::Path>>(
     file.write(to_binary(&process_count))?;
     for p in processes {
         file.write(to_binary(&p.pid))?;
-        file.write(to_binary(&p.process_stats.user_jiffies))?;
-        file.write(to_binary(&p.process_stats.kernel_jiffies))?;
-        file.write(to_binary(&p.process_stats.disk_read_bytes))?;
-        file.write(to_binary(&p.process_stats.disk_write_bytes))?;
-        file.write(to_binary(&p.process_stats.net_bytes_sent))?;
-        file.write(to_binary(&p.process_stats.net_bytes_recv))?;
-        file.write(to_binary(&p.process_stats.timestamp))?;
+        file.write(to_binary(&p.stats.user_jiffies))?;
+        file.write(to_binary(&p.stats.kernel_jiffies))?;
+        file.write(to_binary(&p.stats.disk_read_bytes))?;
+        file.write(to_binary(&p.stats.disk_write_bytes))?;
+        file.write(to_binary(&p.stats.net_bytes_sent))?;
+        file.write(to_binary(&p.stats.net_bytes_recv))?;
+        file.write(to_binary(&p.stats.timestamp))?;
 
         process_count += 1;
     }
@@ -387,13 +339,13 @@ pub fn load_stats_from_cache<'a, P: AsRef<std::path::Path>>(
     for _ in 0..process_count {
         let mut p = Process::default();
         file.read_exact(to_binary_mut(&mut p.pid))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.user_jiffies))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.kernel_jiffies))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.disk_read_bytes))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.disk_write_bytes))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.net_bytes_sent))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.net_bytes_recv))?;
-        file.read_exact(to_binary_mut(&mut p.process_stats.timestamp))?;
+        file.read_exact(to_binary_mut(&mut p.stats.user_jiffies))?;
+        file.read_exact(to_binary_mut(&mut p.stats.kernel_jiffies))?;
+        file.read_exact(to_binary_mut(&mut p.stats.disk_read_bytes))?;
+        file.read_exact(to_binary_mut(&mut p.stats.disk_write_bytes))?;
+        file.read_exact(to_binary_mut(&mut p.stats.net_bytes_sent))?;
+        file.read_exact(to_binary_mut(&mut p.stats.net_bytes_recv))?;
+        file.read_exact(to_binary_mut(&mut p.stats.timestamp))?;
 
         result.insert(p.pid, p);
     }

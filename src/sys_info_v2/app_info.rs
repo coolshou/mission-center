@@ -21,45 +21,63 @@ pub fn running_apps(
         fn update_or_insert_app(app: &App, process: &Process, app_list: &mut HashMap<String, App>) {
             if let Some(app) = app_list.get_mut(&app.name) {
                 app.pids.push(process.pid);
-                return;
+                app.stats.cpu_usage += process.stats.cpu_usage;
+                app.stats.memory_usage += process.stats.memory_usage;
+                app.stats.disk_usage += process.stats.disk_usage;
+                app.stats.network_usage += process.stats.network_usage;
+                app.stats.gpu_usage += process.stats.gpu_usage;
             } else {
                 let mut app = app.clone();
                 app.pids.push(process.pid);
+                app.stats.cpu_usage = process.stats.cpu_usage;
+                app.stats.memory_usage = process.stats.memory_usage;
+                app.stats.disk_usage = process.stats.disk_usage;
+                app.stats.network_usage = process.stats.network_usage;
+                app.stats.gpu_usage = process.stats.gpu_usage;
                 app_list.insert(app.name.clone(), app);
+            }
+
+            for child in process.children.values() {
+                update_or_insert_app(app, child, app_list);
             }
         }
 
+        let mut found = false;
         for process in processes_once {
             if app.is_flatpak {
                 if process.name == "bwrap" {
                     for arg in &process.cmd {
                         if arg.contains(&app.command) {
                             update_or_insert_app(app, process, result);
-                            return;
+                            found = true;
                         }
                     }
                 }
             } else {
                 if process.exe == std::path::Path::new(&app.command) {
                     update_or_insert_app(app, process, result);
-                    return;
+                    found = true;
                 } else {
                     let mut iter = process.cmd.iter();
                     if let Some(cmd) = iter.next() {
                         if cmd.ends_with(&app.command) {
                             update_or_insert_app(app, process, result);
-                            return;
+                            found = true;
                         }
                         // The app might use a runtime (bash, python, node, mono, dotnet, etc.) so check the second argument
                         else if let Some(cmd) = iter.next() {
                             if cmd.ends_with(&app.command) {
                                 update_or_insert_app(app, process, result);
-                                return;
+                                found = true;
                             }
                         }
                     }
                 }
             }
+        }
+
+        if found {
+            return;
         }
 
         for processes in processes_again {

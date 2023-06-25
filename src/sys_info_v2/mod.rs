@@ -94,11 +94,31 @@ pub type App = app_info::App;
 pub type Process = proc_info::Process;
 #[allow(dead_code)]
 pub type ProcessStats = proc_info::Stats;
-#[allow(dead_code)]
 pub type Pid = proc_info::Pid;
 
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
+    static ref FLATPAK_APP_PATH: String = {
+        use ini::*;
+
+        let ini = Ini::load_from_file("/.flatpak-info");
+        if ini.is_err() {
+            return "".to_owned();
+        }
+        let ini = ini.unwrap();
+
+        let section = ini.section(Some("Instance"));
+        if section.is_none() {
+            panic!("Unable to find Instance section in /.flatpak-info");
+        }
+        let section = section.unwrap();
+
+        let app_path = section.get("app-path");
+        if app_path.is_none() {
+            panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info");
+        }
+        app_path.unwrap().to_owned()
+    };
     static ref CACHE_DIR: String = {
         let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
             std::env::var("HOME")
@@ -219,7 +239,14 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let (apps, processes) = proc_info::load_app_and_process_list();
+        let (apps, mut processes) = proc_info::load_app_and_process_list();
+        for gpu in &readings.gpus {
+            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                if let Some(process) = processes.get_mut(pid) {
+                    process.stats.gpu_usage = *gpu_usage;
+                }
+            }
+        }
         readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
         readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
@@ -255,9 +282,16 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let (apps, processes) = proc_info::load_app_and_process_list();
+                        let (apps, mut process_list) = proc_info::load_app_and_process_list();
+                        for gpu in &gpus {
+                            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                                if let Some(process) = process_list.get_mut(pid) {
+                                    process.stats.gpu_usage = *gpu_usage;
+                                }
+                            }
+                        }
                         let process_tree =
-                            proc_info::process_hierarchy(&processes).unwrap_or_default();
+                            proc_info::process_hierarchy(&process_list).unwrap_or_default();
                         let running_apps = app_info::running_apps(&process_tree, &apps);
 
                         let mut readings = Readings {

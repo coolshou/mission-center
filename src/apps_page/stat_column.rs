@@ -140,6 +140,39 @@ mod imp {
                 return;
             }
 
+            fn update_property(this: &StatColumn) {
+                let content = this.content.borrow();
+                let content = content.as_ref();
+                if content.is_none() {
+                    g_critical!("MissionCenter::AppsPage", "Model has no content");
+                    return;
+                }
+                let content = content.unwrap();
+
+                let property_name = unsafe { &*this.property_name.as_ptr() }.as_str();
+                let prop_unit = unsafe { &*this.unit.as_ptr() }.as_str();
+
+                let value = content.property::<f32>(property_name);
+                if prop_unit == "%" {
+                    this.label
+                        .set_text(&format!("{}{}", value.round(), prop_unit));
+                } else if prop_unit == "bps" {
+                    let (value, unit) = crate::to_human_readable(value, 1024.);
+                    this.label
+                        .set_text(&format!("{} {}{}", value.round(), unit, prop_unit));
+                } else {
+                    let (value, unit) = crate::to_human_readable(value, 1024.);
+                    this.label.set_text(&format!(
+                        "{} {}{}{}",
+                        value.round(),
+                        unit,
+                        if unit.is_empty() { "" } else { "i" },
+                        prop_unit
+                    ));
+                }
+            }
+            update_property(self);
+
             let content = self.content.borrow();
             let content = content.as_ref();
             if content.is_none() {
@@ -147,49 +180,15 @@ mod imp {
                 return;
             }
             let content = content.unwrap();
-
-            let value = if self.content_type.get() == ContentType::App {
-                let app_model = content.downcast_ref::<crate::apps_page::view_models::AppModel>();
-                if app_model.is_none() {
-                    g_critical!(
-                        "MissionCenter::AppsPage",
-                        "Model used for App content is not an AppModel"
-                    );
-                    return;
-                }
-                let app_model = app_model.unwrap();
-                app_model.property::<f32>(self.obj().property_name().as_str())
-            } else {
-                let process_model =
-                    content.downcast_ref::<crate::apps_page::view_models::ProcessModel>();
-                if process_model.is_none() {
-                    g_critical!(
-                        "MissionCenter::AppsPage",
-                        "Model used for Process content is not a ProcessModel"
-                    );
-                    return;
-                }
-                let process_model = process_model.unwrap();
-                process_model.property::<f32>(self.obj().property_name().as_str())
-            };
-
-            if self.unit() == "%" {
-                self.label
-                    .set_text(&format!("{}{}", value.round(), self.unit()));
-            } else if self.unit() == "bps" {
-                let (value, unit) = crate::to_human_readable(value, 1000.);
-                self.label
-                    .set_text(&format!("{} {}{}", value.round(), unit, self.unit()));
-            } else {
-                let (value, unit) = crate::to_human_readable(value, 1024.);
-                self.label.set_text(&format!(
-                    "{} {}{}{}",
-                    value.round(),
-                    unit,
-                    if unit.is_empty() { "" } else { "i" },
-                    self.unit()
-                ));
-            }
+            let property_name = unsafe { &*self.property_name.as_ptr() }.as_str();
+            content.connect_notify_local(
+                Some(property_name),
+                clone!(
+                    @weak self as this => move |_, _| {
+                        update_property(&this);
+                    }
+                ),
+            );
         }
     }
 

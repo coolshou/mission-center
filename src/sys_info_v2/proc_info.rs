@@ -5,6 +5,7 @@ pub fn load_app_and_process_list() -> (
     Vec<crate::sys_info_v2::App>,
     std::collections::HashMap<Pid, Process>,
 ) {
+    use super::FLATPAK_APP_PATH;
     use super::{App, CACHE_DIR, IS_FLATPAK};
     use gtk::glib::{g_critical, g_debug};
     use std::{
@@ -18,35 +19,9 @@ pub fn load_app_and_process_list() -> (
     let mut apps = vec![];
 
     let mut cmd = if is_flatpak {
-        match std::fs::create_dir_all(CACHE_DIR.as_str()) {
-            Err(err) => {
-                g_critical!(
-                    "MissionCenter::ProcInfo",
-                    "Failed to load process information: {:?}",
-                    err
-                );
-                return (apps, processes);
-            }
-            _ => {}
-        }
-
-        let proxy_bin_path = CACHE_DIR.clone() + "/missioncenter-proxy";
-
-        match std::fs::copy("/app/bin/missioncenter-proxy", &proxy_bin_path) {
-            Err(err) => {
-                g_critical!(
-                    "MissionCenter::ProcInfo",
-                    "Failed to load process information: {:?}",
-                    err
-                );
-                return (apps, processes);
-            }
-            _ => {}
-        }
-
         cmd_flatpak_host!(&format!(
-            "{} apps-processes --process-cache {}/proc_cache.bin",
-            proxy_bin_path,
+            "{}/bin/missioncenter-proxy apps-processes --process-cache {}/proc_cache.bin",
+            &*FLATPAK_APP_PATH,
             CACHE_DIR.as_str()
         ))
     } else {

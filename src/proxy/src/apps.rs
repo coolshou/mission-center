@@ -114,9 +114,9 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
     let section = ini.section(Some("Desktop Entry"));
     if section.is_none() {
         eprintln!(
-                 "CRTFailed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
-                 path.display()
-             );
+            "CRTFailed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
+            path.display()
+        );
         return None;
     }
     let section = section.unwrap();
@@ -151,10 +151,10 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
     let cmd = parse_command(command);
     if cmd.is_none() {
         eprintln!(
-                "DBGFailed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
-                path.display(),
-                command
-            );
+            "DBGFailed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
+            path.display(),
+            command
+        );
         return None;
     }
     let (cmd, is_flatpak) = cmd.unwrap();
@@ -180,6 +180,13 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
         is_flatpak,
 
         pids: vec![],
+        stats: Stats {
+            cpu_usage: 0.0,
+            memory_usage: 0.0,
+            disk_usage: 0.0,
+            network_usage: 0.0,
+            gpu_usage: 0.0,
+        },
     })
 }
 

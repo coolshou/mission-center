@@ -112,14 +112,31 @@ mod imp {
                                 .as_ref()
                                 .unwrap_or(&"application-x-executable".to_string())
                                 .as_str(),
-                            0.,
-                            0.,
-                            0.,
-                            0.,
-                            0.,
+                            app.stats.cpu_usage,
+                            app.stats.memory_usage,
+                            app.stats.disk_usage,
+                            app.stats.network_usage,
+                            app.stats.gpu_usage,
                         )),
                     );
                     model.append(&view_model);
+                } else {
+                    let model: gio::ListModel = model.clone().into();
+                    let view_model = model
+                        .item(pos.unwrap())
+                        .unwrap()
+                        .downcast::<ViewModel>()
+                        .unwrap();
+
+                    let model = view_model.content_model::<AppModel>();
+                    assert!(model.is_some());
+                    let model = model.unwrap();
+
+                    model.set_cpu_usage(app.stats.cpu_usage);
+                    model.set_memory_usage(app.stats.memory_usage);
+                    model.set_disk_usage(app.stats.disk_usage);
+                    model.set_network_usage(app.stats.network_usage);
+                    model.set_gpu_usage(app.stats.gpu_usage);
                 }
             }
 
@@ -184,11 +201,11 @@ mod imp {
                             entry_name,
                             ContentVariant::Process(ProcessModel::new(
                                 *pid,
-                                child.process_stats.cpu_usage,
-                                child.process_stats.memory_usage,
-                                child.process_stats.disk_usage,
-                                child.process_stats.network_usage,
-                                child.process_stats.gpu_usage,
+                                child.stats.cpu_usage,
+                                child.stats.memory_usage,
+                                child.stats.disk_usage,
+                                child.stats.network_usage,
+                                child.stats.gpu_usage,
                             )),
                         );
                         model.append(&view_model);
@@ -209,11 +226,11 @@ mod imp {
                         assert!(model.is_some());
                         let model = model.unwrap();
 
-                        model.set_cpu_usage(child.process_stats.cpu_usage);
-                        model.set_memory_usage(child.process_stats.memory_usage);
-                        model.set_disk_usage(child.process_stats.disk_usage);
-                        model.set_network_usage(child.process_stats.network_usage);
-                        model.set_gpu_usage(child.process_stats.gpu_usage);
+                        model.set_cpu_usage(child.stats.cpu_usage);
+                        model.set_memory_usage(child.stats.memory_usage);
+                        model.set_disk_usage(child.stats.disk_usage);
+                        model.set_network_usage(child.stats.network_usage);
+                        model.set_gpu_usage(child.stats.gpu_usage);
 
                         process_model = Some(model);
                         process_model.as_ref().unwrap().children()
@@ -283,8 +300,6 @@ mod imp {
                         let section_header_model = section_header_model.unwrap();
 
                         if section_header_model.section_type() == SectionType::Apps {
-                            this.update_app_model();
-
                             let model = this.apps_model.take();
                             this.apps_model.set(model.clone());
 
@@ -376,14 +391,6 @@ mod imp {
             column_view_title = self
                 .configure_column_header(&column_view_title, &i18n("Disk"), "0%", gtk::Align::End)
                 .unwrap();
-            column_view_title = self
-                .configure_column_header(
-                    &column_view_title,
-                    &i18n("Network"),
-                    "0%",
-                    gtk::Align::End,
-                )
-                .unwrap();
             self.configure_column_header(&column_view_title, &i18n("GPU"), "0%", gtk::Align::End);
         }
     }
@@ -406,6 +413,8 @@ impl AppsPage {
         let mut apps = HashMap::new();
         std::mem::swap(&mut apps, &mut readings.running_apps);
         this.apps.set(apps);
+
+        this.update_app_model();
 
         let mut process_tree = crate::sys_info_v2::Process::default();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);

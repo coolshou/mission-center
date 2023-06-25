@@ -18,6 +18,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Stats {
+    pub cpu_usage: f32,
+    pub memory_usage: f32,
+    pub disk_usage: f32,
+    pub network_usage: f32,
+    pub gpu_usage: f32,
+}
+
 #[derive(Debug, Clone)]
 pub struct App {
     pub name: String,
@@ -28,6 +37,7 @@ pub struct App {
     pub is_flatpak: bool,
 
     pub pids: Vec<libc::pid_t>,
+    pub stats: Stats,
 }
 
 impl App {
@@ -71,6 +81,13 @@ impl App {
             app_id: None,
             is_flatpak: false,
             pids: vec![],
+            stats: Stats {
+                cpu_usage: 0.0,
+                memory_usage: 0.0,
+                disk_usage: 0.0,
+                network_usage: 0.0,
+                gpu_usage: 0.0,
+            },
         };
 
         let mut len = 0_usize;

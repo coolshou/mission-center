@@ -127,7 +127,7 @@ pub struct Process {
     pub parent: Pid,
     pub children: std::collections::HashMap<Pid, Process>,
 
-    pub process_stats: Stats,
+    pub stats: Stats,
 }
 
 impl Process {
@@ -150,7 +150,7 @@ impl Process {
         for child in self.children.values() {
             child.serialize(output)?;
         }
-        self.process_stats.serialize(output)?;
+        self.stats.serialize(output)?;
 
         Ok(())
     }
@@ -205,7 +205,7 @@ impl Process {
             this.children.insert(child.pid, child);
         }
 
-        this.process_stats.deserialize(input)?;
+        this.stats.deserialize(input)?;
 
         Ok(this)
     }
