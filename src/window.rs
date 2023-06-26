@@ -99,29 +99,29 @@ mod imp {
                 if new_state {
                     this.header_stack.set_visible_child_name("search-entry");
                     this.search_entry.grab_focus();
+                    this.search_entry.select_region(-1, -1);
                 } else {
                     this.header_stack.set_visible_child_name("view-switcher");
+                    this.search_entry.set_text("");
                 }
             }));
 
-            let escape_controller = gtk::EventControllerKey::new();
+            // IDK... Something about missing Traits... don't care, this works
+            unsafe {
+                gtk::ffi::gtk_search_entry_set_key_capture_widget(
+                    self.search_entry.as_ptr() as *mut _,
+                    self.obj().as_ptr() as *mut _,
+                );
+            }
             let this = self.obj().clone();
-            escape_controller.connect_key_pressed(move |_, key, _, _| {
-                if key == gtk::gdk::Key::Escape && this.imp().search_button.is_active() {
-                    // TODO: Fix
-                    unsafe {
-                        gtk::ffi::gtk_widget_activate_action(
-                            this.as_ptr() as *mut _,
-                            b"win.toggle-search\0".as_ptr() as *const _,
-                            std::ptr::null_mut(),
-                        );
-                    }
-
-                    return signal::Inhibit(true);
-                }
-                signal::Inhibit(false)
+            self.search_entry.connect_search_started(move |_| {
+                let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
             });
-            self.search_entry.add_controller(escape_controller.clone());
+            let this = self.obj().clone();
+            self.search_entry.connect_stop_search(move |_| {
+                let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+            });
+
             self.obj().add_action(&toggle_search);
         }
     }

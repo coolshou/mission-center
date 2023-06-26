@@ -23,7 +23,6 @@ use std::cell::Cell;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::i18n::*;
-use crate::sys_info_v2::Readings;
 
 mod column_header;
 mod list_items;
@@ -263,7 +262,8 @@ mod imp {
         }
 
         pub fn set_up_view_model(&self) {
-            use view_models::{ContentVariant, SectionHeaderModel, SectionType, ViewModel};
+            use glib::g_critical;
+            use view_models::*;
 
             let apps_section_header = ViewModel::new(
                 &i18n("Apps"),
@@ -288,8 +288,6 @@ mod imp {
 
             let this = self.obj().downgrade();
             let treemodel = gtk::TreeListModel::new(root_model, false, false, move |model_entry| {
-                use view_models::{ContentType, ProcessModel};
-
                 let this = this.upgrade();
                 if this.is_none() {
                     return None;
@@ -332,7 +330,130 @@ mod imp {
                     }
                 }
             });
-            let selection = gtk::SingleSelection::new(Some(treemodel));
+
+            let window = crate::MissionCenterApplication::default_instance()
+                .and_then(|app| app.active_window())
+                .and_then(|window| window.downcast::<crate::window::MissionCenterWindow>().ok());
+            if window.is_none() {
+                g_critical!(
+                    "MissionCenter::AppsPage",
+                    "Failed to get MissionCenterWindow instance; searching and filtering will not function"
+                );
+            }
+            let window = window.unwrap();
+
+            let window_clone = window.clone();
+            let this = self.obj().downgrade();
+            let filter = gtk::CustomFilter::new(move |obj| {
+                use textdistance::{Algorithm, Levenshtein};
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return false;
+                }
+                let this = this.unwrap();
+                let _this = this.imp();
+
+                let window = window_clone.imp();
+
+                if !window.search_button.is_active() {
+                    return true;
+                }
+
+                if window.search_entry.text().is_empty() {
+                    return true;
+                }
+
+                let view_model = obj
+                    .downcast_ref::<gtk::TreeListRow>()
+                    .and_then(|row| row.item())
+                    .and_then(|item| item.downcast::<ViewModel>().ok());
+                if view_model.is_none() {
+                    return false;
+                }
+                let view_model = view_model.unwrap();
+                if view_model.content_type() == ContentType::SectionHeader as i32 {
+                    return true;
+                }
+
+                let entry_name = view_model.name().to_lowercase();
+                let search_query = window.search_entry.text().to_lowercase();
+
+                if entry_name.contains(&search_query) {
+                    return true;
+                }
+
+                if search_query.contains(&entry_name) {
+                    return true;
+                }
+
+                let str_distance = Levenshtein::default()
+                    .for_str(&entry_name, &search_query)
+                    .ndist();
+                if str_distance <= 0.6 {
+                    return true;
+                }
+
+                if view_model.content_type() == ContentType::Process as i32 {
+                    fn find_child(model: &ProcessModel, query_string: &str) -> bool {
+                        let children = model.children();
+
+                        for i in 0..children.n_items() {
+                            let child = children.item(i).unwrap();
+                            let view_model = child.downcast_ref::<ViewModel>().unwrap();
+
+                            let child_name = view_model.name().to_lowercase();
+
+                            if query_string.contains(&child_name) {
+                                return true;
+                            }
+
+                            if child_name.contains(query_string) {
+                                return true;
+                            }
+
+                            let str_distance = Levenshtein::default()
+                                .for_str(&child_name, query_string)
+                                .ndist();
+                            if str_distance <= 0.6 {
+                                return true;
+                            }
+                        }
+
+                        for i in 0..children.n_items() {
+                            let child = children.item(i).unwrap();
+                            let view_model = child.downcast_ref::<ViewModel>().unwrap();
+                            let process_model = view_model.content_model::<ProcessModel>();
+                            if process_model.is_none() {
+                                return false;
+                            }
+                            let process_model = process_model.unwrap();
+
+                            return find_child(&process_model, query_string);
+                        }
+
+                        false
+                    }
+
+                    let process_model = view_model.content_model::<ProcessModel>();
+                    if process_model.is_none() {
+                        return false;
+                    }
+                    let process_model = process_model.unwrap();
+                    return find_child(&process_model, &search_query);
+                }
+
+                false
+            });
+            let filter_model = gtk::FilterListModel::new(Some(treemodel), Some(filter.clone()));
+
+            let filter = filter;
+            window
+                .imp()
+                .search_entry
+                .connect_search_changed(move |_| filter.changed(gtk::FilterChange::Different));
+
+            let selection = gtk::SingleSelection::new(Some(filter_model));
             self.column_view.set_model(Some(&selection));
         }
 
@@ -356,7 +477,7 @@ mod imp {
             (column_header.next_sibling(), header)
         }
 
-        pub fn update_column_headers(&self, readings: &Readings) {
+        pub fn update_column_headers(&self, readings: &crate::sys_info_v2::Readings) {
             let column_header_cpu = self.column_header_cpu.take();
             if let Some(column_header_cpu) = &column_header_cpu {
                 column_header_cpu.set_heading(format!(
@@ -444,7 +565,11 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for AppsPage {}
+    impl ObjectImpl for AppsPage {
+        fn constructed(&self) {
+            self.parent_constructed();
+        }
+    }
 
     impl WidgetImpl for AppsPage {
         fn realize(&self) {

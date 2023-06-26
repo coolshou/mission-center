@@ -44,7 +44,7 @@ mod imp {
 
         #[property(get)]
         pub content: RefCell<Option<glib::Object>>,
-        #[property(get, type = i32)]
+        #[property(get = Self::content_type, type = i32)]
         pub content_type: Cell<ContentType>,
     }
 
@@ -76,6 +76,10 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn content_type(&self) -> i32 {
+            self.content_type.get() as i32
         }
     }
 

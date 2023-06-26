@@ -8,6 +8,7 @@ build = "build/build.rs"
 adw = { package = "libadwaita", version = "0.4", features = ["v1_3"] }
 drm = { version = "0.9" }
 egl = { version = "0.2" }
+errno-sys = { version = "0.1" }
 gbm = { version = "0.12" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
@@ -31,7 +32,7 @@ rusqlite = { version = "0.29", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 sysinfo = { version = "0.29", default-features = false }
-errno-sys = { version = "0.1" }
+textdistance = { version = "1.0.2" }
 
 [profile.release]
 opt-level = 3
