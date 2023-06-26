@@ -37,12 +37,24 @@ mod imp {
     pub struct AppsPage {
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
+        #[template_child]
+        pub name_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub cpu_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub gpu_column: TemplateChild<gtk::ColumnViewColumn>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
+
+        pub sort_order: Cell<gtk::SorterChange>,
 
         pub apps_model: Cell<gio::ListStore>,
         pub processes_root_model: Cell<gio::ListStore>,
@@ -58,12 +70,19 @@ mod imp {
 
             Self {
                 column_view: TemplateChild::default(),
+                name_column: TemplateChild::default(),
+                cpu_column: TemplateChild::default(),
+                memory_column: TemplateChild::default(),
+                disk_column: TemplateChild::default(),
+                gpu_column: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
                 column_header_gpu: Cell::new(None),
+
+                sort_order: Cell::new(gtk::SorterChange::Inverted),
 
                 apps_model: Cell::new(gio::ListStore::new(view_models::ViewModel::static_type())),
                 processes_root_model: Cell::new(gio::ListStore::new(
@@ -343,16 +362,8 @@ mod imp {
             let window = window.unwrap();
 
             let window_clone = window.clone();
-            let this = self.obj().downgrade();
             let filter = gtk::CustomFilter::new(move |obj| {
                 use textdistance::{Algorithm, Levenshtein};
-
-                let this = this.upgrade();
-                if this.is_none() {
-                    return false;
-                }
-                let this = this.unwrap();
-                let _this = this.imp();
 
                 let window = window_clone.imp();
 
@@ -446,14 +457,141 @@ mod imp {
                 false
             });
             let filter_model = gtk::FilterListModel::new(Some(treemodel), Some(filter.clone()));
-
-            let filter = filter;
             window
                 .imp()
                 .search_entry
                 .connect_search_changed(move |_| filter.changed(gtk::FilterChange::Different));
 
-            let selection = gtk::SingleSelection::new(Some(filter_model));
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::*;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+                let this = this.imp();
+
+                let lhs = lhs
+                    .downcast_ref::<gtk::TreeListRow>()
+                    .and_then(|row| row.item())
+                    .and_then(|item| item.downcast::<ViewModel>().ok());
+                if lhs.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let lhs = lhs.unwrap();
+
+                let rhs = rhs
+                    .downcast_ref::<gtk::TreeListRow>()
+                    .and_then(|row| row.item())
+                    .and_then(|item| item.downcast::<ViewModel>().ok());
+                if rhs.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let rhs = rhs.unwrap();
+
+                if lhs.content_type() == ContentType::SectionHeader as i32 {
+                    let lhs = lhs.content_model::<SectionHeaderModel>();
+                    if lhs.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let lhs = lhs.unwrap();
+                    if lhs.section_type() == SectionType::Apps {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Less.into();
+                        }
+                        return Ordering::Greater.into();
+                    }
+
+                    if rhs.content_type() == ContentType::App as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Greater.into();
+                        }
+                        return Ordering::Less.into();
+                    }
+
+                    if rhs.content_type() == ContentType::Process as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Less.into();
+                        }
+                        return Ordering::Greater.into();
+                    }
+                }
+
+                if rhs.content_type() == ContentType::SectionHeader as i32 {
+                    let rhs = rhs.content_model::<SectionHeaderModel>();
+                    if rhs.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let rhs = rhs.unwrap();
+                    if rhs.section_type() == SectionType::Apps {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Greater.into();
+                        }
+                        return Ordering::Less.into();
+                    }
+
+                    if lhs.content_type() == ContentType::App as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Less.into();
+                        }
+                        return Ordering::Greater.into();
+                    }
+
+                    if lhs.content_type() == ContentType::Process as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Greater.into();
+                        }
+                        return Ordering::Less.into();
+                    }
+                }
+
+                if lhs.content_type() == ContentType::App as i32 {
+                    if rhs.content_type() == ContentType::App as i32 {
+                        return lhs
+                            .name()
+                            .to_lowercase()
+                            .cmp(&rhs.name().to_lowercase())
+                            .into();
+                    }
+
+                    if rhs.content_type() == ContentType::Process as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Less.into();
+                        }
+                        return Ordering::Greater.into();
+                    }
+                }
+
+                if lhs.content_type() == ContentType::Process as i32 {
+                    if rhs.content_type() == ContentType::Process as i32 {
+                        return lhs
+                            .name()
+                            .to_lowercase()
+                            .cmp(&rhs.name().to_lowercase())
+                            .into();
+                    }
+
+                    if rhs.content_type() == ContentType::App as i32 {
+                        if this.sort_order.get() == gtk::SorterChange::Inverted {
+                            return Ordering::Greater.into();
+                        }
+                        return Ordering::Less.into();
+                    }
+                }
+
+                Ordering::Equal.into()
+            });
+
+            let this = self.obj().downgrade();
+            sorter.connect_changed(move |_, change| {});
+
+            self.name_column.set_sorter(Some(&sorter));
+
+            let sort_model = gtk::SortListModel::new(Some(filter_model), self.column_view.sorter());
+
+            let selection = gtk::SingleSelection::new(Some(sort_model));
             self.column_view.set_model(Some(&selection));
         }
 
@@ -471,8 +609,22 @@ mod imp {
                 .unwrap();
             column_view_box.first_child().unwrap().set_visible(false);
 
+            let controllers = column_header.observe_controllers();
+            let gesture_click = controllers
+                .item(0)
+                .unwrap()
+                .downcast::<gtk::GestureClick>()
+                .unwrap();
+            gesture_click.connect_released(glib::clone!(@weak self as this => move |_, _, _, _| {
+                if this.sort_order.get() == gtk::SorterChange::Inverted{
+                    this.sort_order.set(gtk::SorterChange::Different);
+                } else {
+                    this.sort_order.set(gtk::SorterChange::Inverted);
+                }
+            }));
+
             let header = column_header::ColumnHeader::new(heading, name, align);
-            column_view_box.prepend(&header);
+            column_view_box.append(&header);
 
             (column_header.next_sibling(), header)
         }

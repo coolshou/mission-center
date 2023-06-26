@@ -39,6 +39,7 @@ template $AppsPage : Box {
       ColumnViewColumn name_column {
         resizable: true;
         expand: true;
+        title: "Name";
 
         factory: BuilderListItemFactory {
           template ListItem {
@@ -58,6 +59,7 @@ template $AppsPage : Box {
       ColumnViewColumn cpu_column {
         resizable: true;
         fixed-width: 90;
+        title: "CPU";
 
         factory: BuilderListItemFactory {
           template ListItem {
@@ -84,6 +86,7 @@ template $AppsPage : Box {
       ColumnViewColumn memory_column {
         resizable: true;
         fixed-width: 90;
+        title: "Memory";
 
         factory: BuilderListItemFactory {
           template ListItem {
@@ -110,6 +113,7 @@ template $AppsPage : Box {
       ColumnViewColumn disk_column {
         resizable: true;
         fixed-width: 90;
+        title: "Disk";
 
         factory: BuilderListItemFactory {
           template ListItem {
@@ -136,6 +140,7 @@ template $AppsPage : Box {
       ColumnViewColumn gpu_column {
         resizable: true;
         fixed-width: 90;
+        title: "GPU";
 
         factory: BuilderListItemFactory {
           template ListItem {

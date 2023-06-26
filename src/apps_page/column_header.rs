@@ -68,6 +68,11 @@ mod imp {
         }
 
         pub fn set_heading(&self, heading: &str) {
+            if heading.is_empty() {
+                self.heading_label.set_visible(false);
+            } else {
+                self.heading_label.set_visible(true);
+            }
             self.heading_label.set_label(heading);
         }
 
