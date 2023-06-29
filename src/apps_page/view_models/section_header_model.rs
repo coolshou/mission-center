@@ -20,24 +20,19 @@
 
 use std::cell::Cell;
 
-use gtk::{
-    gio, glib,
-    glib::{prelude::*, subclass::prelude::*},
-};
+use gtk::{glib, glib::subclass::prelude::*};
 
 mod imp {
     use super::*;
 
     pub struct SectionHeaderModel {
         pub section_type: Cell<SectionType>,
-        pub children: Cell<gio::ListStore>,
     }
 
     impl Default for SectionHeaderModel {
         fn default() -> Self {
             Self {
                 section_type: Cell::new(SectionType::Apps),
-                children: Cell::new(gio::ListStore::new(super::super::ViewModel::static_type())),
             }
         }
     }
@@ -72,13 +67,5 @@ impl SectionHeaderModel {
 
     pub fn section_type(&self) -> SectionType {
         self.imp().section_type.get()
-    }
-
-    pub fn children(&self) -> &gio::ListStore {
-        unsafe { &*self.imp().children.as_ptr() }
-    }
-
-    pub fn set_children(&self, children: gio::ListStore) {
-        self.imp().children.set(children);
     }
 }

@@ -27,8 +27,6 @@ use gtk::{
     subclass::prelude::*,
 };
 
-use crate::apps_page::view_models::ContentType;
-
 mod imp {
     use super::*;
 
@@ -47,11 +45,13 @@ mod imp {
         #[property(set = Self::set_content)]
         pub content: RefCell<Option<glib::Object>>,
         #[property(set = Self::set_content_type, type = i32)]
-        pub content_type: Cell<ContentType>,
+        pub content_type: Cell<crate::apps_page::view_models::ContentType>,
     }
 
     impl Default for StatColumn {
         fn default() -> Self {
+            use crate::apps_page::view_models::ContentType;
+
             Self {
                 property_name: Cell::new(glib::GString::from("")),
                 label: TemplateChild::default(),
@@ -83,10 +83,43 @@ mod imp {
         }
 
         fn set_content(&self, content: Option<glib::Object>) {
+            use crate::apps_page::view_models::{
+                AppModel, ContentType, ProcessModel, SectionHeaderModel,
+            };
+
             self.content.set(content);
+
+            let content = unsafe { &*self.content.as_ptr() }.as_ref();
+            if content.is_none() {
+                self.content_type.set(ContentType::None);
+                return;
+            }
+
+            if content
+                .and_then(|c| c.downcast_ref::<ProcessModel>())
+                .is_some()
+            {
+                self.content_type.set(ContentType::Process);
+                return;
+            }
+
+            if content.and_then(|c| c.downcast_ref::<AppModel>()).is_some() {
+                self.content_type.set(ContentType::App);
+                return;
+            }
+
+            if content
+                .and_then(|c| c.downcast_ref::<SectionHeaderModel>())
+                .is_some()
+            {
+                self.content_type.set(ContentType::SectionHeader);
+                return;
+            }
         }
 
         fn set_content_type(&self, v: i32) {
+            use crate::apps_page::view_models::ContentType;
+
             let content_type = match v {
                 0 => ContentType::None,
                 1 => ContentType::SectionHeader,
@@ -130,6 +163,7 @@ mod imp {
 
     impl WidgetImpl for StatColumn {
         fn realize(&self) {
+            use crate::apps_page::view_models::ContentType;
             use glib::*;
 
             self.parent_realize();

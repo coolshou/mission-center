@@ -49,7 +49,6 @@ template $AppsPage : Box {
               child: $ListItem {
                 name: bind (expander.item as <$ViewModel>).name;
                 content: bind (expander.item as <$ViewModel>).content;
-                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -76,7 +75,6 @@ template $AppsPage : Box {
                 unit: "%";
                 property-name: "cpu-usage";
                 content: bind (expander.item as <$ViewModel>).content;
-                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -103,7 +101,6 @@ template $AppsPage : Box {
                 unit: "B";
                 property-name: "memory-usage";
                 content: bind (expander.item as <$ViewModel>).content;
-                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -130,7 +127,6 @@ template $AppsPage : Box {
                 unit: "B/s";
                 property-name: "disk-usage";
                 content: bind (expander.item as <$ViewModel>).content;
-                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -157,7 +153,6 @@ template $AppsPage : Box {
                 unit: "%";
                 property-name: "gpu-usage";
                 content: bind (expander.item as <$ViewModel>).content;
-                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }

@@ -178,7 +178,7 @@ mod imp {
         pub fn update_processes_models(&self) {
             use view_models::{ContentVariant, ProcessModel, ViewModel};
 
-            fn update_model(model: &gio::ListStore, process: &crate::sys_info_v2::Process) {
+            fn update_model(model: gio::ListStore, process: &crate::sys_info_v2::Process) {
                 let mut to_remove = Vec::new();
                 for i in 0..model.n_items() {
                     let current = model.item(i).unwrap().downcast::<ViewModel>();
@@ -198,10 +198,12 @@ mod imp {
                 }
 
                 for (i, to_remove_i) in to_remove.iter().enumerate() {
-                    model.remove((*to_remove_i as usize - i) as _);
+                    let to_remove_i = (*to_remove_i as usize - i) as _;
+                    model.remove(to_remove_i);
                 }
 
                 for (pid, child) in &process.children {
+                    eprintln!("Process: {}({})", &child.name, child.pid);
                     let pos = if model.n_items() > 0 {
                         model.find_with_equal_func(|current| {
                             let current = current.downcast_ref::<ViewModel>();
@@ -225,8 +227,6 @@ mod imp {
                         child.name.as_str()
                     };
 
-                    #[allow(unused_assignments)]
-                    let mut process_model = None;
                     let child_model = if pos.is_none() {
                         let view_model = ViewModel::new(
                             entry_name,
@@ -239,14 +239,12 @@ mod imp {
                                 child.stats.gpu_usage,
                             )),
                         );
+
                         model.append(&view_model);
                         let model = view_model.content_model::<ProcessModel>();
                         assert!(model.is_some());
-                        process_model = Some(model.unwrap());
-
-                        process_model.as_ref().unwrap().children()
+                        model.as_ref().unwrap().children().clone()
                     } else {
-                        let model: gio::ListModel = model.clone().into();
                         let view_model = model
                             .item(pos.unwrap())
                             .unwrap()
@@ -263,8 +261,7 @@ mod imp {
                         model.set_network_usage(child.stats.network_usage);
                         model.set_gpu_usage(child.stats.gpu_usage);
 
-                        process_model = Some(model);
-                        process_model.as_ref().unwrap().children()
+                        model.children().clone()
                     };
 
                     update_model(child_model, child);
@@ -274,14 +271,95 @@ mod imp {
             let process_tree = self.process_tree.take();
             let processes_root_model = self.processes_root_model.take();
 
-            update_model(&processes_root_model, &process_tree);
+            update_model(processes_root_model.clone(), &process_tree);
 
             self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
         }
 
-        pub fn set_up_view_model(&self) {
-            use glib::g_critical;
+        pub fn column_compare_entries_by(
+            &self,
+            lhs: &glib::Object,
+            rhs: &glib::Object,
+            compare_fn: fn(&view_models::ViewModel, &view_models::ViewModel) -> std::cmp::Ordering,
+        ) -> std::cmp::Ordering {
+            use std::cmp::*;
+            use view_models::{ContentType, SectionHeaderModel, SectionType, ViewModel};
+
+            let lhs = lhs.downcast_ref::<ViewModel>();
+            if lhs.is_none() {
+                return Ordering::Equal.into();
+            }
+            let lhs = lhs.unwrap();
+
+            let rhs = rhs.downcast_ref::<ViewModel>();
+            if rhs.is_none() {
+                return Ordering::Equal.into();
+            }
+            let rhs = rhs.unwrap();
+
+            if lhs.content_type() == ContentType::SectionHeader as i32 {
+                let lhs = lhs.content_model::<SectionHeaderModel>();
+                if lhs.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let lhs = lhs.unwrap();
+                if lhs.section_type() == SectionType::Apps {
+                    return Ordering::Greater.into();
+                }
+
+                if rhs.content_type() == ContentType::App as i32 {
+                    return Ordering::Less.into();
+                }
+
+                if rhs.content_type() == ContentType::Process as i32 {
+                    return Ordering::Greater.into();
+                }
+            }
+
+            if rhs.content_type() == ContentType::SectionHeader as i32 {
+                let rhs = rhs.content_model::<SectionHeaderModel>();
+                if rhs.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let rhs = rhs.unwrap();
+                if rhs.section_type() == SectionType::Apps {
+                    return Ordering::Less.into();
+                }
+
+                if lhs.content_type() == ContentType::App as i32 {
+                    return Ordering::Greater.into();
+                }
+
+                if lhs.content_type() == ContentType::Process as i32 {
+                    return Ordering::Less.into();
+                }
+            }
+
+            if lhs.content_type() == ContentType::App as i32 {
+                if rhs.content_type() == ContentType::App as i32 {
+                    return (compare_fn)(lhs, rhs).into();
+                }
+
+                if rhs.content_type() == ContentType::Process as i32 {
+                    return Ordering::Greater.into();
+                }
+            }
+
+            if lhs.content_type() == ContentType::Process as i32 {
+                if rhs.content_type() == ContentType::Process as i32 {
+                    return (compare_fn)(lhs, rhs).into();
+                }
+
+                if rhs.content_type() == ContentType::App as i32 {
+                    return Ordering::Less.into();
+                }
+            }
+
+            Ordering::Equal.into()
+        }
+
+        pub fn set_up_root_model(&self) -> gio::ListStore {
             use view_models::*;
 
             let apps_section_header = ViewModel::new(
@@ -293,20 +371,25 @@ mod imp {
                 &i18n("Processes"),
                 ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Processes)),
             );
-            let section_header_model =
-                processes_section_header.content_model::<SectionHeaderModel>();
-            if section_header_model.is_some() {
-                section_header_model
-                    .unwrap()
-                    .set_children(unsafe { &*self.processes_root_model.as_ptr() }.clone());
-            }
 
             let root_model = gio::ListStore::new(ViewModel::static_type());
             root_model.append(&apps_section_header);
             root_model.append(&processes_section_header);
 
+            root_model
+        }
+
+        pub fn set_up_tree_model(&self, root_model: gio::ListModel) -> gtk::TreeListModel {
+            use view_models::*;
+
             let this = self.obj().downgrade();
-            let treemodel = gtk::TreeListModel::new(root_model, false, false, move |model_entry| {
+            gtk::TreeListModel::new(root_model, false, true, move |model_entry| {
+                let view_model = model_entry.downcast_ref::<ViewModel>();
+                if view_model.is_none() {
+                    return None;
+                }
+                let view_model = view_model.unwrap();
+
                 let this = this.upgrade();
                 if this.is_none() {
                     return None;
@@ -314,41 +397,69 @@ mod imp {
                 let this = this.unwrap();
                 let this = this.imp();
 
-                let view_model = model_entry.downcast_ref::<ViewModel>();
-                if view_model.is_none() {
+                let content_type: ContentType =
+                    unsafe { core::mem::transmute(view_model.content_type() as u8) };
+
+                dbg!(content_type);
+
+                if content_type == ContentType::SectionHeader {
+                    let model = view_model.content_model::<SectionHeaderModel>().unwrap();
+
+                    if model.section_type() == SectionType::Apps {
+                        let apps_model = this.apps_model.take();
+                        this.apps_model.set(apps_model.clone());
+
+                        dbg!("apps_model");
+                        return Some(apps_model.into());
+                    }
+
+                    if model.section_type() == SectionType::Processes {
+                        let processes_model = this.processes_root_model.take();
+                        this.processes_root_model.set(processes_model.clone());
+
+                        dbg!("processes_model");
+                        return Some(processes_model.into());
+                    }
+
                     return None;
                 }
-                let view_model = view_model.unwrap();
 
-                match view_model.real_content_type() {
-                    ContentType::None => None,
-                    ContentType::SectionHeader => {
-                        let section_header_model = view_model.content_model::<SectionHeaderModel>();
-                        if section_header_model.is_none() {
-                            return None;
-                        }
-                        let section_header_model = section_header_model.unwrap();
-
-                        if section_header_model.section_type() == SectionType::Apps {
-                            let model = this.apps_model.take();
-                            this.apps_model.set(model.clone());
-
-                            Some(model.into())
-                        } else {
-                            Some(section_header_model.children().clone().into())
-                        }
-                    }
-                    ContentType::App => None,
-                    ContentType::Process => {
-                        let process_model = view_model.content_model::<ProcessModel>();
-                        if process_model.is_none() {
-                            return None;
-                        }
-                        let process_model = process_model.unwrap();
-                        Some(process_model.children().clone().into())
-                    }
+                if content_type == ContentType::Process {
+                    let model = view_model.content_model::<ProcessModel>().unwrap();
+                    dbg!("process_children");
+                    return Some(model.children().clone().into());
                 }
-            });
+
+                None
+
+                // if view_model.content_type() == ContentType::SectionHeader as i32 {
+                //     let model = view_model.content_model::<SectionHeaderModel>().unwrap();
+                //     if model.section_type() == SectionType::Apps {
+                //         let apps_model = this.apps_model.take();
+                //         this.apps_model.set(apps_model.clone());
+                //
+                //         return Some(apps_model.into());
+                //     }
+                //
+                //     if model.section_type() == SectionType::Processes {
+                //         let processes_model = this.processes_root_model.take();
+                //         this.processes_root_model.set(processes_model.clone());
+                //
+                //         return Some(processes_model.into());
+                //     }
+                //
+                //     return None;
+                // }
+                //
+                // view_model
+                //     .content_model::<ProcessModel>()
+                //     .and_then(|model| Some(model.children().clone().into()))
+            })
+        }
+
+        pub fn set_up_filter_model(&self, tree_model: gio::ListModel) -> gtk::FilterListModel {
+            use glib::g_critical;
+            use view_models::*;
 
             let window = crate::MissionCenterApplication::default_instance()
                 .and_then(|app| app.active_window())
@@ -456,140 +567,67 @@ mod imp {
 
                 false
             });
-            let filter_model = gtk::FilterListModel::new(Some(treemodel), Some(filter.clone()));
-            window
-                .imp()
-                .search_entry
-                .connect_search_changed(move |_| filter.changed(gtk::FilterChange::Different));
 
-            let this = self.obj().downgrade();
-            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
-                use std::cmp::*;
-
-                let this = this.upgrade();
-                if this.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let this = this.unwrap();
-                let this = this.imp();
-
-                let lhs = lhs
-                    .downcast_ref::<gtk::TreeListRow>()
-                    .and_then(|row| row.item())
-                    .and_then(|item| item.downcast::<ViewModel>().ok());
-                if lhs.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let lhs = lhs.unwrap();
-
-                let rhs = rhs
-                    .downcast_ref::<gtk::TreeListRow>()
-                    .and_then(|row| row.item())
-                    .and_then(|item| item.downcast::<ViewModel>().ok());
-                if rhs.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let rhs = rhs.unwrap();
-
-                if lhs.content_type() == ContentType::SectionHeader as i32 {
-                    let lhs = lhs.content_model::<SectionHeaderModel>();
-                    if lhs.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let lhs = lhs.unwrap();
-                    if lhs.section_type() == SectionType::Apps {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Less.into();
-                        }
-                        return Ordering::Greater.into();
-                    }
-
-                    if rhs.content_type() == ContentType::App as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Greater.into();
-                        }
-                        return Ordering::Less.into();
-                    }
-
-                    if rhs.content_type() == ContentType::Process as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Less.into();
-                        }
-                        return Ordering::Greater.into();
-                    }
-                }
-
-                if rhs.content_type() == ContentType::SectionHeader as i32 {
-                    let rhs = rhs.content_model::<SectionHeaderModel>();
-                    if rhs.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let rhs = rhs.unwrap();
-                    if rhs.section_type() == SectionType::Apps {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Greater.into();
-                        }
-                        return Ordering::Less.into();
-                    }
-
-                    if lhs.content_type() == ContentType::App as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Less.into();
-                        }
-                        return Ordering::Greater.into();
-                    }
-
-                    if lhs.content_type() == ContentType::Process as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Greater.into();
-                        }
-                        return Ordering::Less.into();
-                    }
-                }
-
-                if lhs.content_type() == ContentType::App as i32 {
-                    if rhs.content_type() == ContentType::App as i32 {
-                        return lhs
-                            .name()
-                            .to_lowercase()
-                            .cmp(&rhs.name().to_lowercase())
-                            .into();
-                    }
-
-                    if rhs.content_type() == ContentType::Process as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Less.into();
-                        }
-                        return Ordering::Greater.into();
-                    }
-                }
-
-                if lhs.content_type() == ContentType::Process as i32 {
-                    if rhs.content_type() == ContentType::Process as i32 {
-                        return lhs
-                            .name()
-                            .to_lowercase()
-                            .cmp(&rhs.name().to_lowercase())
-                            .into();
-                    }
-
-                    if rhs.content_type() == ContentType::App as i32 {
-                        if this.sort_order.get() == gtk::SorterChange::Inverted {
-                            return Ordering::Greater.into();
-                        }
-                        return Ordering::Less.into();
-                    }
-                }
-
-                Ordering::Equal.into()
+            let filter_clone = filter.clone();
+            window.imp().search_entry.connect_search_changed(move |_| {
+                filter_clone.changed(gtk::FilterChange::Different)
             });
 
+            gtk::FilterListModel::new(Some(tree_model), Some(filter))
+        }
+
+        pub fn set_up_view_model(&self) {
+            let root_model = self.set_up_root_model();
+            let tree_model = self.set_up_tree_model(root_model.into());
+            let filter_model = self.set_up_filter_model(tree_model.into());
+
             let this = self.obj().downgrade();
-            sorter.connect_changed(move |_, change| {});
+            self.name_column
+                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
+                    use std::cmp::Ordering;
 
-            self.name_column.set_sorter(Some(&sorter));
+                    let this = this.upgrade();
+                    if this.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let this = this.unwrap();
 
-            let sort_model = gtk::SortListModel::new(Some(filter_model), self.column_view.sorter());
+                    this.imp()
+                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                            lhs.name().to_lowercase().cmp(&rhs.name().to_lowercase())
+                        })
+                        .into()
+                })));
+
+            let this = self.obj().downgrade();
+            self.cpu_column
+                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
+                    use std::cmp::Ordering;
+
+                    let this = this.upgrade();
+                    if this.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let this = this.unwrap();
+
+                    this.imp()
+                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                            let lhs = lhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("cpu-usage")))
+                                .unwrap_or(0.);
+                            let rhs = rhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("cpu-usage")))
+                                .unwrap_or(0.);
+
+                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        })
+                        .into()
+                })));
+
+            let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
+            let sort_model = gtk::SortListModel::new(Some(filter_model), Some(tree_list_sorter));
 
             let selection = gtk::SingleSelection::new(Some(sort_model));
             self.column_view.set_model(Some(&selection));
@@ -609,19 +647,19 @@ mod imp {
                 .unwrap();
             column_view_box.first_child().unwrap().set_visible(false);
 
-            let controllers = column_header.observe_controllers();
-            let gesture_click = controllers
-                .item(0)
-                .unwrap()
-                .downcast::<gtk::GestureClick>()
-                .unwrap();
-            gesture_click.connect_released(glib::clone!(@weak self as this => move |_, _, _, _| {
-                if this.sort_order.get() == gtk::SorterChange::Inverted{
-                    this.sort_order.set(gtk::SorterChange::Different);
-                } else {
-                    this.sort_order.set(gtk::SorterChange::Inverted);
-                }
-            }));
+            // let controllers = column_header.observe_controllers();
+            // let gesture_click = controllers
+            //     .item(0)
+            //     .unwrap()
+            //     .downcast::<gtk::GestureClick>()
+            //     .unwrap();
+            // gesture_click.connect_released(glib::clone!(@weak self as this => move |_, _, _, _| {
+            //     if this.sort_order.get() == gtk::SorterChange::Inverted{
+            //         this.sort_order.set(gtk::SorterChange::Different);
+            //     } else {
+            //         this.sort_order.set(gtk::SorterChange::Inverted);
+            //     }
+            // }));
 
             let header = column_header::ColumnHeader::new(heading, name, align);
             column_view_box.append(&header);
@@ -788,16 +826,15 @@ impl AppsPage {
         std::mem::swap(&mut apps, &mut readings.running_apps);
         this.apps.set(apps);
 
-        this.update_app_model();
-
         let mut process_tree = crate::sys_info_v2::Process::default();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
+        this.set_up_view_model();
+
+        this.update_app_model();
         this.update_processes_models();
         this.update_column_headers(readings);
-
-        this.set_up_view_model();
 
         true
     }
@@ -809,14 +846,13 @@ impl AppsPage {
         std::mem::swap(&mut apps, &mut readings.running_apps);
         this.apps.set(apps);
 
-        this.update_app_model();
-
         let mut process_tree = this.process_tree.take();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
-        this.update_processes_models();
-        this.update_column_headers(readings);
+        // this.update_app_model();
+        // this.update_processes_models();
+        // this.update_column_headers(readings);
 
         true
     }

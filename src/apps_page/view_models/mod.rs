@@ -137,10 +137,6 @@ impl ViewModel {
         this
     }
 
-    pub fn real_content_type(&self) -> ContentType {
-        self.imp().content_type.get()
-    }
-
     pub fn set_content(&self, content: ContentVariant) {
         let this = self.imp();
 

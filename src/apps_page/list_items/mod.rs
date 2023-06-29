@@ -32,7 +32,7 @@ pub use app_entry::AppEntry;
 pub use process_entry::ProcessEntry;
 pub use section_header_entry::SectionHeaderEntry;
 
-use crate::apps_page::view_models::{AppModel, ContentType, ProcessModel};
+use crate::apps_page::view_models::{AppModel, ContentType, ProcessModel, SectionHeaderModel};
 
 mod app_entry;
 mod process_entry;
@@ -83,6 +83,33 @@ mod imp {
 
         fn set_content(&self, content: Option<glib::Object>) {
             self.content.set(content);
+
+            let content = unsafe { &*self.content.as_ptr() }.as_ref();
+            if content.is_none() {
+                self.content_type.set(ContentType::None);
+                return;
+            }
+
+            if content
+                .and_then(|c| c.downcast_ref::<ProcessModel>())
+                .is_some()
+            {
+                self.content_type.set(ContentType::Process);
+                return;
+            }
+
+            if content.and_then(|c| c.downcast_ref::<AppModel>()).is_some() {
+                self.content_type.set(ContentType::App);
+                return;
+            }
+
+            if content
+                .and_then(|c| c.downcast_ref::<SectionHeaderModel>())
+                .is_some()
+            {
+                self.content_type.set(ContentType::SectionHeader);
+                return;
+            }
         }
 
         fn set_content_type(&self, v: i32) {
@@ -130,8 +157,12 @@ mod imp {
 
             let internal_widget: gtk::Widget = match self.content_type.get() {
                 ContentType::None => return,
-                ContentType::SectionHeader => SectionHeaderEntry::new(&parent, name).upcast(),
+                ContentType::SectionHeader => {
+                    dbg!("Creating section header", name);
+                    SectionHeaderEntry::new(&parent, name).upcast()
+                }
                 ContentType::App => {
+                    dbg!("Creating app", name);
                     let model = content.downcast_ref::<AppModel>();
                     if model.is_none() {
                         g_critical!(
@@ -143,6 +174,7 @@ mod imp {
                     AppEntry::new(&parent, name, model.unwrap()).upcast()
                 }
                 ContentType::Process => {
+                    dbg!("Creating process", name);
                     let model = content.downcast_ref::<ProcessModel>();
                     if model.is_none() {
                         g_critical!(

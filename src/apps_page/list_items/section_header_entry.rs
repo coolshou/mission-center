@@ -20,7 +20,7 @@
 
 use std::cell::Cell;
 
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use gtk::{glib, subclass::prelude::*};
 
 mod imp {
     use super::*;
@@ -79,9 +79,6 @@ impl SectionHeaderEntry {
 
         tree_expander.set_indent_for_depth(false);
         tree_expander.set_indent_for_icon(false);
-        tree_expander.set_hide_expander(true);
-
-        let _ = tree_expander.activate_action("listitem.expand", None);
 
         this
     }
