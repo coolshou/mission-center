@@ -203,7 +203,6 @@ mod imp {
                 }
 
                 for (pid, child) in &process.children {
-                    eprintln!("Process: {}({})", &child.name, child.pid);
                     let pos = if model.n_items() > 0 {
                         model.find_with_equal_func(|current| {
                             let current = current.downcast_ref::<ViewModel>();
@@ -400,8 +399,6 @@ mod imp {
                 let content_type: ContentType =
                     unsafe { core::mem::transmute(view_model.content_type() as u8) };
 
-                dbg!(content_type);
-
                 if content_type == ContentType::SectionHeader {
                     let model = view_model.content_model::<SectionHeaderModel>().unwrap();
 
@@ -409,7 +406,6 @@ mod imp {
                         let apps_model = this.apps_model.take();
                         this.apps_model.set(apps_model.clone());
 
-                        dbg!("apps_model");
                         return Some(apps_model.into());
                     }
 
@@ -417,7 +413,6 @@ mod imp {
                         let processes_model = this.processes_root_model.take();
                         this.processes_root_model.set(processes_model.clone());
 
-                        dbg!("processes_model");
                         return Some(processes_model.into());
                     }
 
@@ -426,7 +421,6 @@ mod imp {
 
                 if content_type == ContentType::Process {
                     let model = view_model.content_model::<ProcessModel>().unwrap();
-                    dbg!("process_children");
                     return Some(model.children().clone().into());
                 }
 
@@ -647,22 +641,8 @@ mod imp {
                 .unwrap();
             column_view_box.first_child().unwrap().set_visible(false);
 
-            // let controllers = column_header.observe_controllers();
-            // let gesture_click = controllers
-            //     .item(0)
-            //     .unwrap()
-            //     .downcast::<gtk::GestureClick>()
-            //     .unwrap();
-            // gesture_click.connect_released(glib::clone!(@weak self as this => move |_, _, _, _| {
-            //     if this.sort_order.get() == gtk::SorterChange::Inverted{
-            //         this.sort_order.set(gtk::SorterChange::Different);
-            //     } else {
-            //         this.sort_order.set(gtk::SorterChange::Inverted);
-            //     }
-            // }));
-
             let header = column_header::ColumnHeader::new(heading, name, align);
-            column_view_box.append(&header);
+            column_view_box.prepend(&header);
 
             (column_header.next_sibling(), header)
         }
@@ -850,9 +830,9 @@ impl AppsPage {
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
-        // this.update_app_model();
-        // this.update_processes_models();
-        // this.update_column_headers(readings);
+        this.update_app_model();
+        this.update_processes_models();
+        this.update_column_headers(readings);
 
         true
     }

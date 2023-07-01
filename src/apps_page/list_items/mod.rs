@@ -157,12 +157,8 @@ mod imp {
 
             let internal_widget: gtk::Widget = match self.content_type.get() {
                 ContentType::None => return,
-                ContentType::SectionHeader => {
-                    dbg!("Creating section header", name);
-                    SectionHeaderEntry::new(&parent, name).upcast()
-                }
+                ContentType::SectionHeader => SectionHeaderEntry::new(&parent, name).upcast(),
                 ContentType::App => {
-                    dbg!("Creating app", name);
                     let model = content.downcast_ref::<AppModel>();
                     if model.is_none() {
                         g_critical!(
@@ -174,7 +170,6 @@ mod imp {
                     AppEntry::new(&parent, name, model.unwrap()).upcast()
                 }
                 ContentType::Process => {
-                    dbg!("Creating process", name);
                     let model = content.downcast_ref::<ProcessModel>();
                     if model.is_none() {
                         g_critical!(
@@ -220,6 +215,13 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
             self.update_child();
+
+            self.obj().connect_content_notify(glib::clone!(
+                @weak self as this => move |_,| {
+                    dbg!("content changed");
+                    this.update_child();
+                }
+            ));
         }
     }
 
