@@ -36,10 +36,6 @@ pub fn running_apps(
                 app.stats.gpu_usage = process.stats.gpu_usage;
                 app_list.insert(app.name.clone(), app);
             }
-
-            for child in process.children.values() {
-                update_or_insert_app(app, child, app_list);
-            }
         }
 
         let mut found = false;

@@ -72,6 +72,15 @@ impl Default for Stats {
 
 impl Stats {
     #[allow(dead_code)]
+    pub fn merge(&mut self, other: &Self) {
+        self.cpu_usage += other.cpu_usage;
+        self.memory_usage += other.memory_usage;
+        self.disk_usage += other.disk_usage;
+        self.network_usage += other.network_usage;
+        self.gpu_usage += other.gpu_usage;
+    }
+
+    #[allow(dead_code)]
     pub fn serialize<W: std::io::Write>(&self, output: &mut W) -> std::io::Result<()> {
         output.write(to_binary(&self.cpu_usage))?;
         output.write(to_binary(&self.memory_usage))?;

@@ -378,11 +378,11 @@ mod imp {
             root_model
         }
 
-        pub fn set_up_tree_model(&self, root_model: gio::ListModel) -> gtk::TreeListModel {
+        pub fn set_up_tree_model(&self, model: gio::ListModel) -> gtk::TreeListModel {
             use view_models::*;
 
             let this = self.obj().downgrade();
-            gtk::TreeListModel::new(root_model, false, true, move |model_entry| {
+            gtk::TreeListModel::new(model, false, true, move |model_entry| {
                 let view_model = model_entry.downcast_ref::<ViewModel>();
                 if view_model.is_none() {
                     return None;
@@ -425,33 +425,10 @@ mod imp {
                 }
 
                 None
-
-                // if view_model.content_type() == ContentType::SectionHeader as i32 {
-                //     let model = view_model.content_model::<SectionHeaderModel>().unwrap();
-                //     if model.section_type() == SectionType::Apps {
-                //         let apps_model = this.apps_model.take();
-                //         this.apps_model.set(apps_model.clone());
-                //
-                //         return Some(apps_model.into());
-                //     }
-                //
-                //     if model.section_type() == SectionType::Processes {
-                //         let processes_model = this.processes_root_model.take();
-                //         this.processes_root_model.set(processes_model.clone());
-                //
-                //         return Some(processes_model.into());
-                //     }
-                //
-                //     return None;
-                // }
-                //
-                // view_model
-                //     .content_model::<ProcessModel>()
-                //     .and_then(|model| Some(model.children().clone().into()))
             })
         }
 
-        pub fn set_up_filter_model(&self, tree_model: gio::ListModel) -> gtk::FilterListModel {
+        pub fn set_up_filter_model(&self, model: gio::ListModel) -> gtk::FilterListModel {
             use glib::g_critical;
             use view_models::*;
 
@@ -567,14 +544,10 @@ mod imp {
                 filter_clone.changed(gtk::FilterChange::Different)
             });
 
-            gtk::FilterListModel::new(Some(tree_model), Some(filter))
+            gtk::FilterListModel::new(Some(model), Some(filter))
         }
 
-        pub fn set_up_view_model(&self) {
-            let root_model = self.set_up_root_model();
-            let tree_model = self.set_up_tree_model(root_model.into());
-            let filter_model = self.set_up_filter_model(tree_model.into());
-
+        pub fn set_up_sort_model(&self, model: gio::ListModel) -> gtk::SortListModel {
             let this = self.obj().downgrade();
             self.name_column
                 .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
@@ -620,11 +593,99 @@ mod imp {
                         .into()
                 })));
 
-            let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
-            let sort_model = gtk::SortListModel::new(Some(filter_model), Some(tree_list_sorter));
+            let this = self.obj().downgrade();
+            self.memory_column
+                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
+                    use std::cmp::Ordering;
 
-            let selection = gtk::SingleSelection::new(Some(sort_model));
-            self.column_view.set_model(Some(&selection));
+                    let this = this.upgrade();
+                    if this.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let this = this.unwrap();
+
+                    this.imp()
+                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                            let lhs = lhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("memory-usage")))
+                                .unwrap_or(0.);
+                            let rhs = rhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("memory-usage")))
+                                .unwrap_or(0.);
+
+                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        })
+                        .into()
+                })));
+
+            let this = self.obj().downgrade();
+            self.disk_column
+                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
+                    use std::cmp::Ordering;
+
+                    let this = this.upgrade();
+                    if this.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let this = this.unwrap();
+
+                    this.imp()
+                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                            let lhs = lhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("disk-usage")))
+                                .unwrap_or(0.);
+                            let rhs = rhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("disk-usage")))
+                                .unwrap_or(0.);
+
+                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        })
+                        .into()
+                })));
+
+            let this = self.obj().downgrade();
+            self.gpu_column
+                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
+                    use std::cmp::Ordering;
+
+                    let this = this.upgrade();
+                    if this.is_none() {
+                        return Ordering::Equal.into();
+                    }
+                    let this = this.unwrap();
+
+                    this.imp()
+                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                            let lhs = lhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("gpu-usage")))
+                                .unwrap_or(0.);
+                            let rhs = rhs
+                                .content()
+                                .and_then(|content| Some(content.property::<f32>("gpu-usage")))
+                                .unwrap_or(0.);
+
+                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        })
+                        .into()
+                })));
+
+            let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
+            gtk::SortListModel::new(Some(model), Some(tree_list_sorter))
+        }
+
+        pub fn set_up_view_model(&self) {
+            let root_model = self.set_up_root_model();
+            let tree_model = self.set_up_tree_model(root_model.into());
+            let filter_model = self.set_up_filter_model(tree_model.into());
+            let sort_model = self.set_up_sort_model(filter_model.into());
+
+            self.column_view
+                .set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
         }
 
         pub fn configure_column_header(
@@ -642,7 +703,7 @@ mod imp {
             column_view_box.first_child().unwrap().set_visible(false);
 
             let header = column_header::ColumnHeader::new(heading, name, align);
-            column_view_box.prepend(&header);
+            column_view_box.append(&header);
 
             (column_header.next_sibling(), header)
         }

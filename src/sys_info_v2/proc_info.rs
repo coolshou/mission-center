@@ -185,6 +185,7 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<Pid, Process>) ->
 
         for (_, child) in &mut process.children {
             gather_descendants(child, process_tree, children);
+            process.stats.merge(&child.stats);
         }
     }
 
@@ -192,6 +193,7 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<Pid, Process>) ->
     std::mem::swap(&mut process.children, &mut children[0]);
     for (_, child) in &mut process.children {
         gather_descendants(child, &process_tree, &mut children);
+        process.stats.merge(&child.stats);
     }
 
     g_debug!(
