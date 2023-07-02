@@ -18,11 +18,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use gtk::{glib, subclass::prelude::*};
+use gtk::{
+    glib,
+    glib::{ParamSpec, Properties, Value},
+    prelude::*,
+    subclass::prelude::*,
+};
 
 mod imp {
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::AppEntry)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/app_entry.ui")]
     pub struct AppEntry {
@@ -30,6 +37,13 @@ mod imp {
         pub icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name: TemplateChild<gtk::Label>,
+
+        #[allow(dead_code)]
+        #[property(name = "icon", get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        icon_property: [u8; 0],
+        #[allow(dead_code)]
+        #[property(name = "name", get = Self::name, set = Self::set_name, type = glib::GString)]
+        name_property: [u8; 0],
     }
 
     impl Default for AppEntry {
@@ -37,7 +51,28 @@ mod imp {
             Self {
                 icon: TemplateChild::default(),
                 name: TemplateChild::default(),
+
+                icon_property: [0; 0],
+                name_property: [0; 0],
             }
+        }
+    }
+
+    impl AppEntry {
+        pub fn name(&self) -> glib::GString {
+            self.name.label()
+        }
+
+        pub fn set_name(&self, name: &str) {
+            self.name.set_text(name)
+        }
+
+        pub fn icon(&self) -> glib::GString {
+            self.icon.icon_name().unwrap_or("".into())
+        }
+
+        pub fn set_icon(&self, icon: &str) {
+            self.icon.set_icon_name(Some(icon))
         }
     }
 
@@ -56,7 +91,19 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for AppEntry {}
+    impl ObjectImpl for AppEntry {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec)
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+    }
 
     impl WidgetImpl for AppEntry {}
 
@@ -70,15 +117,8 @@ glib::wrapper! {
 }
 
 impl AppEntry {
-    pub fn new(
-        tree_expander: &gtk::TreeExpander,
-        name: &str,
-        model: &crate::apps_page::view_models::AppModel,
-    ) -> Self {
+    pub fn new(tree_expander: &gtk::TreeExpander) -> Self {
         let this: Self = glib::Object::builder().build();
-
-        this.imp().name.set_text(name);
-        this.imp().icon.set_icon_name(Some(model.icon().as_str()));
 
         tree_expander.set_hide_expander(true);
         tree_expander.set_indent_for_icon(false);

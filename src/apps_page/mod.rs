@@ -1,4 +1,4 @@
-/* apps_page/view_models
+/* apps_page/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -25,9 +25,9 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use crate::i18n::*;
 
 mod column_header;
-mod list_items;
+mod list_item;
 mod stat_column;
-mod view_models;
+mod view_model;
 
 mod imp {
     use super::*;
@@ -84,9 +84,9 @@ mod imp {
 
                 sort_order: Cell::new(gtk::SorterChange::Inverted),
 
-                apps_model: Cell::new(gio::ListStore::new(view_models::ViewModel::static_type())),
+                apps_model: Cell::new(gio::ListStore::new(view_model::ViewModel::static_type())),
                 processes_root_model: Cell::new(gio::ListStore::new(
-                    view_models::ViewModel::static_type(),
+                    view_model::ViewModel::static_type(),
                 )),
 
                 apps: Cell::new(HashMap::new()),
@@ -98,7 +98,7 @@ mod imp {
     impl AppsPage {
         pub fn update_app_model(&self) {
             use std::collections::BTreeSet;
-            use view_models::{AppModel, ContentVariant, ViewModel};
+            use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
             let model = self.apps_model.take();
             let apps = self.apps.take();
@@ -136,20 +136,21 @@ mod imp {
                 };
 
                 if pos.is_none() {
-                    let view_model = ViewModel::new(
-                        &app.name,
-                        ContentVariant::App(AppModel::new(
+                    let view_model = ViewModelBuilder::new()
+                        .name(&app.name)
+                        .icon(
                             app.icon
                                 .as_ref()
                                 .unwrap_or(&"application-x-executable".to_string())
                                 .as_str(),
-                            app.stats.cpu_usage,
-                            app.stats.memory_usage,
-                            app.stats.disk_usage,
-                            app.stats.network_usage,
-                            app.stats.gpu_usage,
-                        )),
-                    );
+                        )
+                        .content_type(ContentType::App)
+                        .cpu_usage(app.stats.cpu_usage)
+                        .memory_usage(app.stats.memory_usage)
+                        .disk_usage(app.stats.disk_usage)
+                        .network_usage(app.stats.network_usage)
+                        .gpu_usage(app.stats.gpu_usage)
+                        .build();
                     model.append(&view_model);
                 } else {
                     let model: gio::ListModel = model.clone().into();
@@ -159,15 +160,11 @@ mod imp {
                         .downcast::<ViewModel>()
                         .unwrap();
 
-                    let model = view_model.content_model::<AppModel>();
-                    assert!(model.is_some());
-                    let model = model.unwrap();
-
-                    model.set_cpu_usage(app.stats.cpu_usage);
-                    model.set_memory_usage(app.stats.memory_usage);
-                    model.set_disk_usage(app.stats.disk_usage);
-                    model.set_network_usage(app.stats.network_usage);
-                    model.set_gpu_usage(app.stats.gpu_usage);
+                    view_model.set_cpu_usage(app.stats.cpu_usage);
+                    view_model.set_memory_usage(app.stats.memory_usage);
+                    view_model.set_disk_usage(app.stats.disk_usage);
+                    view_model.set_network_usage(app.stats.network_usage);
+                    view_model.set_gpu_usage(app.stats.gpu_usage);
                 }
             }
 
@@ -176,7 +173,7 @@ mod imp {
         }
 
         pub fn update_processes_models(&self) {
-            use view_models::{ContentVariant, ProcessModel, ViewModel};
+            use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
             fn update_model(model: gio::ListStore, process: &crate::sys_info_v2::Process) {
                 let mut to_remove = Vec::new();
@@ -186,13 +183,8 @@ mod imp {
                         continue;
                     }
                     let current = current.unwrap();
-                    let process_model = current.content_model::<ProcessModel>();
-                    if process_model.is_none() {
-                        continue;
-                    }
-                    let process_model = process_model.unwrap();
 
-                    if !process.children.contains_key(&(process_model.pid())) {
+                    if !process.children.contains_key(&(current.pid())) {
                         to_remove.push(i);
                     }
                 }
@@ -210,11 +202,7 @@ mod imp {
                                 return false;
                             }
                             let current = current.unwrap();
-                            let process_model = current.content_model::<ProcessModel>();
-                            if process_model.is_none() {
-                                return false;
-                            }
-                            process_model.unwrap().pid() == *pid
+                            current.pid() == *pid
                         })
                     } else {
                         None
@@ -227,22 +215,19 @@ mod imp {
                     };
 
                     let child_model = if pos.is_none() {
-                        let view_model = ViewModel::new(
-                            entry_name,
-                            ContentVariant::Process(ProcessModel::new(
-                                *pid,
-                                child.stats.cpu_usage,
-                                child.stats.memory_usage,
-                                child.stats.disk_usage,
-                                child.stats.network_usage,
-                                child.stats.gpu_usage,
-                            )),
-                        );
+                        let view_model = ViewModelBuilder::new()
+                            .name(entry_name)
+                            .content_type(ContentType::Process)
+                            .pid(*pid)
+                            .cpu_usage(child.stats.cpu_usage)
+                            .memory_usage(child.stats.memory_usage)
+                            .disk_usage(child.stats.disk_usage)
+                            .network_usage(child.stats.network_usage)
+                            .gpu_usage(child.stats.gpu_usage)
+                            .build();
 
                         model.append(&view_model);
-                        let model = view_model.content_model::<ProcessModel>();
-                        assert!(model.is_some());
-                        model.as_ref().unwrap().children().clone()
+                        view_model.children().clone()
                     } else {
                         let view_model = model
                             .item(pos.unwrap())
@@ -250,17 +235,13 @@ mod imp {
                             .downcast::<ViewModel>()
                             .unwrap();
 
-                        let model = view_model.content_model::<ProcessModel>();
-                        assert!(model.is_some());
-                        let model = model.unwrap();
+                        view_model.set_cpu_usage(child.stats.cpu_usage);
+                        view_model.set_memory_usage(child.stats.memory_usage);
+                        view_model.set_disk_usage(child.stats.disk_usage);
+                        view_model.set_network_usage(child.stats.network_usage);
+                        view_model.set_gpu_usage(child.stats.gpu_usage);
 
-                        model.set_cpu_usage(child.stats.cpu_usage);
-                        model.set_memory_usage(child.stats.memory_usage);
-                        model.set_disk_usage(child.stats.disk_usage);
-                        model.set_network_usage(child.stats.network_usage);
-                        model.set_gpu_usage(child.stats.gpu_usage);
-
-                        model.children().clone()
+                        view_model.children().clone()
                     };
 
                     update_model(child_model, child);
@@ -280,10 +261,10 @@ mod imp {
             &self,
             lhs: &glib::Object,
             rhs: &glib::Object,
-            compare_fn: fn(&view_models::ViewModel, &view_models::ViewModel) -> std::cmp::Ordering,
+            compare_fn: fn(&view_model::ViewModel, &view_model::ViewModel) -> std::cmp::Ordering,
         ) -> std::cmp::Ordering {
             use std::cmp::*;
-            use view_models::{ContentType, SectionHeaderModel, SectionType, ViewModel};
+            use view_model::{ContentType, SectionType, ViewModel};
 
             let lhs = lhs.downcast_ref::<ViewModel>();
             if lhs.is_none() {
@@ -297,60 +278,50 @@ mod imp {
             }
             let rhs = rhs.unwrap();
 
-            if lhs.content_type() == ContentType::SectionHeader as i32 {
-                let lhs = lhs.content_model::<SectionHeaderModel>();
-                if lhs.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let lhs = lhs.unwrap();
-                if lhs.section_type() == SectionType::Apps {
+            if lhs.content_type() == ContentType::SectionHeader as u8 {
+                if lhs.section_type() == SectionType::Apps as u8 {
                     return Ordering::Greater.into();
                 }
 
-                if rhs.content_type() == ContentType::App as i32 {
+                if rhs.content_type() == ContentType::App as u8 {
                     return Ordering::Less.into();
                 }
 
-                if rhs.content_type() == ContentType::Process as i32 {
+                if rhs.content_type() == ContentType::Process as u8 {
                     return Ordering::Greater.into();
                 }
             }
 
-            if rhs.content_type() == ContentType::SectionHeader as i32 {
-                let rhs = rhs.content_model::<SectionHeaderModel>();
-                if rhs.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let rhs = rhs.unwrap();
-                if rhs.section_type() == SectionType::Apps {
+            if rhs.content_type() == ContentType::SectionHeader as u8 {
+                if rhs.section_type() == SectionType::Apps as u8 {
                     return Ordering::Less.into();
                 }
 
-                if lhs.content_type() == ContentType::App as i32 {
+                if lhs.content_type() == ContentType::App as u8 {
                     return Ordering::Greater.into();
                 }
 
-                if lhs.content_type() == ContentType::Process as i32 {
+                if lhs.content_type() == ContentType::Process as u8 {
                     return Ordering::Less.into();
                 }
             }
 
-            if lhs.content_type() == ContentType::App as i32 {
-                if rhs.content_type() == ContentType::App as i32 {
+            if lhs.content_type() == ContentType::App as u8 {
+                if rhs.content_type() == ContentType::App as u8 {
                     return (compare_fn)(lhs, rhs).into();
                 }
 
-                if rhs.content_type() == ContentType::Process as i32 {
+                if rhs.content_type() == ContentType::Process as u8 {
                     return Ordering::Greater.into();
                 }
             }
 
-            if lhs.content_type() == ContentType::Process as i32 {
-                if rhs.content_type() == ContentType::Process as i32 {
+            if lhs.content_type() == ContentType::Process as u8 {
+                if rhs.content_type() == ContentType::Process as u8 {
                     return (compare_fn)(lhs, rhs).into();
                 }
 
-                if rhs.content_type() == ContentType::App as i32 {
+                if rhs.content_type() == ContentType::App as u8 {
                     return Ordering::Less.into();
                 }
             }
@@ -359,17 +330,19 @@ mod imp {
         }
 
         pub fn set_up_root_model(&self) -> gio::ListStore {
-            use view_models::*;
+            use view_model::{ContentType, SectionType, ViewModel, ViewModelBuilder};
 
-            let apps_section_header = ViewModel::new(
-                &i18n("Apps"),
-                ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Apps)),
-            );
+            let apps_section_header = ViewModelBuilder::new()
+                .name(&i18n("Apps"))
+                .content_type(ContentType::SectionHeader)
+                .section_type(SectionType::Apps)
+                .build();
 
-            let processes_section_header = ViewModel::new(
-                &i18n("Processes"),
-                ContentVariant::SectionHeader(SectionHeaderModel::new(SectionType::Processes)),
-            );
+            let processes_section_header = ViewModelBuilder::new()
+                .name(&i18n("Processes"))
+                .content_type(ContentType::SectionHeader)
+                .section_type(SectionType::Processes)
+                .build();
 
             let root_model = gio::ListStore::new(ViewModel::static_type());
             root_model.append(&apps_section_header);
@@ -379,7 +352,7 @@ mod imp {
         }
 
         pub fn set_up_tree_model(&self, model: gio::ListModel) -> gtk::TreeListModel {
-            use view_models::*;
+            use view_model::{ContentType, SectionType, ViewModel};
 
             let this = self.obj().downgrade();
             gtk::TreeListModel::new(model, false, true, move |model_entry| {
@@ -397,19 +370,17 @@ mod imp {
                 let this = this.imp();
 
                 let content_type: ContentType =
-                    unsafe { core::mem::transmute(view_model.content_type() as u8) };
+                    unsafe { core::mem::transmute(view_model.content_type()) };
 
                 if content_type == ContentType::SectionHeader {
-                    let model = view_model.content_model::<SectionHeaderModel>().unwrap();
-
-                    if model.section_type() == SectionType::Apps {
+                    if view_model.section_type() == SectionType::Apps as u8 {
                         let apps_model = this.apps_model.take();
                         this.apps_model.set(apps_model.clone());
 
                         return Some(apps_model.into());
                     }
 
-                    if model.section_type() == SectionType::Processes {
+                    if view_model.section_type() == SectionType::Processes as u8 {
                         let processes_model = this.processes_root_model.take();
                         this.processes_root_model.set(processes_model.clone());
 
@@ -420,8 +391,7 @@ mod imp {
                 }
 
                 if content_type == ContentType::Process {
-                    let model = view_model.content_model::<ProcessModel>().unwrap();
-                    return Some(model.children().clone().into());
+                    return Some(view_model.children().clone().into());
                 }
 
                 None
@@ -430,7 +400,7 @@ mod imp {
 
         pub fn set_up_filter_model(&self, model: gio::ListModel) -> gtk::FilterListModel {
             use glib::g_critical;
-            use view_models::*;
+            use view_model::{ContentType, ViewModel};
 
             let window = crate::MissionCenterApplication::default_instance()
                 .and_then(|app| app.active_window())
@@ -465,7 +435,7 @@ mod imp {
                     return false;
                 }
                 let view_model = view_model.unwrap();
-                if view_model.content_type() == ContentType::SectionHeader as i32 {
+                if view_model.content_type() == ContentType::SectionHeader as u8 {
                     return true;
                 }
 
@@ -487,8 +457,8 @@ mod imp {
                     return true;
                 }
 
-                if view_model.content_type() == ContentType::Process as i32 {
-                    fn find_child(model: &ProcessModel, query_string: &str) -> bool {
+                if view_model.content_type() == ContentType::Process as u8 {
+                    fn find_child(model: &ViewModel, query_string: &str) -> bool {
                         let children = model.children();
 
                         for i in 0..children.n_items() {
@@ -516,24 +486,13 @@ mod imp {
                         for i in 0..children.n_items() {
                             let child = children.item(i).unwrap();
                             let view_model = child.downcast_ref::<ViewModel>().unwrap();
-                            let process_model = view_model.content_model::<ProcessModel>();
-                            if process_model.is_none() {
-                                return false;
-                            }
-                            let process_model = process_model.unwrap();
-
-                            return find_child(&process_model, query_string);
+                            return find_child(&view_model, query_string);
                         }
 
                         false
                     }
 
-                    let process_model = view_model.content_model::<ProcessModel>();
-                    if process_model.is_none() {
-                        return false;
-                    }
-                    let process_model = process_model.unwrap();
-                    return find_child(&process_model, &search_query);
+                    return find_child(&view_model, &search_query);
                 }
 
                 false
@@ -579,14 +538,8 @@ mod imp {
 
                     this.imp()
                         .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("cpu-usage")))
-                                .unwrap_or(0.);
-                            let rhs = rhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("cpu-usage")))
-                                .unwrap_or(0.);
+                            let lhs = lhs.property::<f32>("cpu-usage");
+                            let rhs = rhs.property::<f32>("cpu-usage");
 
                             lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                         })
@@ -606,14 +559,8 @@ mod imp {
 
                     this.imp()
                         .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("memory-usage")))
-                                .unwrap_or(0.);
-                            let rhs = rhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("memory-usage")))
-                                .unwrap_or(0.);
+                            let lhs = lhs.property::<f32>("memory-usage");
+                            let rhs = rhs.property::<f32>("memory-usage");
 
                             lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                         })
@@ -633,14 +580,8 @@ mod imp {
 
                     this.imp()
                         .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("disk-usage")))
-                                .unwrap_or(0.);
-                            let rhs = rhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("disk-usage")))
-                                .unwrap_or(0.);
+                            let lhs = lhs.property::<f32>("disk-usage");
+                            let rhs = rhs.property::<f32>("disk-usage");
 
                             lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                         })
@@ -660,14 +601,8 @@ mod imp {
 
                     this.imp()
                         .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("gpu-usage")))
-                                .unwrap_or(0.);
-                            let rhs = rhs
-                                .content()
-                                .and_then(|content| Some(content.property::<f32>("gpu-usage")))
-                                .unwrap_or(0.);
+                            let lhs = lhs.property::<f32>("gpu-usage");
+                            let rhs = rhs.property::<f32>("gpu-usage");
 
                             lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                         })
@@ -775,15 +710,9 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            list_items::ListItem::ensure_type();
-            list_items::AppEntry::ensure_type();
-            list_items::ProcessEntry::ensure_type();
-            list_items::SectionHeaderEntry::ensure_type();
+            list_item::ListItem::ensure_type();
 
-            view_models::ViewModel::ensure_type();
-            view_models::AppModel::ensure_type();
-            view_models::ProcessModel::ensure_type();
-            view_models::SectionHeaderModel::ensure_type();
+            view_model::ViewModel::ensure_type();
 
             column_header::ColumnHeader::ensure_type();
             stat_column::StatColumn::ensure_type();

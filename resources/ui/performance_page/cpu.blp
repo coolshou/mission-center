@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-template PerformancePageCpu : Box {
+template $PerformancePageCpu : Box {
   orientation: vertical;
 
   WindowHandle {
@@ -132,7 +132,7 @@ template PerformancePageCpu : Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property PerformancePageCpu.summary-mode inverted;
+    visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;

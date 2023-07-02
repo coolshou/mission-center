@@ -46,8 +46,9 @@ template $AppsPage : Box {
             child: TreeExpander expander {
               list-row: bind template.item as <ListItem>;
               child: $ListItem {
+                icon: bind (expander.item as <$ViewModel>).icon;
                 name: bind (expander.item as <$ViewModel>).name;
-                content: bind (expander.item as <$ViewModel>).content;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }
@@ -71,8 +72,6 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "%";
-                property-name: "cpu-usage";
-                content: bind (expander.item as <$ViewModel>).content;
               };
             };
           }
@@ -96,8 +95,6 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "B";
-                property-name: "memory-usage";
-                content: bind (expander.item as <$ViewModel>).content;
               };
             };
           }
@@ -121,8 +118,6 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "B/s";
-                property-name: "disk-usage";
-                content: bind (expander.item as <$ViewModel>).content;
               };
             };
           }
@@ -146,8 +141,6 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "%";
-                property-name: "gpu-usage";
-                content: bind (expander.item as <$ViewModel>).content;
               };
             };
           }

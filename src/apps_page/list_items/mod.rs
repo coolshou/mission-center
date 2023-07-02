@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::{Cell, RefCell};
+use std::cell::Cell;
 
 use gtk::{
     glib,
@@ -32,7 +32,7 @@ pub use app_entry::AppEntry;
 pub use process_entry::ProcessEntry;
 pub use section_header_entry::SectionHeaderEntry;
 
-use crate::apps_page::view_models::{AppModel, ContentType, ProcessModel, SectionHeaderModel};
+use crate::apps_page::view_model::ContentType;
 
 mod app_entry;
 mod process_entry;
@@ -46,9 +46,9 @@ mod imp {
     pub struct ListItem {
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         name: Cell<glib::GString>,
-        #[property(set = Self::set_content)]
-        pub content: RefCell<Option<glib::Object>>,
-        #[property(set = Self::set_content_type, type = i32)]
+        #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        icon: Cell<glib::GString>,
+        #[property(set = Self::set_content_type, type = u8)]
         pub content_type: Cell<ContentType>,
     }
 
@@ -56,8 +56,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 name: Cell::new(glib::GString::default()),
-                content: RefCell::new(None),
-                content_type: Cell::new(ContentType::None),
+                icon: Cell::new(glib::GString::default()),
+                content_type: Cell::new(ContentType::SectionHeader),
             }
         }
     }
@@ -81,43 +81,29 @@ mod imp {
             self.name.set(glib::GString::from(name));
         }
 
-        fn set_content(&self, content: Option<glib::Object>) {
-            self.content.set(content);
+        pub fn icon(&self) -> glib::GString {
+            let icon = self.icon.take();
+            let result = icon.clone();
+            self.icon.set(icon);
 
-            let content = unsafe { &*self.content.as_ptr() }.as_ref();
-            if content.is_none() {
-                self.content_type.set(ContentType::None);
-                return;
-            }
-
-            if content
-                .and_then(|c| c.downcast_ref::<ProcessModel>())
-                .is_some()
-            {
-                self.content_type.set(ContentType::Process);
-                return;
-            }
-
-            if content.and_then(|c| c.downcast_ref::<AppModel>()).is_some() {
-                self.content_type.set(ContentType::App);
-                return;
-            }
-
-            if content
-                .and_then(|c| c.downcast_ref::<SectionHeaderModel>())
-                .is_some()
-            {
-                self.content_type.set(ContentType::SectionHeader);
-                return;
-            }
+            result
         }
 
-        fn set_content_type(&self, v: i32) {
+        pub fn set_icon(&self, icon: &str) {
+            let current_icon = self.icon.take();
+            if current_icon == icon {
+                self.icon.set(current_icon);
+                return;
+            }
+
+            self.icon.set(glib::GString::from(icon));
+        }
+
+        fn set_content_type(&self, v: u8) {
             let content_type = match v {
-                0 => ContentType::None,
-                1 => ContentType::SectionHeader,
-                2 => ContentType::App,
-                3 => ContentType::Process,
+                0 => ContentType::SectionHeader,
+                1 => ContentType::App,
+                2 => ContentType::Process,
                 _ => unreachable!(),
             };
 
@@ -147,38 +133,33 @@ mod imp {
             }
             let parent = parent.unwrap();
 
-            let content = self.content.borrow();
-            let content = content.as_ref();
-            if content.is_none() {
-                g_critical!("MissionCenter::AppsPage", "Model has no content");
-                return;
-            }
-            let content = content.unwrap();
-
             let internal_widget: gtk::Widget = match self.content_type.get() {
-                ContentType::None => return,
                 ContentType::SectionHeader => SectionHeaderEntry::new(&parent, name).upcast(),
                 ContentType::App => {
-                    let model = content.downcast_ref::<AppModel>();
-                    if model.is_none() {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to get AppModel from content"
-                        );
-                        return;
-                    }
-                    AppEntry::new(&parent, name, model.unwrap()).upcast()
+                    let app_entry = AppEntry::new(&parent);
+
+                    self.obj()
+                        .bind_property("name", &app_entry, "name")
+                        .flags(BindingFlags::SYNC_CREATE)
+                        .build();
+
+                    self.obj()
+                        .bind_property("icon", &app_entry, "icon")
+                        .flags(BindingFlags::SYNC_CREATE)
+                        .build();
+
+                    app_entry.upcast()
                 }
                 ContentType::Process => {
-                    let model = content.downcast_ref::<ProcessModel>();
-                    if model.is_none() {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to get AppModel from content"
-                        );
-                        return;
-                    }
-                    ProcessEntry::new(&parent, name, model.unwrap()).upcast()
+                    dbg!("Creating process", name);
+                    let process_entry = ProcessEntry::new(&parent);
+
+                    self.obj()
+                        .bind_property("name", &process_entry, "name")
+                        .flags(BindingFlags::SYNC_CREATE)
+                        .build();
+
+                    process_entry.upcast()
                 }
             };
             self.obj().first_child().map(|c| self.obj().remove(&c));
@@ -215,13 +196,6 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
             self.update_child();
-
-            self.obj().connect_content_notify(glib::clone!(
-                @weak self as this => move |_,| {
-                    dbg!("content changed");
-                    this.update_child();
-                }
-            ));
         }
     }
 

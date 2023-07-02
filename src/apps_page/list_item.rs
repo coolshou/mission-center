@@ -1,4 +1,4 @@
-/* apps_page/list_items/process_entry.rs
+/* apps_page/list_items/list_item.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,52 +18,86 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use gtk::{
     glib,
+    glib::prelude::*,
     glib::{ParamSpec, Properties, Value},
-    prelude::*,
     subclass::prelude::*,
 };
+
+use crate::apps_page::view_model::ContentType;
 
 mod imp {
     use super::*;
 
     #[derive(Properties)]
-    #[properties(wrapper_type = super::ProcessEntry)]
+    #[properties(wrapper_type = super::ListItem)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/process_entry.ui")]
-    pub struct ProcessEntry {
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/list_item.ui")]
+    pub struct ListItem {
+        #[template_child]
+        pub icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name: TemplateChild<gtk::Label>,
 
         #[allow(dead_code)]
         #[property(name = "name", get = Self::name, set = Self::set_name, type = glib::GString)]
         name_property: [u8; 0],
+        #[allow(dead_code)]
+        #[property(name = "icon", get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        icon_property: [u8; 0],
+        #[property(set = Self::set_content_type, type = u8)]
+        pub content_type: Cell<ContentType>,
     }
 
-    impl Default for ProcessEntry {
+    impl Default for ListItem {
         fn default() -> Self {
             Self {
                 name: TemplateChild::default(),
+                icon: TemplateChild::default(),
+
                 name_property: [0; 0],
+                icon_property: [0; 0],
+                content_type: Cell::new(ContentType::SectionHeader),
             }
         }
     }
 
-    impl ProcessEntry {
+    impl ListItem {
         pub fn name(&self) -> glib::GString {
-            self.name.label()
+            self.name.text()
         }
 
         pub fn set_name(&self, name: &str) {
-            self.name.set_text(name)
+            self.name.set_text(name);
+        }
+
+        pub fn icon(&self) -> glib::GString {
+            self.icon.icon_name().unwrap_or("".into())
+        }
+
+        pub fn set_icon(&self, icon: &str) {
+            self.icon.set_from_icon_name(Some(icon));
+        }
+
+        fn set_content_type(&self, v: u8) {
+            let content_type = match v {
+                0 => ContentType::SectionHeader,
+                1 => ContentType::App,
+                2 => ContentType::Process,
+                _ => unreachable!(),
+            };
+
+            self.content_type.set(content_type);
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ProcessEntry {
-        const NAME: &'static str = "ProcessEntry";
-        type Type = super::ProcessEntry;
+    impl ObjectSubclass for ListItem {
+        const NAME: &'static str = "ListItem";
+        type Type = super::ListItem;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -75,7 +109,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ProcessEntry {
+    impl ObjectImpl for ListItem {
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -89,20 +123,19 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ProcessEntry {}
+    impl WidgetImpl for ListItem {
+        fn realize(&self) {
+            self.parent_realize();
+        }
+    }
 
-    impl BoxImpl for ProcessEntry {}
+    impl BoxImpl for ListItem {}
 }
 
 glib::wrapper! {
-    pub struct ProcessEntry(ObjectSubclass<imp::ProcessEntry>)
+    pub struct ListItem(ObjectSubclass<imp::ListItem>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
-impl ProcessEntry {
-    pub fn new(_: &gtk::TreeExpander) -> Self {
-        let this: Self = glib::Object::builder().build();
-        this
-    }
-}
+impl ListItem {}
