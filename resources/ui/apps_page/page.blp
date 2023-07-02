@@ -72,6 +72,8 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "%";
+                value: bind (expander.item as <$ViewModel>).cpu-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }

@@ -41,7 +41,9 @@ mod imp {
         #[property(get = Self::unit, set = Self::set_unit, type = glib::GString)]
         unit: Cell<glib::GString>,
         #[property(set = Self::set_content_type, type = u8)]
-        pub content_type: Cell<crate::apps_page::view_model::ContentType>,
+        content_type: Cell<crate::apps_page::view_model::ContentType>,
+        #[property(get, set)]
+        value: Cell<f32>,
     }
 
     impl Default for StatColumn {
@@ -52,6 +54,7 @@ mod imp {
                 label: TemplateChild::default(),
                 unit: Cell::new(glib::GString::from("")),
                 content_type: Cell::new(ContentType::SectionHeader),
+                value: Cell::new(0.0),
             }
         }
     }
@@ -79,6 +82,38 @@ mod imp {
         }
     }
 
+    impl StatColumn {
+        fn update_label(&self) {
+            use crate::apps_page::view_model::ContentType;
+
+            if self.content_type.get() == ContentType::SectionHeader {
+                self.label.set_text("");
+                return;
+            }
+
+            let prop_unit = unsafe { &*self.unit.as_ptr() }.as_str();
+
+            let value = self.value.get();
+            if prop_unit == "%" {
+                self.label
+                    .set_text(&format!("{}{}", value.round(), prop_unit));
+            } else if prop_unit == "bps" {
+                let (value, unit) = crate::to_human_readable(value, 1024.);
+                self.label
+                    .set_text(&format!("{} {}{}", value.round(), unit, prop_unit));
+            } else {
+                let (value, unit) = crate::to_human_readable(value, 1024.);
+                self.label.set_text(&format!(
+                    "{} {}{}{}",
+                    value.round(),
+                    unit,
+                    if unit.is_empty() { "" } else { "i" },
+                    prop_unit
+                ));
+            }
+        }
+    }
+
     #[glib::object_subclass]
     impl ObjectSubclass for StatColumn {
         const NAME: &'static str = "StatColumn";
@@ -95,6 +130,16 @@ mod imp {
     }
 
     impl ObjectImpl for StatColumn {
+        fn constructed(&self) {
+            let this = self.obj().downgrade();
+            self.obj().connect_value_notify(move |_| {
+                let this = this.upgrade();
+                if let Some(this) = this {
+                    this.imp().update_label();
+                }
+            });
+        }
+
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -110,37 +155,8 @@ mod imp {
 
     impl WidgetImpl for StatColumn {
         fn realize(&self) {
-            use crate::apps_page::view_model::ContentType;
-
             self.parent_realize();
-
-            if self.content_type.get() == ContentType::SectionHeader {
-                return;
-            }
-
-            fn update_property(this: &StatColumn) {
-                let prop_unit = unsafe { &*this.unit.as_ptr() }.as_str();
-
-                let value = 0_f32;
-                if prop_unit == "%" {
-                    this.label
-                        .set_text(&format!("{}{}", value.round(), prop_unit));
-                } else if prop_unit == "bps" {
-                    let (value, unit) = crate::to_human_readable(value, 1024.);
-                    this.label
-                        .set_text(&format!("{} {}{}", value.round(), unit, prop_unit));
-                } else {
-                    let (value, unit) = crate::to_human_readable(value, 1024.);
-                    this.label.set_text(&format!(
-                        "{} {}{}{}",
-                        value.round(),
-                        unit,
-                        if unit.is_empty() { "" } else { "i" },
-                        prop_unit
-                    ));
-                }
-            }
-            update_property(self);
+            self.update_label();
         }
     }
 

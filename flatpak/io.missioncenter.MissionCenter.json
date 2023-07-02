@@ -50,6 +50,7 @@
         "curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable --profile minimal --no-modify-path --target x86_64-unknown-linux-musl",
         "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' /app/tmp/rust/cargo/bin/cargo build --release --target x86_64-unknown-linux-musl",
         "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy",
+        "rm -rf src/proxy/target",
         "mv /app/lib/libudev* /app",
         "mv /app/lib/pkgconfig /app",
         "rm -rf /app/bin/musl-gcc /app/bin/udevadm /app/etc /app/include /app/sbin /app/lib",

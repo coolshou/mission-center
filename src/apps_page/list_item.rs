@@ -24,6 +24,7 @@ use gtk::{
     glib,
     glib::prelude::*,
     glib::{ParamSpec, Properties, Value},
+    prelude::*,
     subclass::prelude::*,
 };
 
@@ -84,9 +85,43 @@ mod imp {
 
         fn set_content_type(&self, v: u8) {
             let content_type = match v {
-                0 => ContentType::SectionHeader,
-                1 => ContentType::App,
-                2 => ContentType::Process,
+                0 => {
+                    self.icon.set_visible(false);
+                    self.name.add_css_class("heading");
+
+                    let this = self.obj();
+                    this.set_margin_top(6);
+                    this.set_margin_bottom(6);
+                    this.set_margin_start(8);
+
+                    ContentType::SectionHeader
+                }
+                1 => {
+                    self.icon.set_visible(true);
+                    self.icon.set_margin_end(10);
+                    self.icon.set_pixel_size(24);
+                    self.name.remove_css_class("heading");
+
+                    let this = self.obj();
+                    this.set_margin_top(0);
+                    this.set_margin_bottom(0);
+                    this.set_margin_start(0);
+
+                    ContentType::App
+                }
+                2 => {
+                    self.icon.set_visible(true);
+                    self.icon.set_margin_end(10);
+                    self.icon.set_pixel_size(16);
+                    self.name.remove_css_class("heading");
+
+                    let this = self.obj();
+                    this.set_margin_top(0);
+                    this.set_margin_bottom(0);
+                    this.set_margin_start(0);
+
+                    ContentType::Process
+                }
                 _ => unreachable!(),
             };
 
@@ -137,5 +172,3 @@ glib::wrapper! {
         @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
-
-impl ListItem {}
