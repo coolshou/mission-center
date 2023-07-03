@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
@@ -37,8 +39,11 @@ mod imp {
         pub search_entry: TemplateChild<gtk::SearchEntry>,
         #[template_child]
         pub search_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub stack: TemplateChild<adw::ViewStack>,
 
-        pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub sys_info: Cell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for MissionCenterWindow {
@@ -49,8 +54,10 @@ mod imp {
                 header_stack: TemplateChild::default(),
                 search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
+                stack: TemplateChild::default(),
 
-                sys_info: std::cell::Cell::new(None),
+                sys_info: Cell::new(None),
+                settings: Cell::new(None),
             }
         }
     }
@@ -81,6 +88,10 @@ mod imp {
 
             self.parent_constructed();
 
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
+
             let toggle_search =
                 gio::SimpleAction::new_stateful("toggle-search", None, false.to_variant());
             toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
@@ -106,6 +117,39 @@ mod imp {
                 }
             }));
 
+            let this = self.obj().downgrade();
+            self.stack.connect_visible_child_notify(move |stack| {
+                let this = this.upgrade();
+                if this.is_none() {
+                    return;
+                }
+                let this = this.unwrap();
+                let this = this.imp();
+
+                let visible_child_name = stack.visible_child_name().unwrap_or("".into());
+                if visible_child_name == "performance-page" {
+                    this.search_button.set_visible(false);
+                    this.search_entry
+                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
+                } else {
+                    this.search_button.set_visible(true);
+                    this.search_entry
+                        .set_state_flags(gtk::StateFlags::NORMAL, true);
+                }
+
+                if let Some(settings) = this.settings.take() {
+                    settings
+                        .set_string("window-selected-page", &visible_child_name)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter",
+                                "Failed to set window-selected-page setting"
+                            );
+                        });
+                    this.settings.set(Some(settings));
+                }
+            });
+
             // IDK... Something about missing Traits... don't care, this works
             unsafe {
                 gtk::ffi::gtk_search_entry_set_key_capture_widget(
@@ -113,20 +157,38 @@ mod imp {
                     self.obj().as_ptr() as *mut _,
                 );
             }
-            let this = self.obj().clone();
+
+            let this = self.obj().downgrade();
             self.search_entry.connect_search_started(move |_| {
-                let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                let this = this.upgrade();
+                if let Some(this) = this {
+                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                }
             });
-            let this = self.obj().clone();
+
+            let this = self.obj().downgrade();
             self.search_entry.connect_stop_search(move |_| {
-                let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                let this = this.upgrade();
+                if let Some(this) = this {
+                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                }
             });
 
             self.obj().add_action(&toggle_search);
         }
     }
 
-    impl WidgetImpl for MissionCenterWindow {}
+    impl WidgetImpl for MissionCenterWindow {
+        fn realize(&self) {
+            self.parent_realize();
+
+            if let Some(settings) = self.settings.take() {
+                self.stack
+                    .set_visible_child_name(settings.string("window-selected-page").as_str());
+                self.settings.set(Some(settings));
+            }
+        }
+    }
 
     impl WindowImpl for MissionCenterWindow {}
 

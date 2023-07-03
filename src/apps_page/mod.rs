@@ -26,6 +26,7 @@ use crate::i18n::*;
 
 mod column_header;
 mod list_item;
+mod pid_column;
 mod stat_column;
 mod view_model;
 
@@ -40,6 +41,8 @@ mod imp {
         #[template_child]
         pub name_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
+        pub pid_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
         pub cpu_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -49,16 +52,12 @@ mod imp {
         pub gpu_column: TemplateChild<gtk::ColumnViewColumn>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
 
-        pub name_sorter: Cell<Option<gtk::CustomSorter>>,
-        pub cpu_sorter: Cell<Option<gtk::CustomSorter>>,
-        pub memory_sorter: Cell<Option<gtk::CustomSorter>>,
-        pub disk_sorter: Cell<Option<gtk::CustomSorter>>,
-        pub gpu_sorter: Cell<Option<gtk::CustomSorter>>,
         pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
 
         pub apps_model: Cell<gio::ListStore>,
@@ -76,22 +75,19 @@ mod imp {
             Self {
                 column_view: TemplateChild::default(),
                 name_column: TemplateChild::default(),
+                pid_column: TemplateChild::default(),
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
                 gpu_column: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
+                column_header_pid: Cell::new(None),
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
                 column_header_gpu: Cell::new(None),
 
-                name_sorter: Cell::new(None),
-                cpu_sorter: Cell::new(None),
-                memory_sorter: Cell::new(None),
-                disk_sorter: Cell::new(None),
-                gpu_sorter: Cell::new(None),
                 tree_list_sorter: Cell::new(None),
 
                 apps_model: Cell::new(gio::ListStore::new(view_model::ViewModel::static_type())),
@@ -499,7 +495,27 @@ mod imp {
                     .into()
             });
             self.name_column.set_sorter(Some(&sorter));
-            self.name_sorter.set(Some(sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<crate::sys_info_v2::Pid>("pid");
+                        let rhs = rhs.property::<crate::sys_info_v2::Pid>("pid");
+
+                        lhs.cmp(&rhs)
+                    })
+                    .into()
+            });
+            self.pid_column.set_sorter(Some(&sorter));
 
             let this = self.obj().downgrade();
             let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
@@ -521,7 +537,6 @@ mod imp {
                     .into()
             });
             self.cpu_column.set_sorter(Some(&sorter));
-            self.cpu_sorter.set(Some(sorter));
 
             let this = self.obj().downgrade();
             let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
@@ -543,7 +558,6 @@ mod imp {
                     .into()
             });
             self.memory_column.set_sorter(Some(&sorter));
-            self.memory_sorter.set(Some(sorter));
 
             let this = self.obj().downgrade();
             let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
@@ -565,7 +579,6 @@ mod imp {
                     .into()
             });
             self.disk_column.set_sorter(Some(&sorter));
-            self.disk_sorter.set(Some(sorter));
 
             let this = self.obj().downgrade();
             let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
@@ -587,7 +600,6 @@ mod imp {
                     .into()
             });
             self.gpu_column.set_sorter(Some(&sorter));
-            self.gpu_sorter.set(Some(sorter));
 
             let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
             self.tree_list_sorter.set(Some(tree_list_sorter.clone()));
@@ -697,6 +709,7 @@ mod imp {
             view_model::ViewModel::ensure_type();
 
             column_header::ColumnHeader::ensure_type();
+            pid_column::PidColumn::ensure_type();
             stat_column::StatColumn::ensure_type();
 
             klass.bind_template();
@@ -726,6 +739,12 @@ mod imp {
                 "",
                 gtk::Align::Start,
             );
+            let (column_view_title, column_header_pid) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("PID"),
+                "",
+                gtk::Align::End,
+            );
             let (column_view_title, column_header_cpu) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("CPU"),
@@ -752,6 +771,7 @@ mod imp {
             );
 
             self.column_header_name.set(Some(column_header_name));
+            self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_disk.set(Some(column_header_disk));

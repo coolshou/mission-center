@@ -1,4 +1,4 @@
-/* apps_page/stat_column.rs
+/* apps_page/pid_column.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -31,43 +31,32 @@ mod imp {
     use super::*;
 
     #[derive(Properties)]
-    #[properties(wrapper_type = super::StatColumn)]
+    #[properties(wrapper_type = super::PidColumn)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/stat_column.ui")]
-    pub struct StatColumn {
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/pid_column.ui")]
+    pub struct PidColumn {
         #[template_child]
         label: TemplateChild<gtk::Label>,
 
-        #[property(get = Self::unit, set = Self::set_unit, type = glib::GString)]
-        unit: Cell<glib::GString>,
         #[property(set = Self::set_content_type, type = u8)]
         content_type: Cell<crate::apps_page::view_model::ContentType>,
-        #[property(get, set)]
-        value: Cell<f32>,
+        #[property(get, set = Self::set_value)]
+        value: Cell<crate::sys_info_v2::Pid>,
     }
 
-    impl Default for StatColumn {
+    impl Default for PidColumn {
         fn default() -> Self {
             use crate::apps_page::view_model::ContentType;
 
             Self {
                 label: TemplateChild::default(),
-                unit: Cell::new(glib::GString::from("")),
                 content_type: Cell::new(ContentType::SectionHeader),
-                value: Cell::new(0.0),
+                value: Cell::new(0),
             }
         }
     }
 
-    impl StatColumn {
-        fn unit(&self) -> glib::GString {
-            unsafe { &*self.unit.as_ptr() }.clone()
-        }
-
-        fn set_unit(&self, unit: &str) {
-            self.unit.set(glib::GString::from(unit));
-        }
-
+    impl PidColumn {
         fn set_content_type(&self, v: u8) {
             use crate::apps_page::view_model::ContentType;
 
@@ -80,44 +69,29 @@ mod imp {
 
             self.content_type.set(content_type);
         }
+
+        fn set_value(&self, v: crate::sys_info_v2::Pid) {
+            self.value.set(v);
+        }
     }
 
-    impl StatColumn {
+    impl PidColumn {
         fn update_label(&self) {
             use crate::apps_page::view_model::ContentType;
 
-            if self.content_type.get() == ContentType::SectionHeader {
+            if self.content_type.get() != ContentType::Process {
                 self.label.set_text("");
                 return;
             }
 
-            let prop_unit = unsafe { &*self.unit.as_ptr() }.as_str();
-
-            let value = self.value.get();
-            if prop_unit == "%" {
-                self.label
-                    .set_text(&format!("{}{}", value.round(), prop_unit));
-            } else if prop_unit == "bps" {
-                let (value, unit) = crate::to_human_readable(value, 1024.);
-                self.label
-                    .set_text(&format!("{} {}{}", value.round(), unit, prop_unit));
-            } else {
-                let (value, unit) = crate::to_human_readable(value, 1024.);
-                self.label.set_text(&format!(
-                    "{} {}{}{}",
-                    value.round(),
-                    unit,
-                    if unit.is_empty() { "" } else { "i" },
-                    prop_unit
-                ));
-            }
+            self.label.set_text(&format!("{}", self.value.get()))
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for StatColumn {
-        const NAME: &'static str = "StatColumn";
-        type Type = super::StatColumn;
+    impl ObjectSubclass for PidColumn {
+        const NAME: &'static str = "PidColumn";
+        type Type = super::PidColumn;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -129,17 +103,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for StatColumn {
-        fn constructed(&self) {
-            let this = self.obj().downgrade();
-            self.obj().connect_value_notify(move |_| {
-                let this = this.upgrade();
-                if let Some(this) = this {
-                    this.imp().update_label();
-                }
-            });
-        }
-
+    impl ObjectImpl for PidColumn {
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -153,18 +117,28 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for StatColumn {
+    impl WidgetImpl for PidColumn {
         fn realize(&self) {
             self.parent_realize();
             self.update_label();
+
+            self.obj()
+                .connect_value_notify(glib::clone!(@weak self as this => move |_| {
+                    this.update_label();
+                }));
+
+            self.obj()
+                .connect_content_type_notify(glib::clone!(@weak self as this => move |_| {
+                    this.update_label();
+                }));
         }
     }
 
-    impl BoxImpl for StatColumn {}
+    impl BoxImpl for PidColumn {}
 }
 
 glib::wrapper! {
-    pub struct StatColumn(ObjectSubclass<imp::StatColumn>)
+    pub struct PidColumn(ObjectSubclass<imp::PidColumn>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }

@@ -33,7 +33,7 @@ template $AppsPage : Box {
         "rich-list"
       ]
 
-      show-row-separators: true;
+      show-row-separators: false;
       show-column-separators: true;
 
       ColumnViewColumn name_column {
@@ -50,6 +50,30 @@ template $AppsPage : Box {
                 name: bind (expander.item as <$ViewModel>).name;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
                 show-expander: bind (expander.item as <$ViewModel>).show-expander;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn pid_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $PidColumn {
+                value: bind (expander.item as <$ViewModel>).pid;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
           }

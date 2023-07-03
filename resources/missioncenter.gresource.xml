@@ -14,6 +14,7 @@
         <file preprocess="xml-stripblanks">ui/apps_page/column_header.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/list_item.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/page.ui</file>
+        <file preprocess="xml-stripblanks">ui/apps_page/pid_column.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/stat_column.ui</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>

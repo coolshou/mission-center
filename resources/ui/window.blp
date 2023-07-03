@@ -75,19 +75,19 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
         vexpand: true;
 
         Adw.ViewStackPage {
-          name: "processes";
-          icon-name: "system-run-symbolic";
-          title: _("Apps");
-          child: $AppsPage apps_page {
-          };
-        }
-
-        Adw.ViewStackPage {
-          name: "performance";
+          name: "performance-page";
           icon-name: "speedometer-symbolic";
           title: _("Performance");
           child: $PerformancePage performance_page {
             summary-mode: bind-property header_bar.visible bidirectional inverted;
+          };
+        }
+
+        Adw.ViewStackPage {
+          name: "apps-page";
+          icon-name: "system-run-symbolic";
+          title: _("Apps");
+          child: $AppsPage apps_page {
           };
         }
       }
