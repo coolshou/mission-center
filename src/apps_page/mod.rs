@@ -54,7 +54,12 @@ mod imp {
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
 
-        pub sort_order: Cell<gtk::SorterChange>,
+        pub name_sorter: Cell<Option<gtk::CustomSorter>>,
+        pub cpu_sorter: Cell<Option<gtk::CustomSorter>>,
+        pub memory_sorter: Cell<Option<gtk::CustomSorter>>,
+        pub disk_sorter: Cell<Option<gtk::CustomSorter>>,
+        pub gpu_sorter: Cell<Option<gtk::CustomSorter>>,
+        pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
 
         pub apps_model: Cell<gio::ListStore>,
         pub processes_root_model: Cell<gio::ListStore>,
@@ -82,7 +87,12 @@ mod imp {
                 column_header_disk: Cell::new(None),
                 column_header_gpu: Cell::new(None),
 
-                sort_order: Cell::new(gtk::SorterChange::Inverted),
+                name_sorter: Cell::new(None),
+                cpu_sorter: Cell::new(None),
+                memory_sorter: Cell::new(None),
+                disk_sorter: Cell::new(None),
+                gpu_sorter: Cell::new(None),
+                tree_list_sorter: Cell::new(None),
 
                 apps_model: Cell::new(gio::ListStore::new(view_model::ViewModel::static_type())),
                 processes_root_model: Cell::new(gio::ListStore::new(
@@ -336,12 +346,14 @@ mod imp {
                 .name(&i18n("Apps"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Apps)
+                .show_expander(true)
                 .build();
 
             let processes_section_header = ViewModelBuilder::new()
                 .name(&i18n("Processes"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Processes)
+                .show_expander(true)
                 .build();
 
             let root_model = gio::ListStore::new(ViewModel::static_type());
@@ -457,44 +469,6 @@ mod imp {
                     return true;
                 }
 
-                if view_model.content_type() == ContentType::Process as u8 {
-                    fn find_child(model: &ViewModel, query_string: &str) -> bool {
-                        let children = model.children();
-
-                        for i in 0..children.n_items() {
-                            let child = children.item(i).unwrap();
-                            let view_model = child.downcast_ref::<ViewModel>().unwrap();
-
-                            let child_name = view_model.name().to_lowercase();
-
-                            if query_string.contains(&child_name) {
-                                return true;
-                            }
-
-                            if child_name.contains(query_string) {
-                                return true;
-                            }
-
-                            let str_distance = Levenshtein::default()
-                                .for_str(&child_name, query_string)
-                                .ndist();
-                            if str_distance <= 0.6 {
-                                return true;
-                            }
-                        }
-
-                        for i in 0..children.n_items() {
-                            let child = children.item(i).unwrap();
-                            let view_model = child.downcast_ref::<ViewModel>().unwrap();
-                            return find_child(&view_model, query_string);
-                        }
-
-                        false
-                    }
-
-                    return find_child(&view_model, &search_query);
-                }
-
                 false
             });
 
@@ -508,108 +482,116 @@ mod imp {
 
         pub fn set_up_sort_model(&self, model: gio::ListModel) -> gtk::SortListModel {
             let this = self.obj().downgrade();
-            self.name_column
-                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
-                    use std::cmp::Ordering;
 
-                    let this = this.upgrade();
-                    if this.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let this = this.unwrap();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
 
-                    this.imp()
-                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            lhs.name().to_lowercase().cmp(&rhs.name().to_lowercase())
-                        })
-                        .into()
-                })));
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
 
-            let this = self.obj().downgrade();
-            self.cpu_column
-                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
-                    use std::cmp::Ordering;
-
-                    let this = this.upgrade();
-                    if this.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let this = this.unwrap();
-
-                    this.imp()
-                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs.property::<f32>("cpu-usage");
-                            let rhs = rhs.property::<f32>("cpu-usage");
-
-                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
-                        })
-                        .into()
-                })));
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        lhs.name().to_lowercase().cmp(&rhs.name().to_lowercase())
+                    })
+                    .into()
+            });
+            self.name_column.set_sorter(Some(&sorter));
+            self.name_sorter.set(Some(sorter));
 
             let this = self.obj().downgrade();
-            self.memory_column
-                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
-                    use std::cmp::Ordering;
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
 
-                    let this = this.upgrade();
-                    if this.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let this = this.unwrap();
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
 
-                    this.imp()
-                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs.property::<f32>("memory-usage");
-                            let rhs = rhs.property::<f32>("memory-usage");
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("cpu-usage");
+                        let rhs = rhs.property::<f32>("cpu-usage");
 
-                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
-                        })
-                        .into()
-                })));
-
-            let this = self.obj().downgrade();
-            self.disk_column
-                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
-                    use std::cmp::Ordering;
-
-                    let this = this.upgrade();
-                    if this.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let this = this.unwrap();
-
-                    this.imp()
-                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs.property::<f32>("disk-usage");
-                            let rhs = rhs.property::<f32>("disk-usage");
-
-                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
-                        })
-                        .into()
-                })));
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.cpu_column.set_sorter(Some(&sorter));
+            self.cpu_sorter.set(Some(sorter));
 
             let this = self.obj().downgrade();
-            self.gpu_column
-                .set_sorter(Some(&gtk::CustomSorter::new(move |lhs, rhs| {
-                    use std::cmp::Ordering;
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
 
-                    let this = this.upgrade();
-                    if this.is_none() {
-                        return Ordering::Equal.into();
-                    }
-                    let this = this.unwrap();
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
 
-                    this.imp()
-                        .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                            let lhs = lhs.property::<f32>("gpu-usage");
-                            let rhs = rhs.property::<f32>("gpu-usage");
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("memory-usage");
+                        let rhs = rhs.property::<f32>("memory-usage");
 
-                            lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
-                        })
-                        .into()
-                })));
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.memory_column.set_sorter(Some(&sorter));
+            self.memory_sorter.set(Some(sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("disk-usage");
+                        let rhs = rhs.property::<f32>("disk-usage");
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.disk_column.set_sorter(Some(&sorter));
+            self.disk_sorter.set(Some(sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("gpu-usage");
+                        let rhs = rhs.property::<f32>("gpu-usage");
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.gpu_column.set_sorter(Some(&sorter));
+            self.gpu_sorter.set(Some(sorter));
 
             let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
+            self.tree_list_sorter.set(Some(tree_list_sorter.clone()));
+
             gtk::SortListModel::new(Some(model), Some(tree_list_sorter))
         }
 
@@ -823,6 +805,12 @@ impl AppsPage {
         this.update_app_model();
         this.update_processes_models();
         this.update_column_headers(readings);
+
+        let sorter = this.tree_list_sorter.take();
+        if let Some(sorter) = sorter.as_ref() {
+            sorter.changed(gtk::SorterChange::Different)
+        }
+        this.tree_list_sorter.set(sorter);
 
         true
     }

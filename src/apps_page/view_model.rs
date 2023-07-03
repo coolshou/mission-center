@@ -43,6 +43,8 @@ mod imp {
         pub content_type: Cell<ContentType>,
         #[property(get = Self::section_type, type = u8)]
         pub section_type: Cell<SectionType>,
+        #[property(get, set)]
+        pub show_expander: Cell<bool>,
 
         #[property(get, set)]
         pub cpu_usage: Cell<f32>,
@@ -68,6 +70,7 @@ mod imp {
 
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
+                show_expander: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0.),
@@ -169,8 +172,11 @@ pub struct ViewModelBuilder {
     pid: libc::pid_t,
     icon: glib::GString,
     name: glib::GString,
+
     content_type: ContentType,
     section_type: SectionType,
+    show_expander: Option<bool>,
+
     cpu_usage: f32,
     memory_usage: f32,
     disk_usage: f32,
@@ -184,8 +190,11 @@ impl ViewModelBuilder {
             pid: 0,
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
+
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
+            show_expander: None,
+
             cpu_usage: 0.,
             memory_usage: 0.,
             disk_usage: 0.,
@@ -219,6 +228,11 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn show_expander(mut self, show_expander: bool) -> Self {
+        self.show_expander = Some(show_expander);
+        self
+    }
+
     pub fn cpu_usage(mut self, cpu_usage: f32) -> Self {
         self.cpu_usage = cpu_usage;
         self
@@ -245,7 +259,7 @@ impl ViewModelBuilder {
     }
 
     pub fn build(self) -> ViewModel {
-        let this = ViewModel::new(self.content_type);
+        let this = ViewModel::new(self.content_type, self.show_expander);
 
         {
             let this = this.imp();
@@ -269,9 +283,26 @@ glib::wrapper! {
 }
 
 impl ViewModel {
-    pub fn new(content_type: ContentType) -> Self {
+    pub fn new(content_type: ContentType, show_expander: Option<bool>) -> Self {
+        use gtk::glib::clone;
+        use gtk::prelude::*;
+
         let this: Self = glib::Object::builder().build();
         this.imp().content_type.set(content_type);
+
+        if show_expander.is_none() {
+            glib::idle_add_local_once(clone!(@weak this => move || {
+                this.set_show_expander(this.children().n_items() > 0);
+            }));
+
+            this.children()
+                .connect_items_changed(clone!(@weak this => move |_, _, _, _| {
+                    this.set_show_expander(this.children().n_items() > 0);
+                }));
+        } else {
+            this.set_show_expander(show_expander.unwrap());
+        }
+
         this
     }
 

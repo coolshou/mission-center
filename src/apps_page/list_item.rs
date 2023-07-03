@@ -51,6 +51,8 @@ mod imp {
         icon_property: [u8; 0],
         #[property(set = Self::set_content_type, type = u8)]
         pub content_type: Cell<ContentType>,
+        #[property(get, set = Self::set_show_expander)]
+        pub show_expander: Cell<bool>,
     }
 
     impl Default for ListItem {
@@ -62,6 +64,7 @@ mod imp {
                 name_property: [0; 0],
                 icon_property: [0; 0],
                 content_type: Cell::new(ContentType::SectionHeader),
+                show_expander: Cell::new(true),
             }
         }
     }
@@ -80,7 +83,15 @@ mod imp {
         }
 
         pub fn set_icon(&self, icon: &str) {
-            self.icon.set_from_icon_name(Some(icon));
+            let display = gtk::gdk::Display::default().unwrap();
+            let icon_theme = gtk::IconTheme::for_display(&display);
+
+            if icon_theme.has_icon(icon) {
+                self.icon.set_from_icon_name(Some(icon));
+            } else {
+                self.icon
+                    .set_from_icon_name(Some("application-x-executable"));
+            }
         }
 
         fn set_content_type(&self, v: u8) {
@@ -92,7 +103,6 @@ mod imp {
                     let this = self.obj();
                     this.set_margin_top(6);
                     this.set_margin_bottom(6);
-                    this.set_margin_start(8);
 
                     ContentType::SectionHeader
                 }
@@ -105,7 +115,6 @@ mod imp {
                     let this = self.obj();
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
-                    this.set_margin_start(0);
 
                     ContentType::App
                 }
@@ -118,7 +127,6 @@ mod imp {
                     let this = self.obj();
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
-                    this.set_margin_start(0);
 
                     ContentType::Process
                 }
@@ -126,6 +134,26 @@ mod imp {
             };
 
             self.content_type.set(content_type);
+        }
+
+        fn set_show_expander(&self, show: bool) {
+            use glib::g_critical;
+
+            let parent = self
+                .obj()
+                .parent()
+                .and_then(|p| p.downcast::<gtk::TreeExpander>().ok());
+            if parent.is_none() {
+                g_critical!(
+                    "MissionCenter::AppsPage",
+                    "Failed to get parent TreeExpander"
+                );
+            } else {
+                let parent = parent.unwrap();
+                parent.set_hide_expander(!show);
+            }
+
+            self.show_expander.set(show);
         }
     }
 
