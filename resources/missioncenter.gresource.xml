@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
+    <gresource prefix="/io/missioncenter/MissionCenter/icons/scalable/actions/">
+        <file preprocess="xml-stripblanks">check-plain-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">speedometer-symbolic.svg</file>
+    </gresource>
+
     <gresource prefix="/io/missioncenter/MissionCenter">
-        <file>check-plain-symbolic.svg</file>
-        <file>line-dashed-disk.svg</file>
-        <file>line-dashed-net.svg</file>
-        <file>line-solid-disk.svg</file>
-        <file>line-solid-net.svg</file>
+        <file preprocess="xml-stripblanks">line-dashed-disk.svg</file>
+        <file preprocess="xml-stripblanks">line-dashed-net.svg</file>
+        <file preprocess="xml-stripblanks">line-solid-disk.svg</file>
+        <file preprocess="xml-stripblanks">line-solid-net.svg</file>
 
         <file preprocess="xml-stripblanks">ui/apps_page/column_header.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/list_item.ui</file>

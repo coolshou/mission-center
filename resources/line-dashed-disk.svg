@@ -25,12 +25,12 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="1.2938725"
-     inkscape:cx="-13.525289"
+     inkscape:cx="-13.138853"
      inkscape:cy="18.548968"
-     inkscape:window-width="954"
-     inkscape:window-height="1123"
-     inkscape:window-x="26"
-     inkscape:window-y="23"
+     inkscape:window-width="1270"
+     inkscape:window-height="655"
+     inkscape:window-x="35"
+     inkscape:window-y="32"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -41,7 +41,7 @@
      id="layer1"
      transform="translate(-5.3356491,-3.3229538)">
     <path
-       style="fill:none;stroke:#218a8a;stroke-width:1.05833;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:none;stroke:#26a269;stroke-width:1.05833;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
        d="M 5.8648143,3.3229537 V 17.434065"
        id="path6163"
        inkscape:export-filename="dashed.svg"
