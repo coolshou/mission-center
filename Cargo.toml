@@ -36,4 +36,3 @@ textdistance = { version = "1.0.2" }
 
 [profile.release]
 opt-level = 3
-lto = true

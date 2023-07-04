@@ -58,7 +58,8 @@
         "mv /app/libudev* /app/lib/",
         "mv /app/pkgconfig /app/lib/",
         "rustup default stable-x86_64-unknown-linux-gnu",
-        "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Db_lto=true -Dflatpak=true && ninja -C _flatpak_build install",
+        "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Dflatpak=true",
+        "ninja -C _flatpak_build install",
         "rm -rf /app/tmp"
       ],
       "sources": [
