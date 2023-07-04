@@ -48,15 +48,12 @@ mod imp {
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub gpu_column: TemplateChild<gtk::ColumnViewColumn>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
-        pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
 
         pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
 
@@ -79,14 +76,12 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
-                gpu_column: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
                 column_header_pid: Cell::new(None),
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
-                column_header_gpu: Cell::new(None),
 
                 tree_list_sorter: Cell::new(None),
 
@@ -215,7 +210,27 @@ mod imp {
                     };
 
                     let entry_name = if child.exe != std::path::Path::new("") {
-                        child.exe.as_path().file_name().unwrap().to_str().unwrap()
+                        let entry_name = child
+                            .exe
+                            .as_path()
+                            .file_name()
+                            .map(|name| name.to_str().unwrap_or(child.name.as_str()))
+                            .unwrap_or(child.name.as_str());
+                        if entry_name.starts_with("wine") {
+                            if child.cmd.is_empty() {
+                                child.name.as_str()
+                            } else {
+                                child.cmd[0]
+                                    .split("\\")
+                                    .last()
+                                    .unwrap_or(child.name.as_str())
+                                    .split("/")
+                                    .last()
+                                    .unwrap_or(child.name.as_str())
+                            }
+                        } else {
+                            entry_name
+                        }
                     } else {
                         child.name.as_str()
                     };
@@ -580,27 +595,6 @@ mod imp {
             });
             self.disk_column.set_sorter(Some(&sorter));
 
-            let this = self.obj().downgrade();
-            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
-                use std::cmp::Ordering;
-
-                let this = this.upgrade();
-                if this.is_none() {
-                    return Ordering::Equal.into();
-                }
-                let this = this.unwrap();
-
-                this.imp()
-                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("gpu-usage");
-                        let rhs = rhs.property::<f32>("gpu-usage");
-
-                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
-                    })
-                    .into()
-            });
-            self.gpu_column.set_sorter(Some(&sorter));
-
             let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
             self.tree_list_sorter.set(Some(tree_list_sorter.clone()));
 
@@ -675,25 +669,6 @@ mod imp {
                 }
             }
             self.column_header_disk.set(column_header_disk);
-
-            let column_header_gpu = self.column_header_gpu.take();
-            if let Some(column_header_gpu) = &column_header_gpu {
-                let total_busy_percent = readings
-                    .gpus
-                    .iter()
-                    .map(|gpu| gpu.dynamic_info.util_percent as f32)
-                    .sum::<f32>();
-
-                if readings.gpus.len() == 0 {
-                    column_header_gpu.set_heading("0%");
-                } else {
-                    column_header_gpu.set_heading(format!(
-                        "{}%",
-                        (total_busy_percent / readings.gpus.len() as f32).round()
-                    ));
-                }
-            }
-            self.column_header_gpu.set(column_header_gpu);
         }
     }
 
@@ -757,15 +732,9 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
-            let (column_view_title, column_header_disk) = self.configure_column_header(
+            let (_, column_header_disk) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("Disk"),
-                "0%",
-                gtk::Align::End,
-            );
-            let (_, column_header_gpu) = self.configure_column_header(
-                &column_view_title.unwrap(),
-                &i18n("GPU"),
                 "0%",
                 gtk::Align::End,
             );
@@ -775,7 +744,6 @@ mod imp {
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_disk.set(Some(column_header_disk));
-            self.column_header_gpu.set(Some(column_header_gpu));
         }
     }
 
