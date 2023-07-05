@@ -24,6 +24,7 @@ build-job: # This job runs in the build stage, which runs first.
 
     - meson setup _build -Dbuildtype=release
     - ninja -C _build
+    - glib-compile-schemas --strict data/ && mv  data/gschemas.compiled gschemas.compiled
     - mv _build/src/missioncenter missioncenter.bin
     - strip missioncenter.bin
     - mv _build/resources/missioncenter.gresource missioncenter.gresource
@@ -33,6 +34,7 @@ build-job: # This job runs in the build stage, which runs first.
       - missioncenter.bin
       - missioncenter.gresource
       - hw.db
+      - gschemas.compiled
 
 unit-test-job: # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
@@ -53,11 +55,10 @@ package-job:
     - apt-get update
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.rust-stable//22.08
+    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
   artifacts:
     paths:
       - flatpak/missioncenter.flatpak
-
