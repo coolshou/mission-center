@@ -375,19 +375,17 @@ mod imp {
                     .set(wireless_info.signal_strength_percent.clone());
                 this.signal_strength.set_icon_name(Some(
                     if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
-                        if *percentage <= 20_u8 {
-                            "network-wireless-signal-none-symbolic"
-                        } else if *percentage <= 40_u8 {
-                            "network-wireless-signal-weak-symbolic"
-                        } else if *percentage <= 60_u8 {
-                            "network-wireless-signal-ok-symbolic"
-                        } else if *percentage <= 80_u8 {
-                            "network-wireless-signal-good-symbolic"
+                        if *percentage <= 25_u8 {
+                            "nm-signal-25-symbolic"
+                        } else if *percentage <= 50_u8 {
+                            "nm-signal-50-symbolic"
+                        } else if *percentage <= 75_u8 {
+                            "nm-signal-75-symbolic"
                         } else {
-                            "network-wireless-signal-excellent-symbolic"
+                            "nm-signal-100-symbolic"
                         }
                     } else {
-                        "network-wireless-no-route-symbolic"
+                        "nm-signal-00-symbolic"
                     },
                 ));
                 this.max_bitrate
