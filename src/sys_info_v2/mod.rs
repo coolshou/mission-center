@@ -1,4 +1,4 @@
-/* sys_info/mod.rs
+/* sys_info/view_models
  *
  * Copyright 2023 Romeo Calota
  *
@@ -19,8 +19,6 @@
  */
 
 use lazy_static::lazy_static;
-
-use crate::sys_info_v2::disk_info::DiskInfo;
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -44,11 +42,27 @@ macro_rules! cmd {
     }};
 }
 
+macro_rules! cmd_flatpak_host {
+    ($cmd: expr) => {{
+        use std::process::Command;
+
+        const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+
+        let mut cmd = Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("--host").arg("sh").arg("-c");
+        cmd.arg($cmd);
+
+        cmd
+    }};
+}
+
+mod app_info;
 mod cpu_info;
 mod disk_info;
 mod gpu_info;
 mod mem_info;
 mod net_info;
+mod proc_info;
 
 #[allow(dead_code)]
 pub type CpuInfo = cpu_info::CpuInfo;
@@ -62,6 +76,7 @@ pub type MemInfo = mem_info::MemInfo;
 pub type MemoryDevice = mem_info::MemoryDevice;
 
 pub type Disk = disk_info::Disk;
+pub type DiskInfo = disk_info::DiskInfo;
 pub type DiskType = disk_info::DiskType;
 
 pub type NetInfo = net_info::NetInfo;
@@ -75,8 +90,45 @@ pub type GPUDynamicInformation = gpu_info::DynamicInfo;
 pub type GPU = gpu_info::GPU;
 pub type GPUInfo = gpu_info::GPUInfo;
 
+pub type App = app_info::App;
+pub type Process = proc_info::Process;
+#[allow(dead_code)]
+pub type ProcessStats = proc_info::Stats;
+pub type Pid = proc_info::Pid;
+
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
+    static ref FLATPAK_APP_PATH: String = {
+        use ini::*;
+
+        let ini = Ini::load_from_file("/.flatpak-info");
+        if ini.is_err() {
+            return "".to_owned();
+        }
+        let ini = ini.unwrap();
+
+        let section = ini.section(Some("Instance"));
+        if section.is_none() {
+            panic!("Unable to find Instance section in /.flatpak-info");
+        }
+        let section = section.unwrap();
+
+        let app_path = section.get("app-path");
+        if app_path.is_none() {
+            panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info");
+        }
+        app_path.unwrap().to_owned()
+    };
+    static ref CACHE_DIR: String = {
+        let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
+            std::env::var("HOME")
+                .and_then(|v| Ok(v + "/.cache"))
+                .unwrap_or("/tmp".to_string()),
+        );
+        cache_dir.push_str("/io.missioncenter.MissionCenter");
+        std::fs::create_dir_all(cache_dir.as_str()).unwrap_or(());
+        cache_dir
+    };
 }
 
 #[allow(dead_code)]
@@ -118,16 +170,24 @@ pub struct Readings {
     pub disks: Vec<Disk>,
     pub network_devices: Vec<NetworkDevice>,
     pub gpus: Vec<GPU>,
+
+    pub running_apps: std::collections::HashMap<String, App>,
+    pub process_tree: Process,
 }
 
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
+        use std::collections::HashMap;
+
         Self {
             cpu_info: CpuInfo::new(system),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
             disks: vec![],
             network_devices: vec![],
             gpus: vec![],
+
+            running_apps: HashMap::new(),
+            process_tree: Process::default(),
         }
     }
 }
@@ -157,7 +217,7 @@ impl SysInfoV2 {
     pub fn new() -> (Self, Readings) {
         use gtk::glib::*;
         use std::sync::{atomic::*, *};
-        use sysinfo::*;
+        use sysinfo::{System, SystemExt};
 
         let mut system = System::new();
         let mut readings = Readings::new(&mut system);
@@ -178,6 +238,17 @@ impl SysInfoV2 {
         } else {
             vec![]
         };
+
+        let (apps, mut processes) = proc_info::load_app_and_process_list();
+        for gpu in &readings.gpus {
+            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                if let Some(process) = processes.get_mut(pid) {
+                    process.stats.gpu_usage = *gpu_usage;
+                }
+            }
+        }
+        readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
+        readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
@@ -211,7 +282,19 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let readings = Readings {
+                        let (apps, mut process_list) = proc_info::load_app_and_process_list();
+                        for gpu in &gpus {
+                            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                                if let Some(process) = process_list.get_mut(pid) {
+                                    process.stats.gpu_usage = *gpu_usage;
+                                }
+                            }
+                        }
+                        let process_tree =
+                            proc_info::process_hierarchy(&process_list).unwrap_or_default();
+                        let running_apps = app_info::running_apps(&process_tree, &apps);
+
+                        let mut readings = Readings {
                             cpu_info: CpuInfo {
                                 static_info: cpu_static_info.clone(),
                                 dynamic_info: cpu_info,
@@ -220,6 +303,9 @@ impl SysInfoV2 {
                             disks,
                             network_devices,
                             gpus,
+
+                            running_apps,
+                            process_tree,
                         };
 
                         g_debug!(
@@ -234,7 +320,7 @@ impl SysInfoV2 {
                             if let Some(app) = crate::MissionCenterApplication::default_instance() {
                                 let now = std::time::Instant::now();
 
-                                if !app.refresh_readings(&readings) {
+                                if !app.refresh_readings(&mut readings) {
                                     g_critical!(
                                         "MissionCenter::SysInfo",
                                         "Readings were not completely refreshed, stale readings will be displayed"
@@ -262,11 +348,11 @@ impl SysInfoV2 {
                         let elapsed = start_load_readings.elapsed();
                         if elapsed > refresh_interval {
                             g_warning!(
-                            "MissionCenter::SysInfo",
-                            "Refresh took {}ms, which is longer than the refresh interval of {}ms",
-                            elapsed.as_millis(),
-                            refresh_interval.as_millis()
-                        );
+                                "MissionCenter::SysInfo",
+                                "Refresh took {}ms, which is longer than the refresh interval of {}ms",
+                                elapsed.as_millis(),
+                                refresh_interval.as_millis()
+                            );
                             continue;
                         }
 

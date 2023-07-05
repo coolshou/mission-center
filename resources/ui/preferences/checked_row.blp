@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template CheckedRow: Box {
+template $CheckedRow: Box {
   orientation: horizontal;
 
   margin-top: 8;
@@ -35,7 +35,7 @@ template CheckedRow: Box {
   }
 
   Image checkmark {
-    resource: "/io/missioncenter/MissionCenter/check-plain-symbolic.svg";
+    icon-name: "check-plain-symbolic";
     visible: false;
   }
 }

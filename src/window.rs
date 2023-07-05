@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
@@ -29,16 +31,33 @@ mod imp {
     pub struct MissionCenterWindow {
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
+        #[template_child]
+        pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
+        #[template_child]
+        pub header_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub search_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub stack: TemplateChild<adw::ViewStack>,
 
-        pub sys_info: std::cell::Cell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub sys_info: Cell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for MissionCenterWindow {
         fn default() -> Self {
             Self {
                 performance_page: TemplateChild::default(),
+                apps_page: TemplateChild::default(),
+                header_stack: TemplateChild::default(),
+                search_entry: TemplateChild::default(),
+                search_button: TemplateChild::default(),
+                stack: TemplateChild::default(),
 
-                sys_info: std::cell::Cell::new(None),
+                sys_info: Cell::new(None),
+                settings: Cell::new(None),
             }
         }
     }
@@ -50,9 +69,11 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
-            use crate::performance_page::PerformancePage;
+            use crate::{apps_page::AppsPage, performance_page::PerformancePage};
 
             PerformancePage::ensure_type();
+            AppsPage::ensure_type();
+
             klass.bind_template();
         }
 
@@ -61,9 +82,113 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MissionCenterWindow {}
+    impl ObjectImpl for MissionCenterWindow {
+        fn constructed(&self) {
+            use glib::*;
 
-    impl WidgetImpl for MissionCenterWindow {}
+            self.parent_constructed();
+
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
+
+            let toggle_search =
+                gio::SimpleAction::new_stateful("toggle-search", None, false.to_variant());
+            toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
+                let current_state = action.state();
+                if current_state.is_none() {
+                    g_critical!("MissionCenter", "Failed to get search action state");
+                    action.set_state(false.to_variant());
+                    return;
+                }
+                let current_state = current_state.unwrap();
+
+                let new_state = !current_state.get::<bool>().unwrap_or(false);
+                action.set_state(new_state.to_variant());
+                this.search_button.set_active(new_state);
+
+                if new_state {
+                    this.header_stack.set_visible_child_name("search-entry");
+                    this.search_entry.grab_focus();
+                    this.search_entry.select_region(-1, -1);
+                } else {
+                    this.header_stack.set_visible_child_name("view-switcher");
+                    this.search_entry.set_text("");
+                }
+            }));
+
+            let this = self.obj().downgrade();
+            self.stack.connect_visible_child_notify(move |stack| {
+                let this = this.upgrade();
+                if this.is_none() {
+                    return;
+                }
+                let this = this.unwrap();
+                let this = this.imp();
+
+                let visible_child_name = stack.visible_child_name().unwrap_or("".into());
+                if visible_child_name == "performance-page" {
+                    this.search_button.set_visible(false);
+                    this.search_entry
+                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
+                } else {
+                    this.search_button.set_visible(true);
+                    this.search_entry
+                        .set_state_flags(gtk::StateFlags::NORMAL, true);
+                }
+
+                if let Some(settings) = this.settings.take() {
+                    settings
+                        .set_string("window-selected-page", &visible_child_name)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter",
+                                "Failed to set window-selected-page setting"
+                            );
+                        });
+                    this.settings.set(Some(settings));
+                }
+            });
+
+            // IDK... Something about missing Traits... don't care, this works
+            unsafe {
+                gtk::ffi::gtk_search_entry_set_key_capture_widget(
+                    self.search_entry.as_ptr() as *mut _,
+                    self.obj().as_ptr() as *mut _,
+                );
+            }
+
+            let this = self.obj().downgrade();
+            self.search_entry.connect_search_started(move |_| {
+                let this = this.upgrade();
+                if let Some(this) = this {
+                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                }
+            });
+
+            let this = self.obj().downgrade();
+            self.search_entry.connect_stop_search(move |_| {
+                let this = this.upgrade();
+                if let Some(this) = this {
+                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
+                }
+            });
+
+            self.obj().add_action(&toggle_search);
+        }
+    }
+
+    impl WidgetImpl for MissionCenterWindow {
+        fn realize(&self) {
+            self.parent_realize();
+
+            if let Some(settings) = self.settings.take() {
+                self.stack
+                    .set_visible_child_name(settings.string("window-selected-page").as_str());
+                self.settings.set(Some(settings));
+            }
+        }
+    }
 
     impl WindowImpl for MissionCenterWindow {}
 
@@ -85,22 +210,28 @@ impl MissionCenterWindow {
     ) -> Self {
         use gtk::glib::*;
 
-        let this: Self = unsafe {
-            Object::new_internal(
-                MissionCenterWindow::static_type(),
-                &mut [("application", application.into())],
-            )
-            .downcast()
-            .unwrap()
-        };
+        let this: Self = Object::builder()
+            .property("application", application)
+            .build();
 
-        let (sys_info, initial_readings) = crate::sys_info_v2::SysInfoV2::new();
+        let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new();
 
         let ok = this.imp().performance_page.set_up_pages(&initial_readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
                 "Failed to set initial readings for performance page"
+            );
+        }
+
+        let ok = this
+            .imp()
+            .apps_page
+            .set_initial_readings(&mut initial_readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for apps page"
             );
         }
 
@@ -131,10 +262,11 @@ impl MissionCenterWindow {
         this
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         let mut result = true;
 
         result &= self.imp().performance_page.update_readings(readings);
+        result &= self.imp().apps_page.update_readings(readings);
 
         result
     }

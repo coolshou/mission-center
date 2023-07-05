@@ -252,6 +252,7 @@ pub struct DynamicInfo {
     pub used_memory: u64,
     pub encoder_percent: u32,
     pub decoder_percent: u32,
+    pub processes: std::collections::HashMap<libc::pid_t, f32>,
 }
 
 #[derive(Debug, Clone)]
@@ -540,6 +541,7 @@ impl GPUInfo {
 
     pub fn load_gpus(&mut self) -> Vec<GPU> {
         use gtk::glib::*;
+        use std::collections::HashMap;
 
         let gpu_list = &mut self.gpu_list;
 
@@ -628,7 +630,7 @@ impl GPUInfo {
                 None
             };
 
-            let gpu_dynamic_info = DynamicInfo {
+            let mut gpu_dynamic_info = DynamicInfo {
                 temp_celsius: dev.dynamic_info.gpu_temp,
                 fan_speed_percent: dev.dynamic_info.fan_speed,
                 util_percent: dev.dynamic_info.gpu_util_rate,
@@ -643,7 +645,14 @@ impl GPUInfo {
                 used_memory: dev.dynamic_info.used_memory,
                 encoder_percent: dev.dynamic_info.encoder_rate,
                 decoder_percent: dev.dynamic_info.decoder_rate,
+                processes: HashMap::new(),
             };
+            for i in 0..dev.processes_count as usize {
+                let process = unsafe { &*dev.processes.add(i) };
+                gpu_dynamic_info
+                    .processes
+                    .insert(process.pid, process.gpu_usage as f32);
+            }
 
             let device_unique_id = format!("{}-{}", device_pci_id, pdev);
             let cached_info = self

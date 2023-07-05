@@ -276,7 +276,9 @@ mod imp {
 
             self.admin_banner
                 .connect_button_clicked(clone!(@weak this => move |_| {
+                    unsafe { glib::gobject_ffi::g_object_ref(this.as_ptr() as *mut _) };
                     let ptr = this.as_ptr() as usize;
+
                     let _ = std::thread::spawn(move || {
                         use crate::sys_info_v2::MemInfo;
 
@@ -285,6 +287,8 @@ mod imp {
                             use glib::translate::from_glib_none;
 
                             let this: gtk::Widget = unsafe { from_glib_none(ptr as *mut gtk::ffi::GtkWidget) };
+                            unsafe { glib::gobject_ffi::g_object_unref(ptr as *mut _) };
+
                             let this = this.downcast_ref::<super::PerformancePageMemory>().unwrap();
 
                             match memory_device_info {

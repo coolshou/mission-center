@@ -21,7 +21,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template PerformancePageGpu: Box {
+template $PerformancePageGpu: Box {
   orientation: vertical;
 
   WindowHandle {
@@ -32,7 +32,7 @@ template PerformancePageGpu: Box {
       hexpand: true;
 
       Box {
-        spacing: 100;
+        spacing: 20;
 
         Label gpu_id {
           styles [
@@ -49,6 +49,7 @@ template PerformancePageGpu: Box {
           ]
 
           halign: end;
+          ellipsize: middle;
         }
       }
     };
@@ -77,13 +78,13 @@ template PerformancePageGpu: Box {
       }
     }
 
-    .GraphWidget usage_graph_overall {
+    $GraphWidget usage_graph_overall {
       vexpand: true;
       hexpand: true;
 
-      height-request: 120;
+      height-request: 100;
 
-      base-color: bind-property PerformancePageGpu.base-color;
+      base-color: bind-property template.base-color;
       data-set-count: 1;
       scroll: true;
     }
@@ -116,13 +117,13 @@ template PerformancePageGpu: Box {
         }
       }
 
-      .GraphWidget usage_graph_encode {
+      $GraphWidget usage_graph_encode {
         vexpand: true;
         hexpand: true;
 
-        height-request: 120;
+        height-request: 100;
 
-        base-color: bind-property PerformancePageGpu.base-color;
+        base-color: bind-property template.base-color;
         data-set-count: 1;
         scroll: true;
       }
@@ -149,13 +150,13 @@ template PerformancePageGpu: Box {
         }
       }
 
-      .GraphWidget usage_graph_decode {
+      $GraphWidget usage_graph_decode {
         vexpand: true;
         hexpand: true;
 
-        height-request: 120;
+        height-request: 100;
 
-        base-color: bind-property PerformancePageGpu.base-color;
+        base-color: bind-property template.base-color;
         data-set-count: 1;
         scroll: true;
       }
@@ -186,12 +187,12 @@ template PerformancePageGpu: Box {
       }
     }
 
-    .GraphWidget usage_graph_memory {
+    $GraphWidget usage_graph_memory {
       hexpand: true;
 
       height-request: 70;
 
-      base-color: bind-property PerformancePageGpu.base-color;
+      base-color: bind-property template.base-color;
       data-set-count: 1;
       scroll: true;
     }
@@ -200,7 +201,7 @@ template PerformancePageGpu: Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property PerformancePageGpu.summary-mode inverted;
+    visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;

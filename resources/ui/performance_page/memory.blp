@@ -21,14 +21,14 @@
 using Gtk 4.0;
 using Adw 1;
 
-template PerformancePageMemory: Box {
+template $PerformancePageMemory: Box {
   orientation: vertical;
 
   Adw.Banner admin_banner {
     title: _("Some information requires administrative privileges");
     button-label: _("_Authenticate");
 
-    visible: bind-property PerformancePageMemory.summary-mode inverted;
+    visible: bind-property template.summary-mode inverted;
   }
 
   WindowHandle {
@@ -39,7 +39,7 @@ template PerformancePageMemory: Box {
       hexpand: true;
 
       Box {
-        spacing: 100;
+        spacing: 20;
 
         Label {
           styles [
@@ -58,6 +58,7 @@ template PerformancePageMemory: Box {
           ]
 
           halign: end;
+          ellipsize: middle;
         }
       }
 
@@ -83,13 +84,13 @@ template PerformancePageMemory: Box {
     };
   }
 
-  .GraphWidget usage_graph {
+  $GraphWidget usage_graph {
     vexpand: true;
     hexpand: true;
 
     height-request: 120;
 
-    base-color: bind-property PerformancePageMemory.base-color;
+    base-color: bind-property template.base-color;
     data-set-count: 1;
     scroll: true;
   }
@@ -130,20 +131,20 @@ template PerformancePageMemory: Box {
     label: _("Memory composition");
   }
 
-  .MemoryCompositionWidget mem_composition {
+  $MemoryCompositionWidget mem_composition {
     hexpand: true;
     margin-bottom: 20;
 
     height-request: 50;
 
-    base-color: bind-property PerformancePageMemory.base-color;
+    base-color: bind-property template.base-color;
   }
 
   Adw.ToastOverlay toast_overlay {
     Box details {
       spacing: 20;
 
-      visible: bind-property PerformancePageMemory.summary-mode inverted;
+      visible: bind-property template.summary-mode inverted;
 
       Box dynamic_data {
         orientation: vertical;

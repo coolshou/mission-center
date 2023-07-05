@@ -2,7 +2,12 @@ data/io.missioncenter.MissionCenter.desktop.in
 data/io.missioncenter.MissionCenter.appdata.xml.in
 data/io.missioncenter.MissionCenter.gschema.xml
 
-resources/ui/window.blp
+resources/ui/apps_page/column_header.blp
+resources/ui/apps_page/list_item.blp
+resources/ui/apps_page/page.blp
+resources/ui/apps_page/pid_column.blp
+resources/ui/apps_page/stat_column.blp
+
 resources/ui/performance_page/cpu.blp
 resources/ui/performance_page/disk.blp
 resources/ui/performance_page/gpu.blp
@@ -10,9 +15,12 @@ resources/ui/performance_page/memory.blp
 resources/ui/performance_page/network.blp
 resources/ui/performance_page/page.blp
 resources/ui/performance_page/summary_graph.blp
+
 resources/ui/preferences/checked_row.blp
 resources/ui/preferences/page.blp
 resources/ui/preferences/window.blp
+
+resources/ui/window.blp
 
 src/performance_page/widgets/mod.rs
 src/performance_page/widgets/graph_widget.rs
@@ -24,6 +32,7 @@ src/performance_page/gpu.rs
 src/performance_page/memory.rs
 src/performance_page/network.rs
 src/performance_page/summary_graph.rs
+
 src/preferences/mod.rs
 src/preferences/checked_row_widget.rs
 src/preferences/page.rs

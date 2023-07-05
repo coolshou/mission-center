@@ -321,7 +321,7 @@ impl DiskInfo {
                     + delta_flush_ticks_weighted_ms;
 
                 // Arbitrary math is arbitrary
-                let busy_percent = (delta_ticks_weighted_ms as f32 / elapsed).min(100.);
+                let busy_percent = (delta_ticks_weighted_ms as f32 / (elapsed * 5.0)).min(100.);
 
                 disk_stat.read_ticks_weighted_ms = read_ticks_weighted_ms;
                 disk_stat.write_ticks_weighted_ms = write_ticks_weighted_ms;
@@ -390,11 +390,9 @@ impl DiskInfo {
                     disk_stat.sectors_written
                 };
 
-                // I understand nothing, the world is a lie
-                // This math is just total empirical BS, makes zero sense, but seems to be accurate enough
-                let read_speed = ((sectors_read - sectors_read_prev) as f32 * 15360.) / elapsed;
+                let read_speed = ((sectors_read - sectors_read_prev) as f32 * 512.) / elapsed;
                 let write_speed =
-                    ((sectors_written - sectors_written_prev) as f32 * 15360.) / elapsed;
+                    ((sectors_written - sectors_written_prev) as f32 * 512.) / elapsed;
 
                 let read_speed = read_speed.round() as u64;
                 let write_speed = write_speed.round() as u64;

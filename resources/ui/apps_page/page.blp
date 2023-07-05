@@ -1,0 +1,159 @@
+/* ui/apps_page/page.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+using Gtk 4.0;
+using Adw 1;
+
+template $AppsPage : Box {
+  orientation: vertical;
+
+  ScrolledWindow {
+    vexpand: true;
+    hexpand: true;
+
+    ColumnView column_view {
+      styles [
+        "rich-list"
+      ]
+
+      show-row-separators: false;
+      show-column-separators: true;
+
+      ColumnViewColumn name_column {
+        resizable: true;
+        expand: true;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              child: $ListItem {
+                icon: bind (expander.item as <$ViewModel>).icon;
+                name: bind (expander.item as <$ViewModel>).name;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+                show-expander: bind (expander.item as <$ViewModel>).show-expander;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn pid_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $PidColumn {
+                value: bind (expander.item as <$ViewModel>).pid;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn cpu_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "%";
+                value: bind (expander.item as <$ViewModel>).cpu-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn memory_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "B";
+                value: bind (expander.item as <$ViewModel>).memory-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn disk_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "B/s";
+                value: bind (expander.item as <$ViewModel>).disk-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+    }
+  }
+}

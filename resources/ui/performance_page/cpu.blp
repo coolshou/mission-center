@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-template PerformancePageCpu : Box {
+template $PerformancePageCpu : Box {
   orientation: vertical;
 
   WindowHandle {
@@ -30,7 +30,7 @@ template PerformancePageCpu : Box {
       hexpand: true;
 
       Box {
-        spacing: 100;
+        spacing: 20;
 
         Label {
           styles [
@@ -48,6 +48,7 @@ template PerformancePageCpu : Box {
           ]
 
           halign: end;
+          ellipsize: middle;
         }
       }
 
@@ -60,6 +61,8 @@ template PerformancePageCpu : Box {
           hexpand: true;
           halign: start;
           label: _("% Utilization over 60 seconds");
+
+          visible: false;
         }
 
         Label utilization_label_overall {
@@ -70,6 +73,8 @@ template PerformancePageCpu : Box {
           hexpand: true;
           halign: start;
           label: _("% Utilization");
+
+          visible: false;
         }
 
         Label {
@@ -100,6 +105,8 @@ template PerformancePageCpu : Box {
     height-request: 25;
 
     Box overall_graph_labels {
+      visible: false;
+
       Label {
         styles [
           "caption",
@@ -125,7 +132,7 @@ template PerformancePageCpu : Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property PerformancePageCpu.summary-mode inverted;
+    visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;

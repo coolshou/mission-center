@@ -140,7 +140,7 @@ impl MissionCenterApplication {
         this
     }
 
-    pub fn refresh_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn refresh_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         use crate::MissionCenterWindow;
         use gtk::glib::*;
 
@@ -235,6 +235,7 @@ impl MissionCenterApplication {
                 "NVTOP https://github.com/Syllo/nvtop",
                 "musl libc https://musl.libc.org/",
                 "Dmidecode https://www.nongnu.org/dmidecode/",
+                "Workbench https://github.com/sonnyp/Workbench",
                 "And many more... Thank you all!",
             ],
         );

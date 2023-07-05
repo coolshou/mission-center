@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-template PerformancePage : Box {
+template $PerformancePage : Box {
   orientation: vertical;
 
   refresh-interval: 1000;
@@ -30,13 +30,17 @@ template PerformancePage : Box {
     margin-bottom: 15;
     margin-end: 20;
 
-    ListBox sidebar {
-      visible: bind-property PerformancePage.summary-mode inverted;
-      styles [
-        "navigation-sidebar",
-      ]
-
+    ScrolledWindow {
+      visible: bind-property template.summary-mode inverted;
       width-request: 220;
+
+      hscrollbar-policy: never;
+
+      ListBox sidebar {
+        styles [
+          "navigation-sidebar",
+        ]
+      }
     }
 
     Stack page_stack {

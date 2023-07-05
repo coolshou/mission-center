@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-template PerformancePageNetwork: Box {
+template $PerformancePageNetwork: Box {
   orientation: vertical;
 
   WindowHandle {
@@ -30,7 +30,7 @@ template PerformancePageNetwork: Box {
       hexpand: true;
 
       Box {
-        spacing: 100;
+        spacing: 20;
 
         Label title_connection_type {
           styles [
@@ -47,6 +47,7 @@ template PerformancePageNetwork: Box {
           ]
 
           halign: end;
+          ellipsize: middle;
         }
       }
 
@@ -70,13 +71,13 @@ template PerformancePageNetwork: Box {
     };
   }
 
-  .GraphWidget usage_graph {
+  $GraphWidget usage_graph {
     vexpand: true;
     hexpand: true;
 
     height-request: 120;
 
-    base-color: bind-property PerformancePageNetwork.base-color;
+    base-color: bind-property template.base-color;
     data-set-count: 3;
     scroll: true;
     auto-scale: true;
@@ -111,7 +112,7 @@ template PerformancePageNetwork: Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property PerformancePageNetwork.summary-mode inverted;
+    visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;

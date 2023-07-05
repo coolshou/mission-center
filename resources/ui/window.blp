@@ -1,4 +1,4 @@
-/* ui/performance_page/window.blp
+/* ui/window.blp
  *
  * Copyright 2023 Romeo Calota
  *
@@ -21,71 +21,78 @@
 using Gtk 4.0;
 using Adw 1;
 
-template MissionCenterWindow : Adw.ApplicationWindow {
+template $MissionCenterWindow : Adw.ApplicationWindow {
   default-width: 600;
   default-height: 300;
 
-  Box {
+  content: Box {
     orientation: vertical;
 
     Adw.HeaderBar header_bar {
-      styles [
-        "flat"
-      ]
+      title-widget: Stack header_stack {
+        transition-type: crossfade;
 
-      [start]
-      Box header_content {
-        vexpand: true;
-
-        StackSwitcher title {
-          valign: start;
-          orientation: horizontal;
-          stack: stack;
+        StackPage {
+          name: "view-switcher";
+          child: Adw.ViewSwitcher title {
+            halign: center;
+            policy: wide;
+            stack: stack;
+          };
         }
-      }
 
-      title-widget: SearchEntry {
-          width-request: 400;
-
-          placeholder-text: _("Type a name, publisher, or PID to search");
+        StackPage {
+          name: "search-entry";
+          child: SearchEntry search_entry {
+            width-request: 400;
+            placeholder-text: _("Type a name or PID to search");
+          };
+        }
       };
 
       [end]
-      MenuButton {
-        icon-name: "open-menu-symbolic";
-        menu-model: primary_menu;
+      Box {
+        ToggleButton search_button {
+          styles [
+            "flat"
+          ]
+          action-name: "win.toggle-search";
+          icon-name: "system-search-symbolic";
+        }
+
+        MenuButton {
+          icon-name: "open-menu-symbolic";
+          menu-model: primary_menu;
+        }
       }
     }
 
     Box {
       orientation: horizontal;
 
-      Stack stack {
+      Adw.ViewStack stack {
         hexpand: true;
         vexpand: true;
 
-        transition-type: crossfade;
-
-        StackPage {
-          name: "performance";
+        Adw.ViewStackPage {
+          name: "performance-page";
           icon-name: "speedometer-symbolic";
-          title: "Performance";
-          child: .PerformancePage performance_page {
+          title: _("Performance");
+          child: $PerformancePage performance_page {
             summary-mode: bind-property header_bar.visible bidirectional inverted;
           };
         }
 
-        StackPage {
-          name: "processes";
+        Adw.ViewStackPage {
+          name: "apps-page";
           icon-name: "system-run-symbolic";
-          title: "Processes";
-          child: Adw.StatusPage {
-            title: "Processes Page";
+          title: _("Apps");
+          child: $AppsPage apps_page {
           };
         }
       }
     }
-  }
+  };
 }
 
 menu primary_menu {
