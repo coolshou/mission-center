@@ -221,15 +221,20 @@ mod imp {
             tooltip_texts.push((
                 x - bar_width,
                 i18n_f(
-                    "In use ({}iB)\n\nMemory used by the operating system and running applications",
-                    &[&format!("{:.2} {}", used_hr.0, used_hr.1)],
+                    "In use ({}B)\n\nMemory used by the operating system and running applications",
+                    &[&format!(
+                        "{:.2} {}{}",
+                        used_hr.0,
+                        used_hr.1,
+                        if used_hr.1.is_empty() { "" } else { "i" }
+                    )],
                 ),
             ));
             tooltip_texts.push((
                 x,
                 i18n_f(
-                    "Modified ({}iB)\n\nMemory whose contents must be written to disk before it can be used by another process",
-                    &[&format!("{:.2} {}", modified.0, modified.1)],
+                    "Modified ({}B)\n\nMemory whose contents must be written to disk before it can be used by another process",
+                    &[&format!("{:.2} {}{}", modified.0, modified.1, if modified.1.is_empty() { "" } else { "i" })],
                 )
             ));
 
@@ -249,8 +254,8 @@ mod imp {
             tooltip_texts.push((
                 width as f32 - bar_width,
                 i18n_f(
-                    "Standby ({}iB)\n\nMemory that contains cached data and code that is not actively in use",
-                    &[&format!("{:.2} {}", standby.0, standby.1)],
+                    "Standby ({}B)\n\nMemory that contains cached data and code that is not actively in use",
+                    &[&format!("{:.2} {}{}", standby.0, standby.1, if standby.1.is_empty() { "" } else { "i" })],
                 )
             ));
 
@@ -258,8 +263,8 @@ mod imp {
             tooltip_texts.push((
                 width as f32 + 1.,
                 i18n_f(
-                    "Free ({}iB)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
-                    &[&format!("{:.2} {}", free.0, free.1)]
+                    "Free ({}B)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
+                    &[&format!("{:.2} {}{}", free.0, free.1, if free.1.is_empty() { "" } else { "i" })],
                 ),
             ));
 

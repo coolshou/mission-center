@@ -170,8 +170,12 @@ mod imp {
                 });
 
             let total_mem = crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
-            this.total_ram
-                .set_text(&format!("{:.2} {}iB", total_mem.0.round(), total_mem.1));
+            this.total_ram.set_text(&format!(
+                "{:.2} {}{}B",
+                total_mem.0.round(),
+                total_mem.1,
+                if total_mem.1.is_empty() { "" } else { "i" }
+            ));
 
             true
         }
@@ -190,30 +194,55 @@ mod imp {
                 this.mem_composition.update_memory_information(mem_info);
 
                 let used = crate::to_human_readable(used as _, 1024.);
-                this.in_use.set_text(&format!("{:.2} {}iB", used.0, used.1));
+                this.in_use.set_text(&format!(
+                    "{:.2} {}{}B",
+                    used.0,
+                    used.1,
+                    if used.1.is_empty() { "" } else { "i" }
+                ));
 
                 let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
-                this.available
-                    .set_text(&format!("{:.2} {}iB", available.0, available.1));
+                this.available.set_text(&format!(
+                    "{:.2} {}{}B",
+                    available.0,
+                    available.1,
+                    if available.1.is_empty() { "" } else { "i" }
+                ));
 
                 let committed = crate::to_human_readable(mem_info.committed_as as _, 1024.);
-                this.committed
-                    .set_text(&format!("{:.2} {}iB", committed.0, committed.1));
+                this.committed.set_text(&format!(
+                    "{:.2} {}{}B",
+                    committed.0,
+                    committed.1,
+                    if committed.1.is_empty() { "" } else { "i" }
+                ));
 
                 let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
-                this.cached
-                    .set_text(&format!("{:.2} {}iB", cached.0, cached.1));
+                this.cached.set_text(&format!(
+                    "{:.2} {}{}B",
+                    cached.0,
+                    cached.1,
+                    if cached.1.is_empty() { "" } else { "i" }
+                ));
 
                 let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
-                this.swap_available
-                    .set_text(&format!("{:.2} {}iB", swap_available.0, swap_available.1));
+                this.swap_available.set_text(&format!(
+                    "{:.2} {}{}B",
+                    swap_available.0,
+                    swap_available.1,
+                    if swap_available.1.is_empty() { "" } else { "i" }
+                ));
 
                 let swap_used = crate::to_human_readable(
                     (mem_info.swap_total - mem_info.swap_free) as _,
                     1024.,
                 );
-                this.swap_used
-                    .set_text(&format!("{:.2} {}iB", swap_used.0, swap_used.1));
+                this.swap_used.set_text(&format!(
+                    "{:.2} {}{}B",
+                    swap_used.0,
+                    swap_used.1,
+                    if swap_used.1.is_empty() { "" } else { "i" }
+                ));
             }
 
             true
