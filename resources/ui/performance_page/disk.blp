@@ -89,7 +89,7 @@ template $PerformancePageDisk: Box {
   Box {
     margin-top: 2;
 
-    Label {
+    Label graph_max_duration {
       styles [
         "caption",
       ]
@@ -97,7 +97,6 @@ template $PerformancePageDisk: Box {
       hexpand: true;
       halign: start;
       valign: start;
-      label: _("60 seconds");
     }
 
     Label {
@@ -151,7 +150,7 @@ template $PerformancePageDisk: Box {
 
       hexpand: true;
       halign: start;
-      label: _("60 seconds");
+      label: bind-property graph_max_duration.label;
     }
 
     Label {
@@ -229,6 +228,8 @@ template $PerformancePageDisk: Box {
           spacing: 5;
 
           Picture legend_read {
+            can-shrink: false;
+            content-fit: scale_down;
           }
 
           Box {
@@ -260,6 +261,8 @@ template $PerformancePageDisk: Box {
           spacing: 5;
 
           Picture legend_write {
+            can-shrink: false;
+            content-fit: scale_down;
           }
 
           Box {

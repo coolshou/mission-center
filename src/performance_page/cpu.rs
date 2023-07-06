@@ -20,10 +20,11 @@
 
 use std::cell::Cell;
 
-use crate::i18n::*;
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
+
+use crate::i18n::*;
 
 use super::widgets::GraphWidget;
 
@@ -48,6 +49,8 @@ mod imp {
         pub usage_graphs: TemplateChild<gtk::Grid>,
         #[template_child]
         pub overall_graph_labels: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
         pub utilization: TemplateChild<gtk::Label>,
         #[template_child]
@@ -97,6 +100,7 @@ mod imp {
                 cpu_name: Default::default(),
                 usage_graphs: Default::default(),
                 overall_graph_labels: Default::default(),
+                graph_max_duration: Default::default(),
                 utilization: Default::default(),
                 speed: Default::default(),
                 processes: Default::default(),
@@ -616,12 +620,33 @@ glib::wrapper! {
 }
 
 impl PerformancePageCpu {
-    pub fn new() -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(Self::static_type(), &mut [])
-                .downcast()
-                .unwrap()
-        };
+    pub fn new(settings: &gio::Settings) -> Self {
+        let this: Self = glib::Object::builder().build();
+
+        fn update_refresh_rate_sensitive_labels(
+            this: &PerformancePageCpu,
+            settings: &gio::Settings,
+        ) {
+            let update_speed_ms = settings.int("update-speed") * 500;
+            let graph_max_duration = (update_speed_ms * 60) / 1000;
+
+            let this = this.imp();
+            this.utilization_label_all.set_text(&i18n_f(
+                "% Utilization over {} seconds",
+                &[&format!("{}", graph_max_duration)],
+            ));
+            this.graph_max_duration
+                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+        }
+        update_refresh_rate_sensitive_labels(&this, settings);
+
+        settings.connect_changed(
+            Some("update-speed"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+
         this
     }
 

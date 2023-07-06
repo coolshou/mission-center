@@ -23,26 +23,16 @@ use std::cell::Cell;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::{gio, glib};
 
-use super::checked_row_widget::CheckedRowWidget;
-
-macro_rules! as_widget_ptr {
-    ($e:expr) => {{
-        use gtk::glib::translate::*;
-
-        let result: *mut gtk::ffi::GtkWidget = $e.upcast_ref::<gtk::Widget>().to_glib_none().0;
-
-        result
-    }};
-}
+use crate::{i18n::*, preferences::checked_row_widget::CheckedRowWidget};
 
 mod imp {
-    use adw::glib::g_critical;
-
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/preferences/page.ui")]
     pub struct PreferencesPage {
+        #[template_child]
+        pub update_speed_setting: TemplateChild<adw::ExpanderRow>,
         #[template_child]
         pub update_very_slow: TemplateChild<CheckedRowWidget>,
         #[template_child]
@@ -60,6 +50,7 @@ mod imp {
     impl Default for PreferencesPage {
         fn default() -> Self {
             Self {
+                update_speed_setting: TemplateChild::default(),
                 update_very_slow: Default::default(),
                 update_slow: Default::default(),
                 update_normal: Default::default(),
@@ -74,10 +65,12 @@ mod imp {
 
     impl PreferencesPage {
         pub fn configure_update_speed(&self, checked_row: &CheckedRowWidget) {
-            let uvs = as_widget_ptr!(self.update_very_slow) as usize;
-            let us = as_widget_ptr!(self.update_slow) as usize;
-            let un = as_widget_ptr!(self.update_normal) as usize;
-            let uf = as_widget_ptr!(self.update_fast) as usize;
+            use glib::g_critical;
+
+            let uvs = self.update_very_slow.as_ptr() as usize;
+            let us = self.update_slow.as_ptr() as usize;
+            let un = self.update_normal.as_ptr() as usize;
+            let uf = self.update_fast.as_ptr() as usize;
 
             let old_selection = self.current_speed_selection.replace(checked_row.clone());
             old_selection.set_checkmark_visible(false);
@@ -92,31 +85,39 @@ mod imp {
             }
             let settings = settings.unwrap();
 
-            let new_selection = as_widget_ptr!(checked_row) as usize;
+            let new_selection = checked_row.as_ptr() as usize;
             let set_result = if new_selection == uvs {
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 1)
-            } else if new_selection == us {
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 2)
-            } else if new_selection == un {
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 3)
-            } else if new_selection == uf {
+                self.update_speed_setting.set_subtitle(&i18n("Very Slow"));
                 checked_row.set_checkmark_visible(true);
                 settings.set_int("update-speed", 4)
+            } else if new_selection == us {
+                self.update_speed_setting.set_subtitle(&i18n("Slow"));
+                checked_row.set_checkmark_visible(true);
+                settings.set_int("update-speed", 3)
+            } else if new_selection == un {
+                self.update_speed_setting.set_subtitle(&i18n("Normal"));
+                checked_row.set_checkmark_visible(true);
+                settings.set_int("update-speed", 2)
+            } else if new_selection == uf {
+                self.update_speed_setting.set_subtitle(&i18n("Fast"));
+                checked_row.set_checkmark_visible(true);
+                settings.set_int("update-speed", 1)
             } else {
                 g_critical!(
                     "MissionCenter::Preferences",
                     "Unknown update speed selection",
                 );
-                settings.set_int("update-speed", 3)
+
+                self.update_speed_setting.set_subtitle(&i18n("Normal"));
+                settings.set_int("update-speed", 2)
             };
             if set_result.is_err() {
                 g_critical!(
                     "MissionCenter::Preferences",
                     "Failed to set update speed setting",
                 );
+
+                self.update_speed_setting.set_subtitle("");
 
                 self.update_very_slow.set_checkmark_visible(false);
                 self.update_slow.set_checkmark_visible(false);
@@ -208,24 +209,36 @@ impl PreferencesPage {
         }
         let settings = settings.unwrap();
         let update_speed = settings.int("update-speed");
+        let this = self.imp();
         let selected_widget = match update_speed {
-            1 => &self.imp().update_very_slow,
-            2 => &self.imp().update_slow,
-            3 => &self.imp().update_normal,
-            4 => &self.imp().update_fast,
+            1 => {
+                this.update_speed_setting.set_subtitle(&i18n("Fast"));
+                &this.update_fast
+            }
+            2 => {
+                this.update_speed_setting.set_subtitle(&i18n("Normal"));
+                &this.update_normal
+            }
+            3 => {
+                this.update_speed_setting.set_subtitle(&i18n("Slow"));
+                &this.update_slow
+            }
+            4 => {
+                this.update_speed_setting.set_subtitle(&i18n("Very Slow"));
+                &this.update_very_slow
+            }
             _ => {
                 g_critical!(
                     "MissionCenter::Preferences",
                     "Unknown update speed setting, defaulting to normal"
                 );
-                &self.imp().update_normal
+                this.update_speed_setting.set_subtitle(&i18n("Normal"));
+                &this.update_normal
             }
         };
         selected_widget.set_checkmark_visible(true);
-        self.imp()
-            .current_speed_selection
-            .set(selected_widget.get());
+        this.current_speed_selection.set(selected_widget.get());
 
-        self.imp().settings.set(Some(settings));
+        this.settings.set(Some(settings));
     }
 }

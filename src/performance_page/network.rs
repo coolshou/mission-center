@@ -45,6 +45,8 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub graph_max_duration: TemplateChild<gtk::Label>,
+        #[template_child]
         pub legend_send: TemplateChild<gtk::Picture>,
         #[template_child]
         pub speed_send: TemplateChild<gtk::Label>,
@@ -93,6 +95,7 @@ mod imp {
                 device_name: Default::default(),
                 max_y: Default::default(),
                 usage_graph: Default::default(),
+                graph_max_duration: Default::default(),
                 legend_send: Default::default(),
                 speed_send: Default::default(),
                 legend_recv: Default::default(),
@@ -580,18 +583,35 @@ glib::wrapper! {
 }
 
 impl PerformancePageNetwork {
-    pub fn new(interface_name: &str, connection_type: crate::sys_info_v2::NetDeviceType) -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(
-                Self::static_type(),
-                &mut [
-                    ("interface-name", interface_name.into()),
-                    ("connection-type", (connection_type as u8).into()),
-                ],
-            )
-            .downcast()
-            .unwrap()
-        };
+    pub fn new(
+        interface_name: &str,
+        connection_type: crate::sys_info_v2::NetDeviceType,
+        settings: &gio::Settings,
+    ) -> Self {
+        let this: Self = glib::Object::builder()
+            .property("interface-name", interface_name)
+            .property("connection-type", connection_type as u8)
+            .build();
+
+        fn update_refresh_rate_sensitive_labels(
+            this: &PerformancePageNetwork,
+            settings: &gio::Settings,
+        ) {
+            let update_speed_ms = settings.int("update-speed") * 500;
+            let graph_max_duration = (update_speed_ms * 60) / 1000;
+
+            let this = this.imp();
+            this.graph_max_duration
+                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+        }
+        update_refresh_rate_sensitive_labels(&this, settings);
+
+        settings.connect_changed(
+            Some("update-speed"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
 
         this
     }

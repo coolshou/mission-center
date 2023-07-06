@@ -44,6 +44,8 @@ mod imp {
         #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
+        pub graph_max_duration: TemplateChild<gtk::Label>,
+        #[template_child]
         pub mem_composition: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -84,6 +86,7 @@ mod imp {
                 admin_banner: Default::default(),
                 total_ram: Default::default(),
                 usage_graph: Default::default(),
+                graph_max_duration: Default::default(),
                 mem_composition: Default::default(),
                 toast_overlay: Default::default(),
                 in_use: Default::default(),
@@ -354,12 +357,28 @@ glib::wrapper! {
 }
 
 impl PerformancePageMemory {
-    pub fn new() -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(Self::static_type(), &mut [])
-                .downcast()
-                .unwrap()
-        };
+    pub fn new(settings: &gio::Settings) -> Self {
+        let this: Self = glib::Object::builder().build();
+
+        fn update_refresh_rate_sensitive_labels(
+            this: &PerformancePageMemory,
+            settings: &gio::Settings,
+        ) {
+            let update_speed_ms = settings.int("update-speed") * 500;
+            let graph_max_duration = (update_speed_ms * 60) / 1000;
+
+            let this = this.imp();
+            this.graph_max_duration
+                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+        }
+        update_refresh_rate_sensitive_labels(&this, settings);
+
+        settings.connect_changed(
+            Some("update-speed"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
 
         this
     }

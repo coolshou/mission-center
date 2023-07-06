@@ -88,7 +88,7 @@ template $PerformancePageNetwork: Box {
     margin-top: 2;
     margin-bottom: 10;
 
-    Label {
+    Label graph_max_duration {
       styles [
         "caption",
       ]
@@ -96,7 +96,6 @@ template $PerformancePageNetwork: Box {
       hexpand: true;
       halign: start;
       valign: start;
-      label: _("60 seconds");
     }
 
     Label {
@@ -122,6 +121,8 @@ template $PerformancePageNetwork: Box {
         spacing: 5;
 
         Picture legend_send {
+            can-shrink: false;
+            content-fit: scale_down;
         }
 
         Box {
@@ -152,6 +153,8 @@ template $PerformancePageNetwork: Box {
         spacing: 5;
 
         Picture legend_recv {
+            can-shrink: false;
+            content-fit: scale_down;
         }
 
         Box {

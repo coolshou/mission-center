@@ -274,13 +274,18 @@ mod imp {
                 1.,
             ));
 
-            let page = CpuPage::new();
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
+            let page = CpuPage::new(settings.as_ref().unwrap());
             page.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
                 BASE_COLOR[1] as f32 / 255.,
                 BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
+            self.settings.set(settings);
             page.set_static_information(readings);
 
             self.obj()
@@ -320,13 +325,18 @@ mod imp {
                 1.,
             ));
 
-            let page = MemoryPage::new();
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
+            let page = MemoryPage::new(settings.as_ref().unwrap());
             page.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
                 BASE_COLOR[1] as f32 / 255.,
                 BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
+            self.settings.set(settings);
             page.set_static_information(readings);
 
             self.obj()
@@ -377,13 +387,18 @@ mod imp {
                     1.,
                 ));
 
-                let page = DiskPage::new(&disk.id);
+                let settings = self.settings.take();
+                if settings.is_none() {
+                    panic!("Settings not set");
+                }
+                let page = DiskPage::new(&disk.id, settings.as_ref().unwrap());
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
+                self.settings.set(settings);
                 page.set_static_information(i, disk);
 
                 self.obj()
@@ -459,13 +474,22 @@ mod imp {
                     ));
                 }
 
-                let page = NetworkPage::new(if_name, network_device.descriptor.r#type);
+                let settings = self.settings.take();
+                if settings.is_none() {
+                    panic!("Settings not set");
+                }
+                let page = NetworkPage::new(
+                    if_name,
+                    network_device.descriptor.r#type,
+                    settings.as_ref().unwrap(),
+                );
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
+                self.settings.set(settings);
                 page.set_static_information(network_device);
 
                 self.obj()

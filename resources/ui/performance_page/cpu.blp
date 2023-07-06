@@ -60,7 +60,6 @@ template $PerformancePageCpu : Box {
 
           hexpand: true;
           halign: start;
-          label: _("% Utilization over 60 seconds");
 
           visible: false;
         }
@@ -107,7 +106,7 @@ template $PerformancePageCpu : Box {
     Box overall_graph_labels {
       visible: false;
 
-      Label {
+      Label graph_max_duration {
         styles [
           "caption",
         ]
@@ -115,7 +114,6 @@ template $PerformancePageCpu : Box {
         hexpand: true;
         halign: start;
         valign: start;
-        label: _("60 seconds");
       }
 
       Label {

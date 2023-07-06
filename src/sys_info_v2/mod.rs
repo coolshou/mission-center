@@ -134,10 +134,10 @@ lazy_static! {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdateSpeed {
-    VerySlow = 1,
-    Slow,
-    Normal,
-    Fast,
+    VerySlow = 4,
+    Slow = 3,
+    Normal = 2,
+    Fast = 1,
 }
 
 impl From<i32> for UpdateSpeed {
@@ -145,10 +145,10 @@ impl From<i32> for UpdateSpeed {
         use gtk::glib::*;
 
         match value {
-            1 => Self::VerySlow,
-            2 => Self::Slow,
-            3 => Self::Normal,
-            4 => Self::Fast,
+            1 => Self::Fast,
+            2 => Self::Normal,
+            3 => Self::Slow,
+            4 => Self::VerySlow,
             _ => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -160,8 +160,6 @@ impl From<i32> for UpdateSpeed {
         }
     }
 }
-
-const REFRESH_INTERVALS: [u16; 4] = [2000, 1500, 1000, 500];
 
 #[derive(Debug)]
 pub struct Readings {
@@ -340,8 +338,7 @@ impl SysInfoV2 {
                             }
                         });
 
-                        let refresh_interval =
-                            REFRESH_INTERVALS[ri.clone().load(Ordering::Acquire) as usize];
+                        let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
                         let refresh_interval =
                             std::time::Duration::from_millis(refresh_interval as u64);
 
@@ -374,6 +371,6 @@ impl SysInfoV2 {
 
     pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
-            .store(speed as u8 - 1, std::sync::atomic::Ordering::Release);
+            .store(speed as u8, std::sync::atomic::Ordering::Release);
     }
 }
