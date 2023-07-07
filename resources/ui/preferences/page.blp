@@ -8,14 +8,9 @@ template $PreferencesPage : Adw.PreferencesPage {
     Adw.ExpanderRow update_speed_setting {
       title: _("Update Speed");
 
-      $CheckedRow update_very_slow {
-        title: _("Very Slow");
-        subtitle: _("Refresh every 2 seconds");
-      }
-
-      $CheckedRow update_slow {
-        title: _("Slow");
-        subtitle: _("Refresh every second and a half");
+      $CheckedRow update_fast {
+        title: _("Fast");
+        subtitle: _("Refresh every half second");
       }
 
       $CheckedRow update_normal {
@@ -23,9 +18,14 @@ template $PreferencesPage : Adw.PreferencesPage {
         subtitle: _("Refresh every second");
       }
 
-      $CheckedRow update_fast {
-        title: _("Fast");
-        subtitle: _("Refresh every half second");
+      $CheckedRow update_slow {
+        title: _("Slow");
+        subtitle: _("Refresh every second and a half");
+      }
+
+      $CheckedRow update_very_slow {
+        title: _("Very Slow");
+        subtitle: _("Refresh every 2 seconds");
       }
     }
   }

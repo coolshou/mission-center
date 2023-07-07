@@ -16,7 +16,7 @@
 
         <key name="update-speed" type="i">
             <range min="1" max="4"/>
-            <default>3</default>
+            <default>2</default>
             <summary>How fast should the data be refreshed and the UI updated</summary>
         </key>
 
