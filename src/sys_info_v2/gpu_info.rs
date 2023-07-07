@@ -585,7 +585,14 @@ impl GPUInfo {
 
             let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) }.to_string_lossy();
 
-            let uevent = std::fs::read_to_string(format!("/sys/bus/pci/devices/{}/uevent", pdev));
+            let mut uevent =
+                std::fs::read_to_string(format!("/sys/bus/pci/devices/{}/uevent", pdev));
+            if uevent.is_err() {
+                uevent = std::fs::read_to_string(format!(
+                    "/sys/bus/pci/devices/{}/uevent",
+                    pdev.to_lowercase()
+                ));
+            }
             let (vendor_id, device_id) = if let Ok(uevent) = uevent {
                 let mut vendor_id = None;
                 let mut device_id = None;
@@ -672,7 +679,11 @@ impl GPUInfo {
             }
 
             let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev);
-            let opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
+            let mut opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
+            if opengl_version.is_none() {
+                let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev.to_lowercase());
+                opengl_version = unsafe { Self::supported_opengl_version(&dri_path) };
+            }
             let device_name =
                 unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
                     .to_string_lossy()
