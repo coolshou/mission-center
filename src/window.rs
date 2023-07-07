@@ -117,6 +117,13 @@ mod imp {
                 }
             }));
 
+            let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
+            if visible_child_name == "performance-page" {
+                self.search_button.set_visible(false);
+                self.search_entry
+                    .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
+            }
+
             let this = self.obj().downgrade();
             self.stack.connect_visible_child_notify(move |stack| {
                 let this = this.upgrade();

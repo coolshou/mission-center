@@ -22,7 +22,7 @@
         <li>Monitor Disk utilization and transfer rates</li>
         <li>Monitor network utilization and transfer speeds</li>
         <li>See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP address</li>
-        <li>Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption</li>
+        <li>Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered by the popular NVTOP project</li>
         <li>See a breakdown of resource usage by app and process</li>
         <li>Supports a minified summary view for simple monitoring</li>
         <li>Use OpenGL rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
@@ -33,9 +33,10 @@
       <p>Limitations (there is ongoing work to overcome all of these):</p>
       <ul>
         <li>The application currently only supports monitoring, you cannot stop processes for example</li>
+        <li>Disk utilization percentage might not be accurate</li>
         <li>No per-process network usage</li>
         <li>No per-process GPU usage</li>
-        <li>Only AMD and nVidia GPUs are currently supported</li>
+        <li>GPU support is experimental and only AMD and nVidia GPUs can be monitored</li>
       </ul>
       <p>Comments, suggestions, bug reports and contributions welcome</p>
     </description>
