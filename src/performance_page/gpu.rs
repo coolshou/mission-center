@@ -224,8 +224,12 @@ mod imp {
 
             let total_memory =
                 crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
-            this.total_memory
-                .set_text(&format!("{} {}iB", total_memory.0.round(), total_memory.1));
+            this.total_memory.set_text(&format!(
+                "{} {}{}B",
+                total_memory.0.round(),
+                total_memory.1,
+                if total_memory.1.is_empty() { "" } else { "i" }
+            ));
 
             let opengl_version =
                 if let Some(opengl_version) = gpu.static_info.opengl_version.as_ref() {
@@ -301,8 +305,13 @@ mod imp {
             let total_memory =
                 crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
             this.memory_usage.set_text(&format!(
-                "{:.2} {}iB / {:.2} {}iB",
-                used_memory.0, used_memory.1, total_memory.0, total_memory.1
+                "{:.2} {}{}B / {:.2} {}{}B",
+                used_memory.0,
+                used_memory.1,
+                if used_memory.1.is_empty() { "" } else { "i" },
+                total_memory.0,
+                total_memory.1,
+                if total_memory.1.is_empty() { "" } else { "i" }
             ));
 
             let clock_speed = crate::to_human_readable(

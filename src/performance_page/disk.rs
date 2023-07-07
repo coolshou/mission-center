@@ -204,12 +204,20 @@ mod imp {
                 .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
 
             let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
-            this.capacity
-                .set_text(&format!("{:.2} {}iB", capacity.0, capacity.1));
+            this.capacity.set_text(&format!(
+                "{:.2} {}{}B",
+                capacity.0,
+                capacity.1,
+                if capacity.1.is_empty() { "" } else { "i" }
+            ));
 
             let formatted = crate::to_human_readable(disk.formatted as f32, 1024.);
-            this.formatted
-                .set_text(&format!("{:.2} {}iB", formatted.0, formatted.1));
+            this.formatted.set_text(&format!(
+                "{:.2} {}{}B",
+                formatted.0,
+                formatted.1,
+                if formatted.1.is_empty() { "" } else { "i" }
+            ));
 
             let is_system_disk = if disk.system_disk {
                 i18n("Yes")
