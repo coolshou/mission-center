@@ -20,17 +20,6 @@
     "--filesystem=/var/lib/flatpak/app:ro",
     "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:~/.local/share/flatpak/exports/share"
   ],
-  "build-options": {
-    "append-path": "/app/tmp/rust/cargo/bin",
-    "build-args": [
-      "--share=network"
-    ],
-    "env": {
-      "RUST_BACKTRACE": "1",
-      "RUSTUP_HOME": "/app/tmp/rust/rustup",
-      "CARGO_HOME": "/app/tmp/rust/cargo"
-    }
-  },
   "cleanup": [
     "/include",
     "/lib/pkgconfig",
@@ -46,27 +35,30 @@
     {
       "name": "missioncenter",
       "buildsystem": "simple",
+      "build-options": {
+        "append-path": "/run/build/missioncenter/bin",
+        "env": {
+          "RUST_BACKTRACE": "full",
+          "RUSTUP_HOME": "/run/build/missioncenter",
+          "CARGO_HOME": "/run/build/missioncenter/cargo"
+        }
+      },
       "build-commands": [
-        "curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable --profile minimal --no-modify-path --target x86_64-unknown-linux-musl",
-        "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' /app/tmp/rust/cargo/bin/cargo build --release --target x86_64-unknown-linux-musl",
-        "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy",
-        "rm -rf src/proxy/target",
-        "mv /app/lib/libudev* /app",
-        "mv /app/lib/pkgconfig /app",
-        "rm -rf /app/bin/musl-gcc /app/bin/udevadm /app/etc /app/include /app/sbin /app/lib",
-        "mkdir -p /app/lib/",
-        "mv /app/libudev* /app/lib/",
-        "mv /app/pkgconfig /app/lib/",
         "rustup default stable-x86_64-unknown-linux-gnu",
-        "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Dflatpak=true",
-        "ninja -C _flatpak_build install",
-        "rm -rf /app/tmp"
+        "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Dflatpak=true -Dcargo_env=\"CARGO_HOME=$CARGO_HOME\"",
+        "ninja -C _flatpak_build install"
       ],
       "sources": [
         {
           "type": "dir",
           "path": ".."
-        }
+        },
+        {
+          "type": "archive",
+          "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
+          "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+        },
+        "cargo-sources.json"
       ],
       "modules": [
         {
@@ -111,6 +103,47 @@
               "url": "https://git.savannah.nongnu.org/cgit/dmidecode.git/snapshot/dmidecode-3-5.tar.gz",
               "sha256": "8b1465a1afa71f9ffb0206ba5ffc435c46c0281d089552578f600879728a1b23"
             }
+          ]
+        },
+        {
+          "name": "proxy",
+          "buildsystem": "simple",
+          "build-options": {
+            "append-path": "/run/build/proxy/bin",
+            "env": {
+              "RUST_BACKTRACE": "full",
+              "RUSTUP_HOME": "/run/build/proxy",
+              "CARGO_HOME": "/run/build/proxy/cargo"
+            }
+          },
+          "build-commands": [
+            "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' cargo build --offline --release --target x86_64-unknown-linux-musl",
+            "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy",
+            "rm -rf src/proxy/target"
+          ],
+          "sources": [
+            {
+              "type": "dir",
+              "path": ".."
+            },
+            {
+              "type": "archive",
+              "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
+              "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+            },
+            "cargo-sources-proxy.json"
+          ]
+        },
+        {
+          "name": "remove-leftover-headers-and-libraries",
+          "buildsystem": "simple",
+          "build-commands": [
+            "mv /app/lib/libudev* /app",
+            "mv /app/lib/pkgconfig /app",
+            "rm -rf /app/bin/musl-gcc /app/bin/udevadm /app/etc /app/include /app/sbin /app/lib",
+            "mkdir -p /app/lib/",
+            "mv /app/libudev* /app/lib/",
+            "mv /app/pkgconfig /app/lib/"
           ]
         }
       ]

@@ -25,10 +25,18 @@ configure_file(
 )
 
 cargo_bin  = find_program('cargo')
-cargo_opt  = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
+
+cargo_env = get_option('cargo_env')
+if get_option('flatpak') == false
+    cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
+    cargo_opt  = []
+else
+    cargo_opt  = [ '--offline' ]
+endif
+
+cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
 cargo_opt += [ '--target-dir', meson.project_build_root()  / 'src' ]
-cargo_env  = [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
-cargo_env  = [ 'BUILD_ROOT=' + meson.project_build_root() ]
+cargo_env += [ 'BUILD_ROOT=' + meson.project_build_root() ]
 
 if get_option('buildtype') == 'release'
   cargo_opt += [ '--release' ]
