@@ -65,7 +65,6 @@ cmake-build*
 
 # Rust
 target/
-Cargo.lock
 
 # IDF
 sdkconfig.old
