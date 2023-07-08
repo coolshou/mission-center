@@ -45,6 +45,7 @@
       },
       "build-commands": [
         "rustup default stable-x86_64-unknown-linux-gnu",
+        "cd subprojects/nvtop-* && find ../packagefiles -type f -name 'nvtop-*' -exec sh -c 'patch -p1 < {}' \\;",
         "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Dflatpak=true -Dcargo_env=\"CARGO_HOME=$CARGO_HOME\"",
         "ninja -C _flatpak_build install"
       ],
@@ -57,6 +58,18 @@
           "type": "archive",
           "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
           "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+        },
+        {
+          "type": "git",
+          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
+          "commit": "f526cfa4d92a02be1eeb539076e22b06bc9ab887",
+          "dest": "subprojects/blueprint-compiler"
+        },
+        {
+          "type": "archive",
+          "url": "https://github.com/Syllo/nvtop/archive/9a8458b541a195a0c5cadafb66e240962c852b39.tar.gz",
+          "sha256": "290542e3c2203613e18faaa769dcc5479b170c39acbe71c976a7e86ff03ea1a7",
+          "dest": "subprojects/nvtop-9a8458b541a195a0c5cadafb66e240962c852b39"
         },
         "cargo-sources.json"
       ],
