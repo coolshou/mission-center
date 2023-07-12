@@ -73,6 +73,9 @@ sdkconfig.old
 .vscode/
 compile_commands.json
 
+# VS Code Flatpak extension by bilelmoussaoui
+.flatpak/
+
 # Project specific
 /flatpak/missioncenter.flatpak
 /subprojects/blueprint-compiler
