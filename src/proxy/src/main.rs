@@ -35,6 +35,7 @@ struct ArgsAppsProcesses {
 const SUBCOMMANDS: &[(&str, fn(std::env::ArgsOs))] = &[("apps-processes", sub_apps_processes)];
 
 fn sub_apps_processes(args: std::env::ArgsOs) {
+    use sha2::Digest;
     use std::io::Write;
 
     let args = ArgsAppsProcesses::parse_from(args);
@@ -43,17 +44,26 @@ fn sub_apps_processes(args: std::env::ArgsOs) {
     let processes = processes::load_process_list(processes);
     processes::save_stats_to_cache(&args.process_cache, processes.values()).unwrap();
 
-    let mut stdout = std::io::stdout().lock();
-    stdout.write(to_binary(&processes.len())).unwrap();
+    let mut cursor = std::io::Cursor::new(vec![]);
+    cursor.set_position(32);
+
+    cursor.write(to_binary(&processes.len())).unwrap();
     for p in processes.values() {
-        p.serialize(&mut stdout).unwrap();
+        p.serialize(&mut cursor).unwrap();
     }
 
     let apps = apps::installed_apps();
-    stdout.write(to_binary(&apps.len())).unwrap();
+    cursor.write(to_binary(&apps.len())).unwrap();
     for app in apps {
-        app.serialize(&mut stdout).unwrap();
+        app.serialize(&mut cursor).unwrap();
     }
+
+    let sha256sum = sha2::Sha256::digest(&cursor.get_ref().as_slice()[32..]);
+    cursor.set_position(0);
+    cursor.write(sha256sum.as_slice()).unwrap();
+
+    let mut stdout = std::io::stdout().lock();
+    stdout.write(cursor.get_ref().as_slice()).unwrap();
 }
 
 fn main() {

@@ -8,6 +8,7 @@ pub fn load_app_and_process_list() -> (
     use super::FLATPAK_APP_PATH;
     use super::{App, CACHE_DIR, IS_FLATPAK};
     use gtk::glib::{g_critical, g_debug};
+    use sha2::Digest;
     use std::{
         collections::HashMap,
         io::{Cursor, Read},
@@ -56,20 +57,38 @@ pub fn load_app_and_process_list() -> (
     for line in stderr.lines() {
         if line.starts_with("CRT") {
             g_critical!(
-                "MissionCenter::ProcInfo",
+                "MissionCenter::ProcInfo-Proxy",
                 "{}",
                 line.trim_start_matches("CRT")
             );
         } else if line.starts_with("DBG") {
             g_debug!(
-                "MissionCenter::ProcInfo",
+                "MissionCenter::ProcInfo-Proxy",
                 "{}",
                 line.trim_start_matches("DBG")
             );
         }
     }
 
+    if output.stdout.len() > 32 {
+        let sha256sum = sha2::Sha256::digest(&output.stdout[32..]);
+        if sha256sum.as_slice() != &output.stdout[0..32] {
+            g_critical!(
+                "MissionCenter::ProcInfo",
+                "Failed to load process information, checksum mismatch"
+            );
+            return (apps, processes);
+        }
+    } else {
+        g_critical!(
+            "MissionCenter::ProcInfo",
+            "Failed to load process information, invalid output"
+        );
+        return (apps, processes);
+    }
+
     let mut cursor = Cursor::new(output.stdout);
+    cursor.set_position(32);
 
     let mut process_count = 0_usize;
     cursor.read(to_binary_mut(&mut process_count)).unwrap();

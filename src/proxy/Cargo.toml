@@ -1,6 +1,6 @@
 [package]
 name = "proxy"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 
 [dependencies]
@@ -9,6 +9,7 @@ lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 num_cpus = { version = "1" }
 rust-ini = { version = "0.19" }
+sha2 = { version = "0.10" }
 
 [profile.release]
 opt-level = 3

@@ -4,6 +4,9 @@
   "runtime-version": "44",
   "sdk": "org.gnome.Sdk",
   "command": "missioncenter",
+  "build-options": {
+    "no-debuginfo": true
+  },
   "finish-args": [
     "--share=network",
     "--share=ipc",
@@ -21,8 +24,12 @@
     "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:~/.local/share/flatpak/exports/share"
   ],
   "cleanup": [
+    "/sbin",
+    "/etc",
+    "/sbin",
     "/include",
     "/lib/pkgconfig",
+    "/lib/python*",
     "/man",
     "/share/doc",
     "/share/gtk-doc",
@@ -33,22 +40,62 @@
   ],
   "modules": [
     {
-      "name": "missioncenter",
+      "name": "rust-toolchain-x86_64",
+      "only-arches": [
+        "x86_64"
+      ],
       "buildsystem": "simple",
+      "build-commands": [
+        "mkdir /app/rust-toolchain",
+        "mv * /app/rust-toolchain"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
+          "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+        }
+      ],
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "rust-toolchain-aarch64",
+      "only-arches": [
+        "aarch64"
+      ],
+      "buildsystem": "simple",
+      "build-commands": [
+        "mkdir /app/rust-toolchain",
+        "mv * /app/rust-toolchain"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0-aarch64.tar.zst",
+          "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+        }
+      ],
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "missioncenter",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dbuildtype=release",
+        "-Dflatpak=true",
+        "-Dcargo_env='CARGO_HOME=/run/build/missioncenter/cargo'"
+      ],
       "build-options": {
-        "append-path": "/run/build/missioncenter/bin",
+        "append-path": "/app/rust-toolchain/bin",
         "env": {
           "RUST_BACKTRACE": "full",
-          "RUSTUP_HOME": "/run/build/missioncenter",
-          "CARGO_HOME": "/run/build/missioncenter/cargo"
+          "RUSTUP_HOME": "/app/rust-toolchain"
         }
       },
-      "build-commands": [
-        "rustup default stable-x86_64-unknown-linux-gnu",
-        "cd subprojects/nvtop-* && find ../packagefiles -type f -name 'nvtop-*' -exec sh -c 'patch -p1 < {}' \\;",
-        "meson setup _flatpak_build -Dprefix=/app -Dbuildtype=release -Dflatpak=true -Dcargo_env=\"CARGO_HOME=$CARGO_HOME\"",
-        "ninja -C _flatpak_build install"
-      ],
       "sources": [
         {
           "type": "dir",
@@ -56,20 +103,15 @@
         },
         {
           "type": "archive",
-          "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
-          "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
-        },
-        {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "commit": "f526cfa4d92a02be1eeb539076e22b06bc9ab887",
-          "dest": "subprojects/blueprint-compiler"
-        },
-        {
-          "type": "archive",
           "url": "https://github.com/Syllo/nvtop/archive/9a8458b541a195a0c5cadafb66e240962c852b39.tar.gz",
           "sha256": "290542e3c2203613e18faaa769dcc5479b170c39acbe71c976a7e86ff03ea1a7",
           "dest": "subprojects/nvtop-9a8458b541a195a0c5cadafb66e240962c852b39"
+        },
+        {
+          "type": "shell",
+          "commands": [
+            "cd subprojects/nvtop-* && find ../packagefiles -type f -name 'nvtop-*' -exec sh -c 'patch -p1 < {}' \\;"
+          ]
         },
         "cargo-sources.json"
       ],
@@ -77,7 +119,6 @@
         {
           "name": "eudev",
           "buildsystem": "autotools",
-          "config-opts": [],
           "cleanup": [
             "/bin",
             "/sbin",
@@ -101,6 +142,9 @@
               "url": "https://musl.libc.org/releases/musl-1.2.4.tar.gz",
               "sha256": "7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039"
             }
+          ],
+          "cleanup": [
+            "*"
           ]
         },
         {
@@ -121,42 +165,73 @@
         {
           "name": "proxy",
           "buildsystem": "simple",
+          "only-arches": [
+            "x86_64"
+          ],
           "build-options": {
-            "append-path": "/run/build/proxy/bin",
+            "append-path": "/app/rust-toolchain/bin",
             "env": {
               "RUST_BACKTRACE": "full",
-              "RUSTUP_HOME": "/run/build/proxy",
+              "RUSTUP_HOME": "/app/rust-toolchain",
               "CARGO_HOME": "/run/build/proxy/cargo"
             }
           },
           "build-commands": [
             "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' cargo build --offline --release --target x86_64-unknown-linux-musl",
-            "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy",
-            "rm -rf src/proxy/target"
+            "install -v -p -m 755 src/proxy/target/x86_64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy"
+          ],
+          "post-install": [
+            "rm -rf /app/include /app/lib/*.o /app/lib/*.a /app/lib/libc.so"
           ],
           "sources": [
             {
               "type": "dir",
               "path": ".."
             },
+            "cargo-sources-proxy.json"
+          ]
+        },
+        {
+          "name": "proxy",
+          "buildsystem": "simple",
+          "only-arches": [
+            "aarch64"
+          ],
+          "build-options": {
+            "append-path": "/app/rust-toolchain/bin",
+            "env": {
+              "RUST_BACKTRACE": "full",
+              "RUSTUP_HOME": "/app/rust-toolchain",
+              "CARGO_HOME": "/run/build/proxy/cargo"
+            }
+          },
+          "build-commands": [
+            "cd src/proxy && env RUSTFLAGS='-C target-feature=+crt-static' cargo build --offline --release --target aarch64-unknown-linux-musl",
+            "install -v -p -m 755 src/proxy/target/aarch64-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy"
+          ],
+          "post-install": [
+            "rm -rf /app/include /app/lib/*.o /app/lib/*.a /app/lib/libc.so"
+          ],
+          "sources": [
             {
-              "type": "archive",
-              "url": "https://gitlab.com/mission-center-devs/build-tools/-/raw/main/rust-musl-1.70.0.tar.zst",
-              "sha256": "fcc101cd0af292d94e090b79517078c704201adff77817af0f654ca32f086f5b"
+              "type": "dir",
+              "path": ".."
             },
             "cargo-sources-proxy.json"
           ]
         },
         {
-          "name": "remove-leftover-headers-and-libraries",
-          "buildsystem": "simple",
-          "build-commands": [
-            "mv /app/lib/libudev* /app",
-            "mv /app/lib/pkgconfig /app",
-            "rm -rf /app/bin/musl-gcc /app/bin/udevadm /app/etc /app/include /app/sbin /app/lib",
-            "mkdir -p /app/lib/",
-            "mv /app/libudev* /app/lib/",
-            "mv /app/pkgconfig /app/lib/"
+          "name": "blueprint-compiler",
+          "buildsystem": "meson",
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
+              "commit": "f526cfa4d92a02be1eeb539076e22b06bc9ab887"
+            }
+          ],
+          "cleanup": [
+            "*"
           ]
         }
       ]
