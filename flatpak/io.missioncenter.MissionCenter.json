@@ -3,6 +3,10 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "44",
   "sdk": "org.gnome.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable",
+    "org.freedesktop.Sdk.Extension.llvm16"
+  ],
   "command": "missioncenter",
   "build-options": {
     "no-debuginfo": true
@@ -90,10 +94,12 @@
         "-Dcargo_env='CARGO_HOME=/run/build/missioncenter/cargo'"
       ],
       "build-options": {
-        "append-path": "/app/rust-toolchain/bin",
+        "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin",
         "env": {
-          "RUST_BACKTRACE": "full",
-          "RUSTUP_HOME": "/app/rust-toolchain"
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold",
+            "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER": "clang",
+            "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
         }
       },
       "sources": [

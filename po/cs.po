@@ -1,0 +1,582 @@
+# Czech translations for MissionCenter
+# Copyright (C) 2023 missioncenter's COPYRIGHT HOLDER
+# This file is distributed under the same license as the missioncenter package.
+# ondra05 <ondra@ondra05.cz>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: missioncenter\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-06 16:25+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: ondra05 <ondra@ondra05.cz>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: data/io.missioncenter.MissionCenter.desktop.in:3
+msgid "Mission Center"
+msgstr "Mission Center"
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:7
+msgid "No description"
+msgstr "Bez popisu"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:14
+msgid "Which page is shown on application startup"
+msgstr "Která stránka se zobrazí po spuštění aplikace"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:20
+msgid "How fast should the data be refreshed and the UI updated"
+msgstr "Jak rychle mají být data a rozhraní aktualizovány"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:26
+msgid "Which graph is shown on the CPU performance page"
+msgstr "Jaký graf se zobrazí na stránce výkonu procesoru"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
+msgid "Which page is shown on application startup, in the performance tab"
+msgstr "Jaká stránka se zobrazí po spuštění aplikace na záložce výkonu"
+
+#: resources/ui/performance_page/cpu.blp:42 src/performance_page/mod.rs:267
+msgid "CPU"
+msgstr "Procesor"
+
+#: resources/ui/performance_page/cpu.blp:74
+msgid "% Utilization"
+msgstr "% využití"
+
+#: resources/ui/performance_page/cpu.blp:84
+msgid "100%"
+msgstr "100 %"
+
+#: resources/ui/performance_page/cpu.blp:152
+#: resources/ui/performance_page/gpu.blp:224
+msgid "Utilization"
+msgstr "Využití"
+
+#: resources/ui/performance_page/cpu.blp:174
+msgid "Speed"
+msgstr "Rychlost"
+
+#: resources/ui/performance_page/cpu.blp:201
+msgid "Processes"
+msgstr "Procesy"
+
+#: resources/ui/performance_page/cpu.blp:223
+msgid "Threads"
+msgstr "Vlákna"
+
+#: resources/ui/performance_page/cpu.blp:245
+msgid "Handles"
+msgstr "Popisovače"
+
+#: resources/ui/performance_page/cpu.blp:268
+msgid "Up time"
+msgstr "Doba od spuštění"
+
+#: resources/ui/performance_page/cpu.blp:294
+msgid "Base Speed:"
+msgstr "Základní rychlost:"
+
+#: resources/ui/performance_page/cpu.blp:303
+msgid "Sockets:"
+msgstr "Patice:"
+
+#: resources/ui/performance_page/cpu.blp:312
+msgid "Virtual processors:"
+msgstr "Logické procesory:"
+
+#: resources/ui/performance_page/cpu.blp:321
+msgid "Virtualization:"
+msgstr "Virtualizace:"
+
+#: resources/ui/performance_page/cpu.blp:330
+msgid "Virtual machine:"
+msgstr "Virtuální stroj:"
+
+#: resources/ui/performance_page/cpu.blp:339
+msgid "L1 cache:"
+msgstr "Mezipaměť L1:"
+
+#: resources/ui/performance_page/cpu.blp:348
+msgid "L2 cache:"
+msgstr "Mezipaměť L2:"
+
+#: resources/ui/performance_page/cpu.blp:357
+msgid "L3 cache:"
+msgstr "Mezipaměť L3:"
+
+#: resources/ui/performance_page/cpu.blp:441
+msgid "Change G_raph To"
+msgstr "Změnit G_raf na"
+
+#: resources/ui/performance_page/cpu.blp:444
+msgid "Overall U_tilization"
+msgstr "_Celkové využití"
+
+#: resources/ui/performance_page/cpu.blp:449
+msgid "Logical _Processors"
+msgstr "_Logické procesory"
+
+#: resources/ui/performance_page/cpu.blp:457
+#: resources/ui/performance_page/disk.blp:385
+#: resources/ui/performance_page/gpu.blp:453
+#: resources/ui/performance_page/memory.blp:401
+#: resources/ui/performance_page/network.blp:368
+msgid "Graph _Summary View"
+msgstr "_Souhrnné zobrazení grafu"
+
+#: resources/ui/performance_page/cpu.blp:462
+#: resources/ui/performance_page/disk.blp:390
+#: resources/ui/performance_page/gpu.blp:458
+#: resources/ui/performance_page/memory.blp:406
+#: resources/ui/performance_page/network.blp:373
+msgid "_View"
+msgstr "_Zobrazit"
+
+#: resources/ui/performance_page/cpu.blp:465
+#: resources/ui/performance_page/disk.blp:393
+#: resources/ui/performance_page/gpu.blp:461
+#: resources/ui/performance_page/memory.blp:409
+#: resources/ui/performance_page/network.blp:376
+msgid "CP_U"
+msgstr "_Procesor"
+
+#: resources/ui/performance_page/cpu.blp:470
+#: resources/ui/performance_page/disk.blp:398
+#: resources/ui/performance_page/gpu.blp:466
+#: resources/ui/performance_page/memory.blp:414
+#: resources/ui/performance_page/network.blp:381
+msgid "_Memory"
+msgstr "Pa_měť"
+
+#: resources/ui/performance_page/cpu.blp:475
+#: resources/ui/performance_page/disk.blp:403
+#: resources/ui/performance_page/gpu.blp:471
+#: resources/ui/performance_page/memory.blp:419
+#: resources/ui/performance_page/network.blp:386
+msgid "_Disk"
+msgstr "_Disk"
+
+#: resources/ui/performance_page/cpu.blp:480
+#: resources/ui/performance_page/disk.blp:408
+#: resources/ui/performance_page/gpu.blp:476
+#: resources/ui/performance_page/memory.blp:424
+#: resources/ui/performance_page/network.blp:391
+msgid "_Network"
+msgstr "_Síť"
+
+#: resources/ui/performance_page/cpu.blp:485
+#: resources/ui/performance_page/disk.blp:413
+#: resources/ui/performance_page/gpu.blp:481
+#: resources/ui/performance_page/memory.blp:429
+#: resources/ui/performance_page/network.blp:396
+msgid "_GPU"
+msgstr "_Grafika"
+
+#: resources/ui/performance_page/cpu.blp:493
+#: resources/ui/performance_page/disk.blp:421
+#: resources/ui/performance_page/gpu.blp:489
+#: resources/ui/performance_page/memory.blp:437
+#: resources/ui/performance_page/network.blp:409
+msgid "_Copy"
+msgstr "_Kopírovat"
+
+#: resources/ui/performance_page/disk.blp:64
+#: resources/ui/performance_page/disk.blp:188
+msgid "Active time"
+msgstr "Aktivní čas"
+
+#: resources/ui/performance_page/disk.blp:122
+msgid "Disk transfer rate"
+msgstr "Přenosová rychlost disku"
+
+#: resources/ui/performance_page/disk.blp:211
+msgid "Average response time"
+msgstr "Průměrná doba odezvy"
+
+#: resources/ui/performance_page/disk.blp:247
+msgid "Read speed"
+msgstr "Rychlost čtení"
+
+#: resources/ui/performance_page/disk.blp:279
+msgid "Write speed"
+msgstr "Rychlost zápisu"
+
+#: resources/ui/performance_page/disk.blp:307
+msgid "Capacity:"
+msgstr "Kapacita:"
+
+#: resources/ui/performance_page/disk.blp:316
+msgid "Formatted:"
+msgstr "Naformátováno:"
+
+#: resources/ui/performance_page/disk.blp:325
+msgid "System disk:"
+msgstr "Systémový disk:"
+
+#: resources/ui/performance_page/disk.blp:334
+#: resources/ui/performance_page/memory.blp:345
+msgid "Type:"
+msgstr "Typ:"
+
+#: resources/ui/performance_page/gpu.blp:71
+msgid "Overall utilization"
+msgstr "Celkové využití:"
+
+#: resources/ui/performance_page/gpu.blp:110
+msgid "Video encode"
+msgstr "Kódování videa"
+
+#: resources/ui/performance_page/gpu.blp:143
+msgid "Video decode"
+msgstr "Dekódování videa"
+
+#: resources/ui/performance_page/gpu.blp:180
+#: resources/ui/performance_page/gpu.blp:247
+#: resources/ui/performance_page/memory.blp:73
+msgid "Memory usage"
+msgstr "Využití paměti"
+
+#: resources/ui/performance_page/gpu.blp:275
+msgid "Clock Speed"
+msgstr "Frekvence"
+
+#: resources/ui/performance_page/gpu.blp:298
+msgid "Memory speed"
+msgstr "Rychlost paměti"
+
+#: resources/ui/performance_page/gpu.blp:325
+msgid "Power draw"
+msgstr "Spotřeba"
+
+#: resources/ui/performance_page/gpu.blp:348
+msgid "Temperature"
+msgstr "Teplota"
+
+#: resources/ui/performance_page/gpu.blp:375
+msgid "OpenGL version:"
+msgstr "Verze OpenGL:"
+
+#: resources/ui/performance_page/gpu.blp:384
+msgid "Vulkan version:"
+msgstr "Verze Vulkan:"
+
+#: resources/ui/performance_page/gpu.blp:393
+msgid "PCI Express speed:"
+msgstr "Rychlost PCI Express:"
+
+#: resources/ui/performance_page/gpu.blp:402
+msgid "PCI bus address:"
+msgstr "Adresa PCI sběrnice:"
+
+#: resources/ui/performance_page/memory.blp:28
+msgid "Some information requires administrative privileges"
+msgstr "K získání některých informací je zapotřebí správcovských práv"
+
+#: resources/ui/performance_page/memory.blp:29
+msgid "_Authenticate"
+msgstr "_Ověřit"
+
+#: resources/ui/performance_page/memory.blp:52 src/performance_page/mod.rs:318
+msgid "Memory"
+msgstr "Paměť"
+
+#: resources/ui/performance_page/memory.blp:130
+msgid "Memory composition"
+msgstr "Složení paměti"
+
+#: resources/ui/performance_page/memory.blp:166
+msgid "In use"
+msgstr "Využitá"
+
+#: resources/ui/performance_page/memory.blp:189
+msgid "Available"
+msgstr "Dostupná"
+
+#: resources/ui/performance_page/memory.blp:217
+msgid "Committed"
+msgstr "Potvrzeno"
+
+#: resources/ui/performance_page/memory.blp:240
+msgid "Cached"
+msgstr "V mezipaměti"
+
+#: resources/ui/performance_page/memory.blp:267
+msgid "Swap available"
+msgstr "Odkládací prostor"
+
+#: resources/ui/performance_page/memory.blp:290
+msgid "Swap used"
+msgstr "Využití odkládacího prostoru"
+
+#: resources/ui/performance_page/memory.blp:318
+msgid "Speed:"
+msgstr "Rychlost:"
+
+#: resources/ui/performance_page/memory.blp:327
+msgid "Slots used:"
+msgstr "Použité sloty:"
+
+#: resources/ui/performance_page/memory.blp:336
+msgid "Form factor:"
+msgstr "Parametry:"
+
+#: resources/ui/performance_page/network.blp:62
+msgid "Throughput"
+msgstr "Prostupnost"
+
+#: resources/ui/performance_page/network.blp:139
+msgid "Send"
+msgstr "Odesílání"
+
+#: resources/ui/performance_page/network.blp:170
+msgid "Receive"
+msgstr "Příjem"
+
+#: resources/ui/performance_page/network.blp:197
+msgid "Interface name:"
+msgstr "Název rozhraní:"
+
+#: resources/ui/performance_page/network.blp:206
+msgid "Connection type:"
+msgstr "Typ připojení:"
+
+#: resources/ui/performance_page/network.blp:216
+msgid "SSID:"
+msgstr "SSID:"
+
+#: resources/ui/performance_page/network.blp:226
+msgid "Signal strength:"
+msgstr "Síla signálu:"
+
+#: resources/ui/performance_page/network.blp:236
+msgid "Maximum Bitrate:"
+msgstr "Maximální datový tok:"
+
+#: resources/ui/performance_page/network.blp:246
+msgid "Frequency:"
+msgstr "Frekvence:"
+
+#: resources/ui/performance_page/network.blp:255
+msgid "Hardware address:"
+msgstr "Hardwarová adresa:"
+
+#: resources/ui/performance_page/network.blp:264
+msgid "IPv4 address:"
+msgstr "IPv4 adresa:"
+
+#: resources/ui/performance_page/network.blp:273
+msgid "IPv6 address:"
+msgstr "IPv6 adresa:"
+
+#: resources/ui/performance_page/network.blp:402
+msgid "Network Se_ttings"
+msgstr "_Nastavení sítě"
+
+#: resources/ui/preferences/page.blp:6
+msgid "General Settings"
+msgstr "Obecné"
+
+#: resources/ui/preferences/page.blp:9
+msgid "Update Speed"
+msgstr "Rychlost aktualizace"
+
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:90
+#: src/preferences/page.rs:227
+msgid "Very Slow"
+msgstr "Velmi pomalá"
+
+#: resources/ui/preferences/page.blp:13
+msgid "Refresh every 2 seconds"
+msgstr "Aktualizovat každé 2 sekundy"
+
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:94
+#: src/preferences/page.rs:223
+msgid "Slow"
+msgstr "Pomalá"
+
+#: resources/ui/preferences/page.blp:18
+msgid "Refresh every second and a half"
+msgstr "Aktualizovat každou 1.5 sekundu"
+
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:98
+#: src/preferences/page.rs:111 src/preferences/page.rs:219
+#: src/preferences/page.rs:235
+msgid "Normal"
+msgstr "Normální"
+
+#: resources/ui/preferences/page.blp:23
+msgid "Refresh every second"
+msgstr "Aktualizovat každou sekundu"
+
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:102
+#: src/preferences/page.rs:215
+msgid "Fast"
+msgstr "Rychlá"
+
+#: resources/ui/preferences/page.blp:28
+msgid "Refresh every half second"
+msgstr "Aktualizovat každou půl sekundu"
+
+#: resources/ui/window.blp:48
+msgid "Type a name or PID to search"
+msgstr "Zadejte název či PID k vyhledání"
+
+#: resources/ui/window.blp:80
+msgid "Performance"
+msgstr "Výkon"
+
+#: resources/ui/window.blp:89
+msgid "Apps"
+msgstr "Aplikace"
+
+#: resources/ui/window.blp:101
+msgid "_Preferences"
+msgstr "_Předvolby"
+
+#: resources/ui/window.blp:106
+msgid "_About MissionCenter"
+msgstr "_O MissionCenter"
+
+#: resources/ui/window.blp:113
+msgid "_Quit"
+msgstr "_Ukončit"
+
+#: src/performance_page/widgets/mem_composition_widget.rs:224
+msgid ""
+"In use ({}B)\n"
+"\n"
+"Memory used by the operating system and running applications"
+msgstr ""
+"Využitá ({}B)\n"
+"\n"
+"Paměť využitá systémem a běžícími aplikacemi"
+
+#: src/performance_page/widgets/mem_composition_widget.rs:231
+msgid ""
+"Modified ({}B)\n"
+"\n"
+"Memory whose contents must be written to disk before it can be used by "
+"another process"
+msgstr ""
+"Změněná ({}B)\n"
+"\n"
+"Paměť, jejíž obsah je třeba před použitím jiným procesem zapsat na disk"
+
+#: src/performance_page/widgets/mem_composition_widget.rs:252
+msgid ""
+"Standby ({}B)\n"
+"\n"
+"Memory that contains cached data and code that is not actively in use"
+msgstr ""
+"Pohotovostní ({}B)\n"
+"\n"
+"Paměť, která obsahuje data a kód v mězipaměti, jež nejsou aktivně používány"
+
+#: src/performance_page/widgets/mem_composition_widget.rs:261
+msgid ""
+"Free ({}B)\n"
+"\n"
+"Memory that is not currently in use, and that will be repurposed first when "
+"the operating system, drivers, or applications need more memory"
+msgstr ""
+"Volná ({}B)\n"
+"\n"
+"Paměť která se aktuálně nevyužívá a která bude opětovně využita v okamžiku kdy "
+"operační systém, ovladače či aplikace budou potřebovat více paměti"
+
+#: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
+msgid "Disk {} ({})"
+msgstr "Disk {} ({})"
+
+#: src/performance_page/mod.rs:375
+msgid "HDD"
+msgstr "HDD"
+
+#: src/performance_page/mod.rs:376
+msgid "SSD"
+msgstr "SSD"
+
+#: src/performance_page/mod.rs:377
+msgid "NVMe"
+msgstr "NVMe"
+
+#: src/performance_page/mod.rs:378
+msgid "eMMC"
+msgstr "eMMC"
+
+#: src/performance_page/mod.rs:379
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
+#: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
+#: src/performance_page/cpu.rs:307 src/performance_page/gpu.rs:239
+#: src/performance_page/memory.rs:309 src/performance_page/network.rs:375
+#: src/performance_page/network.rs:396 src/performance_page/network.rs:404
+#: src/performance_page/network.rs:441 src/performance_page/network.rs:519
+msgid "Unknown"
+msgstr "Neznámé"
+
+#: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
+msgid "Ethernet"
+msgstr ""
+
+#: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
+msgid "Wi-Fi"
+msgstr ""
+
+#: src/performance_page/mod.rs:452 src/performance_page/network.rs:340
+msgid "Other"
+msgstr "Jiný"
+
+#: src/performance_page/mod.rs:541
+msgid "GPU {}"
+msgstr "Grafika {}"
+
+#: src/performance_page/mod.rs:695
+msgid "{}: {} {}bps {}: {} {}bps"
+msgstr "{}: {} {}b/s {}: {} {}b/s"
+
+#: src/performance_page/cpu.rs:286
+msgid "Supported"
+msgstr "Podporovaná"
+
+#: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:250
+msgid "Unsupported"
+msgstr "Nepodporovaná"
+
+#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:215
+msgid "Yes"
+msgstr "Ano"
+
+#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:217
+msgid "No"
+msgstr "Ne"
+
+#: src/performance_page/cpu.rs:635
+msgid "% Utilization over {} seconds"
+msgstr "% využití za {} sekund"
+
+#: src/performance_page/cpu.rs:639 src/performance_page/disk.rs:368
+#: src/performance_page/memory.rs:372 src/performance_page/network.rs:605
+msgid "{} seconds"
+msgstr "{} sekund"
+
+#: src/performance_page/disk.rs:243
+msgid "{} {}{}B/s"
+msgstr "{é {}{}B/s}"
+
+#: src/performance_page/network.rs:415 src/performance_page/network.rs:421
+#: src/performance_page/network.rs:429
+msgid "{} {}bps"
+msgstr "{} {}b/s"
+
+#: src/performance_page/network.rs:454 src/performance_page/network.rs:470
+msgid "N/A"
+msgstr "Není k dispozici"
