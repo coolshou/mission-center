@@ -95,6 +95,15 @@
     <content_rating type="oars-1.1"></content_rating>
 
     <releases>
+
+      <release version="0.2.2" date="2023-07-12">
+        <description>
+          <ul>
+            <li>Fix a crash that occurs when the system is under heavy load</li>
+          </ul>
+        </description>
+      </release>
+
       <release version="0.2.0" date="2023-07-10">
         <description>
           <ul>
@@ -102,5 +111,6 @@
           </ul>
         </description>
       </release>
+
     </releases>
 </component>
