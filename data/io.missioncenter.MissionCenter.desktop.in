@@ -6,3 +6,4 @@ Terminal=false
 Type=Application
 Categories=GTK;
 StartupNotify=true
+Keywords=Task manager;Resource monitor;System monitor;Processor;Processes;Performance monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization
