@@ -1,11 +1,10 @@
 image: "ubuntu:23.04"
 
-stages: # List of stages for jobs, and their order of execution
+stages:
   - build
-  - test
   - package
 
-build-job: # This job runs in the build stage, which runs first.
+build-job:
   stage: build
   script:
     - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
@@ -24,24 +23,9 @@ build-job: # This job runs in the build stage, which runs first.
 
     - meson setup _build -Dbuildtype=release
     - ninja -C _build
-    - glib-compile-schemas --strict data/ && mv  data/gschemas.compiled gschemas.compiled
-    - mv _build/src/missioncenter missioncenter.bin
-    - strip missioncenter.bin
-    - mv _build/resources/missioncenter.gresource missioncenter.gresource
-    - mv _build/data/hwdb/hw.db hw.db
-  artifacts:
-    paths:
-      - missioncenter.bin
-      - missioncenter.gresource
-      - hw.db
-      - gschemas.compiled
-
-unit-test-job: # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+    - glib-compile-schemas --strict data/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 package-job:
   stage: package
@@ -55,10 +39,12 @@ package-job:
     - apt-get update
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
+    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.llvm16//22.08 org.freedesktop.Sdk.Extension.rust-stable//22.08
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
   artifacts:
     paths:
       - flatpak/missioncenter.flatpak
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

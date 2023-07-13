@@ -63,7 +63,11 @@ fn sub_apps_processes(args: std::env::ArgsOs) {
     cursor.write(sha256sum.as_slice()).unwrap();
 
     let mut stdout = std::io::stdout().lock();
-    stdout.write(cursor.get_ref().as_slice()).unwrap();
+    let output = cursor.get_ref().as_slice();
+    for chunk in output.chunks(128) {
+        stdout.write(chunk).unwrap();
+    }
+    stdout.flush().unwrap();
 }
 
 fn main() {
