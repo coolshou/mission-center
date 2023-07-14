@@ -425,6 +425,11 @@ impl NetInfo {
     unsafe fn ip6_address(dbus_proxy: *mut gtk::gio::ffi::GDBusProxy) -> Option<u128> {
         use gtk::glib::gobject_ffi::*;
 
+        // The space for link-local addresses is fe80::/10
+        const LL_PREFIX: u128 = 0xfe80 << 112;
+        // Using this mask, we check if the first 10 bit are equal to the prefix above
+        const LL_MASK: u128 = 0xffc0 << 112;
+
         if let Some(ip6_address_obj_path) = Self::nm_device_property(dbus_proxy, b"Ip6Config\0") {
             if let Some(ip6_address_obj_path_str) = ip6_address_obj_path.str() {
                 let ip6_config_proxy = Self::create_nm_dbus_proxy(
@@ -438,19 +443,30 @@ impl NetInfo {
                 let result = if let Some(ip6_address_variant) =
                     Self::nm_device_property(ip6_config_proxy, b"Addresses\0")
                 {
-                    // Just take the first entry in the list of lists
-                    if let Some(ip6_address_info) = ip6_address_variant.iter().next() {
-                        ip6_address_info.iter().next().map_or(None, |v| {
-                            let mut ip6_address = [0; 16];
-                            v.iter().enumerate().for_each(|(i, v)| {
-                                ip6_address[i] = v.get::<u8>().unwrap_or(0);
-                            });
+                    let parsed_ips: Vec<u128> = ip6_address_variant
+                        .iter()
+                        .map(|ip6_with_mask| {
+                            if let Some(ip6_bytes) = ip6_with_mask.iter().next() {
+                                let mut ip6_address = [0; 16];
+                                ip6_bytes.iter().enumerate().for_each(|(i, v)| {
+                                    ip6_address[i] = v.get::<u8>().unwrap_or(0);
+                                });
 
-                            Some(u128::from_be_bytes(ip6_address))
+                                Some(u128::from_be_bytes(ip6_address))
+                            } else {
+                                None
+                            }
                         })
-                    } else {
-                        None
-                    }
+                        .flatten()
+                        .collect();
+
+                    let first_non_ll = parsed_ips
+                        .iter()
+                        .filter(|ip| (*ip & LL_MASK) != LL_PREFIX)
+                        .next()
+                        .copied();
+
+                    first_non_ll.or(parsed_ips.first().copied())
                 } else {
                     None
                 };
