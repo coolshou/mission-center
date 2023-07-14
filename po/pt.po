@@ -1,7 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Portuguese translations for missioncenter.
+# Copyright (C) 2023 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the missioncenter package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Rilson Joás, 2023.
+# Rafael Fontenelle <rafaelff@gnome.org>, 2023.
 #
 msgid ""
 msgstr ""
@@ -9,13 +10,14 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-06 16:25+0300\n"
 "PO-Revision-Date: 2023-07-13 00:39-0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Language-Team: Portuguese\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Gtranslator 45.alpha0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 msgid "Mission Center"
@@ -115,15 +117,15 @@ msgstr "Cache L3:"
 
 #: resources/ui/performance_page/cpu.blp:441
 msgid "Change G_raph To"
-msgstr "Mudar gráfico para"
+msgstr "Mudar g_ráfico para"
 
 #: resources/ui/performance_page/cpu.blp:444
 msgid "Overall U_tilization"
-msgstr "Utilização geral"
+msgstr "U_tilização geral"
 
 #: resources/ui/performance_page/cpu.blp:449
 msgid "Logical _Processors"
-msgstr "Processadores lógicos"
+msgstr "_Processadores lógicos"
 
 #: resources/ui/performance_page/cpu.blp:457
 #: resources/ui/performance_page/disk.blp:385
@@ -131,7 +133,7 @@ msgstr "Processadores lógicos"
 #: resources/ui/performance_page/memory.blp:401
 #: resources/ui/performance_page/network.blp:368
 msgid "Graph _Summary View"
-msgstr "Visão resumida"
+msgstr "Visão re_sumida"
 
 #: resources/ui/performance_page/cpu.blp:462
 #: resources/ui/performance_page/disk.blp:390
@@ -139,7 +141,7 @@ msgstr "Visão resumida"
 #: resources/ui/performance_page/memory.blp:406
 #: resources/ui/performance_page/network.blp:373
 msgid "_View"
-msgstr "Visão"
+msgstr "_Visão"
 
 #: resources/ui/performance_page/cpu.blp:465
 #: resources/ui/performance_page/disk.blp:393
@@ -147,7 +149,7 @@ msgstr "Visão"
 #: resources/ui/performance_page/memory.blp:409
 #: resources/ui/performance_page/network.blp:376
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:470
 #: resources/ui/performance_page/disk.blp:398
@@ -155,7 +157,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/memory.blp:414
 #: resources/ui/performance_page/network.blp:381
 msgid "_Memory"
-msgstr "Memória"
+msgstr "_Memória"
 
 #: resources/ui/performance_page/cpu.blp:475
 #: resources/ui/performance_page/disk.blp:403
@@ -163,7 +165,7 @@ msgstr "Memória"
 #: resources/ui/performance_page/memory.blp:419
 #: resources/ui/performance_page/network.blp:386
 msgid "_Disk"
-msgstr "Disco"
+msgstr "_Disco"
 
 #: resources/ui/performance_page/cpu.blp:480
 #: resources/ui/performance_page/disk.blp:408
@@ -171,7 +173,7 @@ msgstr "Disco"
 #: resources/ui/performance_page/memory.blp:424
 #: resources/ui/performance_page/network.blp:391
 msgid "_Network"
-msgstr "Rede"
+msgstr "R_ede"
 
 #: resources/ui/performance_page/cpu.blp:485
 #: resources/ui/performance_page/disk.blp:413
@@ -179,7 +181,7 @@ msgstr "Rede"
 #: resources/ui/performance_page/memory.blp:429
 #: resources/ui/performance_page/network.blp:396
 msgid "_GPU"
-msgstr "GPU"
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:493
 #: resources/ui/performance_page/disk.blp:421
@@ -187,7 +189,7 @@ msgstr "GPU"
 #: resources/ui/performance_page/memory.blp:437
 #: resources/ui/performance_page/network.blp:409
 msgid "_Copy"
-msgstr "Cópia"
+msgstr "_Cópia"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
@@ -283,7 +285,7 @@ msgstr "Algumas informações precisam de privilégios administrativos"
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
-msgstr "Autenticar"
+msgstr "_Autenticar"
 
 #: resources/ui/performance_page/memory.blp:52 src/performance_page/mod.rs:318
 msgid "Memory"
@@ -379,7 +381,7 @@ msgstr "Endereço IPv6:"
 
 #: resources/ui/performance_page/network.blp:402
 msgid "Network Se_ttings"
-msgstr "Configurações de rede"
+msgstr "C_onfigurações de rede"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
@@ -396,7 +398,7 @@ msgstr "Muito lenta"
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every 2 seconds"
-msgstr "Atualizar cada 2 segundos"
+msgstr "Atualizar a cada 2 segundos"
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:94
 #: src/preferences/page.rs:223
@@ -405,7 +407,7 @@ msgstr "Lenta"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second and a half"
-msgstr "Atualizar cada segundo e meio"
+msgstr "Atualizar a cada segundo e meio"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:98
 #: src/preferences/page.rs:111 src/preferences/page.rs:219
@@ -415,7 +417,7 @@ msgstr "Normal"
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second"
-msgstr "Atualizar cada segundo"
+msgstr "Atualizar a cada segundo"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:102
 #: src/preferences/page.rs:215
@@ -424,7 +426,7 @@ msgstr "Rápida"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every half second"
-msgstr "Atualizar cada meio segundo"
+msgstr "Atualizar a cada meio segundo"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -440,15 +442,15 @@ msgstr "Aplicativos"
 
 #: resources/ui/window.blp:101
 msgid "_Preferences"
-msgstr "Preferências"
+msgstr "_Preferências"
 
 #: resources/ui/window.blp:106
 msgid "_About MissionCenter"
-msgstr "Sobre o Mission Center"
+msgstr "_Sobre o Mission Center"
 
 #: resources/ui/window.blp:113
 msgid "_Quit"
-msgstr "Fechar"
+msgstr "_Sair"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
