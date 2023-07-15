@@ -121,7 +121,7 @@ template $PerformancePageGpu: Box {
         vexpand: true;
         hexpand: true;
 
-        height-request: 100;
+        height-request: 50;
 
         base-color: bind-property template.base-color;
         data-set-count: 1;
@@ -154,7 +154,7 @@ template $PerformancePageGpu: Box {
         vexpand: true;
         hexpand: true;
 
-        height-request: 100;
+        height-request: 50;
 
         base-color: bind-property template.base-color;
         data-set-count: 1;
@@ -204,16 +204,17 @@ template $PerformancePageGpu: Box {
     visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
-      orientation: vertical;
       spacing: 10;
 
-      Box top_row {
-        spacing: 15;
+      Box left_column {
+        orientation: vertical;
+        spacing: 10;
+
+        hexpand: true;
 
         Box {
           orientation: vertical;
           spacing: 3;
-          width-request: 230;
 
           Label {
             styles [
@@ -236,34 +237,6 @@ template $PerformancePageGpu: Box {
         Box {
           orientation: vertical;
           spacing: 3;
-          width-request: 200;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Memory usage");
-          }
-
-          Label memory_usage {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box mid_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 230;
 
           Label {
 
@@ -275,46 +248,41 @@ template $PerformancePageGpu: Box {
             label: _("Clock Speed");
           }
 
-          Label clock_speed {
-            styles [
-              "title-4",
-            ]
+          Box {
+            Label clock_speed_current {
+              styles [
+                "title-4",
+              ]
 
-            halign: start;
+              ellipsize: end;
+
+              halign: start;
+            }
+
+            Label {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+              label: " / ";
+            }
+
+            Label clock_speed_max {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
           }
         }
 
         Box {
           orientation: vertical;
           spacing: 3;
-          width-request: 230;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Memory speed");
-          }
-
-          Label memory_speed {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box bottom_row {
-        spacing: 15;
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 230;
 
           Label {
             styles [
@@ -325,19 +293,136 @@ template $PerformancePageGpu: Box {
             label: _("Power draw");
           }
 
-          Label power_draw {
+          Box {
+            Label power_draw_current {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
+
+            Label {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+              label: " / ";
+            }
+
+            Label power_draw_max {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
+          }
+        }
+      }
+
+      Box right_column {
+        orientation: vertical;
+        spacing: 10;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
             styles [
-              "title-4",
+              "caption",
             ]
 
             halign: start;
+            label: _("Memory usage");
+          }
+
+          Box {
+            Label memory_usage_current {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
+
+            Label {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+              label: " / ";
+            }
+
+            Label memory_usage_max {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
           }
         }
 
         Box {
           orientation: vertical;
           spacing: 3;
-          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Memory speed");
+          }
+
+          Box {
+            Label memory_speed_current {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
+
+            Label {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+              label: " / ";
+            }
+
+            Label memory_speed_max {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: end;
+
+              halign: start;
+            }
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
 
           Label {
             styles [
@@ -352,6 +437,8 @@ template $PerformancePageGpu: Box {
             styles [
               "title-4",
             ]
+
+            ellipsize: end;
 
             halign: start;
           }

@@ -149,39 +149,92 @@ impl StaticInfo {
     fn base_frequency_khz() -> Option<u64> {
         use gtk::glib::*;
 
-        let content = match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
-            Ok(content) => content,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::CpuInfo",
-                    "Could not read base frequency: {}",
-                    e
-                );
-                return None;
-            }
-        };
+        match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
+            Ok(content) => {
+                let content = match std::str::from_utf8(&content) {
+                    Ok(content) => content,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read base frequency: {}",
+                            e
+                        );
+                        return None;
+                    }
+                };
 
-        let content = match std::str::from_utf8(&content) {
-            Ok(content) => content,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::CpuInfo",
-                    "Could not read base frequency: {}",
-                    e
-                );
-                return None;
+                match content.trim().parse() {
+                    Ok(freq) => Some(freq),
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read base frequency: {}",
+                            e
+                        );
+                        None
+                    }
+                }
             }
-        };
-
-        match content.trim().parse() {
-            Ok(freq) => Some(freq),
             Err(e) => {
                 g_critical!(
                     "MissionCenter::CpuInfo",
-                    "Could not read base frequency: {}",
+                    "Could not read base frequency: {}; trying /proc/cpuinfo",
                     e
                 );
-                None
+
+                let cpuinfo = cmd!("cat /proc/cpuinfo").output();
+                if cpuinfo.is_err() {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not read /proc/cpuinfo: {}",
+                        cpuinfo.err().unwrap()
+                    );
+                    return None;
+                }
+
+                let cpuinfo = String::from_utf8(cpuinfo.unwrap().stdout);
+                if cpuinfo.is_err() {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not read /proc/cpuinfo: {}",
+                        cpuinfo.err().unwrap()
+                    );
+                    return None;
+                }
+                let cpuinfo = cpuinfo.unwrap();
+                let index = cpuinfo.find("cpu MHz");
+                if index.is_none() {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not find `cpu MHz` in /proc/cpuinfo",
+                    );
+                    return None;
+                }
+                let index = index.unwrap();
+
+                let base_frequency = cpuinfo[index..]
+                    .lines()
+                    .next()
+                    .map(|line| line.split(':').nth(1).unwrap_or("").trim())
+                    .map(|mhz| mhz.parse::<f32>());
+                if base_frequency.is_none() {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Failed to parse `cpu MHz` in /proc/cpuinfo",
+                    );
+                    return None;
+                }
+                let base_frequency = base_frequency.unwrap();
+                if base_frequency.is_err() {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
+                        base_frequency.err().unwrap()
+                    );
+                    return None;
+                }
+
+                Some((base_frequency.unwrap() * 1000.).round() as u64)
             }
         }
     }
