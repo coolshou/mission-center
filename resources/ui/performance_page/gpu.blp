@@ -206,243 +206,251 @@ template $PerformancePageGpu: Box {
     Box dynamic_data {
       spacing: 10;
 
-      Box left_column {
-        orientation: vertical;
-        spacing: 10;
+      Adw.Clamp {
+        orientation: horizontal;
+        maximum-size: 250;
 
-        hexpand: true;
-
-        Box {
+        child: Box left_column {
           orientation: vertical;
-          spacing: 3;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Utilization");
-          }
-
-          Label utilization {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-
-          Label {
-
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Clock Speed");
-          }
+          spacing: 10;
 
           Box {
-            Label clock_speed_current {
-              styles [
-                "title-4",
-              ]
-
-              ellipsize: end;
-
-              halign: start;
-            }
+            orientation: vertical;
+            spacing: 3;
 
             Label {
               styles [
-                "title-4",
+                "caption",
               ]
 
               halign: start;
-              label: " / ";
+              label: _("Utilization");
             }
 
-            Label clock_speed_max {
+            Label utilization {
               styles [
                 "title-4",
               ]
 
-              ellipsize: end;
-
               halign: start;
             }
           }
-        }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-          Label {
-            styles [
-              "caption",
-            ]
+            Label {
 
-            halign: start;
-            label: _("Power draw");
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Clock Speed");
+            }
+
+            Box {
+              Label clock_speed_current {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label clock_speed_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+            }
           }
 
           Box {
-            Label power_draw_current {
-              styles [
-                "title-4",
-              ]
-
-              ellipsize: end;
-
-              halign: start;
-            }
+            orientation: vertical;
+            spacing: 3;
 
             Label {
               styles [
-                "title-4",
+                "caption",
               ]
 
               halign: start;
-              label: " / ";
+              label: _("Power draw");
             }
 
-            Label power_draw_max {
-              styles [
-                "title-4",
-              ]
+            Box {
+              Label power_draw_current {
+                styles [
+                  "title-4",
+                ]
 
-              ellipsize: end;
+                ellipsize: middle;
 
-              halign: start;
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label power_draw_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
             }
           }
-        }
+        };
       }
 
-      Box right_column {
-        orientation: vertical;
-        spacing: 10;
+      Adw.Clamp {
+        orientation: horizontal;
+        maximum-size: 250;
 
-        Box {
+        child: Box right_column {
           orientation: vertical;
-          spacing: 3;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Memory usage");
-          }
+          spacing: 10;
 
           Box {
-            Label memory_usage_current {
-              styles [
-                "title-4",
-              ]
-
-              ellipsize: end;
-
-              halign: start;
-            }
+            orientation: vertical;
+            spacing: 3;
 
             Label {
               styles [
-                "title-4",
+                "caption",
               ]
 
               halign: start;
-              label: " / ";
+              label: _("Memory usage");
             }
 
-            Label memory_usage_max {
-              styles [
-                "title-4",
-              ]
+            Box {
+              Label memory_usage_current {
+                styles [
+                  "title-4",
+                ]
 
-              ellipsize: end;
+                ellipsize: middle;
 
-              halign: start;
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label memory_usage_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
             }
-          }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Memory speed");
           }
 
           Box {
-            Label memory_speed_current {
-              styles [
-                "title-4",
-              ]
-
-              ellipsize: end;
-
-              halign: start;
-            }
+            orientation: vertical;
+            spacing: 3;
 
             Label {
               styles [
-                "title-4",
+                "caption",
               ]
 
               halign: start;
-              label: " / ";
+              label: _("Memory speed");
             }
 
-            Label memory_speed_max {
+            Box {
+              Label memory_speed_current {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label memory_speed_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Temperature");
+            }
+
+            Label temperature {
               styles [
                 "title-4",
               ]
 
-              ellipsize: end;
+              ellipsize: middle;
 
               halign: start;
             }
           }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Temperature");
-          }
-
-          Label temperature {
-            styles [
-              "title-4",
-            ]
-
-            ellipsize: end;
-
-            halign: start;
-          }
-        }
+        };
       }
     }
 

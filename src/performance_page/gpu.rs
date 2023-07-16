@@ -432,6 +432,11 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
+
+            self.clock_speed_current
+                .connect_width_request_notify(move |_| {
+                    dbg!(this.imp().clock_speed_current.allocated_width());
+                });
         }
 
         fn properties() -> &'static [ParamSpec] {
