@@ -219,7 +219,7 @@ impl MissionCenterApplication {
             .transient_for(&window)
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
-            .developer_name("Romeo Calota")
+            .developer_name("Mission Center Developers")
             .developers(["Romeo Calota"])
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
