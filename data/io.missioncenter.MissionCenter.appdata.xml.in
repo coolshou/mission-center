@@ -96,6 +96,20 @@
 
     <releases>
 
+      <release version="0.2.4" date="2023-07-16">
+        <description>
+          <ul>
+            <li>Translation fixes for Portuguese by Rafael Fontenelle</li>
+            <li>Only show a link-local IPv6 address if no other IPv6 exists by Maximilian</li>
+            <li>Add Traditional Chinese locale by Peter Dave Hello</li>
+            <li>Add category for application menu by Renner0E</li>
+            <li>Fix a parsing error when parsing the output of `dmidecode` that lead to a panic</li>
+            <li>Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does not exist, when getting CPU base speed information</li>
+            <li>Update GPU tab UI to be more adaptive for smaller resolutions</li>
+          </ul>
+        </description>
+      </release>
+
       <release version="0.2.3" date="2023-07-13">
         <description>
           <ul>
