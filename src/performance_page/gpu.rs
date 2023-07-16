@@ -60,13 +60,21 @@ mod imp {
         #[template_child]
         pub utilization: TemplateChild<gtk::Label>,
         #[template_child]
-        pub memory_usage: TemplateChild<gtk::Label>,
+        pub memory_usage_current: TemplateChild<gtk::Label>,
         #[template_child]
-        pub clock_speed: TemplateChild<gtk::Label>,
+        pub memory_usage_max: TemplateChild<gtk::Label>,
         #[template_child]
-        pub memory_speed: TemplateChild<gtk::Label>,
+        pub clock_speed_current: TemplateChild<gtk::Label>,
         #[template_child]
-        pub power_draw: TemplateChild<gtk::Label>,
+        pub clock_speed_max: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub memory_speed_current: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub memory_speed_max: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub power_draw_current: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub power_draw_max: TemplateChild<gtk::Label>,
         #[template_child]
         pub temperature: TemplateChild<gtk::Label>,
         #[template_child]
@@ -102,10 +110,14 @@ mod imp {
                 total_memory: Default::default(),
                 usage_graph_memory: Default::default(),
                 utilization: Default::default(),
-                memory_usage: Default::default(),
-                clock_speed: Default::default(),
-                memory_speed: Default::default(),
-                power_draw: Default::default(),
+                memory_usage_current: Default::default(),
+                memory_usage_max: Default::default(),
+                clock_speed_current: Default::default(),
+                clock_speed_max: Default::default(),
+                memory_speed_current: Default::default(),
+                memory_speed_max: Default::default(),
+                power_draw_current: Default::default(),
+                power_draw_max: Default::default(),
                 temperature: Default::default(),
                 opengl_version: Default::default(),
                 vulkan_version: Default::default(),
@@ -304,11 +316,15 @@ mod imp {
             let used_memory = crate::to_human_readable(gpu.dynamic_info.used_memory as f32, 1024.);
             let total_memory =
                 crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
-            this.memory_usage.set_text(&format!(
-                "{:.2} {}{}B / {:.2} {}{}B",
+            this.memory_usage_current.set_text(&format!(
+                "{:.2} {}{}B",
                 used_memory.0,
                 used_memory.1,
                 if used_memory.1.is_empty() { "" } else { "i" },
+            ));
+
+            this.memory_usage_max.set_text(&format!(
+                "{:.2} {}{}B",
                 total_memory.0,
                 total_memory.1,
                 if total_memory.1.is_empty() { "" } else { "i" }
@@ -322,10 +338,10 @@ mod imp {
                 gpu.dynamic_info.clock_speed_max_mhz as f32 * 1_000_000.,
                 1000.,
             );
-            this.clock_speed.set_text(&format!(
-                "{:.2} {}Hz / {:.2} {}Hz",
-                clock_speed.0, clock_speed.1, clock_speed_max.0, clock_speed_max.1
-            ));
+            this.clock_speed_current
+                .set_text(&format!("{:.2} {}Hz", clock_speed.0, clock_speed.1));
+            this.clock_speed_max
+                .set_text(&format!("{:.2} {}Hz", clock_speed_max.0, clock_speed_max.1));
 
             let memory_speed =
                 crate::to_human_readable(gpu.dynamic_info.mem_speed_mhz as f32 * 1_000_000., 1000.);
@@ -333,19 +349,21 @@ mod imp {
                 gpu.dynamic_info.mem_speed_max_mhz as f32 * 1_000_000.,
                 1000.,
             );
-            this.memory_speed.set_text(&format!(
-                "{:.2} {}Hz / {:.2} {}Hz",
-                memory_speed.0, memory_speed.1, memory_speed_max.0, memory_speed_max.1
+            this.memory_speed_current
+                .set_text(&format!("{:.2} {}Hz", memory_speed.0, memory_speed.1));
+            this.memory_speed_max.set_text(&format!(
+                "{:.2} {}Hz",
+                memory_speed_max.0, memory_speed_max.1
             ));
 
             let power_draw =
                 crate::to_human_readable(gpu.dynamic_info.power_draw_watts as f32, 1000.);
             let power_limit =
                 crate::to_human_readable(gpu.dynamic_info.power_draw_max_watts as f32, 1000.);
-            this.power_draw.set_text(&format!(
-                "{:.2} {}W / {:.2} {}W",
-                power_draw.0, power_draw.1, power_limit.0, power_limit.1
-            ));
+            this.power_draw_current
+                .set_text(&format!("{:.2} {}W", power_draw.0, power_draw.1));
+            this.power_draw_max
+                .set_text(&format!("{:.2} {}W", power_limit.0, power_limit.1));
 
             this.temperature
                 .set_text(&format!("{}°C", gpu.dynamic_info.temp_celsius));
@@ -365,10 +383,10 @@ mod imp {
     PCI bus address:   {}
 
     Utilization:  {}
-    Memory usage: {}
-    Clock speed:  {}
-    Memory speed: {}
-    Power draw:   {}
+    Memory usage: {} / {}
+    Clock speed:  {} / {}
+    Memory speed: {} / {}
+    Power draw:   {} / {}
     Temperature:  {}"#,
                 self.gpu_id.label(),
                 self.device_name.label(),
@@ -377,10 +395,14 @@ mod imp {
                 self.pcie_speed.label(),
                 self.pci_addr.label(),
                 self.overall_percent.label(),
-                self.memory_usage.label(),
-                self.clock_speed.label(),
-                self.memory_speed.label(),
-                self.power_draw.label(),
+                self.memory_usage_current.label(),
+                self.memory_usage_max.label(),
+                self.clock_speed_current.label(),
+                self.clock_speed_max.label(),
+                self.memory_speed_current.label(),
+                self.memory_speed_max.label(),
+                self.power_draw_current.label(),
+                self.power_draw_max.label(),
                 self.temperature.label(),
             )
         }
@@ -410,6 +432,11 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
+
+            self.clock_speed_current
+                .connect_width_request_notify(move |_| {
+                    dbg!(this.imp().clock_speed_current.allocated_width());
+                });
         }
 
         fn properties() -> &'static [ParamSpec] {

@@ -245,6 +245,10 @@ impl MemInfo {
         let mut index = 0;
         let mut output_str = cmd_output.as_str();
         loop {
+            if index >= output_str.len() {
+                break;
+            }
+
             let to_parse = output_str[index..].trim();
             let mem_dev_str = "Memory Device";
             index = match to_parse.find(mem_dev_str) {
@@ -256,7 +260,7 @@ impl MemInfo {
             index += mem_dev_str.len();
             output_str = output_str[index..].trim();
 
-            let mut mem_dev = MemoryDevice::default();
+            let mut mem_dev = Some(MemoryDevice::default());
 
             for line in to_parse[index..].trim().lines() {
                 let mut split = line.trim().split(":");
@@ -269,6 +273,11 @@ impl MemInfo {
 
                 match key {
                     "Size" => {
+                        if value.to_lowercase() == "no module installed" {
+                            mem_dev = None;
+                            break;
+                        }
+
                         let (value, unit) = {
                             let mut split = value.trim().split_whitespace();
                             (
@@ -278,33 +287,43 @@ impl MemInfo {
                         };
                         match unit.trim() {
                             "TB" => {
-                                mem_dev.size =
+                                mem_dev.as_mut().unwrap().size =
                                     value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
                             }
                             "GB" => {
-                                mem_dev.size =
+                                mem_dev.as_mut().unwrap().size =
                                     value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
                             }
                             "MB" => {
-                                mem_dev.size = value.parse::<usize>().map_or(0, |s| s * 1024 * 1024)
+                                mem_dev.as_mut().unwrap().size =
+                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024)
                             }
-                            "KB" => mem_dev.size = value.parse::<usize>().map_or(0, |s| s * 1024),
-                            _ => mem_dev.size = value.parse::<usize>().map_or(0, |s| s),
+                            "KB" => {
+                                mem_dev.as_mut().unwrap().size =
+                                    value.parse::<usize>().map_or(0, |s| s * 1024)
+                            }
+                            _ => {
+                                mem_dev.as_mut().unwrap().size =
+                                    value.parse::<usize>().map_or(0, |s| s)
+                            }
                         }
                     }
-                    "Form Factor" => mem_dev.form_factor = value.to_owned(),
-                    "Locator" => mem_dev.locator = value.to_owned(),
-                    "Bank Locator" => mem_dev.bank_locator = value.to_owned(),
-                    "Type" => mem_dev.ram_type = value.to_owned(),
+                    "Form Factor" => mem_dev.as_mut().unwrap().form_factor = value.to_owned(),
+                    "Locator" => mem_dev.as_mut().unwrap().locator = value.to_owned(),
+                    "Bank Locator" => mem_dev.as_mut().unwrap().bank_locator = value.to_owned(),
+                    "Type" => mem_dev.as_mut().unwrap().ram_type = value.to_owned(),
                     "Speed" => {
                         let value = value.trim_end_matches("MT/s").trim();
-                        mem_dev.speed = value.parse::<usize>().map_or(0, |s| s)
+                        mem_dev.as_mut().unwrap().speed = value.parse::<usize>().map_or(0, |s| s)
                     }
-                    "Rank" => mem_dev.rank = value.parse::<u8>().map_or(0, |s| s),
+                    "Rank" => mem_dev.as_mut().unwrap().rank = value.parse::<u8>().map_or(0, |s| s),
                     _ => (),
                 }
             }
-            result.push(mem_dev);
+
+            if mem_dev.is_some() {
+                result.push(mem_dev.unwrap());
+            }
         }
 
         Some(result)
