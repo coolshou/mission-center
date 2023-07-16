@@ -74,8 +74,6 @@ mod imp {
 
                 let window = crate::MissionCenterWindow::new(&*application, settings.as_ref());
                 window.connect_default_height_notify(clone!(@weak self as this => move |window| {
-                    dbg!(window.default_height());
-
                     let settings = this.settings.take();
                     if settings.is_none() {
                         return;
@@ -88,8 +86,6 @@ mod imp {
                     this.settings.set(Some(settings));
                 }));
                 window.connect_default_width_notify(clone!(@weak self as this => move|window| {
-                    dbg!(window.default_width());
-
                     let settings = this.settings.take();
                     if settings.is_none() {
                         return;
