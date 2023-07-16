@@ -121,7 +121,7 @@ template $PerformancePageGpu: Box {
         vexpand: true;
         hexpand: true;
 
-        height-request: 100;
+        height-request: 50;
 
         base-color: bind-property template.base-color;
         data-set-count: 1;
@@ -154,7 +154,7 @@ template $PerformancePageGpu: Box {
         vexpand: true;
         hexpand: true;
 
-        height-request: 100;
+        height-request: 50;
 
         base-color: bind-property template.base-color;
         data-set-count: 1;
@@ -204,158 +204,253 @@ template $PerformancePageGpu: Box {
     visible: bind-property template.summary-mode inverted;
 
     Box dynamic_data {
-      orientation: vertical;
       spacing: 10;
 
-      Box top_row {
-        spacing: 15;
+      Adw.Clamp {
+        orientation: horizontal;
+        maximum-size: 250;
 
-        Box {
+        child: Box left_column {
           orientation: vertical;
-          spacing: 3;
-          width-request: 230;
+          spacing: 10;
 
-          Label {
-            styles [
-              "caption",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-            halign: start;
-            label: _("Utilization");
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Utilization");
+            }
+
+            Label utilization {
+              styles [
+                "title-4",
+              ]
+
+              halign: start;
+            }
           }
 
-          Label utilization {
-            styles [
-              "title-4",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-            halign: start;
+            Label {
+
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Clock Speed");
+            }
+
+            Box {
+              Label clock_speed_current {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label clock_speed_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+            }
           }
-        }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 200;
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-          Label {
-            styles [
-              "caption",
-            ]
+            Label {
+              styles [
+                "caption",
+              ]
 
-            halign: start;
-            label: _("Memory usage");
+              halign: start;
+              label: _("Power draw");
+            }
+
+            Box {
+              Label power_draw_current {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label power_draw_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+            }
           }
-
-          Label memory_usage {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
+        };
       }
 
-      Box mid_row {
-        spacing: 15;
+      Adw.Clamp {
+        orientation: horizontal;
+        maximum-size: 250;
 
-        Box {
+        child: Box right_column {
           orientation: vertical;
-          spacing: 3;
-          width-request: 230;
+          spacing: 10;
 
-          Label {
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-            styles [
-              "caption",
-            ]
+            Label {
+              styles [
+                "caption",
+              ]
 
-            halign: start;
-            label: _("Clock Speed");
+              halign: start;
+              label: _("Memory usage");
+            }
+
+            Box {
+              Label memory_usage_current {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+
+              Label {
+                styles [
+                  "title-4",
+                ]
+
+                halign: start;
+                label: " / ";
+              }
+
+              Label memory_usage_max {
+                styles [
+                  "title-4",
+                ]
+
+                ellipsize: middle;
+
+                halign: start;
+              }
+            }
           }
 
-          Label clock_speed {
-            styles [
-              "title-4",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-            halign: start;
-          }
-        }
+            Label {
+              styles [
+                "caption",
+              ]
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 230;
+              halign: start;
+              label: _("Memory speed");
+            }
 
-          Label {
-            styles [
-              "caption",
-            ]
+            Box {
+              Label memory_speed_current {
+                styles [
+                  "title-4",
+                ]
 
-            halign: start;
-            label: _("Memory speed");
-          }
+                ellipsize: middle;
 
-          Label memory_speed {
-            styles [
-              "title-4",
-            ]
+                halign: start;
+              }
 
-            halign: start;
-          }
-        }
-      }
+              Label {
+                styles [
+                  "title-4",
+                ]
 
-      Box bottom_row {
-        spacing: 15;
+                halign: start;
+                label: " / ";
+              }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 230;
+              Label memory_speed_max {
+                styles [
+                  "title-4",
+                ]
 
-          Label {
-            styles [
-              "caption",
-            ]
+                ellipsize: middle;
 
-            halign: start;
-            label: _("Power draw");
+                halign: start;
+              }
+            }
           }
 
-          Label power_draw {
-            styles [
-              "title-4",
-            ]
+          Box {
+            orientation: vertical;
+            spacing: 3;
 
-            halign: start;
+            Label {
+              styles [
+                "caption",
+              ]
+
+              halign: start;
+              label: _("Temperature");
+            }
+
+            Label temperature {
+              styles [
+                "title-4",
+              ]
+
+              ellipsize: middle;
+
+              halign: start;
+            }
           }
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Temperature");
-          }
-
-          Label temperature {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
+        };
       }
     }
 
