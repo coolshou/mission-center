@@ -243,13 +243,14 @@ impl MemInfo {
         let mut result = vec![];
 
         let mut index = 0;
+        let mut speed_fallback = 0;
         let mut output_str = cmd_output.as_str();
         loop {
             if index >= output_str.len() {
                 break;
             }
 
-            let to_parse = output_str[index..].trim();
+            let to_parse = output_str.trim();
             let mem_dev_str = "Memory Device";
             index = match to_parse.find(mem_dev_str) {
                 None => {
@@ -258,7 +259,9 @@ impl MemInfo {
                 Some(index) => index,
             };
             index += mem_dev_str.len();
-            output_str = output_str[index..].trim();
+            if index < output_str.len() {
+                output_str = output_str[index..].trim();
+            }
 
             let mut mem_dev = Some(MemoryDevice::default());
 
@@ -314,6 +317,10 @@ impl MemInfo {
                     "Type" => mem_dev.as_mut().unwrap().ram_type = value.to_owned(),
                     "Speed" => {
                         let value = value.trim_end_matches("MT/s").trim();
+                        speed_fallback = value.parse::<usize>().map_or(0, |s| s)
+                    }
+                    "Configured Memory Speed" => {
+                        let value = value.trim_end_matches("MT/s").trim();
                         mem_dev.as_mut().unwrap().speed = value.parse::<usize>().map_or(0, |s| s)
                     }
                     "Rank" => mem_dev.as_mut().unwrap().rank = value.parse::<u8>().map_or(0, |s| s),
@@ -322,6 +329,13 @@ impl MemInfo {
             }
 
             if mem_dev.is_some() {
+                {
+                    let mem_dev = mem_dev.as_mut().unwrap();
+
+                    if mem_dev.speed == 0 {
+                        mem_dev.speed = speed_fallback;
+                    }
+                }
                 result.push(mem_dev.unwrap());
             }
         }
