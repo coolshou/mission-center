@@ -46,16 +46,27 @@ mod imp {
         #[property(get, set)]
         pub show_expander: Cell<bool>,
 
-        #[property(get, set)]
+        #[property(get, set = Self::set_cpu_usage)]
         pub cpu_usage: Cell<f32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_memory_usage)]
         pub memory_usage: Cell<f32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_disk_usage)]
         pub disk_usage: Cell<f32>,
         #[property(get, set)]
         pub network_usage: Cell<f32>,
         #[property(get, set)]
         pub gpu_usage: Cell<f32>,
+
+        #[property(get)]
+        pub cpu_usage_percent: Cell<f32>,
+        #[property(get)]
+        pub memory_usage_percent: Cell<f32>,
+        #[property(get)]
+        pub disk_usage_percent: Cell<f32>,
+
+        pub max_cpu_usage: Cell<f32>,
+        pub max_memory_usage: Cell<f32>,
+        pub max_disk_usage: Cell<f32>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -77,6 +88,14 @@ mod imp {
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
+
+                cpu_usage_percent: Cell::new(0.),
+                memory_usage_percent: Cell::new(0.),
+                disk_usage_percent: Cell::new(0.),
+
+                max_cpu_usage: Cell::new(0.),
+                max_memory_usage: Cell::new(0.),
+                max_disk_usage: Cell::new(0.),
 
                 children: Cell::new(gio::ListStore::new(super::ViewModel::static_type())),
             }
@@ -118,6 +137,45 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn set_cpu_usage(&self, cpu_usage: f32) {
+            self.cpu_usage.set(cpu_usage);
+
+            let usage_precent = if self.max_cpu_usage.get() == 0. {
+                0.
+            } else {
+                self.cpu_usage.get() * 100.0 / self.max_cpu_usage.get()
+            };
+
+            self.cpu_usage_percent.set(usage_precent);
+            self.obj().notify_cpu_usage_percent();
+        }
+
+        pub fn set_memory_usage(&self, memory_usage: f32) {
+            self.memory_usage.set(memory_usage);
+
+            let usage_precent = if self.max_memory_usage.get() == 0. {
+                0.
+            } else {
+                self.memory_usage.get() * 100.0 / self.max_memory_usage.get()
+            };
+
+            self.memory_usage_percent.set(usage_precent);
+            self.obj().notify_memory_usage_percent();
+        }
+
+        pub fn set_disk_usage(&self, disk_usage: f32) {
+            self.disk_usage.set(disk_usage);
+
+            let usage_precent = if self.max_disk_usage.get() == 0. {
+                0.
+            } else {
+                self.disk_usage.get() * 100.0 / self.max_disk_usage.get()
+            };
+
+            self.disk_usage_percent.set(usage_precent);
+            self.obj().notify_disk_usage_percent();
         }
 
         pub fn content_type(&self) -> u8 {
@@ -182,6 +240,9 @@ pub struct ViewModelBuilder {
     disk_usage: f32,
     network_usage: f32,
     gpu_usage: f32,
+    max_cpu_usage: f32,
+    max_memory_usage: f32,
+    max_disk_usage: f32,
 }
 
 impl ViewModelBuilder {
@@ -200,6 +261,10 @@ impl ViewModelBuilder {
             disk_usage: 0.,
             network_usage: 0.,
             gpu_usage: 0.,
+
+            max_cpu_usage: 0.,
+            max_memory_usage: 0.,
+            max_disk_usage: 0.,
         }
     }
 
@@ -258,6 +323,22 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn max_cpu_usage(mut self, v: f32) -> Self {
+        self.max_cpu_usage = v;
+        self
+    }
+
+    pub fn max_memory_usage(mut self, v: f32) -> Self {
+        self.max_memory_usage = v;
+        self
+    }
+
+    #[allow(dead_code)]
+    pub fn max_disk_usage(mut self, v: f32) -> Self {
+        self.max_disk_usage = v;
+        self
+    }
+
     pub fn build(self) -> ViewModel {
         let this = ViewModel::new(self.content_type, self.show_expander);
 
@@ -272,6 +353,9 @@ impl ViewModelBuilder {
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
+            this.max_cpu_usage.set(self.max_cpu_usage);
+            this.max_memory_usage.set(self.max_memory_usage);
+            this.max_disk_usage.set(self.max_disk_usage);
         }
 
         this
