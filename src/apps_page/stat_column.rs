@@ -24,6 +24,7 @@ use gtk::{
     glib,
     glib::prelude::*,
     glib::{ParamSpec, Properties, Value},
+    prelude::*,
     subclass::prelude::*,
 };
 
@@ -38,12 +39,16 @@ mod imp {
         #[template_child]
         label: TemplateChild<gtk::Label>,
 
+        css_provider: Cell<gtk::CssProvider>,
+
         #[property(get = Self::unit, set = Self::set_unit, type = glib::GString)]
         unit: Cell<glib::GString>,
         #[property(set = Self::set_content_type, type = u8)]
         content_type: Cell<crate::apps_page::view_model::ContentType>,
         #[property(get, set)]
         value: Cell<f32>,
+        #[property(set = Self::set_usage_percent)]
+        usage_percent: Cell<f32>,
     }
 
     impl Default for StatColumn {
@@ -52,9 +57,11 @@ mod imp {
 
             Self {
                 label: TemplateChild::default(),
+                css_provider: Cell::new(gtk::CssProvider::new()),
                 unit: Cell::new(glib::GString::from("")),
                 content_type: Cell::new(ContentType::SectionHeader),
-                value: Cell::new(0.0),
+                value: Cell::new(0.),
+                usage_percent: Cell::new(0.),
             }
         }
     }
@@ -79,6 +86,25 @@ mod imp {
             };
 
             self.content_type.set(content_type);
+        }
+
+        fn set_usage_percent(&self, usage_percent: f32) {
+            use crate::apps_page::{
+                CSS_CELL_USAGE_HIGH, CSS_CELL_USAGE_LOW, CSS_CELL_USAGE_MEDIUM,
+            };
+
+            self.usage_percent.set(usage_percent);
+
+            let css_provider = unsafe { &*self.css_provider.as_ptr() };
+            if usage_percent >= 90.0 {
+                css_provider.load_from_data(CSS_CELL_USAGE_HIGH);
+            } else if usage_percent >= 80.0 {
+                css_provider.load_from_data(CSS_CELL_USAGE_MEDIUM);
+            } else if usage_percent >= 70.0 {
+                css_provider.load_from_data(CSS_CELL_USAGE_LOW);
+            } else {
+                css_provider.load_from_data("");
+            }
         }
     }
 
@@ -156,6 +182,20 @@ mod imp {
     impl WidgetImpl for StatColumn {
         fn realize(&self) {
             self.parent_realize();
+
+            if let Some(tree_expander) = self.obj().parent() {
+                if let Some(column_view_cell) = tree_expander.parent() {
+                    let style_provider = unsafe { &*self.css_provider.as_ptr() };
+                    // FIXME: Deprecated in GTK 4.10, removed in GTK 5.0, unclear what the replacement is
+                    #[allow(deprecated)]
+                    {
+                        column_view_cell
+                            .style_context()
+                            .add_provider(style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+                    }
+                }
+            }
+
             self.update_label();
         }
     }
