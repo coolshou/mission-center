@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-16 17:12+0200\n"
+"POT-Creation-Date: 2023-07-19 08:27+0300\n"
 "PO-Revision-Date: 2023-07-16 18:04+0200\n"
 "Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish; Castilian <>\n"
@@ -251,7 +251,8 @@ msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Qué página se muestra al iniciar la aplicación, en la pestaña de rendimiento"
 
-#: resources/ui/performance_page/cpu.blp:42 src/performance_page/mod.rs:267
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:725
+#: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
 
@@ -272,7 +273,7 @@ msgstr "Uso"
 msgid "Speed"
 msgstr "Velocidad"
 
-#: resources/ui/performance_page/cpu.blp:201
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:364
 msgid "Processes"
 msgstr "Procesos"
 
@@ -492,7 +493,8 @@ msgstr "Alguna información requiere privilegios administrativos"
 msgid "_Authenticate"
 msgstr "_Autenticar"
 
-#: resources/ui/performance_page/memory.blp:52 src/performance_page/mod.rs:318
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:731
+#: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memoria"
 
@@ -641,7 +643,7 @@ msgstr "Escriba un nombre o PID para buscar"
 msgid "Performance"
 msgstr "Rendimiento"
 
-#: resources/ui/window.blp:89
+#: resources/ui/window.blp:89 src/apps_page/mod.rs:357
 msgid "Apps"
 msgstr "Aplicaciones"
 
@@ -656,6 +658,19 @@ msgstr "_Acerca de Mission Center"
 #: resources/ui/window.blp:113
 msgid "_Quit"
 msgstr "_Salir"
+
+#: src/apps_page/mod.rs:713
+msgid "Name"
+msgstr ""
+
+#: src/apps_page/mod.rs:719
+msgid "PID"
+msgstr ""
+
+#: src/apps_page/mod.rs:737
+#, fuzzy
+msgid "Disk"
+msgstr "_Disco"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -792,3 +807,7 @@ msgstr "{} {}bps"
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
 msgstr "N/D"
+
+#: src/application.rs:221
+msgid "translator-credits"
+msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
