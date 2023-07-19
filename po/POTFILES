@@ -22,6 +22,18 @@ resources/ui/preferences/window.blp
 
 resources/ui/window.blp
 
+src/apps_page/mod.rs
+src/apps_page/column_header.rs
+src/apps_page/list_item.rs
+src/apps_page/model_entry.rs
+src/apps_page/pid_column.rs
+src/apps_page/stat_column.rs
+src/apps_page/view_model.rs
+
+src/common/app.rs
+src/common/process.rs
+src/common/util.rs
+
 src/performance_page/widgets/mod.rs
 src/performance_page/widgets/graph_widget.rs
 src/performance_page/widgets/mem_composition_widget.rs
@@ -36,3 +48,7 @@ src/performance_page/summary_graph.rs
 src/preferences/mod.rs
 src/preferences/checked_row_widget.rs
 src/preferences/page.rs
+
+src/application.rs
+src/main.rs
+src/window.rs

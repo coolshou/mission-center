@@ -36,6 +36,12 @@
 * GPU support is experimental and only AMD and nVidia GPUs can be
   monitored [#5](https://gitlab.com/mission-center-devs/mission-center/-/issues/5)
 
+<br/>
+<p align="center">
+  <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
+</p>
+<br/>
+
 #### Screenshots:
 
 *CPU overall view*  
@@ -69,4 +75,95 @@
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
 
-Comments, suggestions, bug reports and contributions welcome
+#### Building - Native
+
+**Requirements:**
+ * Meson (version >= 0.63)
+ * Rust (version >= 1.69)
+ * Python3
+ * Python GObject Introspection (required for Blueprint)
+ * DRM development libraries
+ * GBM development libraries
+ * udev development libraires
+ * GTK 4
+ * libadwaita
+
+**Build instructions**
+```bash
+# On Ubuntu 23.04 all dependencies, except for the Rust toolchain, can be installed with:
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+
+meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
+ninja -C _build
+```
+
+If you want to run the application from the build directory (for development or debugging) some set up is required:
+
+```bash
+export PATH="$(pwd)/_build/src/proxy:$PATH"
+export GSETTINGS_SCHEMA_DIR="$(pwd)/_build/data"
+export HW_DB_DIR="$(pwd)/_build/data/hwdb"
+export MC_RESOURCE_DIR="$(pwd)/_build/resources"
+
+glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$(pwd)/_build/data/"
+```
+
+And then to run the app:
+```bash
+_build/src/missioncenter
+```
+
+If you want to install the app just run:
+```bash
+ninja -C _build install
+```
+
+And run the app from your launcher or from the command-line:
+```bash
+missioncenter
+```
+
+#### Building - Flatpak
+
+**Requirements:**
+ * Flatpak
+ * Flatpak-Builder
+
+Add the `flathub` repo is not already present:
+```bash
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+```
+
+Install the required Flatpak runtimes and SDKs:
+```bash
+flatpak install -y \
+    org.freedesktop.Platform//22.08 \
+    org.freedesktop.Sdk//22.08 \
+    org.gnome.Platform//44 \
+    org.gnome.Sdk//44 \
+    org.freedesktop.Sdk.Extension.llvm16//22.08 \
+    org.freedesktop.Sdk.Extension.rust-stable//22.08
+```
+
+Finally build a Flatpak package:
+```bash
+cd flatpak
+flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
+flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
+```
+
+Install the package:
+```bash
+flatpak uninstall -y io.missioncenter.MissionCenter
+flatpak install -y missioncenter.flatpak
+```
+
+Run the app from your launcher or from the command-line:
+```bash
+flatpak run io.missioncenter.MissionCenter
+```
+
+<br/>
+
+**Comments, suggestions, bug reports and contributions welcome**
+
