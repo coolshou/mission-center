@@ -50,6 +50,9 @@ template $AppsPage : Box {
                 name: bind (expander.item as <$ViewModel>).name;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
                 show-expander: bind (expander.item as <$ViewModel>).show-expander;
+
+                cpu-usage-percent: bind (expander.item as <$ViewModel>).cpu-usage-percent;
+                memory-usage-percent: bind (expander.item as <$ViewModel>).memory-usage-percent;
               };
             };
           }
@@ -98,6 +101,7 @@ template $AppsPage : Box {
               child: $StatColumn {
                 unit: "%";
                 value: bind (expander.item as <$ViewModel>).cpu-usage;
+                usage-percent: bind (expander.item as <$ViewModel>).cpu-usage-percent;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };
@@ -123,6 +127,7 @@ template $AppsPage : Box {
               child: $StatColumn {
                 unit: "B";
                 value: bind (expander.item as <$ViewModel>).memory-usage;
+                usage-percent: bind (expander.item as <$ViewModel>).memory-usage-percent;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };

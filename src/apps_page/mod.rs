@@ -30,6 +30,10 @@ mod pid_column;
 mod stat_column;
 mod view_model;
 
+pub const CSS_CELL_USAGE_LOW: &str = "cell { background-color: rgba(246, 211, 45, 0.3); }";
+pub const CSS_CELL_USAGE_MEDIUM: &str = "cell { background-color: rgba(230, 97, 0, 0.3); }";
+pub const CSS_CELL_USAGE_HIGH: &str = "cell { background-color: rgba(165, 29, 45, 0.3); }";
+
 mod imp {
     use super::*;
 
@@ -60,6 +64,10 @@ mod imp {
         pub apps_model: Cell<gio::ListStore>,
         pub processes_root_model: Cell<gio::ListStore>,
 
+        pub max_cpu_usage: Cell<f32>,
+        pub max_memory_usage: Cell<f32>,
+        pub max_disk_usage: Cell<f32>,
+
         pub apps: Cell<std::collections::HashMap<String, crate::sys_info_v2::App>>,
         pub process_tree: Cell<crate::sys_info_v2::Process>,
     }
@@ -89,6 +97,10 @@ mod imp {
                 processes_root_model: Cell::new(gio::ListStore::new(
                     view_model::ViewModel::static_type(),
                 )),
+
+                max_cpu_usage: Cell::new(0.0),
+                max_memory_usage: Cell::new(0.0),
+                max_disk_usage: Cell::new(0.0),
 
                 apps: Cell::new(HashMap::new()),
                 process_tree: Cell::new(Process::default()),
@@ -151,6 +163,8 @@ mod imp {
                         .disk_usage(app.stats.disk_usage)
                         .network_usage(app.stats.network_usage)
                         .gpu_usage(app.stats.gpu_usage)
+                        .max_cpu_usage(self.max_cpu_usage.get())
+                        .max_memory_usage(self.max_memory_usage.get())
                         .build();
                     model.append(&view_model);
                 } else {
@@ -176,7 +190,11 @@ mod imp {
         pub fn update_processes_models(&self) {
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
-            fn update_model(model: gio::ListStore, process: &crate::sys_info_v2::Process) {
+            fn update_model(
+                this: &AppsPage,
+                model: gio::ListStore,
+                process: &crate::sys_info_v2::Process,
+            ) {
                 let mut to_remove = Vec::new();
                 for i in 0..model.n_items() {
                     let current = model.item(i).unwrap().downcast::<ViewModel>();
@@ -245,6 +263,8 @@ mod imp {
                             .disk_usage(child.stats.disk_usage)
                             .network_usage(child.stats.network_usage)
                             .gpu_usage(child.stats.gpu_usage)
+                            .max_cpu_usage(this.max_cpu_usage.get())
+                            .max_memory_usage(this.max_memory_usage.get())
                             .build();
 
                         model.append(&view_model);
@@ -265,14 +285,14 @@ mod imp {
                         view_model.children().clone()
                     };
 
-                    update_model(child_model, child);
+                    update_model(this, child_model, child);
                 }
             }
 
             let process_tree = self.process_tree.take();
             let processes_root_model = self.processes_root_model.take();
 
-            update_model(processes_root_model.clone(), &process_tree);
+            update_model(self, processes_root_model.clone(), &process_tree);
 
             self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
@@ -761,6 +781,10 @@ impl AppsPage {
         use std::collections::HashMap;
 
         let this = self.imp();
+
+        this.max_cpu_usage.set(num_cpus::get() as f32 * 100.0);
+        this.max_memory_usage
+            .set(readings.mem_info.mem_total as f32);
 
         let mut apps = HashMap::new();
         std::mem::swap(&mut apps, &mut readings.running_apps);
