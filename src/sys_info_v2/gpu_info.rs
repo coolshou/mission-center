@@ -71,7 +71,7 @@ mod nvtop {
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
     pub struct GPUInfoStaticInfo {
-        pub device_name: [i8; MAX_DEVICE_NAME],
+        pub device_name: [libc::c_char; MAX_DEVICE_NAME],
         pub max_pcie_gen: u32,
         pub max_pcie_link_width: u32,
         pub temperature_shutdown_threshold: u32,
@@ -171,8 +171,8 @@ mod nvtop {
     pub struct GPUProcess {
         pub r#type: GPUProcessType,
         pub pid: i32,
-        pub cmdline: *mut i8,
-        pub user_name: *mut i8,
+        pub cmdline: *mut libc::c_char,
+        pub user_name: *mut libc::c_char,
         pub gfx_engine_used: u64,
         pub compute_engine_used: u64,
         pub enc_engine_used: u64,
@@ -198,7 +198,7 @@ mod nvtop {
         pub processes_count: u32,
         pub processes: *mut GPUProcess,
         pub processes_array_size: u32,
-        pub pdev: [i8; PDEV_LEN],
+        pub pdev: [libc::c_char; PDEV_LEN],
     }
 
     extern "C" {
@@ -409,7 +409,7 @@ impl VulkanInfo {
             vendorID: u32,
             deviceID: u32,
             deviceType: i32,
-            deviceName: [i8; VK_MAX_PHYSICAL_DEVICE_NAME_SIZE],
+            deviceName: [libc::c_char; VK_MAX_PHYSICAL_DEVICE_NAME_SIZE],
             pipelineCacheUUID: [u8; VK_UUID_SIZE],
             limits: [u8; SIZE_OF_LIMITS_STRUCT],
             sparseProperties: [u8; SIZE_OF_SPARSE_PROPERTIES_STRUCT],

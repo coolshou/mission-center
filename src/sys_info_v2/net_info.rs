@@ -24,7 +24,7 @@ mod if_nameindex {
     #[repr(C)]
     pub struct if_nameindex {
         pub if_index: u32,
-        pub if_name: *mut i8,
+        pub if_name: *mut libc::c_char,
     }
 
     extern "C" {
@@ -726,10 +726,6 @@ impl NetInfo {
         &mut self,
         dbus_proxy: *mut gtk::gio::ffi::GDBusProxy,
     ) -> Option<String> {
-        extern "C" {
-            fn strerror(error: i32) -> *const i8;
-        }
-
         use errno_sys::errno_location;
         use gtk::glib::*;
         use libudev_sys::*;
@@ -745,7 +741,7 @@ impl NetInfo {
                 let udev_device = udev_device_new_from_syspath(self.udev, udi.as_ptr() as _);
                 if udev_device.is_null() {
                     let err = *errno_location();
-                    let error_message = CStr::from_ptr(strerror(err))
+                    let error_message = CStr::from_ptr(libc::strerror(err))
                         .to_str()
                         .map_or("Unknown error", |s| s)
                         .to_owned();
@@ -859,7 +855,7 @@ impl NetInfo {
             return None;
         }
 
-        let mut device_path: *mut i8 = std::ptr::null_mut();
+        let mut device_path: *mut libc::c_char = std::ptr::null_mut();
         unsafe {
             g_variant_get(
                 device_path_variant,
@@ -948,12 +944,12 @@ impl NetInfo {
     // Yanked from NetworkManager: src/libnm-client-impl/nm-device.c: _get_udev_property()
     unsafe fn get_udev_property(
         device: *mut libudev_sys::udev_device,
-        property: *const i8,
+        property: *const libc::c_char,
     ) -> Option<String> {
         use libudev_sys::*;
         use std::ffi::CStr;
 
-        let mut value: *const i8 = std::ptr::null_mut();
+        let mut value: *const libc::c_char = std::ptr::null_mut();
         let mut tmpdev: *mut udev_device = device;
 
         let mut count = 0;

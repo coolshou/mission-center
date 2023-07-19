@@ -240,13 +240,9 @@ impl StaticInfo {
     }
 
     fn virtualization() -> Option<bool> {
+        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
         fn cpuid_ex<const START: u8, const END: u8>(leaf: u32, result: &mut [u32]) -> Option<()> {
             use raw_cpuid::*;
-
-            #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
-            {
-                return None;
-            }
 
             let x = cpuid!(leaf);
             for (result_i, i) in (START..END).enumerate() {
@@ -270,6 +266,11 @@ impl StaticInfo {
             }
 
             Some(())
+        }
+
+        #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+        fn cpuid_ex<const _START: u8, const _END: u8>(_: u32, _: &mut [u32]) -> Option<()> {
+            None
         }
 
         let mut signature_reg = [0u32; 3];
