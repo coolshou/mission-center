@@ -321,7 +321,7 @@ impl DiskInfo {
                     + delta_flush_ticks_weighted_ms;
 
                 // Arbitrary math is arbitrary
-                let busy_percent = (delta_ticks_weighted_ms as f32 / (elapsed * 5.0)).min(100.);
+                let busy_percent = (delta_ticks_weighted_ms as f32 / (elapsed * 8.0)).min(100.);
 
                 disk_stat.read_ticks_weighted_ms = read_ticks_weighted_ms;
                 disk_stat.write_ticks_weighted_ms = write_ticks_weighted_ms;

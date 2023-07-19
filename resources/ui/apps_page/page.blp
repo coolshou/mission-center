@@ -53,7 +53,6 @@ template $AppsPage : Box {
 
                 cpu-usage-percent: bind (expander.item as <$ViewModel>).cpu-usage-percent;
                 memory-usage-percent: bind (expander.item as <$ViewModel>).memory-usage-percent;
-                disk-usage-percent: bind (expander.item as <$ViewModel>).disk-usage-percent;
               };
             };
           }
@@ -154,7 +153,6 @@ template $AppsPage : Box {
               child: $StatColumn {
                 unit: "B/s";
                 value: bind (expander.item as <$ViewModel>).disk-usage;
-                usage-percent: bind (expander.item as <$ViewModel>).disk-usage-percent;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };

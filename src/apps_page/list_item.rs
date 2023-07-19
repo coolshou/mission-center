@@ -60,8 +60,6 @@ mod imp {
         pub cpu_usage_percent: Cell<f32>,
         #[property(set = Self::set_memory_usage_percent)]
         pub memory_usage_percent: Cell<f32>,
-        #[property(set = Self::set_disk_usage_percent)]
-        pub disk_usage_percent: Cell<f32>,
     }
 
     impl Default for ListItem {
@@ -79,7 +77,6 @@ mod imp {
 
                 cpu_usage_percent: Cell::new(0.0),
                 memory_usage_percent: Cell::new(0.0),
-                disk_usage_percent: Cell::new(0.0),
             }
         }
     }
@@ -174,31 +171,13 @@ mod imp {
         fn set_cpu_usage_percent(&self, usage_percent: f32) {
             self.cpu_usage_percent.set(usage_percent);
 
-            self.update_css(
-                usage_percent
-                    .max(self.memory_usage_percent.get())
-                    .max(self.disk_usage_percent.get()),
-            );
+            self.update_css(usage_percent.max(self.memory_usage_percent.get()));
         }
 
         fn set_memory_usage_percent(&self, usage_percent: f32) {
             self.memory_usage_percent.set(usage_percent);
 
-            self.update_css(
-                usage_percent
-                    .max(self.cpu_usage_percent.get())
-                    .max(self.disk_usage_percent.get()),
-            );
-        }
-
-        fn set_disk_usage_percent(&self, usage_percent: f32) {
-            self.disk_usage_percent.set(usage_percent);
-
-            self.update_css(
-                usage_percent
-                    .max(self.cpu_usage_percent.get())
-                    .max(self.memory_usage_percent.get()),
-            );
+            self.update_css(usage_percent.max(self.cpu_usage_percent.get()));
         }
 
         fn update_css(&self, usage_percent: f32) {

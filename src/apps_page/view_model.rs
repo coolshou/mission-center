@@ -50,7 +50,7 @@ mod imp {
         pub cpu_usage: Cell<f32>,
         #[property(get, set = Self::set_memory_usage)]
         pub memory_usage: Cell<f32>,
-        #[property(get, set = Self::set_disk_usage)]
+        #[property(get, set)]
         pub disk_usage: Cell<f32>,
         #[property(get, set)]
         pub network_usage: Cell<f32>,
@@ -61,12 +61,9 @@ mod imp {
         pub cpu_usage_percent: Cell<f32>,
         #[property(get)]
         pub memory_usage_percent: Cell<f32>,
-        #[property(get)]
-        pub disk_usage_percent: Cell<f32>,
 
         pub max_cpu_usage: Cell<f32>,
         pub max_memory_usage: Cell<f32>,
-        pub max_disk_usage: Cell<f32>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -91,11 +88,9 @@ mod imp {
 
                 cpu_usage_percent: Cell::new(0.),
                 memory_usage_percent: Cell::new(0.),
-                disk_usage_percent: Cell::new(0.),
 
                 max_cpu_usage: Cell::new(0.),
                 max_memory_usage: Cell::new(0.),
-                max_disk_usage: Cell::new(0.),
 
                 children: Cell::new(gio::ListStore::new(super::ViewModel::static_type())),
             }
@@ -165,19 +160,6 @@ mod imp {
             self.obj().notify_memory_usage_percent();
         }
 
-        pub fn set_disk_usage(&self, disk_usage: f32) {
-            self.disk_usage.set(disk_usage);
-
-            let usage_precent = if self.max_disk_usage.get() == 0. {
-                0.
-            } else {
-                self.disk_usage.get() * 100.0 / self.max_disk_usage.get()
-            };
-
-            self.disk_usage_percent.set(usage_precent);
-            self.obj().notify_disk_usage_percent();
-        }
-
         pub fn content_type(&self) -> u8 {
             self.content_type.get() as _
         }
@@ -242,7 +224,6 @@ pub struct ViewModelBuilder {
     gpu_usage: f32,
     max_cpu_usage: f32,
     max_memory_usage: f32,
-    max_disk_usage: f32,
 }
 
 impl ViewModelBuilder {
@@ -264,7 +245,6 @@ impl ViewModelBuilder {
 
             max_cpu_usage: 0.,
             max_memory_usage: 0.,
-            max_disk_usage: 0.,
         }
     }
 
@@ -333,12 +313,6 @@ impl ViewModelBuilder {
         self
     }
 
-    #[allow(dead_code)]
-    pub fn max_disk_usage(mut self, v: f32) -> Self {
-        self.max_disk_usage = v;
-        self
-    }
-
     pub fn build(self) -> ViewModel {
         let this = ViewModel::new(self.content_type, self.show_expander);
 
@@ -355,7 +329,6 @@ impl ViewModelBuilder {
             this.gpu_usage.set(self.gpu_usage);
             this.max_cpu_usage.set(self.max_cpu_usage);
             this.max_memory_usage.set(self.max_memory_usage);
-            this.max_disk_usage.set(self.max_disk_usage);
         }
 
         this
