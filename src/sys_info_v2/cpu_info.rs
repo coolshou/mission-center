@@ -359,20 +359,40 @@ impl StaticInfo {
 
         let mut result = std::collections::HashMap::new();
 
-        let mut buf = String::new();
-        let entries = match read_dir("/sys/devices/system/cpu/cpu0/cache/") {
+        let cpu_entries = match read_dir("/sys/devices/system/cpu/") {
             Ok(entries) => entries,
             Err(e) => {
-                g_critical!("MissionCenter::CpuInfo", "Could not read cache info: {}", e);
+                g_critical!(
+                    "MissionCenter::CpuInfo",
+                    "Could not read '/sys/devices/system/cpu': {}",
+                    e
+                );
                 return result;
             }
         };
 
-        for entry in entries.filter_map(|e| e.ok()) {
-            let file_type = match entry.file_type() {
+        for cpu_entry in cpu_entries {
+            let cpu_entry = match cpu_entry {
+                Ok(entry) => entry,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not read entry in '/sys/devices/system/cpu': {}",
+                        e
+                    );
+                    continue;
+                }
+            };
+
+            let file_type = match cpu_entry.file_type() {
                 Ok(file_type) => file_type,
                 Err(e) => {
-                    g_critical!("MissionCenter::CpuInfo", "Could not read cache info: {}", e);
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not read file type for '{}': {}",
+                        cpu_entry.path().display(),
+                        e
+                    );
                     continue;
                 }
             };
@@ -381,70 +401,98 @@ impl StaticInfo {
                 continue;
             }
 
-            let mut file = match File::open(entry.path().join("level")) {
-                Ok(file) => file,
+            let mut buf = String::new();
+            let entries = match read_dir(cpu_entry.path().join("cache/")) {
+                Ok(entries) => entries,
                 Err(e) => {
                     g_critical!(
                         "MissionCenter::CpuInfo",
-                        "Could not read cache level: {}",
+                        "Could not read cache info from '{}': {}",
+                        cpu_entry.path().display(),
                         e
                     );
                     continue;
                 }
             };
 
-            buf.clear();
-            match file.read_to_string(&mut buf) {
-                Ok(_) => (),
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not read cache level: {}",
-                        e
-                    );
-                    continue;
-                }
-            }
-            let level = match buf.trim().parse::<u8>() {
-                Ok(level) => level,
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not read cache level: {}",
-                        e
-                    );
-                    continue;
-                }
-            };
+            for entry in entries.filter_map(|e| e.ok()) {
+                let file_type = match entry.file_type() {
+                    Ok(file_type) => file_type,
+                    Err(e) => {
+                        g_critical!("MissionCenter::CpuInfo", "Could not read cache info: {}", e);
+                        continue;
+                    }
+                };
 
-            let mut file = match File::open(entry.path().join("size")) {
-                Ok(file) => file,
-                Err(e) => {
-                    g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
+                if !file_type.is_dir() {
                     continue;
                 }
-            };
 
-            buf.clear();
-            match file.read_to_string(&mut buf) {
-                Ok(_) => (),
-                Err(e) => {
-                    g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
-                    continue;
-                }
-            }
-            let size = match buf.trim().trim_matches('K').parse::<usize>() {
-                Ok(level) => level,
-                Err(e) => {
-                    g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
-                    continue;
-                }
-            };
+                let mut file = match File::open(entry.path().join("level")) {
+                    Ok(file) => file,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read cache level: {}",
+                            e
+                        );
+                        continue;
+                    }
+                };
 
-            if let Some(old_size) = result.get_mut(&level) {
-                *old_size += size;
-            } else {
-                result.insert(level, size);
+                buf.clear();
+                match file.read_to_string(&mut buf) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read cache level: {}",
+                            e
+                        );
+                        continue;
+                    }
+                }
+                let level = match buf.trim().parse::<u8>() {
+                    Ok(level) => level,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read cache level: {}",
+                            e
+                        );
+                        continue;
+                    }
+                };
+
+                let mut file = match File::open(entry.path().join("size")) {
+                    Ok(file) => file,
+                    Err(e) => {
+                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
+                        continue;
+                    }
+                };
+
+                buf.clear();
+                match file.read_to_string(&mut buf) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
+                        continue;
+                    }
+                }
+                let size = match buf.trim().trim_matches('K').parse::<usize>() {
+                    Ok(level) => level,
+                    Err(e) => {
+                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
+                        continue;
+                    }
+                };
+
+                if let Some(old_size) = result.get_mut(&level) {
+                    *old_size += size;
+                } else {
+                    result.insert(level, size);
+                }
             }
         }
 
