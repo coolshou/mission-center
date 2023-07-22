@@ -47,10 +47,10 @@ impl StaticInfo {
             base_frequency_khz: Self::base_frequency_khz(),
             virtualization: Self::virtualization(),
             virtual_machine: unsafe { Self::virtual_machine() },
-            l1_cache: cache_info.get(&1).copied(),
-            l2_cache: cache_info.get(&2).copied(),
-            l3_cache: cache_info.get(&3).copied(),
-            l4_cache: cache_info.get(&4).copied(),
+            l1_cache: cache_info[1],
+            l2_cache: cache_info[2],
+            l3_cache: cache_info[3],
+            l4_cache: cache_info[4],
         }
     }
 
@@ -353,153 +353,273 @@ impl StaticInfo {
         Some(is_vm)
     }
 
-    fn cache_info() -> std::collections::HashMap<u8, usize> {
+    fn cache_info() -> [Option<usize>; 5] {
         use gtk::glib::*;
-        use std::{fs::*, io::*};
+        use std::{collections::HashSet, fs::*, os::unix::prelude::*, str::FromStr};
 
-        let mut result = std::collections::HashMap::new();
+        fn read_index_entry_content(
+            file_name: &str,
+            index_path: &std::path::Path,
+        ) -> Option<String> {
+            let path = index_path.join(file_name);
+            let content = read_to_string(path);
+            if content.is_err() {
+                g_critical!(
+                    "MissionCenter::CpuInfo",
+                    "Could not read '{}/{}': {}",
+                    index_path.display(),
+                    file_name,
+                    content.err().unwrap()
+                );
+                return None;
+            }
 
-        let cpu_entries = match read_dir("/sys/devices/system/cpu/") {
+            Some(content.unwrap())
+        }
+
+        fn read_index_entry_number<R: FromStr<Err = core::num::ParseIntError>>(
+            file_name: &str,
+            index_path: &std::path::Path,
+            suffix: Option<&str>,
+        ) -> Option<R> {
+            let content = read_index_entry_content(file_name, index_path);
+            if content.is_none() {
+                return None;
+            }
+            let content = content.unwrap();
+            let content = content.trim();
+            let value = if suffix.is_none() {
+                content.parse::<R>()
+            } else {
+                content.trim_end_matches(suffix.unwrap()).parse::<R>()
+            };
+            if value.is_err() {
+                g_critical!(
+                    "MissionCenter::CpuInfo",
+                    "Failed to parse '{}/{}': {}",
+                    index_path.display(),
+                    file_name,
+                    value.err().unwrap()
+                );
+                return None;
+            }
+
+            Some(value.unwrap())
+        }
+
+        let mut result = [None; 5];
+
+        let numa_node_entries = match read_dir("/sys/devices/system/node/") {
             Ok(entries) => entries,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::CpuInfo",
-                    "Could not read '/sys/devices/system/cpu': {}",
+                    "Could not read '/sys/devices/system/node': {}",
                     e
                 );
                 return result;
             }
         };
 
-        for cpu_entry in cpu_entries {
-            let cpu_entry = match cpu_entry {
+        for nn_entry in numa_node_entries {
+            let nn_entry = match nn_entry {
                 Ok(entry) => entry,
                 Err(e) => {
                     g_critical!(
                         "MissionCenter::CpuInfo",
-                        "Could not read entry in '/sys/devices/system/cpu': {}",
+                        "Could not read entry in '/sys/devices/system/node': {}",
                         e
                     );
                     continue;
                 }
             };
-
-            let file_type = match cpu_entry.file_type() {
-                Ok(file_type) => file_type,
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not read file type for '{}': {}",
-                        cpu_entry.path().display(),
-                        e
-                    );
-                    continue;
-                }
-            };
-
-            if !file_type.is_dir() {
+            let path = nn_entry.path();
+            if !path.is_dir() {
                 continue;
             }
 
-            let mut buf = String::new();
-            let entries = match read_dir(cpu_entry.path().join("cache/")) {
+            let is_node = path
+                .file_name()
+                .map(|file| &file.as_bytes()[0..4] == b"node")
+                .unwrap_or(false);
+            if !is_node {
+                continue;
+            }
+
+            let mut l1_visited_data = HashSet::new();
+            let mut l1_visited_instr = HashSet::new();
+            let mut l2_visited = HashSet::new();
+            let mut l3_visited = HashSet::new();
+            let mut l4_visited = HashSet::new();
+
+            let cpu_entries = match path.read_dir() {
                 Ok(entries) => entries,
                 Err(e) => {
                     g_critical!(
                         "MissionCenter::CpuInfo",
-                        "Could not read cache info from '{}': {}",
-                        cpu_entry.path().display(),
+                        "Could not read '{}': {}",
+                        path.display(),
                         e
                     );
-                    continue;
+                    return result;
                 }
             };
-
-            for entry in entries.filter_map(|e| e.ok()) {
-                let file_type = match entry.file_type() {
-                    Ok(file_type) => file_type,
+            for cpu_entry in cpu_entries {
+                let cpu_entry = match cpu_entry {
+                    Ok(entry) => entry,
                     Err(e) => {
-                        g_critical!("MissionCenter::CpuInfo", "Could not read cache info: {}", e);
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read cpu entry in '{}': {}",
+                            path.display(),
+                            e
+                        );
                         continue;
                     }
                 };
-
-                if !file_type.is_dir() {
+                let mut path = cpu_entry.path();
+                if !path.is_symlink() {
                     continue;
                 }
 
-                let mut file = match File::open(entry.path().join("level")) {
-                    Ok(file) => file,
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::CpuInfo",
-                            "Could not read cache level: {}",
-                            e
-                        );
-                        continue;
-                    }
-                };
-
-                buf.clear();
-                match file.read_to_string(&mut buf) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::CpuInfo",
-                            "Could not read cache level: {}",
-                            e
-                        );
-                        continue;
-                    }
+                let cpu_name = path.file_name();
+                if cpu_name.is_none() {
+                    continue;
                 }
-                let level = match buf.trim().parse::<u8>() {
-                    Ok(level) => level,
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::CpuInfo",
-                            "Could not read cache level: {}",
-                            e
-                        );
-                        continue;
-                    }
-                };
+                let cpu_name = cpu_name.unwrap();
 
-                let mut file = match File::open(entry.path().join("size")) {
-                    Ok(file) => file,
-                    Err(e) => {
-                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
+                let is_cpu = &cpu_name.as_bytes()[0..3] == b"cpu";
+                if is_cpu {
+                    let cpu_number =
+                        unsafe { std::str::from_utf8_unchecked(&cpu_name.as_bytes()[3..]) }
+                            .parse::<u16>();
+                    if cpu_number.is_err() {
                         continue;
                     }
-                };
+                    let cpu_number = cpu_number.unwrap();
 
-                buf.clear();
-                match file.read_to_string(&mut buf) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
-                        continue;
-                    }
-                }
-                let size = match buf.trim().trim_matches('K').parse::<usize>() {
-                    Ok(level) => level,
-                    Err(e) => {
-                        g_critical!("MissionCenter::CpuInfo", "Could not read cache size: {}", e);
-                        continue;
-                    }
-                };
+                    path.push("cache");
+                    let cache_entries = match path.read_dir() {
+                        Ok(entries) => entries,
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::CpuInfo",
+                                "Could not read '{}': {}",
+                                path.display(),
+                                e
+                            );
+                            return result;
+                        }
+                    };
+                    for cache_entry in cache_entries {
+                        let cache_entry = match cache_entry {
+                            Ok(entry) => entry,
+                            Err(e) => {
+                                g_critical!(
+                                    "MissionCenter::CpuInfo",
+                                    "Could not read cpu entry in '{}': {}",
+                                    path.display(),
+                                    e
+                                );
+                                continue;
+                            }
+                        };
+                        let path = cache_entry.path();
+                        let is_cache_entry = path
+                            .file_name()
+                            .map(|file| &file.as_bytes()[0..5] == b"index")
+                            .unwrap_or(false);
+                        if is_cache_entry {
+                            let level = read_index_entry_number::<u8>("level", &path, None);
+                            if level.is_none() {
+                                continue;
+                            }
+                            let level = level.unwrap();
 
-                if let Some(old_size) = result.get_mut(&level) {
-                    *old_size += size;
-                } else {
-                    result.insert(level, size);
+                            let cache_type = read_index_entry_content("type", &path);
+                            if cache_type.is_none() {
+                                continue;
+                            }
+                            let cache_type = cache_type.unwrap();
+
+                            let visited_cpus = match cache_type.trim() {
+                                "Data" => &mut l1_visited_data,
+                                "Instruction" => &mut l1_visited_instr,
+                                "Unified" => match level {
+                                    2 => &mut l2_visited,
+                                    3 => &mut l3_visited,
+                                    4 => &mut l4_visited,
+                                    _ => continue,
+                                },
+                                _ => continue,
+                            };
+
+                            if visited_cpus.contains(&cpu_number) {
+                                continue;
+                            }
+
+                            let size = read_index_entry_number::<usize>("size", &path, Some("K"));
+                            if size.is_none() {
+                                continue;
+                            }
+                            let size = size.unwrap();
+
+                            let result_index = level as usize;
+                            if result[result_index].is_none() {
+                                result[result_index] = Some(size);
+                            } else {
+                                result[result_index] = Some(result[result_index].unwrap() + size);
+                            }
+
+                            let shared_cpu_list =
+                                read_index_entry_content("shared_cpu_list", &path);
+                            if shared_cpu_list.is_some() {
+                                let shared_cpu_list = shared_cpu_list.unwrap();
+                                let shared_cpu_list = shared_cpu_list.trim();
+
+                                let mut parse_success = false;
+
+                                {
+                                    // Try to split by '-' first
+                                    let mut shared_cpu_list = shared_cpu_list.split('-');
+                                    let start = shared_cpu_list.next();
+                                    if start.is_some() {
+                                        let start = start.unwrap().parse::<u16>().unwrap();
+
+                                        let end = shared_cpu_list.next();
+                                        if end.is_some() {
+                                            parse_success = true;
+
+                                            let end = end.unwrap().parse::<u16>().unwrap();
+                                            for i in start..=end {
+                                                visited_cpus.insert(i);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if !parse_success {
+                                    // Try to split by ','
+                                    let shared_cpu_list = shared_cpu_list.split(',');
+                                    for cpu in shared_cpu_list {
+                                        let cpu = cpu.parse::<u16>();
+                                        if cpu.is_err() {
+                                            continue;
+                                        }
+                                        let cpu = cpu.unwrap();
+                                        visited_cpus.insert(cpu);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        for (_, size) in result.iter_mut() {
-            *size *= 1024;
+        for i in 1..result.len() {
+            result[i] = result[i].map(|size| size * 1024);
         }
-
         result
     }
 }
