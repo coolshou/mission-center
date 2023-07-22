@@ -24,8 +24,12 @@ lazy_static! {
     static ref PATH: Vec<String> = {
         let mut result = vec![];
 
-        let path =
-            std::env::var("PATH").unwrap_or_else(|_| "/usr/local/bin:/usr/bin:/bin".to_string());
+        let mut path = std::env::var("PATH").unwrap_or_else(|_| {
+            "/usr/local/bin:/usr/bin:/bin".to_string()
+        });
+        // Add some extra paths to search for binaries. In particular web-browsers seem to launch
+        // themselves from a different path than the one in $PATH
+        path.push_str(":/opt/brave.com/brave:/opt/google/chrome:/opt/microsoft/msedge:/opt/vivaldi:/usr/lib/firefox:/usr/lib/chromium-browser:/usr/lib/opera:/usr/lib/x86_64-linux-gnu/opera:/usr/lib/aarch64-linux-gnu/opera:/usr/lib64/opera");
 
         for dir in path.split(':') {
             let p = std::path::Path::new(dir);
@@ -173,7 +177,7 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
 
     Some(App {
         name: name.to_string(),
-        command: cmd,
+        commands: cmd,
         icon,
 
         app_id,
@@ -190,33 +194,74 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<App> {
     })
 }
 
-fn parse_command(command: &str) -> Option<(String, bool)> {
+fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
     let mut iter = command.split_whitespace();
+
+    let mut commands = vec![];
+    let mut result = None;
 
     if let Some(cmd) = iter.next() {
         if !cmd.ends_with("flatpak") {
-            let cmd_path = std::path::Path::new(cmd);
-            if !cmd_path.exists() {
+            if let Some(file_name) = std::path::Path::new(cmd).file_name() {
                 for p in &*PATH {
                     let p = std::path::Path::new(p);
-                    let cmd_path = p.join(cmd_path);
+                    let cmd_path = p.join(file_name);
                     if cmd_path.exists() {
-                        return Some((cmd_path.to_string_lossy().to_string(), false));
+                        commands.push(cmd_path.to_string_lossy().to_string());
+                    }
+
+                    // Web browsers are wierd, their desktop file has the name of the binary with a
+                    // `-stable`, `-beta`, `-nightly`, `-canary`, etc. suffix, but the binary itself
+                    // doesn't have that suffix, so let's check for that too
+                    let file_name = file_name.to_string_lossy();
+                    let last_index = file_name.rfind('-');
+                    if last_index.is_some() {
+                        let file_name = &file_name[..last_index.unwrap()];
+
+                        // Also Google Chrome is even stranger, the process is just called `chrome`
+                        if file_name.starts_with("google-") {
+                            let file_name = file_name.trim_start_matches("google-");
+                            let cmd_path = p.join(file_name);
+                            if cmd_path.exists() {
+                                commands.push(cmd_path.to_string_lossy().to_string());
+                            }
+                            // Vivaldi just randomly adds a `-bin` at the end
+                        } else if file_name.starts_with("vivaldi") {
+                            let cmd_path = p.join("vivaldi-bin");
+                            if cmd_path.exists() {
+                                commands.push(cmd_path.to_string_lossy().to_string());
+                            }
+                            // Microsoft decided to call their binary `msedge` instead of `microsoft-edge`
+                        } else if file_name.starts_with("microsoft-edge") {
+                            let cmd_path = p.join("msedge");
+                            if cmd_path.exists() {
+                                commands.push(cmd_path.to_string_lossy().to_string());
+                            }
+                        } else {
+                            let cmd_path = p.join(file_name);
+                            if cmd_path.exists() {
+                                commands.push(cmd_path.to_string_lossy().to_string());
+                            }
+                        }
                     }
                 }
             } else {
-                return Some((cmd.to_string(), false));
+                commands.push(cmd.to_string());
             }
-        }
 
-        for arg in iter {
-            if arg.starts_with("--command=") {
-                return Some((arg[10..].to_string(), true));
+            result = Some((commands, false));
+        } else {
+            for arg in iter {
+                if arg.starts_with("--command=") {
+                    commands.push(arg[10..].to_string());
+                    result = Some((commands, true));
+                    break;
+                }
             }
         }
     }
 
-    None
+    result
 }
 
 fn parse_app_id(command: &str) -> Option<String> {

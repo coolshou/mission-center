@@ -43,28 +43,43 @@ pub fn running_apps(
             if app.is_flatpak {
                 if process.name == "bwrap" {
                     for arg in &process.cmd {
-                        if arg.contains(&app.command) {
-                            update_or_insert_app(app, process, result);
-                            found = true;
+                        for command in &app.commands {
+                            if arg.contains(command.as_str()) {
+                                update_or_insert_app(app, process, result);
+                                found = true;
+                            }
                         }
                     }
                 }
             } else {
-                if process.exe == std::path::Path::new(&app.command) {
-                    update_or_insert_app(app, process, result);
-                    found = true;
-                } else {
+                for command in &app.commands {
+                    if process.exe == std::path::Path::new(&command) {
+                        update_or_insert_app(app, process, result);
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
                     let mut iter = process.cmd.iter();
                     if let Some(cmd) = iter.next() {
-                        if cmd.ends_with(&app.command) {
-                            update_or_insert_app(app, process, result);
-                            found = true;
-                        }
-                        // The app might use a runtime (bash, python, node, mono, dotnet, etc.) so check the second argument
-                        else if let Some(cmd) = iter.next() {
-                            if cmd.ends_with(&app.command) {
+                        for command in &app.commands {
+                            if cmd.ends_with(command.as_str()) {
                                 update_or_insert_app(app, process, result);
                                 found = true;
+                                break;
+                            }
+                        }
+
+                        if !found {
+                            // The app might use a runtime (bash, python, node, mono, dotnet, etc.) so check the second argument
+                            if let Some(cmd) = iter.next() {
+                                for command in &app.commands {
+                                    if cmd.ends_with(command.as_str()) {
+                                        update_or_insert_app(app, process, result);
+                                        found = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
