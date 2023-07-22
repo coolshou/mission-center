@@ -577,37 +577,22 @@ impl StaticInfo {
                                 let shared_cpu_list = shared_cpu_list.unwrap();
                                 let shared_cpu_list = shared_cpu_list.trim();
 
-                                let mut parse_success = false;
-
-                                {
-                                    // Try to split by '-' first
-                                    let mut shared_cpu_list = shared_cpu_list.split('-');
-                                    let start = shared_cpu_list.next();
+                                let shared_cpu_list = shared_cpu_list.split(',');
+                                for cpu in shared_cpu_list {
+                                    let mut shared_cpu_sequence = cpu.split('-');
+                                    let start = shared_cpu_sequence.next();
                                     if start.is_some() {
                                         let start = start.unwrap().parse::<u16>().unwrap();
 
-                                        let end = shared_cpu_list.next();
+                                        let end = shared_cpu_sequence.next();
                                         if end.is_some() {
-                                            parse_success = true;
-
                                             let end = end.unwrap().parse::<u16>().unwrap();
                                             for i in start..=end {
                                                 visited_cpus.insert(i);
                                             }
+                                        } else {
+                                            visited_cpus.insert(start);
                                         }
-                                    }
-                                }
-
-                                if !parse_success {
-                                    // Try to split by ','
-                                    let shared_cpu_list = shared_cpu_list.split(',');
-                                    for cpu in shared_cpu_list {
-                                        let cpu = cpu.parse::<u16>();
-                                        if cpu.is_err() {
-                                            continue;
-                                        }
-                                        let cpu = cpu.unwrap();
-                                        visited_cpus.insert(cpu);
                                     }
                                 }
                             }
