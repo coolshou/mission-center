@@ -29,7 +29,7 @@ lazy_static! {
         });
         // Add some extra paths to search for binaries. In particular web-browsers seem to launch
         // themselves from a different path than the one in $PATH
-        path.push_str(":/opt/brave.com/brave:/opt/google/chrome:/opt/microsoft/msedge:/opt/vivaldi:/usr/lib/firefox:/usr/lib/chromium-browser:/usr/lib/opera:/usr/lib/x86_64-linux-gnu/opera:/usr/lib/aarch64-linux-gnu/opera:/usr/lib64/opera");
+        path.push_str(":/opt/brave.com/brave:/opt/google/chrome:/opt/microsoft/msedge:/opt/vivaldi:/usr/lib/firefox:/usr/lib64/firefox:/usr/lib/chromium-browser:/usr/lib64/chromium-browser:/usr/lib64/chromium:/usr/lib/opera:/usr/lib/x86_64-linux-gnu/opera:/usr/lib/aarch64-linux-gnu/opera:/usr/lib64/opera");
 
         for dir in path.split(':') {
             let p = std::path::Path::new(dir);
@@ -242,6 +242,14 @@ fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
                             if cmd_path.exists() {
                                 commands.push(cmd_path.to_string_lossy().to_string());
                             }
+                        }
+                    }
+
+                    // The main Firefox process in RedHat and ArchLinux based distros is `firefox-bin`
+                    if file_name.starts_with("firefox") {
+                        let cmd_path = p.join("firefox-bin");
+                        if cmd_path.exists() {
+                            commands.push(cmd_path.to_string_lossy().to_string());
                         }
                     }
                 }
