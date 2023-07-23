@@ -30,7 +30,7 @@ pub struct Stats {
 #[derive(Debug, Clone)]
 pub struct App {
     pub name: String,
-    pub command: String,
+    pub commands: Vec<String>,
     pub icon: Option<String>,
 
     pub app_id: Option<String>,
@@ -45,8 +45,11 @@ impl App {
     pub fn serialize<W: std::io::Write>(&self, output: &mut W) -> std::io::Result<()> {
         output.write(to_binary(&self.name.len()))?;
         output.write(self.name.as_bytes())?;
-        output.write(to_binary(&self.command.len()))?;
-        output.write(self.command.as_bytes())?;
+        output.write(to_binary(&self.commands.len()))?;
+        for command in &self.commands {
+            output.write(to_binary(&command.len()))?;
+            output.write(command.as_bytes())?;
+        }
         if self.icon.is_some() {
             output.write(to_binary(&true))?;
             let icon = self.icon.as_ref().unwrap();
@@ -76,7 +79,7 @@ impl App {
     pub fn deserialize<R: std::io::Read>(input: &mut R) -> std::io::Result<App> {
         let mut this = Self {
             name: "".to_string(),
-            command: "".to_string(),
+            commands: vec![],
             icon: None,
             app_id: None,
             is_flatpak: false,
@@ -98,9 +101,16 @@ impl App {
         this.name = unsafe { String::from_utf8_unchecked(name) };
 
         input.read_exact(to_binary_mut(&mut len))?;
-        let mut command = vec![0; len];
-        input.read_exact(&mut command)?;
-        this.command = unsafe { String::from_utf8_unchecked(command) };
+        this.commands.reserve(len);
+        for _ in 0..len {
+            let mut cmd_len = 0_usize;
+            input.read_exact(to_binary_mut(&mut cmd_len))?;
+            let mut command = vec![0; cmd_len];
+            input.read_exact(&mut command)?;
+
+            this.commands
+                .push(unsafe { String::from_utf8_unchecked(command) });
+        }
 
         let mut has_icon = false;
         input.read_exact(to_binary_mut(&mut has_icon))?;
