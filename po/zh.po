@@ -25,180 +25,180 @@ msgstr "任務中心"
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
-msgstr ""
+msgstr "工作管理員;資源監控器;系統監控器;處理器;處理程序;效能監控器;CPU;GPU;磁碟;磁碟;記憶體;網路;使用率;使用率"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
 #, fuzzy
 msgid "Mission Center Developers"
-msgstr "任務中心"
+msgstr "任務中心開發者"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:13
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "監控系統資源使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:15
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
+msgstr "監控您的 CPU、記憶體、磁碟、網路和 GPU 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 #, fuzzy
 msgid "Features:"
-msgstr "溫度"
+msgstr "功能："
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "監控整體或每個執行緒的 CPU 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
-msgstr ""
+msgstr "檢視系統處理程序、執行緒和控制代碼數量、運作時間、時脈（基礎及目前）、快取大小"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "監控 RAM 和 Swap 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:21
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "檢視系統如何使用記憶體的詳細資訊"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:22
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "監控磁碟使用情況和傳輸速率"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:23
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "監控網路使用情況和傳輸速度"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:24
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
-msgstr ""
+msgstr "檢視網路介面資訊，如網路卡名稱、連線類型（Wi-Fi 或 Ethernet）、無線速度和頻率、硬體位址、IP 位址"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:25
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
-msgstr ""
+msgstr "監控整體 GPU 使用情況、視訊編碼器和解碼器使用情況、記憶體使用情況和功耗，由熱門的 NVTOP 專案提供支援"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "檢視應用程式和處理程序的資源使用詳細資訊"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "支援縮小的摘要檢視以進行簡單監控"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
-msgstr ""
+msgstr "使用 OpenGL 渲染所有圖表，以盡可能減少 CPU 和整體資源使用"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "使用 GTK4 和 Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Written in Rust"
-msgstr ""
+msgstr "使用 Rust 撰寫"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak 優先"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:33
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "限制（目前正在努力克服這些限制）："
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:35
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
-msgstr ""
+msgstr "該應用程式目前只支援監控功能，舉例來說您無法停止處理程序"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:36
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "磁碟使用率可能不準確"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:37
 msgid "No per-process network usage"
-msgstr ""
+msgstr "沒有每個處理程序的網路使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:38
 msgid "No per-process GPU usage"
-msgstr ""
+msgstr "沒有每個處理程序的 GPU 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:39
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-msgstr ""
+msgstr "GPU 支援處於實驗階段，只能監控 AMD 和 nVidia 的 GPU"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:41
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "歡迎提供評論、建議、錯誤報告和貢獻"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:102
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
+msgstr "由 Rafael Fontenelle 修正葡萄牙語翻譯"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:103
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
-msgstr ""
+msgstr "由 Maximilian 提供，如果沒有其他 IPv6，則只顯示連結本地 IPv6 位址"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:104
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
+msgstr "由 Peter Dave Hello 新增繁體中文語系"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:105
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "由 Renner0E 為應用程式選單新增類別"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:106
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
-msgstr ""
+msgstr "修復解析 `dmidecode` 輸出時導致的解析錯誤"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:107
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
-msgstr ""
+msgstr "在取得 CPU 基礎速度資訊時，如果 `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` 不存在，則使用回退"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:108
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-msgstr ""
+msgstr "更新 GPU 標籤 UI 以適應較小的解析度"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:116
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "由 ondra05 新增捷克語翻譯"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:117
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "由 Rilson Joás 新增葡萄牙語翻譯"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:118
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
-msgstr ""
+msgstr "由 Hannes Kuchelmeister 為桌面檔案新增關鍵字以改進桌面環境的搜尋功能"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:119
 msgid "Fixed a bug where the app and process list was empty for some users"
-msgstr ""
+msgstr "修復了一個錯誤，導致某些使用者的應用程式和處理程序列表為空"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:127
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "修復系統負載過重時發生的崩潰"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:135
 msgid "First official release!"
-msgstr ""
+msgstr "首次正式發布！"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:14
 msgid "Which page is shown on application startup"
@@ -448,7 +448,7 @@ msgstr "PCI Express 速度："
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr "PCI 匯流排地址："
+msgstr "PCI 匯流排位址："
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
@@ -541,15 +541,15 @@ msgstr "頻率："
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr "硬體地址："
+msgstr "硬體位址："
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr "IPv4 地址："
+msgstr "IPv4 位址："
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr "IPv6 地址："
+msgstr "IPv6 位址："
 
 #: resources/ui/performance_page/network.blp:402
 msgid "Network Se_ttings"
@@ -626,11 +626,11 @@ msgstr "退出"
 
 #: src/apps_page/mod.rs:713
 msgid "Name"
-msgstr ""
+msgstr "名稱"
 
 #: src/apps_page/mod.rs:719
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:737
 #, fuzzy
@@ -644,9 +644,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"使用中（{}iB）\n"
+"使用中（{}B）\n"
 "\n"
-"作業系統和執行應用程式使用的記憶體"
+"作業系統和正在值行的應用程式使用的記憶體"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
 #, fuzzy
@@ -656,9 +656,9 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"已修改（{}iB）\n"
+"已修改（{}B）\n"
 "\n"
-"必須將其內容寫入磁碟才能被其他處理程序使用的記憶體"
+"在其他處理程序可以使用之前，必須先將記憶體內容寫入磁碟"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 #, fuzzy
@@ -667,7 +667,7 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"待命（{}iB）\n"
+"待機（{}B）\n"
 "\n"
 "包含非活動使用的快取資料和程式碼的記憶體"
 
@@ -679,10 +679,9 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"空閒（{}iB）\n"
+"空閒（{}B）\n"
 "\n"
-"目前未使用的記憶體，當作業系統、驅動程式或應用程式需要更多記憶體時，將首先重"
-"新分配"
+"當作業系統、驅動程式或應用程式需要更多記憶體時，優先重新分配的未使用的記憶體"
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
