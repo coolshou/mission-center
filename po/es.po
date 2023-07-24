@@ -8,15 +8,17 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-19 08:27+0300\n"
-"PO-Revision-Date: 2023-07-16 18:04+0200\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
-"Language-Team: Spanish; Castilian <>\n"
+"PO-Revision-Date: 2023-07-25 15:44+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Gtranslator 45.alpha0\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:4
@@ -94,7 +96,7 @@ msgid ""
 msgstr ""
 "Supervisar el uso general de la GPU, el uso del codificador y decodificador "
 "de vídeo, el uso de la memoria y el consumo de energía, impulsado por el "
-"popular proyecto NVTOP."
+"popular proyecto NVTOP"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid "See a breakdown of resource usage by app and process"
@@ -102,7 +104,7 @@ msgstr "Ver un desglose del uso de recursos por aplicación y proceso"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Admite una vista resumida minificada para una supervisión sencilla."
+msgstr "Admite una vista resumida minificada para una supervisión sencilla"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid ""
@@ -110,7 +112,7 @@ msgid ""
 "overall resource usage"
 msgstr ""
 "Usa el renderizado OpenGL para todos los gráficos en un esfuerzo por reducir "
-"el uso de la CPU y de los recursos en general."
+"el uso de la CPU y de los recursos en general"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
@@ -152,8 +154,8 @@ msgstr "Sin uso de GPU por proceso"
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
-"La compatibilidad con GPU es experimental y sólo se pueden controlar las GPU "
-"de AMD y NVIDIA."
+"La compatibilidad con GPU es experimental y solo se pueden controlar las GPU "
+"de AMD y NVIDIA"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:41
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -194,13 +196,13 @@ msgid ""
 "not exist, when getting CPU base speed information"
 msgstr ""
 "Usar un fallback si `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` no "
-"existe, cuando se obtiene información sobre la velocidad base de la CPU."
+"existe, cuando se obtiene información sobre la velocidad base de la CPU"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:108
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 "Actualización de la interfaz de usuario de la pestaña GPU para que se adapte "
-"mejor a las resoluciones más pequeñas."
+"mejor a las resoluciones más pequeñas"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:116
 msgid "Added Czech translation by ondra05"
@@ -222,13 +224,13 @@ msgstr ""
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 "Se ha corregido un error por el que la lista de aplicaciones y procesos "
-"aparecía vacía para algunos usuarios."
+"aparecía vacía para algunos usuarios"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:127
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr ""
 "Corrección de un fallo que se produce cuando el sistema está sometido a una "
-"carga pesada."
+"carga pesada"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:135
 msgid "First official release!"
@@ -661,16 +663,15 @@ msgstr "_Salir"
 
 #: src/apps_page/mod.rs:713
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: src/apps_page/mod.rs:719
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:737
-#, fuzzy
 msgid "Disk"
-msgstr "_Disco"
+msgstr "Disco"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -692,7 +693,7 @@ msgstr ""
 "Modificada ({}B)\n"
 "\n"
 "Memoria cuyo contenido debe escribirse en disco antes de que pueda ser usada "
-"por otro proceso."
+"por otro proceso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -702,7 +703,7 @@ msgid ""
 msgstr ""
 "En espera ({}B)\n"
 "\n"
-"Memoria que contiene datos en caché y código que no se usa activamente."
+"Memoria que contiene datos en caché y código que no se usa activamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -715,7 +716,7 @@ msgstr ""
 "\n"
 "Memoria que no está actualmente en uso, y que será reusada en primer lugar "
 "cuando el sistema operativo, los controladores o las aplicaciones necesiten "
-"más memoria."
+"más memoria"
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
