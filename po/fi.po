@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-19 08:27+0300\n"
-"PO-Revision-Date: 2023-07-24 19:10+0300\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2023-07-24 19:42+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:4
@@ -42,7 +44,7 @@ msgstr "Tarkkaile järjestelmän resurssien käyttöä"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:15
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
+msgstr "Tarkkaile suorittimen, muistin, levyn, verkon ja näytönohjaimen käyttöä"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 msgid "Features:"
@@ -50,29 +52,31 @@ msgstr "Ominaisuudet:"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Tarkkaile suorittimen käyttöä yleisesti tai säiekohtaisesti"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Näe järjestelmän prosessi-, säie- ja kahvamäärät, toiminta-aika, "
+"kellotaajuus (perustaajuus ja nykyinen taajuus) ja välimuistien koot"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Tarkkaile keskusmuistin ja swapin käyttöä"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:21
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Näe erittely, miten järjestelmä käyttää muistia"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:22
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Tarkkaile levyn käyttöä ja siirtonopeuksia"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:23
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Tarkkaile verkon käyttöä ja siirtonopeuksia"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:24
 msgid ""
@@ -80,6 +84,9 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Näe verkkoliitäntöjen tiedot kuten verkkokortin nimi, yhteyden tyyppi (Wi-Fi "
+"tai Ethernet), langattoman verkon nopeus ja taajuus, laiteosoite sekä IP-"
+"osoite"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:25
 msgid ""
@@ -89,7 +96,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Näe erittely, miten sovellukset ja prosessit käyttävät resursseja"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "Supports a minified summary view for simple monitoring"
@@ -100,10 +107,12 @@ msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"Käytä OpenGL-piirtoa kaikilla kaavioille suoritinkäytön vähentämiseksi ja "
+"yleisesti resurssien vähäisen käytön vuoksi"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Käyttää GTK4:ää ja Libadwaitaa"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Written in Rust"
@@ -111,11 +120,11 @@ msgstr "Kirjoitettu Rustilla"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak ensisijaisesti"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:33
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Rajoitukset (näiden kaikkien ratkaisemiseksi tehdään töitä):"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:35
 msgid ""
@@ -201,7 +210,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:135
 msgid "First official release!"
-msgstr ""
+msgstr "Ensimmäinen virallinen julkaisu!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:14
 msgid "Which page is shown on application startup"
