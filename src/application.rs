@@ -224,6 +224,16 @@ impl MissionCenterApplication {
             .copyright("© 2023 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
+            .release_notes(r#"<ul>
+    <li>Add Spanish translation by Óscar Fernández Díaz</li>
+    <li>The memory tab now shows configured memory speed instead of the maximum supported by the modules</li>
+    <li>Add German translation by TecCheck</li>
+    <li>When a process uses large amounts of CPU or RAM it is now highlighted in the Apps and Processes list</li>
+    <li>Add initial support for building for ARM64</li>
+    <li>Take into account multiple CPU cores and cache sharing when calculating cache sizes</li>
+    <li>Fix browsers, installed as native packages, not showing up in the Apps list</li>
+    <li>Translation updates for Traditional Chinese by Peter Dave Hello</li>
+</ul>"#)
             .build();
 
         about.add_credit_section(
