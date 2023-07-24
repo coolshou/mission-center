@@ -165,5 +165,8 @@ flatpak run io.missioncenter.MissionCenter
 
 <br/>
 
+**Help translate the project using [Weblate](https://hosted.weblate.org/projects/mission-center/mission-center/)**
+
 **Comments, suggestions, bug reports and contributions welcome**
+
 
