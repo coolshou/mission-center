@@ -2,11 +2,11 @@
 
 # Mission Center
 
+Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](https://missioncenter.io/)
+
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png)
 
-#### Monitor your CPU, Memory, Disk, Network and GPU usage
-
-#### Features:
+## Features
 
 * Monitor overall or per-thread CPU usage
 * See system process, thread, and handle count, uptime, clock speed (base and current), cache sizes
@@ -25,7 +25,9 @@
 * Written in Rust
 * Flatpak first
 
-##### Limitations (there is ongoing work to overcome all of these):
+## Limitations
+
+Please note there is ongoing work to overcome all of these
 
 * The application currently only supports monitoring, you cannot stop processes for
   example [#1](https://gitlab.com/mission-center-devs/mission-center/-/issues/1)
@@ -36,13 +38,17 @@
 * GPU support is experimental and only AMD and nVidia GPUs can be
   monitored [#5](https://gitlab.com/mission-center-devs/mission-center/-/issues/5)
 
+## Installing
+
 <br/>
 <p align="center">
   <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
 </p>
 <br/>
 
-#### Screenshots:
+Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
+
+## Screenshots
 
 *CPU overall view*  
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png)
@@ -75,7 +81,9 @@
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
 
-#### Building - Native
+## Building and running
+
+### Building - Native
 
 **Requirements:**
  * Meson (version >= 0.63)
@@ -123,7 +131,7 @@ And run the app from your launcher or from the command-line:
 missioncenter
 ```
 
-#### Building - Flatpak
+### Building - Flatpak
 
 **Requirements:**
  * Flatpak
@@ -163,10 +171,21 @@ Run the app from your launcher or from the command-line:
 flatpak run io.missioncenter.MissionCenter
 ```
 
-<br/>
+## Contributing
 
-**Help translate the project using [Weblate](https://hosted.weblate.org/projects/mission-center/mission-center/)**
+### Issues
+Report issues to GitLab [issue tracking system](https://gitlab.com/mission-center-devs/mission-center/-/issues).
 
-**Comments, suggestions, bug reports and contributions welcome**
+### Translations
 
+If you'd like to help translating Mission Center into your language, please head over to [Weblate](https://hosted.weblate.org/engage/mission-center/).
 
+<a href="https://hosted.weblate.org/engage/mission-center/">
+  <img src="https://hosted.weblate.org/widgets/mission-center/-/mission-center/multi-auto.svg" alt="Translation status" />
+</a>
+
+Comments, suggestions, bug reports and contributions are welcome.
+
+## License
+
+This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of the license in the file COPYING.
