@@ -21,7 +21,7 @@ pub fn load_app_and_process_list() -> (
 
     let mut cmd = if is_flatpak {
         cmd_flatpak_host!(&format!(
-            "{}/bin/missioncenter-proxy apps-processes --process-cache {}/proc_cache.bin",
+            "{}/bin/missioncenter-proxy-glibc apps-processes --process-cache {}/proc_cache.bin",
             &*FLATPAK_APP_PATH,
             CACHE_DIR.as_str()
         ))
@@ -32,14 +32,33 @@ pub fn load_app_and_process_list() -> (
         ))
     };
 
-    let output = cmd.output();
+    let mut output = cmd.output();
     if output.is_err() {
-        g_critical!(
-            "MissionCenter::ProcInfo",
-            "Failed to load process information, failed to spawn proxy process: {}",
-            output.err().unwrap()
-        );
-        return (apps, processes);
+        if is_flatpak {
+            // We might be running on a `musl`-based system, try to spawn the `musl` proxy process
+            output = cmd_flatpak_host!(&format!(
+                "{}/bin/missioncenter-proxy-musl apps-processes --process-cache {}/proc_cache.bin",
+                &*FLATPAK_APP_PATH,
+                CACHE_DIR.as_str()
+            ))
+            .output();
+
+            if output.is_err() {
+                g_critical!(
+                    "MissionCenter::ProcInfo",
+                    "Failed to load process information, failed to spawn proxy process: {}",
+                    output.err().unwrap()
+                );
+                return (apps, processes);
+            }
+        } else {
+            g_critical!(
+                "MissionCenter::ProcInfo",
+                "Failed to load process information, failed to spawn proxy process: {}",
+                output.err().unwrap()
+            );
+            return (apps, processes);
+        }
     }
     let output = output.unwrap();
 
