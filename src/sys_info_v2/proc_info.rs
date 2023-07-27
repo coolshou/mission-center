@@ -1,8 +1,8 @@
 use adw::glib;
 use lazy_static::lazy_static;
 
-include!("../common/process.rs");
-include!("../common/util.rs");
+include!("common/process.rs");
+include!("common/util.rs");
 
 lazy_static! {
     static ref PROXY_EXECUTABLE_NAME: &'static str = {
