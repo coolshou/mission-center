@@ -1,5 +1,5 @@
 project_name = 'proxy'
-project_path = 'src' / project_name
+project_path = 'src' / 'sys_info_v2' / project_name
 
 cargo_bin  = find_program('cargo')
 cargo_opt  = [ '--manifest-path', meson.project_source_root() / project_path / 'Cargo.toml' ]
