@@ -91,5 +91,5 @@ fn main() {
     for (subcommand, _) in SUBCOMMANDS {
         eprintln!("  {}", subcommand);
     }
-    std::process::exit(1);
+    std::process::exit(0);
 }

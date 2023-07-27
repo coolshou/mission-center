@@ -1,5 +1,5 @@
-include!("../common/util.rs");
-include!("../common/app.rs");
+include!("common/util.rs");
+include!("common/app.rs");
 
 const APP_BLACKLIST: &[&'static str] = &["fish", "Fish", "Guake Preferences"];
 
