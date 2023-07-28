@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-19 08:27+0300\n"
-"PO-Revision-Date: 2023-07-25 15:44+0000\n"
+"PO-Revision-Date: 2023-07-26 16:08+0000\n"
 "Last-Translator: Qustio <qustioof@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -63,7 +63,7 @@ msgid ""
 "current), cache sizes"
 msgstr ""
 "Просмотр количества системных процессов, потоков и дескрипторов, время "
-"работы, тактовую частоту (базовую и текущую), размеры кеша"
+"работы, тактовую частоту (базовую и текущую), размеры кэша"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid "Monitor RAM and Swap usage"
@@ -487,7 +487,7 @@ msgstr "Для получения некоторой информации нео
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
-msgstr "_Аутентифицировать"
+msgstr "_Предоставить"
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:731
 #: src/performance_page/mod.rs:318
