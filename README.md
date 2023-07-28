@@ -50,36 +50,43 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
 ## Screenshots
 
-*CPU overall view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png)
+<details>
+  <summary><b>Show</b></summary>
 
-*Memory view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png)
+  <br/>
 
-*Disk view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png)
+  *CPU overall view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png)
+  
+  *Memory view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png)
+  
+  *Disk view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png)
+  
+  *Ethernet and Wi-Fi view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png)
+  
+  *GPU view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png)
+  
+  *Apps page*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png)
+  
+  *Dark mode*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png)
+  
+  *Summary view*  
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
+  ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
 
-*Ethernet and Wi-Fi view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png)
-
-*GPU view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png)
-
-*Apps page*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png)
-
-*Dark mode*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png)
-
-*Summary view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
+  </details>
 
 ## Building and running
 
