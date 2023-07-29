@@ -59,8 +59,8 @@
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-x86_64.tar.zst",
-          "sha256": "92b613a9a91ac5add802a2803af6db6d03b4cd073c7753896ea3d3020fad1a16",
+          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-x86_64_r2.tar.zst",
+          "sha256": "1a402987c082fcafe5e2b9e73d8071367f04ee96bda70ffd1679ddd859fc9da7",
           "only-arches": [
             "x86_64"
           ]
@@ -76,8 +76,8 @@
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-aarch64.tar.zst",
-          "sha256": "37b2f6aaf45b7d76d18595f1505a776d9b47201a55b1d0c6e2f0cc795aaa8df5",
+          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-aarch64_r2.tar.zst",
+          "sha256": "3cb390f9198c5a7d48c0d6e8604bc0d190864f7f0ffd4b451ad25f39c92b684a",
           "only-arches": [
             "aarch64"
           ]

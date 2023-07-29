@@ -1,0 +1,23 @@
+#[repr(u8)]
+pub enum Message {
+    GatherData,
+    Exit,
+    #[allow(dead_code)]
+    Unknown = 255,
+}
+
+impl From<u8> for Message {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Message::GatherData,
+            1 => Message::Exit,
+            _ => Message::Unknown,
+        }
+    }
+}
+
+impl From<Message> for u8 {
+    fn from(value: Message) -> Self {
+        value as u8
+    }
+}
