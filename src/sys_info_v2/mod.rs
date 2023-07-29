@@ -59,6 +59,7 @@ macro_rules! cmd_flatpak_host {
 mod app_info;
 mod cpu_info;
 mod disk_info;
+mod gatherer;
 mod gpu_info;
 mod mem_info;
 mod net_info;
@@ -176,6 +177,33 @@ pub struct Readings {
 impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
         use std::collections::HashMap;
+
+        let mut daemon =
+            gatherer::Gatherer::<gatherer::SharedData>::new("/home/kicsyromy/Workspace/MissionCenter/build-meson-debug/src/sys_info_v2/gatherer/missioncenter-gatherer").unwrap();
+        daemon.start().unwrap();
+        assert!(daemon.is_running().is_ok());
+
+        loop {
+            if let Err(e) = daemon.send_message(gatherer::Message::GetInstalledApps) {
+                eprintln!("Failed to send message to daemon: {:#?}", e);
+                eprintln!("stdout: {:#?}", daemon.stdout());
+                eprintln!("stderr: {:#?}", daemon.stderr());
+
+                if let Err(e) = daemon.is_running() {
+                    eprintln!("Daemon is no longer running: {:#?}. Restarting...", e);
+                    daemon.start().unwrap();
+
+                    continue;
+                } else {
+                    // TODO: Handle this better
+                    break;
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            dbg!(&daemon.shared_memory().unwrap().content);
+            daemon.send_message(gatherer::Message::Exit).unwrap();
+            break;
+        }
 
         Self {
             cpu_info: CpuInfo::new(system),

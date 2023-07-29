@@ -32,7 +32,7 @@ fn main() {
     let shared_memory = ipc::SharedMemory::<SharedData>::new(&args[2], false);
     if shared_memory.is_err() {
         eprintln!(
-            "Unable to create shared memory: {}",
+            "Unable to create shared memory: {:?}",
             shared_memory.err().unwrap()
         );
         std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);

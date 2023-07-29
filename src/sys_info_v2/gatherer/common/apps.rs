@@ -1,6 +1,7 @@
+use arrayvec::ArrayVec;
 use lazy_static::lazy_static;
 
-use super::FixedString;
+type ArrayString = arrayvec::ArrayString<128>;
 
 lazy_static! {
     static ref PATH: Vec<String> = {
@@ -38,22 +39,21 @@ lazy_static! {
     };
 }
 
-#[derive(Debug, Copy, Clone)]
-#[repr(C)]
+#[derive(Debug, Clone)]
 pub struct AppDescriptor {
-    pub name: FixedString,
-    pub commands: [FixedString; 16],
-    pub icon: Option<FixedString>,
+    pub name: ArrayString,
+    pub commands: ArrayVec<ArrayString, 8>,
+    pub icon: Option<ArrayString>,
 
-    pub app_id: Option<FixedString>,
+    pub app_id: Option<ArrayString>,
     pub is_flatpak: bool,
 }
 
 impl Default for AppDescriptor {
     fn default() -> Self {
         Self {
-            name: [0; core::mem::size_of::<FixedString>()],
-            commands: [[0; core::mem::size_of::<FixedString>()]; 16],
+            name: Default::default(),
+            commands: Default::default(),
             icon: None,
             app_id: None,
             is_flatpak: false,
@@ -61,49 +61,39 @@ impl Default for AppDescriptor {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-#[repr(C)]
+#[derive(Debug, Clone)]
 pub struct InstalledApps {
-    pub apps: [AppDescriptor; 1024],
-    pub app_count: usize,
+    pub apps: ArrayVec<AppDescriptor, 256>,
 }
 
 impl Default for InstalledApps {
     fn default() -> Self {
         Self {
-            apps: [AppDescriptor::default(); 1024],
-            app_count: 0,
+            apps: ArrayVec::new(),
         }
     }
 }
 
 impl InstalledApps {
     pub fn new() -> Self {
-        let mut apps = vec![];
+        let mut this = Self::default();
 
         for dir in &*XDG_DATA_DIRS {
             let dir = std::path::Path::new(dir);
             let dir = dir.join("applications");
             if dir.exists() {
-                load_apps_from_dir(dir, &mut apps);
+                load_apps_from_dir(dir, &mut this.apps);
             }
         }
-
-        let mut this = Self::default();
-        let app_count = apps.len();
-        apps.into_iter()
-            .take(app_count.max(1024))
-            .enumerate()
-            .for_each(|(i, app)| {
-                this.apps[i] = app;
-            });
-        this.app_count = app_count.min(1024);
 
         this
     }
 }
 
-fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDescriptor>) {
+fn load_apps_from_dir<P: AsRef<std::path::Path>, const CAPACITY: usize>(
+    path: P,
+    apps: &mut ArrayVec<AppDescriptor, CAPACITY>,
+) {
     let path = path.as_ref();
     let dir = std::fs::read_dir(path);
     if dir.is_err() {
@@ -117,6 +107,10 @@ fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDesc
     let dir = dir.unwrap();
 
     for entry in dir {
+        if apps.is_full() {
+            break;
+        }
+
         let entry = entry.unwrap();
         let path = entry.path();
         if path.is_dir() {
@@ -132,7 +126,7 @@ fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDesc
 }
 
 fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor> {
-    use super::fixed_string;
+    use super::ToArrayStringLossy;
     use ini::*;
 
     let path = path.as_ref();
@@ -195,14 +189,14 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
     }
     let (commands, is_flatpak) = cmd.unwrap();
     let commands_len = commands.len();
-    let mut cmds: [FixedString; 16] = [[0; 256]; 16];
+    let mut cmds = ArrayVec::new();
     for (i, command) in commands
         .into_iter()
-        .map(|s| fixed_string(&s))
-        .take(commands_len.max(16))
+        .map(|s| s.as_str().to_array_string_lossy())
+        .take(commands_len.max(cmds.capacity()))
         .enumerate()
     {
-        cmds[i] = command;
+        cmds.push(command);
     }
 
     let app_id = if is_flatpak {
@@ -214,11 +208,11 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
     let icon = section.get("Icon");
 
     Some(AppDescriptor {
-        name: fixed_string(name),
-        commands: cmds,
-        icon: icon.map(|s| fixed_string(s)),
+        name: name.to_array_string_lossy(),
+        commands: cmds.into(),
+        icon: icon.map(|s| s.to_array_string_lossy()),
 
-        app_id: app_id.map(|s| fixed_string(s)),
+        app_id: app_id.map(|s| s.to_array_string_lossy()),
         is_flatpak,
     })
 }
