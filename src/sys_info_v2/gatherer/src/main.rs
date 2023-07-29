@@ -1,14 +1,8 @@
-use crate::message::Message;
-
-#[path = "../common/exit_code.rs"]
-mod exit_code;
-#[path = "../common/ipc/message.rs"]
-mod message;
-#[path = "../common/ipc/shm.rs"]
-mod shm;
+#[path = "../common/mod.rs"]
+mod common;
 
 fn main() {
-    use exit_code::ExitCode;
+    use common::{ipc, ExitCode, InstalledApps, SharedData, SharedDataContent};
     use interprocess::local_socket::*;
     use std::io::Read;
 
@@ -33,9 +27,9 @@ fn main() {
 
     if !std::path::Path::new(&args[2]).exists() {
         eprintln!("File link '{}' does not exist", args[2]);
-        std::process::exit(exit_code::ExitCode::FileLinkNotFound as i32);
+        std::process::exit(ExitCode::FileLinkNotFound as i32);
     }
-    let shared_memory = shm::SharedMemory::<u32>::new(&args[2], false);
+    let shared_memory = ipc::SharedMemory::<SharedData>::new(&args[2], false);
     if shared_memory.is_err() {
         eprintln!(
             "Unable to create shared memory: {}",
@@ -57,22 +51,21 @@ fn main() {
             std::process::exit(ExitCode::ReadFromSocketFailed as i32);
         }
 
-        let message = message::Message::from(recv_buffer[0]);
+        let message = ipc::Message::from(recv_buffer[0]);
         match message {
-            Message::GatherData => {
+            ipc::Message::GetInstalledApps => {
                 let data = shared_memory.lock(raw_sync::Timeout::Infinite);
                 if data.is_none() {
                     eprintln!("Unable to obtain shared memory data lock");
                     continue;
                 }
-                let data = data.unwrap();
-                let new_value = *data.content + 1;
-                *data.content = new_value;
+                let mut data = data.unwrap();
+                data.content = SharedDataContent::InstalledApps(InstalledApps::new());
             }
-            Message::Exit => {
+            ipc::Message::Exit => {
                 std::process::exit(0);
             }
-            Message::Unknown => {
+            ipc::Message::Unknown => {
                 eprintln!("Unknown message received");
                 std::process::exit(ExitCode::UnknownMessageReceived as i32);
             }

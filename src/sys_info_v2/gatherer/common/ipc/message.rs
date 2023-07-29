@@ -1,7 +1,7 @@
 #[repr(u8)]
 pub enum Message {
-    GatherData,
-    Exit,
+    GetInstalledApps = 0,
+    Exit = 254,
     #[allow(dead_code)]
     Unknown = 255,
 }
@@ -9,8 +9,8 @@ pub enum Message {
 impl From<u8> for Message {
     fn from(value: u8) -> Self {
         match value {
-            0 => Message::GatherData,
-            1 => Message::Exit,
+            0 => Message::GetInstalledApps,
+            254 => Message::Exit,
             _ => Message::Unknown,
         }
     }

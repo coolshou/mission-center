@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 struct SharedMemoryHeader {
     pub is_initialized: std::sync::atomic::AtomicU8,
     pub rw_lock: raw_sync::locks::Mutex,
@@ -12,7 +14,21 @@ struct SharedMemoryData<T: Sized> {
 
 pub struct SharedMemoryGuard<'a, T: Sized> {
     _lock: raw_sync::locks::LockGuard<'a>,
-    pub content: &'a mut T,
+    data: &'a mut T,
+}
+
+impl<T: Sized> Deref for SharedMemoryGuard<'_, T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.data
+    }
+}
+
+impl<T: Sized> DerefMut for SharedMemoryGuard<'_, T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.data
+    }
 }
 
 pub struct SharedMemory<T: Sized> {
@@ -102,7 +118,7 @@ impl<T: Sized> SharedMemory<T> {
         let data = unsafe { &mut *self.data };
         Some(SharedMemoryGuard {
             _lock: unsafe { lock.unwrap_unchecked() },
-            content: &mut data.content,
+            data: &mut data.content,
         })
     }
 }
