@@ -9,15 +9,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-19 08:27+0300\n"
-"PO-Revision-Date: 2023-07-13 00:39-0300\n"
-"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
-"Language-Team: Portuguese\n"
+"PO-Revision-Date: 2023-07-31 22:06+0000\n"
+"Last-Translator: Jonas Antunes <jonasbantunes@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Gtranslator 45.alpha0\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:4
@@ -25,32 +26,34 @@ msgid "Mission Center"
 msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
+#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Gerenciador de tarefas;Monitor de recursos;Monitor do "
+"sistema;Processador;Processos;Monitor de "
+"desempenho;CPU;GPU;Disco;Disco;Memória;Rede;Utilização;Utilização"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
-#, fuzzy
 msgid "Mission Center Developers"
-msgstr "Mission Center"
+msgstr "Desenvolvedores do Mission Center"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:13
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Monitorar o uso de recursos do sistema"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:15
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
+msgstr "Monitore o uso de CPU, memória, disco, rede e GPU"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
-#, fuzzy
 msgid "Features:"
-msgstr "Temperatura"
+msgstr "Características:"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Monitore o uso geral ou por thread da CPU"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid ""
