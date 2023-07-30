@@ -10,7 +10,6 @@ interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 num_cpus = { version = "1" }
-raw_sync = { version = "0.1" }
 rust-ini = { version = "0.19" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 

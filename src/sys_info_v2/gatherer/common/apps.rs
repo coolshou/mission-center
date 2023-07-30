@@ -190,7 +190,7 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
     let (commands, is_flatpak) = cmd.unwrap();
     let commands_len = commands.len();
     let mut cmds = ArrayVec::new();
-    for (i, command) in commands
+    for (_, command) in commands
         .into_iter()
         .map(|s| s.as_str().to_array_string_lossy())
         .take(commands_len.max(cmds.capacity()))

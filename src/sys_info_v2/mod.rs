@@ -184,6 +184,7 @@ impl Readings {
         assert!(daemon.is_running().is_ok());
 
         loop {
+            let start = std::time::Instant::now();
             if let Err(e) = daemon.send_message(gatherer::Message::GetInstalledApps) {
                 eprintln!("Failed to send message to daemon: {:#?}", e);
                 eprintln!("stdout: {:#?}", daemon.stdout());
@@ -199,9 +200,10 @@ impl Readings {
                     break;
                 }
             }
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            dbg!(&daemon.shared_memory().unwrap().content);
-            daemon.send_message(gatherer::Message::Exit).unwrap();
+            let duration = start.elapsed().as_millis();
+            dbg!(duration);
+            let _ = &daemon.shared_memory().unwrap();
+
             break;
         }
 

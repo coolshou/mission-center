@@ -1,7 +1,7 @@
 pub use interprocess::{local_socket::LocalSocketListener, local_socket::LocalSocketStream};
 
 pub use message::Message;
-pub use shm::{SharedMemory, SharedMemoryGuard};
+pub use shm::{SharedMemory, SharedMemoryContent};
 
 #[path = "message.rs"]
 mod message;

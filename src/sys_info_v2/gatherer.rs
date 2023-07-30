@@ -1,7 +1,10 @@
 use common::{
-    ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryGuard},
+    ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent},
     ExitCode,
 };
+
+const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
+const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5);
 
 pub type SharedData = common::SharedData;
 pub type Message = common::ipc::Message;
@@ -35,6 +38,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         let shm_file_link = format!("/tmp/shm_{}", process_pid);
 
         let listener = LocalSocketListener::bind(socket_path.as_str())?;
+        listener.set_nonblocking(true)?;
         let shared_memory = SharedMemory::<SharedData>::new(shm_file_link.as_str(), true)?;
 
         let mut command = std::process::Command::new(daemon_path);
@@ -66,10 +70,48 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         let mut child = self.command.spawn()?;
         self.stdout = child.stdout.take();
         self.stderr = child.stderr.take();
-
-        self.connection = Some(self.listener.accept()?);
-
         self.child = Some(child);
+
+        // Let the child process start up
+        std::thread::sleep(std::time::Duration::from_millis(50));
+
+        // Try to connect twice, if not successful, then fail
+        for _ in 0..2 {
+            self.connection = match self.listener.accept() {
+                Ok(connection) => {
+                    connection.set_nonblocking(true)?;
+                    Some(connection)
+                }
+                Err(e) => match e.kind() {
+                    std::io::ErrorKind::WouldBlock => {
+                        // Wait a bit and try again, the child process might just be slow to start
+                        std::thread::sleep(std::time::Duration::from_millis(10));
+                        continue;
+                    }
+                    _ => return Err(e.into()),
+                },
+            };
+
+            break;
+        }
+
+        if self.connection.is_none() {
+            return Err(anyhow::anyhow!("Failed to start daemon"));
+        }
+
+        Ok(())
+    }
+
+    pub fn stop(&mut self) -> anyhow::Result<()> {
+        if self.is_running().is_err() {
+            return Ok(());
+        }
+
+        let child = core::mem::take(&mut self.child);
+        if let Some(mut child) = child {
+            self.send_message(Message::Exit)?;
+            child.wait()?;
+        }
 
         Ok(())
     }
@@ -80,17 +122,33 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         if let Some(connection) = self.connection.as_mut() {
             connection.write(&[message.into()])?;
 
+            let reply = Self::read_message(connection, DEFAULT_TIMEOUT)?;
+            if reply != Message::Acknowledge {
+                return Err(anyhow::anyhow!(
+                    "Failed to send message, received {:?} instead of Acknowledge",
+                    reply
+                ));
+            }
+
             Ok(())
         } else {
             Err(anyhow::anyhow!("No connection to daemon"))
         }
     }
 
-    pub fn shared_memory(&mut self) -> anyhow::Result<SharedMemoryGuard<SharedData>> {
-        if let Some(lock) = self.shared_memory.lock(raw_sync::Timeout::Infinite) {
-            Ok(lock)
+    pub fn shared_memory(&mut self) -> anyhow::Result<SharedMemoryContent<SharedData>> {
+        if let Some(connection) = self.connection.as_mut() {
+            let message = Self::read_message(connection, std::time::Duration::from_millis(5000))?;
+            if message != Message::DataReady {
+                return Err(anyhow::anyhow!(
+                    "Unknown if shared memory is ready, received {:?} instead of DataReady",
+                    message
+                ));
+            }
+
+            Ok(unsafe { self.shared_memory.acquire() })
         } else {
-            Err(anyhow::anyhow!("Could not lock shared memory"))
+            Err(anyhow::anyhow!("No connection to daemon"))
         }
     }
 
@@ -131,7 +189,19 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
         let stdout = stdout.unwrap();
         let mut buffer = vec![];
-        stdout.read_to_end(&mut buffer)?;
+        loop {
+            let count = match stdout.read(&mut buffer) {
+                Ok(count) => count,
+                Err(e) => match e.kind() {
+                    std::io::ErrorKind::Interrupted => continue,
+                    _ => return Err(e.into()),
+                },
+            };
+
+            if count == 0 {
+                break;
+            }
+        }
 
         Ok(String::from_utf8_lossy(&buffer).to_string())
     }
@@ -146,8 +216,50 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
         let stderr = stderr.unwrap();
         let mut buffer = vec![];
-        stderr.read_to_end(&mut buffer)?;
+        loop {
+            let count = match stderr.read(&mut buffer) {
+                Ok(count) => count,
+                Err(e) => match e.kind() {
+                    std::io::ErrorKind::Interrupted => continue,
+                    _ => return Err(e.into()),
+                },
+            };
+
+            if count == 0 {
+                break;
+            }
+        }
 
         Ok(String::from_utf8_lossy(&buffer).to_string())
+    }
+
+    fn read_message(
+        connection: &mut LocalSocketStream,
+        timeout: std::time::Duration,
+    ) -> anyhow::Result<Message> {
+        use std::io::Read;
+
+        let mut reply = [0_u8];
+        let mut timeout_left = timeout.as_millis();
+        loop {
+            if timeout_left == 0 {
+                return Err(anyhow::anyhow!("Timeout while waiting for reply"));
+            }
+
+            match connection.read_exact(&mut reply) {
+                Ok(_) => break,
+                Err(e) => match e.kind() {
+                    std::io::ErrorKind::WouldBlock => {
+                        // Wait a bit and try again, the child process might just be slow to respond
+                        timeout_left = timeout_left.saturating_sub(RETRY_INCREMENT.as_millis());
+                        std::thread::sleep(RETRY_INCREMENT);
+                        continue;
+                    }
+                    _ => return Err(e.into()),
+                },
+            }
+        }
+
+        Ok(Message::from(reply[0]))
     }
 }

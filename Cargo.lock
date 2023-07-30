@@ -1307,7 +1307,6 @@ dependencies = [
  "pathfinder_renderer",
  "pathfinder_resources",
  "raw-cpuid",
- "raw_sync",
  "regex",
  "rusqlite",
  "rust-ini",
@@ -1329,7 +1328,6 @@ dependencies = [
  "cfg-if 1.0.0",
  "libc 0.2.147",
  "memoffset 0.7.1",
- "pin-utils",
  "static_assertions",
 ]
 
@@ -1751,19 +1749,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9d86a7c4638d42c44551f4791a20e687dbb4c3de1f33c43dd71e355cd429def1"
 dependencies = [
  "bitflags 2.3.3",
-]
-
-[[package]]
-name = "raw_sync"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a34bde3561f980a51c70495164200569a11662644fe5af017f0b5d7015688cc"
-dependencies = [
- "cfg-if 0.1.10",
- "libc 0.2.147",
- "nix",
- "rand",
- "winapi",
 ]
 
 [[package]]

@@ -7,7 +7,9 @@ pub enum ExitCode {
     UnableToCreateSharedMemory,
     SocketConnectionFailed,
     ReadFromSocketFailed,
-    UnknownMessageReceived,
+    SendDataReadyFailed,
+    SendAcknowledgeFailed,
+    UnknownMessageReceived = 254,
     Unknown = 255,
 }
 
@@ -20,7 +22,8 @@ impl From<u8> for ExitCode {
             4 => ExitCode::UnableToCreateSharedMemory,
             5 => ExitCode::SocketConnectionFailed,
             6 => ExitCode::ReadFromSocketFailed,
-            7 => ExitCode::UnknownMessageReceived,
+            7 => ExitCode::SendAcknowledgeFailed,
+            254 => ExitCode::UnknownMessageReceived,
             _ => ExitCode::Unknown,
         }
     }

@@ -29,7 +29,6 @@ pathfinder_gpu = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa93
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_resources = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 raw-cpuid = { version = "11.0", default-features = false }
-raw_sync = { version = "0.1" }
 regex = { version = "1.8" }
 rust-ini = { version = "0.19" }
 rusqlite = { version = "0.29", features = ["bundled"] }

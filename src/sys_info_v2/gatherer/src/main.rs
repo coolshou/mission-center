@@ -1,3 +1,25 @@
+macro_rules! acknowledge {
+    ($connection: ident) => {{
+        use std::io::Write;
+
+        if let Err(e) = $connection.write(&[common::ipc::Message::Acknowledge.into()]) {
+            eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
+            std::process::exit(common::ExitCode::SendAcknowledgeFailed as i32);
+        }
+    }};
+}
+
+macro_rules! data_ready {
+    ($connection: ident) => {{
+        use std::io::Write;
+
+        if let Err(e) = $connection.write(&[common::ipc::Message::DataReady.into()]) {
+            eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
+            std::process::exit(common::ExitCode::SendDataReadyFailed as i32);
+        }
+    }};
+}
+
 #[path = "../common/mod.rs"]
 mod common;
 
@@ -54,15 +76,20 @@ fn main() {
         let message = ipc::Message::from(recv_buffer[0]);
         match message {
             ipc::Message::GetInstalledApps => {
-                let data = shared_memory.lock(raw_sync::Timeout::Infinite);
-                if data.is_none() {
-                    eprintln!("Unable to obtain shared memory data lock");
-                    continue;
-                }
-                let mut data = data.unwrap();
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
                 data.content = SharedDataContent::InstalledApps(InstalledApps::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::Acknowledge | ipc::Message::DataReady => {
+                // Wierd thing to send, but there you go, send Acknowledge back anyway
+                acknowledge!(connection);
             }
             ipc::Message::Exit => {
+                acknowledge!(connection);
+
                 std::process::exit(0);
             }
             ipc::Message::Unknown => {
