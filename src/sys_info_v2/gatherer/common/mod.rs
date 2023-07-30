@@ -50,21 +50,13 @@ pub enum SharedDataContent {
 }
 
 #[derive(Debug)]
-pub enum SharedDataState {
-    Monostate,
-    Apps,
-}
-
-#[derive(Debug)]
 pub struct SharedData {
     pub content: SharedDataContent,
-    pub state: SharedDataState,
 }
 
 impl SharedData {
     pub fn clear(&mut self) {
         self.content = SharedDataContent::Monostate;
-        self.state = SharedDataState::Monostate;
     }
 }
 

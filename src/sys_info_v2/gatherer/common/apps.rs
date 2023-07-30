@@ -39,6 +39,14 @@ lazy_static! {
     };
 }
 
+mod state {
+    use std::{cell::Cell, thread_local};
+
+    thread_local! {
+        pub static APP_CACHE: Cell<Vec<super::AppDescriptor>> = Cell::new(vec![]);
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct AppDescriptor {
     pub name: ArrayString,
@@ -63,13 +71,15 @@ impl Default for AppDescriptor {
 
 #[derive(Debug, Clone)]
 pub struct InstalledApps {
-    pub apps: ArrayVec<AppDescriptor, 256>,
+    pub apps: ArrayVec<AppDescriptor, 25>,
+    pub is_complete: bool,
 }
 
 impl Default for InstalledApps {
     fn default() -> Self {
         Self {
             apps: ArrayVec::new(),
+            is_complete: false,
         }
     }
 }
@@ -78,22 +88,32 @@ impl InstalledApps {
     pub fn new() -> Self {
         let mut this = Self::default();
 
-        for dir in &*XDG_DATA_DIRS {
-            let dir = std::path::Path::new(dir);
-            let dir = dir.join("applications");
-            if dir.exists() {
-                load_apps_from_dir(dir, &mut this.apps);
+        let app_cache = state::APP_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        if app_cache.is_empty() {
+            for dir in &*XDG_DATA_DIRS {
+                let dir = std::path::Path::new(dir);
+                let dir = dir.join("applications");
+                if dir.exists() {
+                    load_apps_from_dir(dir, app_cache);
+                }
             }
         }
+
+        let drop_count = app_cache
+            .chunks(this.apps.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = app_cache.drain(0..drop_count);
+        this.apps.extend(it);
+        this.is_complete = app_cache.is_empty();
 
         this
     }
 }
 
-fn load_apps_from_dir<P: AsRef<std::path::Path>, const CAPACITY: usize>(
-    path: P,
-    apps: &mut ArrayVec<AppDescriptor, CAPACITY>,
-) {
+fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDescriptor>) {
     let path = path.as_ref();
     let dir = std::fs::read_dir(path);
     if dir.is_err() {
@@ -107,10 +127,6 @@ fn load_apps_from_dir<P: AsRef<std::path::Path>, const CAPACITY: usize>(
     let dir = dir.unwrap();
 
     for entry in dir {
-        if apps.is_full() {
-            break;
-        }
-
         let entry = entry.unwrap();
         let path = entry.path();
         if path.is_dir() {

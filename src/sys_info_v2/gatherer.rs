@@ -8,7 +8,6 @@ const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5)
 
 pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
-pub type SharedDataState = common::SharedDataState;
 pub type Message = common::ipc::Message;
 
 #[path = "gatherer/common/mod.rs"]
@@ -28,9 +27,11 @@ pub struct Gatherer<SharedData: Sized> {
 }
 
 impl<SharedData: Sized> Gatherer<SharedData> {
-    pub fn new<P: AsRef<std::path::Path>>(daemon_path: P) -> anyhow::Result<Gatherer<SharedData>> {
-        let daemon_path = daemon_path.as_ref();
-        if !daemon_path.exists() {
+    pub fn new<P: AsRef<std::path::Path>>(
+        executable_path: P,
+    ) -> anyhow::Result<Gatherer<SharedData>> {
+        let executable_path = executable_path.as_ref();
+        if !executable_path.exists() {
             return Err(anyhow::anyhow!("Daemon path does not exist"));
         }
 
@@ -43,7 +44,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         listener.set_nonblocking(true)?;
         let shared_memory = SharedMemory::<SharedData>::new(shm_file_link.as_str(), true)?;
 
-        let mut command = std::process::Command::new(daemon_path);
+        let mut command = std::process::Command::new(executable_path);
         command
             .arg(socket_path.as_str())
             .arg(shm_file_link.as_str())
@@ -112,7 +113,34 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         let child = core::mem::take(&mut self.child);
         if let Some(mut child) = child {
             self.send_message(Message::Exit)?;
-            child.wait()?;
+
+            for _ in 0..2 {
+                match child.try_wait()? {
+                    Some(_) => break,
+                    None => {
+                        // Wait a bit and try again, the child process might just be slow to stop
+                        std::thread::sleep(std::time::Duration::from_millis(10));
+                        continue;
+                    }
+                }
+            }
+
+            if child.try_wait()?.is_none() {
+                match child.kill() {
+                    Ok(_) => {}
+                    Err(e) => {
+                        if e.kind() == std::io::ErrorKind::InvalidInput {
+                            // The process has already exited
+                            return Ok(());
+                        }
+
+                        return Err(anyhow::anyhow!(
+                            "Failed to kill gatherer process: {}",
+                            e.to_string()
+                        ));
+                    }
+                }
+            }
         }
 
         Ok(())
@@ -134,7 +162,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
             Ok(())
         } else {
-            Err(anyhow::anyhow!("No connection to daemon"))
+            Err(anyhow::anyhow!("No connection to gatherer"))
         }
     }
 
@@ -150,7 +178,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
             Ok(unsafe { self.shared_memory.acquire() })
         } else {
-            Err(anyhow::anyhow!("No connection to daemon"))
+            Err(anyhow::anyhow!("No connection to gatherer"))
         }
     }
 

@@ -199,18 +199,24 @@ impl Readings {
                 if let Err(e) = daemon.is_running() {
                     eprintln!("Daemon is no longer running: {:#?}. Restarting...", e);
                     daemon.start().unwrap();
-
                     continue;
                 } else {
-                    // TODO: Handle this better
-                    break;
+                    daemon.stop().unwrap();
+                    continue;
                 }
             }
             let duration = start.elapsed().as_millis();
             dbg!(duration);
-            let _ = &daemon.shared_memory().unwrap();
 
-            break;
+            match daemon.shared_memory().unwrap().content {
+                gatherer::SharedDataContent::InstalledApps(ref apps) => {
+                    dbg!(apps);
+                    if apps.is_complete {
+                        break;
+                    }
+                }
+                _ => {}
+            }
         }
 
         Self {
