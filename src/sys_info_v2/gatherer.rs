@@ -7,6 +7,8 @@ const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(10
 const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5);
 
 pub type SharedData = common::SharedData;
+pub type SharedDataContent = common::SharedDataContent;
+pub type SharedDataState = common::SharedDataState;
 pub type Message = common::ipc::Message;
 
 #[path = "gatherer/common/mod.rs"]
@@ -75,7 +77,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         // Let the child process start up
         std::thread::sleep(std::time::Duration::from_millis(50));
 
-        // Try to connect twice, if not successful, then fail
+        // Try to connect twice, if not successful, then bail
         for _ in 0..2 {
             self.connection = match self.listener.accept() {
                 Ok(connection) => {
@@ -150,6 +152,10 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         } else {
             Err(anyhow::anyhow!("No connection to daemon"))
         }
+    }
+
+    pub unsafe fn shared_memory_unchecked(&mut self) -> SharedMemoryContent<SharedData> {
+        self.shared_memory.acquire()
     }
 
     pub fn is_running(&mut self) -> Result<(), (ExitCode, i32)> {

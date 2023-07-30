@@ -188,16 +188,6 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
         return None;
     }
     let (commands, is_flatpak) = cmd.unwrap();
-    let commands_len = commands.len();
-    let mut cmds = ArrayVec::new();
-    for (_, command) in commands
-        .into_iter()
-        .map(|s| s.as_str().to_array_string_lossy())
-        .take(commands_len.max(cmds.capacity()))
-        .enumerate()
-    {
-        cmds.push(command);
-    }
 
     let app_id = if is_flatpak {
         parse_app_id(command)
@@ -209,7 +199,7 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
 
     Some(AppDescriptor {
         name: name.to_array_string_lossy(),
-        commands: cmds.into(),
+        commands,
         icon: icon.map(|s| s.to_array_string_lossy()),
 
         app_id: app_id.map(|s| s.to_array_string_lossy()),
@@ -217,10 +207,12 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
     })
 }
 
-fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
+fn parse_command(command: &str) -> Option<(ArrayVec<ArrayString, 8>, bool)> {
+    use super::ToArrayStringLossy;
+
     let mut iter = command.split_whitespace();
 
-    let mut commands = vec![];
+    let mut commands = ArrayVec::new();
     let mut result = None;
 
     if let Some(cmd) = iter.next() {
@@ -230,7 +222,11 @@ fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
                     let p = std::path::Path::new(p);
                     let cmd_path = p.join(file_name);
                     if cmd_path.exists() {
-                        commands.push(cmd_path.to_string_lossy().to_string());
+                        match commands.try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                        {
+                            Err(_) => break,
+                            _ => {}
+                        }
                     }
 
                     // Web browsers are wierd, their desktop file has the name of the binary with a
@@ -246,24 +242,44 @@ fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
                             let file_name = file_name.trim_start_matches("google-");
                             let cmd_path = p.join(file_name);
                             if cmd_path.exists() {
-                                commands.push(cmd_path.to_string_lossy().to_string());
+                                match commands
+                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                                {
+                                    Err(_) => break,
+                                    _ => {}
+                                }
                             }
                             // Vivaldi just randomly adds a `-bin` at the end
                         } else if file_name.starts_with("vivaldi") {
                             let cmd_path = p.join("vivaldi-bin");
                             if cmd_path.exists() {
-                                commands.push(cmd_path.to_string_lossy().to_string());
+                                match commands
+                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                                {
+                                    Err(_) => break,
+                                    _ => {}
+                                }
                             }
                             // Microsoft decided to call their binary `msedge` instead of `microsoft-edge`
                         } else if file_name.starts_with("microsoft-edge") {
                             let cmd_path = p.join("msedge");
                             if cmd_path.exists() {
-                                commands.push(cmd_path.to_string_lossy().to_string());
+                                match commands
+                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                                {
+                                    Err(_) => break,
+                                    _ => {}
+                                }
                             }
                         } else {
                             let cmd_path = p.join(file_name);
                             if cmd_path.exists() {
-                                commands.push(cmd_path.to_string_lossy().to_string());
+                                match commands
+                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                                {
+                                    Err(_) => break,
+                                    _ => {}
+                                }
                             }
                         }
                     }
@@ -272,19 +288,29 @@ fn parse_command(command: &str) -> Option<(Vec<String>, bool)> {
                     if file_name.starts_with("firefox") {
                         let cmd_path = p.join("firefox-bin");
                         if cmd_path.exists() {
-                            commands.push(cmd_path.to_string_lossy().to_string());
+                            match commands
+                                .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                            {
+                                Err(_) => break,
+                                _ => {}
+                            }
                         }
                     }
                 }
             } else {
-                commands.push(cmd.to_string());
+                match commands.try_push(cmd.to_array_string_lossy()) {
+                    _ => {}
+                }
             }
 
             result = Some((commands, false));
         } else {
             for arg in iter {
                 if arg.starts_with("--command=") {
-                    commands.push(arg[10..].to_string());
+                    match commands.try_push(arg[10..].to_array_string_lossy()) {
+                        Err(_) => break,
+                        _ => {}
+                    }
                     result = Some((commands, true));
                     break;
                 }

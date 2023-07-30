@@ -26,15 +26,46 @@ impl ToArrayStringLossy for str {
     }
 }
 
+impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
+    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY> {
+        let mut result = arrayvec::ArrayString::new();
+        if self.len() > CAPACITY {
+            for i in (0..CAPACITY).rev() {
+                if self.is_char_boundary(i) {
+                    result.push_str(&self[..i + 1]);
+                }
+            }
+        } else {
+            result.push_str(self);
+        }
+
+        result
+    }
+}
+
 #[derive(Debug)]
 pub enum SharedDataContent {
+    Monostate,
     InstalledApps(InstalledApps),
 }
 
 #[derive(Debug)]
+pub enum SharedDataState {
+    Monostate,
+    Apps,
+}
+
+#[derive(Debug)]
 pub struct SharedData {
-    pub is_complete: bool,
     pub content: SharedDataContent,
+    pub state: SharedDataState,
+}
+
+impl SharedData {
+    pub fn clear(&mut self) {
+        self.content = SharedDataContent::Monostate;
+        self.state = SharedDataState::Monostate;
+    }
 }
 
 #[inline]

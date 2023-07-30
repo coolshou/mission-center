@@ -180,6 +180,12 @@ impl Readings {
 
         let mut daemon =
             gatherer::Gatherer::<gatherer::SharedData>::new("/home/kicsyromy/Workspace/MissionCenter/build-meson-debug/src/sys_info_v2/gatherer/missioncenter-gatherer").unwrap();
+        {
+            // SAFETY: We are the only ones that have access to the shared memory instance
+            let mut shm_data = unsafe { daemon.shared_memory_unchecked() };
+            (*shm_data).clear();
+        }
+
         daemon.start().unwrap();
         assert!(daemon.is_running().is_ok());
 
