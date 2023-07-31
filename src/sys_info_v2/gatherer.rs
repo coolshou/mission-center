@@ -37,8 +37,8 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
         let process_pid = unsafe { libc::getpid() };
 
-        let socket_path = format!("/tmp/sock_{}", process_pid);
-        let shm_file_link = format!("/tmp/shm_{}", process_pid);
+        let socket_path = format!("{}/sock_{}", super::STATE_DIR.as_str(), process_pid);
+        let shm_file_link = format!("{}/shm_{}", super::STATE_DIR.as_str(), process_pid);
 
         let listener = LocalSocketListener::bind(socket_path.as_str())?;
         listener.set_nonblocking(true)?;
