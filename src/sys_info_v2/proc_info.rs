@@ -4,6 +4,11 @@ use lazy_static::lazy_static;
 include!("common/process.rs");
 include!("common/util.rs");
 
+mod app {
+    use super::*;
+    include!("common/app.rs");
+}
+
 lazy_static! {
     static ref PROXY_EXECUTABLE_NAME: &'static str = {
         use glib::g_debug;
@@ -41,12 +46,9 @@ lazy_static! {
     };
 }
 
-pub fn load_app_and_process_list() -> (
-    Vec<crate::sys_info_v2::App>,
-    std::collections::HashMap<Pid, Process>,
-) {
+pub fn load_app_and_process_list() -> (Vec<app::App>, std::collections::HashMap<Pid, Process>) {
     use super::FLATPAK_APP_PATH;
-    use super::{App, CACHE_DIR, IS_FLATPAK};
+    use super::{CACHE_DIR, IS_FLATPAK};
     use gtk::glib::{g_critical, g_debug};
     use sha2::Digest;
     use std::{
@@ -147,7 +149,7 @@ pub fn load_app_and_process_list() -> (
     cursor.read(to_binary_mut(&mut app_count)).unwrap();
     apps.reserve(app_count);
     for _ in 0..app_count {
-        App::deserialize(&mut cursor)
+        app::App::deserialize(&mut cursor)
             .map(|app| {
                 apps.push(app);
             })

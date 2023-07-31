@@ -9,6 +9,7 @@ const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5)
 pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
 pub type Message = common::ipc::Message;
+pub type AppDescriptor = common::AppDescriptor;
 
 #[path = "gatherer/common/mod.rs"]
 mod common;
@@ -26,14 +27,13 @@ pub struct Gatherer<SharedData: Sized> {
     connection: Option<LocalSocketStream>,
 }
 
+unsafe impl<SharedData: Sized> Send for Gatherer<SharedData> {}
+
 impl<SharedData: Sized> Gatherer<SharedData> {
     pub fn new<P: AsRef<std::path::Path>>(
         executable_path: P,
     ) -> anyhow::Result<Gatherer<SharedData>> {
         let executable_path = executable_path.as_ref();
-        if !executable_path.exists() {
-            return Err(anyhow::anyhow!("Daemon path does not exist"));
-        }
 
         let process_pid = unsafe { libc::getpid() };
 

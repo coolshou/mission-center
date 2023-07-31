@@ -150,13 +150,8 @@ mod imp {
 
                 if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
-                        .name(&app.name)
-                        .icon(
-                            app.icon
-                                .as_ref()
-                                .unwrap_or(&"application-x-executable".to_string())
-                                .as_str(),
-                        )
+                        .name(&app.name())
+                        .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
                         .content_type(ContentType::App)
                         .cpu_usage(app.stats.cpu_usage)
                         .memory_usage(app.stats.memory_usage)

@@ -1,6 +1,7 @@
-pub use apps::InstalledApps;
+pub use apps::{AppDescriptor, InstalledApps};
 pub use exit_code::ExitCode;
 
+#[allow(dead_code)]
 mod apps;
 mod exit_code;
 pub mod ipc;
@@ -43,6 +44,7 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum SharedDataContent {
     Monostate,
@@ -54,18 +56,21 @@ pub struct SharedData {
     pub content: SharedDataContent,
 }
 
+#[allow(dead_code)]
 impl SharedData {
     pub fn clear(&mut self) {
         self.content = SharedDataContent::Monostate;
     }
 }
 
+#[allow(dead_code)]
 #[inline]
 pub fn to_binary<T: Sized>(thing: &T) -> &[u8] {
     let ptr = thing as *const T;
     unsafe { core::slice::from_raw_parts(ptr as *const u8, core::mem::size_of::<T>()) }
 }
 
+#[allow(dead_code)]
 #[inline]
 pub fn to_binary_mut<T: Sized>(thing: &mut T) -> &mut [u8] {
     let ptr = thing as *mut T;

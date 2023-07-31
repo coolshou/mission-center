@@ -178,47 +178,6 @@ impl Readings {
     pub fn new(system: &mut sysinfo::System) -> Self {
         use std::collections::HashMap;
 
-        let mut daemon =
-            gatherer::Gatherer::<gatherer::SharedData>::new("/home/kicsyromy/Workspace/MissionCenter/build-meson-debug/src/sys_info_v2/gatherer/missioncenter-gatherer").unwrap();
-        {
-            // SAFETY: We are the only ones that have access to the shared memory instance
-            let mut shm_data = unsafe { daemon.shared_memory_unchecked() };
-            (*shm_data).clear();
-        }
-
-        daemon.start().unwrap();
-        assert!(daemon.is_running().is_ok());
-
-        loop {
-            let start = std::time::Instant::now();
-            if let Err(e) = daemon.send_message(gatherer::Message::GetInstalledApps) {
-                eprintln!("Failed to send message to daemon: {:#?}", e);
-                eprintln!("stdout: {:#?}", daemon.stdout());
-                eprintln!("stderr: {:#?}", daemon.stderr());
-
-                if let Err(e) = daemon.is_running() {
-                    eprintln!("Daemon is no longer running: {:#?}. Restarting...", e);
-                    daemon.start().unwrap();
-                    continue;
-                } else {
-                    daemon.stop().unwrap();
-                    continue;
-                }
-            }
-            let duration = start.elapsed().as_millis();
-            dbg!(duration);
-
-            match daemon.shared_memory().unwrap().content {
-                gatherer::SharedDataContent::InstalledApps(ref apps) => {
-                    dbg!(apps);
-                    if apps.is_complete {
-                        break;
-                    }
-                }
-                _ => {}
-            }
-        }
-
         Self {
             cpu_info: CpuInfo::new(system),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
@@ -229,6 +188,116 @@ impl Readings {
             running_apps: HashMap::new(),
             process_tree: Process::default(),
         }
+    }
+}
+
+struct GathererSupervisor {
+    gatherer: gatherer::Gatherer<gatherer::SharedData>,
+}
+
+impl Drop for GathererSupervisor {
+    fn drop(&mut self) {
+        self.gatherer.stop().unwrap();
+    }
+}
+
+impl GathererSupervisor {
+    pub fn new() -> anyhow::Result<Self> {
+        let mut gatherer = gatherer::Gatherer::<gatherer::SharedData>::new(Self::executable())?;
+        // SAFETY: We are the only ones that have access to the shared memory instance
+        let mut shm_data = unsafe { gatherer.shared_memory_unchecked() };
+        (*shm_data).clear();
+
+        Ok(Self { gatherer })
+    }
+
+    #[inline]
+    fn execute<F>(&mut self, mut f: F)
+    where
+        F: FnMut(
+            &mut gatherer::Gatherer<gatherer::SharedData>,
+            /* process_restarted */ bool,
+        ) -> bool,
+    {
+        use gtk::glib::g_critical;
+
+        let mut restarted = false;
+        loop {
+            if let Err(e) = self
+                .gatherer
+                .send_message(gatherer::Message::GetInstalledApps)
+            {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to send message to daemon: {:#?}",
+                    e
+                );
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "stdout: {:#?}",
+                    self.gatherer.stdout()
+                );
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "stderr: {:#?}",
+                    self.gatherer.stderr()
+                );
+
+                restarted = true;
+
+                if let Err(e) = self.gatherer.is_running() {
+                    g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Daemon is no longer running: {:#?}. Restarting...",
+                        e
+                    );
+                    self.gatherer.start().unwrap();
+                    continue;
+                } else {
+                    self.gatherer.stop().unwrap();
+                    continue;
+                }
+            }
+
+            if f(&mut self.gatherer, restarted) {
+                break;
+            }
+
+            restarted = false;
+        }
+    }
+
+    fn executable() -> &'static str {
+        use gtk::glib::g_debug;
+
+        let executable_name = if *IS_FLATPAK {
+            let flatpak_app_path = FLATPAK_APP_PATH.as_str();
+
+            let cmd_status = cmd_flatpak_host!(&format!(
+                "{}/bin/missioncenter-gatherer-glibc",
+                flatpak_app_path
+            ))
+            .status();
+            if let Ok(status) = cmd_status {
+                if status.success() {
+                    "missioncenter-gatherer-glibc"
+                } else {
+                    "missioncenter-gatherer-musl"
+                }
+            } else {
+                "missioncenter-gatherer-musl"
+            }
+        } else {
+            "missioncenter-gatherer"
+        };
+
+        g_debug!(
+            "MissionCenter::ProcInfo",
+            "Proxy executable name: {}",
+            executable_name
+        );
+
+        executable_name
     }
 }
 
@@ -261,6 +330,7 @@ impl SysInfoV2 {
 
         let mut system = System::new();
         let mut readings = Readings::new(&mut system);
+        let mut gatherer_supervisor = GathererSupervisor::new().unwrap();
 
         let mut disk_stats = vec![];
         readings.disks = DiskInfo::load(&mut disk_stats);
@@ -279,7 +349,7 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let (apps, mut processes) = proc_info::load_app_and_process_list();
+        let (_, mut processes) = proc_info::load_app_and_process_list();
         for gpu in &readings.gpus {
             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
                 if let Some(process) = processes.get_mut(pid) {
@@ -287,11 +357,12 @@ impl SysInfoV2 {
                 }
             }
         }
+        let apps = gatherer_supervisor.installed_apps();
         readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
         readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
-        let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
+        let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
         let run = refresh_thread_running.clone();
@@ -304,6 +375,7 @@ impl SysInfoV2 {
                     let mut previous_disk_stats = disk_stats;
                     let mut net_info = net_info;
                     let mut gpu_info = gpu_info;
+                    let mut gatherer_supervisor = gatherer_supervisor;
 
                     'read_loop: while run.load(Ordering::Acquire) {
                         let start_load_readings = std::time::Instant::now();
@@ -322,7 +394,7 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let (apps, mut process_list) = proc_info::load_app_and_process_list();
+                        let (_, mut process_list) = proc_info::load_app_and_process_list();
                         for gpu in &gpus {
                             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
                                 if let Some(process) = process_list.get_mut(pid) {
@@ -330,6 +402,7 @@ impl SysInfoV2 {
                                 }
                             }
                         }
+                        let apps = gatherer_supervisor.installed_apps();
                         let process_tree =
                             proc_info::process_hierarchy(&process_list).unwrap_or_default();
                         let running_apps = app_info::running_apps(&process_tree, &apps);
