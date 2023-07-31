@@ -1,7 +1,4 @@
-use common::{
-    ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent},
-    ExitCode,
-};
+use common::ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent};
 
 const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
 const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5);
@@ -10,6 +7,7 @@ pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
 pub type Message = common::ipc::Message;
 pub type AppDescriptor = common::AppDescriptor;
+pub type ExitCode = common::ExitCode;
 
 #[path = "gatherer/common/mod.rs"]
 mod common;
@@ -38,16 +36,23 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         let process_pid = unsafe { libc::getpid() };
 
         let socket_path = format!("{}/sock_{}", super::STATE_DIR.as_str(), process_pid);
-        let shm_file_link = format!("{}/shm_{}", super::STATE_DIR.as_str(), process_pid);
-
+        if (std::path::Path::new(socket_path.as_str())).exists() {
+            std::fs::remove_file(socket_path.as_str())?;
+        }
         let listener = LocalSocketListener::bind(socket_path.as_str())?;
         listener.set_nonblocking(true)?;
+
+        let shm_file_link = format!("{}/shm_{}", super::STATE_DIR.as_str(), process_pid);
         let shared_memory = SharedMemory::<SharedData>::new(shm_file_link.as_str(), true)?;
 
-        let mut command = std::process::Command::new(executable_path);
+        let commandline = format!(
+            "{} {} {}",
+            executable_path.display(),
+            socket_path.as_str(),
+            shm_file_link.as_str()
+        );
+        let mut command = cmd!(&commandline);
         command
-            .arg(socket_path.as_str())
-            .arg(shm_file_link.as_str())
             .stdout(std::process::Stdio::piped())
             .stderr(std::process::Stdio::piped());
 

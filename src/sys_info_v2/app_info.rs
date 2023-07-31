@@ -60,6 +60,7 @@ impl super::GathererSupervisor {
         let mut result = vec![];
 
         self.execute(
+            super::gatherer::Message::GetInstalledApps,
             |gatherer, process_restarted| match gatherer.shared_memory().unwrap().content {
                 SharedDataContent::InstalledApps(ref apps) => {
                     if process_restarted {

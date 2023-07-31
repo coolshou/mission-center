@@ -11,6 +11,7 @@
     "--share=network",
     "--share=ipc",
     "--socket=fallback-x11",
+    "--device=shm",
     "--device=all",
     "--socket=wayland",
     "--talk-name=org.freedesktop.Flatpak",
@@ -211,6 +212,35 @@
             "*"
           ]
         }
+      ]
+    },
+    {
+      "name": "missioncenter-gatherer",
+      "buildsystem": "simple",
+      "build-options": {
+        "append-path": "/app/rust-toolchain/bin",
+        "env": {
+          "RUST_BACKTRACE": "full",
+          "RUSTUP_HOME": "/app/rust-toolchain",
+          "CARGO_HOME": "/build-dir/src/proxy/cargo"
+        }
+      },
+      "build-commands": [
+        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && /app/rust-toolchain/bin/cargo build --offline --release'",
+        "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": ".."
+        },
+        {
+          "type": "inline",
+          "contents": "[source.vendored-sources]\ndirectory = \"../../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n\n[target.aarch64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n",
+          "dest": "src/sys_info_v2/gatherer/.cargo",
+          "dest-filename": "config.toml"
+        },
+        "cargo-sources-gatherer.json"
       ]
     },
     {

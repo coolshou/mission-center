@@ -242,7 +242,7 @@ impl GathererSupervisor {
     }
 
     #[inline]
-    fn execute<F>(&mut self, mut f: F)
+    fn execute<F>(&mut self, message: gatherer::Message, mut f: F)
     where
         F: FnMut(
             &mut gatherer::Gatherer<gatherer::SharedData>,
@@ -253,10 +253,7 @@ impl GathererSupervisor {
 
         let mut restarted = false;
         loop {
-            if let Err(e) = self
-                .gatherer
-                .send_message(gatherer::Message::GetInstalledApps)
-            {
+            if let Err(e) = self.gatherer.send_message(message) {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Failed to send message to daemon: {:#?}",
@@ -297,7 +294,7 @@ impl GathererSupervisor {
         }
     }
 
-    fn executable() -> &'static str {
+    fn executable() -> String {
         use gtk::glib::g_debug;
 
         let executable_name = if *IS_FLATPAK {
@@ -309,16 +306,18 @@ impl GathererSupervisor {
             ))
             .status();
             if let Ok(status) = cmd_status {
-                if status.success() {
-                    "missioncenter-gatherer-glibc"
+                if status.success()
+                    || status.code() == Some(gatherer::ExitCode::MissingProgramArgument as i32)
+                {
+                    format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path)
                 } else {
-                    "missioncenter-gatherer-musl"
+                    format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path)
                 }
             } else {
-                "missioncenter-gatherer-musl"
+                format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path)
             }
         } else {
-            "missioncenter-gatherer"
+            "missioncenter-gatherer".to_string()
         };
 
         g_debug!(

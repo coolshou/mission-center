@@ -778,11 +778,5 @@
     "contents": "{\"package\": \"1a515f5799fe4961cb532f983ce2b23082366b898e52ffbce459c86f67c8378a\", \"files\": {}}",
     "dest": "cargo/vendor/windows_x86_64_msvc-0.48.0",
     "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "inline",
-    "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n",
-    "dest": "cargo",
-    "dest-filename": "config"
   }
 ]
