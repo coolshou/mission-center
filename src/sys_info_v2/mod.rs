@@ -20,6 +20,8 @@
 
 use lazy_static::lazy_static;
 
+use crate::i18n::*;
+
 macro_rules! cmd {
     ($cmd: expr) => {{
         use std::process::Command;
@@ -232,7 +234,7 @@ impl Drop for GathererSupervisor {
 }
 
 impl GathererSupervisor {
-    pub fn new() -> anyhow::Result<Self> {
+    pub fn new() -> Result<Self, gatherer::GathererError> {
         let mut gatherer = gatherer::Gatherer::<gatherer::SharedData>::new(Self::executable())?;
         // SAFETY: We are the only ones that have access to the shared memory instance
         let mut shm_data = unsafe { gatherer.shared_memory_unchecked() };
@@ -275,13 +277,42 @@ impl GathererSupervisor {
                 if let Err(e) = self.gatherer.is_running() {
                     g_critical!(
                         "MissionCenter::SysInfo",
-                        "Daemon is no longer running: {:#?}. Restarting...",
+                        "Gatherer is no longer running: {:#?}. Restarting...",
                         e
                     );
-                    self.gatherer.start().unwrap();
+
+                    match self.gatherer.start() {
+                        Ok(_) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer restarted successfully"
+                            );
+                        }
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Failed to restart gatherer: {:#?}",
+                                e
+                            );
+                        }
+                    }
                     continue;
                 } else {
-                    self.gatherer.stop().unwrap();
+                    match self.gatherer.stop() {
+                        Ok(_) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer hung and was stopped successfully"
+                            );
+                        }
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer hung and could not be stopped, will try again : {:#?}",
+                                e
+                            );
+                        }
+                    }
                     continue;
                 }
             }
@@ -351,15 +382,52 @@ impl Drop for SysInfoV2 {
     }
 }
 
+impl Default for SysInfoV2 {
+    fn default() -> Self {
+        use std::sync::*;
+
+        Self {
+            refresh_interval: Arc::new(0.into()),
+            refresh_thread: None,
+            refresh_thread_running: Arc::new(true.into()),
+        }
+    }
+}
+
 impl SysInfoV2 {
-    pub fn new() -> (Self, Readings) {
+    pub fn new(window: &impl gtk::glib::IsA<gtk::Window>) -> (Self, Readings) {
+        use adw::prelude::*;
         use gtk::glib::*;
         use std::sync::{atomic::*, *};
         use sysinfo::{System, SystemExt};
 
         let mut system = System::new();
         let mut readings = Readings::new(&mut system);
-        let mut gatherer_supervisor = GathererSupervisor::new().unwrap();
+        let mut gatherer_supervisor = match GathererSupervisor::new() {
+            Ok(gs) => gs,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Unable to start gatherer: {:#?}",
+                    &e
+                );
+                let error_dialog = adw::MessageDialog::new(
+                    Some(window),
+                    Some("A fatal error has occurred"),
+                    Some(&format!("Unable to start data gatherer process: {:#?}", e)),
+                );
+                error_dialog.set_modal(true);
+                error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
+                error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
+                error_dialog.connect_response(None, |dialog, _| {
+                    dialog.close();
+                    std::process::exit(1);
+                });
+                error_dialog.present();
+
+                return (Default::default(), readings);
+            }
+        };
 
         let mut disk_stats = vec![];
         readings.disks = DiskInfo::load(&mut disk_stats);

@@ -27,6 +27,14 @@ impl<T: Sized> DerefMut for SharedMemoryContent<'_, T> {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum SharedMemoryError {
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    ShmemError(#[from] shared_memory::ShmemError),
+}
+
 pub struct SharedMemory<T: Sized> {
     _shm_handle: shared_memory::Shmem,
     data: *mut SharedMemoryData<T>,
@@ -36,7 +44,7 @@ impl<T: Sized> SharedMemory<T> {
     pub fn new<P: AsRef<std::path::Path>>(
         file_link: P,
         replace_existing: bool,
-    ) -> anyhow::Result<Self> {
+    ) -> Result<Self, SharedMemoryError> {
         use shared_memory::*;
         use std::sync::atomic::*;
 

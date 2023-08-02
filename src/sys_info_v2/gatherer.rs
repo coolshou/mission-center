@@ -12,6 +12,20 @@ pub type ExitCode = common::ExitCode;
 #[path = "gatherer/common/mod.rs"]
 mod common;
 
+#[derive(Debug, thiserror::Error)]
+pub enum GathererError {
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    SharedMemory(#[from] common::ipc::SharedMemoryError),
+    #[error("Expected message {0:?}, got {1:?}")]
+    MessageMissmatch(common::ipc::Message, common::ipc::Message),
+    #[error("Disconnected")]
+    Disconnected,
+    #[error("Timeout")]
+    Timeout,
+}
+
 pub struct Gatherer<SharedData: Sized> {
     listener: LocalSocketListener,
     shared_memory: SharedMemory<SharedData>,
@@ -30,7 +44,7 @@ unsafe impl<SharedData: Sized> Send for Gatherer<SharedData> {}
 impl<SharedData: Sized> Gatherer<SharedData> {
     pub fn new<P: AsRef<std::path::Path>>(
         executable_path: P,
-    ) -> anyhow::Result<Gatherer<SharedData>> {
+    ) -> Result<Gatherer<SharedData>, GathererError> {
         let executable_path = executable_path.as_ref();
 
         let process_pid = unsafe { libc::getpid() };
@@ -70,7 +84,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         })
     }
 
-    pub fn start(&mut self) -> anyhow::Result<()> {
+    pub fn start(&mut self) -> Result<(), GathererError> {
         if self.is_running().is_ok() {
             return Ok(());
         }
@@ -104,31 +118,41 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         }
 
         if self.connection.is_none() {
-            return Err(anyhow::anyhow!("Failed to start daemon"));
+            return Err(GathererError::Timeout);
         }
 
         Ok(())
     }
 
-    pub fn stop(&mut self) -> anyhow::Result<()> {
+    pub fn stop(&mut self) -> Result<(), GathererError> {
         if self.is_running().is_err() {
             return Ok(());
         }
 
         let child = core::mem::take(&mut self.child);
         if let Some(mut child) = child {
-            self.send_message(Message::Exit)?;
+            'outter: for _ in 0..2 {
+                let _ = self.send_message(Message::Exit);
 
-            for _ in 0..2 {
-                match child.try_wait()? {
-                    Some(_) => break,
-                    None => {
-                        // Wait a bit and try again, the child process might just be slow to stop
-                        std::thread::sleep(std::time::Duration::from_millis(10));
-                        continue;
+                for _ in 0..2 {
+                    match child.try_wait()? {
+                        Some(_) => break 'outter,
+                        None => {
+                            // Wait a bit and try again, the child process might just be slow to stop
+                            std::thread::sleep(std::time::Duration::from_millis(10));
+                            continue;
+                        }
                     }
                 }
+
+                // Try to get the child to wake up in case it's stuck
+                unsafe {
+                    libc::kill(child.id() as i32, libc::SIGCONT);
+                }
             }
+
+            // Either way sever the connection with the child process
+            self.connection = None;
 
             if child.try_wait()?.is_none() {
                 match child.kill() {
@@ -139,10 +163,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
                             return Ok(());
                         }
 
-                        return Err(anyhow::anyhow!(
-                            "Failed to kill gatherer process: {}",
-                            e.to_string()
-                        ));
+                        return Err(e.into());
                     }
                 }
             }
@@ -151,7 +172,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         Ok(())
     }
 
-    pub fn send_message(&mut self, message: Message) -> anyhow::Result<()> {
+    pub fn send_message(&mut self, message: Message) -> Result<(), GathererError> {
         use std::io::Write;
 
         if let Some(connection) = self.connection.as_mut() {
@@ -159,31 +180,25 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
             let reply = Self::read_message(connection, DEFAULT_TIMEOUT)?;
             if reply != Message::Acknowledge {
-                return Err(anyhow::anyhow!(
-                    "Failed to send message, received {:?} instead of Acknowledge",
-                    reply
-                ));
+                return Err(GathererError::MessageMissmatch(Message::Acknowledge, reply));
             }
 
             Ok(())
         } else {
-            Err(anyhow::anyhow!("No connection to gatherer"))
+            Err(GathererError::Disconnected)
         }
     }
 
-    pub fn shared_memory(&mut self) -> anyhow::Result<SharedMemoryContent<SharedData>> {
+    pub fn shared_memory(&mut self) -> Result<SharedMemoryContent<SharedData>, GathererError> {
         if let Some(connection) = self.connection.as_mut() {
             let message = Self::read_message(connection, std::time::Duration::from_millis(5000))?;
             if message != Message::DataReady {
-                return Err(anyhow::anyhow!(
-                    "Unknown if shared memory is ready, received {:?} instead of DataReady",
-                    message
-                ));
+                return Err(GathererError::MessageMissmatch(Message::DataReady, message));
             }
 
             Ok(unsafe { self.shared_memory.acquire() })
         } else {
-            Err(anyhow::anyhow!("No connection to gatherer"))
+            Err(GathererError::Disconnected)
         }
     }
 
@@ -218,7 +233,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         }
     }
 
-    pub fn stdout(&mut self) -> anyhow::Result<String> {
+    pub fn stdout(&mut self) -> Result<String, GathererError> {
         use std::io::Read;
 
         let stdout = self.stdout.as_mut();
@@ -245,7 +260,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         Ok(String::from_utf8_lossy(&buffer).to_string())
     }
 
-    pub fn stderr(&mut self) -> anyhow::Result<String> {
+    pub fn stderr(&mut self) -> Result<String, GathererError> {
         use std::io::Read;
 
         let stderr = self.stderr.as_mut();
@@ -275,14 +290,14 @@ impl<SharedData: Sized> Gatherer<SharedData> {
     fn read_message(
         connection: &mut LocalSocketStream,
         timeout: std::time::Duration,
-    ) -> anyhow::Result<Message> {
+    ) -> Result<Message, GathererError> {
         use std::io::Read;
 
         let mut reply = [0_u8];
         let mut timeout_left = timeout.as_millis();
         loop {
             if timeout_left == 0 {
-                return Err(anyhow::anyhow!("Timeout while waiting for reply"));
+                return Err(GathererError::Timeout);
             }
 
             match connection.read_exact(&mut reply) {

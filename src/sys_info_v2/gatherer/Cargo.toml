@@ -12,6 +12,7 @@ libc = { version = "0.2" }
 num_cpus = { version = "1" }
 rust-ini = { version = "0.19" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
+thiserror = { version = "1.0" }
 
 [profile.release]
 opt-level = 3

@@ -188,6 +188,7 @@ dependencies = [
  "num_cpus",
  "rust-ini",
  "shared_memory_extended",
+ "thiserror",
 ]
 
 [[package]]

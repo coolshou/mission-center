@@ -6,7 +6,6 @@ build = "build/build.rs"
 
 [dependencies]
 adw = { package = "libadwaita", version = "0.4", features = ["v1_3"] }
-anyhow = { version = "1.0" }
 arrayvec = { version = "0.7" }
 drm = { version = "0.9" }
 egl = { version = "0.2" }
@@ -38,6 +37,7 @@ sha2 = { version = "0.10" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 sysinfo = { version = "0.29", default-features = false }
 textdistance = { version = "1.0.2" }
+thiserror = { version = "1.0" }
 
 [profile.release]
 opt-level = 3

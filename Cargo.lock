@@ -1283,7 +1283,6 @@ dependencies = [
 name = "missioncenter"
 version = "0.3.0"
 dependencies = [
- "anyhow",
  "arrayvec 0.7.4",
  "drm",
  "egl",
@@ -1316,6 +1315,7 @@ dependencies = [
  "shared_memory_extended",
  "sysinfo",
  "textdistance",
+ "thiserror",
 ]
 
 [[package]]

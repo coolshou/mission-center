@@ -9,6 +9,7 @@ pub enum ExitCode {
     ReadFromSocketFailed,
     SendDataReadyFailed,
     SendAcknowledgeFailed,
+    OSSignal,
     UnknownMessageReceived = 254,
     Unknown = 255,
 }
@@ -22,7 +23,9 @@ impl From<u8> for ExitCode {
             4 => ExitCode::UnableToCreateSharedMemory,
             5 => ExitCode::SocketConnectionFailed,
             6 => ExitCode::ReadFromSocketFailed,
-            7 => ExitCode::SendAcknowledgeFailed,
+            7 => ExitCode::SendDataReadyFailed,
+            8 => ExitCode::SendAcknowledgeFailed,
+            9 => ExitCode::OSSignal,
             254 => ExitCode::UnknownMessageReceived,
             _ => ExitCode::Unknown,
         }
