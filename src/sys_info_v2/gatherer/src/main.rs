@@ -32,7 +32,6 @@ fn main() {
 
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() < 3 {
-        eprintln!("Usage: {} <ipc_socket_path> <shm_file_link> ", args[0]);
         std::process::exit(ExitCode::MissingProgramArgument as i32);
     }
 

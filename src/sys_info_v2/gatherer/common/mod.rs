@@ -5,6 +5,8 @@ pub use exit_code::ExitCode;
 mod apps;
 mod exit_code;
 pub mod ipc;
+#[allow(dead_code)]
+mod processes;
 
 pub trait ToArrayStringLossy {
     fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
