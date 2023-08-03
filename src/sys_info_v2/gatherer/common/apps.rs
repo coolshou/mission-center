@@ -1,7 +1,7 @@
 use arrayvec::ArrayVec;
 use lazy_static::lazy_static;
 
-type ArrayString = arrayvec::ArrayString<128>;
+use super::ArrayString;
 
 lazy_static! {
     static ref PATH: Vec<String> = {

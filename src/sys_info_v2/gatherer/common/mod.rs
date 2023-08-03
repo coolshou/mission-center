@@ -8,6 +8,8 @@ pub mod ipc;
 #[allow(dead_code)]
 mod processes;
 
+pub type ArrayString = arrayvec::ArrayString<128>;
+
 pub trait ToArrayStringLossy {
     fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
 }
