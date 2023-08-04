@@ -95,9 +95,7 @@ pub type GPUInfo = gpu_info::GPUInfo;
 
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
-#[allow(dead_code)]
-pub type ProcessStats = proc_info::Stats;
-pub type Pid = proc_info::Pid;
+pub type Pid = u32;
 
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
@@ -261,16 +259,6 @@ impl GathererSupervisor {
                     "Failed to send message to daemon: {:#?}",
                     e
                 );
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "stdout: {:#?}",
-                    self.gatherer.stdout()
-                );
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "stderr: {:#?}",
-                    self.gatherer.stderr()
-                );
 
                 restarted = true;
 
@@ -362,7 +350,6 @@ impl GathererSupervisor {
 }
 
 pub struct SysInfoV2 {
-    #[allow(dead_code)]
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
@@ -446,11 +433,11 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let (_, mut processes) = proc_info::load_app_and_process_list();
+        let mut processes = gatherer_supervisor.processes();
         for gpu in &readings.gpus {
             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                if let Some(process) = processes.get_mut(pid) {
-                    process.stats.gpu_usage = *gpu_usage;
+                if let Some(process) = processes.get_mut(&(*pid as u32)) {
+                    process.stats_mut().gpu_usage = *gpu_usage;
                 }
             }
         }
@@ -491,11 +478,11 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let (_, mut process_list) = proc_info::load_app_and_process_list();
+                        let mut process_list = gatherer_supervisor.processes();
                         for gpu in &gpus {
                             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                                if let Some(process) = process_list.get_mut(pid) {
-                                    process.stats.gpu_usage = *gpu_usage;
+                                if let Some(process) = process_list.get_mut(&(*pid as u32)) {
+                                    process.stats_mut().gpu_usage = *gpu_usage;
                                 }
                             }
                         }

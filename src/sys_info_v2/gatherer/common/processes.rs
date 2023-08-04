@@ -56,7 +56,7 @@ impl Default for ProcessState {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 struct RawStats {
     pub user_jiffies: u64,
     pub kernel_jiffies: u64,
@@ -70,13 +70,23 @@ struct RawStats {
     pub timestamp: std::time::Instant,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Stats {
     pub cpu_usage: f32,
     pub memory_usage: f32,
     pub disk_usage: f32,
     pub network_usage: f32,
     pub gpu_usage: f32,
+}
+
+impl Stats {
+    pub fn merge(&mut self, other: &Self) {
+        self.cpu_usage += other.cpu_usage;
+        self.memory_usage += other.memory_usage;
+        self.disk_usage += other.disk_usage;
+        self.network_usage += other.network_usage;
+        self.gpu_usage += other.gpu_usage;
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -171,6 +181,7 @@ impl Processes {
 
     fn update_process_cache() {
         use super::ToArrayStringLossy;
+
         fn parse_stat_file<'a>(data: &'a str, output: &mut [&'a str; 52]) {
             let mut part_index = 0;
 
@@ -247,7 +258,7 @@ impl Processes {
 
         let proc = std::fs::read_dir("/proc");
         if proc.is_err() {
-            eprintln!("CRTFailed to read /proc directory: {}", proc.err().unwrap());
+            eprintln!("Failed to read /proc directory: {}", proc.err().unwrap());
             return;
         }
         let proc_entries = proc
@@ -257,11 +268,6 @@ impl Processes {
         for entry in proc_entries {
             let pid = entry.file_name().to_string_lossy().parse::<u32>();
             if pid.is_err() {
-                eprintln!(
-                    "DBGSkipping non-numeric directory in /proc: {}: {}",
-                    entry.path().display(),
-                    pid.err().unwrap()
-                );
                 continue;
             }
             let pid = pid.unwrap();
@@ -270,7 +276,7 @@ impl Processes {
             let output = std::fs::read_to_string(entry_path.join("stat"));
             if output.is_err() {
                 eprintln!(
-                    "DBGFailed to read stat information for process {}, skipping: {}",
+                    "Failed to read stat information for process {}, skipping: {}",
                     pid,
                     output.err().unwrap()
                 );
@@ -279,7 +285,7 @@ impl Processes {
             let stat_file_content = output.unwrap();
             if stat_file_content.is_empty() {
                 eprintln!(
-                    "DBGFailed to read stat information for process {}, skipping",
+                    "Failed to read stat information for process {}, skipping",
                     pid
                 );
                 continue;
@@ -291,15 +297,11 @@ impl Processes {
             let stime = stat_kernel_mode_jiffies(&stat_parsed);
 
             let mut io_parsed = [0; 7];
-            let output = std::fs::read_to_string(entry_path.join("io"));
-            if output.is_err() {
-                eprintln!(
-                    "DBGFailed to read I/O information for process {}: {}",
-                    pid,
-                    output.err().unwrap()
-                );
-            } else {
-                parse_io_file(output.unwrap().as_str(), &mut io_parsed);
+            match std::fs::read_to_string(entry_path.join("io")) {
+                Ok(output) => {
+                    parse_io_file(&output, &mut io_parsed);
+                }
+                _ => {}
             }
 
             let total_net_sent = 0_u64;
@@ -340,7 +342,7 @@ impl Processes {
             let output = std::fs::read_to_string(entry_path.join("cmdline"));
             let cmd = if output.is_err() {
                 eprintln!(
-                    "DBGFailed to parse commandline for {}: {}",
+                    "Failed to parse commandline for {}: {}",
                     pid,
                     output.err().unwrap()
                 );
@@ -364,30 +366,15 @@ impl Processes {
             };
 
             let output = entry_path.join("exe").read_link();
-            let exe = if output.is_err() {
-                eprintln!(
-                    "DBGFailed to read executable path for {}: {}",
-                    pid,
-                    output.err().unwrap()
-                );
-
-                ArrayString::new()
-            } else {
-                output
-                    .unwrap()
-                    .as_os_str()
-                    .to_string_lossy()
-                    .to_array_string_lossy()
-            };
+            let exe = output
+                .map(|p| p.as_os_str().to_string_lossy().to_array_string_lossy())
+                .unwrap_or(ArrayString::new());
 
             let mut statm_parsed = [0; 7];
             let output = std::fs::read_to_string(entry_path.join("statm"));
             if output.is_err() {
-                eprintln!(
-                    "DBGFailed to read memory information for {}: {}",
-                    pid,
-                    output.err().unwrap()
-                );
+                let err = output.err().unwrap();
+                eprintln!("Failed to read memory information for {}: {}", pid, err);
             } else {
                 let statm_file_content = output.unwrap();
                 parse_statm_file(&statm_file_content, &mut statm_parsed);

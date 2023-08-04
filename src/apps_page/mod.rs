@@ -222,30 +222,28 @@ mod imp {
                         None
                     };
 
-                    let entry_name = if child.exe != std::path::Path::new("") {
-                        let entry_name = child
-                            .exe
-                            .as_path()
+                    let entry_name = if !child.exe().is_empty() {
+                        let entry_name = std::path::Path::new(child.exe())
                             .file_name()
-                            .map(|name| name.to_str().unwrap_or(child.name.as_str()))
-                            .unwrap_or(child.name.as_str());
+                            .map(|name| name.to_str().unwrap_or(child.name()))
+                            .unwrap_or(child.name());
                         if entry_name.starts_with("wine") {
-                            if child.cmd.is_empty() {
-                                child.name.as_str()
+                            if child.cmd().is_empty() {
+                                child.name()
                             } else {
-                                child.cmd[0]
+                                child.cmd()[0]
                                     .split("\\")
                                     .last()
-                                    .unwrap_or(child.name.as_str())
+                                    .unwrap_or(child.name())
                                     .split("/")
                                     .last()
-                                    .unwrap_or(child.name.as_str())
+                                    .unwrap_or(child.name())
                             }
                         } else {
                             entry_name
                         }
                     } else {
-                        child.name.as_str()
+                        child.name()
                     };
 
                     let child_model = if pos.is_none() {
@@ -253,11 +251,11 @@ mod imp {
                             .name(entry_name)
                             .content_type(ContentType::Process)
                             .pid(*pid)
-                            .cpu_usage(child.stats.cpu_usage)
-                            .memory_usage(child.stats.memory_usage)
-                            .disk_usage(child.stats.disk_usage)
-                            .network_usage(child.stats.network_usage)
-                            .gpu_usage(child.stats.gpu_usage)
+                            .cpu_usage(child.stats().cpu_usage)
+                            .memory_usage(child.stats().memory_usage)
+                            .disk_usage(child.stats().disk_usage)
+                            .network_usage(child.stats().network_usage)
+                            .gpu_usage(child.stats().gpu_usage)
                             .max_cpu_usage(this.max_cpu_usage.get())
                             .max_memory_usage(this.max_memory_usage.get())
                             .build();
@@ -271,11 +269,11 @@ mod imp {
                             .downcast::<ViewModel>()
                             .unwrap();
 
-                        view_model.set_cpu_usage(child.stats.cpu_usage);
-                        view_model.set_memory_usage(child.stats.memory_usage);
-                        view_model.set_disk_usage(child.stats.disk_usage);
-                        view_model.set_network_usage(child.stats.network_usage);
-                        view_model.set_gpu_usage(child.stats.gpu_usage);
+                        view_model.set_cpu_usage(child.stats().cpu_usage);
+                        view_model.set_memory_usage(child.stats().memory_usage);
+                        view_model.set_disk_usage(child.stats().disk_usage);
+                        view_model.set_network_usage(child.stats().network_usage);
+                        view_model.set_gpu_usage(child.stats().gpu_usage);
 
                         view_model.children().clone()
                     };

@@ -8,6 +8,10 @@ pub type SharedDataContent = common::SharedDataContent;
 pub type Message = common::ipc::Message;
 pub type AppDescriptor = common::AppDescriptor;
 pub type ExitCode = common::ExitCode;
+pub type ProcessDescriptor = common::ProcessDescriptor;
+pub type ProcessState = common::ProcessState;
+#[allow(dead_code)]
+pub type ProcessStats = common::ProcessStats;
 
 #[path = "gatherer/common/mod.rs"]
 mod common;
@@ -33,8 +37,6 @@ pub struct Gatherer<SharedData: Sized> {
     command: std::process::Command,
 
     child: Option<std::process::Child>,
-    stdout: Option<std::process::ChildStdout>,
-    stderr: Option<std::process::ChildStderr>,
 
     connection: Option<LocalSocketStream>,
 }
@@ -67,8 +69,8 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         );
         let mut command = cmd!(&commandline);
         command
-            .stdout(std::process::Stdio::piped())
-            .stderr(std::process::Stdio::piped());
+            .stdout(std::process::Stdio::inherit())
+            .stderr(std::process::Stdio::inherit());
 
         Ok(Gatherer {
             listener,
@@ -77,8 +79,6 @@ impl<SharedData: Sized> Gatherer<SharedData> {
             command,
 
             child: None,
-            stdout: None,
-            stderr: None,
 
             connection: None,
         })
@@ -89,9 +89,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
             return Ok(());
         }
 
-        let mut child = self.command.spawn()?;
-        self.stdout = child.stdout.take();
-        self.stderr = child.stderr.take();
+        let child = self.command.spawn()?;
         self.child = Some(child);
 
         // Let the child process start up
@@ -231,60 +229,6 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         } else {
             return Err((ExitCode::Unknown, -1));
         }
-    }
-
-    pub fn stdout(&mut self) -> Result<String, GathererError> {
-        use std::io::Read;
-
-        let stdout = self.stdout.as_mut();
-        if stdout.is_none() {
-            return Ok(String::new());
-        }
-
-        let stdout = stdout.unwrap();
-        let mut buffer = vec![];
-        loop {
-            let count = match stdout.read(&mut buffer) {
-                Ok(count) => count,
-                Err(e) => match e.kind() {
-                    std::io::ErrorKind::Interrupted => continue,
-                    _ => return Err(e.into()),
-                },
-            };
-
-            if count == 0 {
-                break;
-            }
-        }
-
-        Ok(String::from_utf8_lossy(&buffer).to_string())
-    }
-
-    pub fn stderr(&mut self) -> Result<String, GathererError> {
-        use std::io::Read;
-
-        let stderr = self.stderr.as_mut();
-        if stderr.is_none() {
-            return Ok(String::new());
-        }
-
-        let stderr = stderr.unwrap();
-        let mut buffer = vec![];
-        loop {
-            let count = match stderr.read(&mut buffer) {
-                Ok(count) => count,
-                Err(e) => match e.kind() {
-                    std::io::ErrorKind::Interrupted => continue,
-                    _ => return Err(e.into()),
-                },
-            };
-
-            if count == 0 {
-                break;
-            }
-        }
-
-        Ok(String::from_utf8_lossy(&buffer).to_string())
     }
 
     fn read_message(

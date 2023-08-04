@@ -24,7 +24,7 @@ macro_rules! data_ready {
 mod common;
 
 fn main() {
-    use common::{ipc, ExitCode, InstalledApps, SharedData, SharedDataContent};
+    use common::{ipc, ExitCode, InstalledApps, Processes, SharedData, SharedDataContent};
     use interprocess::local_socket::*;
     use std::io::Read;
 
@@ -74,6 +74,14 @@ fn main() {
 
         let message = ipc::Message::from(recv_buffer[0]);
         match message {
+            ipc::Message::GetProcesses => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::Processes(Processes::new());
+
+                data_ready!(connection);
+            }
             ipc::Message::GetInstalledApps => {
                 acknowledge!(connection);
 

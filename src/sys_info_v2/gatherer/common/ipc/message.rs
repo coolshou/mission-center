@@ -1,7 +1,8 @@
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Message {
-    GetInstalledApps = 0,
+    GetProcesses = 0,
+    GetInstalledApps,
     Acknowledge = 252,
     DataReady = 253,
     Exit = 254,
@@ -12,7 +13,8 @@ pub enum Message {
 impl From<u8> for Message {
     fn from(value: u8) -> Self {
         match value {
-            0 => Message::GetInstalledApps,
+            0 => Message::GetProcesses,
+            1 => Message::GetInstalledApps,
             252 => Message::Acknowledge,
             253 => Message::DataReady,
             254 => Message::Exit,

@@ -11,6 +11,8 @@ pub mod ipc;
 mod processes;
 
 pub type ArrayString = arrayvec::ArrayString<128>;
+#[allow(dead_code)]
+pub type ProcessStats = processes::Stats;
 
 pub trait ToArrayStringLossy {
     fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
@@ -22,7 +24,8 @@ impl ToArrayStringLossy for str {
         if self.len() > CAPACITY {
             for i in (0..CAPACITY).rev() {
                 if self.is_char_boundary(i) {
-                    result.push_str(&self[..i + 1]);
+                    result.push_str(&self[0..i]);
+                    break;
                 }
             }
         } else {
@@ -39,7 +42,8 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
         if self.len() > CAPACITY {
             for i in (0..CAPACITY).rev() {
                 if self.is_char_boundary(i) {
-                    result.push_str(&self[..i + 1]);
+                    result.push_str(&self[0..i]);
+                    break;
                 }
             }
         } else {

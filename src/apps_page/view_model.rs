@@ -209,7 +209,7 @@ pub enum SectionType {
 }
 
 pub struct ViewModelBuilder {
-    pid: libc::pid_t,
+    pid: u32,
     icon: glib::GString,
     name: glib::GString,
 
@@ -248,7 +248,7 @@ impl ViewModelBuilder {
         }
     }
 
-    pub fn pid(mut self, pid: libc::pid_t) -> Self {
+    pub fn pid(mut self, pid: u32) -> Self {
         self.pid = pid;
         self
     }
