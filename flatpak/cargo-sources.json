@@ -3330,11 +3330,5 @@
     "contents": "{\"package\": \"5a56c84a8ccd4258aed21c92f70c0f6dea75356b6892ae27c24139da456f9336\", \"files\": {}}",
     "dest": "cargo/vendor/xml-rs-0.8.15",
     "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "inline",
-    "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[source.\"https://github.com/servo/pathfinder\"]\ngit = \"https://github.com/servo/pathfinder\"\nreplace-with = \"vendored-sources\"\nrev = \"21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062\"\n",
-    "dest": ".cargo",
-    "dest-filename": "config.toml"
   }
 ]

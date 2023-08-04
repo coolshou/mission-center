@@ -125,7 +125,7 @@
       ]
     },
     {
-      "name": "missioncenter-proxy",
+      "name": "missioncenter-gatherer",
       "buildsystem": "simple",
       "build-options": {
         "append-path": "/app/rust-toolchain/bin",
@@ -136,12 +136,12 @@
         }
       },
       "build-commands": [
-        "cd src/sys_info_v2/proxy && cargo build --offline --release --target $(arch)-unknown-linux-musl",
-        "install -v -p -m 755 src/sys_info_v2/proxy/target/$(arch)-unknown-linux-musl/release/proxy /app/bin/missioncenter-proxy-musl",
-        "rm -rf src/proxy/target",
+        "cd src/sys_info_v2/gatherer && cargo build --offline --release --target $(arch)-unknown-linux-musl",
+        "install -v -p -m 755 src/sys_info_v2/gatherer/target/$(arch)-unknown-linux-musl/release/gatherer /app/bin/missioncenter-gatherer-musl",
+        "rm -rf src/gatherer/target",
         "",
-        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/proxy && /app/rust-toolchain/bin/cargo build --offline --release'",
-        "install -v -p -m 755 src/sys_info_v2/proxy/target/release/proxy /app/bin/missioncenter-proxy-glibc"
+        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && /app/rust-toolchain/bin/cargo build --offline --release'",
+        "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc"
       ],
       "sources": [
         {
@@ -151,10 +151,10 @@
         {
           "type": "inline",
           "contents": "[source.vendored-sources]\ndirectory = \"../../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n\n[target.aarch64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n",
-          "dest": "src/sys_info_v2/proxy/.cargo",
+          "dest": "src/sys_info_v2/gatherer/.cargo",
           "dest-filename": "config.toml"
         },
-        "cargo-sources-proxy.json"
+        "cargo-sources-gatherer.json"
       ],
       "modules": [
         {
@@ -215,35 +215,6 @@
       ]
     },
     {
-      "name": "missioncenter-gatherer",
-      "buildsystem": "simple",
-      "build-options": {
-        "append-path": "/app/rust-toolchain/bin",
-        "env": {
-          "RUST_BACKTRACE": "full",
-          "RUSTUP_HOME": "/app/rust-toolchain",
-          "CARGO_HOME": "/build-dir/src/proxy/cargo"
-        }
-      },
-      "build-commands": [
-        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && /app/rust-toolchain/bin/cargo build --offline --release'",
-        "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc"
-      ],
-      "sources": [
-        {
-          "type": "dir",
-          "path": ".."
-        },
-        {
-          "type": "inline",
-          "contents": "[source.vendored-sources]\ndirectory = \"../../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n\n[target.aarch64-unknown-linux-musl]\nlinker = \"/app/musl-libc/bin/musl-gcc\"\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n",
-          "dest": "src/sys_info_v2/gatherer/.cargo",
-          "dest-filename": "config.toml"
-        },
-        "cargo-sources-gatherer.json"
-      ]
-    },
-    {
       "name": "missioncenter",
       "buildsystem": "meson",
       "build-options": {
@@ -274,6 +245,12 @@
           "commands": [
             "cd subprojects/nvtop-* && find ../packagefiles -type f -name 'nvtop-*' -exec sh -c 'patch -p1 < {}' \\;"
           ]
+        },
+        {
+          "type": "inline",
+          "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[source.\"https://github.com/servo/pathfinder\"]\ngit = \"https://github.com/servo/pathfinder\"\nreplace-with = \"vendored-sources\"\nrev = \"21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062\"\n",
+          "dest": ".cargo",
+          "dest-filename": "config.toml"
         },
         "cargo-sources.json"
       ],

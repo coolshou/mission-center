@@ -2,7 +2,6 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 
 if get_option('flatpak') == false  
   subdir('sys_info_v2/gatherer')
-  subdir('sys_info_v2/proxy')
 endif
 
 gnome = import('gnome')
