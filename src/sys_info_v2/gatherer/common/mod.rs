@@ -1,5 +1,7 @@
 pub use apps::{AppDescriptor, InstalledApps};
 pub use exit_code::ExitCode;
+#[allow(unused)]
+pub use processes::{ProcessDescriptor, ProcessState, Processes};
 
 #[allow(dead_code)]
 mod apps;
@@ -53,6 +55,7 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
 pub enum SharedDataContent {
     Monostate,
     InstalledApps(InstalledApps),
+    Processes(Processes),
 }
 
 #[derive(Debug)]

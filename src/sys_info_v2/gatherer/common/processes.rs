@@ -3,6 +3,15 @@ use lazy_static::lazy_static;
 
 use super::ArrayString;
 
+mod state {
+    use std::{cell::Cell, collections::HashMap, thread_local};
+
+    thread_local! {
+        pub static FULL_PROCESS_CACHE: Cell<HashMap<u32, super::Process>> = Cell::new(HashMap::new());
+        pub static PROCESS_CACHE: Cell<Vec<super::ProcessDescriptor>> = Cell::new(vec![]);
+    }
+}
+
 lazy_static! {
     static ref PAGE_SIZE: usize = unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize };
     static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
@@ -82,9 +91,9 @@ pub struct ProcessDescriptor {
 }
 
 #[derive(Debug, Clone)]
-struct Process {
-    pub descriptor: ProcessDescriptor,
-    pub raw_stats: RawStats,
+pub struct Process {
+    descriptor: ProcessDescriptor,
+    raw_stats: RawStats,
 }
 
 impl Default for Process {
@@ -118,251 +127,289 @@ impl Default for Process {
     }
 }
 
-fn load_process_list(
-    mut previous: std::collections::HashMap<u32, Process>,
-) -> std::collections::HashMap<u32, Process> {
-    use super::ToArrayStringLossy;
-    use std::collections::HashMap;
+#[derive(Debug, Clone)]
+pub struct Processes {
+    pub processes: ArrayVec<ProcessDescriptor, 25>,
+    pub is_complete: bool,
+}
 
-    fn parse_stat_file<'a>(data: &'a str, output: &mut [&'a str; 52]) {
-        let mut part_index = 0;
+impl Default for Processes {
+    fn default() -> Self {
+        Self {
+            processes: ArrayVec::new(),
+            is_complete: false,
+        }
+    }
+}
 
-        let mut split = data.split('(').filter(|x| !x.is_empty());
-        output[part_index] = split.next().unwrap();
-        part_index += 1;
+impl Processes {
+    pub fn new() -> Self {
+        let mut this = Self::default();
 
-        let mut split = split.next().unwrap().split(')').filter(|x| !x.is_empty());
-        output[part_index] = split.next().unwrap();
-        part_index += 1;
+        let process_cache = state::PROCESS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        if process_cache.is_empty() {
+            Self::update_process_cache();
+            let full_process_cache =
+                state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
+            for (_, p) in full_process_cache {
+                process_cache.push(p.descriptor.clone());
+            }
+        }
 
-        for entry in split.next().unwrap().split_whitespace() {
-            output[part_index] = entry;
+        let drop_count = process_cache
+            .chunks(this.processes.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = process_cache.drain(0..drop_count);
+        this.processes.extend(it);
+        this.is_complete = process_cache.is_empty();
+
+        this
+    }
+
+    fn update_process_cache() {
+        use super::ToArrayStringLossy;
+        fn parse_stat_file<'a>(data: &'a str, output: &mut [&'a str; 52]) {
+            let mut part_index = 0;
+
+            let mut split = data.split('(').filter(|x| !x.is_empty());
+            output[part_index] = split.next().unwrap();
             part_index += 1;
-        }
-    }
 
-    fn parse_statm_file(data: &str, output: &mut [u64; 7]) {
-        let mut part_index = 0;
-
-        for entry in data.split_whitespace() {
-            output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
+            let mut split = split.next().unwrap().split(')').filter(|x| !x.is_empty());
+            output[part_index] = split.next().unwrap();
             part_index += 1;
-        }
-    }
 
-    fn parse_io_file(data: &str, output: &mut [u64; 7]) {
-        let mut part_index = 0;
-
-        for entry in data.lines() {
-            let entry = entry.split_whitespace().last().unwrap();
-            output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
-            part_index += 1;
-        }
-    }
-
-    fn stat_name(stat: &[&str; 52]) -> ArrayString {
-        stat[PROC_PID_STAT_TCOMM].to_array_string_lossy()
-    }
-
-    fn stat_state(stat: &[&str; 52]) -> ProcessState {
-        match stat[PROC_PID_STAT_STATE] {
-            "R" => ProcessState::Running,
-            "S" => ProcessState::Sleeping,
-            "D" => ProcessState::SleepingUninterruptible,
-            "Z" => ProcessState::Zombie,
-            "T" => ProcessState::Stopped,
-            "t" => ProcessState::Tracing,
-            "X" | "x" => ProcessState::Dead,
-            "K" => ProcessState::WakeKill,
-            "W" => ProcessState::Waking,
-            "P" => ProcessState::Parked,
-            _ => ProcessState::Unknown,
-        }
-    }
-
-    fn stat_parent_pid(stat: &[&str; 52]) -> u32 {
-        stat[PROC_PID_STAT_PPID].parse::<u32>().unwrap_or(0)
-    }
-
-    fn stat_user_mode_jiffies(stat: &[&str; 52]) -> u64 {
-        stat[PROC_PID_STAT_UTIME].parse::<u64>().unwrap_or(0)
-    }
-
-    fn stat_kernel_mode_jiffies(stat: &[&str; 52]) -> u64 {
-        stat[PROC_PID_STAT_STIME].parse::<u64>().unwrap_or(0)
-    }
-
-    let mut result = HashMap::new();
-    result.reserve(previous.len());
-
-    let now = std::time::Instant::now();
-
-    let proc = std::fs::read_dir("/proc");
-    if proc.is_err() {
-        eprintln!("CRTFailed to read /proc directory: {}", proc.err().unwrap());
-        return previous;
-    }
-    let proc_entries = proc
-        .unwrap()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false));
-    for entry in proc_entries {
-        let pid = entry.file_name().to_string_lossy().parse::<u32>();
-        if pid.is_err() {
-            eprintln!(
-                "DBGSkipping non-numeric directory in /proc: {}: {}",
-                entry.path().display(),
-                pid.err().unwrap()
-            );
-            continue;
-        }
-        let pid = pid.unwrap();
-        let entry_path = entry.path();
-
-        let output = std::fs::read_to_string(entry_path.join("stat"));
-        if output.is_err() {
-            eprintln!(
-                "DBGFailed to read stat information for process {}, skipping: {}",
-                pid,
-                output.err().unwrap()
-            );
-            continue;
-        }
-        let stat_file_content = output.unwrap();
-        if stat_file_content.is_empty() {
-            eprintln!(
-                "DBGFailed to read stat information for process {}, skipping",
-                pid
-            );
-            continue;
-        }
-        let mut stat_parsed = [""; 52];
-        parse_stat_file(&stat_file_content, &mut stat_parsed);
-
-        let utime = stat_user_mode_jiffies(&stat_parsed);
-        let stime = stat_kernel_mode_jiffies(&stat_parsed);
-
-        let mut io_parsed = [0; 7];
-        let output = std::fs::read_to_string(entry_path.join("io"));
-        if output.is_err() {
-            eprintln!(
-                "DBGFailed to read I/O information for process {}: {}",
-                pid,
-                output.err().unwrap()
-            );
-        } else {
-            parse_io_file(output.unwrap().as_str(), &mut io_parsed);
+            for entry in split.next().unwrap().split_whitespace() {
+                output[part_index] = entry;
+                part_index += 1;
+            }
         }
 
-        let total_net_sent = 0_u64;
-        let total_net_recv = 0_u64;
+        fn parse_statm_file(data: &str, output: &mut [u64; 7]) {
+            let mut part_index = 0;
 
-        let mut process;
-
-        let prev_process = previous.remove(&pid);
-        if prev_process.is_some() {
-            process = prev_process.unwrap();
-
-            let delta_time = now - process.raw_stats.timestamp;
-
-            let prev_utime = process.raw_stats.user_jiffies;
-            let prev_stime = process.raw_stats.kernel_jiffies;
-
-            let delta_utime = ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
-            let delta_stime = ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
-
-            process.descriptor.stats.cpu_usage =
-                (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
-                    .min(100. * num_cpus::get() as f32);
-
-            let prev_read_bytes = process.raw_stats.disk_read_bytes;
-            let prev_write_bytes = process.raw_stats.disk_write_bytes;
-
-            let read_speed = (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes))
-                as f32
-                / delta_time.as_secs_f32();
-            let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES].saturating_sub(prev_write_bytes))
-                as f32
-                / delta_time.as_secs_f32();
-            process.descriptor.stats.disk_usage = (read_speed + write_speed) / 2.;
-        } else {
-            process = Process::default();
+            for entry in data.split_whitespace() {
+                output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
+                part_index += 1;
+            }
         }
 
-        let output = std::fs::read_to_string(entry_path.join("cmdline"));
-        let cmd = if output.is_err() {
-            eprintln!(
-                "DBGFailed to parse commandline for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
-            ArrayVec::new()
-        } else {
-            let mut cmd = ArrayVec::new();
-            for c in output
-                .unwrap()
-                .split('\0')
-                .map(|s| s.trim())
-                .filter(|s| !s.is_empty())
-                .map(|s| s.to_array_string_lossy())
-            {
-                cmd.push(c);
-                if cmd.is_full() {
-                    break;
-                }
+        fn parse_io_file(data: &str, output: &mut [u64; 7]) {
+            let mut part_index = 0;
+
+            for entry in data.lines() {
+                let entry = entry.split_whitespace().last().unwrap();
+                output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
+                part_index += 1;
+            }
+        }
+
+        fn stat_name(stat: &[&str; 52]) -> ArrayString {
+            stat[PROC_PID_STAT_TCOMM].to_array_string_lossy()
+        }
+
+        fn stat_state(stat: &[&str; 52]) -> ProcessState {
+            match stat[PROC_PID_STAT_STATE] {
+                "R" => ProcessState::Running,
+                "S" => ProcessState::Sleeping,
+                "D" => ProcessState::SleepingUninterruptible,
+                "Z" => ProcessState::Zombie,
+                "T" => ProcessState::Stopped,
+                "t" => ProcessState::Tracing,
+                "X" | "x" => ProcessState::Dead,
+                "K" => ProcessState::WakeKill,
+                "W" => ProcessState::Waking,
+                "P" => ProcessState::Parked,
+                _ => ProcessState::Unknown,
+            }
+        }
+
+        fn stat_parent_pid(stat: &[&str; 52]) -> u32 {
+            stat[PROC_PID_STAT_PPID].parse::<u32>().unwrap_or(0)
+        }
+
+        fn stat_user_mode_jiffies(stat: &[&str; 52]) -> u64 {
+            stat[PROC_PID_STAT_UTIME].parse::<u64>().unwrap_or(0)
+        }
+
+        fn stat_kernel_mode_jiffies(stat: &[&str; 52]) -> u64 {
+            stat[PROC_PID_STAT_STIME].parse::<u64>().unwrap_or(0)
+        }
+
+        let mut previous = state::FULL_PROCESS_CACHE.with(|prev| prev.take());
+        let result = state::FULL_PROCESS_CACHE.with(|prev| unsafe { &mut *prev.as_ptr() });
+        result.reserve(previous.len());
+
+        let now = std::time::Instant::now();
+
+        let proc = std::fs::read_dir("/proc");
+        if proc.is_err() {
+            eprintln!("CRTFailed to read /proc directory: {}", proc.err().unwrap());
+            return;
+        }
+        let proc_entries = proc
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false));
+        for entry in proc_entries {
+            let pid = entry.file_name().to_string_lossy().parse::<u32>();
+            if pid.is_err() {
+                eprintln!(
+                    "DBGSkipping non-numeric directory in /proc: {}: {}",
+                    entry.path().display(),
+                    pid.err().unwrap()
+                );
+                continue;
+            }
+            let pid = pid.unwrap();
+            let entry_path = entry.path();
+
+            let output = std::fs::read_to_string(entry_path.join("stat"));
+            if output.is_err() {
+                eprintln!(
+                    "DBGFailed to read stat information for process {}, skipping: {}",
+                    pid,
+                    output.err().unwrap()
+                );
+                continue;
+            }
+            let stat_file_content = output.unwrap();
+            if stat_file_content.is_empty() {
+                eprintln!(
+                    "DBGFailed to read stat information for process {}, skipping",
+                    pid
+                );
+                continue;
+            }
+            let mut stat_parsed = [""; 52];
+            parse_stat_file(&stat_file_content, &mut stat_parsed);
+
+            let utime = stat_user_mode_jiffies(&stat_parsed);
+            let stime = stat_kernel_mode_jiffies(&stat_parsed);
+
+            let mut io_parsed = [0; 7];
+            let output = std::fs::read_to_string(entry_path.join("io"));
+            if output.is_err() {
+                eprintln!(
+                    "DBGFailed to read I/O information for process {}: {}",
+                    pid,
+                    output.err().unwrap()
+                );
+            } else {
+                parse_io_file(output.unwrap().as_str(), &mut io_parsed);
             }
 
-            cmd
-        };
+            let total_net_sent = 0_u64;
+            let total_net_recv = 0_u64;
 
-        let output = entry_path.join("exe").read_link();
-        let exe = if output.is_err() {
-            eprintln!(
-                "DBGFailed to read executable path for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
+            let mut process;
 
-            ArrayString::new()
-        } else {
-            output
-                .unwrap()
-                .as_os_str()
-                .to_string_lossy()
-                .to_array_string_lossy()
-        };
+            let prev_process = previous.remove(&pid);
+            if prev_process.is_some() {
+                process = prev_process.unwrap();
 
-        let mut statm_parsed = [0; 7];
-        let output = std::fs::read_to_string(entry_path.join("statm"));
-        if output.is_err() {
-            eprintln!(
-                "DBGFailed to read memory information for {}: {}",
-                pid,
-                output.err().unwrap()
-            );
-        } else {
-            let statm_file_content = output.unwrap();
-            parse_statm_file(&statm_file_content, &mut statm_parsed);
+                let delta_time = now - process.raw_stats.timestamp;
+
+                let prev_utime = process.raw_stats.user_jiffies;
+                let prev_stime = process.raw_stats.kernel_jiffies;
+
+                let delta_utime = ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
+                let delta_stime = ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
+
+                process.descriptor.stats.cpu_usage =
+                    (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
+                        .min(100. * num_cpus::get() as f32);
+
+                let prev_read_bytes = process.raw_stats.disk_read_bytes;
+                let prev_write_bytes = process.raw_stats.disk_write_bytes;
+
+                let read_speed = (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes))
+                    as f32
+                    / delta_time.as_secs_f32();
+                let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES]
+                    .saturating_sub(prev_write_bytes)) as f32
+                    / delta_time.as_secs_f32();
+                process.descriptor.stats.disk_usage = (read_speed + write_speed) / 2.;
+            } else {
+                process = Process::default();
+            }
+
+            let output = std::fs::read_to_string(entry_path.join("cmdline"));
+            let cmd = if output.is_err() {
+                eprintln!(
+                    "DBGFailed to parse commandline for {}: {}",
+                    pid,
+                    output.err().unwrap()
+                );
+                ArrayVec::new()
+            } else {
+                let mut cmd = ArrayVec::new();
+                for c in output
+                    .unwrap()
+                    .split('\0')
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .map(|s| s.to_array_string_lossy())
+                {
+                    cmd.push(c);
+                    if cmd.is_full() {
+                        break;
+                    }
+                }
+
+                cmd
+            };
+
+            let output = entry_path.join("exe").read_link();
+            let exe = if output.is_err() {
+                eprintln!(
+                    "DBGFailed to read executable path for {}: {}",
+                    pid,
+                    output.err().unwrap()
+                );
+
+                ArrayString::new()
+            } else {
+                output
+                    .unwrap()
+                    .as_os_str()
+                    .to_string_lossy()
+                    .to_array_string_lossy()
+            };
+
+            let mut statm_parsed = [0; 7];
+            let output = std::fs::read_to_string(entry_path.join("statm"));
+            if output.is_err() {
+                eprintln!(
+                    "DBGFailed to read memory information for {}: {}",
+                    pid,
+                    output.err().unwrap()
+                );
+            } else {
+                let statm_file_content = output.unwrap();
+                parse_statm_file(&statm_file_content, &mut statm_parsed);
+            }
+
+            process.descriptor.pid = pid;
+            process.descriptor.name = stat_name(&stat_parsed);
+            process.descriptor.cmd = cmd;
+            process.descriptor.exe = exe;
+            process.descriptor.state = stat_state(&stat_parsed);
+            process.descriptor.parent = stat_parent_pid(&stat_parsed);
+            process.descriptor.stats.memory_usage =
+                (statm_parsed[PROC_PID_STATM_RES] * (*PAGE_SIZE) as u64) as f32;
+            process.raw_stats.user_jiffies = utime;
+            process.raw_stats.kernel_jiffies = stime;
+            process.raw_stats.disk_read_bytes = io_parsed[PROC_PID_IO_READ_BYTES];
+            process.raw_stats.disk_write_bytes = io_parsed[PROC_PID_IO_WRITE_BYTES];
+            process.raw_stats.net_bytes_sent = total_net_sent;
+            process.raw_stats.net_bytes_recv = total_net_recv;
+            process.raw_stats.timestamp = now;
+
+            result.insert(pid, process);
         }
-
-        process.descriptor.pid = pid;
-        process.descriptor.name = stat_name(&stat_parsed);
-        process.descriptor.cmd = cmd;
-        process.descriptor.exe = exe;
-        process.descriptor.state = stat_state(&stat_parsed);
-        process.descriptor.parent = stat_parent_pid(&stat_parsed);
-        process.descriptor.stats.memory_usage =
-            (statm_parsed[PROC_PID_STATM_RES] * (*PAGE_SIZE) as u64) as f32;
-        process.raw_stats.user_jiffies = utime;
-        process.raw_stats.kernel_jiffies = stime;
-        process.raw_stats.disk_read_bytes = io_parsed[PROC_PID_IO_READ_BYTES];
-        process.raw_stats.disk_write_bytes = io_parsed[PROC_PID_IO_WRITE_BYTES];
-        process.raw_stats.net_bytes_sent = total_net_sent;
-        process.raw_stats.net_bytes_recv = total_net_recv;
-        process.raw_stats.timestamp = now;
-
-        result.insert(pid, process);
     }
-
-    result
 }
