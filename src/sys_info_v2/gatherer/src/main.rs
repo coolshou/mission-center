@@ -39,26 +39,25 @@ fn main() {
         eprintln!("IPC socket '{}' does not exist", args[1]);
         std::process::exit(ExitCode::SocketConnectionFailed as i32);
     }
-    let connection = LocalSocketStream::connect(args[1].as_str());
-    if connection.is_err() {
-        eprintln!("Unable to connect to parent: {}", connection.err().unwrap());
-        std::process::exit(ExitCode::SocketConnectionFailed as i32);
-    }
-    let mut connection = connection.unwrap();
+    let mut connection = match LocalSocketStream::connect(args[1].as_str()) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Unable to connect to parent: {}", e);
+            std::process::exit(ExitCode::SocketConnectionFailed as i32);
+        }
+    };
 
     if !std::path::Path::new(&args[2]).exists() {
         eprintln!("File link '{}' does not exist", args[2]);
         std::process::exit(ExitCode::FileLinkNotFound as i32);
     }
-    let shared_memory = ipc::SharedMemory::<SharedData>::new(&args[2], false);
-    if shared_memory.is_err() {
-        eprintln!(
-            "Unable to create shared memory: {:?}",
-            shared_memory.err().unwrap()
-        );
-        std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
-    }
-    let mut shared_memory = shared_memory.unwrap();
+    let mut shared_memory = match ipc::SharedMemory::<SharedData>::new(&args[2], false) {
+        Ok(sm) => sm,
+        Err(e) => {
+            eprintln!("Unable to create shared memory: {}", e);
+            std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
+        }
+    };
 
     let mut recv_buffer = [0_u8; 1];
     loop {

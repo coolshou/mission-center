@@ -115,19 +115,20 @@ impl InstalledApps {
 
 fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDescriptor>) {
     let path = path.as_ref();
-    let dir = std::fs::read_dir(path);
-    if dir.is_err() {
-        eprintln!(
-            "CRTFailed to load apps from {}: {}",
-            path.display(),
-            dir.err().unwrap()
-        );
-        return;
-    }
-    let dir = dir.unwrap();
+    let dir = match std::fs::read_dir(path) {
+        Ok(d) => d,
+        Err(e) => {
+            eprintln!("Failed to load apps from {}: {}", path.display(), e);
+            return;
+        }
+    };
 
     for entry in dir {
-        let entry = entry.unwrap();
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+
         let path = entry.path();
         if path.is_dir() {
             load_apps_from_dir(path, apps);
@@ -146,26 +147,24 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
     use ini::*;
 
     let path = path.as_ref();
-    let ini = Ini::load_from_file(path);
-    if ini.is_err() {
-        eprintln!(
-            "CRTFailed to load desktop file from {}: {}",
-            path.display(),
-            ini.err().unwrap()
-        );
-        return None;
-    }
-    let ini = ini.unwrap();
+    let ini = match Ini::load_from_file(path) {
+        Ok(ini) => ini,
+        Err(e) => {
+            eprintln!("Failed to load desktop file from {}: {}", path.display(), e);
+            return None;
+        }
+    };
 
-    let section = ini.section(Some("Desktop Entry"));
-    if section.is_none() {
-        eprintln!(
-            "CRTFailed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
-            path.display()
-        );
-        return None;
-    }
-    let section = section.unwrap();
+    let section = match ini.section(Some("Desktop Entry")) {
+        None => {
+            eprintln!(
+                "Failed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
+                path.display()
+            );
+            return None;
+        }
+        Some(s) => s,
+    };
 
     let hidden = section
         .get("NoDisplay")
@@ -174,36 +173,39 @@ fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor
         return None;
     }
 
-    let name = section.get("Name");
-    if name.is_none() {
-        eprintln!(
-            "CRTFailed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
-            path.display()
-        );
-        return None;
-    }
-    let name = name.unwrap();
+    let name = match section.get("Name") {
+        None => {
+            eprintln!(
+                "Failed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
+                path.display()
+            );
+            return None;
+        }
+        Some(n) => n,
+    };
 
-    let command = section.get("Exec");
-    if command.is_none() {
-        eprintln!(
-            "CRTFailed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
-            path.display()
-        );
-        return None;
-    }
-    let command = command.unwrap();
+    let command = match section.get("Exec") {
+        None => {
+            eprintln!(
+                "Failed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
+                path.display()
+            );
+            return None;
+        }
+        Some(c) => c,
+    };
 
-    let cmd = parse_command(command);
-    if cmd.is_none() {
-        eprintln!(
-            "DBGFailed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
-            path.display(),
-            command
-        );
-        return None;
-    }
-    let (commands, is_flatpak) = cmd.unwrap();
+    let (commands, is_flatpak) = match parse_command(command) {
+        None => {
+            eprintln!(
+                "Failed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
+                path.display(),
+                command
+            );
+            return None;
+        }
+        Some(c) => c,
+    };
 
     let app_id = if is_flatpak {
         parse_app_id(command)
@@ -245,64 +247,67 @@ fn parse_command(command: &str) -> Option<(ArrayVec<ArrayString, 8>, bool)> {
                         }
                     }
 
-                    // Web browsers are wierd, their desktop file has the name of the binary with a
-                    // `-stable`, `-beta`, `-nightly`, `-canary`, etc. suffix, but the binary itself
-                    // doesn't have that suffix, so let's check for that too
                     let file_name = file_name.to_string_lossy();
-                    let last_index = file_name.rfind('-');
-                    if last_index.is_some() {
-                        let file_name = &file_name[..last_index.unwrap()];
-
-                        // Also Google Chrome is even stranger, the process is just called `chrome`
-                        if file_name.starts_with("google-") {
-                            let file_name = file_name.trim_start_matches("google-");
-                            let cmd_path = p.join(file_name);
-                            if cmd_path.exists() {
-                                match commands
-                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
-                                {
-                                    Err(_) => break,
-                                    _ => {}
-                                }
-                            }
-                            // Vivaldi just randomly adds a `-bin` at the end
-                        } else if file_name.starts_with("vivaldi") {
-                            let cmd_path = p.join("vivaldi-bin");
-                            if cmd_path.exists() {
-                                match commands
-                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
-                                {
-                                    Err(_) => break,
-                                    _ => {}
-                                }
-                            }
-                            // Microsoft decided to call their binary `msedge` instead of `microsoft-edge`
-                        } else if file_name.starts_with("microsoft-edge") {
-                            let cmd_path = p.join("msedge");
-                            if cmd_path.exists() {
-                                match commands
-                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
-                                {
-                                    Err(_) => break,
-                                    _ => {}
-                                }
-                            }
-                        } else {
-                            let cmd_path = p.join(file_name);
-                            if cmd_path.exists() {
-                                match commands
-                                    .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
-                                {
-                                    Err(_) => break,
-                                    _ => {}
-                                }
-                            }
-                        }
-                    }
 
                     // The main Firefox process in RedHat and ArchLinux based distros is `firefox-bin`
                     if file_name.starts_with("firefox") {
                         let cmd_path = p.join("firefox-bin");
+                        if cmd_path.exists() {
+                            match commands
+                                .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                            {
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+                    }
+
+                    // Chromium-based browsers are wierd, their desktop file has the name of the
+                    // binary with a `-stable`, `-beta`, `-nightly`, `-canary`, etc. suffix, but the
+                    // binary itself doesn't have that suffix, so let's check for that too
+                    let last_index = match file_name.rfind('-') {
+                        None => continue,
+                        Some(v) => v,
+                    };
+
+                    let file_name = &file_name[..last_index];
+
+                    // Also Google Chrome is even stranger, the process is just called `chrome`
+                    if file_name.starts_with("google-") {
+                        let file_name = file_name.trim_start_matches("google-");
+                        let cmd_path = p.join(file_name);
+                        if cmd_path.exists() {
+                            match commands
+                                .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                            {
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+                        // Vivaldi just randomly adds a `-bin` at the end
+                    } else if file_name.starts_with("vivaldi") {
+                        let cmd_path = p.join("vivaldi-bin");
+                        if cmd_path.exists() {
+                            match commands
+                                .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                            {
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+                        // Microsoft decided to call their binary `msedge` instead of `microsoft-edge`
+                    } else if file_name.starts_with("microsoft-edge") {
+                        let cmd_path = p.join("msedge");
+                        if cmd_path.exists() {
+                            match commands
+                                .try_push(cmd_path.to_string_lossy().to_array_string_lossy())
+                            {
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+                    } else {
+                        let cmd_path = p.join(file_name);
                         if cmd_path.exists() {
                             match commands
                                 .try_push(cmd_path.to_string_lossy().to_array_string_lossy())

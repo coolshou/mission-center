@@ -186,14 +186,28 @@ impl Processes {
             let mut part_index = 0;
 
             let mut split = data.split('(').filter(|x| !x.is_empty());
-            output[part_index] = split.next().unwrap();
+            output[part_index] = match split.next() {
+                Some(x) => x,
+                None => return,
+            };
             part_index += 1;
 
-            let mut split = split.next().unwrap().split(')').filter(|x| !x.is_empty());
-            output[part_index] = split.next().unwrap();
+            let mut split = match split.next() {
+                Some(x) => x.split(')').filter(|x| !x.is_empty()),
+                None => return,
+            };
+
+            output[part_index] = match split.next() {
+                Some(x) => x,
+                None => return,
+            };
             part_index += 1;
 
-            for entry in split.next().unwrap().split_whitespace() {
+            let split = match split.next() {
+                Some(x) => x,
+                None => return,
+            };
+            for entry in split.split_whitespace() {
                 output[part_index] = entry;
                 part_index += 1;
             }
@@ -212,7 +226,7 @@ impl Processes {
             let mut part_index = 0;
 
             for entry in data.lines() {
-                let entry = entry.split_whitespace().last().unwrap();
+                let entry = entry.split_whitespace().last().unwrap_or("");
                 output[part_index] = entry.trim().parse::<u64>().unwrap_or(0);
                 part_index += 1;
             }
@@ -256,40 +270,44 @@ impl Processes {
 
         let now = std::time::Instant::now();
 
-        let proc = std::fs::read_dir("/proc");
-        if proc.is_err() {
-            eprintln!("Failed to read /proc directory: {}", proc.err().unwrap());
-            return;
-        }
+        let proc = match std::fs::read_dir("/proc") {
+            Ok(proc) => proc,
+            Err(e) => {
+                eprintln!("Failed to read /proc directory: {}", e);
+                return;
+            }
+        };
         let proc_entries = proc
-            .unwrap()
             .filter_map(|e| e.ok())
             .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false));
         for entry in proc_entries {
-            let pid = entry.file_name().to_string_lossy().parse::<u32>();
-            if pid.is_err() {
-                continue;
-            }
-            let pid = pid.unwrap();
+            let pid = match entry.file_name().to_string_lossy().parse::<u32>() {
+                Ok(pid) => pid,
+                Err(_) => continue,
+            };
+
             let entry_path = entry.path();
 
-            let output = std::fs::read_to_string(entry_path.join("stat"));
-            if output.is_err() {
-                eprintln!(
-                    "Failed to read stat information for process {}, skipping: {}",
-                    pid,
-                    output.err().unwrap()
-                );
-                continue;
-            }
-            let stat_file_content = output.unwrap();
-            if stat_file_content.is_empty() {
-                eprintln!(
-                    "Failed to read stat information for process {}, skipping",
-                    pid
-                );
-                continue;
-            }
+            let stat_file_content = match std::fs::read_to_string(entry_path.join("stat")) {
+                Ok(sfc) => {
+                    if sfc.is_empty() {
+                        eprintln!(
+                            "Failed to read stat information for process {}, skipping",
+                            pid
+                        );
+                        continue;
+                    }
+
+                    sfc
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Failed to read stat information for process {}, skipping: {}",
+                        pid, e,
+                    );
+                    continue;
+                }
+            };
             let mut stat_parsed = [""; 52];
             parse_stat_file(&stat_file_content, &mut stat_parsed);
 
@@ -339,30 +357,28 @@ impl Processes {
                 process = Process::default();
             }
 
-            let output = std::fs::read_to_string(entry_path.join("cmdline"));
-            let cmd = if output.is_err() {
-                eprintln!(
-                    "Failed to parse commandline for {}: {}",
-                    pid,
-                    output.err().unwrap()
-                );
-                ArrayVec::new()
-            } else {
-                let mut cmd = ArrayVec::new();
-                for c in output
-                    .unwrap()
-                    .split('\0')
-                    .map(|s| s.trim())
-                    .filter(|s| !s.is_empty())
-                    .map(|s| s.to_array_string_lossy())
-                {
-                    cmd.push(c);
-                    if cmd.is_full() {
-                        break;
+            let cmd = match std::fs::read_to_string(entry_path.join("cmdline")) {
+                Ok(output) => {
+                    let mut cmd = ArrayVec::new();
+                    for c in output
+                        .split('\0')
+                        .map(|s| s.trim())
+                        .filter(|s| !s.is_empty())
+                        .map(|s| s.to_array_string_lossy())
+                    {
+                        cmd.push(c);
+                        if cmd.is_full() {
+                            break;
+                        }
                     }
-                }
 
-                cmd
+                    cmd
+                }
+                Err(e) => {
+                    eprintln!("Failed to parse commandline for {}: {}", pid, e);
+
+                    ArrayVec::new()
+                }
             };
 
             let output = entry_path.join("exe").read_link();
@@ -371,14 +387,14 @@ impl Processes {
                 .unwrap_or(ArrayString::new());
 
             let mut statm_parsed = [0; 7];
-            let output = std::fs::read_to_string(entry_path.join("statm"));
-            if output.is_err() {
-                let err = output.err().unwrap();
-                eprintln!("Failed to read memory information for {}: {}", pid, err);
-            } else {
-                let statm_file_content = output.unwrap();
-                parse_statm_file(&statm_file_content, &mut statm_parsed);
-            }
+            match std::fs::read_to_string(entry_path.join("statm")) {
+                Ok(statm_file_content) => {
+                    parse_statm_file(&statm_file_content, &mut statm_parsed);
+                }
+                Err(e) => {
+                    eprintln!("Failed to read memory information for {}: {}", pid, e);
+                }
+            };
 
             process.descriptor.pid = pid;
             process.descriptor.name = stat_name(&stat_parsed);
