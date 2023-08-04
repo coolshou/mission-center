@@ -8,28 +8,33 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-19 08:27+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-08-05 14:54+0000\n"
+"Last-Translator: mthw0 <matejm98mthw@gmail.com>\n"
+"Language-Team: Slovak <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/sk/>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Správca úloh;Monitor zdrojov;Monitor systému;Procesor;Procesy;Monitor "
+"výkonu;CPU;GPU;Disk;Pamäť;Sieť;Využitie;Využitie"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Vývojári Mission Center"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:13
 msgid "Monitor system resource usage"
@@ -41,7 +46,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 msgid "Features:"
-msgstr ""
+msgstr "Funkcie:"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
@@ -98,11 +103,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Používa GTK4 a Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Written in Rust"
-msgstr ""
+msgstr "Napísané v Rust"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Flatpak first"
@@ -217,7 +222,7 @@ msgstr ""
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:725
 #: src/performance_page/mod.rs:267
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:74
 msgid "% Utilization"
@@ -225,24 +230,24 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:84
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr ""
+msgstr "Využitie"
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr ""
+msgstr "Rýchlosť"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:364
 msgid "Processes"
-msgstr ""
+msgstr "Procesy"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr ""
+msgstr "Vlákna"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
@@ -254,35 +259,35 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr ""
+msgstr "Základná rýchlosť:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr ""
+msgstr "Sokety:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Virtuálne procesory:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr ""
+msgstr "Virtualizácia:"
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Virtuálny stroj:"
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr ""
+msgstr "L1 cache:"
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr ""
+msgstr "L2 cache:"
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr ""
+msgstr "L3 cache:"
 
 #: resources/ui/performance_page/cpu.blp:441
 msgid "Change G_raph To"
@@ -375,15 +380,15 @@ msgstr ""
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr ""
+msgstr "Rýchlosť čítania"
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr ""
+msgstr "Rýchlosť zápisu"
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr ""
+msgstr "Kapacita:"
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
@@ -396,25 +401,25 @@ msgstr ""
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
 msgid "Type:"
-msgstr ""
+msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr ""
+msgstr "Celkové využitie"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr ""
+msgstr "Enkódovanie videa"
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr ""
+msgstr "Dekódovanie videa"
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr ""
+msgstr "Využitie pamäte"
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
@@ -422,31 +427,31 @@ msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr ""
+msgstr "Spotreba energie"
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr ""
+msgstr "Rýchlosť pamäte"
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
-msgstr ""
+msgstr "Teplota"
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr ""
+msgstr "OpenGL verzia:"
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr ""
+msgstr "Vulkan verzia:"
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "Rýchlosť PCI Express:"
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr ""
+msgstr "Adresa PCI zbernice:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
@@ -459,7 +464,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:731
 #: src/performance_page/mod.rs:318
 msgid "Memory"
-msgstr ""
+msgstr "Pamäť"
 
 #: resources/ui/performance_page/memory.blp:130
 msgid "Memory composition"
@@ -467,11 +472,11 @@ msgstr ""
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr ""
+msgstr "Používa sa"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr ""
+msgstr "Dostupné"
 
 #: resources/ui/performance_page/memory.blp:217
 msgid "Committed"
@@ -491,7 +496,7 @@ msgstr ""
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr ""
+msgstr "Rýchlosť:"
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
@@ -523,11 +528,11 @@ msgstr ""
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
-msgstr ""
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr ""
+msgstr "Sila signálu:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
@@ -535,19 +540,19 @@ msgstr ""
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr ""
+msgstr "Frekvencia:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr ""
+msgstr "Hardvérová adresa:"
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr ""
+msgstr "IPv4 adresa:"
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr ""
+msgstr "IPv6 adresa:"
 
 #: resources/ui/performance_page/network.blp:402
 msgid "Network Se_ttings"
@@ -555,7 +560,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr ""
+msgstr "Všeobecné nastavenia"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
@@ -604,11 +609,11 @@ msgstr ""
 
 #: resources/ui/window.blp:80
 msgid "Performance"
-msgstr ""
+msgstr "Výkon"
 
 #: resources/ui/window.blp:89 src/apps_page/mod.rs:357
 msgid "Apps"
-msgstr ""
+msgstr "Aplikácie"
 
 #: resources/ui/window.blp:101
 msgid "_Preferences"
@@ -624,15 +629,15 @@ msgstr ""
 
 #: src/apps_page/mod.rs:713
 msgid "Name"
-msgstr ""
+msgstr "Názov"
 
 #: src/apps_page/mod.rs:719
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:737
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -666,27 +671,27 @@ msgstr ""
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Disk {} ({})"
 
 #: src/performance_page/mod.rs:375
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:376
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:377
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:378
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:379
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
 #: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
@@ -699,11 +704,11 @@ msgstr ""
 
 #: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr ""
+msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:340
 msgid "Other"
@@ -711,11 +716,11 @@ msgstr ""
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr ""
+msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:695
 msgid "{}: {} {}bps {}: {} {}bps"
-msgstr ""
+msgstr "{}: {} {}bps {}: {} {}bps"
 
 #: src/performance_page/cpu.rs:286
 msgid "Supported"
@@ -727,11 +732,11 @@ msgstr ""
 
 #: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
 msgid "Yes"
-msgstr ""
+msgstr "Áno"
 
 #: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
 msgid "No"
-msgstr ""
+msgstr "Nie"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"
@@ -744,12 +749,12 @@ msgstr ""
 
 #: src/performance_page/disk.rs:251
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/network.rs:415 src/performance_page/network.rs:421
 #: src/performance_page/network.rs:429
 msgid "{} {}bps"
-msgstr ""
+msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
