@@ -72,30 +72,44 @@ impl super::GathererSupervisor {
 
         self.execute(
             super::gatherer::Message::GetProcesses,
-            |gatherer, process_restarted| match gatherer.shared_memory().unwrap().content {
-                SharedDataContent::Processes(ref proceses) => {
-                    if process_restarted {
-                        result.clear();
+            |gatherer, process_restarted| {
+                let shared_memory = match gatherer.shared_memory() {
+                    Ok(shm) => shm,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Unable to to access shared memory: {}",
+                            e
+                        );
+                        return false;
                     }
+                };
 
-                    for proc in &proceses.processes {
-                        result.insert(proc.pid, Process::new(proc.clone()));
+                match shared_memory.content {
+                    SharedDataContent::Processes(ref proceses) => {
+                        if process_restarted {
+                            result.clear();
+                        }
+
+                        for proc in &proceses.processes {
+                            result.insert(proc.pid, Process::new(proc.clone()));
+                        }
+                        proceses.is_complete
                     }
-                    proceses.is_complete
-                }
-                SharedDataContent::InstalledApps(_) => {
-                    g_critical!(
-                        "MissionCenter::ProcInfo",
-                        "Shared data content is InstalledApps instead of Processes; encountered when reading processes from gatherer", 
-                    );
-                    false
-                }
-                SharedDataContent::Monostate => {
-                    g_critical!(
-                        "MissionCenter::ProcInfo",
-                        "Shared data content is Monostate instead of Processes; encountered when reading processes from gatherer", 
-                    );
-                    false
+                    SharedDataContent::InstalledApps(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is InstalledApps instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
+                    SharedDataContent::Monostate => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is Monostate instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
                 }
             },
         );
@@ -106,23 +120,21 @@ impl super::GathererSupervisor {
 
 pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) -> Option<Process> {
     use super::gatherer::ProcessStats;
-    use gtk::glib::g_debug;
+    use gtk::glib::*;
     use std::collections::*;
 
     let now = std::time::Instant::now();
 
     let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
-    if pids.len() == 0 {
-        return None;
-    }
+    let root_pid = match pids.first() {
+        None => return None,
+        Some(pid) => *pid,
+    };
 
-    let root_process = processes
-        .get(pids.first().unwrap())
-        .map_or(None, |p| Some(p.clone()));
-    if root_process.is_none() {
-        return None;
-    }
-    let mut root_process = root_process.unwrap();
+    let mut root_process = match processes.get(&root_pid).map_or(None, |p| Some(p.clone())) {
+        None => return None,
+        Some(p) => p,
+    };
 
     let mut process_tree = BTreeMap::new();
     process_tree.insert(root_process.pid(), 0_usize);
@@ -138,23 +150,32 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
             continue;
         }
 
-        let process = processes.get(pid);
-        if process.is_none() {
-            continue;
-        }
-        let process = process.unwrap();
+        let process = match processes.get(pid) {
+            None => continue,
+            Some(p) => p,
+        };
 
         let mut stack = vec![process];
         let mut parent = process.parent();
         while parent != 0 {
-            let parent_process = processes.get(&parent);
-            if parent_process.is_none() {
-                break;
-            }
-            let parent_process = parent_process.unwrap();
+            let parent_process = match processes.get(&parent) {
+                None => break,
+                Some(pp) => pp,
+            };
 
             if visited.contains(&parent_process.pid()) {
-                let mut index = *process_tree.get(&parent_process.pid()).unwrap();
+                let mut index = match process_tree.get(&parent_process.pid()) {
+                    None => {
+                        // TODO: Fully understand if this could happen, and what to do if it does.
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Process {} has been visited, but it's not in the process_tree?",
+                            process.pid()
+                        );
+                        break;
+                    }
+                    Some(index) => *index,
+                };
                 while let Some(ancestor) = stack.pop() {
                     let p = ancestor.clone();
                     children[index].insert(p.pid(), p);

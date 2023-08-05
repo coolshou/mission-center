@@ -325,37 +325,38 @@ impl Processes {
             let total_net_sent = 0_u64;
             let total_net_recv = 0_u64;
 
-            let mut process;
+            let mut process = match previous.remove(&pid) {
+                None => Process::default(),
+                Some(mut process) => {
+                    let delta_time = now - process.raw_stats.timestamp;
 
-            let prev_process = previous.remove(&pid);
-            if prev_process.is_some() {
-                process = prev_process.unwrap();
+                    let prev_utime = process.raw_stats.user_jiffies;
+                    let prev_stime = process.raw_stats.kernel_jiffies;
 
-                let delta_time = now - process.raw_stats.timestamp;
+                    let delta_utime =
+                        ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
+                    let delta_stime =
+                        ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
 
-                let prev_utime = process.raw_stats.user_jiffies;
-                let prev_stime = process.raw_stats.kernel_jiffies;
+                    process.descriptor.stats.cpu_usage =
+                        (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
+                            .min(100. * num_cpus::get() as f32);
 
-                let delta_utime = ((utime.saturating_sub(prev_utime) as f32) * 1000.) / *HZ as f32;
-                let delta_stime = ((stime.saturating_sub(prev_stime) as f32) * 1000.) / *HZ as f32;
+                    let prev_read_bytes = process.raw_stats.disk_read_bytes;
+                    let prev_write_bytes = process.raw_stats.disk_write_bytes;
 
-                process.descriptor.stats.cpu_usage =
-                    (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
-                        .min(100. * num_cpus::get() as f32);
+                    let read_speed =
+                        (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes)) as f32
+                            / delta_time.as_secs_f32();
+                    let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES]
+                        .saturating_sub(prev_write_bytes))
+                        as f32
+                        / delta_time.as_secs_f32();
+                    process.descriptor.stats.disk_usage = (read_speed + write_speed) / 2.;
 
-                let prev_read_bytes = process.raw_stats.disk_read_bytes;
-                let prev_write_bytes = process.raw_stats.disk_write_bytes;
-
-                let read_speed = (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes))
-                    as f32
-                    / delta_time.as_secs_f32();
-                let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES]
-                    .saturating_sub(prev_write_bytes)) as f32
-                    / delta_time.as_secs_f32();
-                process.descriptor.stats.disk_usage = (read_speed + write_speed) / 2.;
-            } else {
-                process = Process::default();
-            }
+                    process
+                }
+            };
 
             let cmd = match std::fs::read_to_string(entry_path.join("cmdline")) {
                 Ok(output) => {
