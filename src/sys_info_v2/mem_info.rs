@@ -274,9 +274,19 @@ impl MemInfo {
                     break;
                 }
 
+                let md = match mem_dev.as_mut() {
+                    Some(mem_dev) => mem_dev,
+                    None => {
+                        break;
+                    }
+                };
+
                 match key {
                     "Size" => {
                         if value.to_lowercase() == "no module installed" {
+                            #[allow(dropping_references)]
+                            drop(md);
+
                             mem_dev = None;
                             break;
                         }
@@ -290,53 +300,43 @@ impl MemInfo {
                         };
                         match unit.trim() {
                             "TB" => {
-                                mem_dev.as_mut().unwrap().size =
+                                md.size =
                                     value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
                             }
                             "GB" => {
-                                mem_dev.as_mut().unwrap().size =
+                                md.size =
                                     value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
                             }
-                            "MB" => {
-                                mem_dev.as_mut().unwrap().size =
-                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024)
-                            }
-                            "KB" => {
-                                mem_dev.as_mut().unwrap().size =
-                                    value.parse::<usize>().map_or(0, |s| s * 1024)
-                            }
-                            _ => {
-                                mem_dev.as_mut().unwrap().size =
-                                    value.parse::<usize>().map_or(0, |s| s)
-                            }
+                            "MB" => md.size = value.parse::<usize>().map_or(0, |s| s * 1024 * 1024),
+                            "KB" => md.size = value.parse::<usize>().map_or(0, |s| s * 1024),
+                            _ => md.size = value.parse::<usize>().map_or(0, |s| s),
                         }
                     }
-                    "Form Factor" => mem_dev.as_mut().unwrap().form_factor = value.to_owned(),
-                    "Locator" => mem_dev.as_mut().unwrap().locator = value.to_owned(),
-                    "Bank Locator" => mem_dev.as_mut().unwrap().bank_locator = value.to_owned(),
-                    "Type" => mem_dev.as_mut().unwrap().ram_type = value.to_owned(),
+                    "Form Factor" => md.form_factor = value.to_owned(),
+                    "Locator" => md.locator = value.to_owned(),
+                    "Bank Locator" => md.bank_locator = value.to_owned(),
+                    "Type" => md.ram_type = value.to_owned(),
                     "Speed" => {
                         let value = value.trim_end_matches("MT/s").trim();
                         speed_fallback = value.parse::<usize>().map_or(0, |s| s)
                     }
                     "Configured Memory Speed" => {
                         let value = value.trim_end_matches("MT/s").trim();
-                        mem_dev.as_mut().unwrap().speed = value.parse::<usize>().map_or(0, |s| s)
+                        md.speed = value.parse::<usize>().map_or(0, |s| s)
                     }
-                    "Rank" => mem_dev.as_mut().unwrap().rank = value.parse::<u8>().map_or(0, |s| s),
+                    "Rank" => md.rank = value.parse::<u8>().map_or(0, |s| s),
                     _ => (),
                 }
             }
 
-            if mem_dev.is_some() {
-                {
-                    let mem_dev = mem_dev.as_mut().unwrap();
-
+            match mem_dev {
+                Some(mut mem_dev) => {
                     if mem_dev.speed == 0 {
                         mem_dev.speed = speed_fallback;
                     }
+                    result.push(mem_dev);
                 }
-                result.push(mem_dev.unwrap());
+                _ => {}
             }
         }
 
