@@ -220,17 +220,17 @@ impl NetInfo {
                 continue;
             }
 
-            let device_path = unsafe { self.nm_device_obj_path_new(if_name) };
-            if device_path.is_none() {
-                g_critical!(
-                    "MissionCenter::NetInfo",
-                    "Failed to get device path for {}",
-                    if_name_str
-                );
-
-                continue;
-            }
-            let device_path = device_path.unwrap();
+            let device_path = match unsafe { self.nm_device_obj_path_new(if_name) } {
+                None => {
+                    g_critical!(
+                        "MissionCenter::NetInfo",
+                        "Failed to get device path for {}",
+                        if_name_str
+                    );
+                    continue;
+                }
+                Some(dp) => dp,
+            };
 
             let device_proxy = unsafe {
                 Self::create_nm_dbus_proxy(
@@ -590,62 +590,71 @@ impl NetInfo {
         use gtk::glib::*;
         use std::{fs::*, io::*, path::*};
 
-        if self.hwdb_conn.is_none() {
-            return None;
-        }
-
         let device_name_cache = &mut self.device_name_cache;
         if let Some(device_name) = device_name_cache.get(udi) {
             return Some(device_name.clone());
         }
 
-        let conn = self.hwdb_conn.as_ref().unwrap();
+        let conn = match self.hwdb_conn.as_ref() {
+            None => return None,
+            Some(c) => c,
+        };
 
-        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'min'");
-        if stmt.is_err() {
-            g_critical!(
-                "MissionCenter::NetInfo",
-                "Failed to extract min key length from {}/hw.db: Prepare query failed",
-                crate::HW_DB_DIR.as_str()
-            );
-            return None;
-        }
-        let mut stmt = stmt.unwrap();
-        let query_result = stmt.query_map([], |row| row.get::<usize, i32>(0));
-        if query_result.is_err() {
-            g_critical!(
-                "MissionCenter::NetInfo",
-                "Failed to extract min key length from {}/hw.db: Query map failed",
-                crate::HW_DB_DIR.as_str()
-            );
-            return None;
-        }
-        let min_key_len = if let Some(min_len) = query_result.unwrap().next() {
+        let mut stmt = match conn.prepare("SELECT value FROM key_len WHERE key = 'min'") {
+            Ok(s) => s,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to extract min key length from {}/hw.db: Prepare query failed: {}",
+                    crate::HW_DB_DIR.as_str(),
+                    e,
+                );
+                return None;
+            }
+        };
+        let mut query_result = match stmt.query_map([], |row| row.get::<usize, i32>(0)) {
+            Ok(qr) => qr,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to extract min key length from {}/hw.db: Query map failed: {}",
+                    crate::HW_DB_DIR.as_str(),
+                    e,
+                );
+                return None;
+            }
+        };
+        let min_key_len = if let Some(min_len) = query_result.next() {
             min_len.unwrap_or(0)
         } else {
             0
         };
 
-        let stmt = conn.prepare("SELECT value FROM key_len WHERE key = 'max'");
-        if stmt.is_err() {
-            g_critical!(
-                "MissionCenter::NetInfo",
-                "Failed to extract max key length from {}/hw.db: Prepare query failed",
-                crate::HW_DB_DIR.as_str()
-            );
-            return None;
-        }
-        let mut stmt = stmt.unwrap();
-        let query_result = stmt.query_map([], |row| row.get::<usize, i32>(0));
-        if query_result.is_err() {
-            g_critical!(
-                "MissionCenter::NetInfo",
-                "Failed to extract max key length from {}/hw.db: Query map failed",
-                crate::HW_DB_DIR.as_str()
-            );
-            return None;
-        }
-        let mut max_key_len = if let Some(max_len) = query_result.unwrap().next() {
+        let mut stmt = match conn.prepare("SELECT value FROM key_len WHERE key = 'max'") {
+            Ok(s) => s,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to extract max key length from {}/hw.db: Prepare query failed: {}",
+                    crate::HW_DB_DIR.as_str(),
+                    e,
+                );
+                return None;
+            }
+        };
+        let mut query_result = match stmt.query_map([], |row| row.get::<usize, i32>(0)) {
+            Ok(qr) => qr,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::NetInfo",
+                    "Failed to extract max key length from {}/hw.db: Query map failed: {}",
+                    crate::HW_DB_DIR.as_str(),
+                    e,
+                );
+                return None;
+            }
+        };
+        let mut max_key_len = if let Some(max_len) = query_result.next() {
             max_len.unwrap_or(i32::MAX)
         } else {
             i32::MAX
@@ -679,30 +688,36 @@ impl NetInfo {
 
                         for i in (min_key_len..max_key_len).rev() {
                             modalias.truncate(i as usize);
-                            let stmt = conn.prepare(
+                            let mut stmt = match conn.prepare(
                                 "SELECT value FROM models WHERE key LIKE ?1 || '%' LIMIT 1",
-                            );
-                            if stmt.is_err() {
-                                g_warning!(
-                                    "MissionCenter::NetInfo",
-                                    "Failed to find model in {}/hw.db: Prepare query failed",
-                                    crate::HW_DB_DIR.as_str()
-                                );
-                                continue;
-                            }
-                            let mut stmt = stmt.unwrap();
-                            let query_result = stmt
-                                .query_map([modalias.trim()], |row| row.get::<usize, String>(0));
-                            if query_result.is_err() {
-                                g_warning!(
-                                    "MissionCenter::NetInfo",
-                                    "Failed to find model in {}/hw.db: Query map failed",
-                                    crate::HW_DB_DIR.as_str()
-                                );
-                                continue;
-                            }
+                            ) {
+                                Ok(s) => s,
+                                Err(e) => {
+                                    g_warning!(
+                                        "MissionCenter::NetInfo",
+                                        "Failed to find model in {}/hw.db: Prepare query failed: {}",
+                                        crate::HW_DB_DIR.as_str(),
+                                        e,
+                                    );
+                                    continue;
+                                }
+                            };
+                            let mut query_result = match stmt
+                                .query_map([modalias.trim()], |row| row.get::<usize, String>(0))
+                            {
+                                Ok(qr) => qr,
+                                Err(e) => {
+                                    g_warning!(
+                                        "MissionCenter::NetInfo",
+                                        "Failed to find model in {}/hw.db: Query map failed: {}",
+                                        crate::HW_DB_DIR.as_str(),
+                                        e,
+                                    );
+                                    continue;
+                                }
+                            };
 
-                            let model_name = if let Some(model) = query_result.unwrap().next() {
+                            let model_name = if let Some(model) = query_result.next() {
                                 model.ok()
                             } else {
                                 None
