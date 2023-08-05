@@ -88,61 +88,60 @@ impl DiskInfo {
 
         let mut result = vec![];
 
-        let entries = std::fs::read_dir("/sys/block");
-        if entries.is_err() {
-            g_critical!(
-                "MissionCenter::DiskInfo",
-                "Failed to refresh disk information, failed to read disk entries: {:?}",
-                entries.err()
-            );
-            return result;
-        }
-
-        for entry in entries.unwrap() {
-            if entry.is_err() {
-                g_warning!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read disk entry: {:?}",
-                    entry.err()
+        let entries = match std::fs::read_dir("/sys/block") {
+            Ok(e) => e,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::DiskInfo",
+                    "Failed to refresh disk information, failed to read disk entries: {}",
+                    e
                 );
-                continue;
+                return result;
             }
-
-            let entry = entry.unwrap();
-            let file_type = entry.file_type();
-            if file_type.is_err() {
-                g_warning!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read disk entry file type: {:?}",
-                    file_type.err()
-                );
-                continue;
-            }
-
-            let file_type = file_type.unwrap();
-
-            let dir_name = if file_type.is_symlink() {
-                let path = entry.path().read_link();
-                if path.is_err() {
+        };
+        for entry in entries {
+            let entry = match entry {
+                Ok(e) => e,
+                Err(e) => {
+                    g_warning!("MissionCenter::SysInfo", "Failed to read disk entry: {}", e);
+                    continue;
+                }
+            };
+            let file_type = match entry.file_type() {
+                Ok(ft) => ft,
+                Err(e) => {
                     g_warning!(
                         "MissionCenter::SysInfo",
-                        "Failed to read disk entry symlink: {:?}",
-                        path.err()
+                        "Failed to read disk entry file type: {}",
+                        e
                     );
                     continue;
                 }
+            };
 
-                let path = std::path::Path::new("/sys/block").join(path.unwrap());
-                if !path.is_dir() {
-                    continue;
+            let dir_name = if file_type.is_symlink() {
+                let path = match entry.path().read_link() {
+                    Err(e) => {
+                        g_warning!(
+                            "MissionCenter::SysInfo",
+                            "Failed to read disk entry symlink: {}",
+                            e
+                        );
+                        continue;
+                    }
+                    Ok(p) => {
+                        let path = std::path::Path::new("/sys/block").join(p);
+                        if !path.is_dir() {
+                            continue;
+                        }
+                        path
+                    }
+                };
+
+                match path.file_name() {
+                    None => continue,
+                    Some(dir_name) => dir_name.to_string_lossy().into_owned(),
                 }
-
-                let dir_name = path.file_name();
-                if dir_name.is_none() {
-                    continue;
-                }
-
-                dir_name.unwrap().to_string_lossy().into_owned()
             } else if file_type.is_dir() {
                 entry.file_name().to_string_lossy().into_owned()
             } else {
@@ -212,15 +211,17 @@ impl DiskInfo {
             let model = vendor.trim().to_string() + " " + model.trim();
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
-            let stats = if stats.is_err() {
-                g_warning!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read disk stat: {:?}",
-                    stats.err()
-                );
-                ""
-            } else {
-                stats.as_ref().unwrap().trim()
+
+            let stats = match stats.as_ref() {
+                Err(e) => {
+                    g_warning!(
+                        "MissionCenter::SysInfo",
+                        "Failed to read disk stat: {:?}",
+                        e
+                    );
+                    ""
+                }
+                Ok(stats) => stats.trim(),
             };
 
             let mut read_ios = 0;
@@ -454,35 +455,40 @@ impl DiskInfo {
     fn filesystem_info(device_name: &str) -> Option<(bool, u64)> {
         use gtk::glib::*;
 
-        let entries = std::fs::read_dir(format!("/sys/block/{}", device_name));
-        if entries.is_err() {
-            g_critical!(
-                "MissionCenter::SysInfo",
-                "Failed to read filesystem information for '{}': {:?}",
-                device_name,
-                entries.err()
-            );
+        let entries = match std::fs::read_dir(format!("/sys/block/{}", device_name)) {
+            Ok(e) => e,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to read filesystem information for '{}': {}",
+                    device_name,
+                    e
+                );
 
-            return None;
-        }
+                return None;
+            }
+        };
 
         let is_root_device = Self::mount_points(&device_name)
             .iter()
             .map(|v| v.as_str())
             .any(|v| v == "/");
         let mut formatted_size = 0_u64;
-        for entry in entries.unwrap() {
-            if entry.is_err() {
-                g_warning!(
-                    "MissionCenter::SysInfo",
-                    "Failed to read some filesystem information for '{}': {:?}",
-                    device_name,
-                    entry.err()
-                );
-                continue;
-            }
+        for entry in entries {
+            let entry = match entry {
+                Ok(e) => e,
+                Err(e) => {
+                    g_warning!(
+                        "MissionCenter::SysInfo",
+                        "Failed to read some filesystem information for '{}': {}",
+                        device_name,
+                        e
+                    );
+                    continue;
+                }
+            };
 
-            let part_name = entry.unwrap().file_name();
+            let part_name = entry.file_name();
             let part_name = part_name.to_string_lossy();
             if !part_name.starts_with(device_name) {
                 continue;
