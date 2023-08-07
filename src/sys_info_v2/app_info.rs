@@ -61,30 +61,44 @@ impl super::GathererSupervisor {
 
         self.execute(
             super::gatherer::Message::GetInstalledApps,
-            |gatherer, process_restarted| match gatherer.shared_memory().unwrap().content {
-                SharedDataContent::InstalledApps(ref apps) => {
-                    if process_restarted {
-                        result.clear();
+            |gatherer, process_restarted| {
+                let shared_memory = match gatherer.shared_memory() {
+                    Ok(shm) => shm,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Unable to to access shared memory: {}",
+                            e
+                        );
+                        return false;
                     }
+                };
 
-                    for app in &apps.apps {
-                        result.push(App::new(app.clone()));
+                match shared_memory.content {
+                    SharedDataContent::InstalledApps(ref apps) => {
+                        if process_restarted {
+                            result.clear();
+                        }
+
+                        for app in &apps.apps {
+                            result.push(App::new(app.clone()));
+                        }
+                        apps.is_complete
                     }
-                    apps.is_complete
-                }
-                SharedDataContent::Processes(_) => {
-                    g_critical!(
+                    SharedDataContent::Processes(_) => {
+                        g_critical!(
                         "MissionCenter::AppInfo",
                         "Shared data content is Processes instead of InstalledApps; encountered when reading installed apps from gatherer", 
                     );
-                    false
-                }
-                SharedDataContent::Monostate => {
-                    g_critical!(
+                        false
+                    }
+                    SharedDataContent::Monostate => {
+                        g_critical!(
                         "MissionCenter::AppInfo",
                         "Shared data content is Monostate instead of InstalledApps; encountered when reading installed apps from gatherer", 
                     );
-                    false
+                        false
+                    }
                 }
             },
         );
