@@ -205,29 +205,28 @@ impl<SharedData: Sized> Gatherer<SharedData> {
     }
 
     pub fn is_running(&mut self) -> Result<(), (ExitCode, i32)> {
-        if self.child.is_none() {
-            return Err((ExitCode::Unknown, -1));
-        }
+        let child = match self.child.as_mut() {
+            Some(child) => child,
+            None => return Err((ExitCode::Unknown, -1)),
+        };
 
-        let status = self.child.as_mut().unwrap().try_wait();
-        if status.is_err() {
-            return Err((ExitCode::Unknown, -1));
-        }
-        let status = status.unwrap();
-        if status.is_none() {
-            return Ok(());
-        }
-
-        let status = status.unwrap();
-        if status.code().is_some() {
-            let status_code = status.code().unwrap();
-            if status_code < u8::MAX as _ && status_code > 0 {
-                Err((ExitCode::from(status_code as u8), status_code))
-            } else {
-                Err((ExitCode::Unknown, status_code))
+        let status = match child.try_wait() {
+            Ok(None) => return Ok(()),
+            Ok(Some(status)) => status,
+            Err(_) => {
+                return Err((ExitCode::Unknown, -1));
             }
-        } else {
-            return Err((ExitCode::Unknown, -1));
+        };
+
+        match status.code() {
+            Some(status_code) => {
+                if status_code < u8::MAX as _ && status_code > 0 {
+                    Err((ExitCode::from(status_code as u8), status_code))
+                } else {
+                    Err((ExitCode::Unknown, status_code))
+                }
+            }
+            None => Err((ExitCode::Unknown, -1)),
         }
     }
 
