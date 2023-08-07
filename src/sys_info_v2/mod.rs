@@ -102,23 +102,20 @@ lazy_static! {
     static ref FLATPAK_APP_PATH: String = {
         use ini::*;
 
-        let ini = Ini::load_from_file("/.flatpak-info");
-        if ini.is_err() {
-            return "".to_owned();
-        }
-        let ini = ini.unwrap();
+        let ini = match Ini::load_from_file("/.flatpak-info") {
+            Err(_) => return "".to_owned(),
+            Ok(ini) => ini,
+        };
 
-        let section = ini.section(Some("Instance"));
-        if section.is_none() {
-            panic!("Unable to find Instance section in /.flatpak-info");
-        }
-        let section = section.unwrap();
+        let section = match ini.section(Some("Instance")) {
+            None => panic!("Unable to find Instance section in /.flatpak-info"),
+            Some(section) => section,
+        };
 
-        let app_path = section.get("app-path");
-        if app_path.is_none() {
-            panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info");
+        match section.get("app-path") {
+            None => panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info"),
+            Some(app_path) => app_path.to_owned(),
         }
-        app_path.unwrap().to_owned()
     };
     static ref CACHE_DIR: String = {
         let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
@@ -227,7 +224,13 @@ struct GathererSupervisor {
 
 impl Drop for GathererSupervisor {
     fn drop(&mut self) {
-        self.gatherer.stop().unwrap();
+        match self.gatherer.stop() {
+            Ok(_) => {}
+            Err(e) => {
+                use gtk::glib::g_critical;
+                g_critical!("MissionCenter::SysInfo", "Unable to stop gatherer: {}", e);
+            }
+        };
     }
 }
 
