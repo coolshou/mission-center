@@ -39,7 +39,7 @@ package-job:
     - apt-get update
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.llvm16//22.08 org.freedesktop.Sdk.Extension.rust-stable//22.08
+    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter

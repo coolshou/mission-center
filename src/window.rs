@@ -221,7 +221,7 @@ impl MissionCenterWindow {
             .property("application", application)
             .build();
 
-        let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new();
+        let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new(&this);
 
         let ok = this.imp().performance_page.set_up_pages(&initial_readings);
         if !ok {
