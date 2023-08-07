@@ -182,59 +182,66 @@ impl StaticInfo {
                     e
                 );
 
-                let cpuinfo = cmd!("cat /proc/cpuinfo").output();
-                if cpuinfo.is_err() {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not read /proc/cpuinfo: {}",
-                        cpuinfo.err().unwrap()
-                    );
-                    return None;
-                }
+                let cpuinfo = match cmd!("cat /proc/cpuinfo").output() {
+                    Ok(output) => String::from_utf8(output.stdout),
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read /proc/cpuinfo: {}",
+                            e
+                        );
+                        return None;
+                    }
+                };
 
-                let cpuinfo = String::from_utf8(cpuinfo.unwrap().stdout);
-                if cpuinfo.is_err() {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not read /proc/cpuinfo: {}",
-                        cpuinfo.err().unwrap()
-                    );
-                    return None;
-                }
-                let cpuinfo = cpuinfo.unwrap();
-                let index = cpuinfo.find("cpu MHz");
-                if index.is_none() {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Could not find `cpu MHz` in /proc/cpuinfo",
-                    );
-                    return None;
-                }
-                let index = index.unwrap();
+                let cpuinfo = match cpuinfo {
+                    Ok(cpuinfo) => cpuinfo,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not read /proc/cpuinfo: {}",
+                            e
+                        );
+                        return None;
+                    }
+                };
 
-                let base_frequency = cpuinfo[index..]
+                let index = match cpuinfo.find("cpu MHz") {
+                    Some(index) => index,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Could not find `cpu MHz` in /proc/cpuinfo",
+                        );
+                        return None;
+                    }
+                };
+
+                let base_frequency = match cpuinfo[index..]
                     .lines()
                     .next()
                     .map(|line| line.split(':').nth(1).unwrap_or("").trim())
-                    .map(|mhz| mhz.parse::<f32>());
-                if base_frequency.is_none() {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo",
-                    );
-                    return None;
-                }
-                let base_frequency = base_frequency.unwrap();
-                if base_frequency.is_err() {
-                    g_critical!(
-                        "MissionCenter::CpuInfo",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
-                        base_frequency.err().unwrap()
-                    );
-                    return None;
-                }
+                    .map(|mhz| mhz.parse::<f32>())
+                {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Failed to parse `cpu MHz` in /proc/cpuinfo",
+                        );
+                        return None;
+                    }
+                    Some(Ok(bf)) => bf,
+                    Some(Err(e)) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
+                            e
+                        );
+                        return None;
+                    }
+                };
 
-                Some((base_frequency.unwrap() * 1000.).round() as u64)
+                Some((base_frequency * 1000.).round() as u64)
             }
         }
     }
@@ -362,19 +369,19 @@ impl StaticInfo {
             index_path: &std::path::Path,
         ) -> Option<String> {
             let path = index_path.join(file_name);
-            let content = read_to_string(path);
-            if content.is_err() {
-                g_critical!(
-                    "MissionCenter::CpuInfo",
-                    "Could not read '{}/{}': {}",
-                    index_path.display(),
-                    file_name,
-                    content.err().unwrap()
-                );
-                return None;
+            match read_to_string(path) {
+                Ok(content) => Some(content),
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Could not read '{}/{}': {}",
+                        index_path.display(),
+                        file_name,
+                        e,
+                    );
+                    None
+                }
             }
-
-            Some(content.unwrap())
         }
 
         fn read_index_entry_number<R: FromStr<Err = core::num::ParseIntError>>(
@@ -382,29 +389,28 @@ impl StaticInfo {
             index_path: &std::path::Path,
             suffix: Option<&str>,
         ) -> Option<R> {
-            let content = read_index_entry_content(file_name, index_path);
-            if content.is_none() {
-                return None;
-            }
-            let content = content.unwrap();
-            let content = content.trim();
-            let value = if suffix.is_none() {
-                content.parse::<R>()
-            } else {
-                content.trim_end_matches(suffix.unwrap()).parse::<R>()
+            let content = match read_index_entry_content(file_name, index_path) {
+                Some(content) => content,
+                None => return None,
             };
-            if value.is_err() {
-                g_critical!(
-                    "MissionCenter::CpuInfo",
-                    "Failed to parse '{}/{}': {}",
-                    index_path.display(),
-                    file_name,
-                    value.err().unwrap()
-                );
-                return None;
+            let content = content.trim();
+            let value = match suffix {
+                None => content.parse::<R>(),
+                Some(suffix) => content.trim_end_matches(suffix).parse::<R>(),
+            };
+            match value {
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Failed to parse '{}/{}': {}",
+                        index_path.display(),
+                        file_name,
+                        e,
+                    );
+                    None
+                }
+                Ok(v) => Some(v),
             }
-
-            Some(value.unwrap())
         }
 
         let mut result = [None; 5];
@@ -482,21 +488,20 @@ impl StaticInfo {
                     continue;
                 }
 
-                let cpu_name = path.file_name();
-                if cpu_name.is_none() {
-                    continue;
-                }
-                let cpu_name = cpu_name.unwrap();
+                let cpu_name = match path.file_name() {
+                    Some(name) => name,
+                    None => continue,
+                };
 
                 let is_cpu = &cpu_name.as_bytes()[0..3] == b"cpu";
                 if is_cpu {
                     let cpu_number =
-                        unsafe { std::str::from_utf8_unchecked(&cpu_name.as_bytes()[3..]) }
-                            .parse::<u16>();
-                    if cpu_number.is_err() {
-                        continue;
-                    }
-                    let cpu_number = cpu_number.unwrap();
+                        match unsafe { std::str::from_utf8_unchecked(&cpu_name.as_bytes()[3..]) }
+                            .parse::<u16>()
+                        {
+                            Ok(n) => n,
+                            Err(_) => continue,
+                        };
 
                     path.push("cache");
                     let cache_entries = match path.read_dir() {
@@ -530,17 +535,15 @@ impl StaticInfo {
                             .map(|file| &file.as_bytes()[0..5] == b"index")
                             .unwrap_or(false);
                         if is_cache_entry {
-                            let level = read_index_entry_number::<u8>("level", &path, None);
-                            if level.is_none() {
-                                continue;
-                            }
-                            let level = level.unwrap();
+                            let level = match read_index_entry_number::<u8>("level", &path, None) {
+                                None => continue,
+                                Some(l) => l,
+                            };
 
-                            let cache_type = read_index_entry_content("type", &path);
-                            if cache_type.is_none() {
-                                continue;
-                            }
-                            let cache_type = cache_type.unwrap();
+                            let cache_type = match read_index_entry_content("type", &path) {
+                                None => continue,
+                                Some(ct) => ct,
+                            };
 
                             let visited_cpus = match cache_type.trim() {
                                 "Data" => &mut l1_visited_data,
@@ -558,43 +561,49 @@ impl StaticInfo {
                                 continue;
                             }
 
-                            let size = read_index_entry_number::<usize>("size", &path, Some("K"));
-                            if size.is_none() {
-                                continue;
-                            }
-                            let size = size.unwrap();
+                            let size =
+                                match read_index_entry_number::<usize>("size", &path, Some("K")) {
+                                    None => continue,
+                                    Some(s) => s,
+                                };
 
                             let result_index = level as usize;
-                            if result[result_index].is_none() {
-                                result[result_index] = Some(size);
-                            } else {
-                                result[result_index] = Some(result[result_index].unwrap() + size);
-                            }
+                            result[result_index] = match result[result_index] {
+                                None => Some(size),
+                                Some(s) => Some(s + size),
+                            };
 
-                            let shared_cpu_list =
-                                read_index_entry_content("shared_cpu_list", &path);
-                            if shared_cpu_list.is_some() {
-                                let shared_cpu_list = shared_cpu_list.unwrap();
-                                let shared_cpu_list = shared_cpu_list.trim();
+                            match read_index_entry_content("shared_cpu_list", &path) {
+                                Some(scl) => {
+                                    let shared_cpu_list = scl.trim().split(',');
+                                    for cpu in shared_cpu_list {
+                                        let mut shared_cpu_sequence = cpu.split('-');
 
-                                let shared_cpu_list = shared_cpu_list.split(',');
-                                for cpu in shared_cpu_list {
-                                    let mut shared_cpu_sequence = cpu.split('-');
-                                    let start = shared_cpu_sequence.next();
-                                    if start.is_some() {
-                                        let start = start.unwrap().parse::<u16>().unwrap();
+                                        let start = match shared_cpu_sequence
+                                            .next()
+                                            .map(|s| s.parse::<u16>())
+                                        {
+                                            Some(Ok(s)) => s,
+                                            Some(Err(_)) | None => continue,
+                                        };
 
-                                        let end = shared_cpu_sequence.next();
-                                        if end.is_some() {
-                                            let end = end.unwrap().parse::<u16>().unwrap();
-                                            for i in start..=end {
-                                                visited_cpus.insert(i);
+                                        let end = match shared_cpu_sequence
+                                            .next()
+                                            .map(|e| e.parse::<u16>())
+                                        {
+                                            Some(Ok(e)) => e,
+                                            Some(Err(_)) | None => {
+                                                visited_cpus.insert(start);
+                                                continue;
                                             }
-                                        } else {
-                                            visited_cpus.insert(start);
+                                        };
+
+                                        for i in start..=end {
+                                            visited_cpus.insert(i);
                                         }
                                     }
                                 }
+                                _ => {}
                             }
                         }
                     }

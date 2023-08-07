@@ -20,6 +20,8 @@
 
 use lazy_static::lazy_static;
 
+use crate::i18n::*;
+
 macro_rules! cmd {
     ($cmd: expr) => {{
         use std::process::Command;
@@ -59,6 +61,7 @@ macro_rules! cmd_flatpak_host {
 mod app_info;
 mod cpu_info;
 mod disk_info;
+mod gatherer;
 mod gpu_info;
 mod mem_info;
 mod net_info;
@@ -92,32 +95,27 @@ pub type GPUInfo = gpu_info::GPUInfo;
 
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
-#[allow(dead_code)]
-pub type ProcessStats = proc_info::Stats;
-pub type Pid = proc_info::Pid;
+pub type Pid = u32;
 
 lazy_static! {
     static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
     static ref FLATPAK_APP_PATH: String = {
         use ini::*;
 
-        let ini = Ini::load_from_file("/.flatpak-info");
-        if ini.is_err() {
-            return "".to_owned();
-        }
-        let ini = ini.unwrap();
+        let ini = match Ini::load_from_file("/.flatpak-info") {
+            Err(_) => return "".to_owned(),
+            Ok(ini) => ini,
+        };
 
-        let section = ini.section(Some("Instance"));
-        if section.is_none() {
-            panic!("Unable to find Instance section in /.flatpak-info");
-        }
-        let section = section.unwrap();
+        let section = match ini.section(Some("Instance")) {
+            None => panic!("Unable to find Instance section in /.flatpak-info"),
+            Some(section) => section,
+        };
 
-        let app_path = section.get("app-path");
-        if app_path.is_none() {
-            panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info");
+        match section.get("app-path") {
+            None => panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info"),
+            Some(app_path) => app_path.to_owned(),
         }
-        app_path.unwrap().to_owned()
     };
     static ref CACHE_DIR: String = {
         let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
@@ -128,6 +126,36 @@ lazy_static! {
         cache_dir.push_str("/io.missioncenter.MissionCenter");
         std::fs::create_dir_all(cache_dir.as_str()).unwrap_or(());
         cache_dir
+    };
+    static ref STATE_DIR: String = {
+        let state_dir = if *IS_FLATPAK {
+            let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
+                std::env::var("HOME")
+                    .and_then(|v| Ok(v + "/.var/app/io.missioncenter.MissionCenter/.local"))
+                    .unwrap_or("/tmp/io.missioncenter.MissionCenter/.local".to_string()),
+            );
+            cache_dir.push_str("/../.local/state");
+
+            std::path::Path::new(cache_dir.as_str())
+                .canonicalize()
+                .unwrap_or(std::path::PathBuf::from(
+                    "/tmp/io.missioncenter.MissionCenter/state",
+                ))
+                .to_string_lossy()
+                .to_string()
+        } else {
+            std::env::var("HOME")
+                .and_then(|mut v| {
+                    Ok({
+                        v.push_str("/.local/state/io.missioncenter.MissionCenter");
+                        v
+                    })
+                })
+                .unwrap_or("/tmp/io.missioncenter.MissionCenter/state".to_string())
+        };
+
+        std::fs::create_dir_all(state_dir.as_str()).unwrap_or(());
+        state_dir
     };
 }
 
@@ -190,8 +218,141 @@ impl Readings {
     }
 }
 
+struct GathererSupervisor {
+    gatherer: gatherer::Gatherer<gatherer::SharedData>,
+}
+
+impl Drop for GathererSupervisor {
+    fn drop(&mut self) {
+        match self.gatherer.stop() {
+            Ok(_) => {}
+            Err(e) => {
+                use gtk::glib::g_critical;
+                g_critical!("MissionCenter::SysInfo", "Unable to stop gatherer: {}", e);
+            }
+        };
+    }
+}
+
+impl GathererSupervisor {
+    pub fn new() -> Result<Self, gatherer::GathererError> {
+        let mut gatherer = gatherer::Gatherer::<gatherer::SharedData>::new(Self::executable())?;
+        // SAFETY: We are the only ones that have access to the shared memory instance
+        let mut shm_data = unsafe { gatherer.shared_memory_unchecked() };
+        (*shm_data).clear();
+
+        Ok(Self { gatherer })
+    }
+
+    #[inline]
+    fn execute<F>(&mut self, message: gatherer::Message, mut f: F)
+    where
+        F: FnMut(
+            &mut gatherer::Gatherer<gatherer::SharedData>,
+            /* process_restarted */ bool,
+        ) -> bool,
+    {
+        use gtk::glib::g_critical;
+
+        let mut restarted = false;
+        loop {
+            if let Err(e) = self.gatherer.send_message(message) {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to send message to daemon: {:#?}",
+                    e
+                );
+
+                restarted = true;
+
+                if let Err(e) = self.gatherer.is_running() {
+                    g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Gatherer is no longer running: {:#?}. Restarting...",
+                        e
+                    );
+
+                    match self.gatherer.start() {
+                        Ok(_) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer restarted successfully"
+                            );
+                        }
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Failed to restart gatherer: {:#?}",
+                                e
+                            );
+                        }
+                    }
+                    continue;
+                } else {
+                    match self.gatherer.stop() {
+                        Ok(_) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer hung and was stopped successfully"
+                            );
+                        }
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Gatherer hung and could not be stopped, will try again : {:#?}",
+                                e
+                            );
+                        }
+                    }
+                    continue;
+                }
+            }
+
+            if f(&mut self.gatherer, restarted) {
+                break;
+            }
+
+            restarted = false;
+        }
+    }
+
+    fn executable() -> String {
+        use gtk::glib::g_debug;
+
+        let executable_name = if *IS_FLATPAK {
+            let flatpak_app_path = FLATPAK_APP_PATH.as_str();
+
+            let cmd_status = cmd_flatpak_host!(&format!(
+                "{}/bin/missioncenter-gatherer-glibc",
+                flatpak_app_path
+            ))
+            .status();
+            if let Ok(status) = cmd_status {
+                if status.success()
+                    || status.code() == Some(gatherer::ExitCode::MissingProgramArgument as i32)
+                {
+                    format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path)
+                } else {
+                    format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path)
+                }
+            } else {
+                format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path)
+            }
+        } else {
+            "missioncenter-gatherer".to_string()
+        };
+
+        g_debug!(
+            "MissionCenter::ProcInfo",
+            "Proxy executable name: {}",
+            executable_name
+        );
+
+        executable_name
+    }
+}
+
 pub struct SysInfoV2 {
-    #[allow(dead_code)]
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
@@ -211,14 +372,52 @@ impl Drop for SysInfoV2 {
     }
 }
 
+impl Default for SysInfoV2 {
+    fn default() -> Self {
+        use std::sync::*;
+
+        Self {
+            refresh_interval: Arc::new(0.into()),
+            refresh_thread: None,
+            refresh_thread_running: Arc::new(true.into()),
+        }
+    }
+}
+
 impl SysInfoV2 {
-    pub fn new() -> (Self, Readings) {
+    pub fn new(window: &impl gtk::glib::IsA<gtk::Window>) -> (Self, Readings) {
+        use adw::prelude::*;
         use gtk::glib::*;
         use std::sync::{atomic::*, *};
         use sysinfo::{System, SystemExt};
 
         let mut system = System::new();
         let mut readings = Readings::new(&mut system);
+        let mut gatherer_supervisor = match GathererSupervisor::new() {
+            Ok(gs) => gs,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Unable to start gatherer: {:#?}",
+                    &e
+                );
+                let error_dialog = adw::MessageDialog::new(
+                    Some(window),
+                    Some("A fatal error has occurred"),
+                    Some(&format!("Unable to start data gatherer process: {:#?}", e)),
+                );
+                error_dialog.set_modal(true);
+                error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
+                error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
+                error_dialog.connect_response(None, |dialog, _| {
+                    dialog.close();
+                    std::process::exit(1);
+                });
+                error_dialog.present();
+
+                return (Default::default(), readings);
+            }
+        };
 
         let mut disk_stats = vec![];
         readings.disks = DiskInfo::load(&mut disk_stats);
@@ -237,19 +436,20 @@ impl SysInfoV2 {
             vec![]
         };
 
-        let (apps, mut processes) = proc_info::load_app_and_process_list();
+        let mut processes = gatherer_supervisor.processes();
         for gpu in &readings.gpus {
             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                if let Some(process) = processes.get_mut(pid) {
-                    process.stats.gpu_usage = *gpu_usage;
+                if let Some(process) = processes.get_mut(&(*pid as u32)) {
+                    process.stats_mut().gpu_usage = *gpu_usage;
                 }
             }
         }
+        let apps = gatherer_supervisor.installed_apps();
         readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
         readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
-        let refresh_thread_running = Arc::new(std::sync::atomic::AtomicBool::new(true));
+        let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
         let run = refresh_thread_running.clone();
@@ -262,6 +462,7 @@ impl SysInfoV2 {
                     let mut previous_disk_stats = disk_stats;
                     let mut net_info = net_info;
                     let mut gpu_info = gpu_info;
+                    let mut gatherer_supervisor = gatherer_supervisor;
 
                     'read_loop: while run.load(Ordering::Acquire) {
                         let start_load_readings = std::time::Instant::now();
@@ -280,14 +481,15 @@ impl SysInfoV2 {
                             vec![]
                         };
 
-                        let (apps, mut process_list) = proc_info::load_app_and_process_list();
+                        let mut process_list = gatherer_supervisor.processes();
                         for gpu in &gpus {
                             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                                if let Some(process) = process_list.get_mut(pid) {
-                                    process.stats.gpu_usage = *gpu_usage;
+                                if let Some(process) = process_list.get_mut(&(*pid as u32)) {
+                                    process.stats_mut().gpu_usage = *gpu_usage;
                                 }
                             }
                         }
+                        let apps = gatherer_supervisor.installed_apps();
                         let process_tree =
                             proc_info::process_hierarchy(&process_list).unwrap_or_default();
                         let running_apps = app_info::running_apps(&process_tree, &apps);

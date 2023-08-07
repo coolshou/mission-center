@@ -1,4 +1,4 @@
-project_name = 'proxy'
+project_name = 'gatherer'
 project_path = 'src' / 'sys_info_v2' / project_name
 
 cargo_bin  = find_program('cargo')
