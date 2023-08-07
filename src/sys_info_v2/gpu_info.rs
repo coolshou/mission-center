@@ -287,29 +287,31 @@ impl VulkanInfo {
 
         type Void = std::ffi::c_void;
 
-        let lib = minidl::Library::load("libvulkan.so.1\0");
-        if lib.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get Vulkan information: Could not load 'libvulkan.so.1'; {}",
-                lib.err().unwrap(),
-            );
-            return None;
-        }
-        let lib = lib.unwrap();
+        let lib = match minidl::Library::load("libvulkan.so.1\0") {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get Vulkan information: Could not load 'libvulkan.so.1'; {}",
+                    e
+                );
+                return None;
+            }
+            Ok(lib) => lib,
+        };
 
-        let vkGetInstanceProcAddr = lib.sym::<*const Void>("vkGetInstanceProcAddr\0");
-        if vkGetInstanceProcAddr.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get Vulkan information: Could not find 'vkGetInstanceProcAddr' in 'libvulkan.so.1'; {}", vkGetInstanceProcAddr.err().unwrap(),
-            );
-            return None;
-        }
         let vkGetInstanceProcAddr: extern "C" fn(
             vk_instance: *mut Void,
             name: *const u8,
-        ) -> *mut Void = core::mem::transmute(vkGetInstanceProcAddr.unwrap());
+        ) -> *mut Void = match lib.sym::<*const Void>("vkGetInstanceProcAddr\0") {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get Vulkan information: Could not find 'vkGetInstanceProcAddr' in 'libvulkan.so.1'; {}", e
+                );
+                return None;
+            }
+            Ok(vkGetInstanceProcAddr) => core::mem::transmute(vkGetInstanceProcAddr),
+        };
 
         let vkCreateInstance =
             vkGetInstanceProcAddr(std::ptr::null_mut(), b"vkCreateInstance\0".as_ptr());
@@ -593,7 +595,7 @@ impl GPUInfo {
                     pdev.to_lowercase()
                 ));
             }
-            let (vendor_id, device_id) = if let Ok(uevent) = uevent {
+            let ven_dev_id = if let Ok(uevent) = uevent {
                 let mut vendor_id = None;
                 let mut device_id = None;
 
@@ -617,18 +619,19 @@ impl GPUInfo {
                 (None, None)
             };
 
-            if vendor_id.is_none() || device_id.is_none() {
-                g_critical!(
-                    "MissionCenter::GPUInfo",
-                    "Unable to read PCI id information for device {}",
-                    pdev
-                );
+            let (vendor_id, device_id) = match ven_dev_id {
+                (Some(vendor_id), Some(device_id)) => (vendor_id, device_id),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::GPUInfo",
+                        "Unable to read PCI id information for device {}",
+                        pdev
+                    );
 
-                device = unsafe { (*device).next };
-                continue;
-            }
-
-            let (vendor_id, device_id) = (vendor_id.unwrap(), device_id.unwrap());
+                    device = unsafe { (*device).next };
+                    continue;
+                }
+            };
 
             let device_pci_id = (vendor_id as u32) << 16 | device_id as u32;
             let vulkan_version = if let Some(vulkan_versions) = vulkan_versions.as_ref() {
@@ -662,20 +665,21 @@ impl GPUInfo {
             }
 
             let device_unique_id = format!("{}-{}", device_pci_id, pdev);
-            let cached_info = self
+            match self
                 .static_info_cache
                 .iter_mut()
-                .find(|gpu| gpu.id == device_unique_id.as_str());
-            if cached_info.is_some() {
-                let cached_info = cached_info.unwrap();
+                .find(|gpu| gpu.id == device_unique_id.as_str())
+            {
+                Some(cached_info) => {
+                    result.push(GPU {
+                        static_info: cached_info.clone(),
+                        dynamic_info: gpu_dynamic_info,
+                    });
 
-                result.push(GPU {
-                    static_info: cached_info.clone(),
-                    dynamic_info: gpu_dynamic_info,
-                });
-
-                device = unsafe { (*device).next };
-                continue;
+                    device = unsafe { (*device).next };
+                    continue;
+                }
+                _ => {}
             }
 
             let dri_path = format!("/dev/dri/by-path/pci-{}-card", pdev);
@@ -744,26 +748,29 @@ impl GPUInfo {
 
         impl drm::Device for DrmDevice {}
 
-        let drm_device = DrmDevice::open(dri_path);
-        if drm_device.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get OpenGL information: {}",
-                drm_device.err().unwrap(),
-            );
-            return None;
-        }
+        let drm_device = match DrmDevice::open(dri_path) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get OpenGL information: {}",
+                    e
+                );
+                return None;
+            }
+            Ok(drm_device) => drm_device,
+        };
 
-        let gbm_device = gbm::Device::new(drm_device.unwrap());
-        if gbm_device.is_err() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get OpenGL information: {}",
-                gbm_device.err().unwrap(),
-            );
-            return None;
-        }
-        let gbm_device = gbm_device.unwrap();
+        let gbm_device = match gbm::Device::new(drm_device) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get OpenGL information: {}",
+                    e
+                );
+                return None;
+            }
+            Ok(gbm_device) => gbm_device,
+        };
 
         const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::EGLint = 0x3098;
         const EGL_CONTEXT_MINOR_VERSION_KHR: egl::EGLint = 0x30FB;
@@ -878,14 +885,19 @@ impl GPUInfo {
         };
 
         if egl_config.is_none() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
-                egl::get_error()
-            );
-
             return None;
         }
+        let egl_config = match egl_config {
+            Some(ec) => ec,
+            None => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        };
 
         let mut ver_major = if gl_api == egl::EGL_OPENGL_API { 4 } else { 3 };
         let mut ver_minor = if gl_api == egl::EGL_OPENGL_API { 6 } else { 0 };
@@ -903,7 +915,7 @@ impl GPUInfo {
         loop {
             egl_context = egl::create_context(
                 egl_display,
-                egl_config.unwrap(),
+                egl_config,
                 egl::EGL_NO_CONTEXT,
                 &context_attribs,
             );
@@ -922,16 +934,18 @@ impl GPUInfo {
             context_attribs[1] = ver_major;
             context_attribs[3] = ver_minor;
         }
-        if egl_context.is_none() {
-            g_critical!(
-                "MissionCenter::GPUInfo",
-                "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
-                egl::get_error()
-            );
-            return None;
-        }
 
-        egl::destroy_context(egl_display, egl_context.unwrap());
+        match egl_context {
+            Some(ec) => egl::destroy_context(egl_display, ec),
+            None => {
+                g_critical!(
+                    "MissionCenter::GPUInfo",
+                    "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        };
 
         Some((
             ver_major as u8,
