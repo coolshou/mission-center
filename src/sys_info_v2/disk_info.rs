@@ -20,7 +20,7 @@
 
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {
     name: String,
     mountpoints: Vec<Option<String>>,
@@ -526,50 +526,47 @@ impl DiskInfo {
             return vec![];
         };
 
-        let lsblk_out = serde_json::from_slice::<LSBLKOutput>(lsblk_out.as_slice());
-        if lsblk_out.is_err() {
-            g_critical!(
-                "MissionCenter::SysInfo",
-                "Failed to refresh block device information, host command execution failed: {}",
-                lsblk_out.err().unwrap()
-            );
-            return vec![];
-        }
-
-        let lsblk_out = lsblk_out.unwrap();
+        let mut lsblk_out = match serde_json::from_slice::<LSBLKOutput>(lsblk_out.as_slice()) {
+            Ok(v) => v,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Failed to refresh block device information, host command execution failed: {}",
+                    e
+                );
+                return vec![];
+            }
+        };
 
         let mut mount_points = vec![];
-        for block_device in lsblk_out.blockdevices {
-            if block_device.is_none() {
-                continue;
-            }
-
-            let block_device = block_device.unwrap();
+        for block_device in lsblk_out
+            .blockdevices
+            .iter_mut()
+            .filter_map(|bd| bd.as_mut())
+        {
+            let block_device = core::mem::take(block_device);
             if block_device.name != device_name {
                 continue;
             }
 
-            let children = block_device.children;
-            if children.is_none() {
-                break;
-            }
+            let children = match block_device.children {
+                None => break,
+                Some(c) => c,
+            };
 
             fn find_mount_points(
-                block_devices: Vec<Option<LSBLKBlockDevice>>,
+                mut block_devices: Vec<Option<LSBLKBlockDevice>>,
                 mount_points: &mut Vec<String>,
             ) {
-                for block_device in block_devices {
-                    if block_device.is_none() {
-                        continue;
-                    }
-                    let block_device = block_device.unwrap();
+                for block_device in block_devices.iter_mut().filter_map(|bd| bd.as_mut()) {
+                    let mut block_device = core::mem::take(block_device);
 
-                    for mountpoint in block_device.mountpoints {
-                        if mountpoint.is_none() {
-                            continue;
-                        }
-
-                        mount_points.push(mountpoint.unwrap());
+                    for mountpoint in block_device
+                        .mountpoints
+                        .iter_mut()
+                        .filter_map(|mp| mp.as_mut())
+                    {
+                        mount_points.push(core::mem::take(mountpoint));
                     }
 
                     if let Some(children) = block_device.children {
@@ -578,7 +575,7 @@ impl DiskInfo {
                 }
             }
 
-            find_mount_points(children.unwrap(), &mut mount_points);
+            find_mount_points(children, &mut mount_points);
             break;
         }
 
