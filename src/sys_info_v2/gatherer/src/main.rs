@@ -2,7 +2,7 @@ macro_rules! acknowledge {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(&[common::ipc::Message::Acknowledge.into()]) {
+        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::Acknowledge)) {
             eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendAcknowledgeFailed as i32);
         }
@@ -13,7 +13,7 @@ macro_rules! data_ready {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(&[common::ipc::Message::DataReady.into()]) {
+        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::DataReady)) {
             eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendDataReadyFailed as i32);
         }
@@ -59,19 +59,19 @@ fn main() {
         }
     };
 
-    let mut recv_buffer = [0_u8; 1];
+    let mut recv_buffer: ipc::Message = ipc::Message::Unknown;
     loop {
         if unsafe { libc::getppid() } != parent_pid {
             eprintln!("Parent process no longer running, exiting");
             break;
         }
 
-        if let Err(e) = connection.read_exact(&mut recv_buffer) {
+        if let Err(e) = connection.read_exact(common::to_binary_mut(&mut recv_buffer)) {
             eprintln!("Failed to read from IPC socket, exiting: {:#?}", e);
             std::process::exit(ExitCode::ReadFromSocketFailed as i32);
         }
 
-        let message = ipc::Message::from(recv_buffer[0]);
+        let message = recv_buffer;
         match message {
             ipc::Message::GetProcesses => {
                 acknowledge!(connection);
@@ -88,6 +88,23 @@ fn main() {
                 data.content = SharedDataContent::InstalledApps(InstalledApps::new());
 
                 data_ready!(connection);
+            }
+            ipc::Message::TerminateProcess(pid) => {
+                acknowledge!(connection);
+
+                unsafe {
+                    libc::kill(pid as _, libc::SIGTERM);
+                }
+            }
+            ipc::Message::KillProcess(pid) => {
+                acknowledge!(connection);
+
+                unsafe {
+                    libc::kill(pid as _, libc::SIGKILL);
+                }
+            }
+            ipc::Message::KillProcessTree(_ppid) => {
+                acknowledge!(connection);
             }
             ipc::Message::Acknowledge | ipc::Message::DataReady => {
                 // Wierd thing to send, but there you go, send Acknowledge back anyway

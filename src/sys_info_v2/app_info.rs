@@ -87,16 +87,16 @@ impl super::GathererSupervisor {
                     }
                     SharedDataContent::Processes(_) => {
                         g_critical!(
-                        "MissionCenter::AppInfo",
-                        "Shared data content is Processes instead of InstalledApps; encountered when reading installed apps from gatherer", 
-                    );
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Processes instead of InstalledApps; encountered when reading installed apps from gatherer", 
+                        );
                         false
                     }
                     SharedDataContent::Monostate => {
                         g_critical!(
-                        "MissionCenter::AppInfo",
-                        "Shared data content is Monostate instead of InstalledApps; encountered when reading installed apps from gatherer", 
-                    );
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Monostate instead of InstalledApps; encountered when reading installed apps from gatherer", 
+                        );
                         false
                     }
                 }

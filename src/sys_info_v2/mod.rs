@@ -159,13 +159,17 @@ lazy_static! {
     };
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdateSpeed {
     VerySlow = 4,
     Slow = 3,
     Normal = 2,
     Fast = 1,
+}
+
+pub enum TerminateType {
+    Normal,
+    Force,
 }
 
 impl From<i32> for UpdateSpeed {
@@ -244,6 +248,10 @@ impl GathererSupervisor {
         Ok(Self { gatherer })
     }
 
+    pub fn send_message(&mut self, message: gatherer::Message) {
+        self.execute(message, |_, _| true);
+    }
+
     #[inline]
     fn execute<F>(&mut self, message: gatherer::Message, mut f: F)
     where
@@ -255,7 +263,18 @@ impl GathererSupervisor {
         use gtk::glib::g_critical;
 
         let mut restarted = false;
+        let mut error_counter = 0;
+
         loop {
+            if error_counter >= 5 {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Too many errors when trying to send {:?} to the gatherer, giving up",
+                    message
+                );
+                break;
+            }
+
             if let Err(e) = self.gatherer.send_message(message) {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -285,6 +304,8 @@ impl GathererSupervisor {
                                 "Failed to restart gatherer: {:#?}",
                                 e
                             );
+
+                            error_counter += 1;
                         }
                     }
                     continue;
@@ -302,6 +323,8 @@ impl GathererSupervisor {
                                 "Gatherer hung and could not be stopped, will try again : {:#?}",
                                 e
                             );
+
+                            error_counter += 1;
                         }
                     }
                     continue;
@@ -356,6 +379,8 @@ pub struct SysInfoV2 {
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
+
+    sender: std::sync::mpsc::Sender<gatherer::Message>,
 }
 
 impl Drop for SysInfoV2 {
@@ -376,10 +401,13 @@ impl Default for SysInfoV2 {
     fn default() -> Self {
         use std::sync::*;
 
+        let (tx, _) = mpsc::channel::<gatherer::Message>();
+
         Self {
             refresh_interval: Arc::new(0.into()),
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
+            sender: tx,
         }
     }
 }
@@ -454,6 +482,8 @@ impl SysInfoV2 {
         let ri = refresh_interval.clone();
         let run = refresh_thread_running.clone();
         let cpu_static_info = readings.cpu_info.static_info.clone();
+
+        let (tx, rx) = mpsc::channel::<gatherer::Message>();
         (
             Self {
                 refresh_interval,
@@ -555,17 +585,41 @@ impl SysInfoV2 {
                             continue;
                         }
 
-                        let sleep_duration = refresh_interval - elapsed;
+                        let mut sleep_duration = refresh_interval - elapsed;
                         let sleep_duration_fraction = sleep_duration / 10;
                         for _ in 0..10 {
-                            std::thread::sleep(sleep_duration_fraction);
+                            let timer = std::time::Instant::now();
+
+                            match rx.recv_timeout(sleep_duration_fraction) {
+                                Ok(message) => {
+                                    dbg!(message);
+                                    gatherer_supervisor.send_message(message)
+                                }
+                                Err(e) => {
+                                    if e != mpsc::RecvTimeoutError::Timeout {
+                                        g_warning!(
+                                            "MissionCenter::SysInfo",
+                                            "Error receiving message from gatherer: {}",
+                                            e
+                                        );
+                                    }
+                                }
+                            }
+
                             if !run.load(Ordering::Acquire) {
                                 break 'read_loop;
                             }
+
+                            sleep_duration = sleep_duration.saturating_sub(timer.elapsed());
+                            if sleep_duration.as_millis() == 0 {
+                                break;
+                            }
                         }
+                        std::thread::sleep(sleep_duration);
                     }
                 })),
                 refresh_thread_running,
+                sender: tx,
             },
             readings,
         )
@@ -574,5 +628,36 @@ impl SysInfoV2 {
     pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
             .store(speed as u8, std::sync::atomic::Ordering::Release);
+    }
+
+    pub fn terminate_process(&self, terminate_type: TerminateType, pid: u32) {
+        use gtk::glib::g_critical;
+
+        match terminate_type {
+            TerminateType::Normal => {
+                match self.sender.send(gatherer::Message::TerminateProcess(pid)) {
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending TerminateProcess({}) to gatherer: {}",
+                            pid,
+                            e
+                        );
+                    }
+                    _ => {}
+                }
+            }
+            TerminateType::Force => match self.sender.send(gatherer::Message::KillProcess(pid)) {
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Error sending KillProcess({}) to gatherer: {}",
+                        pid,
+                        e
+                    );
+                }
+                _ => {}
+            },
+        }
     }
 }

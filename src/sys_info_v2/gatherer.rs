@@ -23,7 +23,9 @@ pub enum GathererError {
     #[error(transparent)]
     SharedMemory(#[from] common::ipc::SharedMemoryError),
     #[error("Expected message {0:?}, got {1:?}")]
-    MessageMissmatch(common::ipc::Message, common::ipc::Message),
+    MessageMissmatch(common::ipc::Message, Message),
+    #[error("Failed to send message: {0:?}")]
+    MessageSendFailed(#[from] std::sync::mpsc::SendError<Message>),
     #[error("Disconnected")]
     Disconnected,
     #[error("Timeout")]
@@ -35,9 +37,7 @@ pub struct Gatherer<SharedData: Sized> {
     shared_memory: SharedMemory<SharedData>,
 
     command: std::process::Command,
-
     child: Option<std::process::Child>,
-
     connection: Option<LocalSocketStream>,
 }
 
@@ -77,9 +77,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
             shared_memory,
 
             command,
-
             child: None,
-
             connection: None,
         })
     }
@@ -174,7 +172,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         use std::io::Write;
 
         if let Some(connection) = self.connection.as_mut() {
-            connection.write(&[message.into()])?;
+            connection.write(common::to_binary(&message))?;
 
             let reply = Self::read_message(connection, DEFAULT_TIMEOUT)?;
             if reply != Message::Acknowledge {
@@ -236,14 +234,14 @@ impl<SharedData: Sized> Gatherer<SharedData> {
     ) -> Result<Message, GathererError> {
         use std::io::Read;
 
-        let mut reply = [0_u8];
+        let mut reply = Message::Unknown;
         let mut timeout_left = timeout.as_millis();
         loop {
             if timeout_left == 0 {
                 return Err(GathererError::Timeout);
             }
 
-            match connection.read_exact(&mut reply) {
+            match connection.read_exact(common::to_binary_mut(&mut reply)) {
                 Ok(_) => break,
                 Err(e) => match e.kind() {
                     std::io::ErrorKind::WouldBlock => {
@@ -257,6 +255,6 @@ impl<SharedData: Sized> Gatherer<SharedData> {
             }
         }
 
-        Ok(Message::from(reply[0]))
+        Ok(reply)
     }
 }
