@@ -413,7 +413,7 @@ impl Default for SysInfoV2 {
 }
 
 impl SysInfoV2 {
-    pub fn new(window: &impl gtk::glib::IsA<gtk::Window>) -> (Self, Readings) {
+    pub fn new() -> (Self, Readings) {
         use adw::prelude::*;
         use gtk::glib::*;
         use std::sync::{atomic::*, *};
@@ -430,7 +430,7 @@ impl SysInfoV2 {
                     &e
                 );
                 let error_dialog = adw::MessageDialog::new(
-                    Some(window),
+                    None::<&gtk::Window>,
                     Some("A fatal error has occurred"),
                     Some(&format!("Unable to start data gatherer process: {:#?}", e)),
                 );
