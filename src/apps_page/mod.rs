@@ -52,6 +52,8 @@ mod imp {
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub context_menu: TemplateChild<gtk::Popover>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
@@ -84,6 +86,7 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
+                context_menu: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
                 column_header_pid: Cell::new(None),
@@ -109,6 +112,26 @@ mod imp {
     }
 
     impl AppsPage {
+        fn configure_actions(&self) {
+            use gtk::glib::*;
+
+            let this = self.obj();
+            let this = this.as_ref();
+
+            let actions = gio::SimpleActionGroup::new();
+            this.insert_action_group("apps", Some(&actions));
+
+            let action = gio::SimpleAction::new("stop", None);
+            action.connect_activate(clone!(@weak this => move |_action, _param| {
+            }));
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new("force-stop", None);
+            action.connect_activate(clone!(@weak this => move |_action, _param| {
+            }));
+            actions.add_action(&action);
+        }
+
         pub fn update_app_model(&self) {
             use std::collections::BTreeSet;
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
@@ -711,6 +734,8 @@ mod imp {
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.configure_actions();
         }
     }
 

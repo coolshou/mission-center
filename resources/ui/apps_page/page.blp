@@ -161,4 +161,22 @@ template $AppsPage : Box {
       }
     }
   }
+
+  PopoverMenu context_menu {
+    menu-model: context_menu_model;
+  }
+}
+
+menu context_menu_model {
+  section {
+    item {
+      label: _("Stop Process");
+      action: "apps.stop";
+    }
+
+    item {
+      label: _("Force Stop Process");
+      action: "apps.force-stop";
+    }
+  }
 }

@@ -162,6 +162,7 @@ mod imp {
                 );
             } else {
                 let parent = parent.unwrap();
+
                 parent.set_hide_expander(!show);
             }
 
@@ -240,6 +241,34 @@ mod imp {
                         column_view_cell
                             .style_context()
                             .add_provider(style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+                    }
+
+                    if let Some(list_item_widget) = column_view_cell.parent() {
+                        use crate::apps_page::view_model::ViewModel;
+
+                        let right_click_controller = gtk::GestureClick::new();
+                        right_click_controller.set_button(3); // Secondary click (AKA right click)
+
+                        list_item_widget.add_controller(right_click_controller.clone());
+
+                        right_click_controller.connect_released(move |_, _, _, _| {
+                            match list_item_widget
+                                .first_child()
+                                .and_then(|w| w.first_child())
+                                .and_then(|w| w.downcast::<gtk::TreeExpander>().ok())
+                                .and_then(|te| te.item())
+                                .and_then(|model| model.downcast::<ViewModel>().ok())
+                            {
+                                None => return,
+                                Some(model) => {
+                                    eprintln!("Right clicked on {}", model.name());
+                                    let _ = list_item_widget.activate_action(
+                                        "listitem.select",
+                                        Some(&gtk::glib::Variant::from((true, true))),
+                                    );
+                                }
+                            }
+                        });
                     }
                 }
             }
