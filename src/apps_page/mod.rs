@@ -53,7 +53,7 @@ mod imp {
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        pub context_menu: TemplateChild<gtk::Popover>,
+        pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
@@ -113,21 +113,57 @@ mod imp {
 
     impl AppsPage {
         fn configure_actions(&self) {
+            use crate::sys_info_v2::TerminateType;
             use gtk::glib::*;
 
             let this = self.obj();
             let this = this.as_ref();
 
             let actions = gio::SimpleActionGroup::new();
-            this.insert_action_group("apps", Some(&actions));
+            this.insert_action_group("apps-page", Some(&actions));
 
-            let action = gio::SimpleAction::new("stop", None);
-            action.connect_activate(clone!(@weak this => move |_action, _param| {
+            let app = crate::application::MissionCenterApplication::default_instance()
+                .expect("Failed to get default MissionCenterApplication instance");
+
+            let action = gio::SimpleAction::new("stop", Some(VariantTy::UINT32));
+            action.connect_activate(clone!(@weak app => move |_action, pid| {
+                let pid = match pid.and_then(|p|p.get::<u32>()) {
+                    Some(pid) => pid,
+                    None => {
+                        g_critical!("MissionCenter::AppsPage", "Action 'stop' invalid data encountered for 'pid' parameter");
+                        return;
+                    },
+                };
+
+                let sys_info = match app.sys_info()  {
+                    Ok(si) => si,
+                    Err(err) => {
+                        g_critical!("MissionCenter::AppsPage", "Failed to terminate process: {}", err);
+                        return;
+                    },
+                };
+                sys_info.terminate_process(TerminateType::Normal, pid);
             }));
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new("force-stop", None);
-            action.connect_activate(clone!(@weak this => move |_action, _param| {
+            let action = gio::SimpleAction::new("force-stop", Some(VariantTy::UINT32));
+            action.connect_activate(clone!(@weak app => move |_action, pid| {
+                let pid = match pid.and_then(|p|p.get::<u32>()) {
+                    Some(pid) => pid,
+                    None => {
+                        g_critical!("MissionCenter::AppsPage", "Action 'force-stop' invalid data encountered for 'pid' parameter");
+                        return;
+                    },
+                };
+
+                let sys_info = match app.sys_info()  {
+                    Ok(si) => si,
+                    Err(err) => {
+                        g_critical!("MissionCenter::AppsPage", "Failed to terminate process: {}", err);
+                        return;
+                    },
+                };
+                sys_info.terminate_process(TerminateType::Force, pid);
             }));
             actions.add_action(&action);
         }
@@ -795,6 +831,10 @@ glib::wrapper! {
 }
 
 impl AppsPage {
+    pub fn context_menu(&self) -> &gtk::PopoverMenu {
+        &self.imp().context_menu
+    }
+
     pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         use std::collections::HashMap;
 

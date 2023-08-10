@@ -591,10 +591,7 @@ impl SysInfoV2 {
                             let timer = std::time::Instant::now();
 
                             match rx.recv_timeout(sleep_duration_fraction) {
-                                Ok(message) => {
-                                    dbg!(message);
-                                    gatherer_supervisor.send_message(message)
-                                }
+                                Ok(message) => gatherer_supervisor.send_message(message),
                                 Err(e) => {
                                     if e != mpsc::RecvTimeoutError::Timeout {
                                         g_warning!(

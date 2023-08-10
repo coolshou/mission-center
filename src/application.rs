@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::{BorrowMutError, Cell, RefCell, RefMut};
+use std::cell::{BorrowError, Cell, Ref, RefCell};
 
 use adw::glib::g_critical;
 use adw::subclass::prelude::*;
@@ -192,17 +192,14 @@ impl MissionCenterApplication {
         settings.clone()
     }
 
-    pub fn sys_info(&self) -> Result<RefMut<crate::sys_info_v2::SysInfoV2>, BorrowMutError> {
-        match self.imp().sys_info.try_borrow_mut() {
-            Ok(sys_info_ref) => Ok(RefMut::map(
-                sys_info_ref,
-                |sys_info_opt| match sys_info_opt {
-                    Some(sys_info) => sys_info,
-                    None => {
-                        panic!("MissionCenter::Application::sys_info() called before sys_info was initialized");
-                    }
-                },
-            )),
+    pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {
+        match self.imp().sys_info.try_borrow() {
+            Ok(sys_info_ref) => Ok(Ref::map(sys_info_ref, |sys_info_opt| match sys_info_opt {
+                Some(sys_info) => sys_info,
+                None => {
+                    panic!("MissionCenter::Application::sys_info() called before sys_info was initialized");
+                }
+            })),
             Err(e) => Err(e),
         }
     }
