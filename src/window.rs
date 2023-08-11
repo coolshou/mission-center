@@ -42,6 +42,10 @@ mod imp {
         #[template_child]
         pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
+        pub loading_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub loading_spinner: TemplateChild<gtk::Spinner>,
+        #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
         pub settings: Cell<Option<gio::Settings>>,
@@ -55,6 +59,8 @@ mod imp {
                 header_stack: TemplateChild::default(),
                 search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
+                loading_box: TemplateChild::default(),
+                loading_spinner: TemplateChild::default(),
                 stack: TemplateChild::default(),
 
                 settings: Cell::new(None),
@@ -271,6 +277,10 @@ impl MissionCenterWindow {
                 "Failed to set initial readings for apps page"
             );
         }
+
+        self.imp().loading_spinner.set_spinning(false);
+        self.imp().loading_box.set_visible(false);
+        self.imp().stack.set_visible(true);
     }
 
     pub fn update_readings(&self, readings: &mut Readings) -> bool {
