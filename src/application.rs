@@ -25,8 +25,7 @@ use adw::subclass::prelude::*;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 
-use crate::config::VERSION;
-use crate::i18n::i18n;
+use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
 mod imp {
     use super::*;
@@ -77,14 +76,10 @@ mod imp {
                 let settings = self.settings.take();
                 self.settings.set(settings.clone());
 
-                let (sys_info, initial_readings) = crate::sys_info_v2::SysInfoV2::new();
+                let sys_info = crate::sys_info_v2::SysInfoV2::new();
 
-                let window = crate::MissionCenterWindow::new(
-                    &*application,
-                    settings.as_ref(),
-                    &sys_info,
-                    initial_readings,
-                );
+                let window =
+                    crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
 
                 self.sys_info.set(Some(sys_info));
 
@@ -148,7 +143,33 @@ impl MissionCenterApplication {
         this
     }
 
-    pub fn refresh_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, readings: Readings) {
+        use crate::MissionCenterWindow;
+        use gtk::glib::*;
+
+        let window = self.active_window();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return;
+        }
+
+        let window = window.unwrap();
+        let window = window.downcast_ref::<MissionCenterWindow>();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "Active window is not a MissionCenterWindow",
+            );
+            return;
+        }
+
+        window.unwrap().set_initial_readings(readings)
+    }
+
+    pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
         use crate::MissionCenterWindow;
         use gtk::glib::*;
 

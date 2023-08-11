@@ -23,6 +23,8 @@ use std::cell::Cell;
 use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
+use crate::sys_info_v2::Readings;
+
 mod imp {
     use super::*;
 
@@ -213,32 +215,12 @@ impl MissionCenterWindow {
         application: &P,
         settings: Option<&gio::Settings>,
         sys_info: &crate::sys_info_v2::SysInfoV2,
-        mut initial_readings: crate::sys_info_v2::Readings,
     ) -> Self {
         use gtk::glib::*;
 
         let this: Self = Object::builder()
             .property("application", application)
             .build();
-
-        let ok = this.imp().performance_page.set_up_pages(&initial_readings);
-        if !ok {
-            g_critical!(
-                "MissionCenter",
-                "Failed to set initial readings for performance page"
-            );
-        }
-
-        let ok = this
-            .imp()
-            .apps_page
-            .set_initial_readings(&mut initial_readings);
-        if !ok {
-            g_critical!(
-                "MissionCenter",
-                "Failed to set initial readings for apps page"
-            );
-        }
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());
@@ -271,7 +253,27 @@ impl MissionCenterWindow {
         this
     }
 
-    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, mut readings: Readings) {
+        use gtk::glib::*;
+
+        let ok = self.imp().performance_page.set_up_pages(&readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for performance page"
+            );
+        }
+
+        let ok = self.imp().apps_page.set_initial_readings(&mut readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for apps page"
+            );
+        }
+    }
+
+    pub fn update_readings(&self, readings: &mut Readings) -> bool {
         let mut result = true;
 
         result &= self.imp().performance_page.update_readings(readings);
