@@ -81,7 +81,7 @@ template $PerformancePageDisk: Box {
 
     height-request: 120;
 
-    base-color: bind-property template.base-color;
+    base-color: bind template.base-color;
     data-set-count: 1;
     scroll: true;
   }
@@ -133,7 +133,7 @@ template $PerformancePageDisk: Box {
     hexpand: true;
     height-request: 50;
 
-    base-color: bind-property template.base-color;
+    base-color: bind template.base-color;
     data-set-count: 3;
     scroll: true;
     auto-scale: true;
@@ -150,7 +150,7 @@ template $PerformancePageDisk: Box {
 
       hexpand: true;
       halign: start;
-      label: bind-property graph_max_duration.label;
+      label: bind graph_max_duration.label;
     }
 
     Label {
@@ -165,7 +165,7 @@ template $PerformancePageDisk: Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property template.summary-mode inverted;
+    visible: bind template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;
