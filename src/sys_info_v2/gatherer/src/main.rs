@@ -3,7 +3,7 @@ macro_rules! acknowledge {
         use std::io::Write;
 
         if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::Acknowledge)) {
-            eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
+            eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendAcknowledgeFailed as i32);
         }
     }};
@@ -14,7 +14,7 @@ macro_rules! data_ready {
         use std::io::Write;
 
         if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::DataReady)) {
-            eprintln!("Failed to write to IPC socket, exiting: {:#?}", e);
+            eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendDataReadyFailed as i32);
         }
     }};
@@ -36,25 +36,25 @@ fn main() {
     }
 
     if !std::path::Path::new(&args[1]).exists() {
-        eprintln!("IPC socket '{}' does not exist", args[1]);
+        eprintln!("Gatherer: IPC socket '{}' does not exist", args[1]);
         std::process::exit(ExitCode::SocketConnectionFailed as i32);
     }
     let mut connection = match LocalSocketStream::connect(args[1].as_str()) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!("Unable to connect to parent: {}", e);
+            eprintln!("Gatherer: Unable to connect to parent: {}", e);
             std::process::exit(ExitCode::SocketConnectionFailed as i32);
         }
     };
 
     if !std::path::Path::new(&args[2]).exists() {
-        eprintln!("File link '{}' does not exist", args[2]);
+        eprintln!("Gatherer: File link '{}' does not exist", args[2]);
         std::process::exit(ExitCode::FileLinkNotFound as i32);
     }
     let mut shared_memory = match ipc::SharedMemory::<SharedData>::new(&args[2], false) {
         Ok(sm) => sm,
         Err(e) => {
-            eprintln!("Unable to create shared memory: {}", e);
+            eprintln!("Gatherer: Unable to create shared memory: {}", e);
             std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
         }
     };
@@ -62,13 +62,18 @@ fn main() {
     let mut recv_buffer: ipc::Message = ipc::Message::Unknown;
     loop {
         if unsafe { libc::getppid() } != parent_pid {
-            eprintln!("Parent process no longer running, exiting");
+            eprintln!("Gatherer: Parent process no longer running, exiting");
             break;
         }
 
         if let Err(e) = connection.read_exact(common::to_binary_mut(&mut recv_buffer)) {
-            eprintln!("Failed to read from IPC socket, exiting: {:#?}", e);
-            std::process::exit(ExitCode::ReadFromSocketFailed as i32);
+            if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                eprintln!("Gatherer: Main application has disconnected, shutting down");
+                std::process::exit(0);
+            } else {
+                eprintln!("Gatherer: Failed to read from IPC socket, exiting: {}", e);
+                std::process::exit(ExitCode::ReadFromSocketFailed as i32);
+            }
         }
 
         let message = recv_buffer;
@@ -116,7 +121,7 @@ fn main() {
                 std::process::exit(0);
             }
             ipc::Message::Unknown => {
-                eprintln!("Unknown message received");
+                eprintln!("Gatherer: Unknown message received");
                 std::process::exit(ExitCode::UnknownMessageReceived as i32);
             }
         }

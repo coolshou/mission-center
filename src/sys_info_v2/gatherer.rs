@@ -1,7 +1,6 @@
 use common::ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent};
 
 const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
-const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5);
 
 pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
@@ -93,8 +92,8 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         // Let the child process start up
         std::thread::sleep(std::time::Duration::from_millis(50));
 
-        // Try to connect twice, if not successful, then bail
-        for _ in 0..2 {
+        // Try to connect multiple times, if not successful, then bail
+        for _ in 0..10 {
             self.connection = match self.listener.accept() {
                 Ok(connection) => {
                     connection.set_nonblocking(true)?;
@@ -143,7 +142,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
                 // Try to get the child to wake up in case it's stuck
                 unsafe {
-                    libc::kill(child.id() as i32, libc::SIGCONT);
+                    libc::kill(child.id() as _, libc::SIGCONT);
                 }
             }
 
@@ -232,26 +231,58 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         connection: &mut LocalSocketStream,
         timeout: std::time::Duration,
     ) -> Result<Message, GathererError> {
-        use std::io::Read;
+        use gtk::glib::ffi::*;
+        use std::{io::Read, os::fd::AsRawFd};
+
+        let mut poll_fd = [GPollFD {
+            fd: connection.as_raw_fd(),
+            events: (G_IO_IN | G_IO_HUP | G_IO_ERR) as _,
+            revents: 0,
+        }];
+        let ret = unsafe {
+            g_poll(
+                poll_fd.as_mut_ptr(),
+                poll_fd.len() as _,
+                timeout.as_millis() as _,
+            )
+        };
+        if ret == 0 {
+            return Err(GathererError::Timeout);
+        } else if ret < 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
+
+        if poll_fd[0].revents & G_IO_HUP as u16 > 0 {
+            return Err(GathererError::Disconnected);
+        }
+
+        if poll_fd[0].revents & G_IO_ERR as u16 > 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
 
         let mut reply = Message::Unknown;
-        let mut timeout_left = timeout.as_millis();
-        loop {
-            if timeout_left == 0 {
-                return Err(GathererError::Timeout);
-            }
 
+        const RETRIES: usize = 2;
+        for i in 0..RETRIES {
+            // We know there is data ready on the file descriptor, so we can safely read
             match connection.read_exact(common::to_binary_mut(&mut reply)) {
-                Ok(_) => break,
-                Err(e) => match e.kind() {
-                    std::io::ErrorKind::WouldBlock => {
-                        // Wait a bit and try again, the child process might just be slow to respond
-                        timeout_left = timeout_left.saturating_sub(RETRY_INCREMENT.as_millis());
-                        std::thread::sleep(RETRY_INCREMENT);
-                        continue;
+                Err(e) => {
+                    // In case there was only a partial read, try again
+                    if e.kind() == std::io::ErrorKind::WouldBlock {
+                        if i == RETRIES - 1 {
+                            return Err(GathererError::Timeout);
+                        } else {
+                            std::thread::sleep(std::time::Duration::from_millis(5));
+                            continue;
+                        }
                     }
-                    _ => return Err(e.into()),
-                },
+                    return if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                        Err(GathererError::Disconnected)
+                    } else {
+                        Err(e.into())
+                    };
+                }
+                _ => break,
             }
         }
 

@@ -287,7 +287,7 @@ impl GathererSupervisor {
                 if let Err(e) = self.gatherer.is_running() {
                     g_critical!(
                         "MissionCenter::SysInfo",
-                        "Gatherer is no longer running: {:#?}. Restarting...",
+                        "Gatherer is no longer running: {:?}. Restarting...",
                         e
                     );
 
@@ -301,7 +301,7 @@ impl GathererSupervisor {
                         Err(e) => {
                             g_critical!(
                                 "MissionCenter::SysInfo",
-                                "Failed to restart gatherer: {:#?}",
+                                "Failed to restart gatherer: {}",
                                 e
                             );
 
@@ -497,20 +497,35 @@ impl SysInfoV2 {
                     'read_loop: while run.load(Ordering::Acquire) {
                         let start_load_readings = std::time::Instant::now();
 
+                        let timer = std::time::Instant::now();
                         let cpu_info = CpuInfoDynamic::load(&mut system);
+                        eprintln!("CPU load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let mem_info = MemInfo::load().unwrap_or(MemInfo::default());
+                        eprintln!("Mem load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let disks = DiskInfo::load(&mut previous_disk_stats);
+                        eprintln!("Disk load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let network_devices = if let Some(net_info) = net_info.as_mut() {
                             net_info.load_devices()
                         } else {
                             vec![]
                         };
+                        eprintln!("Net load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let gpus = if let Some(gpu_info) = gpu_info.as_mut() {
                             gpu_info.load_gpus()
                         } else {
                             vec![]
                         };
+                        eprintln!("GPU load took: {:?}", timer.elapsed());
 
+                        let timer = std::time::Instant::now();
                         let mut process_list = gatherer_supervisor.processes();
                         for gpu in &gpus {
                             for (pid, gpu_usage) in &gpu.dynamic_info.processes {
@@ -519,10 +534,17 @@ impl SysInfoV2 {
                                 }
                             }
                         }
+                        eprintln!("Process load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let apps = gatherer_supervisor.installed_apps();
+                        eprintln!("App load took: {:?}", timer.elapsed());
+
+                        let timer = std::time::Instant::now();
                         let process_tree =
                             proc_info::process_hierarchy(&process_list).unwrap_or_default();
                         let running_apps = app_info::running_apps(&process_tree, &apps);
+                        eprintln!("Process tree load took: {:?}", timer.elapsed());
 
                         let mut readings = Readings {
                             cpu_info: CpuInfo {
