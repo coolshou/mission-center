@@ -261,28 +261,31 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         }
 
         let mut reply = Message::Unknown;
+        let reply_bin = common::to_binary_mut(&mut reply);
 
-        const RETRIES: usize = 2;
-        for i in 0..RETRIES {
-            // We know there is data ready on the file descriptor, so we can safely read
-            match connection.read_exact(common::to_binary_mut(&mut reply)) {
-                Err(e) => {
-                    // In case there was only a partial read, try again
-                    if e.kind() == std::io::ErrorKind::WouldBlock {
-                        if i == RETRIES - 1 {
-                            return Err(GathererError::Timeout);
-                        } else {
-                            std::thread::sleep(std::time::Duration::from_millis(5));
-                            continue;
+        for byte in 0..core::mem::size_of::<Message>() {
+            const RETRIES: usize = 2;
+            for i in 0..RETRIES {
+                // We know there is data ready on the file descriptor, so we can safely read
+                match connection.read_exact(&mut reply_bin[byte..byte + 1]) {
+                    Err(e) => {
+                        // In case there was only a partial read, try again
+                        if e.kind() == std::io::ErrorKind::WouldBlock {
+                            if i == RETRIES - 1 {
+                                return Err(GathererError::Timeout);
+                            } else {
+                                std::thread::sleep(std::time::Duration::from_millis(5));
+                                continue;
+                            }
                         }
+                        return if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                            Err(GathererError::Disconnected)
+                        } else {
+                            Err(e.into())
+                        };
                     }
-                    return if e.kind() == std::io::ErrorKind::UnexpectedEof {
-                        Err(GathererError::Disconnected)
-                    } else {
-                        Err(e.into())
-                    };
+                    _ => break,
                 }
-                _ => break,
             }
         }
 
