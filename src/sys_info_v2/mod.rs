@@ -1,4 +1,4 @@
-/* sys_info/view_models
+/* sys_info_v2/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -159,13 +159,17 @@ lazy_static! {
     };
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdateSpeed {
     VerySlow = 4,
     Slow = 3,
     Normal = 2,
     Fast = 1,
+}
+
+pub enum TerminateType {
+    Normal,
+    Force,
 }
 
 impl From<i32> for UpdateSpeed {
@@ -244,6 +248,10 @@ impl GathererSupervisor {
         Ok(Self { gatherer })
     }
 
+    pub fn send_message(&mut self, message: gatherer::Message) {
+        self.execute(message, |_, _| true);
+    }
+
     #[inline]
     fn execute<F>(&mut self, message: gatherer::Message, mut f: F)
     where
@@ -255,7 +263,18 @@ impl GathererSupervisor {
         use gtk::glib::g_critical;
 
         let mut restarted = false;
+        let mut error_counter = 0;
+
         loop {
+            if error_counter >= 5 {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Too many errors when trying to send {:?} to the gatherer, giving up",
+                    message
+                );
+                break;
+            }
+
             if let Err(e) = self.gatherer.send_message(message) {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -268,7 +287,7 @@ impl GathererSupervisor {
                 if let Err(e) = self.gatherer.is_running() {
                     g_critical!(
                         "MissionCenter::SysInfo",
-                        "Gatherer is no longer running: {:#?}. Restarting...",
+                        "Gatherer is no longer running: {:?}. Restarting...",
                         e
                     );
 
@@ -282,9 +301,11 @@ impl GathererSupervisor {
                         Err(e) => {
                             g_critical!(
                                 "MissionCenter::SysInfo",
-                                "Failed to restart gatherer: {:#?}",
+                                "Failed to restart gatherer: {}",
                                 e
                             );
+
+                            error_counter += 1;
                         }
                     }
                     continue;
@@ -302,6 +323,8 @@ impl GathererSupervisor {
                                 "Gatherer hung and could not be stopped, will try again : {:#?}",
                                 e
                             );
+
+                            error_counter += 1;
                         }
                     }
                     continue;
@@ -356,6 +379,8 @@ pub struct SysInfoV2 {
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
+
+    sender: std::sync::mpsc::Sender<gatherer::Message>,
 }
 
 impl Drop for SysInfoV2 {
@@ -376,203 +401,298 @@ impl Default for SysInfoV2 {
     fn default() -> Self {
         use std::sync::*;
 
+        let (tx, _) = mpsc::channel::<gatherer::Message>();
+
         Self {
             refresh_interval: Arc::new(0.into()),
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
+            sender: tx,
         }
     }
 }
 
 impl SysInfoV2 {
-    pub fn new(window: &impl gtk::glib::IsA<gtk::Window>) -> (Self, Readings) {
-        use adw::prelude::*;
-        use gtk::glib::*;
+    pub fn new() -> Self {
         use std::sync::{atomic::*, *};
-        use sysinfo::{System, SystemExt};
-
-        let mut system = System::new();
-        let mut readings = Readings::new(&mut system);
-        let mut gatherer_supervisor = match GathererSupervisor::new() {
-            Ok(gs) => gs,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Unable to start gatherer: {:#?}",
-                    &e
-                );
-                let error_dialog = adw::MessageDialog::new(
-                    Some(window),
-                    Some("A fatal error has occurred"),
-                    Some(&format!("Unable to start data gatherer process: {:#?}", e)),
-                );
-                error_dialog.set_modal(true);
-                error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
-                error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
-                error_dialog.connect_response(None, |dialog, _| {
-                    dialog.close();
-                    std::process::exit(1);
-                });
-                error_dialog.present();
-
-                return (Default::default(), readings);
-            }
-        };
-
-        let mut disk_stats = vec![];
-        readings.disks = DiskInfo::load(&mut disk_stats);
-
-        let mut net_info = NetInfo::new();
-        readings.network_devices = if let Some(net_info) = net_info.as_mut() {
-            net_info.load_devices()
-        } else {
-            vec![]
-        };
-
-        let mut gpu_info = GPUInfo::new();
-        readings.gpus = if let Some(gpu_info) = gpu_info.as_mut() {
-            gpu_info.load_gpus()
-        } else {
-            vec![]
-        };
-
-        let mut processes = gatherer_supervisor.processes();
-        for gpu in &readings.gpus {
-            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                if let Some(process) = processes.get_mut(&(*pid as u32)) {
-                    process.stats_mut().gpu_usage = *gpu_usage;
-                }
-            }
-        }
-        let apps = gatherer_supervisor.installed_apps();
-        readings.process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
-        readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
         let run = refresh_thread_running.clone();
-        let cpu_static_info = readings.cpu_info.static_info.clone();
-        (
-            Self {
-                refresh_interval,
-                refresh_thread: Some(std::thread::spawn(move || {
-                    let mut system = system;
-                    let mut previous_disk_stats = disk_stats;
-                    let mut net_info = net_info;
-                    let mut gpu_info = gpu_info;
-                    let mut gatherer_supervisor = gatherer_supervisor;
 
-                    'read_loop: while run.load(Ordering::Acquire) {
-                        let start_load_readings = std::time::Instant::now();
+        let (tx, rx) = mpsc::channel::<gatherer::Message>();
+        Self {
+            refresh_interval,
+            refresh_thread: Some(std::thread::spawn(move || {
+                use adw::prelude::*;
+                use gtk::glib::*;
+                use sysinfo::{System, SystemExt};
 
-                        let cpu_info = CpuInfoDynamic::load(&mut system);
-                        let mem_info = MemInfo::load().unwrap_or(MemInfo::default());
-                        let disks = DiskInfo::load(&mut previous_disk_stats);
-                        let network_devices = if let Some(net_info) = net_info.as_mut() {
-                            net_info.load_devices()
-                        } else {
-                            vec![]
-                        };
-                        let gpus = if let Some(gpu_info) = gpu_info.as_mut() {
-                            gpu_info.load_gpus()
-                        } else {
-                            vec![]
-                        };
+                let mut system = System::new();
+                let mut readings = Readings::new(&mut system);
 
-                        let mut process_list = gatherer_supervisor.processes();
-                        for gpu in &gpus {
-                            for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                                if let Some(process) = process_list.get_mut(&(*pid as u32)) {
-                                    process.stats_mut().gpu_usage = *gpu_usage;
-                                }
-                            }
-                        }
-                        let apps = gatherer_supervisor.installed_apps();
-                        let process_tree =
-                            proc_info::process_hierarchy(&process_list).unwrap_or_default();
-                        let running_apps = app_info::running_apps(&process_tree, &apps);
-
-                        let mut readings = Readings {
-                            cpu_info: CpuInfo {
-                                static_info: cpu_static_info.clone(),
-                                dynamic_info: cpu_info,
-                            },
-                            mem_info,
-                            disks,
-                            network_devices,
-                            gpus,
-
-                            running_apps,
-                            process_tree,
-                        };
-
-                        g_debug!(
-                            "MissionCenter::SysInfo",
-                            "Loaded readings in {}ms",
-                            start_load_readings.elapsed().as_millis()
-                        );
-
+                let mut gatherer_supervisor = match GathererSupervisor::new() {
+                    Ok(gs) => gs,
+                    Err(e) => {
                         idle_add_once(move || {
-                            use gtk::glib::*;
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Unable to start gatherer: {:#?}",
+                                &e
+                            );
 
-                            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                                let now = std::time::Instant::now();
+                            let app_window = crate::MissionCenterApplication::default_instance()
+                                .and_then(|app| app.active_window());
 
-                                if !app.refresh_readings(&mut readings) {
-                                    g_critical!(
-                                        "MissionCenter::SysInfo",
-                                        "Readings were not completely refreshed, stale readings will be displayed"
-                                    );
-                                }
-
-                                g_debug!(
-                                    "MissionCenter::SysInfo",
-                                    "Refreshed readings in {}ms",
-                                    now.elapsed().as_millis()
-                                );
-                            } else {
-                                g_critical!(
-                                    "MissionCenter::SysInfo",
-                                    "Default GtkApplication is not a MissionCenterApplication"
-                                );
-                            }
+                            let error_dialog = adw::MessageDialog::new(
+                                app_window.as_ref(),
+                                Some("A fatal error has occurred"),
+                                Some(&format!("Unable to start data gatherer process: {:#?}", e)),
+                            );
+                            error_dialog.set_modal(true);
+                            error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
+                            error_dialog.set_response_appearance(
+                                "close",
+                                adw::ResponseAppearance::Destructive,
+                            );
+                            error_dialog.connect_response(None, |dialog, _| {
+                                dialog.close();
+                                std::process::exit(1);
+                            });
+                            error_dialog.present();
                         });
 
-                        let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
-                        let refresh_interval =
-                            std::time::Duration::from_millis(refresh_interval as u64);
+                        return;
+                    }
+                };
 
-                        let elapsed = start_load_readings.elapsed();
-                        if elapsed > refresh_interval {
-                            g_warning!(
-                                "MissionCenter::SysInfo",
-                                "Refresh took {}ms, which is longer than the refresh interval of {}ms",
-                                elapsed.as_millis(),
-                                refresh_interval.as_millis()
-                            );
-                            continue;
+                let mut disk_stats = vec![];
+                readings.disks = DiskInfo::load(&mut disk_stats);
+
+                let mut net_info = NetInfo::new();
+                readings.network_devices = if let Some(net_info) = net_info.as_mut() {
+                    net_info.load_devices()
+                } else {
+                    vec![]
+                };
+
+                let mut gpu_info = GPUInfo::new();
+                readings.gpus = if let Some(gpu_info) = gpu_info.as_mut() {
+                    gpu_info.load_gpus()
+                } else {
+                    vec![]
+                };
+
+                let mut processes = gatherer_supervisor.processes();
+                for gpu in &readings.gpus {
+                    for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                        if let Some(process) = processes.get_mut(&(*pid as u32)) {
+                            process.stats_mut().gpu_usage = *gpu_usage;
                         }
+                    }
+                }
+                let apps = gatherer_supervisor.installed_apps();
+                readings.process_tree =
+                    proc_info::process_hierarchy(&processes).unwrap_or_default();
+                readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
 
-                        let sleep_duration = refresh_interval - elapsed;
-                        let sleep_duration_fraction = sleep_duration / 10;
-                        for _ in 0..10 {
-                            std::thread::sleep(sleep_duration_fraction);
-                            if !run.load(Ordering::Acquire) {
-                                break 'read_loop;
+                let cpu_static_info = readings.cpu_info.static_info.clone();
+
+                idle_add_once(move || {
+                    use gtk::glib::*;
+
+                    if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                        app.set_initial_readings(readings);
+                    } else {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Default GtkApplication is not a MissionCenterApplication; failed to set initial readings"
+                        );
+                    }
+                });
+
+                'read_loop: while run.load(Ordering::Acquire) {
+                    let start_load_readings = std::time::Instant::now();
+
+                    let timer = std::time::Instant::now();
+                    let cpu_info = CpuInfoDynamic::load(&mut system);
+                    eprintln!("CPU load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let mem_info = MemInfo::load().unwrap_or(MemInfo::default());
+                    eprintln!("Mem load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let disks = DiskInfo::load(&mut disk_stats);
+                    eprintln!("Disk load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let network_devices = if let Some(net_info) = net_info.as_mut() {
+                        net_info.load_devices()
+                    } else {
+                        vec![]
+                    };
+                    eprintln!("Net load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let gpus = if let Some(gpu_info) = gpu_info.as_mut() {
+                        gpu_info.load_gpus()
+                    } else {
+                        vec![]
+                    };
+                    eprintln!("GPU load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let mut processes = gatherer_supervisor.processes();
+                    for gpu in &gpus {
+                        for (pid, gpu_usage) in &gpu.dynamic_info.processes {
+                            if let Some(process) = processes.get_mut(&(*pid as u32)) {
+                                process.stats_mut().gpu_usage = *gpu_usage;
                             }
                         }
                     }
-                })),
-                refresh_thread_running,
-            },
-            readings,
-        )
+                    eprintln!("Process load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let apps = gatherer_supervisor.installed_apps();
+                    eprintln!("App load took: {:?}", timer.elapsed());
+
+                    let timer = std::time::Instant::now();
+                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
+                    let running_apps = app_info::running_apps(&process_tree, &apps);
+                    eprintln!("Process tree load took: {:?}", timer.elapsed());
+
+                    let mut readings = Readings {
+                        cpu_info: CpuInfo {
+                            static_info: cpu_static_info.clone(),
+                            dynamic_info: cpu_info,
+                        },
+                        mem_info,
+                        disks,
+                        network_devices,
+                        gpus,
+
+                        running_apps,
+                        process_tree,
+                    };
+
+                    g_debug!(
+                        "MissionCenter::SysInfo",
+                        "Loaded readings in {}ms",
+                        start_load_readings.elapsed().as_millis()
+                    );
+
+                    idle_add_once(move || {
+                        use gtk::glib::*;
+
+                        if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                            let now = std::time::Instant::now();
+
+                            if !app.refresh_readings(&mut readings) {
+                                g_critical!(
+                                        "MissionCenter::SysInfo",
+                                        "Readings were not completely refreshed, stale readings will be displayed"
+                                    );
+                            }
+
+                            g_debug!(
+                                "MissionCenter::SysInfo",
+                                "Refreshed readings in {}ms",
+                                now.elapsed().as_millis()
+                            );
+                        } else {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Default GtkApplication is not a MissionCenterApplication"
+                            );
+                        }
+                    });
+
+                    let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
+                    let refresh_interval =
+                        std::time::Duration::from_millis(refresh_interval as u64);
+
+                    let elapsed = start_load_readings.elapsed();
+                    if elapsed > refresh_interval {
+                        g_warning!(
+                            "MissionCenter::SysInfo",
+                            "Refresh took {}ms, which is longer than the refresh interval of {}ms",
+                            elapsed.as_millis(),
+                            refresh_interval.as_millis()
+                        );
+                        continue;
+                    }
+
+                    let mut sleep_duration = refresh_interval - elapsed;
+                    let sleep_duration_fraction = sleep_duration / 10;
+                    for _ in 0..10 {
+                        let timer = std::time::Instant::now();
+
+                        match rx.recv_timeout(sleep_duration_fraction) {
+                            Ok(message) => gatherer_supervisor.send_message(message),
+                            Err(e) => {
+                                if e != mpsc::RecvTimeoutError::Timeout {
+                                    g_warning!(
+                                        "MissionCenter::SysInfo",
+                                        "Error receiving message from gatherer: {}",
+                                        e
+                                    );
+                                }
+                            }
+                        }
+
+                        if !run.load(Ordering::Acquire) {
+                            break 'read_loop;
+                        }
+
+                        sleep_duration = sleep_duration.saturating_sub(timer.elapsed());
+                        if sleep_duration.as_millis() == 0 {
+                            break;
+                        }
+                    }
+                    std::thread::sleep(sleep_duration);
+                }
+            })),
+            refresh_thread_running,
+            sender: tx,
+        }
     }
 
     pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
             .store(speed as u8, std::sync::atomic::Ordering::Release);
+    }
+
+    pub fn terminate_process(&self, terminate_type: TerminateType, pid: u32) {
+        use gtk::glib::g_critical;
+
+        match terminate_type {
+            TerminateType::Normal => {
+                match self.sender.send(gatherer::Message::TerminateProcess(pid)) {
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending TerminateProcess({}) to gatherer: {}",
+                            pid,
+                            e
+                        );
+                    }
+                    _ => {}
+                }
+            }
+            TerminateType::Force => match self.sender.send(gatherer::Message::KillProcess(pid)) {
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Error sending KillProcess({}) to gatherer: {}",
+                        pid,
+                        e
+                    );
+                }
+                _ => {}
+            },
+        }
     }
 }

@@ -32,7 +32,7 @@ mod imp {
     #[properties(wrapper_type = super::ViewModel)]
     pub struct ViewModel {
         #[property(get, set)]
-        pub pid: Cell<crate::sys_info_v2::Pid>,
+        pub pid: Cell<u32>,
 
         #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
         pub icon: Cell<glib::GString>,

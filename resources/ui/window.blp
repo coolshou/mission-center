@@ -67,29 +67,52 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
       }
     }
 
-    Box {
-      orientation: horizontal;
+    Box loading_box {
+      orientation: vertical;
 
-      Adw.ViewStack stack {
-        hexpand: true;
-        vexpand: true;
+      spacing: 12;
 
-        Adw.ViewStackPage {
-          name: "performance-page";
-          icon-name: "speedometer-symbolic";
-          title: _("Performance");
-          child: $PerformancePage performance_page {
-            summary-mode: bind-property header_bar.visible bidirectional inverted;
-          };
-        }
+      valign: center;
+      vexpand: true;
+      halign: center;
+      hexpand: true;
 
-        Adw.ViewStackPage {
-          name: "apps-page";
-          icon-name: "overlapping-windows-symbolic";
-          title: _("Apps");
-          child: $AppsPage apps_page {
-          };
-        }
+      Spinner loading_spinner {
+        spinning: true;
+        halign: center;
+      }
+
+      Label {
+        styles [
+          "title-4"
+        ]
+
+        label: _("Loading...");
+        halign: center;
+      }
+    }
+
+    Adw.ViewStack stack {
+      visible: false;
+
+      hexpand: true;
+      vexpand: true;
+
+      Adw.ViewStackPage {
+        name: "performance-page";
+        icon-name: "speedometer-symbolic";
+        title: _("Performance");
+        child: $PerformancePage performance_page {
+          summary-mode: bind header_bar.visible bidirectional inverted;
+        };
+      }
+
+      Adw.ViewStackPage {
+        name: "apps-page";
+        icon-name: "overlapping-windows-symbolic";
+        title: _("Apps");
+        child: $AppsPage apps_page {
+        };
       }
     }
   };
@@ -105,13 +128,6 @@ menu primary_menu {
     item {
       label: _("_About MissionCenter");
       action: "app.about";
-    }
-  }
-
-  section {
-    item {
-      label: _("_Quit");
-      action: "app.quit";
     }
   }
 }

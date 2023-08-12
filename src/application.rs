@@ -18,25 +18,28 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::{BorrowError, Cell, Ref, RefCell};
+
 use adw::glib::g_critical;
 use adw::subclass::prelude::*;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 
-use crate::config::VERSION;
-use crate::i18n::i18n;
+use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
 mod imp {
     use super::*;
 
     pub struct MissionCenterApplication {
-        pub settings: std::cell::Cell<Option<gio::Settings>>,
+        pub settings: Cell<Option<gio::Settings>>,
+        pub sys_info: RefCell<Option<crate::sys_info_v2::SysInfoV2>>,
     }
 
     impl Default for MissionCenterApplication {
         fn default() -> Self {
             Self {
-                settings: std::cell::Cell::new(None),
+                settings: Cell::new(None),
+                sys_info: RefCell::new(None),
             }
         }
     }
@@ -73,7 +76,13 @@ mod imp {
                 let settings = self.settings.take();
                 self.settings.set(settings.clone());
 
-                let window = crate::MissionCenterWindow::new(&*application, settings.as_ref());
+                let sys_info = crate::sys_info_v2::SysInfoV2::new();
+
+                let window =
+                    crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
+
+                self.sys_info.set(Some(sys_info));
+
                 window.connect_default_height_notify(clone!(@weak self as this => move |window| {
                     let settings = this.settings.take();
                     if settings.is_none() {
@@ -126,22 +135,41 @@ glib::wrapper! {
 
 impl MissionCenterApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(
-                MissionCenterApplication::static_type(),
-                &mut [
-                    ("application-id", application_id.into()),
-                    ("flags", flags.into()),
-                ],
-            )
-            .downcast()
-            .unwrap()
-        };
+        let this: Self = glib::Object::builder()
+            .property("application-id", application_id)
+            .property("flags", flags)
+            .build();
 
         this
     }
 
-    pub fn refresh_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, readings: Readings) {
+        use crate::MissionCenterWindow;
+        use gtk::glib::*;
+
+        let window = self.active_window();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return;
+        }
+
+        let window = window.unwrap();
+        let window = window.downcast_ref::<MissionCenterWindow>();
+        if window.is_none() {
+            g_critical!(
+                "MissionCenter::Application",
+                "Active window is not a MissionCenterWindow",
+            );
+            return;
+        }
+
+        window.unwrap().set_initial_readings(readings)
+    }
+
+    pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
         use crate::MissionCenterWindow;
         use gtk::glib::*;
 
@@ -168,21 +196,33 @@ impl MissionCenterApplication {
     }
 
     pub fn default_instance() -> Option<Self> {
-        let app = gio::Application::default();
-        if app.is_none() {
-            g_critical!(
-                "MissionCenter",
-                "Unable to get the default MissionCenterApplication instance"
-            );
+        match gio::Application::default() {
+            Some(app) => app.downcast_ref::<Self>().cloned(),
+            None => {
+                g_critical!(
+                    "MissionCenter",
+                    "Unable to get the default MissionCenterApplication instance"
+                );
+                return None;
+            }
         }
-        let app = app.unwrap();
-        app.downcast_ref::<crate::MissionCenterApplication>()
-            .cloned()
     }
 
     pub fn settings(&self) -> Option<gio::Settings> {
         let settings = unsafe { &*self.imp().settings.as_ptr() };
         settings.clone()
+    }
+
+    pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {
+        match self.imp().sys_info.try_borrow() {
+            Ok(sys_info_ref) => Ok(Ref::map(sys_info_ref, |sys_info_opt| match sys_info_opt {
+                Some(sys_info) => sys_info,
+                None => {
+                    panic!("MissionCenter::Application::sys_info() called before sys_info was initialized");
+                }
+            })),
+            Err(e) => Err(e),
+        }
     }
 
     fn setup_gactions(&self) {

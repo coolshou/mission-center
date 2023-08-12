@@ -9,6 +9,7 @@
 
     <url type="homepage">https://missioncenter.io</url>
     <url type="bugtracker">https://gitlab.com/mission-center-devs/mission-center/-/issues</url>
+    <url type="translate">https://hosted.weblate.org/projects/mission-center/mission-center</url>
 
     <summary>Monitor system resource usage</summary>
     <description>

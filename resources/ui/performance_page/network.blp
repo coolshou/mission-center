@@ -77,7 +77,7 @@ template $PerformancePageNetwork: Box {
 
     height-request: 120;
 
-    base-color: bind-property template.base-color;
+    base-color: bind template.base-color;
     data-set-count: 3;
     scroll: true;
     auto-scale: true;
@@ -111,7 +111,7 @@ template $PerformancePageNetwork: Box {
   Box details {
     spacing: 20;
 
-    visible: bind-property template.summary-mode inverted;
+    visible: bind template.summary-mode inverted;
 
     Box dynamic_data {
       orientation: vertical;
@@ -212,7 +212,7 @@ template $PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property ssid.visible;
+          visible: bind ssid.visible;
           label: _("SSID:");
         }
 
@@ -222,7 +222,7 @@ template $PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property signal_strength.visible;
+          visible: bind signal_strength.visible;
           label: _("Signal strength:");
         }
 
@@ -232,7 +232,7 @@ template $PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property max_bitrate.visible;
+          visible: bind max_bitrate.visible;
           label: _("Maximum Bitrate:");
         }
 
@@ -242,7 +242,7 @@ template $PerformancePageNetwork: Box {
           ]
 
           halign: start;
-          visible: bind-property frequency.visible;
+          visible: bind frequency.visible;
           label: _("Frequency:");
         }
 
@@ -358,6 +358,7 @@ template $PerformancePageNetwork: Box {
   }
 
   PopoverMenu context_menu {
+    has-arrow: false;
     menu-model: context_menu_model;
   }
 }
