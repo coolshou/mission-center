@@ -232,6 +232,13 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
+            match self.content_type.get() {
+                ContentType::App => {
+                    let _ = self.obj().activate_action("listitem.collapse", None);
+                }
+                _ => {}
+            }
+
             if let Some(tree_expander) = self.obj().parent() {
                 if let Some(column_view_cell) = tree_expander.parent() {
                     let style_provider = unsafe { &*self.css_provider.as_ptr() };
