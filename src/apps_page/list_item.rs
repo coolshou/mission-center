@@ -28,7 +28,7 @@ use gtk::{
     subclass::prelude::*,
 };
 
-use crate::apps_page::view_model::ContentType;
+use crate::{apps_page::view_model::ContentType, i18n::*};
 
 mod imp {
     use super::*;
@@ -162,6 +162,7 @@ mod imp {
                 );
             } else {
                 let parent = parent.unwrap();
+
                 parent.set_hide_expander(!show);
             }
 
@@ -231,6 +232,13 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
+            match self.content_type.get() {
+                ContentType::App => {
+                    let _ = self.obj().activate_action("listitem.collapse", None);
+                }
+                _ => {}
+            }
+
             if let Some(tree_expander) = self.obj().parent() {
                 if let Some(column_view_cell) = tree_expander.parent() {
                     let style_provider = unsafe { &*self.css_provider.as_ptr() };
@@ -240,6 +248,112 @@ mod imp {
                         column_view_cell
                             .style_context()
                             .add_provider(style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+                    }
+
+                    if let Some(list_item_widget) = column_view_cell.parent() {
+                        use crate::apps_page::view_model::ViewModel;
+
+                        let right_click_controller = gtk::GestureClick::new();
+                        right_click_controller.set_button(3); // Secondary click (AKA right click)
+
+                        list_item_widget.add_controller(right_click_controller.clone());
+
+                        right_click_controller.connect_released(move |_, _, x, y| {
+                            use gtk::glib::*;
+
+                            let view_model = match list_item_widget
+                                .first_child()
+                                .and_then(|w| w.first_child())
+                                .and_then(|w| w.downcast::<gtk::TreeExpander>().ok())
+                                .and_then(|te| te.item())
+                                .and_then(|model| model.downcast::<ViewModel>().ok())
+                            {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::AppsPage",
+                                        "Failed to get ViewModel, cannot show context menu for App/Process"
+                                    );
+                                    return;
+                                }
+                                Some(model) => {
+                                    model
+                                }
+                            };
+
+                            let (stop_label, force_stop_label) = match view_model.content_type() {
+                                0 => {
+                                    // ContentType::SectionHeader
+                                    return;
+                                }
+                                1 => {
+                                    // ContentType::App
+                                    (i18n("Stop Application"), i18n("Force Stop Application"))
+                                }
+                                2 => {
+                                    // ContentType::Process
+                                    (i18n("Stop Process"), i18n("Force Stop Process"))
+                                }
+                                _ => unreachable!(),
+                            };
+
+                            let apps_page = match list_item_widget.
+                                parent()
+                                .and_then(|p| p.parent())
+                                .and_then(|p| p.parent())
+                                .and_then(|p| p.parent())
+                                .and_then(|p| p.downcast::<crate::apps_page::AppsPage>().ok()) {
+                                Some(ap) => ap,
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::AppsPage",
+                                        "Failed to get AppsPage, cannot show context menu for App/Process"
+                                    );
+                                    return;
+                                }
+                            };
+
+                            let mouse_pos = match list_item_widget.compute_point(
+                                &apps_page,
+                                &gtk::graphene::Point::new(x as _, y as _),
+                            ) {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::AppsPage",
+                                        "Failed to compute_point, cannot context menu will not be anchored to mouse position"
+                                    );
+                                    (x as f32, y as f32)
+                                }
+                                Some(p) => {
+                                    (p.x(), p.y())
+                                }
+                            };
+
+                            let context_menu = apps_page.context_menu();
+
+                            let _ = list_item_widget.activate_action(
+                                "listitem.select",
+                                Some(&Variant::from((true, true))),
+                            );
+
+                            let menu = gtk::gio::Menu::new();
+
+                            let mi_stop = gtk::gio::MenuItem::new(Some(&stop_label), None);
+                            mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from(view_model.pid())));
+                            let mi_force_stop = gtk::gio::MenuItem::new(Some(&force_stop_label), None);
+                            mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from(view_model.pid())));
+
+                            menu.append_item(&mi_stop);
+                            menu.append_item(&mi_force_stop);
+
+                            context_menu.set_menu_model(Some(&menu));
+                            context_menu.set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                                mouse_pos.0.round() as i32,
+                                mouse_pos.1.round() as i32,
+                                1,
+                                1,
+                            )));
+                            context_menu.popup();
+                        });
                     }
                 }
             }

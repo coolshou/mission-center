@@ -1,4 +1,4 @@
-/* sys_info/disk_info.rs
+/* sys_info_v2/disk_info.rs
  *
  * Copyright 2023 Romeo Calota
  *

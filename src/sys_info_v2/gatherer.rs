@@ -1,7 +1,26 @@
+/* sys_info_v2/gatherer.rs
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 use common::ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent};
 
 const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
-const RETRY_INCREMENT: std::time::Duration = std::time::Duration::from_millis(5);
 
 pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
@@ -23,7 +42,9 @@ pub enum GathererError {
     #[error(transparent)]
     SharedMemory(#[from] common::ipc::SharedMemoryError),
     #[error("Expected message {0:?}, got {1:?}")]
-    MessageMissmatch(common::ipc::Message, common::ipc::Message),
+    MessageMissmatch(common::ipc::Message, Message),
+    #[error("Failed to send message: {0:?}")]
+    MessageSendFailed(#[from] std::sync::mpsc::SendError<Message>),
     #[error("Disconnected")]
     Disconnected,
     #[error("Timeout")]
@@ -35,9 +56,7 @@ pub struct Gatherer<SharedData: Sized> {
     shared_memory: SharedMemory<SharedData>,
 
     command: std::process::Command,
-
     child: Option<std::process::Child>,
-
     connection: Option<LocalSocketStream>,
 }
 
@@ -77,9 +96,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
             shared_memory,
 
             command,
-
             child: None,
-
             connection: None,
         })
     }
@@ -95,8 +112,8 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         // Let the child process start up
         std::thread::sleep(std::time::Duration::from_millis(50));
 
-        // Try to connect twice, if not successful, then bail
-        for _ in 0..2 {
+        // Try to connect multiple times, if not successful, then bail
+        for _ in 0..10 {
             self.connection = match self.listener.accept() {
                 Ok(connection) => {
                     connection.set_nonblocking(true)?;
@@ -145,7 +162,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
 
                 // Try to get the child to wake up in case it's stuck
                 unsafe {
-                    libc::kill(child.id() as i32, libc::SIGCONT);
+                    libc::kill(child.id() as _, libc::SIGCONT);
                 }
             }
 
@@ -174,7 +191,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         use std::io::Write;
 
         if let Some(connection) = self.connection.as_mut() {
-            connection.write(&[message.into()])?;
+            connection.write(common::to_binary(&message))?;
 
             let reply = Self::read_message(connection, DEFAULT_TIMEOUT)?;
             if reply != Message::Acknowledge {
@@ -234,29 +251,64 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         connection: &mut LocalSocketStream,
         timeout: std::time::Duration,
     ) -> Result<Message, GathererError> {
-        use std::io::Read;
+        use gtk::glib::ffi::*;
+        use std::{io::Read, os::fd::AsRawFd};
 
-        let mut reply = [0_u8];
-        let mut timeout_left = timeout.as_millis();
-        loop {
-            if timeout_left == 0 {
-                return Err(GathererError::Timeout);
-            }
+        let mut poll_fd = [GPollFD {
+            fd: connection.as_raw_fd(),
+            events: (G_IO_IN | G_IO_HUP | G_IO_ERR) as _,
+            revents: 0,
+        }];
+        let ret = unsafe {
+            g_poll(
+                poll_fd.as_mut_ptr(),
+                poll_fd.len() as _,
+                timeout.as_millis() as _,
+            )
+        };
+        if ret == 0 {
+            return Err(GathererError::Timeout);
+        } else if ret < 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
 
-            match connection.read_exact(&mut reply) {
-                Ok(_) => break,
-                Err(e) => match e.kind() {
-                    std::io::ErrorKind::WouldBlock => {
-                        // Wait a bit and try again, the child process might just be slow to respond
-                        timeout_left = timeout_left.saturating_sub(RETRY_INCREMENT.as_millis());
-                        std::thread::sleep(RETRY_INCREMENT);
-                        continue;
+        if poll_fd[0].revents & G_IO_HUP as u16 > 0 {
+            return Err(GathererError::Disconnected);
+        }
+
+        if poll_fd[0].revents & G_IO_ERR as u16 > 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
+
+        let mut reply = Message::Unknown;
+        let reply_bin = common::to_binary_mut(&mut reply);
+
+        for byte in 0..core::mem::size_of::<Message>() {
+            const RETRIES: usize = 2;
+            for i in 0..RETRIES {
+                // We know there is data ready on the file descriptor, so we can safely read
+                match connection.read_exact(&mut reply_bin[byte..byte + 1]) {
+                    Err(e) => {
+                        // In case there was only a partial read, try again
+                        if e.kind() == std::io::ErrorKind::WouldBlock {
+                            if i == RETRIES - 1 {
+                                return Err(GathererError::Timeout);
+                            } else {
+                                std::thread::sleep(std::time::Duration::from_millis(5));
+                                continue;
+                            }
+                        }
+                        return if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                            Err(GathererError::Disconnected)
+                        } else {
+                            Err(e.into())
+                        };
                     }
-                    _ => return Err(e.into()),
-                },
+                    _ => break,
+                }
             }
         }
 
-        Ok(Message::from(reply[0]))
+        Ok(reply)
     }
 }

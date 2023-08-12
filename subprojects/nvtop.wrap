@@ -1,9 +1,9 @@
 [wrap-file]
-directory = nvtop-9a8458b541a195a0c5cadafb66e240962c852b39
+directory = nvtop-be47f8c560487efc6e6a419d59c69bfbdb819324
 
-source_url = https://github.com/Syllo/nvtop/archive/9a8458b541a195a0c5cadafb66e240962c852b39.tar.gz
-source_filename = 9a8458b541a195a0c5cadafb66e240962c852b39.tar.gz
-source_hash = 290542e3c2203613e18faaa769dcc5479b170c39acbe71c976a7e86ff03ea1a7
+source_url = https://github.com/Syllo/nvtop/archive/be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz
+source_filename = be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz
+source_hash = 47c963deb1d22c75e92ca2cc7fcd1e1552cfa6da70e9d51be6a80da45249035f
 
 diff_files = nvtop-meson.patch, nvtop-amdgpu-h.patch, nvtop-amdgpu_drm-h.patch, nvtop-constructors.patch, nvtop-no-assert-amdgpu.patch
 

@@ -28,7 +28,7 @@ template $PerformancePageMemory: Box {
     title: _("Some information requires administrative privileges");
     button-label: _("_Authenticate");
 
-    visible: bind-property template.summary-mode inverted;
+    visible: bind template.summary-mode inverted;
   }
 
   WindowHandle {
@@ -78,7 +78,7 @@ template $PerformancePageMemory: Box {
             "caption",
           ]
 
-          label: bind-property total_ram.label;
+          label: bind total_ram.label;
         }
       }
     };
@@ -90,7 +90,7 @@ template $PerformancePageMemory: Box {
 
     height-request: 120;
 
-    base-color: bind-property template.base-color;
+    base-color: bind template.base-color;
     data-set-count: 1;
     scroll: true;
   }
@@ -136,14 +136,14 @@ template $PerformancePageMemory: Box {
 
     height-request: 50;
 
-    base-color: bind-property template.base-color;
+    base-color: bind template.base-color;
   }
 
   Adw.ToastOverlay toast_overlay {
     Box details {
       spacing: 20;
 
-      visible: bind-property template.summary-mode inverted;
+      visible: bind template.summary-mode inverted;
 
       Box dynamic_data {
         orientation: vertical;
@@ -391,6 +391,7 @@ template $PerformancePageMemory: Box {
   }
 
   PopoverMenu context_menu {
+    has-arrow: false;
     menu-model: context_menu_model;
   }
 }

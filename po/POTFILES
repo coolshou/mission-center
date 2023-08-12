@@ -30,10 +30,6 @@ src/apps_page/pid_column.rs
 src/apps_page/stat_column.rs
 src/apps_page/view_model.rs
 
-src/common/app.rs
-src/common/process.rs
-src/common/util.rs
-
 src/performance_page/widgets/mod.rs
 src/performance_page/widgets/graph_widget.rs
 src/performance_page/widgets/mem_composition_widget.rs

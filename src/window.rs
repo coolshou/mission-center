@@ -23,6 +23,8 @@ use std::cell::Cell;
 use adw::subclass::prelude::*;
 use gtk::{gio, glib, prelude::*};
 
+use crate::sys_info_v2::Readings;
+
 mod imp {
     use super::*;
 
@@ -40,9 +42,12 @@ mod imp {
         #[template_child]
         pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
+        pub loading_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub loading_spinner: TemplateChild<gtk::Spinner>,
+        #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
-        pub sys_info: Cell<Option<crate::sys_info_v2::SysInfoV2>>,
         pub settings: Cell<Option<gio::Settings>>,
     }
 
@@ -54,9 +59,10 @@ mod imp {
                 header_stack: TemplateChild::default(),
                 search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
+                loading_box: TemplateChild::default(),
+                loading_spinner: TemplateChild::default(),
                 stack: TemplateChild::default(),
 
-                sys_info: Cell::new(None),
                 settings: Cell::new(None),
             }
         }
@@ -214,6 +220,7 @@ impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(
         application: &P,
         settings: Option<&gio::Settings>,
+        sys_info: &crate::sys_info_v2::SysInfoV2,
     ) -> Self {
         use gtk::glib::*;
 
@@ -221,9 +228,41 @@ impl MissionCenterWindow {
             .property("application", application)
             .build();
 
-        let (sys_info, mut initial_readings) = crate::sys_info_v2::SysInfoV2::new(&this);
+        if let Some(settings) = settings {
+            sys_info.set_update_speed(settings.int("update-speed").into());
 
-        let ok = this.imp().performance_page.set_up_pages(&initial_readings);
+            settings.connect_changed(
+                Some("update-speed"),
+                clone!(@weak this => move |settings, _| {
+                    use crate::{application::MissionCenterApplication, sys_info_v2::UpdateSpeed};
+
+                    let update_speed: UpdateSpeed = settings.int("update-speed").into();
+                    let app = match MissionCenterApplication::default_instance() {
+                        Some(app) => app,
+                        None => {
+                            g_critical!("MissionCenter", "Failed to get default instance of MissionCenterApplication");
+                            return;
+                        }
+                    };
+                    match app.sys_info() {
+                        Ok(sys_info) => {
+                            sys_info.set_update_speed(update_speed);
+                        }
+                        Err(e) => {
+                            g_critical!("MissionCenter", "Failed to get sys_info from MissionCenterApplication: {}", e);
+                        }
+                    };
+                }),
+            );
+        }
+
+        this
+    }
+
+    pub fn set_initial_readings(&self, mut readings: Readings) {
+        use gtk::glib::*;
+
+        let ok = self.imp().performance_page.set_up_pages(&readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
@@ -231,10 +270,7 @@ impl MissionCenterWindow {
             );
         }
 
-        let ok = this
-            .imp()
-            .apps_page
-            .set_initial_readings(&mut initial_readings);
+        let ok = self.imp().apps_page.set_initial_readings(&mut readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
@@ -242,34 +278,12 @@ impl MissionCenterWindow {
             );
         }
 
-        if let Some(settings) = settings {
-            sys_info.set_update_speed(settings.int("update-speed").into());
-
-            settings.connect_changed(
-                Some("update-speed"),
-                clone!(@weak this => move |settings, _| {
-                    use crate::sys_info_v2::UpdateSpeed;
-
-                    let update_speed: UpdateSpeed = settings.int("update-speed").into();
-                    let sys_info = this.imp().sys_info.take();
-                    if sys_info.is_none() {
-                        g_critical!("MissionCenter", "SysInfo is not initialized, how is this application still running?");
-                    }
-                    let sys_info = sys_info.unwrap();
-
-                    sys_info.set_update_speed(update_speed);
-
-                    this.imp().sys_info.set(Some(sys_info));
-                }),
-            );
-        }
-
-        this.imp().sys_info.set(Some(sys_info));
-
-        this
+        self.imp().loading_spinner.set_spinning(false);
+        self.imp().loading_box.set_visible(false);
+        self.imp().stack.set_visible(true);
     }
 
-    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &mut Readings) -> bool {
         let mut result = true;
 
         result &= self.imp().performance_page.update_readings(readings);
