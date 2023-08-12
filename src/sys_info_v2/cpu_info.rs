@@ -1,4 +1,4 @@
-/* sys_info/cpu_info.rs
+/* sys_info_v2/cpu_info.rs
  *
  * Copyright 2023 Romeo Calota
  *

@@ -169,11 +169,34 @@ mod imp {
         }
 
         pub fn update_app_model(&self) {
+            use crate::sys_info_v2::Process;
+            use gtk::glib::g_critical;
             use std::collections::BTreeSet;
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
+            fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
+                if root_process.pid() == pid {
+                    return Some(root_process);
+                }
+
+                match root_process.children.get(&pid) {
+                    Some(process) => return Some(process),
+                    None => {}
+                }
+
+                for (_, process) in &root_process.children {
+                    match find_process(process, pid) {
+                        Some(process) => return Some(process),
+                        None => {}
+                    }
+                }
+
+                None
+            }
+
             let model = self.apps_model.take();
             let apps = self.apps.take();
+            let process_tree = self.process_tree.take();
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -207,10 +230,12 @@ mod imp {
                     None
                 };
 
-                if pos.is_none() {
+                let primary_pid = app.pids[0];
+                let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(&app.name())
                         .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
+                        .pid(primary_pid)
                         .content_type(ContentType::App)
                         .cpu_usage(app.stats.cpu_usage)
                         .memory_usage(app.stats.memory_usage)
@@ -221,6 +246,8 @@ mod imp {
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
                     model.append(&view_model);
+
+                    view_model
                 } else {
                     let model: gio::ListModel = model.clone().into();
                     let view_model = model
@@ -229,122 +256,43 @@ mod imp {
                         .downcast::<ViewModel>()
                         .unwrap();
 
+                    // The app might have been stopped and restarted between updates, so always
+                    // reset the primary PID, and repopulate the list of child processes.
+                    view_model.set_pid(primary_pid);
                     view_model.set_cpu_usage(app.stats.cpu_usage);
                     view_model.set_memory_usage(app.stats.memory_usage);
                     view_model.set_disk_usage(app.stats.disk_usage);
                     view_model.set_network_usage(app.stats.network_usage);
                     view_model.set_gpu_usage(app.stats.gpu_usage);
+
+                    view_model
+                };
+
+                let children = view_model.children().clone();
+                children.remove_all();
+
+                if let Some(process) = find_process(&process_tree, primary_pid) {
+                    Self::update_process_model(self, children, process);
+                } else {
+                    g_critical!(
+                        "MissionCenter::AppsPage",
+                        "Failed to find process with PID {} in process tree, for App {}",
+                        primary_pid,
+                        app.name()
+                    );
                 }
             }
 
+            self.process_tree.set(process_tree);
             self.apps.set(apps);
             self.apps_model.set(model);
         }
 
         pub fn update_processes_models(&self) {
-            use view_model::{ContentType, ViewModel, ViewModelBuilder};
-
-            fn update_model(
-                this: &AppsPage,
-                model: gio::ListStore,
-                process: &crate::sys_info_v2::Process,
-            ) {
-                let mut to_remove = Vec::new();
-                for i in 0..model.n_items() {
-                    let current = model.item(i).unwrap().downcast::<ViewModel>();
-                    if current.is_err() {
-                        continue;
-                    }
-                    let current = current.unwrap();
-
-                    if !process.children.contains_key(&(current.pid())) {
-                        to_remove.push(i);
-                    }
-                }
-
-                for (i, to_remove_i) in to_remove.iter().enumerate() {
-                    let to_remove_i = (*to_remove_i as usize - i) as _;
-                    model.remove(to_remove_i);
-                }
-
-                for (pid, child) in &process.children {
-                    let pos = if model.n_items() > 0 {
-                        model.find_with_equal_func(|current| {
-                            let current = current.downcast_ref::<ViewModel>();
-                            if current.is_none() {
-                                return false;
-                            }
-                            let current = current.unwrap();
-                            current.pid() == *pid
-                        })
-                    } else {
-                        None
-                    };
-
-                    let entry_name = if !child.exe().is_empty() {
-                        let entry_name = std::path::Path::new(child.exe())
-                            .file_name()
-                            .map(|name| name.to_str().unwrap_or(child.name()))
-                            .unwrap_or(child.name());
-                        if entry_name.starts_with("wine") {
-                            if child.cmd().is_empty() {
-                                child.name()
-                            } else {
-                                child.cmd()[0]
-                                    .split("\\")
-                                    .last()
-                                    .unwrap_or(child.name())
-                                    .split("/")
-                                    .last()
-                                    .unwrap_or(child.name())
-                            }
-                        } else {
-                            entry_name
-                        }
-                    } else {
-                        child.name()
-                    };
-
-                    let child_model = if pos.is_none() {
-                        let view_model = ViewModelBuilder::new()
-                            .name(entry_name)
-                            .content_type(ContentType::Process)
-                            .pid(*pid)
-                            .cpu_usage(child.stats().cpu_usage)
-                            .memory_usage(child.stats().memory_usage)
-                            .disk_usage(child.stats().disk_usage)
-                            .network_usage(child.stats().network_usage)
-                            .gpu_usage(child.stats().gpu_usage)
-                            .max_cpu_usage(this.max_cpu_usage.get())
-                            .max_memory_usage(this.max_memory_usage.get())
-                            .build();
-
-                        model.append(&view_model);
-                        view_model.children().clone()
-                    } else {
-                        let view_model = model
-                            .item(pos.unwrap())
-                            .unwrap()
-                            .downcast::<ViewModel>()
-                            .unwrap();
-
-                        view_model.set_cpu_usage(child.stats().cpu_usage);
-                        view_model.set_memory_usage(child.stats().memory_usage);
-                        view_model.set_disk_usage(child.stats().disk_usage);
-                        view_model.set_network_usage(child.stats().network_usage);
-                        view_model.set_gpu_usage(child.stats().gpu_usage);
-
-                        view_model.children().clone()
-                    };
-
-                    update_model(this, child_model, child);
-                }
-            }
-
             let process_tree = self.process_tree.take();
             let processes_root_model = self.processes_root_model.take();
 
-            update_model(self, processes_root_model.clone(), &process_tree);
+            Self::update_process_model(self, processes_root_model.clone(), &process_tree);
 
             self.processes_root_model.set(processes_root_model);
             self.process_tree.set(process_tree);
@@ -485,7 +433,7 @@ mod imp {
                     return None;
                 }
 
-                if content_type == ContentType::Process {
+                if content_type == ContentType::Process || content_type == ContentType::App {
                     return Some(view_model.children().clone().into());
                 }
 
@@ -741,6 +689,105 @@ mod imp {
                 }
             }
             self.column_header_disk.set(column_header_disk);
+        }
+
+        fn update_process_model(
+            this: &AppsPage,
+            model: gio::ListStore,
+            process: &crate::sys_info_v2::Process,
+        ) {
+            use crate::apps_page::view_model::{ContentType, ViewModel, ViewModelBuilder};
+
+            let mut to_remove = Vec::new();
+            for i in 0..model.n_items() {
+                let current = model.item(i).unwrap().downcast::<ViewModel>();
+                if current.is_err() {
+                    continue;
+                }
+                let current = current.unwrap();
+
+                if !process.children.contains_key(&(current.pid())) {
+                    to_remove.push(i);
+                }
+            }
+
+            for (i, to_remove_i) in to_remove.iter().enumerate() {
+                let to_remove_i = (*to_remove_i as usize - i) as _;
+                model.remove(to_remove_i);
+            }
+
+            for (pid, child) in &process.children {
+                let pos = if model.n_items() > 0 {
+                    model.find_with_equal_func(|current| {
+                        let current = current.downcast_ref::<ViewModel>();
+                        if current.is_none() {
+                            return false;
+                        }
+                        let current = current.unwrap();
+                        current.pid() == *pid
+                    })
+                } else {
+                    None
+                };
+
+                let entry_name = if !child.exe().is_empty() {
+                    let entry_name = std::path::Path::new(child.exe())
+                        .file_name()
+                        .map(|name| name.to_str().unwrap_or(child.name()))
+                        .unwrap_or(child.name());
+                    if entry_name.starts_with("wine") {
+                        if child.cmd().is_empty() {
+                            child.name()
+                        } else {
+                            child.cmd()[0]
+                                .split("\\")
+                                .last()
+                                .unwrap_or(child.name())
+                                .split("/")
+                                .last()
+                                .unwrap_or(child.name())
+                        }
+                    } else {
+                        entry_name
+                    }
+                } else {
+                    child.name()
+                };
+
+                let child_model = if pos.is_none() {
+                    let view_model = ViewModelBuilder::new()
+                        .name(entry_name)
+                        .content_type(ContentType::Process)
+                        .pid(*pid)
+                        .cpu_usage(child.stats().cpu_usage)
+                        .memory_usage(child.stats().memory_usage)
+                        .disk_usage(child.stats().disk_usage)
+                        .network_usage(child.stats().network_usage)
+                        .gpu_usage(child.stats().gpu_usage)
+                        .max_cpu_usage(this.max_cpu_usage.get())
+                        .max_memory_usage(this.max_memory_usage.get())
+                        .build();
+
+                    model.append(&view_model);
+                    view_model.children().clone()
+                } else {
+                    let view_model = model
+                        .item(pos.unwrap())
+                        .unwrap()
+                        .downcast::<ViewModel>()
+                        .unwrap();
+
+                    view_model.set_cpu_usage(child.stats().cpu_usage);
+                    view_model.set_memory_usage(child.stats().memory_usage);
+                    view_model.set_disk_usage(child.stats().disk_usage);
+                    view_model.set_network_usage(child.stats().network_usage);
+                    view_model.set_gpu_usage(child.stats().gpu_usage);
+
+                    view_model.children().clone()
+                };
+
+                Self::update_process_model(this, child_model, child);
+            }
         }
     }
 

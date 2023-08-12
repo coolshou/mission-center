@@ -41,7 +41,7 @@ mod imp {
         #[property(set = Self::set_content_type, type = u8)]
         content_type: Cell<crate::apps_page::view_model::ContentType>,
         #[property(get, set = Self::set_value)]
-        value: Cell<crate::sys_info_v2::Pid>,
+        value: Cell<u32>,
     }
 
     impl Default for PidColumn {
@@ -70,7 +70,7 @@ mod imp {
             self.content_type.set(content_type);
         }
 
-        fn set_value(&self, v: crate::sys_info_v2::Pid) {
+        fn set_value(&self, v: u32) {
             self.value.set(v);
         }
     }
@@ -79,7 +79,9 @@ mod imp {
         fn update_label(&self) {
             use crate::apps_page::view_model::ContentType;
 
-            if self.content_type.get() != ContentType::Process {
+            if self.content_type.get() != ContentType::Process
+                && self.content_type.get() != ContentType::App
+            {
                 self.label.set_text("");
                 return;
             }

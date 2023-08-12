@@ -1,4 +1,4 @@
-/* sys_info/view_models
+/* sys_info_v2/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -545,10 +545,10 @@ impl SysInfoV2 {
                     eprintln!("GPU load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let mut process_list = gatherer_supervisor.processes();
+                    let mut processes = gatherer_supervisor.processes();
                     for gpu in &gpus {
                         for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                            if let Some(process) = process_list.get_mut(&(*pid as u32)) {
+                            if let Some(process) = processes.get_mut(&(*pid as u32)) {
                                 process.stats_mut().gpu_usage = *gpu_usage;
                             }
                         }
@@ -560,8 +560,7 @@ impl SysInfoV2 {
                     eprintln!("App load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let process_tree =
-                        proc_info::process_hierarchy(&process_list).unwrap_or_default();
+                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
                     let running_apps = app_info::running_apps(&process_tree, &apps);
                     eprintln!("Process tree load took: {:?}", timer.elapsed());
 
