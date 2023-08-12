@@ -1,4 +1,4 @@
-/* sys_info/net_info.rs
+/* sys_info_v2/net_info.rs
  *
  * Copyright 2023 Romeo Calota
  *
