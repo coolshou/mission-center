@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-19 08:27+0300\n"
+"POT-Creation-Date: 2023-08-12 15:22+0300\n"
 "PO-Revision-Date: 2023-08-08 15:53+0000\n"
 "Last-Translator: yiannis ioannides <sub@wai.ai>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/mission-center/"
@@ -30,56 +30,56 @@ msgid ""
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
 "Διαχείριση εφαρμογών;Επίβλεψη πόρων;Επίβλεψη συστήματος;Processor;Εφαρμογές;"
-"Επίβλεψη επίδοσης;Επεξεργαστής;Κάρτα "
-"γραφικών;Δίσκος;Δίσκος;Μνήμη;Δίκτυο;Χρήση;Χρήση"
+"Επίβλεψη επίδοσης;Επεξεργαστής;Κάρτα γραφικών;Δίσκος;Δίσκος;Μνήμη;Δίκτυο;"
+"Χρήση;Χρήση"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
 msgid "Mission Center Developers"
 msgstr "Κέντρο Ελέγχου - Προγραμματιστές"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:13
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:14
 msgid "Monitor system resource usage"
 msgstr "Επίβλεψη χρήσης πόρων συστήματος"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:15
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
 "Επιβλέψτε τη χρήση του επεξεργαστή, μνήμης, δίσκου, δικτύου και κάρτας "
 "γραφικών του υπολογιστή σας"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:17
 msgid "Features:"
 msgstr "Χαρακτηριστικά:"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:18
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "Επίβλεψη χρήσης του επεξεργαστή, ολικής ή ανά thread"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Δείτε τις διεργασίες συστήματος, threads, χρόνο λειτουργίας, clock speed ("
-"βασικό ή τρέχων), μέγεθος cache"
+"Δείτε τις διεργασίες συστήματος, threads, χρόνο λειτουργίας, clock speed "
+"(βασικό ή τρέχων), μέγεθος cache"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
 msgid "Monitor RAM and Swap usage"
 msgstr "Επίβλεψη χρήσης μνήμης και swap"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "Δείτε αναλυτικά το τρόπο χρήσης της μνήμης από το σύστημα"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "Επίβλεψη χρήσης δίσκου και ταχύτητα ανταλλαγής δεδομένων"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
 msgstr "Επίβλεψη χρήση δικτύου και ταχύτητα ανταλλαγής δεδομένων"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -89,7 +89,7 @@ msgstr ""
 "σύνδεσης (Wi-Fi ή Ethernet), ταχύτητες wireless και συχνότητα, διεύθυνση "
 "συσκευής και IP"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -98,15 +98,15 @@ msgstr ""
 "αποκωδικοποίησης βίντεο, κατανάλωσης μνήμης και ρεύματος, δια της γνωστής "
 "εφαρμογής NVTOP"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Δείτε αναλυτικά τη χρήση πόρων ανά εφαρμογή ή διεργασιών"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "Υποστήριξη συνοπτικής εικόνας για απλή επίβλεψη"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -114,23 +114,23 @@ msgstr ""
 "Χρήση OpenGL rendering για όλα τα γραφήματα με σκοπό την λιγότερη κατανάλωση "
 "πόρων του επεξεργαστή"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Χρησιμοποιεί GTK4 και Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Written in Rust"
 msgstr "Γραμμένο σε Rust"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:32
 msgid "Flatpak first"
 msgstr "Πρώτα Flatpak"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:33
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Περιορισμοί (προς επίλυση):"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:35
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
@@ -138,55 +138,96 @@ msgstr ""
 "Προς το παρόν, η εφαρμογή υποστηρίζει μόνο επίβλεψη, δεν μπορεί πχ. να "
 "διακόψει εφαρμογές"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
 msgstr "Το ποσοστό χρήσης δίσκου μπορεί να μην είναι ακριβές"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
 msgid "No per-process network usage"
 msgstr "Χωρίς ένδειξη χρήσης δικτύου ανά διεργασία"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
 msgid "No per-process GPU usage"
 msgstr "Χωρίς ένδειξη χρήσης κάρτας δικτύου ανά διεργασία"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
 "Η υποστήριξη επίβλεψης κάρτας γραφικών βρίσκεται ακόμη σε πειραματικό "
 "στάδιο, μόνο για κάρτες AMD κια NVIDIA"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:41
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Σχόλια, προτάσεις, αναφορά σφαλμάτων και συνεισφορές είναι ευπρόσδεκτα"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:102
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+msgid "Add Spanish translation by Óscar Fernández Díaz"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+msgid ""
+"The memory tab now shows configured memory speed instead of the maximum "
+"supported by the modules"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#, fuzzy
+msgid "Add German translation by TecCheck"
+msgstr "Προσθήκη μετάφρασης Τσέχικων από ondra05"
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+msgid ""
+"When a process uses large amounts of CPU or RAM it is now highlighted in the "
+"Apps and Processes list"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+msgid "Add initial support for building for ARM64"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+msgid ""
+"Take into account multiple CPU cores and cache sharing when calculating "
+"cache sizes"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:109
+msgid ""
+"Fix browsers, installed as native packages, not showing up in the Apps list"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:110
+#, fuzzy
+msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
+msgstr "Προσθήκη μετάφρασης παραδοσιακών Κινέζικων από Peter Dave Hello"
+
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "Διόρθωση μετάφρασης Πορτογαλικών από Rafael Fontenelle"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
 "Ένδειξη τοπικής διεύθυνσης IPv6 σε περίπτωση που δεν υπάρχει άλλη IPv6, από "
 "Maximillian"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "Προσθήκη μετάφρασης παραδοσιακών Κινέζικων από Peter Dave Hello"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:121
 msgid "Add category for application menu by Renner0E"
 msgstr "Προσθήκη κατηγορίας μενού εφαρμογών από Renner0E"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr "Διόρθωση σφάλματος εξόδου μηνύματος `dmidecode`που οδηγούσε σε σφάλμα"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -195,21 +236,21 @@ msgstr ""
 "cpu0/cpufreq/base_frequency`δεν υπάρχει, κατά τη διάρκεια ένδειξης ταχύτητας "
 "του επεξεργαστή"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 "Αναβάθμιση του πάνελ ένδειξης της κάρτας γραφικών, προσαρμόσιμο σε οθόνες "
 "μικρότερης ευκρίνειας"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:116
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:132
 msgid "Added Czech translation by ondra05"
 msgstr "Προσθήκη μετάφρασης Τσέχικων από ondra05"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:117
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "Προσθήκη μετάφρασης Πορτογαλικών από Rilson Joás"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
@@ -217,17 +258,17 @@ msgstr ""
 "Προσθήκη λέξεων-κλειδιών στο αρχείο desktop για την βελτίωση αναζήτησης σε "
 "διάφορα περιβάλλοντα, από Hannes Kuchelmeister"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 "Διόρθωση σφάλματος οπού η λίστα εφαρμογών και διεργασιών ήταν άδεια για "
 "κάποιους χρήστες"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:127
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr "Διόρθωση κρασαρίσματος κατόπιν βαριάς χρήσης του συστήματος"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
+#: data/io.missioncenter.MissionCenter.appdata.xml.in:151
 msgid "First official release!"
 msgstr "Πρώτη επίσημη κυκλοφορία!"
 
@@ -248,7 +289,7 @@ msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Ποιά σελίδα θα φαίνεται κατά την εκκίνηση της εφαρμογής, στη καρτέλα επίδοσης"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:725
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Επεξεργαστής"
@@ -270,7 +311,7 @@ msgstr "Χρήση"
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:364
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
 msgid "Processes"
 msgstr "Διεργασίες"
 
@@ -318,79 +359,79 @@ msgstr "L2 cache:"
 msgid "L3 cache:"
 msgstr "L3 cache:"
 
-#: resources/ui/performance_page/cpu.blp:441
+#: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
 msgstr "Αλλαγή γ_ραφήματος σε"
 
-#: resources/ui/performance_page/cpu.blp:444
+#: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
 msgstr "Ολική χ_ρήση"
 
-#: resources/ui/performance_page/cpu.blp:449
+#: resources/ui/performance_page/cpu.blp:450
 msgid "Logical _Processors"
 msgstr "Λογικές _διεργασίες"
 
-#: resources/ui/performance_page/cpu.blp:457
-#: resources/ui/performance_page/disk.blp:385
-#: resources/ui/performance_page/gpu.blp:548
-#: resources/ui/performance_page/memory.blp:401
-#: resources/ui/performance_page/network.blp:368
+#: resources/ui/performance_page/cpu.blp:458
+#: resources/ui/performance_page/disk.blp:386
+#: resources/ui/performance_page/gpu.blp:549
+#: resources/ui/performance_page/memory.blp:402
+#: resources/ui/performance_page/network.blp:369
 msgid "Graph _Summary View"
 msgstr "Γράφημα _σύνοψης"
 
-#: resources/ui/performance_page/cpu.blp:462
-#: resources/ui/performance_page/disk.blp:390
-#: resources/ui/performance_page/gpu.blp:553
-#: resources/ui/performance_page/memory.blp:406
-#: resources/ui/performance_page/network.blp:373
+#: resources/ui/performance_page/cpu.blp:463
+#: resources/ui/performance_page/disk.blp:391
+#: resources/ui/performance_page/gpu.blp:554
+#: resources/ui/performance_page/memory.blp:407
+#: resources/ui/performance_page/network.blp:374
 msgid "_View"
 msgstr "_Προβολή"
 
-#: resources/ui/performance_page/cpu.blp:465
-#: resources/ui/performance_page/disk.blp:393
-#: resources/ui/performance_page/gpu.blp:556
-#: resources/ui/performance_page/memory.blp:409
-#: resources/ui/performance_page/network.blp:376
+#: resources/ui/performance_page/cpu.blp:466
+#: resources/ui/performance_page/disk.blp:394
+#: resources/ui/performance_page/gpu.blp:557
+#: resources/ui/performance_page/memory.blp:410
+#: resources/ui/performance_page/network.blp:377
 msgid "CP_U"
 msgstr "_Επεξεργαστής"
 
-#: resources/ui/performance_page/cpu.blp:470
-#: resources/ui/performance_page/disk.blp:398
-#: resources/ui/performance_page/gpu.blp:561
-#: resources/ui/performance_page/memory.blp:414
-#: resources/ui/performance_page/network.blp:381
+#: resources/ui/performance_page/cpu.blp:471
+#: resources/ui/performance_page/disk.blp:399
+#: resources/ui/performance_page/gpu.blp:562
+#: resources/ui/performance_page/memory.blp:415
+#: resources/ui/performance_page/network.blp:382
 msgid "_Memory"
 msgstr "_Μνήμη"
 
-#: resources/ui/performance_page/cpu.blp:475
-#: resources/ui/performance_page/disk.blp:403
-#: resources/ui/performance_page/gpu.blp:566
-#: resources/ui/performance_page/memory.blp:419
-#: resources/ui/performance_page/network.blp:386
+#: resources/ui/performance_page/cpu.blp:476
+#: resources/ui/performance_page/disk.blp:404
+#: resources/ui/performance_page/gpu.blp:567
+#: resources/ui/performance_page/memory.blp:420
+#: resources/ui/performance_page/network.blp:387
 msgid "_Disk"
 msgstr "_Δίσκος"
 
-#: resources/ui/performance_page/cpu.blp:480
-#: resources/ui/performance_page/disk.blp:408
-#: resources/ui/performance_page/gpu.blp:571
-#: resources/ui/performance_page/memory.blp:424
-#: resources/ui/performance_page/network.blp:391
+#: resources/ui/performance_page/cpu.blp:481
+#: resources/ui/performance_page/disk.blp:409
+#: resources/ui/performance_page/gpu.blp:572
+#: resources/ui/performance_page/memory.blp:425
+#: resources/ui/performance_page/network.blp:392
 msgid "_Network"
 msgstr "_Δίκτυο"
 
-#: resources/ui/performance_page/cpu.blp:485
-#: resources/ui/performance_page/disk.blp:413
-#: resources/ui/performance_page/gpu.blp:576
-#: resources/ui/performance_page/memory.blp:429
-#: resources/ui/performance_page/network.blp:396
+#: resources/ui/performance_page/cpu.blp:486
+#: resources/ui/performance_page/disk.blp:414
+#: resources/ui/performance_page/gpu.blp:577
+#: resources/ui/performance_page/memory.blp:430
+#: resources/ui/performance_page/network.blp:397
 msgid "_GPU"
 msgstr "_Κάρτα γραφικών"
 
-#: resources/ui/performance_page/cpu.blp:493
-#: resources/ui/performance_page/disk.blp:421
-#: resources/ui/performance_page/gpu.blp:584
-#: resources/ui/performance_page/memory.blp:437
-#: resources/ui/performance_page/network.blp:409
+#: resources/ui/performance_page/cpu.blp:494
+#: resources/ui/performance_page/disk.blp:422
+#: resources/ui/performance_page/gpu.blp:585
+#: resources/ui/performance_page/memory.blp:438
+#: resources/ui/performance_page/network.blp:410
 msgid "_Copy"
 msgstr "_Αντιγραφή"
 
@@ -490,7 +531,7 @@ msgstr "Κάποιες πληροφορίες χρειάζονται προνό�
 msgid "_Authenticate"
 msgstr "_Επιβεβαίωση"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:731
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Μνήμη"
@@ -583,7 +624,7 @@ msgstr "Διεύθυνση IPv4:"
 msgid "IPv6 address:"
 msgstr "Διεύθυνση IPv6:"
 
-#: resources/ui/performance_page/network.blp:402
+#: resources/ui/performance_page/network.blp:403
 msgid "Network Se_ttings"
 msgstr "Ρ_υθμίσεις Δικτύου"
 
@@ -636,37 +677,56 @@ msgstr "Ανανέωση κάθε 2 δευτερόλεπτα"
 msgid "Type a name or PID to search"
 msgstr "Αναζήτηση μέσω ονόματος ή PID"
 
-#: resources/ui/window.blp:80
+#: resources/ui/window.blp:90
+msgid "Loading..."
+msgstr ""
+
+#: resources/ui/window.blp:104
 msgid "Performance"
 msgstr "Επίδοση"
 
-#: resources/ui/window.blp:89 src/apps_page/mod.rs:357
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
 msgid "Apps"
 msgstr "Εφαρμογές"
 
-#: resources/ui/window.blp:101
+#: resources/ui/window.blp:124
 msgid "_Preferences"
 msgstr "_Προτιμήσεις"
 
-#: resources/ui/window.blp:106
+#: resources/ui/window.blp:129
 msgid "_About MissionCenter"
 msgstr "_Σχετικά με το Κέντρο Ελέγχου"
 
-#: resources/ui/window.blp:113
-msgid "_Quit"
-msgstr "_Κλείσιμο"
-
-#: src/apps_page/mod.rs:713
+#: src/apps_page/mod.rs:834
 msgid "Name"
 msgstr "Όνομα"
 
-#: src/apps_page/mod.rs:719
+#: src/apps_page/mod.rs:840
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:737
+#: src/apps_page/mod.rs:858
 msgid "Disk"
 msgstr "Δίσκος"
+
+#. ContentType::App
+#: src/apps_page/list_item.rs:290
+msgid "Stop Application"
+msgstr ""
+
+#: src/apps_page/list_item.rs:290
+msgid "Force Stop Application"
+msgstr ""
+
+#. ContentType::Process
+#: src/apps_page/list_item.rs:294
+#, fuzzy
+msgid "Stop Process"
+msgstr "Διεργασίες"
+
+#: src/apps_page/list_item.rs:294
+msgid "Force Stop Process"
+msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -803,6 +863,9 @@ msgstr "{} {}bps"
 msgid "N/A"
 msgstr "Μ/Δ"
 
-#: src/application.rs:221
+#: src/application.rs:261
 msgid "translator-credits"
 msgstr "Yiannis Ioannides"
+
+#~ msgid "_Quit"
+#~ msgstr "_Κλείσιμο"
