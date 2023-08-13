@@ -53,7 +53,7 @@ impl Process {
         &self.base.name
     }
 
-    pub fn cmd(&self) -> &[arrayvec::ArrayString<128>] {
+    pub fn cmd(&self) -> &[super::gatherer::ArrayString] {
         &self.base.cmd
     }
 

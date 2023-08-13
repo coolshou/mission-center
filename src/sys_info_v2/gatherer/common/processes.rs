@@ -122,8 +122,9 @@ pub struct ProcessDescriptor {
 
 #[derive(Debug, Clone)]
 pub struct Process {
-    descriptor: ProcessDescriptor,
+    pub descriptor: ProcessDescriptor,
     raw_stats: RawStats,
+    pub cgroup: Option<String>,
 }
 
 impl Default for Process {
@@ -153,6 +154,7 @@ impl Default for Process {
                 net_bytes_recv: 0,
                 timestamp: std::time::Instant::now(),
             },
+            cgroup: None,
         }
     }
 }
@@ -197,6 +199,10 @@ impl Processes {
         this.is_complete = process_cache.is_empty();
 
         this
+    }
+
+    pub fn cached_processes() -> &'static std::collections::HashMap<u32, Process> {
+        state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
     }
 
     fn update_process_cache() {
@@ -307,6 +313,41 @@ impl Processes {
             };
 
             let entry_path = entry.path();
+
+            let cgroup = match std::fs::read_to_string(entry_path.join("cgroup")) {
+                Ok(cfc) => {
+                    if cfc.is_empty() {
+                        eprintln!("Failed to read cgroup information for process {}: No cgroup associated with process", pid);
+                        None
+                    } else {
+                        let mut cgroup = None;
+
+                        let cfc = cfc
+                            .trim()
+                            .split(':')
+                            .nth(2)
+                            .unwrap_or("/")
+                            .trim_start_matches('/');
+
+                        let slice_path = std::path::Path::new("/sys/fs/cgroup").join(cfc);
+                        if !cfc.is_empty() && slice_path.exists() && slice_path.is_dir() {
+                            let app_scope = cfc.split('/').last().unwrap_or("");
+                            if app_scope.starts_with("app") && app_scope.ends_with(".scope") {
+                                cgroup = Some(slice_path.to_string_lossy().into());
+                            }
+                        }
+
+                        cgroup
+                    }
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Failed to read cgroup information for process {}: {}",
+                        pid, e
+                    );
+                    None
+                }
+            };
 
             let stat_file_content = match std::fs::read_to_string(entry_path.join("stat")) {
                 Ok(sfc) => {
@@ -432,6 +473,7 @@ impl Processes {
             process.raw_stats.net_bytes_sent = total_net_sent;
             process.raw_stats.net_bytes_recv = total_net_recv;
             process.raw_stats.timestamp = now;
+            process.cgroup = cgroup;
 
             result.insert(pid, process);
         }

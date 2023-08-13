@@ -29,8 +29,9 @@ mod exit_code;
 pub mod ipc;
 #[allow(dead_code)]
 mod processes;
+mod running_apps;
 
-pub type ArrayString = arrayvec::ArrayString<128>;
+pub type ArrayString = arrayvec::ArrayString<256>;
 #[allow(dead_code)]
 pub type ProcessStats = processes::Stats;
 

@@ -52,7 +52,7 @@ impl App {
     }
 
     #[inline]
-    pub fn commands(&self) -> &[arrayvec::ArrayString<128>] {
+    pub fn commands(&self) -> &[super::gatherer::ArrayString] {
         &self.base.commands
     }
 
@@ -178,6 +178,7 @@ pub fn running_apps(
                 for command in app.commands() {
                     if process.exe() == command.as_str() {
                         update_or_insert_app(app, process, result);
+                        eprintln!("{}:{}: found app {}", file!(), line!(), app.name());
                         found = true;
                         break;
                     }
@@ -188,6 +189,7 @@ pub fn running_apps(
                         for command in app.commands() {
                             if cmd.ends_with(command.as_str()) {
                                 update_or_insert_app(app, process, result);
+                                eprintln!("{}:{}: found app {}", file!(), line!(), app.name());
                                 found = true;
                                 break;
                             }
@@ -199,6 +201,13 @@ pub fn running_apps(
                                 for command in app.commands() {
                                     if cmd.ends_with(command.as_str()) {
                                         update_or_insert_app(app, process, result);
+                                        eprintln!(
+                                            "{}:{}: found app {}: {}",
+                                            file!(),
+                                            line!(),
+                                            app.name(),
+                                            process.cmd().join(" ")
+                                        );
                                         found = true;
                                         break;
                                     }
