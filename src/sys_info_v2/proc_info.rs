@@ -116,17 +116,17 @@ impl super::GathererSupervisor {
                         }
                         proceses.is_complete
                     }
-                    SharedDataContent::InstalledApps(_) => {
-                        g_critical!(
-                            "MissionCenter::ProcInfo",
-                            "Shared data content is InstalledApps instead of Processes; encountered when reading processes from gatherer", 
-                        );
-                        false
-                    }
                     SharedDataContent::Apps(_) => {
                         g_critical!(
                             "MissionCenter::ProcInfo",
                             "Shared data content is Apps instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
+                    SharedDataContent::AppPIDs(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is AppPIDs instead of Processes; encountered when reading processes from gatherer", 
                         );
                         false
                     }

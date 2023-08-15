@@ -27,6 +27,7 @@ pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
 pub type Message = common::ipc::Message;
 pub type AppDescriptor = common::AppDescriptor;
+pub type AppStats = common::AppStats;
 pub type ExitCode = common::ExitCode;
 pub type ProcessDescriptor = common::ProcessDescriptor;
 pub type ProcessState = common::ProcessState;
