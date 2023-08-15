@@ -20,6 +20,7 @@
 
 use arrayvec::ArrayVec;
 use lazy_static::lazy_static;
+use std::collections::HashMap;
 
 use super::ArrayString;
 
@@ -205,6 +206,11 @@ impl Processes {
         this
     }
 
+    pub fn process_cache() -> &'static HashMap<u32, Process> {
+        state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
+    }
+
+    #[allow(dead_code)]
     pub fn process_hierarchy() -> Option<Process> {
         use std::collections::*;
 

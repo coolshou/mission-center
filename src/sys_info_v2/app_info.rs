@@ -112,6 +112,13 @@ impl super::GathererSupervisor {
                         );
                         false
                     }
+                    SharedDataContent::Apps(_) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Apps instead of InstalledApps; encountered when reading installed apps from gatherer", 
+                        );
+                        false
+                    }
                     SharedDataContent::Monostate => {
                         g_critical!(
                             "MissionCenter::AppInfo",

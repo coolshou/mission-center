@@ -108,6 +108,8 @@ impl InstalledApps {
     pub fn new() -> Self {
         let mut this = Self::default();
 
+        let _ = super::running_apps::Apps::new();
+
         let app_cache = state::APP_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
         if app_cache.is_empty() {
             for dir in &*XDG_DATA_DIRS {

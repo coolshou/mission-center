@@ -20,18 +20,18 @@
 
 pub use apps::{AppDescriptor, InstalledApps};
 pub use exit_code::ExitCode;
-#[allow(unused)]
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
+pub use running_apps::Apps;
 
-#[allow(dead_code)]
 mod apps;
 mod exit_code;
 pub mod ipc;
-#[allow(dead_code)]
 mod processes;
 mod running_apps;
 
 pub type ArrayString = arrayvec::ArrayString<256>;
+#[allow(dead_code)]
+pub type AppStats = running_apps::Stats;
 #[allow(dead_code)]
 pub type ProcessStats = processes::Stats;
 
@@ -81,6 +81,7 @@ pub enum SharedDataContent {
     Monostate,
     InstalledApps(InstalledApps),
     Processes(Processes),
+    Apps(Apps),
 }
 
 #[derive(Debug)]

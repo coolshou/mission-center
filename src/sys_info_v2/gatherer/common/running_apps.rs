@@ -62,8 +62,12 @@ lazy_static! {
 
         let mut path =
             std::env::var("PATH").unwrap_or_else(|_| "/usr/local/bin:/usr/bin:/bin".to_string());
+        path.push_str(":/var/lib/flatpak/exports/bin");
 
         for dir in path.split(':') {
+            if dir.is_empty() {
+                continue;
+            }
             let p = std::path::Path::new(dir);
             if p.exists() {
                 result.push(dir.to_string());
@@ -104,6 +108,7 @@ pub type Stats = super::processes::Stats;
 pub struct AppDescriptor {
     pub name: ArrayString,
     pub icon: Option<ArrayString>,
+    pub id: ArrayString,
     pub command: ArrayString,
     pub stats: Stats,
 }
@@ -113,6 +118,7 @@ impl Default for AppDescriptor {
         Self {
             name: Default::default(),
             icon: None,
+            id: Default::default(),
             command: Default::default(),
             stats: Default::default(),
         }
@@ -144,26 +150,114 @@ impl Default for Apps {
 
 impl Apps {
     pub fn new() -> Self {
+        use super::processes::Process;
+        use std::collections::{BTreeSet, HashMap};
+
+        #[derive(Debug, Clone)]
+        struct App {
+            descriptor: AppDescriptor,
+            pids: std::collections::BTreeSet<u32>,
+        }
+
+        fn extract_app_id(cgroup: &str) -> Option<String> {
+            cgroup
+                .split('/')
+                .last()
+                .and_then(|s| s.split('-').skip(2).next())
+                .and_then(|s| {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s.replace("\\x2d", "-"))
+                    }
+                })
+        }
+
+        fn update_or_insert_app<'a>(
+            app: &'a AppDescriptor,
+            process: &Process,
+            app_list: &mut HashMap<&'a str, App>,
+        ) {
+            if let Some(app) = app_list.get_mut(app.id.as_str()) {
+                app.pids.insert(process.descriptor.pid);
+                app.descriptor.stats.merge(&process.descriptor.stats);
+            } else {
+                let mut new_app = App {
+                    descriptor: app.clone(),
+                    pids: BTreeSet::new(),
+                };
+                new_app.pids.insert(process.descriptor.pid);
+                new_app.descriptor.stats = process.descriptor.stats;
+                app_list.insert(app.id.as_str(), new_app);
+            }
+        }
+
         let mut this = Self::default();
 
         let app_cache = state::APP_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        let app_pids_cache = state::APP_PIDS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+
         if app_cache.is_empty() {
-            let mut installed_apps = vec![];
+            app_pids_cache.clear();
+
+            let mut installed_apps = HashMap::new();
             for dir in &*XDG_DATA_DIRS {
                 let dir = std::path::Path::new(dir);
                 let dir = dir.join("applications");
                 if dir.exists() {
-                    load_apps_from_dir(dir, &mut installed_apps);
+                    Self::load_apps_from_dir(dir, &mut installed_apps);
                 }
             }
 
-            let processes = match super::Processes::process_hierarchy() {
-                Some(p) => p,
-                None => {
-                    eprintln!("Gatherer: Failed to get process hierarchy for running apps");
-                    return this;
-                }
-            };
+            let mut running_apps = HashMap::new();
+
+            let processes: Vec<Process> = super::Processes::process_cache()
+                .iter()
+                .map(|(_, p)| p.clone())
+                .collect();
+
+            for process in &processes {
+                match process
+                    .cgroup
+                    .as_ref()
+                    .and_then(|cgroup| extract_app_id(cgroup.as_str()))
+                {
+                    None => {
+                        for app in installed_apps.values() {
+                            if process
+                                .descriptor
+                                .exe
+                                .as_str()
+                                .contains(app.command.as_str())
+                            {
+                                update_or_insert_app(app, process, &mut running_apps);
+                                break;
+                            }
+
+                            if process
+                                .descriptor
+                                .cmd
+                                .iter()
+                                .any(|cmd| cmd.contains(app.command.as_str()))
+                            {
+                                update_or_insert_app(app, process, &mut running_apps);
+                                break;
+                            }
+                        }
+                    }
+                    Some(app_id) => {
+                        if let Some(app) = installed_apps.get(&app_id) {
+                            update_or_insert_app(app, process, &mut running_apps);
+                        }
+                    }
+                };
+            }
+
+            for app in running_apps.values() {
+                app_cache.push(app.descriptor.clone());
+                app_pids_cache.extend(app.pids.iter().copied());
+                app_pids_cache.push(0);
+            }
         }
 
         let drop_count = app_cache
@@ -178,175 +272,154 @@ impl Apps {
 
         this
     }
-}
 
-fn load_apps_from_dir<P: AsRef<std::path::Path>>(path: P, apps: &mut Vec<AppDescriptor>) {
-    let path = path.as_ref();
-    let dir = match std::fs::read_dir(path) {
-        Ok(d) => d,
-        Err(e) => {
-            eprintln!("Failed to load apps from {}: {}", path.display(), e);
-            return;
-        }
-    };
-
-    for entry in dir {
-        let entry = match entry {
-            Ok(e) => e,
-            Err(_) => continue,
+    fn load_apps_from_dir<P: AsRef<std::path::Path>>(
+        path: P,
+        apps: &mut std::collections::HashMap<String, AppDescriptor>,
+    ) {
+        let path = path.as_ref();
+        let dir = match std::fs::read_dir(path) {
+            Ok(d) => d,
+            Err(e) => {
+                eprintln!("Failed to load apps from {}: {}", path.display(), e);
+                return;
+            }
         };
 
-        let path = entry.path();
-        if path.is_dir() {
-            load_apps_from_dir(path, apps);
-        } else if path.is_file() {
-            if path.to_string_lossy().ends_with(".desktop") {
-                if let Some(app) = from_desktop_file(path) {
-                    apps.push(app);
-                }
-            }
-        }
-    }
-}
+        for entry in dir {
+            let entry = match entry {
+                Ok(e) => e,
+                Err(_) => continue,
+            };
 
-fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor> {
-    use super::ToArrayStringLossy;
-    use ini::*;
-
-    let path = path.as_ref();
-    let ini = match Ini::load_from_file(path) {
-        Ok(ini) => ini,
-        Err(e) => {
-            eprintln!("Failed to load desktop file from {}: {}", path.display(), e);
-            return None;
-        }
-    };
-
-    let section = match ini.section(Some("Desktop Entry")) {
-        None => {
-            eprintln!(
-                "Failed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
-                path.display()
-            );
-            return None;
-        }
-        Some(s) => s,
-    };
-
-    let hidden = section
-        .get("NoDisplay")
-        .unwrap_or_else(|| section.get("Hidden").unwrap_or("false"));
-    if hidden.trim() != "false" {
-        return None;
-    }
-
-    let name = match section.get("Name") {
-        None => {
-            eprintln!(
-                "Failed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
-                path.display()
-            );
-            return None;
-        }
-        Some(n) => n,
-    };
-
-    let command = match section.get("Exec") {
-        None => {
-            eprintln!(
-                "Failed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
-                path.display()
-            );
-            return None;
-        }
-        Some(c) => c,
-    };
-
-    let command = match parse_command(command) {
-        None => {
-            eprintln!(
-                "Failed to load desktop file from {}: Failed to parse \"Exec\" key.\nExec line is: '{}'",
-                path.display(),
-                command
-            );
-            return None;
-        }
-        Some(c) => c,
-    };
-
-    let icon = section.get("Icon");
-
-    Some(AppDescriptor {
-        name: name.to_array_string_lossy(),
-        icon: icon.map(|s| s.to_array_string_lossy()),
-        command,
-        ..Default::default()
-    })
-}
-
-fn parse_command(command_line: &str) -> Option<ArrayString> {
-    use super::ToArrayStringLossy;
-
-    let mut iter = command_line.split_whitespace();
-
-    let mut cmd_line_split = iter.clone();
-    match cmd_line_split.next() {
-        Some(cmd) => {
-            if cmd.ends_with("flatpak") {
-                for arg in cmd_line_split {
-                    if arg.starts_with("--command=") {
-                        return Some(arg[10..].to_array_string_lossy());
+            let path = entry.path();
+            if path.is_dir() {
+                Self::load_apps_from_dir(path, apps);
+            } else if path.is_file() {
+                if path.to_string_lossy().ends_with(".desktop") {
+                    if let Some(app) = Self::from_desktop_file(path) {
+                        apps.insert(app.id.to_string(), app);
                     }
                 }
             }
         }
-        None => return None,
-    };
+    }
 
-    for arg in iter {
-        if COMMAND_IGNORELIST.contains(&arg) {
-            continue;
-        }
-        let binary_name = arg.split('/').last().unwrap_or("");
-        if binary_name.is_empty() || COMMAND_IGNORELIST.contains(&binary_name) {
-            continue;
+    fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor> {
+        use super::ToArrayStringLossy;
+        use ini::*;
+
+        let path = path.as_ref();
+        let ini = match Ini::load_from_file(path) {
+            Ok(ini) => ini,
+            Err(e) => {
+                eprintln!("Failed to load desktop file from {}: {}", path.display(), e);
+                return None;
+            }
+        };
+
+        let section = match ini.section(Some("Desktop Entry")) {
+            None => {
+                eprintln!(
+                    "Failed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
+                    path.display()
+                );
+                return None;
+            }
+            Some(s) => s,
+        };
+
+        let hidden = section
+            .get("NoDisplay")
+            .unwrap_or_else(|| section.get("Hidden").unwrap_or("false"));
+        if hidden.trim() != "false" {
+            return None;
         }
 
-        for p in &*PATH {
-            let p = std::path::Path::new(p);
-            let cmd_path = p.join(binary_name);
-            if cmd_path.exists() && cmd_path.is_file() {
-                return Some(cmd_path.to_string_lossy().to_array_string_lossy());
+        let name = match section.get("Name") {
+            None => {
+                eprintln!(
+                    "Failed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
+                    path.display()
+                );
+                return None;
+            }
+            Some(n) => n,
+        };
+
+        let command = match section.get("Exec") {
+            None => {
+                eprintln!(
+                    "Failed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
+                    path.display()
+                );
+                return None;
+            }
+            Some(c) => c,
+        };
+
+        let command = match Self::parse_command(command) {
+            None => return None,
+            Some(c) => c,
+        };
+
+        Some(AppDescriptor {
+            name: name.to_array_string_lossy(),
+            icon: section.get("Icon").map(|s| s.to_array_string_lossy()),
+            id: path
+                .file_stem()
+                .map(|s| s.to_string_lossy().to_array_string_lossy())
+                .unwrap_or_default(),
+            command,
+            ..Default::default()
+        })
+    }
+
+    fn parse_command(command_line: &str) -> Option<ArrayString> {
+        use super::ToArrayStringLossy;
+
+        let iter = command_line.split_whitespace();
+
+        let mut cmd_line_split = iter.clone();
+        match cmd_line_split.next() {
+            Some(cmd) => {
+                if cmd.ends_with("flatpak") {
+                    for arg in cmd_line_split {
+                        if arg.starts_with("--command=") {
+                            let binary_name = match arg[10..].split('/').last() {
+                                Some(b) => b,
+                                None => continue,
+                            };
+                            return Some(binary_name.to_array_string_lossy());
+                        }
+                    }
+                    return None;
+                }
+            }
+            None => return None,
+        };
+
+        'outer: for arg in iter {
+            let binary_name = arg.split('/').last().unwrap_or("");
+            if binary_name.is_empty() {
+                continue;
+            }
+
+            for ignored in COMMAND_IGNORELIST {
+                if arg.starts_with(*ignored) || binary_name.starts_with(*ignored) {
+                    continue 'outer;
+                }
+            }
+
+            for p in &*PATH {
+                let p = std::path::Path::new(p);
+                let cmd_path = p.join(binary_name);
+                if cmd_path.exists() && cmd_path.is_file() {
+                    return Some(cmd_path.to_string_lossy().to_array_string_lossy());
+                }
             }
         }
+
+        None
     }
-
-    None
-}
-
-fn parse_app_id(command: &str) -> Option<&str> {
-    // We already know it's a flatpak app, so we can skip the first arg
-    let iter = command.split_whitespace().skip(1);
-
-    for arg in iter {
-        if arg == "run" {
-            continue;
-        }
-
-        if arg.starts_with("-") {
-            continue;
-        }
-
-        if arg.starts_with("@") {
-            continue;
-        }
-
-        if arg.starts_with("%") {
-            continue;
-        }
-
-        return Some(arg);
-    }
-
-    None
 }

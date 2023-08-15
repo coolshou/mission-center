@@ -123,6 +123,13 @@ impl super::GathererSupervisor {
                         );
                         false
                     }
+                    SharedDataContent::Apps(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is Apps instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
                     SharedDataContent::Monostate => {
                         g_critical!(
                             "MissionCenter::ProcInfo",
