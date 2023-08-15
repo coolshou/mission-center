@@ -206,7 +206,7 @@ mod imp {
                 }
                 let current = current.unwrap();
 
-                if !apps.contains_key(current.name().as_str()) {
+                if !apps.contains_key(current.id().as_str()) {
                     to_remove.insert(i);
                 }
             }
@@ -215,7 +215,7 @@ mod imp {
                 model.remove((*to_remove_i as usize - i) as _);
             }
 
-            for (name, app) in &apps {
+            for (app_id, app) in &apps {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
                         let current = current.downcast_ref::<ViewModel>();
@@ -224,7 +224,7 @@ mod imp {
                         }
                         let current = current.unwrap();
 
-                        current.name().as_str() == name
+                        current.id().as_str() == app_id
                     })
                 } else {
                     None
@@ -238,6 +238,7 @@ mod imp {
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(&app.name())
+                        .id(&app.id())
                         .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
                         .pid(primary_pid)
                         .content_type(ContentType::App)

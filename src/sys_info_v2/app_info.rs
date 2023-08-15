@@ -88,7 +88,6 @@ impl super::GathererSupervisor {
                         }
 
                         for app in &apps.apps {
-                            dbg!(app);
                             running_apps.push(App::new(app.clone()));
                         }
                         apps.is_complete

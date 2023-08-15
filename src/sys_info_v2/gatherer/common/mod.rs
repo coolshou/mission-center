@@ -18,13 +18,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pub use apps::{AppDescriptor, AppPIDs, Apps};
 pub use exit_code::ExitCode;
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
-pub use apps::{AppDescriptor, Apps, AppPIDs};
 
+#[allow(dead_code)]
 mod apps;
 mod exit_code;
 pub mod ipc;
+#[allow(dead_code)]
 mod processes;
 
 pub type ArrayString = arrayvec::ArrayString<256>;

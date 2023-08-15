@@ -18,18 +18,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::collections::HashMap;
+
 use arrayvec::ArrayVec;
 use lazy_static::lazy_static;
-use std::collections::HashMap;
 
 use super::ArrayString;
 
 mod state {
-    use super::*;
     use std::{cell::Cell, collections::HashMap, thread_local};
 
+    use super::*;
+
     thread_local! {
-        pub static FULL_PROCESS_CACHE: Cell<HashMap<u32, Process>> = Cell::new(HashMap::new());
+        pub static PERSISTENT_PROCESS_CACHE: Cell<HashMap<u32, Process>> = Cell::new(HashMap::new());
         pub static PROCESS_HIERARCHY: Cell<Process> = Cell::new(Process::default());
         pub static PROCESS_CACHE: Cell<Vec<ProcessDescriptor>> = Cell::new(vec![]);
     }
@@ -187,7 +189,7 @@ impl Processes {
         if process_cache.is_empty() {
             Self::update_process_cache();
             let full_process_cache =
-                state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
+                state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
             for (_, p) in full_process_cache {
                 process_cache.push(p.descriptor.clone());
             }
@@ -207,14 +209,14 @@ impl Processes {
     }
 
     pub fn process_cache() -> &'static HashMap<u32, Process> {
-        state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
+        state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
     }
 
     #[allow(dead_code)]
     pub fn process_hierarchy() -> Option<Process> {
         use std::collections::*;
 
-        let processes = state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
+        let processes = state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
 
         let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
         let root_pid = match pids.first() {
@@ -409,8 +411,8 @@ impl Processes {
             stat[PROC_PID_STAT_STIME].parse::<u64>().unwrap_or(0)
         }
 
-        let mut previous = state::FULL_PROCESS_CACHE.with(|prev| prev.take());
-        let result = state::FULL_PROCESS_CACHE.with(|prev| unsafe { &mut *prev.as_ptr() });
+        let mut previous = state::PERSISTENT_PROCESS_CACHE.with(|prev| prev.take());
+        let result = state::PERSISTENT_PROCESS_CACHE.with(|prev| unsafe { &mut *prev.as_ptr() });
         result.reserve(previous.len());
 
         let now = std::time::Instant::now();

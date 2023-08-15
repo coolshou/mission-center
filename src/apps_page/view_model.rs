@@ -38,6 +38,8 @@ mod imp {
         pub icon: Cell<glib::GString>,
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         pub name: Cell<glib::GString>,
+        #[property(get = Self::id, set = Self::set_id, type = glib::GString)]
+        pub id: Cell<glib::GString>,
 
         #[property(get = Self::content_type, type = u8)]
         pub content_type: Cell<ContentType>,
@@ -75,6 +77,7 @@ mod imp {
 
                 icon: Cell::new(glib::GString::default()),
                 name: Cell::new(glib::GString::default()),
+                id: Cell::new(glib::GString::default()),
 
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
@@ -132,6 +135,24 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn id(&self) -> glib::GString {
+            let id = self.id.take();
+            let result = id.clone();
+            self.id.set(id);
+
+            result
+        }
+
+        pub fn set_id(&self, id: &str) {
+            let current_id = self.id.take();
+            if current_id == id {
+                self.id.set(current_id);
+                return;
+            }
+
+            self.id.set(glib::GString::from(id));
         }
 
         pub fn set_cpu_usage(&self, cpu_usage: f32) {
@@ -212,6 +233,7 @@ pub struct ViewModelBuilder {
     pid: u32,
     icon: glib::GString,
     name: glib::GString,
+    id: glib::GString,
 
     content_type: ContentType,
     section_type: SectionType,
@@ -232,6 +254,7 @@ impl ViewModelBuilder {
             pid: 0,
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
+            id: glib::GString::default(),
 
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
@@ -260,6 +283,11 @@ impl ViewModelBuilder {
 
     pub fn name(mut self, name: &str) -> Self {
         self.name = name.into();
+        self
+    }
+
+    pub fn id(mut self, id: &str) -> Self {
+        self.id = id.into();
         self
     }
 
@@ -321,6 +349,7 @@ impl ViewModelBuilder {
             this.pid.set(self.pid);
             this.icon.set(self.icon);
             this.name.set(self.name);
+            this.id.set(self.id);
             this.section_type.set(self.section_type);
             this.cpu_usage.set(self.cpu_usage);
             this.memory_usage.set(self.memory_usage);

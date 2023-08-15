@@ -56,6 +56,8 @@ const COMMAND_IGNORELIST: &[&str] = &[
     "python3",
 ];
 
+const APP_IGNORELIST: &[&str] = &["guake-prefs"];
+
 lazy_static! {
     static ref PATH: Vec<String> = {
         let mut result = vec![];
@@ -156,7 +158,7 @@ impl Apps {
         #[derive(Debug, Clone)]
         struct App {
             descriptor: AppDescriptor,
-            pids: std::collections::BTreeSet<u32>,
+            pids: BTreeSet<u32>,
         }
 
         fn extract_app_id(cgroup: &str) -> Option<String> {
@@ -228,7 +230,7 @@ impl Apps {
                                 .descriptor
                                 .exe
                                 .as_str()
-                                .contains(app.command.as_str())
+                                .starts_with(app.command.as_str())
                             {
                                 update_or_insert_app(app, process, &mut running_apps);
                                 break;
@@ -238,7 +240,7 @@ impl Apps {
                                 .descriptor
                                 .cmd
                                 .iter()
-                                .any(|cmd| cmd.contains(app.command.as_str()))
+                                .any(|cmd| cmd.starts_with(app.command.as_str()))
                             {
                                 update_or_insert_app(app, process, &mut running_apps);
                                 break;
@@ -310,6 +312,16 @@ impl Apps {
         use ini::*;
 
         let path = path.as_ref();
+
+        let app_id = path
+            .file_stem()
+            .map(|s| s.to_string_lossy().to_array_string_lossy())
+            .unwrap_or_default();
+
+        if APP_IGNORELIST.contains(&app_id.as_str()) {
+            return None;
+        }
+
         let ini = match Ini::load_from_file(path) {
             Ok(ini) => ini,
             Err(e) => {
@@ -366,10 +378,7 @@ impl Apps {
         Some(AppDescriptor {
             name: name.to_array_string_lossy(),
             icon: section.get("Icon").map(|s| s.to_array_string_lossy()),
-            id: path
-                .file_stem()
-                .map(|s| s.to_string_lossy().to_array_string_lossy())
-                .unwrap_or_default(),
+            id: app_id,
             command,
             ..Default::default()
         })
@@ -429,7 +438,7 @@ impl AppPIDs {
         let mut this = Self::default();
 
         let app_pids_cache = state::APP_PIDS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        
+
         let drop_count = app_pids_cache
             .chunks(this.pids.capacity())
             .next()
