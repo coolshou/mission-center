@@ -31,7 +31,7 @@ if get_option('flatpak') == false
     cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
     cargo_opt  = []
 else
-    cargo_opt  = [ '--offline' ]
+    cargo_opt  = []
 endif
 
 cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
