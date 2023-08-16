@@ -118,8 +118,8 @@ mod imp {
                     this.search_entry.grab_focus();
                     this.search_entry.select_region(-1, -1);
                 } else {
-                    this.header_stack.set_visible_child_name("view-switcher");
                     this.search_entry.set_text("");
+                    this.header_stack.set_visible_child_name("view-switcher");
                 }
             }));
 
