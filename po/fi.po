@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-12 15:22+0300\n"
-"PO-Revision-Date: 2023-07-24 19:42+0000\n"
+"PO-Revision-Date: 2023-08-16 06:10+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -658,7 +658,7 @@ msgstr "Kirjoita nimi tai PID etsiäksesi"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Ladataan..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
@@ -691,21 +691,20 @@ msgstr "Levy"
 #. ContentType::App
 #: src/apps_page/list_item.rs:290
 msgid "Stop Application"
-msgstr ""
+msgstr "Pysäytä sovellus"
 
 #: src/apps_page/list_item.rs:290
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Pysäytä sovellus pakolla"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:294
-#, fuzzy
 msgid "Stop Process"
-msgstr "Prosessit"
+msgstr "Pysäytä prosessi"
 
 #: src/apps_page/list_item.rs:294
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Pysäytä prosessi pakolla"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
