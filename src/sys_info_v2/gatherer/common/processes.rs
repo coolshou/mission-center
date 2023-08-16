@@ -562,7 +562,9 @@ impl Processes {
                         let cgroup_path = std::path::Path::new("/sys/fs/cgroup").join(cfc);
                         if !cfc.is_empty() && cgroup_path.exists() && cgroup_path.is_dir() {
                             let app_scope = cfc.split('/').last().unwrap_or("");
-                            if app_scope.starts_with("app") && app_scope.ends_with(".scope") {
+                            if (app_scope.starts_with("app") || app_scope.starts_with("snap"))
+                                && app_scope.ends_with(".scope")
+                            {
                                 cgroup = Some(cgroup_path.to_string_lossy().into());
                             }
                         }

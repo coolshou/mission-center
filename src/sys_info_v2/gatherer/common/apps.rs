@@ -162,17 +162,40 @@ impl Apps {
         }
 
         fn extract_app_id(cgroup: &str) -> Option<String> {
-            cgroup
-                .split('/')
-                .last()
-                .and_then(|s| s.split('-').skip(2).next())
-                .and_then(|s| {
+            let app_scope = cgroup.split('/').last().unwrap_or_default();
+            if app_scope.is_empty() {
+                return None;
+            }
+
+            if app_scope.starts_with("snap") {
+                let split: Vec<&str> = app_scope
+                    .trim_start_matches("snap.")
+                    .split('.')
+                    .rev()
+                    .skip(2)
+                    .collect();
+                if split.is_empty() {
+                    return None;
+                }
+
+                let mut result = String::new();
+                let mut split = split.iter().rev();
+                result.push_str(unsafe { split.next().unwrap_unchecked() });
+                for s in split {
+                    result.push('_');
+                    result.push_str(s);
+                }
+                dbg!(&result);
+                Some(result)
+            } else {
+                app_scope.split('-').skip(2).next().and_then(|s| {
                     if s.is_empty() {
                         None
                     } else {
                         Some(s.replace("\\x2d", "-"))
                     }
                 })
+            }
         }
 
         fn update_or_insert_app<'a>(
