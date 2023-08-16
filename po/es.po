@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-12 15:22+0300\n"
-"PO-Revision-Date: 2023-07-25 15:44+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2023-08-16 06:10+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -165,44 +164,51 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Añadidas las traducciones al español de Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"La pestaña de la memoria muestra ahora la velocidad de la memoria "
+"configurada en lugar de la máxima soportada por los módulos"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:105
-#, fuzzy
 msgid "Add German translation by TecCheck"
-msgstr "Traducción al checo añadida por ondra05"
+msgstr "Añadidas las traducciones al alemán de TecCheck"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Cuando un proceso utiliza grandes cantidades de la CPU o la RAM, ahora "
+"aparecerá resaltado en la lista de las aplicaciones y los procesos"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "Añadido soporte inicial para la construcción en ARM64"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"Tener en cuenta los varios núcleos de la CPU y el uso compartido de la caché "
+"al calcular el tamaño de la caché"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"Arreglar que los navegadores, instalados como paquetes nativos, no aparezcan "
+"en la lista de aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:110
-#, fuzzy
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr "Añadir idioma chino tradicional por Peter Dave Hola"
+msgstr ""
+"Actualizaciones de las traducciones al chino tradicional por Peter Dave Hola"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
@@ -684,7 +690,7 @@ msgstr "Escriba un nombre o PID para buscar"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Cargando..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
@@ -717,21 +723,20 @@ msgstr "Disco"
 #. ContentType::App
 #: src/apps_page/list_item.rs:290
 msgid "Stop Application"
-msgstr ""
+msgstr "Detener la aplicación"
 
 #: src/apps_page/list_item.rs:290
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Forzar la detención la aplicación"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:294
-#, fuzzy
 msgid "Stop Process"
-msgstr "Procesos"
+msgstr "Detener el proceso"
 
 #: src/apps_page/list_item.rs:294
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Forzar la detención del proceso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
