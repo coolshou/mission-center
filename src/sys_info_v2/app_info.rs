@@ -118,6 +118,9 @@ impl super::GathererSupervisor {
         );
 
         let mut result = std::collections::HashMap::new();
+        if running_apps.is_empty() {
+            return result;
+        }
 
         let mut current_app_index = 0_usize;
         let mut current_app = running_apps[current_app_index].clone();
@@ -140,7 +143,7 @@ impl super::GathererSupervisor {
                     SharedDataContent::AppPIDs(ref pids) => {
                         if process_restarted {
                             g_critical!("MissionCenter::AppInfo", "Gatherer process restarted while reading app PIDs from it, incomplete data will be shown");
-                           return true;
+                            return true;
                         }
 
                         for pid in &pids.pids {
