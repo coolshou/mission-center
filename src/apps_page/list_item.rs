@@ -55,6 +55,8 @@ mod imp {
         pub content_type: Cell<ContentType>,
         #[property(get, set = Self::set_show_expander)]
         pub show_expander: Cell<bool>,
+        #[property(get, set = Self::set_expanded)]
+        pub expanded: Cell<bool>,
 
         #[property(set = Self::set_cpu_usage_percent)]
         pub cpu_usage_percent: Cell<f32>,
@@ -74,6 +76,7 @@ mod imp {
                 icon_property: [0; 0],
                 content_type: Cell::new(ContentType::SectionHeader),
                 show_expander: Cell::new(true),
+                expanded: Cell::new(false),
 
                 cpu_usage_percent: Cell::new(0.0),
                 memory_usage_percent: Cell::new(0.0),
@@ -95,6 +98,12 @@ mod imp {
         }
 
         pub fn set_icon(&self, icon: &str) {
+            let icon_path = std::path::Path::new(icon);
+            if icon_path.exists() {
+                self.icon.set_from_file(Some(&icon_path));
+                return;
+            }
+
             let display = gtk::gdk::Display::default().unwrap();
             let icon_theme = gtk::IconTheme::for_display(&display);
 
@@ -169,6 +178,14 @@ mod imp {
             self.show_expander.set(show);
         }
 
+        fn set_expanded(&self, expanded: bool) {
+            self.expanded.set(expanded);
+
+            if !expanded {
+                let _ = self.obj().activate_action("listitem.collapse", None);
+            }
+        }
+
         fn set_cpu_usage_percent(&self, usage_percent: f32) {
             self.cpu_usage_percent.set(usage_percent);
 
@@ -230,16 +247,45 @@ mod imp {
 
     impl WidgetImpl for ListItem {
         fn realize(&self) {
+            use crate::apps_page::view_model::ViewModel;
+            use glib::g_critical;
+
             self.parent_realize();
 
-            match self.content_type.get() {
-                ContentType::App => {
-                    let _ = self.obj().activate_action("listitem.collapse", None);
-                }
-                _ => {}
-            }
-
             if let Some(tree_expander) = self.obj().parent() {
+                let view_model = match tree_expander
+                    .downcast_ref::<gtk::TreeExpander>()
+                    .and_then(|te| te.item())
+                    .and_then(|model| model.downcast::<ViewModel>().ok())
+                {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to get ViewModel, cannot show context menu for App/Process"
+                        );
+                        return;
+                    }
+                    Some(model) => model,
+                };
+
+                // FIXME (Romeo Calota):
+                // Compound hackery with the property in the ViewModel. If we're an app we start
+                // out collapsed. We set the expanded property to true in the model, so that any
+                // action from the user (expand/collapse) will be ignored. We do this with a timeout
+                // so that the view has time to refresh at least once with the binding set to true.
+                let model_content_type: ContentType =
+                    unsafe { core::mem::transmute(view_model.content_type()) };
+                if model_content_type == ContentType::App {
+                    glib::timeout_add_seconds_local_once(1, {
+                        let view_model = view_model.downgrade();
+                        move || {
+                            if let Some(view_model) = view_model.upgrade() {
+                                view_model.set_expanded(true);
+                            }
+                        }
+                    });
+                }
+
                 if let Some(column_view_cell) = tree_expander.parent() {
                     let style_provider = unsafe { &*self.css_provider.as_ptr() };
                     // FIXME: Deprecated in GTK 4.10, removed in GTK 5.0, unclear what the replacement is
@@ -251,8 +297,6 @@ mod imp {
                     }
 
                     if let Some(list_item_widget) = column_view_cell.parent() {
-                        use crate::apps_page::view_model::ViewModel;
-
                         let right_click_controller = gtk::GestureClick::new();
                         right_click_controller.set_button(3); // Secondary click (AKA right click)
 
@@ -260,25 +304,6 @@ mod imp {
 
                         right_click_controller.connect_released(move |_, _, x, y| {
                             use gtk::glib::*;
-
-                            let view_model = match list_item_widget
-                                .first_child()
-                                .and_then(|w| w.first_child())
-                                .and_then(|w| w.downcast::<gtk::TreeExpander>().ok())
-                                .and_then(|te| te.item())
-                                .and_then(|model| model.downcast::<ViewModel>().ok())
-                            {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::AppsPage",
-                                        "Failed to get ViewModel, cannot show context menu for App/Process"
-                                    );
-                                    return;
-                                }
-                                Some(model) => {
-                                    model
-                                }
-                            };
 
                             let (stop_label, force_stop_label) = match view_model.content_type() {
                                 0 => {

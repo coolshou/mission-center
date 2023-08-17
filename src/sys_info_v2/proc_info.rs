@@ -53,7 +53,7 @@ impl Process {
         &self.base.name
     }
 
-    pub fn cmd(&self) -> &[arrayvec::ArrayString<128>] {
+    pub fn cmd(&self) -> &[super::gatherer::ArrayString] {
         &self.base.cmd
     }
 
@@ -116,10 +116,17 @@ impl super::GathererSupervisor {
                         }
                         proceses.is_complete
                     }
-                    SharedDataContent::InstalledApps(_) => {
+                    SharedDataContent::Apps(_) => {
                         g_critical!(
                             "MissionCenter::ProcInfo",
-                            "Shared data content is InstalledApps instead of Processes; encountered when reading processes from gatherer", 
+                            "Shared data content is Apps instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
+                    SharedDataContent::AppPIDs(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is AppPIDs instead of Processes; encountered when reading processes from gatherer", 
                         );
                         false
                     }

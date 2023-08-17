@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::collections::HashMap;
+
 use arrayvec::ArrayVec;
 use lazy_static::lazy_static;
 
@@ -26,9 +28,12 @@ use super::ArrayString;
 mod state {
     use std::{cell::Cell, collections::HashMap, thread_local};
 
+    use super::*;
+
     thread_local! {
-        pub static FULL_PROCESS_CACHE: Cell<HashMap<u32, super::Process>> = Cell::new(HashMap::new());
-        pub static PROCESS_CACHE: Cell<Vec<super::ProcessDescriptor>> = Cell::new(vec![]);
+        pub static PERSISTENT_PROCESS_CACHE: Cell<HashMap<u32, Process>> = Cell::new(HashMap::new());
+        pub static PROCESS_HIERARCHY: Cell<Process> = Cell::new(Process::default());
+        pub static PROCESS_CACHE: Cell<Vec<ProcessDescriptor>> = Cell::new(vec![]);
     }
 }
 
@@ -122,8 +127,10 @@ pub struct ProcessDescriptor {
 
 #[derive(Debug, Clone)]
 pub struct Process {
-    descriptor: ProcessDescriptor,
+    pub descriptor: ProcessDescriptor,
     raw_stats: RawStats,
+    pub children: Vec<Process>,
+    pub cgroup: Option<String>,
 }
 
 impl Default for Process {
@@ -153,6 +160,8 @@ impl Default for Process {
                 net_bytes_recv: 0,
                 timestamp: std::time::Instant::now(),
             },
+            children: vec![],
+            cgroup: None,
         }
     }
 }
@@ -180,7 +189,7 @@ impl Processes {
         if process_cache.is_empty() {
             Self::update_process_cache();
             let full_process_cache =
-                state::FULL_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
+                state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
             for (_, p) in full_process_cache {
                 process_cache.push(p.descriptor.clone());
             }
@@ -197,6 +206,124 @@ impl Processes {
         this.is_complete = process_cache.is_empty();
 
         this
+    }
+
+    pub fn process_cache() -> &'static HashMap<u32, Process> {
+        state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
+    }
+
+    #[allow(dead_code)]
+    pub fn process_hierarchy() -> Option<Process> {
+        use std::collections::*;
+
+        let processes = state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
+
+        let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
+        let root_pid = match pids.first() {
+            None => return None,
+            Some(pid) => *pid,
+        };
+
+        let mut root_process = match processes.get(&root_pid).map_or(None, |p| Some(p.clone())) {
+            None => return None,
+            Some(p) => p,
+        };
+
+        let mut process_tree = BTreeMap::new();
+        process_tree.insert(root_process.descriptor.pid, 0_usize);
+
+        let mut children = Vec::with_capacity(pids.len());
+        children.push(vec![]);
+
+        let mut visited = HashSet::new();
+        visited.insert(root_process.descriptor.pid);
+
+        for pid in pids.iter().skip(1).rev() {
+            if visited.contains(pid) {
+                continue;
+            }
+
+            let process = match processes.get(pid) {
+                None => continue,
+                Some(p) => p,
+            };
+
+            let mut stack = vec![process];
+            let mut parent = process.descriptor.parent;
+            while parent != 0 {
+                let parent_process = match processes.get(&parent) {
+                    None => break,
+                    Some(pp) => pp,
+                };
+
+                if visited.contains(&parent_process.descriptor.pid) {
+                    let mut index = match process_tree.get(&parent_process.descriptor.pid) {
+                        None => {
+                            // TODO: Fully understand if this could happen, and what to do if it does.
+                            eprintln!(
+                                "Gatherer: Process {} has been visited, but it's not in the process_tree?",
+                                process.descriptor.pid
+                            );
+                            break;
+                        }
+                        Some(index) => *index,
+                    };
+                    while let Some(ancestor) = stack.pop() {
+                        let p = ancestor.clone();
+                        children[index].push(p);
+
+                        visited.insert(ancestor.descriptor.pid);
+
+                        index = children.len();
+                        process_tree.insert(ancestor.descriptor.pid, index);
+                        children.push(vec![]);
+                    }
+
+                    break;
+                }
+
+                stack.push(parent_process);
+                parent = parent_process.descriptor.parent;
+            }
+        }
+
+        fn gather_descendants(
+            process: &mut Process,
+            process_tree: &BTreeMap<u32, usize>,
+            children: &mut Vec<Vec<Process>>,
+        ) {
+            let pid = process.descriptor.pid;
+
+            let index = match process_tree.get(&pid) {
+                Some(index) => *index,
+                None => return,
+            };
+
+            if children[index].is_empty() {
+                return;
+            }
+
+            std::mem::swap(&mut process.children, &mut children[index]);
+
+            let mut process_stats = Stats::default();
+            for child in &mut process.children {
+                gather_descendants(child, process_tree, children);
+                process_stats.merge(&child.descriptor.stats);
+            }
+            process.descriptor.stats.merge(&process_stats);
+        }
+
+        let process = &mut root_process;
+        std::mem::swap(&mut process.children, &mut children[0]);
+
+        let mut process_stats = Stats::default();
+        for child in &mut process.children {
+            gather_descendants(child, &process_tree, &mut children);
+            process_stats.merge(&child.descriptor.stats);
+        }
+        process.descriptor.stats.merge(&process_stats);
+
+        Some(root_process)
     }
 
     fn update_process_cache() {
@@ -284,8 +411,8 @@ impl Processes {
             stat[PROC_PID_STAT_STIME].parse::<u64>().unwrap_or(0)
         }
 
-        let mut previous = state::FULL_PROCESS_CACHE.with(|prev| prev.take());
-        let result = state::FULL_PROCESS_CACHE.with(|prev| unsafe { &mut *prev.as_ptr() });
+        let mut previous = state::PERSISTENT_PROCESS_CACHE.with(|prev| prev.take());
+        let result = state::PERSISTENT_PROCESS_CACHE.with(|prev| unsafe { &mut *prev.as_ptr() });
         result.reserve(previous.len());
 
         let now = std::time::Instant::now();
@@ -417,6 +544,43 @@ impl Processes {
                 }
             };
 
+            let cgroup = match std::fs::read_to_string(entry_path.join("cgroup")) {
+                Ok(cfc) => {
+                    if cfc.is_empty() {
+                        eprintln!("Failed to read cgroup information for process {}: No cgroup associated with process", pid);
+                        None
+                    } else {
+                        let mut cgroup = None;
+
+                        let cfc = cfc
+                            .trim()
+                            .split(':')
+                            .nth(2)
+                            .unwrap_or("/")
+                            .trim_start_matches('/');
+
+                        let cgroup_path = std::path::Path::new("/sys/fs/cgroup").join(cfc);
+                        if !cfc.is_empty() && cgroup_path.exists() && cgroup_path.is_dir() {
+                            let app_scope = cfc.split('/').last().unwrap_or("");
+                            if (app_scope.starts_with("app") || app_scope.starts_with("snap"))
+                                && app_scope.ends_with(".scope")
+                            {
+                                cgroup = Some(cgroup_path.to_string_lossy().into());
+                            }
+                        }
+
+                        cgroup
+                    }
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Failed to read cgroup information for process {}: {}",
+                        pid, e
+                    );
+                    None
+                }
+            };
+
             process.descriptor.pid = pid;
             process.descriptor.name = stat_name(&stat_parsed);
             process.descriptor.cmd = cmd;
@@ -432,6 +596,7 @@ impl Processes {
             process.raw_stats.net_bytes_sent = total_net_sent;
             process.raw_stats.net_bytes_recv = total_net_recv;
             process.raw_stats.timestamp = now;
+            process.cgroup = cgroup;
 
             result.insert(pid, process);
         }

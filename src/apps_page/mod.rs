@@ -206,7 +206,7 @@ mod imp {
                 }
                 let current = current.unwrap();
 
-                if !apps.contains_key(current.name().as_str()) {
+                if !apps.contains_key(current.id().as_str()) {
                     to_remove.insert(i);
                 }
             }
@@ -215,7 +215,7 @@ mod imp {
                 model.remove((*to_remove_i as usize - i) as _);
             }
 
-            for (name, app) in &apps {
+            for (app_id, app) in &apps {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
                         let current = current.downcast_ref::<ViewModel>();
@@ -224,24 +224,44 @@ mod imp {
                         }
                         let current = current.unwrap();
 
-                        current.name().as_str() == name
+                        current.id().as_str() == app_id
                     })
                 } else {
                     None
                 };
 
-                let primary_pid = app.pids[0];
+                if app.pids.is_empty() {
+                    dbg!(&app);
+                }
+
+                // Find the first process that has any children. This is most likely the root
+                // of the App's process tree.
+                let primary_pid = {
+                    let mut primary_pid = app.pids[0];
+                    for pid in &app.pids {
+                        if let Some(process) = find_process(&process_tree, *pid) {
+                            if process.children.len() > 0 {
+                                primary_pid = *pid;
+                                break;
+                            }
+                        }
+                    }
+
+                    primary_pid
+                };
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(&app.name())
+                        .id(&app.id())
                         .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
                         .pid(primary_pid)
                         .content_type(ContentType::App)
-                        .cpu_usage(app.stats.cpu_usage)
-                        .memory_usage(app.stats.memory_usage)
-                        .disk_usage(app.stats.disk_usage)
-                        .network_usage(app.stats.network_usage)
-                        .gpu_usage(app.stats.gpu_usage)
+                        .expanded(false)
+                        .cpu_usage(app.stats().cpu_usage)
+                        .memory_usage(app.stats().memory_usage)
+                        .disk_usage(app.stats().disk_usage)
+                        .network_usage(app.stats().network_usage)
+                        .gpu_usage(app.stats().gpu_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -259,11 +279,11 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     view_model.set_pid(primary_pid);
-                    view_model.set_cpu_usage(app.stats.cpu_usage);
-                    view_model.set_memory_usage(app.stats.memory_usage);
-                    view_model.set_disk_usage(app.stats.disk_usage);
-                    view_model.set_network_usage(app.stats.network_usage);
-                    view_model.set_gpu_usage(app.stats.gpu_usage);
+                    view_model.set_cpu_usage(app.stats().cpu_usage);
+                    view_model.set_memory_usage(app.stats().memory_usage);
+                    view_model.set_disk_usage(app.stats().disk_usage);
+                    view_model.set_network_usage(app.stats().network_usage);
+                    view_model.set_gpu_usage(app.stats().gpu_usage);
 
                     view_model
                 };
@@ -456,56 +476,66 @@ mod imp {
             }
             let window = window.unwrap();
 
-            let window_clone = window.clone();
-            let filter = gtk::CustomFilter::new(move |obj| {
-                use textdistance::{Algorithm, Levenshtein};
+            let filter = gtk::CustomFilter::new({
+                let window = window.downgrade();
+                move |obj| {
+                    use textdistance::{Algorithm, Levenshtein};
 
-                let window = window_clone.imp();
+                    let window = match window.upgrade() {
+                        None => return true,
+                        Some(w) => w,
+                    };
+                    let window = window.imp();
 
-                if !window.search_button.is_active() {
-                    return true;
+                    if !window.search_button.is_active() {
+                        return true;
+                    }
+
+                    if window.search_entry.text().is_empty() {
+                        return true;
+                    }
+
+                    let view_model = match obj
+                        .downcast_ref::<gtk::TreeListRow>()
+                        .and_then(|row| row.item())
+                        .and_then(|item| item.downcast::<ViewModel>().ok())
+                    {
+                        None => return false,
+                        Some(vm) => vm,
+                    };
+                    if view_model.content_type() == ContentType::SectionHeader as u8 {
+                        return true;
+                    }
+
+                    let entry_name = view_model.name().to_lowercase();
+                    let search_query = window.search_entry.text().to_lowercase();
+
+                    if entry_name.contains(&search_query) {
+                        return true;
+                    }
+
+                    if search_query.contains(&entry_name) {
+                        return true;
+                    }
+
+                    let str_distance = Levenshtein::default()
+                        .for_str(&entry_name, &search_query)
+                        .ndist();
+                    if str_distance <= 0.6 {
+                        return true;
+                    }
+
+                    false
                 }
-
-                if window.search_entry.text().is_empty() {
-                    return true;
-                }
-
-                let view_model = obj
-                    .downcast_ref::<gtk::TreeListRow>()
-                    .and_then(|row| row.item())
-                    .and_then(|item| item.downcast::<ViewModel>().ok());
-                if view_model.is_none() {
-                    return false;
-                }
-                let view_model = view_model.unwrap();
-                if view_model.content_type() == ContentType::SectionHeader as u8 {
-                    return true;
-                }
-
-                let entry_name = view_model.name().to_lowercase();
-                let search_query = window.search_entry.text().to_lowercase();
-
-                if entry_name.contains(&search_query) {
-                    return true;
-                }
-
-                if search_query.contains(&entry_name) {
-                    return true;
-                }
-
-                let str_distance = Levenshtein::default()
-                    .for_str(&entry_name, &search_query)
-                    .ndist();
-                if str_distance <= 0.6 {
-                    return true;
-                }
-
-                false
             });
 
-            let filter_clone = filter.clone();
-            window.imp().search_entry.connect_search_changed(move |_| {
-                filter_clone.changed(gtk::FilterChange::Different)
+            window.imp().search_entry.connect_search_changed({
+                let filter = filter.downgrade();
+                move |_| {
+                    if let Some(filter) = filter.upgrade() {
+                        filter.changed(gtk::FilterChange::Different);
+                    }
+                }
             });
 
             gtk::FilterListModel::new(Some(model), Some(filter))

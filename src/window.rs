@@ -118,8 +118,8 @@ mod imp {
                     this.search_entry.grab_focus();
                     this.search_entry.select_region(-1, -1);
                 } else {
-                    this.header_stack.set_visible_child_name("view-switcher");
                     this.search_entry.set_text("");
+                    this.header_stack.set_visible_child_name("view-switcher");
                 }
             }));
 
@@ -163,13 +163,8 @@ mod imp {
                 }
             });
 
-            // IDK... Something about missing Traits... don't care, this works
-            unsafe {
-                gtk::ffi::gtk_search_entry_set_key_capture_widget(
-                    self.search_entry.as_ptr() as *mut _,
-                    self.obj().as_ptr() as *mut _,
-                );
-            }
+            self.search_entry
+                .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
 
             let this = self.obj().downgrade();
             self.search_entry.connect_search_started(move |_| {

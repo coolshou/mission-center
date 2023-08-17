@@ -18,9 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use apps::{AppDescriptor, InstalledApps};
+pub use apps::{AppDescriptor, AppPIDs, Apps};
 pub use exit_code::ExitCode;
-#[allow(unused)]
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
 
 #[allow(dead_code)]
@@ -30,7 +29,9 @@ pub mod ipc;
 #[allow(dead_code)]
 mod processes;
 
-pub type ArrayString = arrayvec::ArrayString<128>;
+pub type ArrayString = arrayvec::ArrayString<256>;
+#[allow(dead_code)]
+pub type AppStats = apps::Stats;
 #[allow(dead_code)]
 pub type ProcessStats = processes::Stats;
 
@@ -78,8 +79,9 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
 #[derive(Debug)]
 pub enum SharedDataContent {
     Monostate,
-    InstalledApps(InstalledApps),
     Processes(Processes),
+    Apps(Apps),
+    AppPIDs(AppPIDs),
 }
 
 #[derive(Debug)]

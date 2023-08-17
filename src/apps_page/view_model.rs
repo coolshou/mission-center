@@ -38,6 +38,8 @@ mod imp {
         pub icon: Cell<glib::GString>,
         #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
         pub name: Cell<glib::GString>,
+        #[property(get = Self::id, set = Self::set_id, type = glib::GString)]
+        pub id: Cell<glib::GString>,
 
         #[property(get = Self::content_type, type = u8)]
         pub content_type: Cell<ContentType>,
@@ -45,6 +47,8 @@ mod imp {
         pub section_type: Cell<SectionType>,
         #[property(get, set)]
         pub show_expander: Cell<bool>,
+        #[property(get, set)]
+        pub expanded: Cell<bool>,
 
         #[property(get, set = Self::set_cpu_usage)]
         pub cpu_usage: Cell<f32>,
@@ -75,10 +79,20 @@ mod imp {
 
                 icon: Cell::new(glib::GString::default()),
                 name: Cell::new(glib::GString::default()),
+                id: Cell::new(glib::GString::default()),
 
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
                 show_expander: Cell::new(true),
+                // FIXME (Romeo Calota): 
+                // This property is only used as a workaround for a weirdness in GTK.
+                // When the property is set to false, the list item will honor it and collapse the
+                // expander. However, when the property is set to true, the list item will ignore it.
+                // This is done to force App entries to initially be collapsed, while retaining
+                // the ability to stay expanded when the user expands them.
+                // Ideally this should be a bidirectional bind with the list item, but there is no
+                // way to know when a user expands or collapses an item.
+                expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0.),
@@ -132,6 +146,24 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn id(&self) -> glib::GString {
+            let id = self.id.take();
+            let result = id.clone();
+            self.id.set(id);
+
+            result
+        }
+
+        pub fn set_id(&self, id: &str) {
+            let current_id = self.id.take();
+            if current_id == id {
+                self.id.set(current_id);
+                return;
+            }
+
+            self.id.set(glib::GString::from(id));
         }
 
         pub fn set_cpu_usage(&self, cpu_usage: f32) {
@@ -212,10 +244,12 @@ pub struct ViewModelBuilder {
     pid: u32,
     icon: glib::GString,
     name: glib::GString,
+    id: glib::GString,
 
     content_type: ContentType,
     section_type: SectionType,
     show_expander: Option<bool>,
+    expanded: bool,
 
     cpu_usage: f32,
     memory_usage: f32,
@@ -232,10 +266,12 @@ impl ViewModelBuilder {
             pid: 0,
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
+            id: glib::GString::default(),
 
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
             show_expander: None,
+            expanded: true,
 
             cpu_usage: 0.,
             memory_usage: 0.,
@@ -263,6 +299,11 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn id(mut self, id: &str) -> Self {
+        self.id = id.into();
+        self
+    }
+
     pub fn content_type(mut self, content_type: ContentType) -> Self {
         self.content_type = content_type;
         self
@@ -275,6 +316,11 @@ impl ViewModelBuilder {
 
     pub fn show_expander(mut self, show_expander: bool) -> Self {
         self.show_expander = Some(show_expander);
+        self
+    }
+
+    pub fn expanded(mut self, expanded: bool) -> Self {
+        self.expanded = expanded;
         self
     }
 
@@ -321,6 +367,8 @@ impl ViewModelBuilder {
             this.pid.set(self.pid);
             this.icon.set(self.icon);
             this.name.set(self.name);
+            this.id.set(self.id);
+            this.expanded.set(self.expanded);
             this.section_type.set(self.section_type);
             this.cpu_usage.set(self.cpu_usage);
             this.memory_usage.set(self.memory_usage);
