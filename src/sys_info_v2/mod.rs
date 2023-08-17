@@ -588,12 +588,14 @@ impl SysInfoV2 {
                         if let Some(app) = crate::MissionCenterApplication::default_instance() {
                             let now = std::time::Instant::now();
 
+                            let timer = std::time::Instant::now();
                             if !app.refresh_readings(&mut readings) {
                                 g_critical!(
                                         "MissionCenter::SysInfo",
                                         "Readings were not completely refreshed, stale readings will be displayed"
                                     );
                             }
+                            eprintln!("UI refresh took: {:?}", timer.elapsed());
 
                             g_debug!(
                                 "MissionCenter::SysInfo",

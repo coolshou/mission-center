@@ -234,7 +234,21 @@ mod imp {
                     dbg!(&app);
                 }
 
-                let primary_pid = app.pids[0];
+                // Find the first process that has any children. This is most likely the root
+                // of the App's process tree.
+                let primary_pid = {
+                    let mut primary_pid = app.pids[0];
+                    for pid in &app.pids {
+                        if let Some(process) = find_process(&process_tree, *pid) {
+                            if process.children.len() > 0 {
+                                primary_pid = *pid;
+                                break;
+                            }
+                        }
+                    }
+
+                    primary_pid
+                };
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(&app.name())
