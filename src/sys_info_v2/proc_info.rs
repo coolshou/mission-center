@@ -145,7 +145,10 @@ impl super::GathererSupervisor {
     }
 }
 
-pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) -> Option<Process> {
+pub fn process_hierarchy(
+    processes: &std::collections::HashMap<u32, Process>,
+    merged_stats: bool,
+) -> Option<Process> {
     use super::gatherer::ProcessStats;
     use gtk::glib::*;
     use std::collections::*;
@@ -226,6 +229,7 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
         process: &mut Process,
         process_tree: &BTreeMap<u32, usize>,
         children: &mut Vec<HashMap<u32, Process>>,
+        merged_stats: bool,
     ) {
         let pid = process.pid();
 
@@ -242,10 +246,14 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
 
         let mut process_stats = ProcessStats::default();
         for (_, child) in &mut process.children {
-            gather_descendants(child, process_tree, children);
-            process_stats.merge(&child.stats());
+            gather_descendants(child, process_tree, children, merged_stats);
+            if merged_stats {
+                process_stats.merge(&child.stats());
+            }
         }
-        process.stats_mut().merge(&process_stats);
+        if merged_stats {
+            process.stats_mut().merge(&process_stats);
+        }
     }
 
     let process = &mut root_process;
@@ -253,10 +261,14 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
 
     let mut process_stats = ProcessStats::default();
     for (_, child) in &mut process.children {
-        gather_descendants(child, &process_tree, &mut children);
-        process_stats.merge(&child.stats());
+        gather_descendants(child, &process_tree, &mut children, merged_stats);
+        if merged_stats {
+            process_stats.merge(&child.stats());
+        }
     }
-    process.stats_mut().merge(&process_stats);
+    if merged_stats {
+        process.stats_mut().merge(&process_stats);
+    }
 
     g_debug!(
         "MissionCenter::ProcInfo",

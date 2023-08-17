@@ -377,6 +377,8 @@ impl GathererSupervisor {
 
 pub struct SysInfoV2 {
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
+    merged_process_stats: std::sync::Arc<std::sync::atomic::AtomicBool>,
+
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
 
@@ -405,8 +407,11 @@ impl Default for SysInfoV2 {
 
         Self {
             refresh_interval: Arc::new(0.into()),
+            merged_process_stats: Arc::new(false.into()),
+
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
+
             sender: tx,
         }
     }
@@ -417,14 +422,17 @@ impl SysInfoV2 {
         use std::sync::{atomic::*, *};
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
+        let merged_process_stats = Arc::new(AtomicBool::new(false));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
+        let mps = merged_process_stats.clone();
         let run = refresh_thread_running.clone();
 
         let (tx, rx) = mpsc::channel::<gatherer::Message>();
         Self {
             refresh_interval,
+            merged_process_stats,
             refresh_thread: Some(std::thread::spawn(move || {
                 use adw::prelude::*;
                 use gtk::glib::*;
@@ -493,8 +501,9 @@ impl SysInfoV2 {
                         }
                     }
                 }
+                let merged_stats = mps.load(Ordering::Acquire);
                 readings.process_tree =
-                    proc_info::process_hierarchy(&processes).unwrap_or_default();
+                    proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                 readings.running_apps = gatherer_supervisor.apps();
 
                 let cpu_static_info = readings.cpu_info.static_info.clone();
@@ -555,7 +564,9 @@ impl SysInfoV2 {
                     eprintln!("Process load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
+                    let merged_stats = mps.load(Ordering::Acquire);
+                    let process_tree =
+                        proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                     eprintln!("Process tree load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
@@ -663,6 +674,11 @@ impl SysInfoV2 {
     pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
             .store(speed as u8, std::sync::atomic::Ordering::Release);
+    }
+
+    pub fn set_merged_process_stats(&self, merged_stats: bool) {
+        self.merged_process_stats
+            .store(merged_stats, std::sync::atomic::Ordering::Release);
     }
 
     pub fn terminate_process(&self, terminate_type: TerminateType, pid: u32) {

@@ -42,23 +42,36 @@ mod imp {
         #[template_child]
         pub update_fast: TemplateChild<CheckedRowWidget>,
 
+        #[template_child]
+        pub merged_process_stats: TemplateChild<adw::ExpanderRow>,
+        #[template_child]
+        pub mps_no: TemplateChild<CheckedRowWidget>,
+        #[template_child]
+        pub mps_yes: TemplateChild<CheckedRowWidget>,
+
         pub settings: Cell<Option<gio::Settings>>,
 
         pub current_speed_selection: Cell<CheckedRowWidget>,
+        pub current_mps_selection: Cell<CheckedRowWidget>,
     }
 
     impl Default for PreferencesPage {
         fn default() -> Self {
             Self {
-                update_speed_setting: TemplateChild::default(),
+                update_speed_setting: Default::default(),
                 update_very_slow: Default::default(),
                 update_slow: Default::default(),
                 update_normal: Default::default(),
                 update_fast: Default::default(),
 
+                merged_process_stats: Default::default(),
+                mps_no: Default::default(),
+                mps_yes: Default::default(),
+
                 settings: Cell::new(None),
 
                 current_speed_selection: Cell::new(CheckedRowWidget::new()),
+                current_mps_selection: Cell::new(CheckedRowWidget::new()),
             }
         }
     }
@@ -79,7 +92,7 @@ mod imp {
             if settings.is_none() {
                 g_critical!(
                     "MissionCenter::Preferences",
-                    "Failed to set up update speed settings, could not load application settings"
+                    "Failed to configure update speed settings, could not load application settings"
                 );
                 return;
             }
@@ -127,6 +140,58 @@ mod imp {
 
             self.settings.set(Some(settings));
         }
+
+        pub fn configure_merged_process_stats(&self, checked_row: &CheckedRowWidget) {
+            use glib::g_critical;
+
+            let no = self.mps_no.as_ptr() as usize;
+            let yes = self.mps_yes.as_ptr() as usize;
+
+            let old_selection = self.current_mps_selection.replace(checked_row.clone());
+            old_selection.set_checkmark_visible(false);
+
+            let settings = self.settings.take();
+            if settings.is_none() {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure merged process stats settings, could not load application settings"
+                );
+                return;
+            }
+            let settings = settings.unwrap();
+
+            let new_selection = checked_row.as_ptr() as usize;
+            let set_result = if new_selection == no {
+                self.merged_process_stats.set_subtitle(&i18n("No"));
+                checked_row.set_checkmark_visible(true);
+                settings.set_boolean("apps-page-merged-process-stats", false)
+            } else if new_selection == yes {
+                self.merged_process_stats.set_subtitle(&i18n("Yes"));
+                checked_row.set_checkmark_visible(true);
+                settings.set_boolean("apps-page-merged-process-stats", true)
+            } else {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Unknown merge process stats selection",
+                );
+
+                self.merged_process_stats.set_subtitle(&i18n("No"));
+                settings.set_boolean("apps-page-merged-process-stats", false)
+            };
+            if set_result.is_err() {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to set merge process stats setting",
+                );
+
+                self.merged_process_stats.set_subtitle("");
+
+                self.mps_no.set_checkmark_visible(false);
+                self.mps_yes.set_checkmark_visible(false);
+            }
+
+            self.settings.set(Some(settings));
+        }
     }
 
     #[glib::object_subclass]
@@ -169,6 +234,26 @@ mod imp {
                     }),
                 );
             }
+
+            let merge_process_stats_row = self.mps_no.parent().and_then(|p| p.parent());
+            if merge_process_stats_row.is_none() {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to set up merge process stats settings"
+                );
+            } else {
+                let merge_process_stats_row = merge_process_stats_row.unwrap();
+                let merge_process_stats_row = merge_process_stats_row
+                    .downcast_ref::<gtk::ListBox>()
+                    .unwrap();
+                merge_process_stats_row.connect_row_activated(
+                    glib::clone!(@weak self as this => move |_, row| {
+                        let row = row.first_child().unwrap();
+                        let checked_row = row.downcast_ref::<CheckedRowWidget>().unwrap();
+                        this.configure_merged_process_stats(checked_row);
+                    }),
+                );
+            }
         }
     }
 
@@ -192,6 +277,7 @@ impl PreferencesPage {
         };
         this.imp().settings.set(settings.cloned());
         this.set_initial_update_speed();
+        this.set_initial_merge_process_stats();
 
         this
     }
@@ -238,6 +324,36 @@ impl PreferencesPage {
         };
         selected_widget.set_checkmark_visible(true);
         this.current_speed_selection.set(selected_widget.get());
+
+        this.settings.set(Some(settings));
+    }
+
+    fn set_initial_merge_process_stats(&self) {
+        use gtk::glib::*;
+
+        let settings = self.imp().settings.take();
+        if settings.is_none() {
+            g_critical!(
+                "MissionCenter::Preferences",
+                "Failed to configure merge process stats settings, could not load application settings"
+            );
+            return;
+        }
+        let settings = settings.unwrap();
+        let merge_process_stats = settings.boolean("apps-page-merged-process-stats");
+        let this = self.imp();
+        let selected_widget = match merge_process_stats {
+            false => {
+                this.merged_process_stats.set_subtitle(&i18n("No"));
+                &this.mps_no
+            }
+            true => {
+                this.merged_process_stats.set_subtitle(&i18n("Yes"));
+                &this.mps_yes
+            }
+        };
+        selected_widget.set_checkmark_visible(true);
+        this.current_mps_selection.set(selected_widget.get());
 
         this.settings.set(Some(settings));
     }
