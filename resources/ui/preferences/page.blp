@@ -29,4 +29,22 @@ template $PreferencesPage : Adw.PreferencesPage {
       }
     }
   }
+
+  Adw.PreferencesGroup {
+    title: _("App Page Settings");
+
+    Adw.ExpanderRow merged_process_stats {
+      title: _("Merge Process Stats");
+
+      $CheckedRow mps_no {
+        title: _("No");
+        subtitle: _("Parent and child process stats are shown individually");
+      }
+
+      $CheckedRow mps_yes {
+        title: _("Yes");
+        subtitle: _("Parent and child process stats are merged upwards");
+      }
+    }
+  }
 }

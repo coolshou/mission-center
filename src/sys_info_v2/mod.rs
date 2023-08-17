@@ -377,7 +377,7 @@ impl GathererSupervisor {
 
 pub struct SysInfoV2 {
     refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
-    merged_stats: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    merged_process_stats: std::sync::Arc<std::sync::atomic::AtomicBool>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
@@ -407,7 +407,7 @@ impl Default for SysInfoV2 {
 
         Self {
             refresh_interval: Arc::new(0.into()),
-            merged_stats: Arc::new(false.into()),
+            merged_process_stats: Arc::new(false.into()),
 
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
@@ -422,17 +422,17 @@ impl SysInfoV2 {
         use std::sync::{atomic::*, *};
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
-        let merged_stats = Arc::new(AtomicBool::new(false));
+        let merged_process_stats = Arc::new(AtomicBool::new(false));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
-        let ms = merged_stats.clone();
+        let mps = merged_process_stats.clone();
         let run = refresh_thread_running.clone();
 
         let (tx, rx) = mpsc::channel::<gatherer::Message>();
         Self {
             refresh_interval,
-            merged_stats,
+            merged_process_stats,
             refresh_thread: Some(std::thread::spawn(move || {
                 use adw::prelude::*;
                 use gtk::glib::*;
@@ -501,7 +501,7 @@ impl SysInfoV2 {
                         }
                     }
                 }
-                let merged_stats = ms.load(Ordering::Acquire);
+                let merged_stats = mps.load(Ordering::Acquire);
                 readings.process_tree =
                     proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                 readings.running_apps = gatherer_supervisor.apps();
@@ -564,7 +564,7 @@ impl SysInfoV2 {
                     eprintln!("Process load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let merged_stats = ms.load(Ordering::Acquire);
+                    let merged_stats = mps.load(Ordering::Acquire);
                     let process_tree =
                         proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                     eprintln!("Process tree load took: {:?}", timer.elapsed());
@@ -676,8 +676,8 @@ impl SysInfoV2 {
             .store(speed as u8, std::sync::atomic::Ordering::Release);
     }
 
-    pub fn set_merged_stats(&self, merged_stats: bool) {
-        self.merged_stats
+    pub fn set_merged_process_stats(&self, merged_stats: bool) {
+        self.merged_process_stats
             .store(merged_stats, std::sync::atomic::Ordering::Release);
     }
 

@@ -225,6 +225,7 @@ impl MissionCenterWindow {
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());
+            sys_info.set_merged_process_stats(settings.boolean("apps-page-merged-process-stats"));
 
             settings.connect_changed(
                 Some("update-speed"),
@@ -249,6 +250,28 @@ impl MissionCenterWindow {
                     };
                 }),
             );
+
+            settings.connect_changed(Some("apps-page-merged-process-stats"), clone!(@weak this => move |settings, _| {
+                use crate::{application::MissionCenterApplication};
+                let merged_process_stats = settings.boolean("apps-page-merged-process-stats");
+
+                let app = match MissionCenterApplication::default_instance() {
+                    Some(app) => app,
+                    None => {
+                        g_critical!("MissionCenter", "Failed to get default instance of MissionCenterApplication");
+                        return;
+                    }
+                };
+
+                match app.sys_info() {
+                    Ok(sys_info) => {
+                        sys_info.set_merged_process_stats(merged_process_stats);
+                    }
+                    Err(e) => {
+                        g_critical!("MissionCenter", "Failed to get sys_info from MissionCenterApplication: {}", e);
+                    }
+                };
+            }));
         }
 
         this
