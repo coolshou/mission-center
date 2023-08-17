@@ -47,6 +47,8 @@ mod imp {
         pub section_type: Cell<SectionType>,
         #[property(get, set)]
         pub show_expander: Cell<bool>,
+        #[property(get, set)]
+        pub expanded: Cell<bool>,
 
         #[property(get, set = Self::set_cpu_usage)]
         pub cpu_usage: Cell<f32>,
@@ -82,6 +84,7 @@ mod imp {
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
                 show_expander: Cell::new(true),
+                expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0.),
@@ -238,6 +241,7 @@ pub struct ViewModelBuilder {
     content_type: ContentType,
     section_type: SectionType,
     show_expander: Option<bool>,
+    expanded: bool,
 
     cpu_usage: f32,
     memory_usage: f32,
@@ -259,6 +263,7 @@ impl ViewModelBuilder {
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
             show_expander: None,
+            expanded: true,
 
             cpu_usage: 0.,
             memory_usage: 0.,
@@ -306,6 +311,11 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn expanded(mut self, expanded: bool) -> Self {
+        self.expanded = expanded;
+        self
+    }
+
     pub fn cpu_usage(mut self, cpu_usage: f32) -> Self {
         self.cpu_usage = cpu_usage;
         self
@@ -350,6 +360,7 @@ impl ViewModelBuilder {
             this.icon.set(self.icon);
             this.name.set(self.name);
             this.id.set(self.id);
+            this.expanded.set(self.expanded);
             this.section_type.set(self.section_type);
             this.cpu_usage.set(self.cpu_usage);
             this.memory_usage.set(self.memory_usage);

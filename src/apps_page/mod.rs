@@ -242,6 +242,7 @@ mod imp {
                         .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
                         .pid(primary_pid)
                         .content_type(ContentType::App)
+                        .expanded(false)
                         .cpu_usage(app.stats().cpu_usage)
                         .memory_usage(app.stats().memory_usage)
                         .disk_usage(app.stats().disk_usage)
