@@ -98,6 +98,12 @@ mod imp {
         }
 
         pub fn set_icon(&self, icon: &str) {
+            let icon_path = std::path::Path::new(icon);
+            if icon_path.exists() {
+                self.icon.set_from_file(Some(&icon_path));
+                return;
+            }
+
             let display = gtk::gdk::Display::default().unwrap();
             let icon_theme = gtk::IconTheme::for_display(&display);
 

@@ -185,7 +185,6 @@ impl Apps {
                     result.push('_');
                     result.push_str(s);
                 }
-                dbg!(&result);
                 Some(result)
             } else {
                 app_scope.split('-').skip(2).next().and_then(|s| {
