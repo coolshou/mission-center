@@ -493,10 +493,9 @@ impl SysInfoV2 {
                         }
                     }
                 }
-                let apps = gatherer_supervisor.installed_apps();
                 readings.process_tree =
                     proc_info::process_hierarchy(&processes).unwrap_or_default();
-                readings.running_apps = app_info::running_apps(&readings.process_tree, &apps);
+                readings.running_apps = gatherer_supervisor.apps();
 
                 let cpu_static_info = readings.cpu_info.static_info.clone();
 
@@ -556,13 +555,12 @@ impl SysInfoV2 {
                     eprintln!("Process load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let apps = gatherer_supervisor.installed_apps();
-                    eprintln!("App load took: {:?}", timer.elapsed());
+                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
+                    eprintln!("Process tree load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
-                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
-                    let running_apps = app_info::running_apps(&process_tree, &apps);
-                    eprintln!("Process tree load took: {:?}", timer.elapsed());
+                    let running_apps = gatherer_supervisor.apps();
+                    eprintln!("App load took: {:?}", timer.elapsed());
 
                     let mut readings = Readings {
                         cpu_info: CpuInfo {
@@ -590,12 +588,14 @@ impl SysInfoV2 {
                         if let Some(app) = crate::MissionCenterApplication::default_instance() {
                             let now = std::time::Instant::now();
 
+                            let timer = std::time::Instant::now();
                             if !app.refresh_readings(&mut readings) {
                                 g_critical!(
                                         "MissionCenter::SysInfo",
                                         "Readings were not completely refreshed, stale readings will be displayed"
                                     );
                             }
+                            eprintln!("UI refresh took: {:?}", timer.elapsed());
 
                             g_debug!(
                                 "MissionCenter::SysInfo",

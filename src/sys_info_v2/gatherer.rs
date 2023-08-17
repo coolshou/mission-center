@@ -22,10 +22,12 @@ use common::ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMe
 
 const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
 
+pub type ArrayString = common::ArrayString;
 pub type SharedData = common::SharedData;
 pub type SharedDataContent = common::SharedDataContent;
 pub type Message = common::ipc::Message;
 pub type AppDescriptor = common::AppDescriptor;
+pub type AppStats = common::AppStats;
 pub type ExitCode = common::ExitCode;
 pub type ProcessDescriptor = common::ProcessDescriptor;
 pub type ProcessState = common::ProcessState;

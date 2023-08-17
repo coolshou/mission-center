@@ -53,6 +53,7 @@ template $AppsPage : Box {
                 name: bind (expander.item as <$ViewModel>).name;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
                 show-expander: bind (expander.item as <$ViewModel>).show-expander;
+                expanded: bind (expander.item as <$ViewModel>).expanded;
 
                 cpu-usage-percent: bind (expander.item as <$ViewModel>).cpu-usage-percent;
                 memory-usage-percent: bind (expander.item as <$ViewModel>).memory-usage-percent;

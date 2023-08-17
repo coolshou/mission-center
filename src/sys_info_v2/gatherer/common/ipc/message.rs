@@ -22,7 +22,8 @@
 #[allow(dead_code)]
 pub enum Message {
     GetProcesses,
-    GetInstalledApps,
+    GetApps,
+    GetAppPIDs,
     TerminateProcess(u32 /* PID */),
     KillProcess(u32 /* PID */),
     KillProcessTree(u32 /* Parent PID */),

@@ -18,24 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use super::Process;
-
-const APP_BLACKLIST: &[&'static str] = &["fish", "Fish", "Guake Preferences"];
+pub type Stats = super::gatherer::AppStats;
 
 #[derive(Debug, Default, Clone)]
 pub struct App {
     base: super::gatherer::AppDescriptor,
     pub pids: Vec<u32>,
-    pub stats: Stats,
-}
-
-#[derive(Debug, Default, Copy, Clone)]
-pub struct Stats {
-    pub cpu_usage: f32,
-    pub memory_usage: f32,
-    pub disk_usage: f32,
-    pub network_usage: f32,
-    pub gpu_usage: f32,
 }
 
 impl App {
@@ -52,35 +40,34 @@ impl App {
     }
 
     #[inline]
-    pub fn commands(&self) -> &[arrayvec::ArrayString<128>] {
-        &self.base.commands
-    }
-
-    #[inline]
     pub fn icon(&self) -> Option<&str> {
         self.base.icon.as_deref()
     }
 
     #[inline]
-    pub fn app_id(&self) -> Option<&str> {
-        self.base.app_id.as_deref()
+    pub fn id(&self) -> &str {
+        self.base.id.as_str()
     }
 
     #[inline]
-    pub fn is_flatpak(&self) -> bool {
-        self.base.is_flatpak
+    pub fn command(&self) -> &str {
+        self.base.command.as_str()
+    }
+
+    #[inline]
+    pub fn stats(&self) -> &Stats {
+        &self.base.stats
     }
 }
 
 impl super::GathererSupervisor {
-    pub fn installed_apps(&mut self) -> Vec<App> {
+    pub fn apps(&mut self) -> std::collections::HashMap<String, App> {
         use super::gatherer::SharedDataContent;
         use gtk::glib::*;
 
-        let mut result = vec![];
-
+        let mut running_apps = vec![];
         self.execute(
-            super::gatherer::Message::GetInstalledApps,
+            super::gatherer::Message::GetApps,
             |gatherer, process_restarted| {
                 let shared_memory = match gatherer.shared_memory() {
                     Ok(shm) => shm,
@@ -95,27 +82,104 @@ impl super::GathererSupervisor {
                 };
 
                 match shared_memory.content {
-                    SharedDataContent::InstalledApps(ref apps) => {
+                    SharedDataContent::Apps(ref apps) => {
                         if process_restarted {
-                            result.clear();
+                            running_apps.clear();
                         }
 
                         for app in &apps.apps {
-                            result.push(App::new(app.clone()));
+                            running_apps.push(App::new(app.clone()));
                         }
                         apps.is_complete
                     }
                     SharedDataContent::Processes(_) => {
                         g_critical!(
                             "MissionCenter::AppInfo",
-                            "Shared data content is Processes instead of InstalledApps; encountered when reading installed apps from gatherer", 
+                            "Shared data content is Processes instead of Apps; encountered when reading installed apps from gatherer",
+                        );
+                        false
+                    }
+                    SharedDataContent::AppPIDs(_) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Shared data content is AppPIDs instead of Apps; encountered when reading installed apps from gatherer",
                         );
                         false
                     }
                     SharedDataContent::Monostate => {
                         g_critical!(
                             "MissionCenter::AppInfo",
-                            "Shared data content is Monostate instead of InstalledApps; encountered when reading installed apps from gatherer", 
+                            "Shared data content is Monostate instead of Apps; encountered when reading installed apps from gatherer",
+                        );
+                        false
+                    }
+                }
+            },
+        );
+
+        let mut result = std::collections::HashMap::new();
+        if running_apps.is_empty() {
+            return result;
+        }
+
+        let mut current_app_index = 0_usize;
+        let mut current_app = running_apps[current_app_index].clone();
+        self.execute(
+            super::gatherer::Message::GetAppPIDs,
+            |gatherer, process_restarted| {
+                let shared_memory = match gatherer.shared_memory() {
+                    Ok(shm) => shm,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Unable to to access shared memory: {}",
+                            e
+                        );
+                        return false;
+                    }
+                };
+
+                match shared_memory.content {
+                    SharedDataContent::AppPIDs(ref pids) => {
+                        if process_restarted {
+                            g_critical!("MissionCenter::AppInfo", "Gatherer process restarted while reading app PIDs from it, incomplete data will be shown");
+                            return true;
+                        }
+
+                        for pid in &pids.pids {
+                            if *pid == 0 {
+                                result.insert(current_app.id().to_string(), core::mem::take(&mut current_app));
+
+                                current_app_index += 1;
+                                if current_app_index >= running_apps.len() {
+                                    break;
+                                }
+                                current_app = running_apps[current_app_index].clone();
+                                continue;
+                            }
+
+                            current_app.pids.push(*pid);
+                        }
+                        pids.is_complete
+                    }
+                    SharedDataContent::Processes(_) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Processes instead of AppPIDs; encountered when reading installed apps from gatherer",
+                        );
+                        false
+                    }
+                    SharedDataContent::Apps(_) => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Apps instead of AppPIDs; encountered when reading installed apps from gatherer",
+                        );
+                        false
+                    }
+                    SharedDataContent::Monostate => {
+                        g_critical!(
+                            "MissionCenter::AppInfo",
+                            "Shared data content is Monostate instead of AppPIDs; encountered when reading installed apps from gatherer",
                         );
                         false
                     }
@@ -125,128 +189,4 @@ impl super::GathererSupervisor {
 
         result
     }
-}
-
-pub fn running_apps(
-    root_process: &Process,
-    apps: &[App],
-) -> std::collections::HashMap<String, App> {
-    use gtk::glib::*;
-    use std::collections::HashMap;
-
-    fn find_app<'a>(
-        app: &App,
-        // Iterating over these consumes the iterator, and we need to iterate over them twice
-        processes_once: impl IntoIterator<Item = &'a Process>,
-        processes_again: impl IntoIterator<Item = &'a Process>,
-        result: &mut HashMap<String, App>,
-    ) {
-        fn update_or_insert_app(app: &App, process: &Process, app_list: &mut HashMap<String, App>) {
-            if let Some(app) = app_list.get_mut(app.name()) {
-                app.pids.push(process.pid());
-                app.stats.cpu_usage += process.stats().cpu_usage;
-                app.stats.memory_usage += process.stats().memory_usage;
-                app.stats.disk_usage += process.stats().disk_usage;
-                app.stats.network_usage += process.stats().network_usage;
-                app.stats.gpu_usage += process.stats().gpu_usage;
-            } else {
-                let mut app = app.clone();
-                app.pids.push(process.pid());
-                app.stats.cpu_usage = process.stats().cpu_usage;
-                app.stats.memory_usage = process.stats().memory_usage;
-                app.stats.disk_usage = process.stats().disk_usage;
-                app.stats.network_usage = process.stats().network_usage;
-                app.stats.gpu_usage = process.stats().gpu_usage;
-                app_list.insert(app.name().to_string(), app);
-            }
-        }
-
-        let mut found = false;
-        for process in processes_once {
-            if app.is_flatpak() {
-                if process.name() == "bwrap" {
-                    for arg in process.cmd() {
-                        for command in app.commands() {
-                            if arg.contains(command.as_str()) {
-                                update_or_insert_app(app, process, result);
-                                found = true;
-                            }
-                        }
-                    }
-                }
-            } else {
-                for command in app.commands() {
-                    if process.exe() == command.as_str() {
-                        update_or_insert_app(app, process, result);
-                        found = true;
-                        break;
-                    }
-                }
-                if !found {
-                    let mut iter = process.cmd().iter();
-                    if let Some(cmd) = iter.next() {
-                        for command in app.commands() {
-                            if cmd.ends_with(command.as_str()) {
-                                update_or_insert_app(app, process, result);
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if !found {
-                            // The app might use a runtime (bash, python, node, mono, dotnet, etc.) so check the second argument
-                            if let Some(cmd) = iter.next() {
-                                for command in app.commands() {
-                                    if cmd.ends_with(command.as_str()) {
-                                        update_or_insert_app(app, process, result);
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if found {
-            return;
-        }
-
-        for processes in processes_again {
-            find_app(
-                app,
-                processes.children.values(),
-                processes.children.values(),
-                result,
-            );
-        }
-    }
-
-    let start = std::time::Instant::now();
-
-    let mut running_apps = HashMap::new();
-    for app in apps {
-        if APP_BLACKLIST.contains(&app.name()) {
-            continue;
-        }
-
-        find_app(
-            app,
-            root_process.children.values(),
-            root_process.children.values(),
-            &mut running_apps,
-        );
-    }
-
-    g_debug!(
-        "MissionCenter::AppInfo",
-        "[{}:{}] Found running apps in {}ms",
-        file!(),
-        line!(),
-        start.elapsed().as_millis()
-    );
-
-    return running_apps;
 }
