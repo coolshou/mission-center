@@ -461,56 +461,66 @@ mod imp {
             }
             let window = window.unwrap();
 
-            let window_clone = window.clone();
-            let filter = gtk::CustomFilter::new(move |obj| {
-                use textdistance::{Algorithm, Levenshtein};
+            let filter = gtk::CustomFilter::new({
+                let window = window.downgrade();
+                move |obj| {
+                    use textdistance::{Algorithm, Levenshtein};
 
-                let window = window_clone.imp();
+                    let window = match window.upgrade() {
+                        None => return true,
+                        Some(w) => w,
+                    };
+                    let window = window.imp();
 
-                if !window.search_button.is_active() {
-                    return true;
+                    if !window.search_button.is_active() {
+                        return true;
+                    }
+
+                    if window.search_entry.text().is_empty() {
+                        return true;
+                    }
+
+                    let view_model = match obj
+                        .downcast_ref::<gtk::TreeListRow>()
+                        .and_then(|row| row.item())
+                        .and_then(|item| item.downcast::<ViewModel>().ok())
+                    {
+                        None => return false,
+                        Some(vm) => vm,
+                    };
+                    if view_model.content_type() == ContentType::SectionHeader as u8 {
+                        return true;
+                    }
+
+                    let entry_name = view_model.name().to_lowercase();
+                    let search_query = window.search_entry.text().to_lowercase();
+
+                    if entry_name.contains(&search_query) {
+                        return true;
+                    }
+
+                    if search_query.contains(&entry_name) {
+                        return true;
+                    }
+
+                    let str_distance = Levenshtein::default()
+                        .for_str(&entry_name, &search_query)
+                        .ndist();
+                    if str_distance <= 0.6 {
+                        return true;
+                    }
+
+                    false
                 }
-
-                if window.search_entry.text().is_empty() {
-                    return true;
-                }
-
-                let view_model = obj
-                    .downcast_ref::<gtk::TreeListRow>()
-                    .and_then(|row| row.item())
-                    .and_then(|item| item.downcast::<ViewModel>().ok());
-                if view_model.is_none() {
-                    return false;
-                }
-                let view_model = view_model.unwrap();
-                if view_model.content_type() == ContentType::SectionHeader as u8 {
-                    return true;
-                }
-
-                let entry_name = view_model.name().to_lowercase();
-                let search_query = window.search_entry.text().to_lowercase();
-
-                if entry_name.contains(&search_query) {
-                    return true;
-                }
-
-                if search_query.contains(&entry_name) {
-                    return true;
-                }
-
-                let str_distance = Levenshtein::default()
-                    .for_str(&entry_name, &search_query)
-                    .ndist();
-                if str_distance <= 0.6 {
-                    return true;
-                }
-
-                false
             });
 
-            let filter_clone = filter.clone();
-            window.imp().search_entry.connect_search_changed(move |_| {
-                filter_clone.changed(gtk::FilterChange::Different)
+            window.imp().search_entry.connect_search_changed({
+                let filter = filter.downgrade();
+                move |_| {
+                    if let Some(filter) = filter.upgrade() {
+                        filter.changed(gtk::FilterChange::Different);
+                    }
+                }
             });
 
             gtk::FilterListModel::new(Some(model), Some(filter))
