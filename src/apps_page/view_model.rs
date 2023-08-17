@@ -84,6 +84,14 @@ mod imp {
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
                 show_expander: Cell::new(true),
+                // FIXME (Romeo Calota): 
+                // This property is only used as a workaround for a weirdness in GTK.
+                // When the property is set to false, the list item will honor it and collapse the
+                // expander. However, when the property is set to true, the list item will ignore it.
+                // This is done to force App entries to initially be collapsed, while retaining
+                // the ability to stay expanded when the user expands them.
+                // Ideally this should be a bidirectional bind with the list item, but there is no
+                // way to know when a user expands or collapses an item.
                 expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),

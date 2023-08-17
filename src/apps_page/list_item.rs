@@ -261,7 +261,24 @@ mod imp {
                     }
                     Some(model) => model,
                 };
-                view_model.set_expanded(true);
+
+                // FIXME (Romeo Calota):
+                // Compound hackery with the property in the ViewModel. If we're an app we start
+                // out collapsed. We set the expanded property to true in the model, so that any
+                // action from the user (expand/collapse) will be ignored. We do this with a timeout
+                // so that the view has time to refresh at least once with the binding set to true.
+                let model_content_type: ContentType =
+                    unsafe { core::mem::transmute(view_model.content_type()) };
+                if model_content_type == ContentType::App {
+                    glib::timeout_add_seconds_local_once(1, {
+                        let view_model = view_model.downgrade();
+                        move || {
+                            if let Some(view_model) = view_model.upgrade() {
+                                view_model.set_expanded(true);
+                            }
+                        }
+                    });
+                }
 
                 if let Some(column_view_cell) = tree_expander.parent() {
                     let style_provider = unsafe { &*self.css_provider.as_ptr() };
