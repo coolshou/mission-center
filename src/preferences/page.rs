@@ -325,8 +325,26 @@ impl PreferencesPage {
         };
 
         let this = self.imp();
-        this.remember_sorting
-            .set_active(settings.boolean("apps-page-remember-sorting"));
+
+        let remember_sorting = settings.boolean("apps-page-remember-sorting");
+        if !remember_sorting {
+            if let Err(e) = settings.set_enum("apps-page-sorting-column", 255) {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to reset apps-page-sorting-column setting: {}",
+                    e
+                );
+            }
+            if let Err(e) = settings.set_enum("apps-page-sorting-order", 255) {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to reset apps-page-sorting-order setting: {}",
+                    e
+                );
+            }
+        }
+
+        this.remember_sorting.set_active(remember_sorting);
 
         this.settings.set(Some(settings));
     }
