@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-08-16 06:10+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
@@ -252,23 +252,40 @@ msgstr ""
 msgid "First official release!"
 msgstr "Ensimmäinen virallinen julkaisu!"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Suoritin"
@@ -290,7 +307,7 @@ msgstr "Käyttö"
 msgid "Speed"
 msgstr "Nopeus"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Prosessit"
 
@@ -510,7 +527,7 @@ msgstr "Jotkin tiedot vaativat ylläpitäjän oikeuksia"
 msgid "_Authenticate"
 msgstr "_Tunnistaudu"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Muisti"
@@ -615,8 +632,8 @@ msgstr "Yleiset asetukset"
 msgid "Update Speed"
 msgstr "Päivitysnopeus"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "Nopea"
 
@@ -624,9 +641,9 @@ msgstr "Nopea"
 msgid "Refresh every half second"
 msgstr "Päivitä puolen sekunnin välein"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "Tavallinen"
 
@@ -634,8 +651,8 @@ msgstr "Tavallinen"
 msgid "Refresh every second"
 msgstr "Päivitä sekunnin välein"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "Hidas"
 
@@ -643,14 +660,31 @@ msgstr "Hidas"
 msgid "Refresh every second and a half"
 msgstr "Päivitä 1,5 sekunnin välein"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "Erittäin hidas"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Päivitä kahden sekunnin välein"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Yleiset asetukset"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:43
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -664,7 +698,7 @@ msgstr "Ladataan..."
 msgid "Performance"
 msgstr "Suorituskyky"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Sovellukset"
 
@@ -676,33 +710,33 @@ msgstr "_Asetukset"
 msgid "_About MissionCenter"
 msgstr "_Tietoja - Tehtäväkeskus"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr "Nimi"
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:1016
 msgid "Disk"
 msgstr "Levy"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr "Pysäytä sovellus"
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr "Pysäytä sovellus pakolla"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Stop Process"
 msgstr "Pysäytä prosessi"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr "Pysäytä prosessi pakolla"
 

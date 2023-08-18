@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-08-07 03:54+0000\n"
 "Last-Translator: NF <muwuren@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -252,23 +252,40 @@ msgstr "修復系統負載過重時發生的崩潰"
 msgid "First official release!"
 msgstr "首次正式發布！"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
 msgstr "應用程式啟動時顯示的頁面"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "資料和使用者介面更新的頻率為何"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr "在 CPU 效能頁面上顯示哪個圖表"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "在效能標籤中，應用程式啟動時顯示的頁面"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -290,7 +307,7 @@ msgstr "使用率"
 msgid "Speed"
 msgstr "速度"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "處理程序"
 
@@ -510,7 +527,7 @@ msgstr "某些資訊需要管理員權限"
 msgid "_Authenticate"
 msgstr "驗證"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "記憶體"
@@ -615,8 +632,8 @@ msgstr "一般設定"
 msgid "Update Speed"
 msgstr "更新速度"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "快"
 
@@ -624,9 +641,9 @@ msgstr "快"
 msgid "Refresh every half second"
 msgstr "每半秒更新一次"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "正常"
 
@@ -634,8 +651,8 @@ msgstr "正常"
 msgid "Refresh every second"
 msgstr "每秒更新一次"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "慢"
 
@@ -643,14 +660,32 @@ msgstr "慢"
 msgid "Refresh every second and a half"
 msgstr "每 1.5 秒更新一次"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "非常慢"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "每 2 秒更新一次"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "一般設定"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:43
+#, fuzzy
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr "修復了一個錯誤，導致某些使用者的應用程式和處理程序列表為空"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -664,7 +699,7 @@ msgstr ""
 msgid "Performance"
 msgstr "效能"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "應用程式"
 
@@ -676,34 +711,34 @@ msgstr "偏好設定"
 msgid "_About MissionCenter"
 msgstr "關於任務中心"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr "名稱"
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:1016
 msgid "Disk"
 msgstr "磁碟"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr ""
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr ""
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 #, fuzzy
 msgid "Stop Process"
 msgstr "處理程序"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-07-31 22:06+0000\n"
 "Last-Translator: Jonas Antunes <jonasbantunes@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
@@ -245,26 +245,43 @@ msgstr ""
 msgid "First official release!"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
 msgstr "Qual página deve ser exibida na inicialização do aplicativo"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
 "Com que velocidade os dados devem ser atualizados e a interface do usuário "
 "deve ser atualizada"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Qual gráfico é mostrado na página de desempenho da CPU"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Qual página é mostrada na inicialização do aplicativo, na aba de Desempenho"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -286,7 +303,7 @@ msgstr "Utilização"
 msgid "Speed"
 msgstr "Velocidade"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Processos"
 
@@ -506,7 +523,7 @@ msgstr "Algumas informações precisam de privilégios administrativos"
 msgid "_Authenticate"
 msgstr "_Autenticar"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memória"
@@ -611,8 +628,8 @@ msgstr "Configurações gerais"
 msgid "Update Speed"
 msgstr "Velocidade de atualização"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "Rápida"
 
@@ -620,9 +637,9 @@ msgstr "Rápida"
 msgid "Refresh every half second"
 msgstr "Atualizar a cada meio segundo"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "Normal"
 
@@ -630,8 +647,8 @@ msgstr "Normal"
 msgid "Refresh every second"
 msgstr "Atualizar a cada segundo"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "Lenta"
 
@@ -639,14 +656,31 @@ msgstr "Lenta"
 msgid "Refresh every second and a half"
 msgstr "Atualizar a cada segundo e meio"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "Muito lenta"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Atualizar a cada 2 segundos"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Configurações gerais"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:43
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -660,7 +694,7 @@ msgstr ""
 msgid "Performance"
 msgstr "Desempenho"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Aplicativos"
 
@@ -672,35 +706,35 @@ msgstr "_Preferências"
 msgid "_About MissionCenter"
 msgstr "_Sobre o Mission Center"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:1016
 #, fuzzy
 msgid "Disk"
 msgstr "_Disco"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr ""
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr ""
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 #, fuzzy
 msgid "Stop Process"
 msgstr "Processos"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr ""
 

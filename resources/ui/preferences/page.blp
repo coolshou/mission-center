@@ -33,18 +33,14 @@ template $PreferencesPage : Adw.PreferencesPage {
   Adw.PreferencesGroup {
     title: _("App Page Settings");
 
-    Adw.ExpanderRow merged_process_stats {
+    $SwitchRow merged_process_stats {
       title: _("Merge Process Stats");
+      subtitle: _("Parent and child process stats are shown individually or merged upwards");
+    }
 
-      $CheckedRow mps_no {
-        title: _("No");
-        subtitle: _("Parent and child process stats are shown individually");
-      }
-
-      $CheckedRow mps_yes {
-        title: _("Yes");
-        subtitle: _("Parent and child process stats are merged upwards");
-      }
+    $SwitchRow remember_sorting {
+      title: _("Remember Sorting");
+      subtitle: _("Remember the sorting of the app and process list across app restarts");
     }
   }
 }

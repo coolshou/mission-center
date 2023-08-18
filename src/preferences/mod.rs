@@ -1,4 +1,4 @@
-/* preferences/view_models
+/* preferences/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -23,6 +23,7 @@ use gtk::{gio, glib};
 
 mod checked_row_widget;
 mod page;
+mod switch_row;
 
 mod imp {
     use super::*;
