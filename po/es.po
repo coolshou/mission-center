@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 08:45+0300\n"
 "PO-Revision-Date: 2023-08-16 06:10+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
@@ -291,16 +291,21 @@ msgstr "Qué página se muestra al iniciar la aplicación"
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "Con qué rapidez deben actualizarse los datos y la interfaz de usuario"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:25
+msgid ""
+"Parent process stats should contain the sum of the stats of their children"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Qué gráfico se muestra en la página de rendimiento de la CPU"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Qué página se muestra al iniciar la aplicación, en la pestaña de rendimiento"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -322,7 +327,7 @@ msgstr "Uso"
 msgid "Speed"
 msgstr "Velocidad"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
 msgid "Processes"
 msgstr "Procesos"
 
@@ -542,7 +547,7 @@ msgstr "Alguna información requiere privilegios administrativos"
 msgid "_Authenticate"
 msgstr "_Autenticar"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memoria"
@@ -647,8 +652,8 @@ msgstr "Configuración general"
 msgid "Update Speed"
 msgstr "Velocidad de actualización"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
+#: src/preferences/page.rs:301
 msgid "Fast"
 msgstr "Rápida"
 
@@ -656,9 +661,9 @@ msgstr "Rápida"
 msgid "Refresh every half second"
 msgstr "Actualizar cada medio segundo"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
+#: src/preferences/page.rs:124 src/preferences/page.rs:305
+#: src/preferences/page.rs:321
 msgid "Normal"
 msgstr "Normal"
 
@@ -666,8 +671,8 @@ msgstr "Normal"
 msgid "Refresh every second"
 msgstr "Actualizar cada segundo"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
+#: src/preferences/page.rs:309
 msgid "Slow"
 msgstr "Lenta"
 
@@ -675,14 +680,43 @@ msgstr "Lenta"
 msgid "Refresh every second and a half"
 msgstr "Actualizar cada segundo y medio"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
+#: src/preferences/page.rs:313
 msgid "Very Slow"
 msgstr "Muy lenta"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Actualizar cada 2 segundos"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Configuración general"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
+#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
+#: src/preferences/page.rs:178 src/preferences/page.rs:347
+msgid "No"
+msgstr "No"
+
+#: resources/ui/preferences/page.blp:41
+msgid "Parent and child process stats are shown individually"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
+#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
+#: src/preferences/page.rs:351
+msgid "Yes"
+msgstr "Sí"
+
+#: resources/ui/preferences/page.blp:46
+msgid "Parent and child process stats are merged upwards"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -696,7 +730,7 @@ msgstr "Cargando..."
 msgid "Performance"
 msgstr "Rendimiento"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
 msgid "Apps"
 msgstr "Aplicaciones"
 
@@ -708,33 +742,33 @@ msgstr "_Preferencias"
 msgid "_About MissionCenter"
 msgstr "_Acerca de Mission Center"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:864
 msgid "Name"
 msgstr "Nombre"
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:870
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:888
 msgid "Disk"
 msgstr "Disco"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr "Detener la aplicación"
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr "Forzar la detención la aplicación"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Stop Process"
 msgstr "Detener el proceso"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr "Forzar la detención del proceso"
 
@@ -843,14 +877,6 @@ msgstr "Soportado"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "No soportado"
-
-#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
-msgid "Yes"
-msgstr "Sí"
-
-#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
-msgid "No"
-msgstr "No"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

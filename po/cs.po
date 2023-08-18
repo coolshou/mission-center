@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 08:45+0300\n"
 "PO-Revision-Date: 2023-08-02 15:25+0200\n"
 "Last-Translator: ondra05 <ondra@ondra05.cz>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,15 +273,20 @@ msgstr "Která stránka se zobrazí po spuštění aplikace"
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "Jak rychle mají být data a rozhraní aktualizovány"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:25
+msgid ""
+"Parent process stats should contain the sum of the stats of their children"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Jaký graf se zobrazí na stránce výkonu procesoru"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "Jaká stránka se zobrazí po spuštění aplikace na záložce výkonu"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Procesor"
@@ -303,7 +308,7 @@ msgstr "Využití"
 msgid "Speed"
 msgstr "Takt"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
 msgid "Processes"
 msgstr "Procesy"
 
@@ -523,7 +528,7 @@ msgstr "K získání některých informací je zapotřebí ověření"
 msgid "_Authenticate"
 msgstr "_Ověřit"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Paměť"
@@ -628,8 +633,8 @@ msgstr "Obecné"
 msgid "Update Speed"
 msgstr "Rychlost aktualizace"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
+#: src/preferences/page.rs:301
 msgid "Fast"
 msgstr "Rychlá"
 
@@ -637,9 +642,9 @@ msgstr "Rychlá"
 msgid "Refresh every half second"
 msgstr "Aktualizovat každou půl sekundu"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
+#: src/preferences/page.rs:124 src/preferences/page.rs:305
+#: src/preferences/page.rs:321
 msgid "Normal"
 msgstr "Normální"
 
@@ -647,8 +652,8 @@ msgstr "Normální"
 msgid "Refresh every second"
 msgstr "Aktualizovat každou sekundu"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
+#: src/preferences/page.rs:309
 msgid "Slow"
 msgstr "Pomalá"
 
@@ -656,14 +661,43 @@ msgstr "Pomalá"
 msgid "Refresh every second and a half"
 msgstr "Aktualizovat každou 1.5 sekundu"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
+#: src/preferences/page.rs:313
 msgid "Very Slow"
 msgstr "Velmi pomalá"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Aktualizovat každé 2 sekundy"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Obecné"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
+#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
+#: src/preferences/page.rs:178 src/preferences/page.rs:347
+msgid "No"
+msgstr "Ne"
+
+#: resources/ui/preferences/page.blp:41
+msgid "Parent and child process stats are shown individually"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
+#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
+#: src/preferences/page.rs:351
+msgid "Yes"
+msgstr "Ano"
+
+#: resources/ui/preferences/page.blp:46
+msgid "Parent and child process stats are merged upwards"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -677,7 +711,7 @@ msgstr ""
 msgid "Performance"
 msgstr "Výkon"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
 msgid "Apps"
 msgstr "Aplikace"
 
@@ -689,35 +723,35 @@ msgstr "_Předvolby"
 msgid "_About MissionCenter"
 msgstr "_O MissionCenter"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:864
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:870
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:888
 #, fuzzy
 msgid "Disk"
 msgstr "_Disk"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr ""
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr ""
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 #, fuzzy
 msgid "Stop Process"
 msgstr "Procesy"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr ""
 
@@ -824,14 +858,6 @@ msgstr "Podporovaná"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "Nepodporovaná"
-
-#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
-msgid "Yes"
-msgstr "Ano"
-
-#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
-msgid "No"
-msgstr "Ne"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

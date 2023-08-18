@@ -236,18 +236,20 @@ mod imp {
 
                 // Find the first process that has any children. This is most likely the root
                 // of the App's process tree.
-                let primary_pid = {
-                    let mut primary_pid = app.pids[0];
-                    for pid in &app.pids {
+                let (primary_process, primary_pid) = {
+                    let mut primary_process = None;
+                    let mut primary_pid = 0;
+                    for (index, pid) in app.pids.iter().enumerate() {
                         if let Some(process) = find_process(&process_tree, *pid) {
-                            if process.children.len() > 0 {
-                                primary_pid = *pid;
+                            if process.children.len() > 0 || index == app.pids.len() - 1 {
+                                primary_process = Some(process);
+                                primary_pid = process.pid();
                                 break;
                             }
                         }
                     }
 
-                    primary_pid
+                    (primary_process, primary_pid)
                 };
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
@@ -289,15 +291,14 @@ mod imp {
                 };
 
                 let children = view_model.children().clone();
-                if let Some(process) = find_process(&process_tree, primary_pid) {
+                if let Some(process) = primary_process {
                     Self::update_process_model(self, children, process);
                 } else {
                     children.remove_all();
 
                     g_critical!(
                         "MissionCenter::AppsPage",
-                        "Failed to find process with PID {} in process tree, for App {}",
-                        primary_pid,
+                        "Failed to find process in process tree, for App {}",
                         app.name()
                     );
                 }

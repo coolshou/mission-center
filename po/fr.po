@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 08:45+0300\n"
 "PO-Revision-Date: 2023-08-16 06:10+0000\n"
 "Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
@@ -29,8 +29,8 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Gestionnaire de tâches;moniteur;ressources;système;processeur;processus;perfo"
-"rmance;CPU;GPU;disques;mémoire;réseau;utilisation;tâches;"
+"Gestionnaire de tâches;moniteur;ressources;système;processeur;processus;"
+"performance;CPU;GPU;disques;mémoire;réseau;utilisation;tâches;"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
 msgid "Mission Center Developers"
@@ -59,8 +59,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Visualisation du nombre de processus, de threads (fils) et de handles ("
-"ressources utilisées) du système, ainsi que du temps de fonctionnement, de "
+"Visualisation du nombre de processus, de threads (fils) et de handles "
+"(ressources utilisées) du système, ainsi que du temps de fonctionnement, de "
 "la vitesse d’horloge (de base et actuelle) et de la taille des caches"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:21
@@ -96,9 +96,9 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Surveillez l’utilisation globale du GPU (processeur graphique), l’"
-"utilisation des encodeurs et décodeurs vidéo, l’utilisation de la mémoire et "
-"la consommation d’énergie, grâce au projet NVTOP"
+"Surveillez l’utilisation globale du GPU (processeur graphique), "
+"l’utilisation des encodeurs et décodeurs vidéo, l’utilisation de la mémoire "
+"et la consommation d’énergie, grâce au projet NVTOP"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
@@ -116,8 +116,8 @@ msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
-"Utilise le rendu OpenGL pour tous les graphiques afin de réduire l’"
-"utilisation du CPU et de la consommation des ressources"
+"Utilise le rendu OpenGL pour tous les graphiques afin de réduire "
+"l’utilisation du CPU et de la consommation des ressources"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
@@ -209,8 +209,8 @@ msgstr ""
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
-"Correction des navigateurs, installés en tant que paquets natifs, qui ne s’"
-"affichaient pas dans la liste des applications"
+"Correction des navigateurs, installés en tant que paquets natifs, qui ne "
+"s’affichaient pas dans la liste des applications"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
@@ -225,8 +225,8 @@ msgstr "Correction de la traduction en portugais par Rafael Fontenelle"
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
-"N’afficher une adresse IPv6 locale que si aucune autre adresse IPv6 n’"
-"existe, par Maximilian"
+"N’afficher une adresse IPv6 locale que si aucune autre adresse IPv6 "
+"n’existe, par Maximilian"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
@@ -297,17 +297,22 @@ msgstr "Quelle page est affichée au démarrage de l’application"
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "À quelle vitesse doivent se rafraîchir les données et l’interface"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:25
+msgid ""
+"Parent process stats should contain the sum of the stats of their children"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Quel graph est affiché sur la page de performance du processeur"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Quelle page est affichée au lancement de l’application, dans l’onglet "
 "performance"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Processeur"
@@ -329,7 +334,7 @@ msgstr "Utilisation"
 msgid "Speed"
 msgstr "Vitesse"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
 msgid "Processes"
 msgstr "Processus"
 
@@ -549,7 +554,7 @@ msgstr "Certaines informations nécessitent des privilèges administrateur"
 msgid "_Authenticate"
 msgstr "S’_authentifier"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Mémoire"
@@ -654,8 +659,8 @@ msgstr "Paramètres génériques"
 msgid "Update Speed"
 msgstr "Fréquence de rafraîchissement"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
+#: src/preferences/page.rs:301
 msgid "Fast"
 msgstr "Rapide"
 
@@ -663,9 +668,9 @@ msgstr "Rapide"
 msgid "Refresh every half second"
 msgstr "Rafraîchit toutes les demi-secondes"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
+#: src/preferences/page.rs:124 src/preferences/page.rs:305
+#: src/preferences/page.rs:321
 msgid "Normal"
 msgstr "Normale"
 
@@ -673,8 +678,8 @@ msgstr "Normale"
 msgid "Refresh every second"
 msgstr "Rafraîchit toutes les secondes"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
+#: src/preferences/page.rs:309
 msgid "Slow"
 msgstr "Lente"
 
@@ -682,14 +687,43 @@ msgstr "Lente"
 msgid "Refresh every second and a half"
 msgstr "Rafraîchit toutes les secondes et demies"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
+#: src/preferences/page.rs:313
 msgid "Very Slow"
 msgstr "Très lente"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Rafraîchit toutes les deux secondes"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Paramètres génériques"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
+#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
+#: src/preferences/page.rs:178 src/preferences/page.rs:347
+msgid "No"
+msgstr "Non"
+
+#: resources/ui/preferences/page.blp:41
+msgid "Parent and child process stats are shown individually"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
+#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
+#: src/preferences/page.rs:351
+msgid "Yes"
+msgstr "Oui"
+
+#: resources/ui/preferences/page.blp:46
+msgid "Parent and child process stats are merged upwards"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -703,7 +737,7 @@ msgstr "Chargement…"
 msgid "Performance"
 msgstr "Performance"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
 msgid "Apps"
 msgstr "Applications"
 
@@ -715,33 +749,33 @@ msgstr "_Préférences"
 msgid "_About MissionCenter"
 msgstr "_À propos de MissionCenter"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:864
 msgid "Name"
 msgstr "Nom"
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:870
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:888
 msgid "Disk"
 msgstr "Disque"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr "Arrêter l’application"
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr "Forcer l’arrêt de l’application"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Stop Process"
 msgstr "Arrêter le processus"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr "Forcer l’arrêt du processus"
 
@@ -852,14 +886,6 @@ msgstr "Supporté"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "Non-supporté"
-
-#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
-msgid "Yes"
-msgstr "Oui"
-
-#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
-msgid "No"
-msgstr "Non"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

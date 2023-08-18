@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 08:45+0300\n"
 "PO-Revision-Date: 2023-08-17 14:47+0000\n"
 "Last-Translator: Kovács Bálint Hunor <kovacsbalinthunor53@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
@@ -29,9 +29,9 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Feladatkezelő;Erőforrásfigyelő;Rendszerfigyelő;Processzor;Folyamatok;Teljesít"
-"ményfigyelő;CPU;GPU;Lemez;Merevlemez;Memória;Hálózat;Kihasználtság;Kihasznált"
-"ság"
+"Feladatkezelő;Erőforrásfigyelő;Rendszerfigyelő;Processzor;Folyamatok;"
+"Teljesítményfigyelő;CPU;GPU;Lemez;Merevlemez;Memória;Hálózat;Kihasználtság;"
+"Kihasználtság"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
 msgid "Mission Center Developers"
@@ -105,7 +105,8 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Támogatja a kicsinyített összefoglaló nézetet az egyszerű felügyelethez"
+msgstr ""
+"Támogatja a kicsinyített összefoglaló nézetet az egyszerű felügyelethez"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid ""
@@ -294,16 +295,21 @@ msgstr ""
 "Milyen gyorsan kell frissíteni az adatokat és frissíteni a felhasználói "
 "felületet"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:25
+msgid ""
+"Parent process stats should contain the sum of the stats of their children"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Melyik grafikon jelenik meg a CPU-teljesítmény oldalon"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Melyik oldal jelenik meg az alkalmazás indításakor, a teljesítmény lapon"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Processzor"
@@ -325,7 +331,7 @@ msgstr "Kihasználtság"
 msgid "Speed"
 msgstr "Sebesség"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
 msgid "Processes"
 msgstr "Folyamatok"
 
@@ -545,7 +551,7 @@ msgstr "Néhány információhoz adminisztrátori jogosultságok szükségesek"
 msgid "_Authenticate"
 msgstr "_Hitelesítés"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memória"
@@ -650,8 +656,8 @@ msgstr "Általános beállítások"
 msgid "Update Speed"
 msgstr "Frissítési sebesség"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
+#: src/preferences/page.rs:301
 msgid "Fast"
 msgstr "Gyors"
 
@@ -659,9 +665,9 @@ msgstr "Gyors"
 msgid "Refresh every half second"
 msgstr "Fél másodpercenkénti frissítés"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
+#: src/preferences/page.rs:124 src/preferences/page.rs:305
+#: src/preferences/page.rs:321
 msgid "Normal"
 msgstr "Normál"
 
@@ -669,8 +675,8 @@ msgstr "Normál"
 msgid "Refresh every second"
 msgstr "Minden másodpercben frissítés"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
+#: src/preferences/page.rs:309
 msgid "Slow"
 msgstr "Lassú"
 
@@ -678,14 +684,43 @@ msgstr "Lassú"
 msgid "Refresh every second and a half"
 msgstr "Másfél másodpercenként frissítés"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
+#: src/preferences/page.rs:313
 msgid "Very Slow"
 msgstr "Nagyon lassú"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "Frissítés 2 másodpercenként"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "Általános beállítások"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
+#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
+#: src/preferences/page.rs:178 src/preferences/page.rs:347
+msgid "No"
+msgstr "Nem"
+
+#: resources/ui/preferences/page.blp:41
+msgid "Parent and child process stats are shown individually"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
+#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
+#: src/preferences/page.rs:351
+msgid "Yes"
+msgstr "Igen"
+
+#: resources/ui/preferences/page.blp:46
+msgid "Parent and child process stats are merged upwards"
+msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -699,7 +734,7 @@ msgstr "Betöltés..."
 msgid "Performance"
 msgstr "Teljesítmény"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
 msgid "Apps"
 msgstr "Alkalmazások"
 
@@ -711,33 +746,33 @@ msgstr "_Beállítások"
 msgid "_About MissionCenter"
 msgstr "_A MissionCenterről"
 
-#: src/apps_page/mod.rs:834
+#: src/apps_page/mod.rs:864
 msgid "Name"
 msgstr "Név"
 
-#: src/apps_page/mod.rs:840
+#: src/apps_page/mod.rs:870
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858
+#: src/apps_page/mod.rs:888
 msgid "Disk"
 msgstr "Lemez"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr "Alkalmazás leállítása"
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr "Alkalmazás kényszerített leállítása"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Stop Process"
 msgstr "Folyamat leállítása"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr "Folyamat kényszerített leállítása"
 
@@ -847,14 +882,6 @@ msgstr "Támogatott"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "Nem támogatott"
-
-#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
-msgid "Yes"
-msgstr "Igen"
-
-#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
-msgid "No"
-msgstr "Nem"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"
