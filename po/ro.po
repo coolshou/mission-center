@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 17:38+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-06-08 11:21+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -241,37 +241,45 @@ msgstr ""
 msgid "First official release!"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 #, fuzzy
 msgid "Which page is shown on application startup"
 msgstr ""
 "Care pagină este afișată la pornirea aplicației, în fila de performanță"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
 "Cât de repede ar trebui să fie reîmprospătate datele și interfața grafică "
 "actualizată"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:25
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:30
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:36
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Care grafic este afișat pe pagina de performanță a procesorului"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:41
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Care pagină este afișată la pornirea aplicației, în fila de performanță"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:877
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Procesor"
@@ -293,7 +301,7 @@ msgstr "Utilizare"
 msgid "Speed"
 msgstr "Viteză"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:405
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Procese"
 
@@ -513,7 +521,7 @@ msgstr "Anumite informații necesită privilegii de administrator"
 msgid "_Authenticate"
 msgstr "_Autentificare"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:883
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memorie"
@@ -685,7 +693,7 @@ msgstr ""
 msgid "Performance"
 msgstr ""
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:398
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Aplicații"
 
@@ -697,15 +705,15 @@ msgstr "_Preferințe"
 msgid "_About MissionCenter"
 msgstr "_Despre MissionCenter"
 
-#: src/apps_page/mod.rs:865
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:871
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:889
+#: src/apps_page/mod.rs:1016
 #, fuzzy
 msgid "Disk"
 msgstr "_Disc"

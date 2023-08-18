@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 17:38+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-08-16 06:10+0000\n"
 "Last-Translator: FineFindus <FineFindus@users.noreply.hosted.weblate.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
@@ -271,32 +271,40 @@ msgstr ""
 msgid "First official release!"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
 msgstr "Welche Seite beim Start des Programms gezeigt wird"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "Wie oft die daten der Benutzeroberfläche aktualisiert werden"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:25
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:30
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:36
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Welcher Graph auf der CPU Seite gezeigt wird"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:41
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "Welche Seite beim Programstart im Leistungstab angezeit wird"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:877
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -318,7 +326,7 @@ msgstr "Auslastung"
 msgid "Speed"
 msgstr "Geschwindigkeit"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:405
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Prozesse"
 
@@ -538,7 +546,7 @@ msgstr "Einige Informationen benötigen Anmeldung"
 msgid "_Authenticate"
 msgstr "_Entsperren"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:883
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Arbeitsspeicher"
@@ -709,7 +717,7 @@ msgstr ""
 msgid "Performance"
 msgstr "Leistung"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:398
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Apps"
 
@@ -721,15 +729,15 @@ msgstr "_Einstellungen"
 msgid "_About MissionCenter"
 msgstr "_Über MissionCenter"
 
-#: src/apps_page/mod.rs:865
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:871
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:889
+#: src/apps_page/mod.rs:1016
 #, fuzzy
 msgid "Disk"
 msgstr "_Datenträger"
