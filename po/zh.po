@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-12 15:22+0300\n"
+"POT-Creation-Date: 2023-08-18 19:41+0300\n"
 "PO-Revision-Date: 2023-08-08 15:53+0000\n"
 "Last-Translator: NF <muwuren@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -37,27 +37,22 @@ msgid "Mission Center Developers"
 msgstr "任务中心开发者"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:14
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:13
 msgid "Monitor system resource usage"
 msgstr "监控系统资源使用情况"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:15
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr "监控您的CPU、内存、硬盘、网络和GPU使用情况"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:17
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 msgid "Features:"
 msgstr "功能："
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:19
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "监控整体或每个核心的CPU使用情况"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:20
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -66,27 +61,22 @@ msgstr ""
 "大小"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:21
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid "Monitor RAM and Swap usage"
 msgstr "监控 RAM 和 Swap 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:22
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "查看系统使用内存的详细信息"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:23
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "监控磁盘使用情况和传输速率"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:24
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
 msgid "Monitor network utilization and transfer speeds"
 msgstr "监控网络使用情况和传输速度"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:25
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -96,7 +86,6 @@ msgstr ""
 "硬件地址、IP 地址"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:26
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -105,72 +94,59 @@ msgstr ""
 "项目NVTOP提供支持"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid "See a breakdown of resource usage by app and process"
 msgstr "查看应用程序和进程的资源使用详细信息"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:28
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "支持缩小的摘要视图以进行简单监控"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr "使用 OpenGL 渲染所有图表，以尽可能減少 CPU 和整体资源使用"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
 msgstr "使用 GTK4 和 Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:31
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Written in Rust"
 msgstr "使用 Rust 编写"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:32
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Flatpak first"
 msgstr "Flatpak 优先"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:34
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:33
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "限制（目前正在努力克服这些限制）："
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:36
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:35
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr "该应用程序目前只支持监控功能，例如您无法停止进程"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:37
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
 msgid "Disk utilization percentage might not be accurate"
 msgstr "磁盘利用率可能不准确"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:38
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
 msgid "No per-process network usage"
 msgstr "没有单个进程网络使用情况"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:39
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
 msgid "No per-process GPU usage"
 msgstr "沒有单个进程的 GPU 使用情況"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:40
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr "GPU 支持处于实验阶段，只能监控 AMD 和 nVidia 的 GPU"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:42
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:41
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "欢迎提供评论、建议、bug报告和贡献"
 
@@ -216,35 +192,29 @@ msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "由 Peter Dave Hello 新增繁体中文语言"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:118
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:102
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "由 Rafael Fontenelle 修复葡萄牙语翻译"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:119
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr "由 Maximilian 提供，如果沒有其他 IPv6，則只顯示連結本地 IPv6 位址"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:120
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "由 Peter Dave Hello 新增繁体中文语言"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:121
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
 msgid "Add category for application menu by Renner0E"
 msgstr "由 Renner0E 为应用程序菜单新增分类"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:122
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr "修复在解析 `dmidecode` 输出时导致panic的解析错误"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:123
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -253,60 +223,70 @@ msgstr ""
 "base_frequency` 不存在，則使用回退"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:124
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr "更新GPU选项卡UI，使其更适合较小分辨率"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:132
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:116
 msgid "Added Czech translation by ondra05"
 msgstr "由 ondra05 新增捷克语翻译"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:133
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:117
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "由 Rilson Joás 新增葡萄牙语翻译"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:134
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr "由 Hannes Kuchelmeister 为桌面文件新增关键字以改进桌面环境的搜索功能"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:135
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr "修复某些用户的应用程序和进程列表为空的bug"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:143
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:127
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr "修复系统负载过重时发生的崩溃"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:151
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
 msgid "First official release!"
 msgstr "首次正式发布！"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:14
+#: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
 msgstr "应用程序启动时显示的页面"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:20
+#: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "数据刷新和UI更新的频率多快"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:26
+#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:45
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
+msgid "The column id by which the Apps page view is sorted"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:55
+msgid "The sorting direction of the Apps page view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
 msgstr "在CPU性能页面上展示哪个图表"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "在性能标签下，应用程序启动时展示的页面"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:846
-#: src/performance_page/mod.rs:267 src/apps_page/mod.rs:725
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
+#: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
 
@@ -327,8 +307,7 @@ msgstr "使用率"
 msgid "Speed"
 msgstr "速度"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:384
-#: src/apps_page/mod.rs:364
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "进程"
 
@@ -377,17 +356,14 @@ msgid "L3 cache:"
 msgstr "L3 缓存："
 
 #: resources/ui/performance_page/cpu.blp:442
-#: resources/ui/performance_page/cpu.blp:441
 msgid "Change G_raph To"
 msgstr "更改图表为"
 
 #: resources/ui/performance_page/cpu.blp:445
-#: resources/ui/performance_page/cpu.blp:444
 msgid "Overall U_tilization"
 msgstr "整体使用率"
 
 #: resources/ui/performance_page/cpu.blp:450
-#: resources/ui/performance_page/cpu.blp:449
 msgid "Logical _Processors"
 msgstr "逻辑处理器"
 
@@ -396,11 +372,6 @@ msgstr "逻辑处理器"
 #: resources/ui/performance_page/gpu.blp:549
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
-#: resources/ui/performance_page/cpu.blp:457
-#: resources/ui/performance_page/disk.blp:385
-#: resources/ui/performance_page/gpu.blp:548
-#: resources/ui/performance_page/memory.blp:401
-#: resources/ui/performance_page/network.blp:368
 msgid "Graph _Summary View"
 msgstr "图表总览"
 
@@ -409,11 +380,6 @@ msgstr "图表总览"
 #: resources/ui/performance_page/gpu.blp:554
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
-#: resources/ui/performance_page/cpu.blp:462
-#: resources/ui/performance_page/disk.blp:390
-#: resources/ui/performance_page/gpu.blp:553
-#: resources/ui/performance_page/memory.blp:406
-#: resources/ui/performance_page/network.blp:373
 msgid "_View"
 msgstr "视图"
 
@@ -422,11 +388,6 @@ msgstr "视图"
 #: resources/ui/performance_page/gpu.blp:557
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
-#: resources/ui/performance_page/cpu.blp:465
-#: resources/ui/performance_page/disk.blp:393
-#: resources/ui/performance_page/gpu.blp:556
-#: resources/ui/performance_page/memory.blp:409
-#: resources/ui/performance_page/network.blp:376
 msgid "CP_U"
 msgstr "CPU"
 
@@ -435,11 +396,6 @@ msgstr "CPU"
 #: resources/ui/performance_page/gpu.blp:562
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
-#: resources/ui/performance_page/cpu.blp:470
-#: resources/ui/performance_page/disk.blp:398
-#: resources/ui/performance_page/gpu.blp:561
-#: resources/ui/performance_page/memory.blp:414
-#: resources/ui/performance_page/network.blp:381
 msgid "_Memory"
 msgstr "内存"
 
@@ -448,11 +404,6 @@ msgstr "内存"
 #: resources/ui/performance_page/gpu.blp:567
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
-#: resources/ui/performance_page/cpu.blp:475
-#: resources/ui/performance_page/disk.blp:403
-#: resources/ui/performance_page/gpu.blp:566
-#: resources/ui/performance_page/memory.blp:419
-#: resources/ui/performance_page/network.blp:386
 msgid "_Disk"
 msgstr "磁盘"
 
@@ -461,11 +412,6 @@ msgstr "磁盘"
 #: resources/ui/performance_page/gpu.blp:572
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
-#: resources/ui/performance_page/cpu.blp:480
-#: resources/ui/performance_page/disk.blp:408
-#: resources/ui/performance_page/gpu.blp:571
-#: resources/ui/performance_page/memory.blp:424
-#: resources/ui/performance_page/network.blp:391
 msgid "_Network"
 msgstr "网络"
 
@@ -474,11 +420,6 @@ msgstr "网络"
 #: resources/ui/performance_page/gpu.blp:577
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
-#: resources/ui/performance_page/cpu.blp:485
-#: resources/ui/performance_page/disk.blp:413
-#: resources/ui/performance_page/gpu.blp:576
-#: resources/ui/performance_page/memory.blp:429
-#: resources/ui/performance_page/network.blp:396
 msgid "_GPU"
 msgstr "GPU"
 
@@ -487,11 +428,6 @@ msgstr "GPU"
 #: resources/ui/performance_page/gpu.blp:585
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
-#: resources/ui/performance_page/cpu.blp:493
-#: resources/ui/performance_page/disk.blp:421
-#: resources/ui/performance_page/gpu.blp:584
-#: resources/ui/performance_page/memory.blp:437
-#: resources/ui/performance_page/network.blp:409
 msgid "_Copy"
 msgstr "复制"
 
@@ -591,8 +527,8 @@ msgstr "某些信息需要管理员权限"
 msgid "_Authenticate"
 msgstr "认证"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:852
-#: src/performance_page/mod.rs:318 src/apps_page/mod.rs:731
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
+#: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "内存"
 
@@ -685,7 +621,6 @@ msgid "IPv6 address:"
 msgstr "IPv6 地址："
 
 #: resources/ui/performance_page/network.blp:403
-#: resources/ui/performance_page/network.blp:402
 msgid "Network Se_ttings"
 msgstr "网络设置"
 
@@ -697,8 +632,8 @@ msgstr "一般设置"
 msgid "Update Speed"
 msgstr "更新速度"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:102
-#: src/preferences/page.rs:215
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "快"
 
@@ -706,9 +641,9 @@ msgstr "快"
 msgid "Refresh every half second"
 msgstr "每半秒更新一次"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:98
-#: src/preferences/page.rs:111 src/preferences/page.rs:219
-#: src/preferences/page.rs:235
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "正常"
 
@@ -716,8 +651,8 @@ msgstr "正常"
 msgid "Refresh every second"
 msgstr "每秒更新一次"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:94
-#: src/preferences/page.rs:223
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "慢"
 
@@ -725,14 +660,32 @@ msgstr "慢"
 msgid "Refresh every second and a half"
 msgstr "每 1.5 秒更新一次"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:90
-#: src/preferences/page.rs:227
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "非常慢"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
 msgstr "每 2 秒更新一次"
+
+#: resources/ui/preferences/page.blp:34
+#, fuzzy
+msgid "App Page Settings"
+msgstr "一般设置"
+
+#: resources/ui/preferences/page.blp:37
+msgid "Merge Process Stats"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:43
+#, fuzzy
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr "修复某些用户的应用程序和进程列表为空的bug"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -742,51 +695,50 @@ msgstr "输入名称或 PID 进行搜索"
 msgid "Loading..."
 msgstr ""
 
-#: resources/ui/window.blp:104 resources/ui/window.blp:80
+#: resources/ui/window.blp:104
 msgid "Performance"
 msgstr "性能"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:377
-#: resources/ui/window.blp:89 src/apps_page/mod.rs:357
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "应用程序"
 
-#: resources/ui/window.blp:124 resources/ui/window.blp:101
+#: resources/ui/window.blp:124
 msgid "_Preferences"
 msgstr "偏好设置"
 
-#: resources/ui/window.blp:129 resources/ui/window.blp:106
+#: resources/ui/window.blp:129
 msgid "_About MissionCenter"
 msgstr "关于任务中心"
 
-#: src/apps_page/mod.rs:834 src/apps_page/mod.rs:713
+#: src/apps_page/mod.rs:992
 msgid "Name"
 msgstr "名称"
 
-#: src/apps_page/mod.rs:840 src/apps_page/mod.rs:719
+#: src/apps_page/mod.rs:998
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:858 src/apps_page/mod.rs:737
+#: src/apps_page/mod.rs:1016
 msgid "Disk"
 msgstr "磁盘"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Stop Application"
 msgstr ""
 
-#: src/apps_page/list_item.rs:290
+#: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
 msgstr ""
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 #, fuzzy
 msgid "Stop Process"
 msgstr "进程"
 
-#: src/apps_page/list_item.rs:294
+#: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
 msgstr ""
 
@@ -923,13 +875,12 @@ msgstr "{} {}bps"
 msgid "N/A"
 msgstr "无法获取"
 
-#: src/application.rs:261 src/application.rs:221
+#: src/application.rs:261
 msgid "translator-credits"
 msgstr "NS nsfoxer <muwuren@gmail.com>"
 
-#: resources/ui/window.blp:113
-msgid "_Quit"
-msgstr "退出"
+#~ msgid "_Quit"
+#~ msgstr "退出"
 
 #~ msgid "No description"
 #~ msgstr "無描述"

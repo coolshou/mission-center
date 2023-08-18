@@ -230,7 +230,7 @@ impl MissionCenterWindow {
             settings.connect_changed(
                 Some("update-speed"),
                 clone!(@weak this => move |settings, _| {
-                    use crate::{application::MissionCenterApplication, sys_info_v2::UpdateSpeed};
+                    use crate::{MissionCenterApplication, sys_info_v2::UpdateSpeed};
 
                     let update_speed: UpdateSpeed = settings.int("update-speed").into();
                     let app = match MissionCenterApplication::default_instance() {
@@ -252,7 +252,7 @@ impl MissionCenterWindow {
             );
 
             settings.connect_changed(Some("apps-page-merged-process-stats"), clone!(@weak this => move |settings, _| {
-                use crate::{application::MissionCenterApplication};
+                use crate::MissionCenterApplication;
                 let merged_process_stats = settings.boolean("apps-page-merged-process-stats");
 
                 let app = match MissionCenterApplication::default_instance() {

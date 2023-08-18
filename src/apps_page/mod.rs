@@ -52,6 +52,7 @@ mod imp {
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
+
         #[template_child]
         pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
@@ -86,6 +87,7 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
+
                 context_menu: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
@@ -236,18 +238,20 @@ mod imp {
 
                 // Find the first process that has any children. This is most likely the root
                 // of the App's process tree.
-                let primary_pid = {
-                    let mut primary_pid = app.pids[0];
-                    for pid in &app.pids {
+                let (primary_process, primary_pid) = {
+                    let mut primary_process = None;
+                    let mut primary_pid = 0;
+                    for (index, pid) in app.pids.iter().enumerate() {
                         if let Some(process) = find_process(&process_tree, *pid) {
-                            if process.children.len() > 0 {
-                                primary_pid = *pid;
+                            if process.children.len() > 0 || index == app.pids.len() - 1 {
+                                primary_process = Some(process);
+                                primary_pid = process.pid();
                                 break;
                             }
                         }
                     }
 
-                    primary_pid
+                    (primary_process, primary_pid)
                 };
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
@@ -289,15 +293,14 @@ mod imp {
                 };
 
                 let children = view_model.children().clone();
-                if let Some(process) = find_process(&process_tree, primary_pid) {
+                if let Some(process) = primary_process {
                     Self::update_process_model(self, children, process);
                 } else {
                     children.remove_all();
 
                     g_critical!(
                         "MissionCenter::AppsPage",
-                        "Failed to find process with PID {} in process tree, for App {}",
-                        primary_pid,
+                        "Failed to find process in process tree, for App {}",
                         app.name()
                     );
                 }
@@ -645,7 +648,82 @@ mod imp {
             });
             self.disk_column.set_sorter(Some(&sorter));
 
-            let tree_list_sorter = gtk::TreeListRowSorter::new(self.column_view.sorter());
+            let column_view_sorter = self.column_view.sorter();
+            if let Some(column_view_sorter) = column_view_sorter.as_ref() {
+                column_view_sorter.connect_changed({
+                    let this = self.obj().downgrade();
+                    move |sorter, _| {
+                        use glib::g_critical;
+
+                        let settings = match crate::MissionCenterApplication::default_instance()
+                            .and_then(|app| app.settings())
+                        {
+                            None => {
+                                g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to save column sorting, could not get settings instance from MissionCenterApplication"
+                            );
+                                return;
+                            }
+                            Some(s) => s,
+                        };
+
+                        let this = match this.upgrade() {
+                            None => return,
+                            Some(this) => this,
+                        };
+
+                        if let Some(sorter) = sorter.downcast_ref::<gtk::ColumnViewSorter>() {
+                            let sort_column = sorter.primary_sort_column().as_ref().and_then(|c| Some(c.as_ptr() as usize)).unwrap_or_default();
+
+                            let nc = this.imp().name_column.as_ptr() as usize;
+                            let pc = this.imp().pid_column.as_ptr() as usize;
+                            let cc = this.imp().cpu_column.as_ptr() as usize;
+                            let mc = this.imp().memory_column.as_ptr() as usize;
+                            let dc = this.imp().disk_column.as_ptr() as usize;
+
+                            if let Err(e) = if sort_column == nc {
+                                settings.set_enum("apps-page-sorting-column", 0)
+                            } else if sort_column == pc {
+                                settings.set_enum("apps-page-sorting-column", 1)
+                            } else if sort_column == cc {
+                                settings.set_enum("apps-page-sorting-column", 2)
+                            } else if sort_column == mc {
+                                settings.set_enum("apps-page-sorting-column", 3)
+                            } else if sort_column == dc {
+                                settings.set_enum("apps-page-sorting-column", 4)
+                            } else {
+                                g_critical!(
+                                        "MissionCenter::AppsPage",
+                                        "Unknown column sorting encountered"
+                                    );
+                                Ok(())
+                            }
+                            {
+                                g_critical!(
+                                    "MissionCenter::AppsPage",
+                                    "Failed to save column sorting: {}", e
+                                );
+                                return;
+                            }
+
+                            let sort_order = sorter.primary_sort_order();
+                            if let Err(e) = settings.set_enum("apps-page-sorting-order", match sort_order {
+                                gtk::SortType::Ascending => 0,
+                                gtk::SortType::Descending => 1,
+                                _ => 0
+                            }) {
+                                g_critical!(
+                                    "MissionCenter::AppsPage",
+                                    "Failed to save column sorting: {}", e
+                                );
+                                return;
+                            }
+                        }
+                    }
+                });
+            }
+            let tree_list_sorter = gtk::TreeListRowSorter::new(column_view_sorter);
             self.tree_list_sorter.set(Some(tree_list_sorter.clone()));
 
             gtk::SortListModel::new(Some(model), Some(tree_list_sorter))
@@ -659,6 +737,56 @@ mod imp {
 
             self.column_view
                 .set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
+
+            let settings = match crate::MissionCenterApplication::default_instance()
+                .and_then(|app| app.settings())
+            {
+                None => {
+                    glib::g_critical!(
+                        "MissionCenter::AppsPage",
+                        "Failed to get column sorting, could not get settings instance from MissionCenterApplication"
+                    );
+                    return;
+                }
+                Some(s) => s,
+            };
+
+            let remember_sorting = settings.boolean("apps-page-remember-sorting");
+            if remember_sorting {
+                let column = settings.enum_("apps-page-sorting-column");
+                let order = settings.enum_("apps-page-sorting-order");
+
+                let column = match column {
+                    0 => &self.name_column,
+                    1 => &self.pid_column,
+                    2 => &self.cpu_column,
+                    3 => &self.memory_column,
+                    4 => &self.disk_column,
+                    255 => return,
+                    _ => {
+                        glib::g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Unknown column retrieved from settings, sorting by name as a fallback"
+                        );
+                        &self.name_column
+                    }
+                };
+
+                let order = match order {
+                    0 => gtk::SortType::Ascending,
+                    1 => gtk::SortType::Descending,
+                    255 => return,
+                    _ => {
+                        glib::g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Unknown column sorting order retrieved from settings, sorting in ascending order as a fallback"
+                        );
+                        gtk::SortType::Ascending
+                    }
+                };
+
+                self.column_view.sort_by_column(Some(column), order);
+            }
         }
 
         pub fn configure_column_header(
