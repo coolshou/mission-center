@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 08:45+0300\n"
+"POT-Creation-Date: 2023-08-18 17:38+0300\n"
 "PO-Revision-Date: 2023-08-08 15:53+0000\n"
 "Last-Translator: NF <muwuren@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -261,19 +261,23 @@ msgid "How fast should the data be refreshed and the UI updated"
 msgstr "数据刷新和UI更新的频率多快"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:25
-msgid ""
-"Parent process stats should contain the sum of the stats of their children"
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:30
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which graph is shown on the CPU performance page"
 msgstr "在CPU性能页面上展示哪个图表"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:36
+#: data/io.missioncenter.MissionCenter.gschema.xml:41
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "在性能标签下，应用程序启动时展示的页面"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:877
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -295,7 +299,7 @@ msgstr "使用率"
 msgid "Speed"
 msgstr "速度"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:405
 msgid "Processes"
 msgstr "进程"
 
@@ -515,7 +519,7 @@ msgstr "某些信息需要管理员权限"
 msgid "_Authenticate"
 msgstr "认证"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:883
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "内存"
@@ -620,8 +624,8 @@ msgstr "一般设置"
 msgid "Update Speed"
 msgstr "更新速度"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
-#: src/preferences/page.rs:301
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "快"
 
@@ -629,9 +633,9 @@ msgstr "快"
 msgid "Refresh every half second"
 msgstr "每半秒更新一次"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
-#: src/preferences/page.rs:124 src/preferences/page.rs:305
-#: src/preferences/page.rs:321
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "正常"
 
@@ -639,8 +643,8 @@ msgstr "正常"
 msgid "Refresh every second"
 msgstr "每秒更新一次"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
-#: src/preferences/page.rs:309
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "慢"
 
@@ -648,8 +652,8 @@ msgstr "慢"
 msgid "Refresh every second and a half"
 msgstr "每 1.5 秒更新一次"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
-#: src/preferences/page.rs:313
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "非常慢"
 
@@ -666,25 +670,14 @@ msgstr "一般设置"
 msgid "Merge Process Stats"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
-#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
-#: src/preferences/page.rs:178 src/preferences/page.rs:347
-msgid "No"
-msgstr "否"
-
-#: resources/ui/preferences/page.blp:41
-msgid "Parent and child process stats are shown individually"
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
-#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
-#: src/preferences/page.rs:351
-msgid "Yes"
-msgstr "是"
-
-#: resources/ui/preferences/page.blp:46
-msgid "Parent and child process stats are merged upwards"
-msgstr ""
+#: resources/ui/preferences/page.blp:43
+#, fuzzy
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr "修复某些用户的应用程序和进程列表为空的bug"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -698,7 +691,7 @@ msgstr ""
 msgid "Performance"
 msgstr "性能"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:398
 msgid "Apps"
 msgstr "应用程序"
 
@@ -710,15 +703,15 @@ msgstr "偏好设置"
 msgid "_About MissionCenter"
 msgstr "关于任务中心"
 
-#: src/apps_page/mod.rs:864
+#: src/apps_page/mod.rs:865
 msgid "Name"
 msgstr "名称"
 
-#: src/apps_page/mod.rs:870
+#: src/apps_page/mod.rs:871
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:888
+#: src/apps_page/mod.rs:889
 msgid "Disk"
 msgstr "磁盘"
 
@@ -843,6 +836,14 @@ msgstr "支持"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "不支持"
+
+#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
+msgid "Yes"
+msgstr "是"
+
+#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
+msgid "No"
+msgstr "否"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

@@ -22,7 +22,12 @@
 
         <key name="apps-page-merged-process-stats" type="b">
             <default>false</default>
-            <summary>Parent process stats should contain the sum of the stats of their children</summary>
+            <summary>Parent and child process stats are shown individually or merged upwards</summary>
+        </key>
+
+        <key name="apps-page-remember-sorting" type="b">
+            <default>false</default>
+            <summary>Column sorting is persisted across app restarts</summary>
         </key>
 
         <key name="performance-page-cpu-graph" type="i">

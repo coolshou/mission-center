@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 08:45+0300\n"
+"POT-Creation-Date: 2023-08-18 17:38+0300\n"
 "PO-Revision-Date: 2023-08-05 14:54+0000\n"
 "Last-Translator: mthw0 <matejm98mthw@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/mission-center/"
@@ -251,19 +251,23 @@ msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:25
-msgid ""
-"Parent process stats should contain the sum of the stats of their children"
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
-msgid "Which graph is shown on the CPU performance page"
+#: data/io.missioncenter.MissionCenter.gschema.xml:30
+msgid "Column sorting is persisted across app restarts"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
+msgid "Which graph is shown on the CPU performance page"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:41
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:877
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -285,7 +289,7 @@ msgstr "Využitie"
 msgid "Speed"
 msgstr "Rýchlosť"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:405
 msgid "Processes"
 msgstr "Procesy"
 
@@ -505,7 +509,7 @@ msgstr ""
 msgid "_Authenticate"
 msgstr ""
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:883
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Pamäť"
@@ -610,8 +614,8 @@ msgstr "Všeobecné nastavenia"
 msgid "Update Speed"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
-#: src/preferences/page.rs:301
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr ""
 
@@ -619,9 +623,9 @@ msgstr ""
 msgid "Refresh every half second"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
-#: src/preferences/page.rs:124 src/preferences/page.rs:305
-#: src/preferences/page.rs:321
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr ""
 
@@ -629,8 +633,8 @@ msgstr ""
 msgid "Refresh every second"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
-#: src/preferences/page.rs:309
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr ""
 
@@ -638,8 +642,8 @@ msgstr ""
 msgid "Refresh every second and a half"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
-#: src/preferences/page.rs:313
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr ""
 
@@ -656,24 +660,12 @@ msgstr "Všeobecné nastavenia"
 msgid "Merge Process Stats"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
-#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
-#: src/preferences/page.rs:178 src/preferences/page.rs:347
-msgid "No"
-msgstr "Nie"
-
-#: resources/ui/preferences/page.blp:41
-msgid "Parent and child process stats are shown individually"
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
-#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
-#: src/preferences/page.rs:351
-msgid "Yes"
-msgstr "Áno"
-
-#: resources/ui/preferences/page.blp:46
-msgid "Parent and child process stats are merged upwards"
+#: resources/ui/preferences/page.blp:43
+msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
 
 #: resources/ui/window.blp:48
@@ -688,7 +680,7 @@ msgstr ""
 msgid "Performance"
 msgstr "Výkon"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:398
 msgid "Apps"
 msgstr "Aplikácie"
 
@@ -700,15 +692,15 @@ msgstr ""
 msgid "_About MissionCenter"
 msgstr ""
 
-#: src/apps_page/mod.rs:864
+#: src/apps_page/mod.rs:865
 msgid "Name"
 msgstr "Názov"
 
-#: src/apps_page/mod.rs:870
+#: src/apps_page/mod.rs:871
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:888
+#: src/apps_page/mod.rs:889
 msgid "Disk"
 msgstr "Disk"
 
@@ -821,6 +813,14 @@ msgstr ""
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr ""
+
+#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
+msgid "Yes"
+msgstr "Áno"
+
+#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
+msgid "No"
+msgstr "Nie"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

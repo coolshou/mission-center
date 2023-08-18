@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 08:45+0300\n"
+"POT-Creation-Date: 2023-08-18 17:38+0300\n"
 "PO-Revision-Date: 2023-07-31 22:06+0000\n"
 "Last-Translator: Jonas Antunes <jonasbantunes@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
@@ -256,20 +256,24 @@ msgstr ""
 "deve ser atualizada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:25
-msgid ""
-"Parent process stats should contain the sum of the stats of their children"
+#: resources/ui/preferences/page.blp:38
+msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:31
+#: data/io.missioncenter.MissionCenter.gschema.xml:30
+msgid "Column sorting is persisted across app restarts"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Qual gráfico é mostrado na página de desempenho da CPU"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:36
+#: data/io.missioncenter.MissionCenter.gschema.xml:41
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Qual página é mostrada na inicialização do aplicativo, na aba de Desempenho"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:876
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:877
 #: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "CPU"
@@ -291,7 +295,7 @@ msgstr "Utilização"
 msgid "Speed"
 msgstr "Velocidade"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:404
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:405
 msgid "Processes"
 msgstr "Processos"
 
@@ -511,7 +515,7 @@ msgstr "Algumas informações precisam de privilégios administrativos"
 msgid "_Authenticate"
 msgstr "_Autenticar"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:882
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:883
 #: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Memória"
@@ -616,8 +620,8 @@ msgstr "Configurações gerais"
 msgid "Update Speed"
 msgstr "Velocidade de atualização"
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:115
-#: src/preferences/page.rs:301
+#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
+#: src/preferences/page.rs:262
 msgid "Fast"
 msgstr "Rápida"
 
@@ -625,9 +629,9 @@ msgstr "Rápida"
 msgid "Refresh every half second"
 msgstr "Atualizar a cada meio segundo"
 
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:111
-#: src/preferences/page.rs:124 src/preferences/page.rs:305
-#: src/preferences/page.rs:321
+#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
+#: src/preferences/page.rs:122 src/preferences/page.rs:266
+#: src/preferences/page.rs:282
 msgid "Normal"
 msgstr "Normal"
 
@@ -635,8 +639,8 @@ msgstr "Normal"
 msgid "Refresh every second"
 msgstr "Atualizar a cada segundo"
 
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:107
-#: src/preferences/page.rs:309
+#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
+#: src/preferences/page.rs:270
 msgid "Slow"
 msgstr "Lenta"
 
@@ -644,8 +648,8 @@ msgstr "Lenta"
 msgid "Refresh every second and a half"
 msgstr "Atualizar a cada segundo e meio"
 
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:103
-#: src/preferences/page.rs:313
+#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
+#: src/preferences/page.rs:274
 msgid "Very Slow"
 msgstr "Muito lenta"
 
@@ -662,24 +666,12 @@ msgstr "Configurações gerais"
 msgid "Merge Process Stats"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:40 src/performance_page/cpu.rs:298
-#: src/performance_page/disk.rs:225 src/preferences/page.rs:165
-#: src/preferences/page.rs:178 src/preferences/page.rs:347
-msgid "No"
-msgstr "Não"
-
-#: resources/ui/preferences/page.blp:41
-msgid "Parent and child process stats are shown individually"
+#: resources/ui/preferences/page.blp:42
+msgid "Remember Sorting"
 msgstr ""
 
-#: resources/ui/preferences/page.blp:45 src/performance_page/cpu.rs:296
-#: src/performance_page/disk.rs:223 src/preferences/page.rs:169
-#: src/preferences/page.rs:351
-msgid "Yes"
-msgstr "Sim"
-
-#: resources/ui/preferences/page.blp:46
-msgid "Parent and child process stats are merged upwards"
+#: resources/ui/preferences/page.blp:43
+msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
 
 #: resources/ui/window.blp:48
@@ -694,7 +686,7 @@ msgstr ""
 msgid "Performance"
 msgstr "Desempenho"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:397
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:398
 msgid "Apps"
 msgstr "Aplicativos"
 
@@ -706,15 +698,15 @@ msgstr "_Preferências"
 msgid "_About MissionCenter"
 msgstr "_Sobre o Mission Center"
 
-#: src/apps_page/mod.rs:864
+#: src/apps_page/mod.rs:865
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:870
+#: src/apps_page/mod.rs:871
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:888
+#: src/apps_page/mod.rs:889
 #, fuzzy
 msgid "Disk"
 msgstr "_Disco"
@@ -846,6 +838,14 @@ msgstr "Compatível"
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "Não compatível"
+
+#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
+msgid "Yes"
+msgstr "Sim"
+
+#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
+msgid "No"
+msgstr "Não"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"

@@ -47,6 +47,8 @@ mod imp {
 
         #[template_child]
         pub merged_process_stats: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub remember_sorting: TemplateChild<SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
 
@@ -63,6 +65,7 @@ mod imp {
                 update_fast: Default::default(),
 
                 merged_process_stats: Default::default(),
+                remember_sorting: Default::default(),
 
                 settings: Cell::new(None),
 
@@ -194,6 +197,22 @@ mod imp {
                     }
                 }),
             );
+
+            self.remember_sorting.connect_active_notify(
+                glib::clone!(@weak self as this => move |switch_row| {
+                    let settings = this.settings.take();
+                    if let Some(settings) = settings {
+                        if let Err(e) = settings.set_boolean("apps-page-remember-sorting", switch_row.active()) {
+                            g_critical!(
+                                "MissionCenter::Preferences",
+                                "Failed to set merged process stats setting: {}",
+                                e
+                            );
+                        }
+                        this.settings.set(Some(settings));
+                    }
+                }),
+            );
         }
     }
 
@@ -218,6 +237,7 @@ impl PreferencesPage {
         this.imp().settings.set(settings.cloned());
         this.set_initial_update_speed();
         this.set_initial_merge_process_stats();
+        this.set_initial_remember_sorting_option();
 
         this
     }
@@ -225,15 +245,16 @@ impl PreferencesPage {
     fn set_initial_update_speed(&self) {
         use gtk::glib::*;
 
-        let settings = self.imp().settings.take();
-        if settings.is_none() {
-            g_critical!(
-                "MissionCenter::Preferences",
-                "Failed to set up update speed settings, could not load application settings"
-            );
-            return;
-        }
-        let settings = settings.unwrap();
+        let settings = match self.imp().settings.take() {
+            None => {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to set up update speed settings, could not load application settings"
+                );
+                return;
+            }
+            Some(settings) => settings,
+        };
         let update_speed = settings.int("update-speed");
         let this = self.imp();
         let selected_widget = match update_speed {
@@ -271,19 +292,41 @@ impl PreferencesPage {
     fn set_initial_merge_process_stats(&self) {
         use gtk::glib::*;
 
-        let settings = self.imp().settings.take();
-        if settings.is_none() {
-            g_critical!(
-                "MissionCenter::Preferences",
-                "Failed to configure merge process stats settings, could not load application settings"
-            );
-            return;
-        }
-        let settings = settings.unwrap();
+        let settings = match self.imp().settings.take() {
+            None => {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure merge process stats setting, could not load application settings"
+                );
+                return;
+            }
+            Some(settings) => settings,
+        };
 
         let this = self.imp();
         this.merged_process_stats
             .set_active(settings.boolean("apps-page-merged-process-stats"));
+
+        this.settings.set(Some(settings));
+    }
+
+    fn set_initial_remember_sorting_option(&self) {
+        use gtk::glib::*;
+
+        let settings = match self.imp().settings.take() {
+            None => {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure remember sorting setting, could not load application settings"
+                );
+                return;
+            }
+            Some(settings) => settings,
+        };
+
+        let this = self.imp();
+        this.remember_sorting
+            .set_active(settings.boolean("apps-page-remember-sorting"));
 
         this.settings.set(Some(settings));
     }
