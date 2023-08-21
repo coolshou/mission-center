@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-17 14:47+0000\n"
+"PO-Revision-Date: 2023-08-21 05:35+0000\n"
 "Last-Translator: Kovács Bálint Hunor <kovacsbalinthunor53@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hu/>\n"
@@ -299,18 +299,22 @@ msgstr ""
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"A szülői és a gyermek folyamatok statisztikái külön-külön vagy felfelé "
+"összevontan jelennek meg"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Az oszlopok rendezése az alkalmazás újraindításakor is fennmarad"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"Az oszlop azonosítója, amely szerint az Alkalmazások oldal nézete rendezve "
+"van"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Az Alkalmazások oldal nézetének rendezési iránya"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
@@ -706,20 +710,18 @@ msgid "Refresh every 2 seconds"
 msgstr "Frissítés 2 másodpercenként"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
-msgstr "Általános beállítások"
+msgstr "Alkalmazás oldal beállításai"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Egyesítési folyamat statisztikái"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Emlékezz a válogatásra"
 
 #: resources/ui/preferences/page.blp:43
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
 "Kijavítottuk azt a hibát, amely miatt az alkalmazások és folyamatok listája "

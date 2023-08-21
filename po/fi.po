@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-16 06:10+0000\n"
+"PO-Revision-Date: 2023-08-21 05:35+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -670,21 +670,22 @@ msgid "Refresh every 2 seconds"
 msgstr "Päivitä kahden sekunnin välein"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
-msgstr "Yleiset asetukset"
+msgstr "Sovellussivun asetukset"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Yhdistä prosessitilastot"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Muista järjestys"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
+"uudelleenkäynnistyksen välillä"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"

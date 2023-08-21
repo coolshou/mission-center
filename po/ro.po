@@ -8,15 +8,17 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-06-08 11:21+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-08-20 08:49+0000\n"
+"Last-Translator: Romeo Calota <mail@romeocalota.me>\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:4
@@ -30,48 +32,53 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:5
-#, fuzzy
 msgid "Mission Center Developers"
-msgstr "Mission Center"
+msgstr "Dezvoltatorii Mission Center"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:14
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Monitorizarea utilizării resurselor de sistem"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
+"Monitorizează utilizarea Procesorului, Memoriei, Discului, Rețelei și a "
+"plăcii grafice"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:17
-#, fuzzy
 msgid "Features:"
-msgstr "Temperatură"
+msgstr "Caracteristici:"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Monitorizează utilizarea procesorului per nucleu sau per ansamblu"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Vizualizează numărul de procese, fire de execuție, și identificatori de "
+"resurse, disponibilitatea aparatului, viteza de tact (de bază si actuală), "
+"marimea cache a procesorului"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Monitorizează ocuparea memoriei RAM și Swap"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
 msgstr ""
+"Vizualizarea a unei defalcări a modului în care memoria este utilizată de "
+"sistem"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Monitorizarea utilizării discului și a ratelor de transfer"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Monitorizarea utilizării rețelei și a ratelor de transfer"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:25
 msgid ""
@@ -79,89 +86,107 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Consultarea informațiilor despre interfața de rețea, cum ar fi numele plăcii "
+"de rețea, tipul conexiunii (Wi-Fi sau Ethernet), vitezele și frecvența "
+"wireless, adresa hardware, adresa IP"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Monitorizarea utilizării generale a GPU-ului, utilizarea (de)codorului "
+"video, utilizarea memoriei și consumul de energie, alimentat de popularul "
+"proiect NVTOP"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Detaliere a utilizării resurselor în funcție de aplicație și proces"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Permite o vizualizare rezumat minimizată pentru monitorizare simplă"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"Utilizarea randării folosind OpenGL pentru toate graficele cu scopul de a "
+"reduce utilizarea procesorului si a resurselor din sistem"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Folosește GTK4 si Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:31
 msgid "Written in Rust"
-msgstr ""
+msgstr "Scris in Rust"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:32
 msgid "Flatpak first"
-msgstr ""
+msgstr "Creat pentru a fi distribuit ca si Flatpak"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Limitări (în curs de a depăși toate acestea):"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
+"Aplicația, în prezent, doar monitorizează, nu puteți opri procesele, de "
+"exemplu"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "Este posibil ca procentul de utilizare a discului să nu fie corect"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:38
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Fără utilizare per proces a rețelei"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:39
 msgid "No per-process GPU usage"
-msgstr ""
+msgstr "Fără utilizare GPU per proces"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Suportul GPU este experimental și numai GPU-urile AMD și nVidia pot fi "
+"monitorizate"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
+"Comentariile, sugestiile, rapoartele de erori și contribuțiile sunt "
+"binevenite"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Adaugă traducere în spaniolă de Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"Fila memorie afișează acum viteza memoriei configurate în locul maximului "
+"acceptat de modulele RAM"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:105
 msgid "Add German translation by TecCheck"
-msgstr ""
+msgstr "Adăugată traducerea în germană de TecCheck"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Atunci când un proces utilizează un procentaj mare de CPU sau RAM, acesta "
+"este acum evidențiat în lista aplicații și procese"
 
 #: data/io.missioncenter.MissionCenter.appdata.xml.in:107
 msgid "Add initial support for building for ARM64"
