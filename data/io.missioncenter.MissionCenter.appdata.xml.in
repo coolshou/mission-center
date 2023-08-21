@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-	<id>io.missioncenter.MissionCenter</id>
-	<name>Mission Center</name>
-	<developer_name>Mission Center Developers</developer_name>
+    <id>io.missioncenter.MissionCenter</id>
+    <name>Mission Center</name>
+    <developer_name>Mission Center Developers</developer_name>
 
-	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>GPL-3.0-or-later</project_license>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0-or-later</project_license>
 
     <url type="homepage">https://missioncenter.io</url>
     <url type="bugtracker">https://gitlab.com/mission-center-devs/mission-center/-/issues</url>
@@ -13,145 +13,208 @@
 
     <summary>Monitor system resource usage</summary>
     <description>
-      <p>Monitor your CPU, Memory, Disk, Network and GPU usage</p>
-      <p>Features:</p>
-      <ul>
-        <li>Monitor overall or per-thread CPU usage</li>
-        <li>See system process, thread, and handle count, uptime, clock speed (base and current), cache sizes</li>
-        <li>Monitor RAM and Swap usage</li>
-        <li>See a breakdown how the memory is being used by the system</li>
-        <li>Monitor Disk utilization and transfer rates</li>
-        <li>Monitor network utilization and transfer speeds</li>
-        <li>See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP address</li>
-        <li>Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered by the popular NVTOP project</li>
-        <li>See a breakdown of resource usage by app and process</li>
-        <li>Supports a minified summary view for simple monitoring</li>
-        <li>Use OpenGL rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
-        <li>Uses GTK4 and Libadwaita</li>
-        <li>Written in Rust</li>
-        <li>Flatpak first</li>
-      </ul>
-      <p>Limitations (there is ongoing work to overcome all of these):</p>
-      <ul>
-        <li>The application currently only supports monitoring, you cannot stop processes for example</li>
-        <li>Disk utilization percentage might not be accurate</li>
-        <li>No per-process network usage</li>
-        <li>No per-process GPU usage</li>
-        <li>GPU support is experimental and only AMD and nVidia GPUs can be monitored</li>
-      </ul>
-      <p>Comments, suggestions, bug reports and contributions welcome</p>
+        <p>Monitor your CPU, Memory, Disk, Network and GPU usage</p>
+        <p>Features:</p>
+        <ul>
+            <li>Monitor overall or per-thread CPU usage</li>
+            <li>See system process, thread, and handle count, uptime, clock speed (base and current), cache sizes</li>
+            <li>Monitor RAM and Swap usage</li>
+            <li>See a breakdown how the memory is being used by the system</li>
+            <li>Monitor Disk utilization and transfer rates</li>
+            <li>Monitor network utilization and transfer speeds</li>
+            <li>See network interface information such as network card name, connection type (Wi-Fi or Ethernet),
+                wireless speeds and frequency, hardware address, IP address
+            </li>
+            <li>Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered
+                by the popular NVTOP project
+            </li>
+            <li>See a breakdown of resource usage by app and process</li>
+            <li>Supports a minified summary view for simple monitoring</li>
+            <li>Use OpenGL rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
+            <li>Uses GTK4 and Libadwaita</li>
+            <li>Written in Rust</li>
+            <li>Flatpak first</li>
+        </ul>
+        <p>Limitations (there is ongoing work to overcome all of these):</p>
+        <ul>
+            <li>The application currently only supports monitoring, you cannot stop processes for example</li>
+            <li>Disk utilization percentage might not be accurate</li>
+            <li>No per-process network usage</li>
+            <li>No per-process GPU usage</li>
+            <li>GPU support is experimental and only AMD and nVidia GPUs can be monitored</li>
+        </ul>
+        <p>Comments, suggestions, bug reports and contributions welcome</p>
     </description>
 
     <screenshots>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png</image>
-      </screenshot>
-      <screenshot>
-        <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png</image>
-      </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>
+                https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>
+                https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png
+            </image>
+        </screenshot>
+        <screenshot>
+            <image>
+                https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png
+            </image>
+        </screenshot>
     </screenshots>
 
     <content_rating type="oars-1.1"></content_rating>
 
     <releases>
 
-      <release version="0.2.5" date="2023-07-24">
-        <description>
-          <ul>
-            <li>Add Spanish translation by Óscar Fernández Díaz</li>
-            <li>The memory tab now shows configured memory speed instead of the maximum supported by the modules</li>
-            <li>Add German translation by TecCheck</li>
-            <li>When a process uses large amounts of CPU or RAM it is now highlighted in the Apps and Processes list</li>
-            <li>Add initial support for building for ARM64</li>
-            <li>Take into account multiple CPU cores and cache sharing when calculating cache sizes</li>
-            <li>Fix browsers, installed as native packages, not showing up in the Apps list</li>
-            <li>Translation updates for Traditional Chinese by Peter Dave Hello</li>
-          </ul>
-        </description>
-      </release>
+        <release version="0.3.0" date="2023-08-22">
+            <description>
+                <p>Features:</p>
+                <ul>
+                    <li>New app icon by QwertyChouskie</li>
+                    <li>Add ability to stop and force stop apps and processes</li>
+                    <li>Running apps are now shown more reliably, and should reflect most if not all running apps</li>
+                    <li>Experimental support for Snap apps in the running apps list</li>
+                    <li>Added a setting to show resource consumption individually per process or cumulated with their
+                        descendants
+                    </li>
+                    <li>Added a setting to enable persistent sorting in the apps and processes list</li>
+                    <li>Data gathering is now more versatile and will permit new features to be added quicker and
+                        easier
+                    </li>
+                    <li>App can now be built from GNOME Builder</li>
+                </ul>
+                <p>Translations:</p>
+                <ul>
+                    <li>New translation to Norwegian Bokmål by Allan Nordhøy</li>
+                    <li>New translation to Russian by Ivan Maslikhov</li>
+                    <li>New translation to Slovak by mthw0</li>
+                    <li>New translation to Greek by Yiannis Ioannides</li>
+                    <li>New translation to Chinese (Simplified) by foxer NS</li>
+                    <li>New translation to French by Link Mauve</li>
+                    <li>New translation to Hungarian by Kovács Bálint Hunor</li>
+                    <li>Updated Spanish translation</li>
+                    <li>Updated Czech translation</li>
+                    <li>Updated Portuguese translation</li>
+                    <li>Updated German translation</li>
+                    <li>Updated Finnish translation</li>
+                    <li>Fixes for Chinese translations by foxer NS</li>
+                </ul>
+            </description>
+        </release>
 
-      <release version="0.2.4" date="2023-07-16">
-        <description>
-          <ul>
-            <li>Translation fixes for Portuguese by Rafael Fontenelle</li>
-            <li>Only show a link-local IPv6 address if no other IPv6 exists by Maximilian</li>
-            <li>Add Traditional Chinese locale by Peter Dave Hello</li>
-            <li>Add category for application menu by Renner0E</li>
-            <li>Fix a parsing error when parsing the output of `dmidecode` that lead to a panic</li>
-            <li>Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does not exist, when getting CPU base speed information</li>
-            <li>Update GPU tab UI to be more adaptive for smaller resolutions</li>
-          </ul>
-        </description>
-      </release>
+        <release version="0.2.5" date="2023-07-24">
+            <description>
+                <ul>
+                    <li>Add Spanish translation by Óscar Fernández Díaz</li>
+                    <li>The memory tab now shows configured memory speed instead of the maximum supported by the
+                        modules
+                    </li>
+                    <li>Add German translation by TecCheck</li>
+                    <li>When a process uses large amounts of CPU or RAM it is now highlighted in the Apps and Processes
+                        list
+                    </li>
+                    <li>Add initial support for building for ARM64</li>
+                    <li>Take into account multiple CPU cores and cache sharing when calculating cache sizes</li>
+                    <li>Fix browsers, installed as native packages, not showing up in the Apps list</li>
+                    <li>Translation updates for Traditional Chinese by Peter Dave Hello</li>
+                </ul>
+            </description>
+        </release>
 
-      <release version="0.2.3" date="2023-07-13">
-        <description>
-          <ul>
-            <li>Added Czech translation by ondra05</li>
-            <li>Added Portuguese translation by Rilson Joás</li>
-            <li>Add keywords to desktop file to improve search function of desktop environments by Hannes Kuchelmeister</li>
-            <li>Fixed a bug where the app and process list was empty for some users</li>
-          </ul>
-        </description>
-      </release>
+        <release version="0.2.4" date="2023-07-16">
+            <description>
+                <ul>
+                    <li>Translation fixes for Portuguese by Rafael Fontenelle</li>
+                    <li>Only show a link-local IPv6 address if no other IPv6 exists by Maximilian</li>
+                    <li>Add Traditional Chinese locale by Peter Dave Hello</li>
+                    <li>Add category for application menu by Renner0E</li>
+                    <li>Fix a parsing error when parsing the output of `dmidecode` that lead to a panic</li>
+                    <li>Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does not exist, when
+                        getting CPU base speed information
+                    </li>
+                    <li>Update GPU tab UI to be more adaptive for smaller resolutions</li>
+                </ul>
+            </description>
+        </release>
 
-      <release version="0.2.2" date="2023-07-12">
-        <description>
-          <ul>
-            <li>Fix a crash that occurs when the system is under heavy load</li>
-          </ul>
-        </description>
-      </release>
+        <release version="0.2.3" date="2023-07-13">
+            <description>
+                <ul>
+                    <li>Added Czech translation by ondra05</li>
+                    <li>Added Portuguese translation by Rilson Joás</li>
+                    <li>Add keywords to desktop file to improve search function of desktop environments by Hannes
+                        Kuchelmeister
+                    </li>
+                    <li>Fixed a bug where the app and process list was empty for some users</li>
+                </ul>
+            </description>
+        </release>
 
-      <release version="0.2.0" date="2023-07-10">
-        <description>
-          <ul>
-            <li>First official release!</li>
-          </ul>
-        </description>
-      </release>
+        <release version="0.2.2" date="2023-07-12">
+            <description>
+                <ul>
+                    <li>Fix a crash that occurs when the system is under heavy load</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.0" date="2023-07-10">
+            <description>
+                <ul>
+                    <li>First official release!</li>
+                </ul>
+            </description>
+        </release>
 
     </releases>
 </component>

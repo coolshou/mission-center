@@ -264,15 +264,36 @@ impl MissionCenterApplication {
             .copyright("© 2023 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
-            .release_notes(r#"<ul>
-    <li>Add Spanish translation by Óscar Fernández Díaz</li>
-    <li>The memory tab now shows configured memory speed instead of the maximum supported by the modules</li>
-    <li>Add German translation by TecCheck</li>
-    <li>When a process uses large amounts of CPU or RAM it is now highlighted in the Apps and Processes list</li>
-    <li>Add initial support for building for ARM64</li>
-    <li>Take into account multiple CPU cores and cache sharing when calculating cache sizes</li>
-    <li>Fix browsers, installed as native packages, not showing up in the Apps list</li>
-    <li>Translation updates for Traditional Chinese by Peter Dave Hello</li>
+            .release_notes(r#"<p>Features:</p>
+<ul>
+    <li>New app icon by QwertyChouskie</li>
+    <li>Add ability to stop and force stop apps and processes</li>
+    <li>Running apps are now shown more reliably, and should reflect most if not all running apps</li>
+    <li>Experimental support for Snap apps in the running apps list</li>
+    <li>Added a setting to show resource consumption individually per process or cumulated with their
+        descendants
+    </li>
+    <li>Added a setting to enable persistent sorting in the apps and processes list</li>
+    <li>Data gathering is now more versatile and will permit new features to be added quicker and
+        easier
+    </li>
+    <li>App can now be built from GNOME Builder</li>
+</ul>
+<p>Translations:</p>
+<ul>
+    <li>New translation to Norwegian Bokmål by Allan Nordhøy</li>
+    <li>New translation to Russian by Ivan Maslikhov</li>
+    <li>New translation to Slovak by mthw0</li>
+    <li>New translation to Greek by Yiannis Ioannides</li>
+    <li>New translation to Chinese (Simplified) by foxer NS</li>
+    <li>New translation to French by Link Mauve</li>
+    <li>New translation to Hungarian by Kovács Bálint Hunor</li>
+    <li>Updated Spanish translation</li>
+    <li>Updated Czech translation</li>
+    <li>Updated Portuguese translation</li>
+    <li>Updated German translation</li>
+    <li>Updated Finnish translation</li>
+    <li>Fixes for Chinese translations by foxer NS</li>
 </ul>"#)
             .build();
 
