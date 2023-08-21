@@ -114,9 +114,105 @@ mod imp {
     }
 
     impl AppsPage {
+        fn find_process(
+            root_process: &crate::sys_info_v2::Process,
+            pid: u32,
+        ) -> Option<&crate::sys_info_v2::Process> {
+            if root_process.pid() == pid {
+                return Some(root_process);
+            }
+
+            match root_process.children.get(&pid) {
+                Some(process) => return Some(process),
+                None => {}
+            }
+
+            for (_, process) in &root_process.children {
+                match Self::find_process(process, pid) {
+                    Some(process) => return Some(process),
+                    None => {}
+                }
+            }
+
+            None
+        }
+
         fn configure_actions(&self) {
-            use crate::sys_info_v2::TerminateType;
+            use crate::sys_info_v2::{Process, TerminateType};
             use gtk::glib::*;
+
+            fn stop_process(
+                this: Option<super::AppsPage>,
+                app: Option<crate::MissionCenterApplication>,
+                pid_and_bool: Option<&glib::Variant>,
+                terminate_type: TerminateType,
+            ) {
+                let this = match this {
+                    None => return,
+                    Some(this) => this,
+                };
+
+                let app = match app {
+                    None => return,
+                    Some(app) => app,
+                };
+
+                let (mut pid, is_app) = match pid_and_bool.and_then(|p| p.get::<(u32, bool)>()) {
+                    Some(pid) => pid,
+                    None => {
+                        g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Invalid data encountered for 'pid' and 'is_app' parameter when stopping process via {:?}", terminate_type
+                            );
+                        return;
+                    }
+                };
+
+                // For some wierd reason when stopping the bwarp process for Flatpak apps, they
+                // just continue running which makes it confusing for the end-user. So go through
+                // the children of the bwrap process and find the first child that is not a bwrap
+                // and terminate that instead.
+                fn find_first_non_bwrap_child(root: &Process) -> Option<&Process> {
+                    for (_, child) in &root.children {
+                        if child.name() != "bwrap" {
+                            return Some(child);
+                        }
+                    }
+
+                    for (_, child) in &root.children {
+                        if let Some(child) = find_first_non_bwrap_child(child) {
+                            return Some(child);
+                        }
+                    }
+
+                    None
+                }
+                if is_app {
+                    if let Some(process) =
+                        AppsPage::find_process(unsafe { &*this.imp().process_tree.as_ptr() }, pid)
+                    {
+                        if process.name() == "bwrap" {
+                            if let Some(child) = find_first_non_bwrap_child(process) {
+                                pid = child.pid();
+                            }
+                        }
+                    }
+                }
+
+                let sys_info = match app.sys_info() {
+                    Ok(si) => si,
+                    Err(err) => {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to terminate process: {}",
+                            err
+                        );
+                        return;
+                    }
+                };
+
+                sys_info.terminate_process(terminate_type, pid);
+            }
 
             let this = self.obj();
             let this = this.as_ref();
@@ -127,74 +223,31 @@ mod imp {
             let app = crate::application::MissionCenterApplication::default_instance()
                 .expect("Failed to get default MissionCenterApplication instance");
 
-            let action = gio::SimpleAction::new("stop", Some(VariantTy::UINT32));
-            action.connect_activate(clone!(@weak app => move |_action, pid| {
-                let pid = match pid.and_then(|p|p.get::<u32>()) {
-                    Some(pid) => pid,
-                    None => {
-                        g_critical!("MissionCenter::AppsPage", "Action 'stop' invalid data encountered for 'pid' parameter");
-                        return;
-                    },
-                };
-
-                let sys_info = match app.sys_info()  {
-                    Ok(si) => si,
-                    Err(err) => {
-                        g_critical!("MissionCenter::AppsPage", "Failed to terminate process: {}", err);
-                        return;
-                    },
-                };
-                sys_info.terminate_process(TerminateType::Normal, pid);
-            }));
+            let action = gio::SimpleAction::new("stop", Some(VariantTy::TUPLE));
+            action.connect_activate({
+                let app = app.downgrade();
+                let this = self.obj().downgrade();
+                move |_action, pid| {
+                    stop_process(this.upgrade(), app.upgrade(), pid, TerminateType::Normal);
+                }
+            });
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new("force-stop", Some(VariantTy::UINT32));
-            action.connect_activate(clone!(@weak app => move |_action, pid| {
-                let pid = match pid.and_then(|p|p.get::<u32>()) {
-                    Some(pid) => pid,
-                    None => {
-                        g_critical!("MissionCenter::AppsPage", "Action 'force-stop' invalid data encountered for 'pid' parameter");
-                        return;
-                    },
-                };
-
-                let sys_info = match app.sys_info()  {
-                    Ok(si) => si,
-                    Err(err) => {
-                        g_critical!("MissionCenter::AppsPage", "Failed to terminate process: {}", err);
-                        return;
-                    },
-                };
-                sys_info.terminate_process(TerminateType::Force, pid);
-            }));
+            let action = gio::SimpleAction::new("force-stop", Some(VariantTy::TUPLE));
+            action.connect_activate({
+                let app = app.downgrade();
+                let this = self.obj().downgrade();
+                move |_action, pid| {
+                    stop_process(this.upgrade(), app.upgrade(), pid, TerminateType::Force);
+                }
+            });
             actions.add_action(&action);
         }
 
         pub fn update_app_model(&self) {
-            use crate::sys_info_v2::Process;
             use gtk::glib::g_critical;
             use std::collections::BTreeSet;
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
-
-            fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
-                if root_process.pid() == pid {
-                    return Some(root_process);
-                }
-
-                match root_process.children.get(&pid) {
-                    Some(process) => return Some(process),
-                    None => {}
-                }
-
-                for (_, process) in &root_process.children {
-                    match find_process(process, pid) {
-                        Some(process) => return Some(process),
-                        None => {}
-                    }
-                }
-
-                None
-            }
 
             let model = self.apps_model.take();
             let apps = self.apps.take();
@@ -242,7 +295,7 @@ mod imp {
                     let mut primary_process = None;
                     let mut primary_pid = 0;
                     for (index, pid) in app.pids.iter().enumerate() {
-                        if let Some(process) = find_process(&process_tree, *pid) {
+                        if let Some(process) = Self::find_process(&process_tree, *pid) {
                             if process.children.len() > 0 || index == app.pids.len() - 1 {
                                 primary_process = Some(process);
                                 primary_pid = process.pid();

@@ -305,18 +305,18 @@ mod imp {
                         right_click_controller.connect_released(move |_, _, x, y| {
                             use gtk::glib::*;
 
-                            let (stop_label, force_stop_label) = match view_model.content_type() {
+                            let (stop_label, force_stop_label, is_app) = match view_model.content_type() {
                                 0 => {
                                     // ContentType::SectionHeader
                                     return;
                                 }
                                 1 => {
                                     // ContentType::App
-                                    (i18n("Stop Application"), i18n("Force Stop Application"))
+                                    (i18n("Stop Application"), i18n("Force Stop Application"), true)
                                 }
                                 2 => {
                                     // ContentType::Process
-                                    (i18n("Stop Process"), i18n("Force Stop Process"))
+                                    (i18n("Stop Process"), i18n("Force Stop Process"), false)
                                 }
                                 _ => unreachable!(),
                             };
@@ -363,9 +363,9 @@ mod imp {
                             let menu = gtk::gio::Menu::new();
 
                             let mi_stop = gtk::gio::MenuItem::new(Some(&stop_label), None);
-                            mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from(view_model.pid())));
+                            mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from((view_model.pid(), is_app))));
                             let mi_force_stop = gtk::gio::MenuItem::new(Some(&force_stop_label), None);
-                            mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from(view_model.pid())));
+                            mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from((view_model.pid(), is_app))));
 
                             menu.append_item(&mi_stop);
                             menu.append_item(&mi_force_stop);

@@ -167,6 +167,7 @@ pub enum UpdateSpeed {
     Fast = 1,
 }
 
+#[derive(Debug)]
 pub enum TerminateType {
     Normal,
     Force,
