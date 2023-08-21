@@ -647,9 +647,9 @@ impl SysInfoV2 {
                             let timer = std::time::Instant::now();
                             if !app.refresh_readings(&mut readings) {
                                 g_critical!(
-                                        "MissionCenter::SysInfo",
-                                        "Readings were not completely refreshed, stale readings will be displayed"
-                                    );
+                                    "MissionCenter::SysInfo",
+                                    "Readings were not completely refreshed, stale readings will be displayed"
+                                );
                             }
                             eprintln!("UI refresh took: {:?}", timer.elapsed());
 
