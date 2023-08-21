@@ -594,39 +594,11 @@ impl SysInfoV2 {
                         loop_start.elapsed().as_millis()
                     );
 
-                    idle_add_once(move || {
-                        use gtk::glib::*;
-
-                        if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                            let now = std::time::Instant::now();
-
-                            let timer = std::time::Instant::now();
-                            if !app.refresh_readings(&mut readings) {
-                                g_critical!(
-                                        "MissionCenter::SysInfo",
-                                        "Readings were not completely refreshed, stale readings will be displayed"
-                                    );
-                            }
-                            eprintln!("UI refresh took: {:?}", timer.elapsed());
-
-                            g_debug!(
-                                "MissionCenter::SysInfo",
-                                "Refreshed readings in {}ms",
-                                now.elapsed().as_millis()
-                            );
-                        } else {
-                            g_critical!(
-                                "MissionCenter::SysInfo",
-                                "Default GtkApplication is not a MissionCenterApplication"
-                            );
-                        }
-                    });
-
                     let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
                     let refresh_interval =
                         std::time::Duration::from_millis(refresh_interval as u64);
-
                     let elapsed = loop_start.elapsed();
+
                     if elapsed > refresh_interval {
                         g_warning!(
                             "MissionCenter::SysInfo",
@@ -665,6 +637,35 @@ impl SysInfoV2 {
                         }
                     }
                     std::thread::sleep(sleep_duration);
+
+                    idle_add_once(move || {
+                        use gtk::glib::*;
+
+                        if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                            let now = std::time::Instant::now();
+
+                            let timer = std::time::Instant::now();
+                            if !app.refresh_readings(&mut readings) {
+                                g_critical!(
+                                        "MissionCenter::SysInfo",
+                                        "Readings were not completely refreshed, stale readings will be displayed"
+                                    );
+                            }
+                            eprintln!("UI refresh took: {:?}", timer.elapsed());
+
+                            g_debug!(
+                                "MissionCenter::SysInfo",
+                                "Refreshed readings in {}ms",
+                                now.elapsed().as_millis()
+                            );
+                        } else {
+                            g_critical!(
+                                "MissionCenter::SysInfo",
+                                "Default GtkApplication is not a MissionCenterApplication"
+                            );
+                        }
+                    });
+
                     eprintln!(
                         "Read-refresh loop executed in: {}ms",
                         loop_start.elapsed().as_millis()
