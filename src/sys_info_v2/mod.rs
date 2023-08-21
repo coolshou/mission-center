@@ -523,7 +523,7 @@ impl SysInfoV2 {
                 });
 
                 'read_loop: while run.load(Ordering::Acquire) {
-                    let start_load_readings = std::time::Instant::now();
+                    let loop_start = std::time::Instant::now();
 
                     let timer = std::time::Instant::now();
                     let cpu_info = CpuInfoDynamic::load(&mut system);
@@ -591,7 +591,7 @@ impl SysInfoV2 {
                     g_debug!(
                         "MissionCenter::SysInfo",
                         "Loaded readings in {}ms",
-                        start_load_readings.elapsed().as_millis()
+                        loop_start.elapsed().as_millis()
                     );
 
                     idle_add_once(move || {
@@ -626,7 +626,7 @@ impl SysInfoV2 {
                     let refresh_interval =
                         std::time::Duration::from_millis(refresh_interval as u64);
 
-                    let elapsed = start_load_readings.elapsed();
+                    let elapsed = loop_start.elapsed();
                     if elapsed > refresh_interval {
                         g_warning!(
                             "MissionCenter::SysInfo",
@@ -665,6 +665,10 @@ impl SysInfoV2 {
                         }
                     }
                     std::thread::sleep(sleep_duration);
+                    eprintln!(
+                        "Read-refresh loop executed in: {}ms",
+                        loop_start.elapsed().as_millis()
+                    );
                 }
             })),
             refresh_thread_running,
