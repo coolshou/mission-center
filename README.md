@@ -29,8 +29,6 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 
 Please note there is ongoing work to overcome all of these
 
-* The application currently only supports monitoring, you cannot stop processes for
-  example [#1](https://gitlab.com/mission-center-devs/mission-center/-/issues/1)
 * Disk utilization percentage might not be
   accurate [#2](https://gitlab.com/mission-center-devs/mission-center/-/issues/2)
 * No per-process network usage [#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3)
