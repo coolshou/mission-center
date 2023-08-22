@@ -507,6 +507,8 @@ mod imp {
                 .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
             self.utilization_label_overall
                 .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
+            self.utilization_label_all
+                .set_visible(graph_selection == GRAPH_SELECTION_ALL);
 
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
