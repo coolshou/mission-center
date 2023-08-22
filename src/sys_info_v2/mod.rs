@@ -136,13 +136,23 @@ lazy_static! {
             );
             cache_dir.push_str("/../.local/state");
 
-            std::path::Path::new(cache_dir.as_str())
-                .canonicalize()
-                .unwrap_or(std::path::PathBuf::from(
-                    "/tmp/io.missioncenter.MissionCenter/state",
-                ))
-                .to_string_lossy()
-                .to_string()
+            match std::fs::create_dir_all(cache_dir.as_str()) {
+                Err(e) => {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Unable to create state dir: {}",
+                        e
+                    );
+                    "/tmp/io.missioncenter.MissionCenter/state".to_string()
+                }
+                _ => std::path::Path::new(cache_dir.as_str())
+                    .canonicalize()
+                    .unwrap_or(std::path::PathBuf::from(
+                        "/tmp/io.missioncenter.MissionCenter/state",
+                    ))
+                    .to_string_lossy()
+                    .to_string(),
+            }
         } else {
             std::env::var("HOME")
                 .and_then(|mut v| {
