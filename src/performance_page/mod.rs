@@ -65,8 +65,6 @@ mod imp {
         pub page_stack: TemplateChild<gtk::Stack>,
 
         #[property(get, set)]
-        refresh_interval: Cell<u32>,
-        #[property(get, set)]
         summary_mode: Cell<bool>,
 
         pages: Cell<Vec<Pages>>,
@@ -82,7 +80,6 @@ mod imp {
                 sidebar: Default::default(),
                 page_stack: Default::default(),
 
-                refresh_interval: Cell::new(1000),
                 summary_mode: Cell::new(false),
 
                 pages: Cell::new(Vec::new()),
@@ -647,11 +644,12 @@ mod imp {
                         result &= page.update_readings(readings);
                     }
                     Pages::Memory((summary, page)) => {
-                        let total =
-                            crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
-                        let used = readings.mem_info.mem_total - readings.mem_info.mem_available;
-                        summary.graph_widget().add_data_point(0, used as _);
-                        let used = crate::to_human_readable(used as _, 1024.);
+                        let total_raw = readings.mem_info.mem_total;
+                        let total = crate::to_human_readable(total_raw as _, 1024.);
+                        let used_raw =
+                            readings.mem_info.mem_total - readings.mem_info.mem_available;
+                        summary.graph_widget().add_data_point(0, used_raw as _);
+                        let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
                             "{:.2} {}iB/{} {}iB ({}%)",
@@ -659,7 +657,7 @@ mod imp {
                             used.1,
                             total.0.round(),
                             total.1,
-                            ((used.0 / total.0) * 100.).round()
+                            ((used_raw as f32 / total_raw as f32) * 100.).round()
                         ));
 
                         result &= page.update_readings(readings);
