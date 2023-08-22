@@ -52,6 +52,7 @@ fn main() {
 
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() < 3 {
+        eprintln!("Gatherer: not enough arguments");
         std::process::exit(ExitCode::MissingProgramArgument as i32);
     }
 
