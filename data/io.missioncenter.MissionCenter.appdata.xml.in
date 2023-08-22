@@ -37,7 +37,6 @@
         </ul>
         <p>Limitations (there is ongoing work to overcome all of these):</p>
         <ul>
-            <li>The application currently only supports monitoring, you cannot stop processes for example</li>
             <li>Disk utilization percentage might not be accurate</li>
             <li>No per-process network usage</li>
             <li>No per-process GPU usage</li>
@@ -115,6 +114,12 @@
     <content_rating type="oars-1.1"></content_rating>
 
     <releases>
+
+        <release version="0.3.1" date="2023-08-22">
+            <description>
+                Hotfix release to fix a bug that caused the app to not display any information for some users
+            </description>
+        </release>
 
         <release version="0.3.0" date="2023-08-22">
             <description>

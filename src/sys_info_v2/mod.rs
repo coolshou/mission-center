@@ -136,13 +136,23 @@ lazy_static! {
             );
             cache_dir.push_str("/../.local/state");
 
-            std::path::Path::new(cache_dir.as_str())
-                .canonicalize()
-                .unwrap_or(std::path::PathBuf::from(
-                    "/tmp/io.missioncenter.MissionCenter/state",
-                ))
-                .to_string_lossy()
-                .to_string()
+            match std::fs::create_dir_all(cache_dir.as_str()) {
+                Err(e) => {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::SysInfo",
+                        "Unable to create state dir: {}",
+                        e
+                    );
+                    "/tmp/io.missioncenter.MissionCenter/state".to_string()
+                }
+                _ => std::path::Path::new(cache_dir.as_str())
+                    .canonicalize()
+                    .unwrap_or(std::path::PathBuf::from(
+                        "/tmp/io.missioncenter.MissionCenter/state",
+                    ))
+                    .to_string_lossy()
+                    .to_string(),
+            }
         } else {
             std::env::var("HOME")
                 .and_then(|mut v| {
@@ -588,15 +598,17 @@ impl SysInfoV2 {
                         process_tree,
                     };
 
-                    g_debug!(
-                        "MissionCenter::SysInfo",
-                        "Loaded readings in {}ms",
-                        loop_start.elapsed().as_millis()
-                    );
+                    eprintln!("Loaded readings in {}ms", loop_start.elapsed().as_millis());
 
+                    let time = std::time::Instant::now();
                     let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
                     let refresh_interval =
                         std::time::Duration::from_millis(refresh_interval as u64);
+                    eprintln!(
+                        "Refresh interval ({:?}) read in {:?}",
+                        refresh_interval,
+                        time.elapsed()
+                    );
                     let elapsed = loop_start.elapsed();
 
                     if elapsed > refresh_interval {
@@ -606,10 +618,9 @@ impl SysInfoV2 {
                             elapsed.as_millis(),
                             refresh_interval.as_millis()
                         );
-                        continue;
                     }
 
-                    let mut sleep_duration = refresh_interval - elapsed;
+                    let mut sleep_duration = refresh_interval.saturating_sub(elapsed);
                     let sleep_duration_fraction = sleep_duration / 10;
                     for _ in 0..10 {
                         let timer = std::time::Instant::now();
