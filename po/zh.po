@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:4
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
 msgstr "任务中心"
 
@@ -32,32 +32,32 @@ msgstr ""
 "任务管理器;资源监控器;系统监控器;处理器;进程管理;性能监控器;CPU;GPU;磁盘;磁"
 "盘;内存;网络;使用率;利用率"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:5
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
 msgstr "任务中心开发者"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:14
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:13
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:13
 msgid "Monitor system resource usage"
 msgstr "监控系统资源使用情况"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:15
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr "监控您的CPU、内存、硬盘、网络和GPU使用情况"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:17
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Features:"
 msgstr "功能："
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:18
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "监控整体或每个核心的CPU使用情况"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -65,28 +65,28 @@ msgstr ""
 "查看系统进程、线程和句柄数量、运行时间、时钟频率（基本频率和当前频率）、缓存"
 "大小"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Monitor RAM and Swap usage"
 msgstr "监控 RAM 和 Swap 使用情況"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "查看系统使用内存的详细信息"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "监控磁盘使用情况和传输速率"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor network utilization and transfer speeds"
 msgstr "监控网络使用情况和传输速度"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -95,8 +95,8 @@ msgstr ""
 "查看网络接口信息，如网卡名称、连接类型（Wi-Fi 或 Ethernet）、无线速度和频率、"
 "硬件地址、IP 地址"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -104,145 +104,145 @@ msgstr ""
 "监控GPU整体使用情况，视频编码器和解码器使用情况，内存使用情况和功耗，由受欢迎"
 "项目NVTOP提供支持"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "See a breakdown of resource usage by app and process"
 msgstr "查看应用程序和进程的资源使用详细信息"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "支持缩小的摘要视图以进行简单监控"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr "使用 OpenGL 渲染所有图表，以尽可能減少 CPU 和整体资源使用"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid "Uses GTK4 and Libadwaita"
 msgstr "使用 GTK4 和 Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Written in Rust"
 msgstr "使用 Rust 编写"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:32
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Flatpak first"
 msgstr "Flatpak 优先"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:34
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:33
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "限制（目前正在努力克服这些限制）："
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:35
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr "该应用程序目前只支持监控功能，例如您无法停止进程"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Disk utilization percentage might not be accurate"
 msgstr "磁盘利用率可能不准确"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "No per-process network usage"
 msgstr "没有单个进程网络使用情况"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process GPU usage"
 msgstr "沒有单个进程的 GPU 使用情況"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:40
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr "GPU 支持处于实验阶段，只能监控 AMD 和 nVidia 的 GPU"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:42
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:41
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "欢迎提供评论、建议、bug报告和贡献"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr "由 Óscar Fernández Díaz 新增西班牙语翻译"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr "内存标签现在显示配置的内存速度，而不是模块支持的最大速度"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
 msgstr "由 TecCheck 新增德语翻译"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr "当进程占用大量CPU或RAM时，它现在会在应用程序和进程列表中突出显示"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
 msgstr "添加对ARM64架构的初始支持"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr "计算缓存大小时考虑多个CPU核心和缓存共享"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:109
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr "修复作为本机软件包安装时未在菜单的应用程序列表中显示的问题"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:110
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "由 Peter Dave Hello 新增繁体中文语言"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:102
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:102
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "由 Rafael Fontenelle 修复葡萄牙语翻译"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr "由 Maximilian 提供，如果沒有其他 IPv6，則只顯示連結本地 IPv6 位址"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:120
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "由 Peter Dave Hello 新增繁体中文语言"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:121
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add category for application menu by Renner0E"
 msgstr "由 Renner0E 为应用程序菜单新增分类"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:122
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr "修复在解析 `dmidecode` 输出时导致panic的解析错误"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:123
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -250,40 +250,40 @@ msgstr ""
 "在获取 CPU 基础速度信息时，如果 `/sys/devices/system/cpu/cpu0/cpufreq/"
 "base_frequency` 不存在，則使用回退"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:124
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr "更新GPU选项卡UI，使其更适合较小分辨率"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:132
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:116
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:116
 msgid "Added Czech translation by ondra05"
 msgstr "由 ondra05 新增捷克语翻译"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:133
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:117
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:117
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "由 Rilson Joás 新增葡萄牙语翻译"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:134
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr "由 Hannes Kuchelmeister 为桌面文件新增关键字以改进桌面环境的搜索功能"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr "修复某些用户的应用程序和进程列表为空的bug"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:143
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:127
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr "修复系统负载过重时发生的崩溃"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:151
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "First official release!"
 msgstr "首次正式发布！"
 

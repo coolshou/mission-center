@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 5.0-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:4
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
 msgstr "Mission Center"
 
@@ -33,28 +33,28 @@ msgstr ""
 "Leistugsmonitor;CPU;GPU;Disc;Speicher;Arbeitsspeicher;Netzwerk;Auslastung;"
 "Auslastung"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:5
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
 msgstr "Mission Center Entwickler"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:14
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
 msgstr "Resourcenbenutzung überwachen"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
 "Überwache deine CPU, Arbeitsspeicher, Festplatte, Netzwerk und Grafikkarte"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:17
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Features:"
 msgstr "Funktionen:"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "Überache die Auslastung aller Threads zusammen oder einzelner Threads"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -62,24 +62,24 @@ msgstr ""
 "Überwache Systemprozesse, Threads, Anzahl der Handles, Betriebszeit, "
 "Taktfrequenz (Basistakt sowie aktuell) und Cache-Größen"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
 msgstr "Überwache die Arbeitsspeicher- und Swapauslastung"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
 msgstr ""
 "Sehe eine Aufschlüsselung, wie der Arbeitsspeicher vom System genutzt wird"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "Überwache Speichernutzung und Übertragungsraten"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
 msgstr "Überwache Netzwerknutzung und Übertragungsgeschwindigkeiten"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -89,7 +89,7 @@ msgstr ""
 "Verbindungstyp (Wi-Fi oder Ethernet), Wireless-Geschwindigkeiten und -"
 "Frequenz, Hardware-Adresse, IP-Adresse"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -98,17 +98,17 @@ msgstr ""
 "Decodern, die Arbeitsspeichernutzung und den Stromverbrauch, ermöglicht "
 "durch das beliebte NVTOP-Projekt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
 msgstr ""
 "Aufschlüsselung der Ressourcennutzung nach Anwendung und Prozess anzeigen"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
 msgstr ""
 "Unterstützt eine verkleinerte Übersichtsansicht für eine einfache Überwachung"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -116,26 +116,26 @@ msgstr ""
 "Verwendung von OpenGL-Rendering für alle Diagramme, um die CPU- und "
 "Gesamtressourcennutzung zu reduzieren"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Nutzt GTK4 und Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
 msgstr "Geschrieben in Rust"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 #, fuzzy
 msgid "Flatpak first"
 msgstr "Vorrangig Flatpak"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
 "Beschränkungen (an der Überwindung all dieser Beschränkungen wird "
 "gearbeitet):"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
@@ -143,34 +143,34 @@ msgstr ""
 "Die Anwendung unterstützt zurzeit nur das Monitoren. Das stoppen von "
 "Prozessen beispielsweise ist nicht möglich"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
 msgstr "Die Laufwerksauslastung ist eventuell nicht exakt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
 msgstr "Keine Netzwerkauslastung pro Prozess"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
 msgstr "Keine GPU Auslastung pro Prozess"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
 "Die Grafikkartenunterstützug ist experimentell, nur AMD und nVidia "
 "Grafikkarten werden unterstützt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Kommentare, Vorschläge, Fehlerberichte und Beiträge sind willkommen"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr "Spanische Übersetzung von Óscar Fernández Díaz hinzugefügt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
@@ -179,11 +179,11 @@ msgstr ""
 "Speichergeschwindigkeit anstelle der von den Modulen maximal unterstützten "
 "Geschwindigkeit an"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
 msgstr "Deutsche Übersetzung von TecCheck hinzufügt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
@@ -191,11 +191,11 @@ msgstr ""
 "Wenn ein Prozess große Mengen an CPU oder RAM verwendet, wird er jetzt in "
 "der Liste \"Apps und Prozesse\" hervorgehoben"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
 msgstr "Anfängliche Unterstützung für die Erstellung von ARM64 hinzufügt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
@@ -203,71 +203,71 @@ msgstr ""
 "Mehrerer CPU-Kerne und gemeinsamer Cache-Nutzung bei der Berechnung der "
 "Cache-Größen werden nun berücksichtigt"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:109
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:110
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:120
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:121
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:122
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:123
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:124
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:132
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:133
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:134
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:143
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:151
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
 msgstr ""
 
