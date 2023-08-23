@@ -557,7 +557,8 @@ impl Processes {
                             .split(':')
                             .nth(2)
                             .unwrap_or("/")
-                            .trim_start_matches('/');
+                            .trim_start_matches('/')
+                            .trim_end_matches(&format!("/{}", pid));
 
                         let cgroup_path = std::path::Path::new("/sys/fs/cgroup").join(cfc);
                         if !cfc.is_empty() && cgroup_path.exists() && cgroup_path.is_dir() {
