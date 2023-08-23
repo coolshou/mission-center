@@ -13,11 +13,11 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-        input: 'io.missioncenter.MissionCenter.appdata.xml.in',
-       output: 'io.missioncenter.MissionCenter.appdata.xml',
+        input: 'io.missioncenter.MissionCenter.metainfo.xml.in',
+       output: 'io.missioncenter.MissionCenter.metainfo.xml',
        po_dir: '../po',
       install: true,
-  install_dir: join_paths(get_option('datadir'), 'appdata')
+  install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
 appstream_util = find_program('appstream-util', required: false)

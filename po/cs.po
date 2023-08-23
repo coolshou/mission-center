@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:4
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
 msgstr "Mission Center"
 
@@ -30,29 +30,29 @@ msgstr ""
 "Správce úloh;Sledování zdrojů;Sledování systému;Procesor;Procesy;Sledování "
 "výkonu;CPU;GPU;Grafika;Disk;Paměť;Síť;Využití"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:5
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #, fuzzy
 msgid "Mission Center Developers"
 msgstr "Vývojáři Mission Center"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:14
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
 msgstr "Sledovat využití zdrojů systému"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr "Sledujte využití procesoru, paměťi, disků, sítě a grafik"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:17
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 #, fuzzy
 msgid "Features:"
 msgstr "Funkce:"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "Sledujte celkové či vlákenní využití procesoru"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:20
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -60,23 +60,23 @@ msgstr ""
 "Sledujte počet procesů, vláken a popisovačů, dobu od spuštění, takt "
 "(základní a současný) a velikosti mezipamětí"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
 msgstr "Sledujte využití operační paměti a odkládacího prostoru"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "Zobrazte si rozbor využití paměti systémem"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "Sledujte využití disku a přenosové rychlosti"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
 msgstr "Sledujte síťové využití a přenosové rychlosti"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -86,7 +86,7 @@ msgstr ""
 "připojení (Wi-Fi nebo Ethernet), bezdrátové rychosti a frekvence, hardwarové "
 "adresy či IP adresy"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -94,15 +94,15 @@ msgstr ""
 "Sledujte celkové využití grafik, video kodéru a dekodéru, paměti a spotřebu "
 "díky populárnímu projektu NVTOP"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Zobrazte si rozbor využití zdrojů dle aplikace a procesu"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "Podporuje zmenšené souhrnné zobrazení pro jednoduché sledování"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -110,118 +110,118 @@ msgstr ""
 "Využivá OpenGL vykreslování pro všechny grafy pro zmenšení nároků na "
 "procesor a obecné snížení využití zdrojů"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Používá GTK4 a LibAdwaitu"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
 msgstr "Napsáno v Rustu"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
 msgstr "Flatpak na prvním místě"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Omezení (na překonání se pracuje):"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
 "Aplikace podporuje pouze sledování, například není možné proces ukončit"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:37
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
 msgstr "Procento využití disku nemusí být přesné"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
 msgstr "Chybí využití sítě procesem"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
 msgstr "Chybí využití grafiky procesem"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
 "Podpora grafik je experimentální a prozatím jsou podporované jen grafiky AMD "
 "a nVidia"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Komentáře, návrhy, hlášení chyb a přispívání vítáno"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:103
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:105
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 #, fuzzy
 msgid "Add German translation by TecCheck"
 msgstr "Přidání českého překladu od ondra05"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:106
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:107
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:108
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:109
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:110
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 #, fuzzy
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "Přidání čínského překladu od Peter Dave Hello"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:118
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "Opravy překladů pro portugalštinu od Rafael Fontenelle"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:119
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
 "Zobrazit link-local IPv6 adresu pouze pokud jiná neexistuje od Maximilian"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:120
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "Přidání čínského překladu od Peter Dave Hello"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:121
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
 msgstr "Přiedání kategorie pro aplikační nabídku od Renner0E"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:122
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr "Oprava chyby parsování výstupu `dmidecode`, která vedla k paniku"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:123
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -229,21 +229,21 @@ msgstr ""
 "Použít záložní řešení při získávání základní frekvence když `/sys/devices/"
 "system/cpu/cpu0/cpufreq/base_frequency` neexistuje"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:124
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 "Aktualizace rozhraní záložky grafiky, aby bylo lépe přizpůsobitelné pro "
 "menší rozlišení"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:132
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
 msgstr "Přidání českého překladu od ondra05"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:133
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "Přidání portugalského překlad od Rilson Joás"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:134
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
@@ -251,17 +251,17 @@ msgstr ""
 "Přidat klíčová slova do desktop souboru pro vylepšení vyhledávání v "
 "desktopových prostředích od Hannes Kuchelmeister"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:135
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 "Opravena chyba kdy pro některé uživatele byl seznam aplikací a procesů "
 "prázdný"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:143
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr "Opraven pád při vysokém zatížení systému"
 
-#: data/io.missioncenter.MissionCenter.appdata.xml.in:151
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
 msgstr "První oficiální vydání!"
 

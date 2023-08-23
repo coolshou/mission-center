@@ -1,5 +1,5 @@
 data/io.missioncenter.MissionCenter.desktop.in
-data/io.missioncenter.MissionCenter.appdata.xml.in
+data/io.missioncenter.MissionCenter.metainfo.xml.in
 data/io.missioncenter.MissionCenter.gschema.xml
 
 resources/ui/apps_page/column_header.blp
