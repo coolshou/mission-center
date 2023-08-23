@@ -344,7 +344,13 @@ impl Apps {
             return None;
         }
 
-        let ini = match Ini::load_from_file(path) {
+        let ini = match Ini::load_from_file_opt(
+            path,
+            ParseOption {
+                enabled_quote: false,
+                enabled_escape: true,
+            },
+        ) {
             Ok(ini) => ini,
             Err(e) => {
                 eprintln!("Failed to load desktop file from {}: {}", path.display(), e);
