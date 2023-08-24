@@ -4,12 +4,12 @@ index 0000000..73baf63
 --- /dev/null
 +++ b/meson.build
 @@ -0,0 +1,54 @@
-+project('libnvtop', 'c', version: '3.0.1')
++project('libnvtop', 'c', version: '3.0.2')
 +
 +conf = configuration_data()
 +conf.set('nvtop_VERSION_MAJOR', '3')
 +conf.set('nvtop_VERSION_MINOR', '0')
-+conf.set('nvtop_VERSION_PATCH', '1')
++conf.set('nvtop_VERSION_PATCH', '2')
 +
 +version_header = configure_file(
 +    input: 'include/nvtop/version.h.in',
