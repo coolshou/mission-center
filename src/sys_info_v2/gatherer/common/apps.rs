@@ -187,13 +187,18 @@ impl Apps {
                 }
                 Some(result)
             } else {
-                app_scope.split('-').skip(2).next().and_then(|s| {
-                    if s.is_empty() {
-                        None
-                    } else {
-                        Some(s.replace("\\x2d", "-"))
-                    }
-                })
+                app_scope
+                    .split('-')
+                    .skip(1)
+                    .skip_while(|s| *s == "gnome" || *s == "plasma" || *s == "flatpak")
+                    .next()
+                    .and_then(|s| {
+                        if s.is_empty() {
+                            None
+                        } else {
+                            Some(s.replace("\\x2d", "-"))
+                        }
+                    })
             }
         }
 
