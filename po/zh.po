@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-08 15:53+0000\n"
+"PO-Revision-Date: 2023-08-26 07:40+0000\n"
 "Last-Translator: NF <muwuren@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -300,19 +300,19 @@ msgstr "数据刷新和UI更新的频率多快"
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
-msgstr ""
+msgstr "分别显示或合并显示父进程和子进程的状态信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "列排序在应用程序重新启动后保持不变"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "应用程序页面视图排序所依据的列id"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "应用程序页面视图的排序方向"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 #: data/io.missioncenter.MissionCenter.gschema.xml:26
@@ -761,22 +761,20 @@ msgid "Refresh every 2 seconds"
 msgstr "每 2 秒更新一次"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
 msgstr "一般设置"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "合并进程状态信息"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "保存排序状态"
 
 #: resources/ui/preferences/page.blp:43
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "修复某些用户的应用程序和进程列表为空的bug"
+msgstr "保存应用程序重新启动后对应用程序和进程列表排序状态"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
