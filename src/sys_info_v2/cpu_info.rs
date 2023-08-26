@@ -623,6 +623,7 @@ pub struct DynamicInfo {
     pub utilization_percent: f32,
     pub utilization_percent_per_core: Vec<f32>,
     pub current_frequency_mhz: u64,
+    pub temperature: Option<f32>,
     pub process_count: u32,
     pub thread_count: u32,
     pub handle_count: u32,
@@ -648,11 +649,74 @@ impl DynamicInfo {
             utilization_percent: system.global_cpu_info().cpu_usage(),
             utilization_percent_per_core,
             current_frequency_mhz: system.global_cpu_info().frequency(),
+            temperature: Self::temperature(),
             process_count: Self::process_count(),
             thread_count: Self::thread_count(),
             handle_count: Self::handle_count(),
             uptime_seconds: system.uptime(),
         }
+    }
+
+    fn temperature() -> Option<f32> {
+        use gtk::glib::*;
+
+        let dir = match std::fs::read_dir("/sys/class/hwmon") {
+            Ok(d) => d,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::CpuInfo",
+                    "Failed to open `/sys/class/hwmon`: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        for mut entry in dir
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .filter(|path| path.is_dir())
+        {
+            let mut name = entry.clone();
+            name.push("name");
+
+            let name = match std::fs::read_to_string(name) {
+                Ok(name) => name.trim().to_lowercase(),
+                Err(_) => continue,
+            };
+            if name != "k10temp" && name != "coretemp" {
+                continue;
+            }
+
+            entry.push("temp1_input");
+            let temp = match std::fs::read_to_string(&entry) {
+                Ok(temp) => temp,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Failed to read temperature from `{}`: {}",
+                        entry.display(),
+                        e
+                    );
+                    continue;
+                }
+            };
+
+            return Some(match temp.trim().parse::<u32>() {
+                Ok(temp) => (temp as f32) / 1000.,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::CpuInfo",
+                        "Failed to parse temperature from `{}`: {}",
+                        entry.display(),
+                        e
+                    );
+                    continue;
+                }
+            });
+        }
+
+        None
     }
 
     fn process_count() -> u32 {
