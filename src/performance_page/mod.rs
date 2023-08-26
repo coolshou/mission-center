@@ -264,7 +264,7 @@ mod imp {
             summary.set_heading(i18n("CPU"));
             summary.set_info1("0% 0.00 GHz");
             match readings.cpu_info.dynamic_info.temperature.as_ref() {
-                Some(v) => summary.set_info2(format!("{:.2}°C", *v)),
+                Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
                 _ => {}
             }
 
@@ -645,7 +645,7 @@ mod imp {
                             readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
                         match readings.cpu_info.dynamic_info.temperature.as_ref() {
-                            Some(v) => summary.set_info2(format!("{:.2}°C", *v)),
+                            Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
                             _ => {}
                         }
 
