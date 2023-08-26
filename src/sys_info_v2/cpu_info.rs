@@ -41,7 +41,11 @@ impl StaticInfo {
         let cache_info = Self::cache_info();
 
         StaticInfo {
-            name: system.global_cpu_info().brand().to_owned(),
+            name: system
+                .global_cpu_info()
+                .brand()
+                .replace("(R)", "®")
+                .replace("(TM)", "™"),
             logical_cpu_count: Self::logical_cpu_count(),
             socket_count: Self::socket_count(),
             base_frequency_khz: Self::base_frequency_khz(),
