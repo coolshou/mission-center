@@ -262,7 +262,11 @@ mod imp {
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
-            summary.set_info1("0% 0.00 Ghz");
+            summary.set_info1("0% 0.00 GHz");
+            match readings.cpu_info.dynamic_info.temperature.as_ref() {
+                Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
+                _ => {}
+            }
 
             summary.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
@@ -640,6 +644,10 @@ mod imp {
                             readings.cpu_info.dynamic_info.utilization_percent.round(),
                             readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
+                        match readings.cpu_info.dynamic_info.temperature.as_ref() {
+                            Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
+                            _ => {}
+                        }
 
                         result &= page.update_readings(readings);
                     }
