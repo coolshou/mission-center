@@ -44,7 +44,7 @@ macro_rules! data_ready {
 mod common;
 
 fn main() {
-    use common::{ipc, Apps, AppPIDs, ExitCode, Processes, SharedData, SharedDataContent};
+    use common::{ipc, AppPIDs, Apps, ExitCode, Processes, SharedData, SharedDataContent};
     use interprocess::local_socket::*;
     use std::io::Read;
 
@@ -80,14 +80,14 @@ fn main() {
         }
     };
 
-    let mut recv_buffer: ipc::Message = ipc::Message::Unknown;
+    let mut message = ipc::Message::Unknown;
     loop {
         if unsafe { libc::getppid() } != parent_pid {
             eprintln!("Gatherer: Parent process no longer running, exiting");
             break;
         }
 
-        if let Err(e) = connection.read_exact(common::to_binary_mut(&mut recv_buffer)) {
+        if let Err(e) = connection.read_exact(common::to_binary_mut(&mut message)) {
             if e.kind() == std::io::ErrorKind::UnexpectedEof {
                 eprintln!("Gatherer: Main application has disconnected, shutting down");
                 std::process::exit(0);
@@ -97,7 +97,6 @@ fn main() {
             }
         }
 
-        let message = recv_buffer;
         match message {
             ipc::Message::GetProcesses => {
                 acknowledge!(connection);

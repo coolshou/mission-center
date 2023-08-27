@@ -24,12 +24,14 @@ pub use processes::{ProcessDescriptor, ProcessState, Processes};
 
 #[allow(dead_code)]
 mod apps;
+mod cpu;
 mod exit_code;
 pub mod ipc;
 #[allow(dead_code)]
 mod processes;
 
 pub type ArrayString = arrayvec::ArrayString<256>;
+
 #[allow(dead_code)]
 pub type AppStats = apps::Stats;
 #[allow(dead_code)]
