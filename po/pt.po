@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-07-31 22:06+0000\n"
-"Last-Translator: Jonas Antunes <jonasbantunes@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/pt/>\n"
+"PO-Revision-Date: 2023-08-29 00:53+0000\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -26,14 +26,13 @@ msgid "Mission Center"
 msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Gerenciador de tarefas;Monitor de recursos;Monitor do sistema;Processador;"
-"Processos;Monitor de desempenho;CPU;GPU;Disco;Disco;Memória;Rede;Utilização;"
-"Utilização"
+"Gestor de tarefas;Monitor de recursos;Monitor do "
+"sistema;Processador;Processos;Monitor de "
+"desempenho;CPU;GPU;Disco;Disco;Memória;Rede;Uso;Utilização"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -688,7 +687,7 @@ msgstr "Digite um nome ou identificador para iniciar busca"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "A carregar..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
@@ -696,7 +695,7 @@ msgstr "Desempenho"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
-msgstr "Aplicativos"
+msgstr "Aplicações"
 
 #: resources/ui/window.blp:124
 msgid "_Preferences"
@@ -708,59 +707,55 @@ msgstr "_Sobre o Mission Center"
 
 #: src/apps_page/mod.rs:992
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: src/apps_page/mod.rs:998
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:1016
-#, fuzzy
 msgid "Disk"
-msgstr "_Disco"
+msgstr "Disco"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr ""
+msgstr "Parar aplicação"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Forçar o término da aplicação"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
-#, fuzzy
 msgid "Stop Process"
-msgstr "Processos"
+msgstr "Parar processo"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Forçar o término do processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
-#, fuzzy
 msgid ""
 "In use ({}B)\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Em uso ({}iB)\n"
+"Em utilização ({}iB)\n"
 "\n"
-"Memória usada pelo sistema operacional e pelos aplicativos"
+"Memória utilizada pelo sistema operativo e pelas aplicações"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
-#, fuzzy
 msgid ""
 "Modified ({}B)\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Modificado ({}iB)\n"
+"Modificado ({}B)\n"
 "\n"
-"Conteúdo de memória que precisa ser escrito ao disco antes de ser usado por "
-"outro processo"
+"Memória cujo conteúdo tem de ser gravado no disco antes de poder ser "
+"utilizado por outro processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 #, fuzzy
