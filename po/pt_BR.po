@@ -1,82 +1,78 @@
-# Spanish translations for missioncenter package.
-# Copyright (C) 2023 THE missioncenter'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the missioncenter package.
-# Óscar Fernández Díaz <oscfdezdz@tuta.io>, 2023.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-25 05:47+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/es/>\n"
-"Language: es\n"
+"PO-Revision-Date: 2023-08-27 05:54+0000\n"
+"Last-Translator: Gérson da Fonseca Henzel <Gersonzao@skiff.com>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Mission Center"
+msgstr "Central de Missões"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Gestor de "
-"tareas;Monitor de recursos;Monitor del sistema;Procesador;Processes;Monitor "
-"de rendimiento;Disco;Memoria;Red;Uso;"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Desarrolladores de Mission Center"
+msgstr "Desenvolvedores do Central de Missões"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr "Supervisar el uso de los recursos del sistema"
+msgstr "Monitorar a utilização de recursos do sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "Monitorice el uso de su CPU, memoria, disco, red y GPU"
+msgstr "Monitorar a utilização da sua CPU, Memória, Disco, Rede e GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Features:"
-msgstr "Características:"
+msgstr "Recursos:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Supervisar el uso global o por hilo de la CPU"
+msgstr "Monitorar a utilização da CPU em geral ou por thread"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Consulte el recuento de procesos, hilos y manejadores del sistema, el tiempo "
-"de actividad, la velocidad del reloj (base y actual), los tamaños de caché"
+"Ver processos do sistema, contagem de threads e handles, tempo ativo, "
+"velocidade de clock (base e atual), tamanhos de cache"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "Monitorizar el uso de RAM y Swap"
+msgstr "Monitorar utilização de RAM e Swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Ver un desglose de cómo la memoria está siendo usada por el sistema"
+msgstr "Ver um detalhamento de como a memória está sendo usada pelo sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Supervisar el uso del disco y las tasas de transferencia"
+msgstr "Monitorar utilização de Disco e taxas de transferência"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Supervisar el uso de la red y las velocidades de transferencia"
+msgstr "Monitorar utilização de rede e velocidades de tranferência"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -84,243 +80,237 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Ver la información de la interfaz de red, como el nombre de la tarjeta de "
-"red, el tipo de conexión (Wi-Fi o Ethernet), las velocidades inalámbricas y "
-"la frecuencia, la dirección de hardware, la dirección IP"
+"Ver informações de interfaces de rede como placa de rede, tipo de conexão "
+"(Wi-Fi ou cabo), velocidades e frequência sem fio, endereço de hardware, "
+"endereço IP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Supervisar el uso general de la GPU, el uso del codificador y decodificador "
-"de vídeo, el uso de la memoria y el consumo de energía, impulsado por el "
-"popular proyecto NVTOP"
+"Monitorar uso de GPU em geral, utilização de codificadores e decodificadores "
+"de vídeo, uso de memória e consumo de energia, pelo popular projeto NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Ver un desglose del uso de recursos por aplicación y proceso"
+msgstr "Ver um detalhamento do uso de recursos por aplicativo e processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Admite una vista resumida minificada para una supervisión sencilla"
+msgstr ""
+"Suporta uma visualização resumida minimalista para monitoramento simples"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
-"Usa el renderizado OpenGL para todos los gráficos en un esfuerzo por reducir "
-"el uso de la CPU y de los recursos en general"
+"Usar a renderização OpenGL para renderizar todos gráficos com o esforço de "
+"reduzir uso geral e de CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Usa GTK4 y Libadwaita"
+msgstr "Usa GTK4 e Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
-msgstr "Escrito en Rust"
+msgstr "Escrito em Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
-msgstr "Primero en Flatpak"
+msgstr "Flatpak em primeiro lugar"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Limitaciones (se está trabajando para superarlas todas):"
+msgstr "Limitações (há trabalho em curso para superar todas essas):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
-"Actualmente, la aplicación sólo admite la supervisión, no se pueden detener "
-"procesos, por ejemplo"
+"A aplicação atualmente só suporta monitoramento, você não consegue parar "
+"processos, por exemplo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
-msgstr "El porcentaje de uso del disco puede no ser exacto"
+msgstr "Porcentagem de utilização de disco pode não ser precisa"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
-msgstr "Sin uso de red por proceso"
+msgstr "Sem utilização de rede por processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
-msgstr "Sin uso de GPU por proceso"
+msgstr "Sem utilização de GPU por processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
-"La compatibilidad con GPU es experimental y solo se pueden controlar las GPU "
-"de AMD y NVIDIA"
+"Suporte à GPU é experimental e somente placas de vídeo da AMD e nVidia podem "
+"ser monitoradas"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
-"Comentarios, sugerencias, informes de errores y contribuciones son "
-"bienvenidos"
+"Comentários, sugestões, relatórios de erros e contribuições são bem-vindos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr "Añadidas las traducciones al español de Óscar Fernández Díaz"
+msgstr "Adicionar tradução Espanhol por Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
-"La pestaña de la memoria muestra ahora la velocidad de la memoria "
-"configurada en lugar de la máxima soportada por los módulos"
+"A aba de memória agora mostra a velocidade de memória configurada em vez do "
+"máximo suportado pelos módulos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
-msgstr "Añadidas las traducciones al alemán de TecCheck"
+msgstr "Adicionar tradução Alemão por TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
+#, fuzzy
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
-"Cuando un proceso utiliza grandes cantidades de la CPU o la RAM, ahora "
-"aparecerá resaltado en la lista de las aplicaciones y los procesos"
+"Quando um processo usa grandes quantidades de CPU ou RAM, ele agora é "
+"destacado na Lista de Aplicativos e Processos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr "Añadido soporte inicial para la construcción en ARM64"
+msgstr "Adicionar suporte inicial para compilação para ARM64"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
-"Tener en cuenta los varios núcleos de la CPU y el uso compartido de la caché "
-"al calcular el tamaño de la caché"
+"Leve em consideração o compartilhamento de vários núcleos e cache de CPU ao "
+"calcular tamanhos de cache"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
-"Arreglar que los navegadores, instalados como paquetes nativos, no aparezcan "
-"en la lista de aplicaciones"
+"Corrigir navegadores instalados como pacotes nativos não serem mostrados na "
+"lista de Aplicativos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr ""
-"Actualizaciones de las traducciones al chino tradicional por Peter Dave Hola"
+msgstr "Atualizações de tradução para Chinês Tradicional por Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr "Correcciones de traducción al portugués por Rafael Fontenelle"
+msgstr "Correções de tradução para Português por Rafael Fontenelle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
-"Mostrar una dirección IPv6 link-local solo si no existe otra IPv6 por "
+"Mostrar somente um endereço IPv6 link-local se nenhum outro IPv6 existe por "
 "Maximilian"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr "Añadir idioma chino tradicional por Peter Dave Hola"
+msgstr "Adicionar localidade Chinês Tradicional por Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
-msgstr "Añadir categoría para el menú de la aplicación por Renner0E"
+msgstr "Adicionar categoria para menu da aplicação por Renner0E"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
-"Corregir un error de análisis al analizar la salida de `dmidecode` que "
-"conducen a un pánico"
+"Corrigir um erro de análise ao analisar a saída de `dmidecode` que causa um "
+"pânico"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
-"Usar un fallback si `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` no "
-"existe, cuando se obtiene información sobre la velocidad base de la CPU"
+"Usar um substituto se `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` "
+"não existir, ao obter informações de velocidade base da CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
-"Actualización de la interfaz de usuario de la pestaña GPU para que se adapte "
-"mejor a las resoluciones más pequeñas"
+"Atualizar interface de usuário da guia da GPU para ser mais adaptável para "
+"resoluções menores"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
-msgstr "Traducción al checo añadida por ondra05"
+msgstr "Adicionada tradução Tcheca por ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr "Añadida traducción al portugués por Rilson Joás"
+msgstr "Adicionada tradução Português por Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
-"Añadir palabras clave al archivo de escritorio para mejorar la función de "
-"búsqueda de entornos de escritorio por Hannes Kuchelmeister"
+"Adicionar palavras-chave para o arquivo da área de trabalho para melhorar a "
+"função de busca dos ambientes de área de trabalho por Hannes Kuchelmeister"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
-"Se ha corregido un error por el que la lista de aplicaciones y procesos "
-"aparecía vacía para algunos usuarios"
+"Corrigido um erro onde a lista de aplicativos e processos estava vazia para "
+"alguns usuários"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
-"Corrección de un fallo que se produce cuando el sistema está sometido a una "
-"carga pesada"
+msgstr "Corrigir uma falha que ocorre quando o sistema está sob carga pesada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
-msgstr "¡Primer lanzamiento oficial!"
+msgstr "Primeiro lançamento oficial!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr "Qué página se muestra al iniciar la aplicación"
+msgstr "Qual página é mostrada na inicialização do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr "Con qué rapidez deben actualizarse los datos y la interfaz de usuario"
+msgstr "Com que rapidez os dados e a interface de usuário devem ser atualizados"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Las estadísticas de los procesos padre e hijo se muestran individualmente o "
-"combinadas hacia arriba"
+"As estatísticas de processo pai e filho são mostradas individualmente ou "
+"mescladas para cima"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr "La ordenación de las columnas se mantiene al reiniciar la aplicación"
+msgstr ""
+"A classificação de colunas é mantida entre reinicializações do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
-"El identificador de la columna por el que se ordena la vista de página de "
-"Aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
 msgstr ""
-"La dirección de la clasificación de la vista de la página de las Aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Qué gráfico se muestra en la página de rendimiento de la CPU"
+msgstr "Qual gráfico é mostrado na página de performance da CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
-"Qué página se muestra al iniciar la aplicación, en la pestaña de rendimiento"
+msgstr "Qual página é mostrada no início do aplicativo, na aba performance"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
@@ -329,7 +319,7 @@ msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:74
 msgid "% Utilization"
-msgstr "% de uso"
+msgstr "% Utilização"
 
 #: resources/ui/performance_page/cpu.blp:84
 msgid "100%"
@@ -338,19 +328,19 @@ msgstr "100%"
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr "Uso"
+msgstr "Utilização"
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr "Velocidad"
+msgstr "Velocidade"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
-msgstr "Procesos"
+msgstr "Processos"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr "Subprocesos"
+msgstr "Threads"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
@@ -358,23 +348,23 @@ msgstr "Identificadores"
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
-msgstr "Tiempo activo"
+msgstr "Tempo ativo"
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr "Velocidad de base:"
+msgstr "Velocidade Base:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr "Sockets:"
+msgstr "Soquetes:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr "Procesadores virtuales:"
+msgstr "Processadores virtuais:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr "Virtualización:"
+msgstr "Virtualização:"
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
@@ -382,27 +372,28 @@ msgstr "Máquina virtual:"
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr "Caché L1:"
+msgstr "Cache L1:"
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr "Caché L2:"
+msgstr "Cache L2:"
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr "Caché L3:"
+msgstr "Cache L3:"
 
 #: resources/ui/performance_page/cpu.blp:442
+#, fuzzy
 msgid "Change G_raph To"
-msgstr "Cambiar g_ráfica a"
+msgstr "Mudar G_raph Para"
 
 #: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
-msgstr "U_so global"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:450
 msgid "Logical _Processors"
-msgstr "_Procesadores lógicos"
+msgstr "Processadores _Lógicos"
 
 #: resources/ui/performance_page/cpu.blp:458
 #: resources/ui/performance_page/disk.blp:386
@@ -410,7 +401,7 @@ msgstr "_Procesadores lógicos"
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
 msgid "Graph _Summary View"
-msgstr "Vista resu_mida de la gráfica"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:391
@@ -418,7 +409,7 @@ msgstr "Vista resu_mida de la gráfica"
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
 msgid "_View"
-msgstr "_Vista"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:466
 #: resources/ui/performance_page/disk.blp:394
@@ -434,7 +425,7 @@ msgstr "CP_U"
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
 msgid "_Memory"
-msgstr "_Memoria"
+msgstr "_Memória"
 
 #: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:404
@@ -450,7 +441,7 @@ msgstr "_Disco"
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
 msgid "_Network"
-msgstr "_Red"
+msgstr "_Rede"
 
 #: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:414
@@ -466,40 +457,40 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
 msgid "_Copy"
-msgstr "_Copiar"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
 msgid "Active time"
-msgstr "Tiempo de actividad"
+msgstr "Tempo ativo"
 
 #: resources/ui/performance_page/disk.blp:122
 msgid "Disk transfer rate"
-msgstr "Velocidad de transferencia de disco"
+msgstr "Taxa de transferência do disco"
 
 #: resources/ui/performance_page/disk.blp:211
 msgid "Average response time"
-msgstr "Tiempo promedio de respuesta"
+msgstr "Tempo de resposta médio"
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr "Velocidad de lectura"
+msgstr "Velocidade de leitura"
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr "Velocidad de escritura"
+msgstr "Velocidade de escrita"
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr "Capacidad:"
+msgstr "Capacidade:"
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
-msgstr "Con formato:"
+msgstr "Formatado:"
 
 #: resources/ui/performance_page/disk.blp:325
 msgid "System disk:"
-msgstr "Disco del sistema:"
+msgstr "Disco do sistema:"
 
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
@@ -508,33 +499,33 @@ msgstr "Tipo:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr "Uso global"
+msgstr "Utilização geral"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr "Codificación de vídeo"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr "Decodificación de vídeo"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr "Uso de memoria"
+msgstr "Uso de memória"
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
-msgstr "Velocidad del reloj"
+msgstr "Velocidade do Clock"
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr "Consumo de energía"
+msgstr "Consumo de energia"
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr "Velocidad de memoria"
+msgstr "Velocidade da memória"
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
@@ -542,23 +533,23 @@ msgstr "Temperatura"
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr "Versión de OpenGL:"
+msgstr "Versão OpenGL:"
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr "Versión de Vulkan:"
+msgstr "Versão Vulkan:"
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr "Velocidad de PCI Express:"
+msgstr "Velocidade PCI Express:"
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr "Dirección del bus PCI:"
+msgstr "Endereço de barramento PCI:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr "Alguna información requiere privilegios administrativos"
+msgstr "Algumas informações requerem privilégios administrativos"
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
@@ -567,67 +558,67 @@ msgstr "_Autenticar"
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
-msgstr "Memoria"
+msgstr "Memória"
 
 #: resources/ui/performance_page/memory.blp:130
 msgid "Memory composition"
-msgstr "Composición de memoria"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr "En uso"
+msgstr "Em uso"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr "Disponible"
+msgstr "Disponível"
 
 #: resources/ui/performance_page/memory.blp:217
 msgid "Committed"
-msgstr "Confirmada"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:240
 msgid "Cached"
-msgstr "En caché"
+msgstr "Em cache"
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr "Intercambio disponible"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr "Intercambio usado"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr "Velocidad:"
+msgstr "Velocidade:"
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
-msgstr "Ranuras usadas:"
+msgstr "Slots usados:"
 
 #: resources/ui/performance_page/memory.blp:336
 msgid "Form factor:"
-msgstr "Factor de forma:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr "Rendimiento"
+msgstr "Taxa de transferência"
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr "Envío"
+msgstr "Enviar"
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr "Recepción"
+msgstr "Receber"
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
-msgstr "Nombre de la interfaz:"
+msgstr "Nome da interface:"
 
 #: resources/ui/performance_page/network.blp:206
 msgid "Connection type:"
-msgstr "Tipo de conexión:"
+msgstr "Tipo de conexão:"
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
@@ -635,48 +626,48 @@ msgstr "SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr "Intensidad de la señal:"
+msgstr "Força do sinal:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "Tasa de bits máxima:"
+msgstr "Taxa de bits máxima:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr "Frecuencia:"
+msgstr "Frequência:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr "Dirección hardware:"
+msgstr "Endereço do hardware:"
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr "Dirección IPv4:"
+msgstr "Endereço IPv4:"
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr "Dirección IPv6:"
+msgstr "Endereço IPv6:"
 
 #: resources/ui/performance_page/network.blp:403
 msgid "Network Se_ttings"
-msgstr "Con_figuración de red"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr "Configuración general"
+msgstr "Configurações Gerais"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr "Velocidad de actualización"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr "Rápida"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
-msgstr "Actualizar cada medio segundo"
+msgstr "Atualizar a cada meio segundo"
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
@@ -686,71 +677,71 @@ msgstr "Normal"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr "Actualizar cada segundo"
+msgstr "Atualizar a cada segundo"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr "Lenta"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr "Actualizar cada segundo y medio"
+msgstr "Atualizar a cada segundo e meio"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
 msgid "Very Slow"
-msgstr "Muy lenta"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr "Actualizar cada 2 segundos"
+msgstr "Atualizar a cada 2 segundos"
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
-msgstr "Configuración de la página de la aplicación"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr "Estadísticas del proceso de fusión"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr "Recordar la clasificación"
+msgstr "Lembrar Classificação"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Recordar la ordenación de la lista de aplicaciones y procesos al reiniciar "
-"la aplicación"
+"Lembrar classificação da lista de aplicativos e processos entre "
+"reinicializações do aplicativo"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr "Escriba un nombre o PID para buscar"
+msgstr "Digite um nome ou PID para pesquisar"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr "Cargando..."
+msgstr "Carregando..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr "Rendimiento"
+msgstr "Performance"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
-msgstr "Aplicaciones"
+msgstr "Aplicativos"
 
 #: resources/ui/window.blp:124
 msgid "_Preferences"
-msgstr "_Preferencias"
+msgstr "_Configurações"
 
 #: resources/ui/window.blp:129
 msgid "_About MissionCenter"
-msgstr "_Acerca de Mission Center"
+msgstr ""
 
 #: src/apps_page/mod.rs:992
 msgid "Name"
-msgstr "Nombre"
+msgstr "Nome"
 
 #: src/apps_page/mod.rs:998
 msgid "PID"
@@ -763,20 +754,20 @@ msgstr "Disco"
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr "Detener la aplicación"
+msgstr "Parar Aplicação"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr "Forzar la detención la aplicación"
+msgstr "Parar Aplicativo Forçadamente"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
 msgid "Stop Process"
-msgstr "Detener el proceso"
+msgstr "Parar Processo"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr "Forzar la detención del proceso"
+msgstr "Parar Processo Forçadamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -784,9 +775,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"En uso ({}B)\n"
+"Em uso ({}B)\n"
 "\n"
-"Memoria usada por el sistema operativo y las aplicaciones en ejecución"
+"Memória usada pelo sistema operacional e aplicativos em execução"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
 msgid ""
@@ -797,8 +788,8 @@ msgid ""
 msgstr ""
 "Modificada ({}B)\n"
 "\n"
-"Memoria cuyo contenido debe escribirse en disco antes de que pueda ser usada "
-"por otro proceso"
+"Memória cujo conteúdo deve ser escrito ao disco antes de poder ser usado por "
+"outro processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -806,9 +797,6 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"En espera ({}B)\n"
-"\n"
-"Memoria que contiene datos en caché y código que no se usa activamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -817,11 +805,11 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Libre ({}B)\n"
+"Livre ({}B)\n"
 "\n"
-"Memoria que no está actualmente en uso, y que será reusada en primer lugar "
-"cuando el sistema operativo, los controladores o las aplicaciones necesiten "
-"más memoria"
+"Memória que não está em uso no momento e irá ser reaproveitada em primeiro "
+"lugar quando o sistema operacional, drivers ou aplicativos precisarem de "
+"mais memória"
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
@@ -854,11 +842,11 @@ msgstr "iSCSI"
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:404
 #: src/performance_page/network.rs:441 src/performance_page/network.rs:519
 msgid "Unknown"
-msgstr "Desconocido"
+msgstr ""
 
 #: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr "Ethernet"
+msgstr "Cabo"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
 msgid "Wi-Fi"
@@ -866,7 +854,7 @@ msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:340
 msgid "Other"
-msgstr "Otros"
+msgstr ""
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
@@ -878,23 +866,23 @@ msgstr "{}: {} {}bps {}: {} {}bps"
 
 #: src/performance_page/cpu.rs:286
 msgid "Supported"
-msgstr "Soportado"
+msgstr ""
 
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
-msgstr "No soportado"
+msgstr ""
 
 #: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
 msgid "Yes"
-msgstr "Sí"
+msgstr "Sim"
 
 #: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
 msgid "No"
-msgstr "No"
+msgstr "Não"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"
-msgstr "% Uso en {} segundos"
+msgstr "% Utilização em {} segundos"
 
 #: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:605
@@ -912,11 +900,8 @@ msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
-msgstr "N/D"
+msgstr "N/A"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
-
-#~ msgid "_Quit"
-#~ msgstr "_Salir"
+msgstr ""
