@@ -23,8 +23,6 @@ use super::ArrayString;
 mod state {
     use std::{cell::Cell, thread_local};
 
-    use super::*;
-
     thread_local! {
         pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![]);
     }
@@ -543,6 +541,107 @@ impl StaticInfo {
             && signature_reg[2] == 0x444d4163
         {
             return Some((features[0] & 0x04) > 0);
+        }
+
+        None
+    }
+
+    fn virtual_machine() -> Option<bool> {
+        use rustbus::*;
+        use std::time::Duration;
+
+        let mut rpc_con = match RpcConn::system_conn(connection::Timeout::Duration(
+            Duration::from_millis(1000),
+        )) {
+            Ok(rpc_con) => rpc_con,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Failed to connect to D-Bus: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        let mut call = MessageBuilder::new()
+            .call("Get")
+            .at("org.freedesktop.systemd1")
+            .on("/org/freedesktop/systemd1")
+            .with_interface("org.freedesktop.DBus.Properties")
+            .build();
+
+        match call
+            .body
+            .push_param2("org.freedesktop.systemd1.Manager", "Virtualization")
+        {
+            Ok(_) => {}
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Failed to marshal parameters: {}",
+                    e
+                );
+                return None;
+            }
+        }
+
+        let id = match rpc_con
+            .send_message(&mut call)
+            .and_then(|smc| smc.write_all().map_err(|e| e.1))
+        {
+            Ok(id) => id,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Failed to send message: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        let message = match rpc_con.wait_response(
+            id,
+            connection::Timeout::Duration(Duration::from_millis(1000)),
+        ) {
+            Ok(message) => message,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Failed to retrieve response: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        match message.typ {
+            MessageType::Error => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Received error message: {}: {}",
+                    message.dynheader.error_name.unwrap_or_default(),
+                    message
+                        .body
+                        .parser()
+                        .get::<&str>()
+                        .unwrap_or("Unknown error")
+                );
+                return None;
+            }
+            MessageType::Reply => {
+                use wire::unmarshal::traits::Variant;
+
+                let reply = message
+                    .body
+                    .parser()
+                    .get::<Variant>()
+                    .and_then(|v| v.get::<&str>());
+
+                return Some(reply.unwrap_or_default().len() > 0);
+            }
+            _ => {
+                eprintln!(
+                    "Gatherer: Failed to determine VM: Expected message type Reply got: {:?}",
+                    message.typ
+                );
+            }
         }
 
         None

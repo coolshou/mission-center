@@ -22,7 +22,8 @@ macro_rules! acknowledge {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::Acknowledge)) {
+        if let Err(e) = $connection.write_all(common::to_binary(&common::ipc::Message::Acknowledge))
+        {
             eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendAcknowledgeFailed as i32);
         }
@@ -33,7 +34,7 @@ macro_rules! data_ready {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::DataReady)) {
+        if let Err(e) = $connection.write_all(common::to_binary(&common::ipc::Message::DataReady)) {
             eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
             std::process::exit(common::ExitCode::SendDataReadyFailed as i32);
         }
