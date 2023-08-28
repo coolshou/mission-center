@@ -106,6 +106,13 @@ impl super::GathererSupervisor {
                         );
                         false
                     }
+                    SharedDataContent::CpuStaticInfo(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is CpuStaticInfo instead of Apps; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
                     SharedDataContent::Monostate => {
                         g_critical!(
                             "MissionCenter::AppInfo",
@@ -173,6 +180,13 @@ impl super::GathererSupervisor {
                         g_critical!(
                             "MissionCenter::AppInfo",
                             "Shared data content is Apps instead of AppPIDs; encountered when reading installed apps from gatherer",
+                        );
+                        false
+                    }
+                    SharedDataContent::CpuStaticInfo(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is CpuStaticInfo instead of AppPIDs; encountered when reading processes from gatherer", 
                         );
                         false
                     }

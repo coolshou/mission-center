@@ -130,6 +130,13 @@ impl super::GathererSupervisor {
                         );
                         false
                     }
+                    SharedDataContent::CpuStaticInfo(_) => {
+                        g_critical!(
+                            "MissionCenter::ProcInfo",
+                            "Shared data content is CpuStaticInfo instead of Processes; encountered when reading processes from gatherer", 
+                        );
+                        false
+                    }
                     SharedDataContent::Monostate => {
                         g_critical!(
                             "MissionCenter::ProcInfo",

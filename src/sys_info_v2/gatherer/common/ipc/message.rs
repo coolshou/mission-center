@@ -24,6 +24,7 @@ pub enum Message {
     GetProcesses,
     GetApps,
     GetAppPIDs,
+    GetCpuStaticInfo,
     TerminateProcess(u32 /* PID */),
     KillProcess(u32 /* PID */),
     KillProcessTree(u32 /* Parent PID */),

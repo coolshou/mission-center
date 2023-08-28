@@ -217,11 +217,11 @@ pub struct Readings {
 }
 
 impl Readings {
-    pub fn new(system: &mut sysinfo::System) -> Self {
+    pub fn new(system: &mut sysinfo::System, gatherer_supervisor: &mut GathererSupervisor) -> Self {
         use std::collections::HashMap;
 
         Self {
-            cpu_info: CpuInfo::new(system),
+            cpu_info: CpuInfo::new(system, gatherer_supervisor),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
             disks: vec![],
             network_devices: vec![],
@@ -233,7 +233,7 @@ impl Readings {
     }
 }
 
-struct GathererSupervisor {
+pub struct GathererSupervisor {
     gatherer: gatherer::Gatherer<gatherer::SharedData>,
 }
 
@@ -449,9 +449,6 @@ impl SysInfoV2 {
                 use gtk::glib::*;
                 use sysinfo::{System, SystemExt};
 
-                let mut system = System::new();
-                let mut readings = Readings::new(&mut system);
-
                 let mut gatherer_supervisor = match GathererSupervisor::new() {
                     Ok(gs) => gs,
                     Err(e) => {
@@ -486,6 +483,9 @@ impl SysInfoV2 {
                         return;
                     }
                 };
+
+                let mut system = System::new();
+                let mut readings = Readings::new(&mut system, &mut gatherer_supervisor);
 
                 let mut disk_stats = vec![];
                 readings.disks = DiskInfo::load(&mut disk_stats);

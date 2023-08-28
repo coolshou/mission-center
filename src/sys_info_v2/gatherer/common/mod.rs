@@ -37,6 +37,9 @@ pub type AppStats = apps::Stats;
 #[allow(dead_code)]
 pub type ProcessStats = processes::Stats;
 
+#[allow(dead_code)]
+pub type CpuStaticInfo = cpu::StaticInfo;
+
 pub trait ToArrayStringLossy {
     fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
 }
@@ -84,6 +87,7 @@ pub enum SharedDataContent {
     Processes(Processes),
     Apps(Apps),
     AppPIDs(AppPIDs),
+    CpuStaticInfo(CpuStaticInfo),
 }
 
 #[derive(Debug)]

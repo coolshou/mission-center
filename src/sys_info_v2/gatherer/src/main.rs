@@ -123,6 +123,14 @@ fn main() {
 
                 data_ready!(connection);
             }
+            ipc::Message::GetCpuStaticInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::CpuStaticInfo(common::CpuStaticInfo::new());
+
+                data_ready!(connection);
+            }
             ipc::Message::TerminateProcess(pid) => {
                 acknowledge!(connection);
 
