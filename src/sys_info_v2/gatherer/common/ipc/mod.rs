@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/ipc/mod.rs
+/* sys_info_v2/gatherer/common/types/ipc/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -19,11 +19,8 @@
  */
 
 pub use interprocess::{local_socket::LocalSocketListener, local_socket::LocalSocketStream};
-
 pub use message::Message;
 pub use shm::{SharedMemory, SharedMemoryContent, SharedMemoryError};
 
-#[path = "message.rs"]
 mod message;
-#[path = "shm.rs"]
 mod shm;

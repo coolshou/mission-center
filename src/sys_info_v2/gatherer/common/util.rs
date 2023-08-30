@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/mod.rs
+/* sys_info_v2/gatherer/common/util.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,25 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use arrayvec::ArrayVec;
+#[inline]
+pub fn to_binary<T: Sized>(thing: &T) -> &[u8] {
+    let ptr = thing as *const T;
+    unsafe { core::slice::from_raw_parts(ptr as *const u8, core::mem::size_of::<T>()) }
+}
 
-pub use apps::{AppDescriptor, AppPIDs, Apps};
-pub use exit_code::ExitCode;
-pub use processes::{ProcessDescriptor, ProcessState, Processes};
-pub use shared_data::{SharedData, SharedDataContent};
-pub use util::{to_binary, to_binary_mut};
-
-pub mod ipc;
-
-mod apps;
-mod cpu;
-mod exit_code;
-mod processes;
-mod shared_data;
-mod util;
-
-pub type ArrayString = arrayvec::ArrayString<256>;
-pub type ProcessStats = processes::Stats;
-pub type AppStats = apps::Stats;
-pub type CpuStaticInfo = cpu::StaticInfo;
-pub type CpuDynamicInfo = cpu::DynamicInfo;
+#[inline]
+pub fn to_binary_mut<T: Sized>(thing: &mut T) -> &mut [u8] {
+    let ptr = thing as *mut T;
+    unsafe { core::slice::from_raw_parts_mut(ptr as *mut u8, core::mem::size_of::<T>()) }
+}
