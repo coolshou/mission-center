@@ -91,6 +91,7 @@ lazy_static! {
 }
 
 mod state {
+    use super::*;
     use std::{cell::Cell, thread_local};
 
     thread_local! {
