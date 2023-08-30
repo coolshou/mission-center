@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/types/processes.rs
+/* sys_info_v2/gatherer/common/processes.rs
  *
  * Copyright 2023 Romeo Calota
  *

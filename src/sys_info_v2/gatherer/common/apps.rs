@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/types/apps.rs
+/* sys_info_v2/gatherer/common/apps.rs
  *
  * Copyright 2023 Romeo Calota
  *

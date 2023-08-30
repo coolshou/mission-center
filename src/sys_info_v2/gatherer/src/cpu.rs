@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/cpu.rs
+/* sys_info_v2/gatherer/src/cpu.rs
  *
  * Copyright 2023 Romeo Calota
  *

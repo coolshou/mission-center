@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/apps.rs
+/* sys_info_v2/gatherer/src/apps.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -92,8 +92,6 @@ lazy_static! {
 
 mod state {
     use std::{cell::Cell, thread_local};
-
-    use super::*;
 
     thread_local! {
         pub static APP_CACHE: Cell<Vec<AppDescriptor>> = Cell::new(vec![]);
