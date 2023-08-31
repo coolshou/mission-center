@@ -268,15 +268,19 @@ mod imp {
                 .add_data_point(0, disk.read_speed as f32);
             let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
             let i = if read_speed.1.is_empty() { "" } else { "i" };
-            this.read_speed
-                .set_text(&format!("{:.2} {}{}B/s", read_speed.0, read_speed.1, i,));
+            this.read_speed.set_text(&format!(
+                "{0:.2$} {1}{3}B/s",
+                read_speed.0, read_speed.1, read_speed.2, i,
+            ));
 
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.write_speed as f32);
             let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
             let i = if write_speed.1.is_empty() { "" } else { "i" };
-            this.write_speed
-                .set_text(&format!("{:.2} {}{}B/s", write_speed.0, write_speed.1, i,));
+            this.write_speed.set_text(&format!(
+                "{0:.2$} {1}{3}B/s",
+                write_speed.0, write_speed.1, write_speed.2, i,
+            ));
 
             true
         }

@@ -395,17 +395,18 @@ mod imp {
                     .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
                         i18n("Unknown"),
                         |kbps| {
-                            let (val, unit) = crate::to_human_readable(*kbps as f32 * 1000., 1024.);
-                            format!("{} {}bps", val.round(), unit)
+                            let (val, unit, dec_to_display) =
+                                crate::to_human_readable(*kbps as f32 * 1000., 1024.);
+                            format!("{0:.2$} {1}bps", val, unit, dec_to_display)
                         },
                     ));
                 this.frequency
                     .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
                         i18n("Unknown"),
                         |freq| {
-                            let (freq, unit) =
+                            let (freq, unit, dec_to_display) =
                                 crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
-                            format!("{:.2} {}Hz", freq, unit)
+                            format!("{0:.2$} {1}Hz", freq, unit, dec_to_display)
                         },
                     ));
             }
@@ -420,7 +421,7 @@ mod imp {
             this.speed_send.set_text(&i18n_f(
                 "{} {}bps",
                 &[
-                    &format!("{}", speed_send_info.0.round()),
+                    &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
                     &format!("{}", speed_send_info.1),
                 ],
             ));
@@ -428,7 +429,7 @@ mod imp {
             this.speed_recv.set_text(&i18n_f(
                 "{} {}bps",
                 &[
-                    &format!("{}", speed_recv_info.0.round()),
+                    &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
                     &format!("{}", speed_recv_info.1),
                 ],
             ));

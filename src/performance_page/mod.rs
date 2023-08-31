@@ -264,7 +264,7 @@ mod imp {
             summary.set_heading(i18n("CPU"));
             summary.set_info1("0% 0.00 GHz");
             match readings.cpu_info.dynamic_info.temperature.as_ref() {
-                Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
+                Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                 _ => {}
             }
 
@@ -380,7 +380,7 @@ mod imp {
                     DiskType::iSCSI => i18n("iSCSI"),
                     DiskType::Unknown => i18n("Unknown"),
                 });
-                summary.set_info2(format!("{:.2}%", disk.busy_percent));
+                summary.set_info2(format!("{:.0}%", disk.busy_percent));
                 summary.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -456,8 +456,7 @@ mod imp {
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(if_name);
 
-                summary.set_heading(conn_type.clone());
-                summary.set_info1(if_name.to_string());
+                summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
 
                 {
                     let graph_widget = summary.graph_widget();
@@ -645,7 +644,7 @@ mod imp {
                             readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
                         match readings.cpu_info.dynamic_info.temperature.as_ref() {
-                            Some(v) => summary.set_info2(format!("{:.2} °C", *v)),
+                            Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                             _ => {}
                         }
 
@@ -660,12 +659,13 @@ mod imp {
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
-                            "{:.2} {}iB/{} {}iB ({}%)",
-                            used.0,
-                            used.1,
-                            total.0.round(),
-                            total.1,
+                            "{}%",
                             ((used_raw as f32 / total_raw as f32) * 100.).round()
+                        ));
+
+                        summary.set_info2(format!(
+                            "{0:.2$} {1}iB/{3:.5$} {4}iB",
+                            used.0, used.1, used.2, total.0, total.1, total.2
                         ));
 
                         result &= page.update_readings(readings);
@@ -675,7 +675,7 @@ mod imp {
                             if let Some((summary, page)) = disks_pages.get(&disk.id) {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                summary.set_info2(format!("{:.2}%", disk.busy_percent));
+                                summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
                                 result &= page.update_readings(disk);
                             } else {
@@ -697,14 +697,20 @@ mod imp {
 
                                 let sent = crate::to_human_readable(sent * 8., 1024.);
                                 let received = crate::to_human_readable(received * 8., 1024.);
-                                summary.set_info2(i18n_f(
-                                    "{}: {} {}bps {}: {} {}bps",
+
+                                summary.set_info1(i18n_f(
+                                    "{}: {} {}bps",
                                     &[
                                         "S",
-                                        &format!("{}", sent.0.round()),
+                                        &format!("{0:.1$}", sent.0, sent.2),
                                         &format!("{}", sent.1),
+                                    ],
+                                ));
+                                summary.set_info2(i18n_f(
+                                    "{}: {} {}bps",
+                                    &[
                                         "R",
-                                        &format!("{}", received.0.round()),
+                                        &format!("{0:.1$}", received.0, received.2),
                                         &format!("{}", received.1),
                                     ],
                                 ));

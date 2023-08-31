@@ -238,7 +238,7 @@ mod imp {
                 crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
             this.total_memory.set_text(&format!(
                 "{} {}{}B",
-                total_memory.0.round(),
+                total_memory.0,
                 total_memory.1,
                 if total_memory.1.is_empty() { "" } else { "i" }
             ));
@@ -317,16 +317,18 @@ mod imp {
             let total_memory =
                 crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
             this.memory_usage_current.set_text(&format!(
-                "{:.2} {}{}B",
+                "{0:.2$} {1}{3}B",
                 used_memory.0,
                 used_memory.1,
+                used_memory.2,
                 if used_memory.1.is_empty() { "" } else { "i" },
             ));
 
             this.memory_usage_max.set_text(&format!(
-                "{:.2} {}{}B",
+                "{0:.2$} {1}{3}B",
                 total_memory.0,
                 total_memory.1,
+                total_memory.2,
                 if total_memory.1.is_empty() { "" } else { "i" }
             ));
 
@@ -338,10 +340,14 @@ mod imp {
                 gpu.dynamic_info.clock_speed_max_mhz as f32 * 1_000_000.,
                 1000.,
             );
-            this.clock_speed_current
-                .set_text(&format!("{:.2} {}Hz", clock_speed.0, clock_speed.1));
-            this.clock_speed_max
-                .set_text(&format!("{:.2} {}Hz", clock_speed_max.0, clock_speed_max.1));
+            this.clock_speed_current.set_text(&format!(
+                "{0:.2$} {1}Hz",
+                clock_speed.0, clock_speed.1, clock_speed.2
+            ));
+            this.clock_speed_max.set_text(&format!(
+                "{0:.2$} {1}Hz",
+                clock_speed_max.0, clock_speed_max.1, clock_speed_max.2
+            ));
 
             let memory_speed =
                 crate::to_human_readable(gpu.dynamic_info.mem_speed_mhz as f32 * 1_000_000., 1000.);
@@ -349,21 +355,27 @@ mod imp {
                 gpu.dynamic_info.mem_speed_max_mhz as f32 * 1_000_000.,
                 1000.,
             );
-            this.memory_speed_current
-                .set_text(&format!("{:.2} {}Hz", memory_speed.0, memory_speed.1));
+            this.memory_speed_current.set_text(&format!(
+                "{0:.2$} {1}Hz",
+                memory_speed.0, memory_speed.1, memory_speed.2
+            ));
             this.memory_speed_max.set_text(&format!(
-                "{:.2} {}Hz",
-                memory_speed_max.0, memory_speed_max.1
+                "{0:.2$} {1}Hz",
+                memory_speed_max.0, memory_speed_max.1, memory_speed_max.2
             ));
 
             let power_draw =
                 crate::to_human_readable(gpu.dynamic_info.power_draw_watts as f32, 1000.);
             let power_limit =
                 crate::to_human_readable(gpu.dynamic_info.power_draw_max_watts as f32, 1000.);
-            this.power_draw_current
-                .set_text(&format!("{:.2} {}W", power_draw.0, power_draw.1));
-            this.power_draw_max
-                .set_text(&format!("{:.2} {}W", power_limit.0, power_limit.1));
+            this.power_draw_current.set_text(&format!(
+                "{0:.2$} {1}W",
+                power_draw.0, power_draw.1, power_draw.2
+            ));
+            this.power_draw_max.set_text(&format!(
+                "{0:.2$} {1}W",
+                power_limit.0, power_limit.1, power_limit.2
+            ));
 
             this.temperature
                 .set_text(&format!("{}°C", gpu.dynamic_info.temp_celsius));
