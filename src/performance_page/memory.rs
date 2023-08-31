@@ -172,7 +172,7 @@ mod imp {
             let total_mem = crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
             this.total_ram.set_text(&format!(
                 "{:.2} {}{}B",
-                total_mem.0.round(),
+                total_mem.0,
                 total_mem.1,
                 if total_mem.1.is_empty() { "" } else { "i" }
             ));
