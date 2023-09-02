@@ -21,12 +21,33 @@
 mod state {
     use std::{cell::Cell, thread_local};
 
+    #[derive(Debug, Default, Copy, Clone)]
+    pub struct CpuStats {
+        pub user: u64,
+        pub nice: u64,
+        pub system: u64,
+        pub irq: u64,
+        pub softirq: u64,
+    }
+
     thread_local! {
-        pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![]);
+        pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; num_cpus::get()]);
+
+        pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); num_cpus::get() + 1]);
     }
 }
 
+const PROC_STAT_USER: usize = 0;
+const PROC_STAT_NICE: usize = 1;
+const PROC_STAT_SYSTEM: usize = 2;
+const PROC_STAT_IRQ: usize = 5;
+const PROC_STAT_SOFTIRQ: usize = 6;
+const PROC_STAT_GUEST: usize = 8;
+const PROC_STAT_GUEST_NICE: usize = 9;
+
 include!("../common/cpu.rs");
+
+use state::CpuStats;
 
 impl StaticInfo {
     pub fn new() -> Self {
@@ -876,5 +897,97 @@ impl StaticInfo {
             result[i] = result[i].map(|size| size * 1024);
         }
         result
+    }
+}
+
+// #[derive(Debug, Clone)]
+// pub struct DynamicInfo {
+//     pub overall_utilization_percent: f32,
+//     pub current_frequency_mhz: u64,
+//     pub temperature: Option<f32>,
+//     pub process_count: u32,
+//     pub thread_count: u32,
+//     pub handle_count: u32,
+//     pub uptime_seconds: u64,
+// }
+
+impl DynamicInfo {
+    pub fn new() -> Self {
+        // use state::*;
+
+        // super::Processes::process_cache()
+        //     .iter()
+        //     .map(|(_, p)| p)
+
+        Self {
+            overall_utilization_percent: 0.,
+            current_frequency_mhz: 0,
+            temperature: None,
+            process_count: 0,
+            thread_count: 0,
+            handle_count: 0,
+            uptime_seconds: 0,
+        }
+    }
+
+    fn cpu_usage(per_core_usage: &mut Vec<f32>) -> f32 {
+        pub fn extract_cpu_stats(line: &str) -> CpuStats {
+            let mut result = CpuStats::default();
+
+            for (i, value) in line.split_whitespace().skip(1).enumerate() {
+                match i {
+                    PROC_STAT_USER => {
+                        result.user = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_NICE => {
+                        result.nice = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_SYSTEM => {
+                        result.system = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_IRQ => {
+                        result.irq = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_SOFTIRQ => {
+                        result.softirq = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_GUEST => {
+                        let guest = value.parse::<u64>().unwrap_or(0);
+                        result.user = result.user.saturating_sub(guest);
+                    }
+                    PROC_STAT_GUEST_NICE => {
+                        let guest_nice = value.parse::<u64>().unwrap_or(0);
+                        result.nice = result.nice.saturating_sub(guest_nice);
+                    }
+                    _ => {}
+                }
+            }
+
+            result
+        }
+
+        let proc_stat = match std::fs::read_to_string("/proc/stat") {
+            Err(e) => {
+                eprintln!("Gatherer: Failed to read /proc/stat: {}", e);
+                return 0.;
+            }
+            Ok(s) => s,
+        };
+
+        let stats_cache = state::CPU_STATS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+
+        let mut line_iter = proc_stat
+            .lines()
+            .map(|l| l.trim())
+            .skip_while(|l| !l.starts_with("cpu"));
+        if let Some(cpu_overall_line) = line_iter.next() {
+            stats_cache[0] = extract_cpu_stats(cpu_overall_line);
+        } else {
+            return 0.;
+        }
+
+        per_core_usage.clear();
+
+        0.
     }
 }

@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/types/ipc/message.rs
+/* sys_info_v2/gatherer/common/ipc/message.rs
  *
  * Copyright 2023 Romeo Calota
  *
