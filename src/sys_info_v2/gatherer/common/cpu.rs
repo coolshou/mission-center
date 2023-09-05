@@ -34,7 +34,7 @@ pub struct StaticInfo {
     pub l4_cache: Option<usize>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct DynamicInfo {
     pub overall_utilization_percent: f32,
     pub current_frequency_mhz: u64,
@@ -45,7 +45,7 @@ pub struct DynamicInfo {
     pub uptime_seconds: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct LogicalCpuInfo {
     pub utilization_percent: ArrayVec<f32, 128>,
     pub is_complete: bool,

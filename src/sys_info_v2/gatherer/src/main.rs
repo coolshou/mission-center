@@ -165,13 +165,8 @@ fn main() {
             ipc::Message::GetProcesses => {
                 acknowledge!(connection);
 
-                let p = Processes::new();
-                if p.is_complete {
-                    dbg!(CpuDynamicInfo::new());
-                }
-
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::Processes(p);
+                data.content = SharedDataContent::Processes(Processes::new());
 
                 data_ready!(connection);
             }

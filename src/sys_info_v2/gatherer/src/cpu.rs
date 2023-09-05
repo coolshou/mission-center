@@ -974,8 +974,8 @@ impl DynamicInfo {
             temperature: Self::temperature(),
             process_count: Self::process_count(),
             thread_count: Self::thread_count() as _,
-            handle_count: 0,
-            uptime_seconds: 0,
+            handle_count: Self::handle_count(),
+            uptime_seconds: Self::uptime().as_secs(),
         }
     }
 
@@ -1138,13 +1138,70 @@ impl DynamicInfo {
     }
 
     fn process_count() -> u32 {
-        super::processes::Processes::process_cache().len() as _
+        super::Processes::process_cache().len() as _
     }
 
     fn thread_count() -> usize {
-        super::processes::Processes::process_cache()
+        super::Processes::process_cache()
             .iter()
             .map(|(_, p)| p.task_count)
             .sum()
+    }
+
+    fn handle_count() -> u32 {
+        let file_nr = match std::fs::read_to_string("/proc/sys/fs/file-nr") {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
+                    e
+                );
+                return 0;
+            }
+        };
+        let file_nr = match file_nr.split_whitespace().next() {
+            Some(s) => s,
+            None => {
+                eprintln!(
+                    "Gatherer: Failed to get handle count, failed to parse /proc/sys/fs/file-nr",
+                );
+                return 0;
+            }
+        };
+
+        match file_nr.trim().parse() {
+            Ok(count) => count,
+            Err(e) => {
+                eprintln!("Gatherer: Failed to get handle count, failed to parse /proc/sys/fs/file-nr content ({}): {}", file_nr, e);
+                0
+            }
+        }
+    }
+
+    fn uptime() -> std::time::Duration {
+        let proc_uptime = match std::fs::read_to_string("/proc/uptime") {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
+                    e
+                );
+                return std::time::Duration::from_millis(0);
+            }
+        };
+
+        match proc_uptime
+            .split_whitespace()
+            .next()
+            .unwrap_or_default()
+            .trim()
+            .parse::<f64>()
+        {
+            Ok(count) => std::time::Duration::from_secs_f64(count),
+            Err(e) => {
+                eprintln!("Gatherer: Failed to parse uptime, failed to parse /proc/uptime content ({}): {}", proc_uptime, e);
+                std::time::Duration::from_millis(0)
+            }
+        }
     }
 }
