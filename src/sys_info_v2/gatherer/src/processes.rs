@@ -85,6 +85,7 @@ pub struct Process {
     raw_stats: RawStats,
     pub children: Vec<Process>,
     pub cgroup: Option<String>,
+    pub task_count: usize,
 }
 
 impl Default for Process {
@@ -116,6 +117,7 @@ impl Default for Process {
             },
             children: vec![],
             cgroup: None,
+            task_count: 0,
         }
     }
 }
@@ -530,6 +532,25 @@ impl Processes {
                 }
             };
 
+            let mut task_count = 0_usize;
+            match std::fs::read_dir(entry_path.join("task")) {
+                Ok(tasks) => {
+                    for task in tasks.filter_map(|t| t.ok()) {
+                        match task.file_name().to_string_lossy().parse::<u32>() {
+                            Err(_) => continue,
+                            _ => {}
+                        };
+                        task_count += 1;
+                    }
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Gatherer: Failed to read task directory for process {}: {}",
+                        pid, e
+                    );
+                }
+            }
+
             process.descriptor.pid = pid;
             process.descriptor.name = stat_name(&stat_parsed);
             process.descriptor.cmd = cmd;
@@ -546,6 +567,7 @@ impl Processes {
             process.raw_stats.net_bytes_recv = total_net_recv;
             process.raw_stats.timestamp = now;
             process.cgroup = cgroup;
+            process.task_count = task_count;
 
             result.insert(pid, process);
         }

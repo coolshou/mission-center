@@ -972,8 +972,8 @@ impl DynamicInfo {
             overall_utilization_percent: cpu_usage,
             current_frequency_mhz: Self::cpu_frequency_mhz(),
             temperature: Self::temperature(),
-            process_count: 0,
-            thread_count: 0,
+            process_count: Self::process_count(),
+            thread_count: Self::thread_count() as _,
             handle_count: 0,
             uptime_seconds: 0,
         }
@@ -1139,5 +1139,12 @@ impl DynamicInfo {
 
     fn process_count() -> u32 {
         super::processes::Processes::process_cache().len() as _
+    }
+
+    fn thread_count() -> usize {
+        super::processes::Processes::process_cache()
+            .iter()
+            .map(|(_, p)| p.task_count)
+            .sum()
     }
 }
