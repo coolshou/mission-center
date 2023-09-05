@@ -18,8 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use apps::{AppDescriptor, AppPIDs, Apps};
+#[allow(unused_imports)]
 pub use arrayvec::ArrayVec;
+
+pub use apps::{AppDescriptor, AppPIDs, Apps};
 pub use cpu::LogicalCpuInfo;
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
 pub use util::{to_binary, to_binary_mut};
@@ -59,6 +61,7 @@ mod util;
 pub type ArrayString = arrayvec::ArrayString<256>;
 pub type ProcessStats = processes::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
+pub type CpuDynamicInfo = cpu::DynamicInfo;
 
 #[path = "../common/shared_data.rs"]
 mod shared_data;
@@ -162,8 +165,13 @@ fn main() {
             ipc::Message::GetProcesses => {
                 acknowledge!(connection);
 
+                let p = Processes::new();
+                if p.is_complete {
+                    dbg!(CpuDynamicInfo::new().overall_utilization_percent);
+                }
+
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::Processes(Processes::new());
+                data.content = SharedDataContent::Processes(p);
 
                 data_ready!(connection);
             }

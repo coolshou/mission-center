@@ -18,22 +18,86 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use state::CpuStats;
+
 mod state {
     use std::{cell::Cell, thread_local};
 
-    #[derive(Debug, Default, Copy, Clone)]
+    use lazy_static::lazy_static;
+
+    #[derive(Debug, Copy, Clone)]
     pub struct CpuStats {
         pub user: u64,
         pub nice: u64,
         pub system: u64,
         pub irq: u64,
         pub softirq: u64,
+        pub timestamp: std::time::Instant,
+    }
+
+    impl Default for CpuStats {
+        fn default() -> Self {
+            Self {
+                user: 0,
+                nice: 0,
+                system: 0,
+                irq: 0,
+                softirq: 0,
+                timestamp: std::time::Instant::now(),
+            }
+        }
+    }
+
+    impl CpuStats {
+        pub fn cpu_usage(&self, prev_measurement: &Self) -> f32 {
+            let delta_time = self.timestamp - prev_measurement.timestamp;
+            let delta_work_time = ((self
+                .work_time()
+                .saturating_sub(prev_measurement.work_time())
+                as f32)
+                * 1000.)
+                / *HZ as f32;
+
+            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / num_cpus::get() as f32)
+                .min(100.)
+        }
+
+        pub fn cpu_usage_kernel(&self, prev_measurement: &Self) -> f32 {
+            let delta_time = self.timestamp - prev_measurement.timestamp;
+            let delta_work_time = ((self
+                .kernel_work_time()
+                .saturating_sub(prev_measurement.kernel_work_time())
+                as f32)
+                * 1000.)
+                / *HZ as f32;
+
+            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / num_cpus::get() as f32)
+                .min(100.)
+        }
+
+        fn work_time(&self) -> u64 {
+            self.user
+                .saturating_add(self.nice)
+                .saturating_add(self.system)
+                .saturating_add(self.irq)
+                .saturating_add(self.softirq)
+        }
+
+        fn kernel_work_time(&self) -> u64 {
+            self.system
+                .saturating_add(self.irq)
+                .saturating_add(self.softirq)
+        }
     }
 
     thread_local! {
         pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; num_cpus::get()]);
 
         pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); num_cpus::get() + 1]);
+    }
+
+    lazy_static! {
+        static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
     }
 }
 
@@ -46,8 +110,6 @@ const PROC_STAT_GUEST: usize = 8;
 const PROC_STAT_GUEST_NICE: usize = 9;
 
 include!("../common/cpu.rs");
-
-use state::CpuStats;
 
 impl StaticInfo {
     pub fn new() -> Self {
@@ -913,14 +975,11 @@ impl StaticInfo {
 
 impl DynamicInfo {
     pub fn new() -> Self {
-        // use state::*;
-
-        // super::Processes::process_cache()
-        //     .iter()
-        //     .map(|(_, p)| p)
+        let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        let cpu_usage = Self::cpu_usage(cpu_usage_cache);
 
         Self {
-            overall_utilization_percent: 0.,
+            overall_utilization_percent: cpu_usage,
             current_frequency_mhz: 0,
             temperature: None,
             process_count: 0,
@@ -930,7 +989,7 @@ impl DynamicInfo {
         }
     }
 
-    fn cpu_usage(per_core_usage: &mut Vec<f32>) -> f32 {
+    fn cpu_usage(per_core_usage: &mut [f32]) -> f32 {
         pub fn extract_cpu_stats(line: &str) -> CpuStats {
             let mut result = CpuStats::default();
 
@@ -976,18 +1035,29 @@ impl DynamicInfo {
 
         let stats_cache = state::CPU_STATS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
 
+        let result;
         let mut line_iter = proc_stat
             .lines()
             .map(|l| l.trim())
             .skip_while(|l| !l.starts_with("cpu"));
         if let Some(cpu_overall_line) = line_iter.next() {
-            stats_cache[0] = extract_cpu_stats(cpu_overall_line);
+            let overall_stats = extract_cpu_stats(cpu_overall_line);
+            result = overall_stats.cpu_usage(&stats_cache[0]);
+            stats_cache[0] = overall_stats;
         } else {
             return 0.;
         }
 
-        per_core_usage.clear();
+        for (i, line) in line_iter.enumerate() {
+            if !line.starts_with("cpu") {
+                break;
+            }
 
-        0.
+            let stats = extract_cpu_stats(line);
+            per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1]);
+            stats_cache[i + 1] = stats;
+        }
+
+        result
     }
 }
