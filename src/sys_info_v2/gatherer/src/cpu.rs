@@ -962,26 +962,16 @@ impl StaticInfo {
     }
 }
 
-// #[derive(Debug, Clone)]
-// pub struct DynamicInfo {
-//     pub overall_utilization_percent: f32,
-//     pub current_frequency_mhz: u64,
-//     pub temperature: Option<f32>,
-//     pub process_count: u32,
-//     pub thread_count: u32,
-//     pub handle_count: u32,
-//     pub uptime_seconds: u64,
-// }
-
 impl DynamicInfo {
     pub fn new() -> Self {
         let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        cpu_usage_cache.resize(num_cpus::get(), 0.);
         let cpu_usage = Self::cpu_usage(cpu_usage_cache);
 
         Self {
             overall_utilization_percent: cpu_usage,
-            current_frequency_mhz: 0,
-            temperature: None,
+            current_frequency_mhz: Self::cpu_frequency_mhz(),
+            temperature: Self::temperature(),
             process_count: 0,
             thread_count: 0,
             handle_count: 0,
@@ -1059,5 +1049,95 @@ impl DynamicInfo {
         }
 
         result
+    }
+
+    // Adapted from `sysinfo` crate, linux/cpu.rs:415
+    fn cpu_frequency_mhz() -> u64 {
+        let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!(
+                    "Gatherer: Failed to read frequency: Failed to open /proc/cpuinfo: {}",
+                    e
+                );
+                return 0;
+            }
+        };
+
+        let mut result = 0;
+        for line in cpuinfo.split('\n').filter(|line| {
+            line.starts_with("cpu MHz\t")
+                || line.starts_with("BogoMIPS")
+                || line.starts_with("clock\t")
+                || line.starts_with("bogomips per cpu")
+        }) {
+            result = line
+                .split(':')
+                .last()
+                .and_then(|val| val.replace("MHz", "").trim().parse::<f64>().ok())
+                .map(|speed| speed as u64)
+                .unwrap_or_default()
+                .max(result);
+        }
+
+        result
+    }
+
+    fn temperature() -> Option<f32> {
+        let dir = match std::fs::read_dir("/sys/class/hwmon") {
+            Ok(d) => d,
+            Err(e) => {
+                eprintln!("Gatherer: Failed to open `/sys/class/hwmon`: {}", e);
+                return None;
+            }
+        };
+
+        for mut entry in dir
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .filter(|path| path.is_dir())
+        {
+            let mut name = entry.clone();
+            name.push("name");
+
+            let name = match std::fs::read_to_string(name) {
+                Ok(name) => name.trim().to_lowercase(),
+                Err(_) => continue,
+            };
+            if name != "k10temp" && name != "coretemp" {
+                continue;
+            }
+
+            entry.push("temp1_input");
+            let temp = match std::fs::read_to_string(&entry) {
+                Ok(temp) => temp,
+                Err(e) => {
+                    eprintln!(
+                        "Gatherer: Failed to read temperature from `{}`: {}",
+                        entry.display(),
+                        e
+                    );
+                    continue;
+                }
+            };
+
+            return Some(match temp.trim().parse::<u32>() {
+                Ok(temp) => (temp as f32) / 1000.,
+                Err(e) => {
+                    eprintln!(
+                        "Gatherer: Failed to parse temperature from `{}`: {}",
+                        entry.display(),
+                        e
+                    );
+                    continue;
+                }
+            });
+        }
+
+        None
+    }
+
+    fn process_count() -> u32 {
+        super::processes::Processes::process_cache().len() as _
     }
 }

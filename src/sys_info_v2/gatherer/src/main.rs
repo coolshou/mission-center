@@ -167,7 +167,7 @@ fn main() {
 
                 let p = Processes::new();
                 if p.is_complete {
-                    dbg!(CpuDynamicInfo::new().overall_utilization_percent);
+                    dbg!(CpuDynamicInfo::new());
                 }
 
                 let mut data = unsafe { shared_memory.acquire() };
