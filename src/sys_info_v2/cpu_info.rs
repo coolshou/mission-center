@@ -102,7 +102,6 @@ impl GathererSupervisor {
                 match shared_memory.content {
                     SharedDataContent::CpuDynamicInfo(ref dynamic_info) => {
                         result.utilization_percent = dynamic_info.overall_utilization_percent;
-                        result.utilization_percent_per_core.resize(num_cpus::get(), 0.);
                         result.current_frequency_mhz = dynamic_info.current_frequency_mhz;
                         result.temperature = dynamic_info.temperature;
                         result.process_count = dynamic_info.process_count;
@@ -123,6 +122,42 @@ impl GathererSupervisor {
                 }
             },
         );
+
+        result.utilization_percent_per_core.clear();
+        self.execute(
+            super::gatherer::Message::GetLogicalCpuInfo,
+            |gatherer, _| {
+                let shared_memory = match gatherer.shared_memory() {
+                    Ok(shm) => shm,
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Unable to to access shared memory: {}",
+                            e
+                        );
+                        return false;
+                    }
+                };
+
+                match shared_memory.content {
+                    SharedDataContent::LogicalCpuInfo(ref logical_cpu_info) => {
+                        result.utilization_percent_per_core.extend_from_slice(logical_cpu_info.utilization_percent.as_slice());
+                        return logical_cpu_info.is_complete;
+                    }
+                    _ => {
+                        g_critical!(
+                            "MissionCenter::CpuInfo",
+                            "Shared data content is {:?} instead of CpuDynamicInfo; encountered when reading installed apps from gatherer",
+                            shared_memory.content
+                        );
+                        false
+                    }
+                }
+            },
+        );
+        result
+            .utilization_percent_per_core
+            .resize(num_cpus::get(), 0.);
 
         result
     }

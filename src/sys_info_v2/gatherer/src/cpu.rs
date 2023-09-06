@@ -18,12 +18,17 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use lazy_static::lazy_static;
 use state::CpuStats;
 
-mod state {
-    use std::{cell::Cell, thread_local};
+lazy_static! {
+    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
+    static ref CPU_COUNT: usize = num_cpus::get();
+}
 
-    use lazy_static::lazy_static;
+mod state {
+    use super::*;
+    use std::{cell::Cell, thread_local};
 
     #[derive(Debug, Copy, Clone)]
     pub struct CpuStats {
@@ -49,7 +54,7 @@ mod state {
     }
 
     impl CpuStats {
-        pub fn cpu_usage(&self, prev_measurement: &Self) -> f32 {
+        pub fn cpu_usage(&self, prev_measurement: &Self, core_count: usize) -> f32 {
             let delta_time = self.timestamp - prev_measurement.timestamp;
             let delta_work_time = ((self
                 .work_time()
@@ -58,11 +63,11 @@ mod state {
                 * 1000.)
                 / *HZ as f32;
 
-            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / num_cpus::get() as f32)
+            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32)
                 .min(100.)
         }
 
-        pub fn cpu_usage_kernel(&self, prev_measurement: &Self) -> f32 {
+        pub fn cpu_usage_kernel(&self, prev_measurement: &Self, core_count: usize) -> f32 {
             let delta_time = self.timestamp - prev_measurement.timestamp;
             let delta_work_time = ((self
                 .kernel_work_time()
@@ -71,7 +76,7 @@ mod state {
                 * 1000.)
                 / *HZ as f32;
 
-            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / num_cpus::get() as f32)
+            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32)
                 .min(100.)
         }
 
@@ -91,13 +96,9 @@ mod state {
     }
 
     thread_local! {
-        pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; num_cpus::get()]);
+        pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; *CPU_COUNT]);
 
-        pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); num_cpus::get() + 1]);
-    }
-
-    lazy_static! {
-        static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
+        pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); *CPU_COUNT + 1]);
     }
 }
 
@@ -411,7 +412,7 @@ impl StaticInfo {
     }
 
     fn logical_cpu_count() -> u32 {
-        num_cpus::get() as u32
+        *CPU_COUNT as u32
     }
 
     fn socket_count() -> Option<u8> {
@@ -965,7 +966,7 @@ impl StaticInfo {
 impl DynamicInfo {
     pub fn new() -> Self {
         let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        cpu_usage_cache.resize(num_cpus::get(), 0.);
+        cpu_usage_cache.resize(*CPU_COUNT, 0.);
         let cpu_usage = Self::cpu_usage(cpu_usage_cache);
 
         Self {
@@ -1032,7 +1033,7 @@ impl DynamicInfo {
             .skip_while(|l| !l.starts_with("cpu"));
         if let Some(cpu_overall_line) = line_iter.next() {
             let overall_stats = extract_cpu_stats(cpu_overall_line);
-            result = overall_stats.cpu_usage(&stats_cache[0]);
+            result = overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
             stats_cache[0] = overall_stats;
         } else {
             return 0.;
@@ -1044,7 +1045,7 @@ impl DynamicInfo {
             }
 
             let stats = extract_cpu_stats(line);
-            per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1]);
+            per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1], 1);
             stats_cache[i + 1] = stats;
         }
 
