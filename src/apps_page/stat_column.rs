@@ -124,15 +124,18 @@ mod imp {
                 self.label
                     .set_text(&format!("{}{}", value.round(), prop_unit));
             } else if prop_unit == "bps" {
-                let (value, unit) = crate::to_human_readable(value, 1024.);
-                self.label
-                    .set_text(&format!("{} {}{}", value.round(), unit, prop_unit));
-            } else {
-                let (value, unit) = crate::to_human_readable(value, 1024.);
+                let (value, unit, dec_to_display) = crate::to_human_readable(value, 1024.);
                 self.label.set_text(&format!(
-                    "{} {}{}{}",
-                    value.round(),
+                    "{0:.2$} {1}{3}",
+                    value, unit, dec_to_display, prop_unit
+                ));
+            } else {
+                let (value, unit, dec_to_display) = crate::to_human_readable_adv(value, 1024., 2);
+                self.label.set_text(&format!(
+                    "{0:.2$} {1}{3}{4}",
+                    value,
                     unit,
+                    dec_to_display,
                     if unit.is_empty() { "" } else { "i" },
                     prop_unit
                 ));

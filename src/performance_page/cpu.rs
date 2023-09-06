@@ -342,7 +342,7 @@ mod imp {
             let l1_cache_size = if let Some(size) = static_cpu_info.l1_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
-                    "{:.1} {}{}B",
+                    "{} {}{}B",
                     size.0,
                     size.1,
                     if size.1.is_empty() { "" } else { "i" }
@@ -355,7 +355,7 @@ mod imp {
             let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
-                    "{:.1} {}{}B",
+                    "{} {}{}B",
                     size.0,
                     size.1,
                     if size.1.is_empty() { "" } else { "i" }
@@ -368,7 +368,7 @@ mod imp {
             let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
-                    "{:.1} {}{}B",
+                    "{} {}{}B",
                     size.0,
                     size.1,
                     if size.1.is_empty() { "" } else { "i" }
@@ -381,7 +381,7 @@ mod imp {
             let _ = if let Some(size) = static_cpu_info.l4_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
-                    "{:.1} {}{}B",
+                    "{} {}{}B",
                     size.0,
                     size.1,
                     if size.1.is_empty() { "" } else { "i" }

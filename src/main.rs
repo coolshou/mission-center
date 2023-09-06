@@ -50,18 +50,48 @@ lazy_static! {
     };
 }
 
-pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str) {
+pub fn to_human_readable_adv(
+    value: f32,
+    divisor: f32,
+    min_type: usize,
+) -> (f32, &'static str, usize) {
     const UNITS: [&'static str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
     let mut index = 0;
     let mut value = value;
+
+    // Only display bit/byte values in the given range or higher, not individual bits/bytes
+    // This sacrifices some precision for the sake of readability
+    if divisor == 1024. {
+        while index < min_type {
+            value /= divisor;
+            index += 1;
+        }
+    }
 
     while value >= divisor && index < UNITS.len() - 1 {
         value /= divisor;
         index += 1;
     }
 
-    (value, UNITS[index])
+    // Calculate number of decimals to display
+    // Only display fractional values for bit/byte numbers in the defined range and bigger
+    // This sacrifices some precision for the sake of readability
+    let mut dec_to_display = 0;
+    if index > min_type || (divisor == 1000.) {
+        if value < 100.0 {
+            dec_to_display = 1
+        }
+        if value < 10.0 {
+            dec_to_display = 2
+        }
+    }
+
+    (value, UNITS[index], dec_to_display)
+}
+
+pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str, usize) {
+    return to_human_readable_adv(value, divisor, 1);
 }
 
 fn main() {
