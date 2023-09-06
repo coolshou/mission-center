@@ -18,13 +18,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#[allow(unused_imports)]
+pub use arrayvec::ArrayVec;
+
+pub use apps::{AppDescriptor, AppPIDs, Apps};
+pub use processes::{ProcessDescriptor, ProcessState, Processes};
+pub use util::{to_binary, to_binary_mut};
+
 macro_rules! acknowledge {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::Acknowledge)) {
+        if let Err(e) = $connection.write_all(to_binary(&ipc::Message::Acknowledge)) {
             eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
-            std::process::exit(common::ExitCode::SendAcknowledgeFailed as i32);
+            std::process::exit(exit_code::ExitCode::SendAcknowledgeFailed as i32);
         }
     }};
 }
@@ -33,19 +40,76 @@ macro_rules! data_ready {
     ($connection: ident) => {{
         use std::io::Write;
 
-        if let Err(e) = $connection.write(common::to_binary(&common::ipc::Message::DataReady)) {
+        if let Err(e) = $connection.write_all(to_binary(&ipc::Message::DataReady)) {
             eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
-            std::process::exit(common::ExitCode::SendDataReadyFailed as i32);
+            std::process::exit(exit_code::ExitCode::SendDataReadyFailed as i32);
         }
     }};
 }
 
-#[path = "../common/mod.rs"]
-mod common;
+mod apps;
+mod cpu;
+#[path = "../common/exit_code.rs"]
+mod exit_code;
+#[path = "../common/ipc/mod.rs"]
+mod ipc;
+mod processes;
+#[path = "../common/util.rs"]
+mod util;
+
+pub type ArrayString = arrayvec::ArrayString<256>;
+pub type ProcessStats = processes::Stats;
+pub type CpuStaticInfo = cpu::StaticInfo;
+pub type CpuDynamicInfo = cpu::DynamicInfo;
+pub type LogicalCpuInfo = cpu::LogicalInfo;
+
+#[path = "../common/shared_data.rs"]
+mod shared_data;
+
+pub trait ToArrayStringLossy {
+    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
+}
+
+impl ToArrayStringLossy for str {
+    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY> {
+        let mut result = arrayvec::ArrayString::new();
+        if self.len() > CAPACITY {
+            for i in (0..CAPACITY).rev() {
+                if self.is_char_boundary(i) {
+                    result.push_str(&self[0..i]);
+                    break;
+                }
+            }
+        } else {
+            result.push_str(self);
+        }
+
+        result
+    }
+}
+
+impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
+    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY> {
+        let mut result = arrayvec::ArrayString::new();
+        if self.len() > CAPACITY {
+            for i in (0..CAPACITY).rev() {
+                if self.is_char_boundary(i) {
+                    result.push_str(&self[0..i]);
+                    break;
+                }
+            }
+        } else {
+            result.push_str(self);
+        }
+
+        result
+    }
+}
 
 fn main() {
-    use common::{ipc, Apps, AppPIDs, ExitCode, Processes, SharedData, SharedDataContent};
+    use exit_code::ExitCode;
     use interprocess::local_socket::*;
+    use shared_data::{SharedData, SharedDataContent};
     use std::io::Read;
 
     let parent_pid = unsafe { libc::getppid() };
@@ -80,14 +144,14 @@ fn main() {
         }
     };
 
-    let mut recv_buffer: ipc::Message = ipc::Message::Unknown;
+    let mut message = ipc::Message::Unknown;
     loop {
         if unsafe { libc::getppid() } != parent_pid {
             eprintln!("Gatherer: Parent process no longer running, exiting");
             break;
         }
 
-        if let Err(e) = connection.read_exact(common::to_binary_mut(&mut recv_buffer)) {
+        if let Err(e) = connection.read_exact(to_binary_mut(&mut message)) {
             if e.kind() == std::io::ErrorKind::UnexpectedEof {
                 eprintln!("Gatherer: Main application has disconnected, shutting down");
                 std::process::exit(0);
@@ -97,7 +161,6 @@ fn main() {
             }
         }
 
-        let message = recv_buffer;
         match message {
             ipc::Message::GetProcesses => {
                 acknowledge!(connection);
@@ -120,6 +183,30 @@ fn main() {
 
                 let mut data = unsafe { shared_memory.acquire() };
                 data.content = SharedDataContent::AppPIDs(AppPIDs::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetCpuStaticInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::CpuStaticInfo(CpuStaticInfo::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetCpuDynamicInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::CpuDynamicInfo(CpuDynamicInfo::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetLogicalCpuInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::LogicalCpuInfo(LogicalCpuInfo::new());
 
                 data_ready!(connection);
             }
