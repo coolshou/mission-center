@@ -35,6 +35,7 @@ mod imp {
     pub struct DataSetDescriptor {
         pub dashed: bool,
         pub fill: bool,
+        pub visible: bool,
 
         pub data_set: Vec<f32>,
     }
@@ -99,6 +100,7 @@ mod imp {
                 data_sets: Cell::new(vec![DataSetDescriptor {
                     dashed: false,
                     fill: true,
+                    visible: true,
                     data_set,
                 }]),
 
@@ -125,6 +127,7 @@ mod imp {
                 DataSetDescriptor {
                     dashed: false,
                     fill: true,
+                    visible: true,
                     data_set: vec![0.; self.data_points.get() as _],
                 },
             );
@@ -368,6 +371,10 @@ mod imp {
             }
 
             for values in data_sets.iter() {
+                if !values.visible {
+                    continue;
+                }
+
                 self.plot_values(
                     &mut canvas,
                     width,
@@ -476,6 +483,14 @@ impl GraphWidget {
         let mut data = self.imp().data_sets.take();
         if index < data.len() {
             data[index].fill = filled;
+        }
+        self.imp().data_sets.set(data);
+    }
+
+    pub fn set_data_visible(&self, index: usize, visible: bool) {
+        let mut data = self.imp().data_sets.take();
+        if index < data.len() {
+            data[index].visible = visible;
         }
         self.imp().data_sets.set(data);
     }

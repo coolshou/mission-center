@@ -97,6 +97,7 @@ mod state {
 
     thread_local! {
         pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; *CPU_COUNT]);
+        pub static KERNEL_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; *CPU_COUNT]);
 
         pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); *CPU_COUNT + 1]);
     }
@@ -967,10 +968,16 @@ impl DynamicInfo {
     pub fn new() -> Self {
         let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
         cpu_usage_cache.resize(*CPU_COUNT, 0.);
-        let cpu_usage = Self::cpu_usage(cpu_usage_cache);
+
+        let kernel_usage_cache =
+            state::KERNEL_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        kernel_usage_cache.resize(*CPU_COUNT, 0.);
+
+        let (cpu_usage, kernel_usage) = Self::cpu_usage(cpu_usage_cache, kernel_usage_cache);
 
         Self {
-            overall_utilization_percent: cpu_usage,
+            utilization_percent: cpu_usage,
+            kernel_utilization_percent: kernel_usage,
             current_frequency_mhz: Self::cpu_frequency_mhz(),
             temperature: Self::temperature(),
             process_count: Self::process_count(),
@@ -980,7 +987,7 @@ impl DynamicInfo {
         }
     }
 
-    fn cpu_usage(per_core_usage: &mut [f32]) -> f32 {
+    fn cpu_usage(per_core_usage: &mut [f32], per_core_kernel_usage: &mut [f32]) -> (f32, f32) {
         pub fn extract_cpu_stats(line: &str) -> CpuStats {
             let mut result = CpuStats::default();
 
@@ -1019,24 +1026,25 @@ impl DynamicInfo {
         let proc_stat = match std::fs::read_to_string("/proc/stat") {
             Err(e) => {
                 eprintln!("Gatherer: Failed to read /proc/stat: {}", e);
-                return 0.;
+                return (0., 0.);
             }
             Ok(s) => s,
         };
 
         let stats_cache = state::CPU_STATS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
 
-        let result;
+        let mut result = (0., 0.);
         let mut line_iter = proc_stat
             .lines()
             .map(|l| l.trim())
             .skip_while(|l| !l.starts_with("cpu"));
         if let Some(cpu_overall_line) = line_iter.next() {
             let overall_stats = extract_cpu_stats(cpu_overall_line);
-            result = overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
+            result.0 = overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
+            result.1 = overall_stats.cpu_usage_kernel(&stats_cache[0], *CPU_COUNT);
             stats_cache[0] = overall_stats;
         } else {
-            return 0.;
+            return (0., 0.);
         }
 
         for (i, line) in line_iter.enumerate() {
@@ -1046,6 +1054,7 @@ impl DynamicInfo {
 
             let stats = extract_cpu_stats(line);
             per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1], 1);
+            per_core_kernel_usage[i] = stats.cpu_usage_kernel(&stats_cache[i + 1], 1);
             stats_cache[i + 1] = stats;
         }
 
@@ -1216,6 +1225,12 @@ impl LogicalInfo {
             return this;
         }
 
+        let kernel_usage_cache =
+            state::KERNEL_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        if kernel_usage_cache.is_empty() {
+            return this;
+        }
+
         let drop_count = cpu_usage_cache
             .chunks(this.utilization_percent.capacity())
             .next()
@@ -1224,7 +1239,11 @@ impl LogicalInfo {
 
         let it = cpu_usage_cache.drain(0..drop_count);
         this.utilization_percent.extend(it);
-        this.is_complete = cpu_usage_cache.is_empty();
+
+        let it = kernel_usage_cache.drain(0..drop_count);
+        this.kernel_utilization_percent.extend(it);
+
+        this.is_complete = cpu_usage_cache.is_empty() && kernel_usage_cache.is_empty();
 
         this
     }

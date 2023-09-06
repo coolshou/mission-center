@@ -68,7 +68,9 @@ impl GathererSupervisor {
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfo {
     pub utilization_percent: f32,
+    pub kernel_utilization_percent: f32,
     pub utilization_percent_per_core: Vec<f32>,
+    pub kernel_utilization_percent_per_core: Vec<f32>,
     pub current_frequency_mhz: u64,
     pub temperature: Option<f32>,
     pub process_count: u32,
@@ -101,7 +103,8 @@ impl GathererSupervisor {
 
                 match shared_memory.content {
                     SharedDataContent::CpuDynamicInfo(ref dynamic_info) => {
-                        result.utilization_percent = dynamic_info.overall_utilization_percent;
+                        result.utilization_percent = dynamic_info.utilization_percent;
+                        result.kernel_utilization_percent = dynamic_info.kernel_utilization_percent;
                         result.current_frequency_mhz = dynamic_info.current_frequency_mhz;
                         result.temperature = dynamic_info.temperature;
                         result.process_count = dynamic_info.process_count;
@@ -124,6 +127,7 @@ impl GathererSupervisor {
         );
 
         result.utilization_percent_per_core.clear();
+        result.kernel_utilization_percent_per_core.clear();
         self.execute(
             super::gatherer::Message::GetLogicalCpuInfo,
             |gatherer, _| {
@@ -142,6 +146,7 @@ impl GathererSupervisor {
                 match shared_memory.content {
                     SharedDataContent::LogicalCpuInfo(ref logical_cpu_info) => {
                         result.utilization_percent_per_core.extend_from_slice(logical_cpu_info.utilization_percent.as_slice());
+                        result.kernel_utilization_percent_per_core.extend_from_slice(logical_cpu_info.kernel_utilization_percent.as_slice());
                         return logical_cpu_info.is_complete;
                     }
                     _ => {
@@ -157,6 +162,9 @@ impl GathererSupervisor {
         );
         result
             .utilization_percent_per_core
+            .resize(num_cpus::get(), 0.);
+        result
+            .kernel_utilization_percent_per_core
             .resize(num_cpus::get(), 0.);
 
         result

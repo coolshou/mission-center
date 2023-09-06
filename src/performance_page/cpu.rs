@@ -144,15 +144,17 @@ mod imp {
             use gtk::glib::*;
 
             let settings = this.imp().settings.take();
-            let graph_selection = if settings.is_none() {
-                GRAPH_SELECTION_OVERALL
-            } else {
-                let settings = settings.unwrap();
-                let v = settings.int("performance-page-cpu-graph");
-                this.imp().settings.set(Some(settings));
+            let mut graph_selection = GRAPH_SELECTION_OVERALL;
+            let mut show_kernel_times = false;
+            match settings {
+                Some(settings) => {
+                    graph_selection = settings.int("performance-page-cpu-graph");
+                    show_kernel_times = settings.boolean("performance-page-kernel-times");
 
-                v
-            };
+                    this.imp().settings.set(Some(settings));
+                }
+                None => {}
+            }
 
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
@@ -226,6 +228,36 @@ mod imp {
                 this.imp().graph_widgets.set(graph_widgets);
             }));
             actions.add_action(&all_processors_action);
+
+            let action = gio::SimpleAction::new_stateful(
+                "kernel_times",
+                None,
+                glib::Variant::from(show_kernel_times),
+            );
+            action.connect_activate(clone!(@weak this => move |action, _| {
+                let graph_widgets = this.imp().graph_widgets.take();
+
+                let visible = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(false);
+
+                graph_widgets[0].set_data_visible(1, visible);
+                for graph_widget in graph_widgets.iter().skip(1) {
+                    graph_widget.set_data_visible(1, visible);
+                }
+
+                action.set_state(glib::Variant::from(visible));
+
+                let settings = this.imp().settings.take();
+                if settings.is_some() {
+                    let settings = settings.unwrap();
+                    settings.set_boolean("performance-page-kernel-times", visible).unwrap_or_else(|_| {
+                        g_critical!("MissionCenter::PerformancePage", "Failed to save kernel times setting");
+                    });
+                    this.imp().settings.set(Some(settings));
+                }
+
+                this.imp().graph_widgets.set(graph_widgets);
+            }));
+            actions.add_action(&action);
 
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate(clone!(@weak this => move |_, _| {
@@ -371,15 +403,14 @@ mod imp {
 
             // Update global CPU graph
             graph_widgets[0].add_data_point(0, dynamic_cpu_info.utilization_percent);
+            graph_widgets[0].add_data_point(1, dynamic_cpu_info.kernel_utilization_percent);
 
             // Update per-core graphs
-            for (i, percent) in dynamic_cpu_info
-                .utilization_percent_per_core
-                .iter()
-                .enumerate()
-            {
+            for i in 0..dynamic_cpu_info.utilization_percent_per_core.len() {
                 let graph_widget = &mut graph_widgets[i + 1];
-                graph_widget.add_data_point(0, *percent);
+                graph_widget.add_data_point(0, dynamic_cpu_info.utilization_percent_per_core[i]);
+                graph_widget
+                    .add_data_point(1, dynamic_cpu_info.kernel_utilization_percent_per_core[i]);
             }
 
             this.imp().graph_widgets.set(graph_widgets);
@@ -463,24 +494,30 @@ mod imp {
             let (_, col_count) = Self::compute_row_column_count(cpu_count);
 
             let settings = self.settings.take();
-            let graph_selection = if settings.is_none() {
-                GRAPH_SELECTION_OVERALL
-            } else {
-                let settings = settings.unwrap();
-                let v = settings.int("performance-page-cpu-graph");
-                self.settings.set(Some(settings));
+            let mut graph_selection = GRAPH_SELECTION_OVERALL;
+            let mut show_kernel_times = false;
+            match settings {
+                Some(settings) => {
+                    graph_selection = settings.int("performance-page-cpu-graph");
+                    show_kernel_times = settings.boolean("performance-page-kernel-times");
 
-                v
-            };
+                    self.settings.set(Some(settings));
+                }
+                None => {}
+            }
 
             // Add one for overall CPU utilization
             let mut graph_widgets = vec![];
 
             graph_widgets.push(GraphWidget::new());
-            graph_widgets[0].set_base_color(&base_color);
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_points(60);
             graph_widgets[0].set_scroll(true);
+            graph_widgets[0].set_data_set_count(2);
+            graph_widgets[0].set_filled(1, false);
+            graph_widgets[0].set_dashed(1, true);
+            graph_widgets[0].set_data_visible(1, show_kernel_times);
+            graph_widgets[0].set_base_color(&base_color);
             graph_widgets[0].set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
 
             let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
@@ -542,6 +579,10 @@ mod imp {
                     });
                 }
                 graph_widgets[graph_widget_index].set_data_points(60);
+                graph_widgets[graph_widget_index].set_data_set_count(2);
+                graph_widgets[graph_widget_index].set_filled(1, false);
+                graph_widgets[graph_widget_index].set_dashed(1, true);
+                graph_widgets[graph_widget_index].set_data_visible(1, show_kernel_times);
                 graph_widgets[graph_widget_index].set_base_color(&base_color);
                 graph_widgets[graph_widget_index]
                     .set_visible(graph_selection == GRAPH_SELECTION_ALL);

@@ -36,7 +36,8 @@ pub struct StaticInfo {
 
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfo {
-    pub overall_utilization_percent: f32,
+    pub utilization_percent: f32,
+    pub kernel_utilization_percent: f32,
     pub current_frequency_mhz: u64,
     pub temperature: Option<f32>,
     pub process_count: u32,
@@ -48,5 +49,6 @@ pub struct DynamicInfo {
 #[derive(Debug, Default, Clone)]
 pub struct LogicalInfo {
     pub utilization_percent: ArrayVec<f32, 64>,
+    pub kernel_utilization_percent: ArrayVec<f32, 64>,
     pub is_complete: bool,
 }

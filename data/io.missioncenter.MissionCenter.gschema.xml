@@ -61,6 +61,11 @@
             <summary>Which graph is shown on the CPU performance page</summary>
         </key>
 
+        <key name="performance-page-kernel-times" type="b">
+            <default>false</default>
+            <summary>Show kernel times in the CPU graphs</summary>
+        </key>
+
         <key name="performance-selected-page" type="s">
             <default>"cpu"</default>
             <summary>Which page is shown on application startup, in the performance tab</summary>
