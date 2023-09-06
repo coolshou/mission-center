@@ -22,7 +22,6 @@
 pub use arrayvec::ArrayVec;
 
 pub use apps::{AppDescriptor, AppPIDs, Apps};
-pub use cpu::LogicalCpuInfo;
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
 pub use util::{to_binary, to_binary_mut};
 
@@ -62,6 +61,7 @@ pub type ArrayString = arrayvec::ArrayString<256>;
 pub type ProcessStats = processes::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
+pub type LogicalCpuInfo = cpu::LogicalInfo;
 
 #[path = "../common/shared_data.rs"]
 mod shared_data;
@@ -191,6 +191,22 @@ fn main() {
 
                 let mut data = unsafe { shared_memory.acquire() };
                 data.content = SharedDataContent::CpuStaticInfo(CpuStaticInfo::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetCpuDynamicInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::CpuDynamicInfo(CpuDynamicInfo::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetLogicalCpuInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::LogicalCpuInfo(LogicalCpuInfo::new());
 
                 data_ready!(connection);
             }

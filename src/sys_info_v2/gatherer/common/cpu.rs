@@ -46,7 +46,7 @@ pub struct DynamicInfo {
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct LogicalCpuInfo {
-    pub utilization_percent: ArrayVec<f32, 128>,
+pub struct LogicalInfo {
+    pub utilization_percent: ArrayVec<f32, 64>,
     pub is_complete: bool,
 }

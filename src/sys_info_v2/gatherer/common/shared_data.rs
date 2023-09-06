@@ -21,13 +21,28 @@
 use super::*;
 
 #[allow(dead_code)]
-#[derive(Debug)]
 pub enum SharedDataContent {
     Monostate,
     Processes(Processes),
     Apps(Apps),
     AppPIDs(AppPIDs),
     CpuStaticInfo(CpuStaticInfo),
+    CpuDynamicInfo(CpuDynamicInfo),
+    LogicalCpuInfo(LogicalCpuInfo),
+}
+
+impl std::fmt::Debug for SharedDataContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            SharedDataContent::Monostate => f.write_str("Monostate"),
+            SharedDataContent::Processes(_) => f.write_str("Processes"),
+            SharedDataContent::Apps(_) => f.write_str("Apps"),
+            SharedDataContent::AppPIDs(_) => f.write_str("AppPIDs"),
+            SharedDataContent::CpuStaticInfo(_) => f.write_str("CpuStaticInfo"),
+            SharedDataContent::CpuDynamicInfo(_) => f.write_str("CpuDynamicInfo"),
+            SharedDataContent::LogicalCpuInfo(_) => f.write_str("LogicalCpuInfo"),
+        }
+    }
 }
 
 #[derive(Debug)]

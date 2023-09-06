@@ -68,11 +68,9 @@ mod net_info;
 mod proc_info;
 
 #[allow(dead_code)]
-pub type CpuInfo = cpu_info::CpuInfo;
+pub type CpuStaticInfo = cpu_info::StaticInfo;
 #[allow(dead_code)]
-pub type CpuInfoStatic = cpu_info::StaticInfo;
-#[allow(dead_code)]
-pub type CpuInfoDynamic = cpu_info::DynamicInfo;
+pub type CpuDynamicInfo = cpu_info::DynamicInfo;
 
 pub type MemInfo = mem_info::MemInfo;
 #[allow(dead_code)]
@@ -206,7 +204,8 @@ impl From<i32> for UpdateSpeed {
 
 #[derive(Debug)]
 pub struct Readings {
-    pub cpu_info: CpuInfo,
+    pub cpu_static_info: CpuStaticInfo,
+    pub cpu_dynamic_info: CpuDynamicInfo,
     pub mem_info: MemInfo,
     pub disks: Vec<Disk>,
     pub network_devices: Vec<NetworkDevice>,
@@ -217,11 +216,12 @@ pub struct Readings {
 }
 
 impl Readings {
-    pub fn new(system: &mut sysinfo::System, gatherer_supervisor: &mut GathererSupervisor) -> Self {
+    pub fn new(gatherer_supervisor: &mut GathererSupervisor) -> Self {
         use std::collections::HashMap;
 
         Self {
-            cpu_info: CpuInfo::new(system, gatherer_supervisor),
+            cpu_static_info: gatherer_supervisor.cpu_static_info(),
+            cpu_dynamic_info: gatherer_supervisor.cpu_dynamic_info(),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
             disks: vec![],
             network_devices: vec![],
@@ -447,7 +447,6 @@ impl SysInfoV2 {
             refresh_thread: Some(std::thread::spawn(move || {
                 use adw::prelude::*;
                 use gtk::glib::*;
-                use sysinfo::{System, SystemExt};
 
                 let mut gatherer_supervisor = match GathererSupervisor::new() {
                     Ok(gs) => gs,
@@ -484,8 +483,7 @@ impl SysInfoV2 {
                     }
                 };
 
-                let mut system = System::new();
-                let mut readings = Readings::new(&mut system, &mut gatherer_supervisor);
+                let mut readings = Readings::new(&mut gatherer_supervisor);
 
                 let mut disk_stats = vec![];
                 readings.disks = DiskInfo::load(&mut disk_stats);
@@ -517,7 +515,7 @@ impl SysInfoV2 {
                     proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                 readings.running_apps = gatherer_supervisor.apps();
 
-                let cpu_static_info = readings.cpu_info.static_info.clone();
+                let cpu_static_info = readings.cpu_static_info.clone();
 
                 idle_add_once(move || {
                     use gtk::glib::*;
@@ -536,7 +534,7 @@ impl SysInfoV2 {
                     let loop_start = std::time::Instant::now();
 
                     let timer = std::time::Instant::now();
-                    let cpu_info = CpuInfoDynamic::load(&mut system);
+                    let cpu_info = gatherer_supervisor.cpu_dynamic_info();
                     eprintln!("CPU load took: {:?}", timer.elapsed());
 
                     let timer = std::time::Instant::now();
@@ -585,10 +583,8 @@ impl SysInfoV2 {
                     eprintln!("App load took: {:?}", timer.elapsed());
 
                     let mut readings = Readings {
-                        cpu_info: CpuInfo {
-                            static_info: cpu_static_info.clone(),
-                            dynamic_info: cpu_info,
-                        },
+                        cpu_static_info: cpu_static_info.clone(),
+                        cpu_dynamic_info: cpu_info,
                         mem_info,
                         disks,
                         network_devices,

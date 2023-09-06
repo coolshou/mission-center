@@ -1205,3 +1205,26 @@ impl DynamicInfo {
         }
     }
 }
+
+impl LogicalInfo {
+    pub fn new() -> Self {
+        let mut this = Self::default();
+
+        let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        if cpu_usage_cache.is_empty() {
+            return this;
+        }
+
+        let drop_count = cpu_usage_cache
+            .chunks(this.utilization_percent.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = cpu_usage_cache.drain(0..drop_count);
+        this.utilization_percent.extend(it);
+        this.is_complete = cpu_usage_cache.is_empty();
+
+        this
+    }
+}

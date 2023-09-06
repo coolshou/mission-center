@@ -40,3 +40,4 @@ pub type ProcessStats = processes::Stats;
 pub type AppStats = apps::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
+pub type LogicalCpuInfo = cpu::LogicalInfo;

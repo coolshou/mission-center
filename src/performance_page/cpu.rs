@@ -263,7 +263,7 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            let static_cpu_info = &readings.cpu_info.static_info;
+            let static_cpu_info = &readings.cpu_static_info;
 
             this.cpu_name.set_text(&static_cpu_info.name);
 
@@ -367,7 +367,7 @@ mod imp {
         ) -> bool {
             let mut graph_widgets = this.imp().graph_widgets.take();
 
-            let dynamic_cpu_info = &readings.cpu_info.dynamic_info;
+            let dynamic_cpu_info = &readings.cpu_dynamic_info;
 
             // Update global CPU graph
             graph_widgets[0].add_data_point(0, dynamic_cpu_info.utilization_percent);
@@ -392,7 +392,7 @@ mod imp {
                 ));
                 this.imp().speed.set_text(&format!(
                     "{:.2} GHz",
-                    readings.cpu_info.dynamic_info.current_frequency_mhz as f32 / 1024.
+                    readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                 ));
                 this.imp()
                     .processes
