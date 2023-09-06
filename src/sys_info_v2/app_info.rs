@@ -92,24 +92,11 @@ impl super::GathererSupervisor {
                         }
                         apps.is_complete
                     }
-                    SharedDataContent::Processes(_) => {
+                    _ => {
                         g_critical!(
                             "MissionCenter::AppInfo",
-                            "Shared data content is Processes instead of Apps; encountered when reading installed apps from gatherer",
-                        );
-                        false
-                    }
-                    SharedDataContent::AppPIDs(_) => {
-                        g_critical!(
-                            "MissionCenter::AppInfo",
-                            "Shared data content is AppPIDs instead of Apps; encountered when reading installed apps from gatherer",
-                        );
-                        false
-                    }
-                    SharedDataContent::Monostate => {
-                        g_critical!(
-                            "MissionCenter::AppInfo",
-                            "Shared data content is Monostate instead of Apps; encountered when reading installed apps from gatherer",
+                            "Shared data content is {:?} instead of Apps; encountered when reading installed apps from gatherer",
+                            shared_memory.content
                         );
                         false
                     }
@@ -162,24 +149,11 @@ impl super::GathererSupervisor {
                         }
                         pids.is_complete
                     }
-                    SharedDataContent::Processes(_) => {
+                    _ => {
                         g_critical!(
                             "MissionCenter::AppInfo",
-                            "Shared data content is Processes instead of AppPIDs; encountered when reading installed apps from gatherer",
-                        );
-                        false
-                    }
-                    SharedDataContent::Apps(_) => {
-                        g_critical!(
-                            "MissionCenter::AppInfo",
-                            "Shared data content is Apps instead of AppPIDs; encountered when reading installed apps from gatherer",
-                        );
-                        false
-                    }
-                    SharedDataContent::Monostate => {
-                        g_critical!(
-                            "MissionCenter::AppInfo",
-                            "Shared data content is Monostate instead of AppPIDs; encountered when reading installed apps from gatherer",
+                            "Shared data content is {:?} instead of AppPIDs; encountered when reading installed apps from gatherer",
+                            shared_memory.content
                         );
                         false
                     }

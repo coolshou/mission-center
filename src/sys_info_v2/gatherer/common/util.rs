@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/ipc/message.rs
+/* sys_info_v2/gatherer/common/util.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,20 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-#[allow(dead_code)]
-pub enum Message {
-    GetProcesses,
-    GetApps,
-    GetAppPIDs,
-    GetCpuStaticInfo,
-    GetCpuDynamicInfo,
-    GetLogicalCpuInfo,
-    TerminateProcess(u32 /* PID */),
-    KillProcess(u32 /* PID */),
-    KillProcessTree(u32 /* Parent PID */),
-    Acknowledge,
-    DataReady,
-    Exit,
-    Unknown,
+#[inline]
+pub fn to_binary<T: Sized>(thing: &T) -> &[u8] {
+    let ptr = thing as *const T;
+    unsafe { core::slice::from_raw_parts(ptr as *const u8, core::mem::size_of::<T>()) }
+}
+
+#[inline]
+pub fn to_binary_mut<T: Sized>(thing: &mut T) -> &mut [u8] {
+    let ptr = thing as *mut T;
+    unsafe { core::slice::from_raw_parts_mut(ptr as *mut u8, core::mem::size_of::<T>()) }
 }

@@ -33,6 +33,7 @@ pub type ProcessDescriptor = common::ProcessDescriptor;
 pub type ProcessState = common::ProcessState;
 #[allow(dead_code)]
 pub type ProcessStats = common::ProcessStats;
+pub type CpuStaticInfo = common::CpuStaticInfo;
 
 #[path = "gatherer/common/mod.rs"]
 mod common;

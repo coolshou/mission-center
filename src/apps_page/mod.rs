@@ -867,7 +867,7 @@ mod imp {
             if let Some(column_header_cpu) = &column_header_cpu {
                 column_header_cpu.set_heading(format!(
                     "{}%",
-                    readings.cpu_info.dynamic_info.utilization_percent.round()
+                    readings.cpu_dynamic_info.utilization_percent.round()
                 ));
             }
             self.column_header_cpu.set(column_header_cpu);
