@@ -191,6 +191,7 @@ dependencies = [
  "interprocess",
  "lazy_static",
  "libc",
+ "log",
  "num_cpus",
  "raw-cpuid",
  "rust-ini",

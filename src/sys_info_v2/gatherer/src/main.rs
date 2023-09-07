@@ -22,6 +22,8 @@
 pub use arrayvec::ArrayVec;
 
 pub use apps::{AppDescriptor, AppPIDs, Apps};
+#[allow(unused_imports)]
+pub(crate) use logging::{critical, debug, error, info, message, warning};
 pub use processes::{ProcessDescriptor, ProcessState, Processes};
 pub use util::{to_binary, to_binary_mut};
 
@@ -30,7 +32,11 @@ macro_rules! acknowledge {
         use std::io::Write;
 
         if let Err(e) = $connection.write_all(to_binary(&ipc::Message::Acknowledge)) {
-            eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
+            crate::critical!(
+                "Gatherer::Main",
+                "Failed to write to IPC socket, exiting: {:#?}",
+                e
+            );
             std::process::exit(exit_code::ExitCode::SendAcknowledgeFailed as i32);
         }
     }};
@@ -41,7 +47,11 @@ macro_rules! data_ready {
         use std::io::Write;
 
         if let Err(e) = $connection.write_all(to_binary(&ipc::Message::DataReady)) {
-            eprintln!("Gatherer: Failed to write to IPC socket, exiting: {:#?}", e);
+            crate::critical!(
+                "Gatherer::Main",
+                "Failed to write to IPC socket, exiting: {:#?}",
+                e
+            );
             std::process::exit(exit_code::ExitCode::SendDataReadyFailed as i32);
         }
     }};
@@ -53,6 +63,7 @@ mod cpu;
 mod exit_code;
 #[path = "../common/ipc/mod.rs"]
 mod ipc;
+mod logging;
 mod processes;
 #[path = "../common/util.rs"]
 mod util;
@@ -116,30 +127,30 @@ fn main() {
 
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() < 3 {
-        eprintln!("Gatherer: not enough arguments");
+        critical!("Gatherer::Main", "Not enough arguments");
         std::process::exit(ExitCode::MissingProgramArgument as i32);
     }
 
     if !std::path::Path::new(&args[1]).exists() {
-        eprintln!("Gatherer: IPC socket '{}' does not exist", args[1]);
+        critical!("Gatherer::Main", "IPC socket '{}' does not exist", args[1]);
         std::process::exit(ExitCode::SocketConnectionFailed as i32);
     }
     let mut connection = match LocalSocketStream::connect(args[1].as_str()) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!("Gatherer: Unable to connect to parent: {}", e);
+            critical!("Gatherer::Main", "Unable to connect to parent: {}", e);
             std::process::exit(ExitCode::SocketConnectionFailed as i32);
         }
     };
 
     if !std::path::Path::new(&args[2]).exists() {
-        eprintln!("Gatherer: File link '{}' does not exist", args[2]);
+        critical!("Gatherer::Main", "File link '{}' does not exist", args[2]);
         std::process::exit(ExitCode::FileLinkNotFound as i32);
     }
     let mut shared_memory = match ipc::SharedMemory::<SharedData>::new(&args[2], false) {
         Ok(sm) => sm,
         Err(e) => {
-            eprintln!("Gatherer: Unable to create shared memory: {}", e);
+            critical!("Gatherer::Main", "Unable to create shared memory: {}", e);
             std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
         }
     };
@@ -147,16 +158,26 @@ fn main() {
     let mut message = ipc::Message::Unknown;
     loop {
         if unsafe { libc::getppid() } != parent_pid {
-            eprintln!("Gatherer: Parent process no longer running, exiting");
+            message!(
+                "Gatherer::Main",
+                "Parent process no longer running, exiting"
+            );
             break;
         }
 
         if let Err(e) = connection.read_exact(to_binary_mut(&mut message)) {
             if e.kind() == std::io::ErrorKind::UnexpectedEof {
-                eprintln!("Gatherer: Main application has disconnected, shutting down");
+                message!(
+                    "Gatherer::Main",
+                    "Main application has disconnected, shutting down"
+                );
                 std::process::exit(0);
             } else {
-                eprintln!("Gatherer: Failed to read from IPC socket, exiting: {}", e);
+                critical!(
+                    "Gatherer::Main",
+                    "Failed to read from IPC socket, exiting: {}",
+                    e
+                );
                 std::process::exit(ExitCode::ReadFromSocketFailed as i32);
             }
         }
@@ -237,7 +258,7 @@ fn main() {
                 std::process::exit(0);
             }
             ipc::Message::Unknown => {
-                eprintln!("Gatherer: Unknown message received");
+                critical!("Gatherer::Main", "Unknown message received; exiting");
                 std::process::exit(ExitCode::UnknownMessageReceived as i32);
             }
         }
