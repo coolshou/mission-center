@@ -99,18 +99,18 @@ mod imp {
             }
 
             let toggle_search =
-                gio::SimpleAction::new_stateful("toggle-search", None, false.to_variant());
+                gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
             toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
                 let current_state = action.state();
                 if current_state.is_none() {
                     g_critical!("MissionCenter", "Failed to get search action state");
-                    action.set_state(false.to_variant());
+                    action.set_state(&false.to_variant());
                     return;
                 }
                 let current_state = current_state.unwrap();
 
                 let new_state = !current_state.get::<bool>().unwrap_or(false);
-                action.set_state(new_state.to_variant());
+                action.set_state(&new_state.to_variant());
                 this.search_button.set_active(new_state);
 
                 if new_state {
