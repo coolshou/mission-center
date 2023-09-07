@@ -98,10 +98,8 @@ mod imp {
 
                 tree_list_sorter: Cell::new(None),
 
-                apps_model: Cell::new(gio::ListStore::new(view_model::ViewModel::static_type())),
-                processes_root_model: Cell::new(gio::ListStore::new(
-                    view_model::ViewModel::static_type(),
-                )),
+                apps_model: Cell::new(gio::ListStore::new::<view_model::ViewModel>()),
+                processes_root_model: Cell::new(gio::ListStore::new::<view_model::ViewModel>()),
 
                 max_cpu_usage: Cell::new(0.0),
                 max_memory_usage: Cell::new(0.0),
@@ -245,13 +243,14 @@ mod imp {
         }
 
         pub fn update_app_model(&self) {
+            use crate::glib_clone;
             use gtk::glib::g_critical;
             use std::collections::BTreeSet;
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
-            let model = self.apps_model.take();
-            let apps = self.apps.take();
-            let process_tree = self.process_tree.take();
+            let model = glib_clone!(self.apps_model);
+            let apps = glib_clone!(self.apps);
+            let process_tree = glib_clone!(self.process_tree);
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -358,20 +357,15 @@ mod imp {
                     );
                 }
             }
-
-            self.process_tree.set(process_tree);
-            self.apps.set(apps);
-            self.apps_model.set(model);
         }
 
         pub fn update_processes_models(&self) {
-            let process_tree = self.process_tree.take();
-            let processes_root_model = self.processes_root_model.take();
+            use crate::glib_clone;
+
+            let process_tree = glib_clone!(self.process_tree);
+            let processes_root_model = glib_clone!(self.processes_root_model);
 
             Self::update_process_model(self, processes_root_model.clone(), &process_tree);
-
-            self.processes_root_model.set(processes_root_model);
-            self.process_tree.set(process_tree);
         }
 
         pub fn column_compare_entries_by(
@@ -463,7 +457,7 @@ mod imp {
                 .show_expander(true)
                 .build();
 
-            let root_model = gio::ListStore::new(ViewModel::static_type());
+            let root_model = gio::ListStore::new::<ViewModel>();
             root_model.append(&apps_section_header);
             root_model.append(&processes_section_header);
 
@@ -471,6 +465,8 @@ mod imp {
         }
 
         pub fn set_up_tree_model(&self, model: gio::ListModel) -> gtk::TreeListModel {
+            use crate::glib_clone;
+
             use view_model::{ContentType, SectionType, ViewModel};
 
             let this = self.obj().downgrade();
@@ -493,16 +489,12 @@ mod imp {
 
                 if content_type == ContentType::SectionHeader {
                     if view_model.section_type() == SectionType::Apps as u8 {
-                        let apps_model = this.apps_model.take();
-                        this.apps_model.set(apps_model.clone());
-
+                        let apps_model = glib_clone!(this.apps_model);
                         return Some(apps_model.into());
                     }
 
                     if view_model.section_type() == SectionType::Processes as u8 {
-                        let processes_model = this.processes_root_model.take();
-                        this.processes_root_model.set(processes_model.clone());
-
+                        let processes_model = glib_clone!(this.processes_root_model);
                         return Some(processes_model.into());
                     }
 

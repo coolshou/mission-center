@@ -162,12 +162,12 @@ mod imp {
             let overall_action = gio::SimpleAction::new_stateful(
                 "overall",
                 None,
-                glib::Variant::from(graph_selection == GRAPH_SELECTION_OVERALL),
+                &glib::Variant::from(graph_selection == GRAPH_SELECTION_OVERALL),
             );
             let all_processors_action = gio::SimpleAction::new_stateful(
                 "all-processors",
                 None,
-                glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
+                &glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
             );
             let apa = all_processors_action.clone();
             overall_action.connect_activate(clone!(@weak this => move |action, _| {
@@ -184,8 +184,8 @@ mod imp {
                     graph_widget.set_visible(false);
                 }
 
-                action.set_state(glib::Variant::from(true));
-                apa.set_state(glib::Variant::from(false));
+                action.set_state(&glib::Variant::from(true));
+                apa.set_state(&glib::Variant::from(false));
 
                 let settings = this.imp().settings.take();
                 if settings.is_some() {
@@ -213,8 +213,8 @@ mod imp {
                     graph_widget.set_visible(true);
                 }
 
-                action.set_state(glib::Variant::from(true));
-                ova.set_state(glib::Variant::from(false));
+                action.set_state(&glib::Variant::from(true));
+                ova.set_state(&glib::Variant::from(false));
 
                 let settings = this.imp().settings.take();
                 if settings.is_some() {
@@ -232,7 +232,7 @@ mod imp {
             let action = gio::SimpleAction::new_stateful(
                 "kernel_times",
                 None,
-                glib::Variant::from(show_kernel_times),
+                &glib::Variant::from(show_kernel_times),
             );
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
@@ -244,7 +244,7 @@ mod imp {
                     graph_widget.set_data_visible(1, visible);
                 }
 
-                action.set_state(glib::Variant::from(visible));
+                action.set_state(&glib::Variant::from(visible));
 
                 let settings = this.imp().settings.take();
                 if settings.is_some() {
@@ -695,7 +695,7 @@ impl PerformancePageCpu {
 
             let this = this.imp();
             this.utilization_label_all.set_text(&i18n_f(
-                "% Utilization over {} seconds",
+                "Utilization over {} seconds",
                 &[&format!("{}", graph_max_duration)],
             ));
             this.graph_max_duration
