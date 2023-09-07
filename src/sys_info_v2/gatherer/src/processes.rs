@@ -164,6 +164,8 @@ impl Processes {
 
     #[allow(dead_code)]
     pub fn process_hierarchy() -> Option<Process> {
+        use crate::critical;
+
         use std::collections::*;
 
         let processes = state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() });
@@ -210,8 +212,9 @@ impl Processes {
                     let mut index = match process_tree.get(&parent_process.descriptor.pid) {
                         None => {
                             // TODO: Fully understand if this could happen, and what to do if it does.
-                            eprintln!(
-                                "Gatherer: Process {} has been visited, but it's not in the process_tree?",
+                            critical!(
+                                "Gatherer::Proccesses",
+                                "Process {} has been visited, but it's not in the process_tree?",
                                 process.descriptor.pid
                             );
                             break;
@@ -278,6 +281,7 @@ impl Processes {
 
     fn update_process_cache() {
         use super::ToArrayStringLossy;
+        use crate::critical;
 
         fn parse_stat_file<'a>(data: &'a str, output: &mut [&'a str; 52]) {
             let mut part_index = 0;
@@ -370,7 +374,11 @@ impl Processes {
         let proc = match std::fs::read_dir("/proc") {
             Ok(proc) => proc,
             Err(e) => {
-                eprintln!("Failed to read /proc directory: {}", e);
+                critical!(
+                    "Gatherer::Processes",
+                    "Failed to read /proc directory: {}",
+                    e
+                );
                 return;
             }
         };
@@ -388,7 +396,8 @@ impl Processes {
             let stat_file_content = match std::fs::read_to_string(entry_path.join("stat")) {
                 Ok(sfc) => {
                     if sfc.is_empty() {
-                        eprintln!(
+                        critical!(
+                            "Gatherer::Processes",
                             "Failed to read stat information for process {}, skipping",
                             pid
                         );
@@ -398,9 +407,11 @@ impl Processes {
                     sfc
                 }
                 Err(e) => {
-                    eprintln!(
+                    critical!(
+                        "Gatherer::Processes",
                         "Failed to read stat information for process {}, skipping: {}",
-                        pid, e,
+                        pid,
+                        e,
                     );
                     continue;
                 }
@@ -473,8 +484,12 @@ impl Processes {
                     cmd
                 }
                 Err(e) => {
-                    eprintln!("Failed to parse commandline for {}: {}", pid, e);
-
+                    critical!(
+                        "Gatherer::Processes",
+                        "Failed to parse commandline for {}: {}",
+                        pid,
+                        e
+                    );
                     ArrayVec::new()
                 }
             };
@@ -490,14 +505,23 @@ impl Processes {
                     parse_statm_file(&statm_file_content, &mut statm_parsed);
                 }
                 Err(e) => {
-                    eprintln!("Failed to read memory information for {}: {}", pid, e);
+                    critical!(
+                        "Gatherer::Processes",
+                        "Failed to read memory information for {}: {}",
+                        pid,
+                        e
+                    );
                 }
             };
 
             let cgroup = match std::fs::read_to_string(entry_path.join("cgroup")) {
                 Ok(cfc) => {
                     if cfc.is_empty() {
-                        eprintln!("Failed to read cgroup information for process {}: No cgroup associated with process", pid);
+                        critical!(
+                            "Gatherer::Processes",
+                            "Failed to read cgroup information for process {}: No cgroup associated with process",
+                            pid
+                        );
                         None
                     } else {
                         let mut cgroup = None;
@@ -524,9 +548,11 @@ impl Processes {
                     }
                 }
                 Err(e) => {
-                    eprintln!(
+                    critical!(
+                        "Gatherer::Processes",
                         "Failed to read cgroup information for process {}: {}",
-                        pid, e
+                        pid,
+                        e
                     );
                     None
                 }
@@ -544,9 +570,11 @@ impl Processes {
                     }
                 }
                 Err(e) => {
-                    eprintln!(
+                    critical!(
+                        "Gatherer::Processes",
                         "Gatherer: Failed to read task directory for process {}: {}",
-                        pid, e
+                        pid,
+                        e
                     );
                 }
             }

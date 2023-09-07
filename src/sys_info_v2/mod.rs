@@ -535,15 +535,27 @@ impl SysInfoV2 {
 
                     let timer = std::time::Instant::now();
                     let cpu_info = gatherer_supervisor.cpu_dynamic_info();
-                    eprintln!("CPU load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "CPU load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let mem_info = MemInfo::load().unwrap_or(MemInfo::default());
-                    eprintln!("Mem load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Mem load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let disks = DiskInfo::load(&mut disk_stats);
-                    eprintln!("Disk load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Disk load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let network_devices = if let Some(net_info) = net_info.as_mut() {
@@ -551,7 +563,11 @@ impl SysInfoV2 {
                     } else {
                         vec![]
                     };
-                    eprintln!("Net load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Net load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let gpus = if let Some(gpu_info) = gpu_info.as_mut() {
@@ -559,7 +575,11 @@ impl SysInfoV2 {
                     } else {
                         vec![]
                     };
-                    eprintln!("GPU load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "GPU load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let mut processes = gatherer_supervisor.processes();
@@ -570,17 +590,29 @@ impl SysInfoV2 {
                             }
                         }
                     }
-                    eprintln!("Process load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Process load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let merged_stats = mps.load(Ordering::Acquire);
                     let process_tree =
                         proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
-                    eprintln!("Process tree load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Process tree load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let timer = std::time::Instant::now();
                     let running_apps = gatherer_supervisor.apps();
-                    eprintln!("App load took: {:?}", timer.elapsed());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "App load took: {:?}",
+                        timer.elapsed()
+                    );
 
                     let mut readings = Readings {
                         cpu_static_info: cpu_static_info.clone(),
@@ -594,13 +626,18 @@ impl SysInfoV2 {
                         process_tree,
                     };
 
-                    eprintln!("Loaded readings in {}ms", loop_start.elapsed().as_millis());
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Loaded readings in {}ms",
+                        loop_start.elapsed().as_millis()
+                    );
 
                     let time = std::time::Instant::now();
                     let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
                     let refresh_interval =
                         std::time::Duration::from_millis(refresh_interval as u64);
-                    eprintln!(
+                    g_debug!(
+                        "MissionCenter::Perf",
                         "Refresh interval ({:?}) read in {:?}",
                         refresh_interval,
                         time.elapsed()
@@ -658,7 +695,11 @@ impl SysInfoV2 {
                                     "Readings were not completely refreshed, stale readings will be displayed"
                                 );
                             }
-                            eprintln!("UI refresh took: {:?}", timer.elapsed());
+                            g_debug!(
+                                "MissionCenter::Perf",
+                                "UI refresh took: {:?}",
+                                timer.elapsed()
+                            );
 
                             g_debug!(
                                 "MissionCenter::SysInfo",
@@ -673,7 +714,8 @@ impl SysInfoV2 {
                         }
                     });
 
-                    eprintln!(
+                    g_debug!(
+                        "MissionCenter::Perf",
                         "Read-refresh loop executed in: {}ms",
                         loop_start.elapsed().as_millis()
                     );

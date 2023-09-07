@@ -19,6 +19,7 @@
  */
 
 use lazy_static::lazy_static;
+
 use state::CpuStats;
 
 lazy_static! {
@@ -27,8 +28,9 @@ lazy_static! {
 }
 
 mod state {
-    use super::*;
     use std::{cell::Cell, thread_local};
+
+    use super::*;
 
     #[derive(Debug, Copy, Clone)]
     pub struct CpuStats {
@@ -417,6 +419,7 @@ impl StaticInfo {
     }
 
     fn socket_count() -> Option<u8> {
+        use crate::critical;
         use std::{fs::*, io::*};
 
         let mut sockets = std::collections::HashSet::new();
@@ -427,7 +430,11 @@ impl StaticInfo {
         let entries = match read_dir("/sys/devices/system/cpu/") {
             Ok(entries) => entries,
             Err(e) => {
-                eprintln!("Gatherer: Could not read '/sys/devices/system/cpu': {}", e);
+                critical!(
+                    "Gatherer::CPU",
+                    "Could not read '/sys/devices/system/cpu': {}",
+                    e
+                );
                 return None;
             }
         };
@@ -436,8 +443,9 @@ impl StaticInfo {
             let entry = match entry {
                 Ok(entry) => entry,
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Could not read entry in '/sys/devices/system/cpu': {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read entry in '/sys/devices/system/cpu': {}",
                         e
                     );
                     continue;
@@ -450,8 +458,9 @@ impl StaticInfo {
             let file_type = match entry.file_type() {
                 Ok(file_type) => file_type,
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Could not read file type for '/sys/devices/system/cpu/{}': {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read file type for '/sys/devices/system/cpu/{}': {}",
                         entry.file_name().to_string_lossy(),
                         e
                     );
@@ -474,7 +483,12 @@ impl StaticInfo {
             match file.read_to_string(&mut buf) {
                 Ok(_) => {}
                 Err(e) => {
-                    eprintln!("Gatherer: Could not read '/sys/devices/system/cpu/{}/topology/physical_package_id': {}", file_name, e);
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read '/sys/devices/system/cpu/{}/topology/physical_package_id': {}",
+                        file_name,
+                        e
+                    );
                     continue;
                 }
             };
@@ -482,7 +496,12 @@ impl StaticInfo {
             let socket_id = match buf.trim().parse::<u8>() {
                 Ok(socket_id) => socket_id,
                 Err(e) => {
-                    eprintln!("Gatherer: Could not read '/sys/devices/system/cpu/{}/topology/physical_package_id': {}", file_name, e);
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read '/sys/devices/system/cpu/{}/topology/physical_package_id': {}",
+                        file_name,
+                        e
+                    );
                     continue;
                 }
             };
@@ -490,7 +509,7 @@ impl StaticInfo {
         }
 
         if sockets.is_empty() {
-            eprintln!("Gatherer: Could not determine socket count");
+            critical!("Gatherer::CPU", "Could not determine socket count");
             None
         } else {
             Some(sockets.len() as u8)
@@ -498,12 +517,14 @@ impl StaticInfo {
     }
 
     fn base_frequency_khz() -> Option<u64> {
+        use crate::critical;
+
         match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
             Ok(content) => {
                 let content = match std::str::from_utf8(&content) {
                     Ok(content) => content,
                     Err(e) => {
-                        eprintln!("Gatherer: Could not read base frequency: {}", e);
+                        critical!("Gatherer::CPU", "Could not read base frequency: {}", e);
                         return None;
                     }
                 };
@@ -511,21 +532,22 @@ impl StaticInfo {
                 match content.trim().parse() {
                     Ok(freq) => Some(freq),
                     Err(e) => {
-                        eprintln!("Gatherer: Could not read base frequency: {}", e);
+                        critical!("Gatherer::CPU", "Could not read base frequency: {}", e);
                         None
                     }
                 }
             }
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Could not read base frequency: {}; trying /proc/cpuinfo",
+                critical!(
+                    "Gatherer::CPU",
+                    "Could not read base frequency: {}; trying /proc/cpuinfo",
                     e
                 );
 
                 let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
                     Ok(output) => output,
                     Err(e) => {
-                        eprintln!("Gatherer: Could not read /proc/cpuinfo: {}", e);
+                        critical!("Gatherer::CPU", "Could not read /proc/cpuinfo: {}", e);
                         return None;
                     }
                 };
@@ -533,7 +555,7 @@ impl StaticInfo {
                 let index = match cpuinfo.find("cpu MHz") {
                     Some(index) => index,
                     None => {
-                        eprintln!("Gatherer: Could not find `cpu MHz` in /proc/cpuinfo",);
+                        critical!("Gatherer::CPU", "Could not find `cpu MHz` in /proc/cpuinfo",);
                         return None;
                     }
                 };
@@ -545,13 +567,17 @@ impl StaticInfo {
                     .map(|mhz| mhz.parse::<f32>())
                 {
                     None => {
-                        eprintln!("Gatherer: Failed to parse `cpu MHz` in /proc/cpuinfo",);
+                        critical!(
+                            "Gatherer::CPU",
+                            "Failed to parse `cpu MHz` in /proc/cpuinfo",
+                        );
                         return None;
                     }
                     Some(Ok(bf)) => bf,
                     Some(Err(e)) => {
-                        eprintln!(
-                            "Gatherer: Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
+                        critical!(
+                            "Gatherer::CPU",
+                            "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
                             e
                         );
                         return None;
@@ -626,6 +652,7 @@ impl StaticInfo {
     }
 
     fn virtual_machine() -> Option<bool> {
+        use crate::critical;
         use rustbus::*;
         use std::time::Duration;
 
@@ -634,8 +661,9 @@ impl StaticInfo {
         )) {
             Ok(rpc_con) => rpc_con,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Failed to connect to D-Bus: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to connect to D-Bus: {}",
                     e
                 );
                 return None;
@@ -655,8 +683,9 @@ impl StaticInfo {
         {
             Ok(_) => {}
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Failed to marshal parameters: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to marshal parameters: {}",
                     e
                 );
                 return None;
@@ -669,8 +698,9 @@ impl StaticInfo {
         {
             Ok(id) => id,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Failed to send message: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to send message: {}",
                     e
                 );
                 return None;
@@ -683,8 +713,9 @@ impl StaticInfo {
         ) {
             Ok(message) => message,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Failed to retrieve response: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to retrieve response: {}",
                     e
                 );
                 return None;
@@ -693,8 +724,9 @@ impl StaticInfo {
 
         match message.typ {
             MessageType::Error => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Received error message: {}: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Received error message: {}: {}",
                     message.dynheader.error_name.unwrap_or_default(),
                     message
                         .body
@@ -716,8 +748,9 @@ impl StaticInfo {
                 return Some(reply.unwrap_or_default().len() > 0);
             }
             _ => {
-                eprintln!(
-                    "Gatherer: Failed to determine VM: Expected message type Reply got: {:?}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Expected message type Reply got: {:?}",
                     message.typ
                 );
             }
@@ -727,6 +760,7 @@ impl StaticInfo {
     }
 
     fn cache_info() -> [Option<usize>; 5] {
+        use crate::critical;
         use std::{collections::HashSet, fs::*, os::unix::prelude::*, str::FromStr};
 
         fn read_index_entry_content(
@@ -737,8 +771,9 @@ impl StaticInfo {
             match read_to_string(path) {
                 Ok(content) => Some(content),
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Could not read '{}/{}': {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read '{}/{}': {}",
                         index_path.display(),
                         file_name,
                         e,
@@ -764,8 +799,9 @@ impl StaticInfo {
             };
             match value {
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Failed to parse '{}/{}': {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Failed to parse '{}/{}': {}",
                         index_path.display(),
                         file_name,
                         e,
@@ -781,7 +817,11 @@ impl StaticInfo {
         let numa_node_entries = match read_dir("/sys/devices/system/node/") {
             Ok(entries) => entries,
             Err(e) => {
-                eprintln!("Gatherer: Could not read '/sys/devices/system/node': {}", e);
+                critical!(
+                    "Gatherer::CPU",
+                    "Could not read '/sys/devices/system/node': {}",
+                    e
+                );
                 return result;
             }
         };
@@ -790,8 +830,9 @@ impl StaticInfo {
             let nn_entry = match nn_entry {
                 Ok(entry) => entry,
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Could not read entry in '/sys/devices/system/node': {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read entry in '/sys/devices/system/node': {}",
                         e
                     );
                     continue;
@@ -819,7 +860,12 @@ impl StaticInfo {
             let cpu_entries = match path.read_dir() {
                 Ok(entries) => entries,
                 Err(e) => {
-                    eprintln!("Gatherer: Could not read '{}': {}", path.display(), e);
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read '{}': {}",
+                        path.display(),
+                        e
+                    );
                     return result;
                 }
             };
@@ -827,8 +873,9 @@ impl StaticInfo {
                 let cpu_entry = match cpu_entry {
                     Ok(entry) => entry,
                     Err(e) => {
-                        eprintln!(
-                            "Gatherer: Could not read cpu entry in '{}': {}",
+                        critical!(
+                            "Gatherer::CPU",
+                            "Could not read cpu entry in '{}': {}",
                             path.display(),
                             e
                         );
@@ -859,7 +906,12 @@ impl StaticInfo {
                     let cache_entries = match path.read_dir() {
                         Ok(entries) => entries,
                         Err(e) => {
-                            eprintln!("Gatherer: Could not read '{}': {}", path.display(), e);
+                            critical!(
+                                "Gatherer::CPU",
+                                "Could not read '{}': {}",
+                                path.display(),
+                                e
+                            );
                             return result;
                         }
                     };
@@ -867,8 +919,9 @@ impl StaticInfo {
                         let cache_entry = match cache_entry {
                             Ok(entry) => entry,
                             Err(e) => {
-                                eprintln!(
-                                    "Gatherer: Could not read cpu entry in '{}': {}",
+                                critical!(
+                                    "Gatherer::CPU",
+                                    "Could not read cpu entry in '{}': {}",
                                     path.display(),
                                     e
                                 );
@@ -988,6 +1041,8 @@ impl DynamicInfo {
     }
 
     fn cpu_usage(per_core_usage: &mut [f32], per_core_kernel_usage: &mut [f32]) -> (f32, f32) {
+        use crate::critical;
+
         pub fn extract_cpu_stats(line: &str) -> CpuStats {
             let mut result = CpuStats::default();
 
@@ -1025,7 +1080,7 @@ impl DynamicInfo {
 
         let proc_stat = match std::fs::read_to_string("/proc/stat") {
             Err(e) => {
-                eprintln!("Gatherer: Failed to read /proc/stat: {}", e);
+                critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
                 return (0., 0.);
             }
             Ok(s) => s,
@@ -1063,11 +1118,14 @@ impl DynamicInfo {
 
     // Adapted from `sysinfo` crate, linux/cpu.rs:415
     fn cpu_frequency_mhz() -> u64 {
+        use crate::critical;
+
         let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
             Ok(s) => s,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to read frequency: Failed to open /proc/cpuinfo: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to read frequency: Failed to open /proc/cpuinfo: {}",
                     e
                 );
                 return 0;
@@ -1094,10 +1152,12 @@ impl DynamicInfo {
     }
 
     fn temperature() -> Option<f32> {
+        use crate::critical;
+
         let dir = match std::fs::read_dir("/sys/class/hwmon") {
             Ok(d) => d,
             Err(e) => {
-                eprintln!("Gatherer: Failed to open `/sys/class/hwmon`: {}", e);
+                critical!("Gatherer::CPU", "Failed to open `/sys/class/hwmon`: {}", e);
                 return None;
             }
         };
@@ -1122,8 +1182,9 @@ impl DynamicInfo {
             let temp = match std::fs::read_to_string(&entry) {
                 Ok(temp) => temp,
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Failed to read temperature from `{}`: {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Failed to read temperature from `{}`: {}",
                         entry.display(),
                         e
                     );
@@ -1134,8 +1195,9 @@ impl DynamicInfo {
             return Some(match temp.trim().parse::<u32>() {
                 Ok(temp) => (temp as f32) / 1000.,
                 Err(e) => {
-                    eprintln!(
-                        "Gatherer: Failed to parse temperature from `{}`: {}",
+                    critical!(
+                        "Gatherer::CPU",
+                        "Failed to parse temperature from `{}`: {}",
                         entry.display(),
                         e
                     );
@@ -1159,11 +1221,14 @@ impl DynamicInfo {
     }
 
     fn handle_count() -> u32 {
+        use crate::critical;
+
         let file_nr = match std::fs::read_to_string("/proc/sys/fs/file-nr") {
             Ok(s) => s,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
                     e
                 );
                 return 0;
@@ -1172,8 +1237,9 @@ impl DynamicInfo {
         let file_nr = match file_nr.split_whitespace().next() {
             Some(s) => s,
             None => {
-                eprintln!(
-                    "Gatherer: Failed to get handle count, failed to parse /proc/sys/fs/file-nr",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to get handle count, failed to parse /proc/sys/fs/file-nr",
                 );
                 return 0;
             }
@@ -1182,18 +1248,21 @@ impl DynamicInfo {
         match file_nr.trim().parse() {
             Ok(count) => count,
             Err(e) => {
-                eprintln!("Gatherer: Failed to get handle count, failed to parse /proc/sys/fs/file-nr content ({}): {}", file_nr, e);
+                critical!("Gatherer::CPU", "Failed to get handle count, failed to parse /proc/sys/fs/file-nr content ({}): {}", file_nr, e);
                 0
             }
         }
     }
 
     fn uptime() -> std::time::Duration {
+        use crate::critical;
+
         let proc_uptime = match std::fs::read_to_string("/proc/uptime") {
             Ok(s) => s,
             Err(e) => {
-                eprintln!(
-                    "Gatherer: Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to get handle count, could not read /proc/sys/fs/file-nr: {}",
                     e
                 );
                 return std::time::Duration::from_millis(0);
@@ -1209,7 +1278,12 @@ impl DynamicInfo {
         {
             Ok(count) => std::time::Duration::from_secs_f64(count),
             Err(e) => {
-                eprintln!("Gatherer: Failed to parse uptime, failed to parse /proc/uptime content ({}): {}", proc_uptime, e);
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to parse uptime, failed to parse /proc/uptime content ({}): {}",
+                    proc_uptime,
+                    e
+                );
                 std::time::Duration::from_millis(0)
             }
         }

@@ -258,11 +258,18 @@ impl Apps {
         path: P,
         apps: &mut std::collections::HashMap<String, AppDescriptor>,
     ) {
+        use crate::critical;
+
         let path = path.as_ref();
         let dir = match std::fs::read_dir(path) {
             Ok(d) => d,
             Err(e) => {
-                eprintln!("Failed to load apps from {}: {}", path.display(), e);
+                critical!(
+                    "Gatherer::Apps",
+                    "Failed to load apps from {}: {}",
+                    path.display(),
+                    e
+                );
                 return;
             }
         };
@@ -288,6 +295,7 @@ impl Apps {
 
     fn from_desktop_file<P: AsRef<std::path::Path>>(path: P) -> Option<AppDescriptor> {
         use super::ToArrayStringLossy;
+        use crate::critical;
         use ini::*;
 
         let path = path.as_ref();
@@ -310,14 +318,20 @@ impl Apps {
         ) {
             Ok(ini) => ini,
             Err(e) => {
-                eprintln!("Failed to load desktop file from {}: {}", path.display(), e);
+                critical!(
+                    "Gatherer::Apps",
+                    "Failed to load desktop file from {}: {}",
+                    path.display(),
+                    e
+                );
                 return None;
             }
         };
 
         let section = match ini.section(Some("Desktop Entry")) {
             None => {
-                eprintln!(
+                critical!(
+                    "Gatherer::Apps",
                     "Failed to load desktop file from {}: Invalid or corrupt file, missing \"[Desktop Entry]\"",
                     path.display()
                 );
@@ -335,7 +349,8 @@ impl Apps {
 
         let name = match section.get("Name") {
             None => {
-                eprintln!(
+                critical!(
+                    "Gatherer::Apps",
                     "Failed to load desktop file from {}: Invalid or corrupt file, \"Name\" key is missing",
                     path.display()
                 );
@@ -346,7 +361,8 @@ impl Apps {
 
         let command = match section.get("Exec") {
             None => {
-                eprintln!(
+                critical!(
+                    "Gatherer::Apps",
                     "Failed to load desktop file from {}: Invalid or corrupt file, \"Exec\" key is missing",
                     path.display()
                 );
