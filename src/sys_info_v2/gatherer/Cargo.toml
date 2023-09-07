@@ -12,7 +12,7 @@ libc = { version = "0.2" }
 num_cpus = { version = "1" }
 raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.19" }
-rustbus = {version = "0.19" }
+rustbus = { version = "0.19" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 thiserror = { version = "1.0" }
 
