@@ -101,16 +101,16 @@ mod imp {
             let action = gio::SimpleAction::new_stateful(
                 "summary",
                 None,
-                glib::Variant::from(this.imp().summary_mode.get()),
+                &glib::Variant::from(this.imp().summary_mode.get()),
             );
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let new_state = !this.summary_mode();
-                action.set_state(glib::Variant::from(new_state));
+                action.set_state(&glib::Variant::from(new_state));
                 this.set_summary_mode(new_state);
             }));
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new_stateful("cpu", None, glib::Variant::from(true));
+            let action = gio::SimpleAction::new_stateful("cpu", None, &glib::Variant::from(true));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
                     .sidebar
@@ -119,15 +119,15 @@ mod imp {
                 this.imp().sidebar.select_row(Some(&row));
 
                 let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(glib::Variant::from(false));
-                action.set_state(glib::Variant::from(true));
+                prev_action.set_state(&glib::Variant::from(false));
+                action.set_state(&glib::Variant::from(true));
             }));
             actions.add_action(&action);
             view_actions.insert("cpu".to_string(), action.clone());
             this.imp().current_view_action.set(action);
 
             let action =
-                gio::SimpleAction::new_stateful("memory", None, glib::Variant::from(false));
+                gio::SimpleAction::new_stateful("memory", None, &glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
                     .sidebar
@@ -136,13 +136,13 @@ mod imp {
                 this.imp().sidebar.select_row(Some(&row));
 
                 let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(glib::Variant::from(false));
-                action.set_state(glib::Variant::from(true));
+                prev_action.set_state(&glib::Variant::from(false));
+                action.set_state(&glib::Variant::from(true));
             }));
             actions.add_action(&action);
             view_actions.insert("memory".to_string(), action);
 
-            let action = gio::SimpleAction::new_stateful("disk", None, glib::Variant::from(false));
+            let action = gio::SimpleAction::new_stateful("disk", None, &glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
                 for page in &pages {
@@ -168,8 +168,8 @@ mod imp {
                     this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(glib::Variant::from(false));
-                    action.set_state(glib::Variant::from(true));
+                    prev_action.set_state(&glib::Variant::from(false));
+                    action.set_state(&glib::Variant::from(true));
 
                     break;
                 }
@@ -179,7 +179,7 @@ mod imp {
             view_actions.insert("disk".to_string(), action);
 
             let action =
-                gio::SimpleAction::new_stateful("network", None, glib::Variant::from(false));
+                gio::SimpleAction::new_stateful("network", None, &glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
                 for page in &pages {
@@ -205,8 +205,8 @@ mod imp {
                     this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(glib::Variant::from(false));
-                    action.set_state(glib::Variant::from(true));
+                    prev_action.set_state(&glib::Variant::from(false));
+                    action.set_state(&glib::Variant::from(true));
 
                     break;
                 }
@@ -215,7 +215,7 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("network".to_string(), action);
 
-            let action = gio::SimpleAction::new_stateful("gpu", None, glib::Variant::from(false));
+            let action = gio::SimpleAction::new_stateful("gpu", None, &glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let pages = this.imp().pages.take();
                 for page in &pages {
@@ -241,8 +241,8 @@ mod imp {
                     this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(glib::Variant::from(false));
-                    action.set_state(glib::Variant::from(true));
+                    prev_action.set_state(&glib::Variant::from(false));
+                    action.set_state(&glib::Variant::from(true));
 
                     break;
                 }
@@ -563,7 +563,7 @@ mod imp {
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .flags(BindingFlags::SYNC_CREATE)
                     .build();
 
                 self.sidebar.append(&summary);
@@ -688,8 +688,8 @@ mod imp {
                             if let Some((summary, page)) =
                                 pages.get(&network_device.descriptor.if_name)
                             {
-                                let sent = network_device.send_bps as f32;
-                                let received = network_device.recv_bps as f32;
+                                let sent = network_device.send_bps;
+                                let received = network_device.recv_bps;
 
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, sent);
@@ -802,8 +802,8 @@ mod imp {
                     let actions = imp.context_menu_view_actions.take();
                     if let Some(new_action) = actions.get(page_name) {
                         let prev_action = imp.current_view_action.replace(new_action.clone());
-                        prev_action.set_state(glib::Variant::from(false));
-                        new_action.set_state(glib::Variant::from(true));
+                        prev_action.set_state(&glib::Variant::from(false));
+                        new_action.set_state(&glib::Variant::from(true));
                     }
 
                     imp.context_menu_view_actions.set(actions);

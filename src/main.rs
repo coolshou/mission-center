@@ -19,8 +19,7 @@
  */
 
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
-use gtk::gio;
-use gtk::prelude::*;
+use gtk::{gio, prelude::*};
 use lazy_static::lazy_static;
 
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
@@ -35,6 +34,13 @@ mod performance_page;
 mod preferences;
 mod sys_info_v2;
 mod window;
+
+#[macro_export]
+macro_rules! glib_clone {
+    ($var:expr) => {{
+        unsafe { &*$var.as_ptr() }.clone()
+    }};
+}
 
 mod config {
     include!(concat!(env!("BUILD_ROOT"), "/src/config.rs"));

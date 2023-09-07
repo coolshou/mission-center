@@ -84,7 +84,7 @@ mod imp {
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
                 show_expander: Cell::new(true),
-                // FIXME (Romeo Calota): 
+                // FIXME (Romeo Calota):
                 // This property is only used as a workaround for a weirdness in GTK.
                 // When the property is set to false, the list item will honor it and collapse the
                 // expander. However, when the property is set to true, the list item will ignore it.
@@ -106,7 +106,7 @@ mod imp {
                 max_cpu_usage: Cell::new(0.),
                 max_memory_usage: Cell::new(0.),
 
-                children: Cell::new(gio::ListStore::new(super::ViewModel::static_type())),
+                children: Cell::new(gio::ListStore::new::<super::ViewModel>()),
             }
         }
     }
