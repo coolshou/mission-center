@@ -115,9 +115,45 @@
 
     <releases>
 
+        <release version="0.3.2" date="2023-09-08">
+            <description>
+                <p>Features:</p>
+                <ul>
+                    <li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
+                    <li>Add CPU temperature, where possible</li>
+                    <li>Implement smarter rounding and display precision of values throughout the app by QwertyChouskie</li>
+                    <li>Use metainfo instead of appdata for application metadata by David Guglielmi</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fixed a regression where natively installed browsers were not showing up in the apps list on Fedora</li>
+                    <li>Fixed a regression where Flatpak apps were not showing up in the apps list on ArchLinux Plasma</li>
+                    <li>Fixed a bug where the Maps app desktop file wasn't being parsed correctly</li>
+                    <li>Moved some performance related logs to g_debug to prevent spamming of system logs</li>
+                </ul>
+                <p>Translations:</p>
+                <ul>
+                    <li>New translation to Korean by Seong-ho Cho</li>
+                    <li>New translation to Dutch by Gert</li>
+                    <li>New translation to Polish by _Ghost_</li>
+                    <li>New translation to Italian by beppeilgommista</li>
+                    <li>New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel</li>
+                    <li>Updated Spanish translation</li>
+                    <li>Updated Finnish translation</li>
+                    <li>Updated Russian translation</li>
+                    <li>Updated Chinese (Simplified) translation</li>
+                    <li>Updated Finnish translation</li>
+                    <li>Updated Greek translation</li>
+                    <li>Updated German translation</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.3.1" date="2023-08-22">
             <description>
-                Hotfix release to fix a bug that caused the app to not display any information for some users
+                <ul>
+                    <li>Hotfix release to fix a bug that caused the app to not display any information for some users</li>
+                </ul>
             </description>
         </release>
 

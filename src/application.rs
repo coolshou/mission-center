@@ -266,36 +266,33 @@ impl MissionCenterApplication {
             .website("https://missioncenter.io")
             .release_notes(r#"<p>Features:</p>
 <ul>
-    <li>New app icon by QwertyChouskie</li>
-    <li>Add ability to stop and force stop apps and processes</li>
-    <li>Running apps are now shown more reliably, and should reflect most if not all running apps</li>
-    <li>Experimental support for Snap apps in the running apps list</li>
-    <li>Added a setting to show resource consumption individually per process or cumulated with their
-        descendants
-    </li>
-    <li>Added a setting to enable persistent sorting in the apps and processes list</li>
-    <li>Data gathering is now more versatile and will permit new features to be added quicker and
-        easier
-    </li>
-    <li>App can now be built from GNOME Builder</li>
+<li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
+<li>Add CPU temperature, where possible</li>
+<li>Implement smarter rounding and display precision of values throughout the app by QwertyChouskie</li>
+<li>Use metainfo instead of appdata for application metadata by David Guglielmi</li>
+</ul>
+<p>Fixes:</p>
+<ul>
+<li>Fixed a regression where natively installed browsers were not showing up in the apps list on Fedora</li>
+<li>Fixed a regression where Flatpak apps were not showing up in the apps list on ArchLinux Plasma</li>
+<li>Fixed a bug where the Maps app desktop file wasn't being parsed correctly</li>
+<li>Moved some performance related logs to g_debug to prevent spamming of system logs</li>
 </ul>
 <p>Translations:</p>
 <ul>
-    <li>New translation to Norwegian Bokmål by Allan Nordhøy</li>
-    <li>New translation to Russian by Ivan Maslikhov</li>
-    <li>New translation to Slovak by mthw0</li>
-    <li>New translation to Greek by Yiannis Ioannides</li>
-    <li>New translation to Chinese (Simplified) by foxer NS</li>
-    <li>New translation to French by Link Mauve</li>
-    <li>New translation to Hungarian by Kovács Bálint Hunor</li>
-    <li>Updated Spanish translation</li>
-    <li>Updated Czech translation</li>
-    <li>Updated Portuguese translation</li>
-    <li>Updated German translation</li>
-    <li>Updated Finnish translation</li>
-    <li>Fixes for Chinese translations by foxer NS</li>
-</ul>"#)
-            .build();
+<li>New translation to Korean by Seong-ho Cho</li>
+<li>New translation to Dutch by Gert</li>
+<li>New translation to Polish by _Ghost_</li>
+<li>New translation to Italian by beppeilgommista</li>
+<li>New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel</li>
+<li>Updated Spanish translation</li>
+<li>Updated Finnish translation</li>
+<li>Updated Russian translation</li>
+<li>Updated Chinese (Simplified) translation</li>
+<li>Updated Finnish translation</li>
+<li>Updated Greek translation</li>
+<li>Updated German translation</li>
+</ul>"#).build();
 
         about.add_credit_section(
             Some("Standing on the shoulders of giants"),
