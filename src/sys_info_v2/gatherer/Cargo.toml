@@ -9,6 +9,7 @@ arrayvec = { version = "0.7" }
 interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
+minidl = { version = "0.1" }
 num_cpus = { version = "1" }
 raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.19" }

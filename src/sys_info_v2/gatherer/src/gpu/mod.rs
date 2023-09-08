@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/ipc/message.rs
+/* sys_info_v2/gatherer/src/gpu/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,23 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-#[allow(dead_code)]
-pub enum Message {
-    GetProcesses,
-    GetApps,
-    GetAppPIDs,
-    GetCpuStaticInfo,
-    GetCpuDynamicInfo,
-    GetLogicalCpuInfo,
-    GetGpuStaticInfo,
-    GetGpuDynamicInfo,
-    GetGpuProcesses,
-    TerminateProcess(u32 /* PID */),
-    KillProcess(u32 /* PID */),
-    KillProcessTree(u32 /* Parent PID */),
-    Acknowledge,
-    DataReady,
-    Exit,
-    Unknown,
+mod state {
+    use std::cell::Cell;
+
+    thread_local! {
+        pub static GPU_USAGE_CACHE: Cell<Vec<(u32, f32)>> = Cell::new(vec![]);
+    }
 }
+
+include!("../../common/gpu.rs");
+
+#[allow(unused)]
+mod nvtop;
+mod vulkan_info;

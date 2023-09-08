@@ -191,6 +191,7 @@ dependencies = [
  "interprocess",
  "lazy_static",
  "libc",
+ "minidl",
  "num_cpus",
  "raw-cpuid",
  "rust-ini",
@@ -299,6 +300,12 @@ checksum = "5de893c32cde5f383baa4c04c5d6dbdd735cfd4a794b0debdb2bb1b421da5ff4"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "minidl"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87d3d8666e5ed22230c0096edcccf7097905b1e2975869e1b9fe5df40d26d801"
 
 [[package]]
 name = "nix"

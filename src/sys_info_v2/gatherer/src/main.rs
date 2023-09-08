@@ -61,6 +61,7 @@ mod apps;
 mod cpu;
 #[path = "../common/exit_code.rs"]
 mod exit_code;
+mod gpu;
 #[path = "../common/ipc/mod.rs"]
 mod ipc;
 mod logging;
@@ -73,6 +74,9 @@ pub type ProcessStats = processes::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
 pub type LogicalCpuInfo = cpu::LogicalInfo;
+pub type GpuStaticInfo = gpu::StaticInfo;
+pub type GpuDynamicInfo = gpu::DynamicInfo;
+pub type GpuProcesses = gpu::Processes;
 
 #[path = "../common/shared_data.rs"]
 mod shared_data;
@@ -228,6 +232,30 @@ fn main() {
 
                 let mut data = unsafe { shared_memory.acquire() };
                 data.content = SharedDataContent::LogicalCpuInfo(LogicalCpuInfo::new());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetGpuStaticInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::GpuStaticInfo(GpuStaticInfo::default());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetGpuDynamicInfo => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::GpuDynamicInfo(GpuDynamicInfo::default());
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetGpuProcesses => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::GpuProcesses(GpuProcesses::default());
 
                 data_ready!(connection);
             }
