@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-08 15:53+0000\n"
+"PO-Revision-Date: 2023-09-02 05:53+0000\n"
 "Last-Translator: yiannis ioannides <sub@wai.ai>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/el/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -29,9 +29,9 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Διαχείριση εφαρμογών;Επίβλεψη πόρων;Επίβλεψη συστήματος;Processor;Εφαρμογές;"
-"Επίβλεψη επίδοσης;Επεξεργαστής;Κάρτα γραφικών;Δίσκος;Δίσκος;Μνήμη;Δίκτυο;"
-"Χρήση;Χρήση"
+"Διαχείριση εφαρμογών;Επίβλεψη πόρων;Επίβλεψη συστήματος;Processor;Διεργασίες;"
+"Επίβλεψη επίδοσης;Επεξεργαστής;Κάρτα "
+"γραφικών;Δίσκος;Δίσκος;Μνήμη;Δίκτυο;Χρήση;Χρήση"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -136,7 +136,7 @@ msgid ""
 "processes for example"
 msgstr ""
 "Προς το παρόν, η εφαρμογή υποστηρίζει μόνο επίβλεψη, δεν μπορεί πχ. να "
-"διακόψει εφαρμογές"
+"διακόψει διεργασίες"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
@@ -163,42 +163,48 @@ msgstr "Σχόλια, προτάσεις, αναφορά σφαλμάτων κα
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Προσθήκη Ισπανικής μετάφρασης από Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"Η καρτέλα μνήμης δείχνει τώρα τη ρυθμισμένη ταχύτητα μνήμης αντί τη μέγιστη "
+"ταχύτητα που υποστηρίζεται από τις ενότητες"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
-#, fuzzy
 msgid "Add German translation by TecCheck"
-msgstr "Προσθήκη μετάφρασης Τσέχικων από ondra05"
+msgstr "Προσθήκη μετάφρασης Γερμανικών από TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Όταν μια εφαρμογή χρησιμοποιεί μεγάλο ποσοστό CPU ή RAM, θα επισημαίνεται "
+"στη λίστα Εφαρμογές και Διεργασίες"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "Προσθήκη πρώιμης υποστήριξης για κατασκευή σε ARM64"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"Εξετάστε πολλαπλούς πυρήνες CPU και μοίρασμα cache όταν υπολογίζεται το "
+"μέγεθος cache"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"Διόρθωση του προβλήματος προβολής των browsers, εγκατεστημένων ως native "
+"πακέτα που δεν εμφανίζονται στη λίστα Εφαρμογές"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
-#, fuzzy
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "Προσθήκη μετάφρασης παραδοσιακών Κινέζικων από Peter Dave Hello"
 
@@ -284,18 +290,20 @@ msgstr "Πόσο γρήγορα θα ανανεώνεται η ροή των π�
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Τα στατιστικά στοιχεία των κυρίων διεργασιών και υποδιεργασιών εμφανίζονται "
+"ατομικά ή συγχωνευμένα προς τα πάνω"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Η ταξινόμηση στηλών διατηρείται και κατόπιν επανεκκίνησης της εφαρμογής"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Η ταυτότητα στήλης με την οποία ρυθμίζεται η προβολή σελίδας Εφαρμογές"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Η φορά ταξινόμησης προβολής της σελίδας Εφαρμογές"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
@@ -691,24 +699,22 @@ msgid "Refresh every 2 seconds"
 msgstr "Ανανέωση κάθε 2 δευτερόλεπτα"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
-msgstr "Γενικές ρυθμίσεις"
+msgstr "Ρυθμίσεις σελίδας Εφαρμογές"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Συγχώνευση στοιχείων των διεργασιών"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Αποθήκευση ταξινόμησης"
 
 #: resources/ui/preferences/page.blp:43
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Διόρθωση σφάλματος οπού η λίστα εφαρμογών και διεργασιών ήταν άδεια για "
-"κάποιους χρήστες"
+"Αποθήκευση ταξινόμησης των λιστών Εφαρμογές και Διεργασίες και κατόπιν "
+"επανεκκίνησης"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -716,7 +722,7 @@ msgstr "Αναζήτηση μέσω ονόματος ή PID"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Φόρτωση..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
@@ -749,21 +755,20 @@ msgstr "Δίσκος"
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr ""
+msgstr "Διακοπή εφαρμογής"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Εξαναγκαστική διακοπή εφαρμογής"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
-#, fuzzy
 msgid "Stop Process"
-msgstr "Διεργασίες"
+msgstr "Διακοπή διεργασίας"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Εξαναγκαστική διακοπή διεργασίας"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""

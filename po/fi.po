@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-25 05:47+0000\n"
+"PO-Revision-Date: 2023-09-02 05:53+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -149,6 +149,8 @@ msgstr ""
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Näytönohjaintuki on kokeellinen, ja vain AMD:n ja nVidian näytönohjaimia on "
+"mahdollista tarkkailla"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -254,11 +256,11 @@ msgstr "Ensimmäinen virallinen julkaisu!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Sovelluksen käynnistyessä avattava sivu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "Kuinka nopeasti data päivitetään käyttöliittymään"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
@@ -759,6 +761,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Muokattu ({} t)\n"
+"\n"
+"Muisti, jonka sisältö tulee kirjoittaa levylle, ennen kuin sitä on "
+"mahdollista käyttää toisen prosessin toimesta"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -766,6 +772,10 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Lepo ({} t)\n"
+"\n"
+"Muisti, joka sisältää välimuistiin asetettua dataa ja koodia, joka ei ole "
+"aktiivisessa käytössä"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -774,6 +784,10 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Vapaa ({} t)\n"
+"\n"
+"Muisti, joka ei tällä hetkellä ole käytössä, ja otetaan käyttöön, kun "
+"käyttöjärjestelmä, ajurit tai sovellukset tarvitsevat muistia"
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
