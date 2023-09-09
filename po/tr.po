@@ -8,44 +8,51 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-09-09 16:20+0000\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Görev Merkezi"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Görev "
+"yöneticisi;Kaynak İzleyici;Sistem "
+"Gözlemcisi;Süreç;Performans;Başarım;İşlemci;Ekran Kartı;Bellek;Ağ;Kullanım"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Görev Merkezi Geliştiricileri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Sistem kaynakları kullanımını izle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
+msgstr "İşlemci, Bellek, Disk, Ağ ve Ekran Kartı kullanımlarınızı izleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Features:"
-msgstr ""
+msgstr "Özellikler:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Genel veya işlemci başına kullanımı izleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
@@ -55,7 +62,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Bellek ve Takas Alanı kullanımı izleme eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
@@ -98,15 +105,15 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "GTK4 ve Libadwaita kullanıyor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
-msgstr ""
+msgstr "Rust ile yazıldı"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak öncelikli"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
@@ -124,7 +131,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
-msgstr ""
+msgstr "İşlemci başına ağ kullanımı yok"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
@@ -151,7 +158,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
-msgstr ""
+msgstr "Almanca çeviri eklendi, teşekkürler TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
@@ -235,7 +242,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
-msgstr ""
+msgstr "İlk resmi sürüm!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
@@ -273,84 +280,84 @@ msgstr ""
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
-msgstr ""
+msgstr "İşlemci"
 
 #: resources/ui/performance_page/cpu.blp:74
 msgid "% Utilization"
-msgstr ""
+msgstr "% Kullanım"
 
 #: resources/ui/performance_page/cpu.blp:84
 msgid "100%"
-msgstr ""
+msgstr "%100"
 
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr ""
+msgstr "Kullanım"
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr ""
+msgstr "Hız"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
-msgstr ""
+msgstr "Süreçler"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr ""
+msgstr "İş Parçacıkları"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
-msgstr ""
+msgstr "İşleyiciler"
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
-msgstr ""
+msgstr "Çalışma zamanı"
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr ""
+msgstr "Taban Hız:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr ""
+msgstr "Yuvalar:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Sanal işlemciler:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr ""
+msgstr "Sanallaştırma:"
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Sanal makine:"
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr ""
+msgstr "L1 önbellek:"
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr ""
+msgstr "L2 önbellek:"
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr ""
+msgstr "L3 önbellek:"
 
 #: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
-msgstr ""
+msgstr "G_rafiği Değiştir"
 
 #: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "Genel _Kullanım"
 
 #: resources/ui/performance_page/cpu.blp:450
 msgid "Logical _Processors"
-msgstr ""
+msgstr "Mantıksal İşl_emciler"
 
 #: resources/ui/performance_page/cpu.blp:458
 #: resources/ui/performance_page/disk.blp:386
@@ -358,7 +365,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "_Özet Grafiğini Çiz"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:391
@@ -366,7 +373,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
 msgid "_View"
-msgstr ""
+msgstr "G_örünüm"
 
 #: resources/ui/performance_page/cpu.blp:466
 #: resources/ui/performance_page/disk.blp:394
@@ -374,7 +381,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
 msgid "CP_U"
-msgstr ""
+msgstr "İşl_emci"
 
 #: resources/ui/performance_page/cpu.blp:471
 #: resources/ui/performance_page/disk.blp:399
@@ -382,7 +389,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
 msgid "_Memory"
-msgstr ""
+msgstr "_Bellek"
 
 #: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:404
@@ -390,7 +397,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
 msgid "_Disk"
-msgstr ""
+msgstr "_Disk"
 
 #: resources/ui/performance_page/cpu.blp:481
 #: resources/ui/performance_page/disk.blp:409
@@ -398,7 +405,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
 msgid "_Network"
-msgstr ""
+msgstr "_Ağ"
 
 #: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:414
@@ -406,7 +413,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
 msgid "_GPU"
-msgstr ""
+msgstr "_Ekran Kartı"
 
 #: resources/ui/performance_page/cpu.blp:494
 #: resources/ui/performance_page/disk.blp:422
@@ -414,315 +421,317 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
 msgid "_Copy"
-msgstr ""
+msgstr "K_opyala"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
 msgid "Active time"
-msgstr ""
+msgstr "Aktif zaman"
 
 #: resources/ui/performance_page/disk.blp:122
 msgid "Disk transfer rate"
-msgstr ""
+msgstr "Disk aktarım oranı"
 
 #: resources/ui/performance_page/disk.blp:211
 msgid "Average response time"
-msgstr ""
+msgstr "Ortalama yanıt zamanı"
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr ""
+msgstr "Okuma hızı"
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr ""
+msgstr "Yazma hızı"
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr ""
+msgstr "Kapasite:"
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
-msgstr ""
+msgstr "Biçimlendirilmiş:"
 
 #: resources/ui/performance_page/disk.blp:325
 msgid "System disk:"
-msgstr ""
+msgstr "Sistem diski:"
 
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
 msgid "Type:"
-msgstr ""
+msgstr "Tür:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr ""
+msgstr "Genel kullanım"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr ""
+msgstr "Video kodla"
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr ""
+msgstr "Video kod çözme"
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr ""
+msgstr "Bellek kullanımı"
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
-msgstr ""
+msgstr "Saat Hızı"
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr ""
+msgstr "Güç kullanımı"
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr ""
+msgstr "Bellek hızı"
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
-msgstr ""
+msgstr "Sıcaklık"
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr ""
+msgstr "OpenGL sürümü:"
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr ""
+msgstr "Vulkan sürümü:"
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "PCI Express hızı:"
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr ""
+msgstr "PCI veri yolu adresi:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr ""
+msgstr "Kimi bilgiler yönetici ayrıcalıkları gerektirir"
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
-msgstr ""
+msgstr "_Kimlik Doğrula"
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
-msgstr ""
+msgstr "Bellek"
 
 #: resources/ui/performance_page/memory.blp:130
 msgid "Memory composition"
-msgstr ""
+msgstr "Bellek kompozisyonu"
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr ""
+msgstr "Kullanımda"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr ""
+msgstr "Kullanılabilir"
 
 #: resources/ui/performance_page/memory.blp:217
 msgid "Committed"
-msgstr ""
+msgstr "Kullanıldı"
 
 #: resources/ui/performance_page/memory.blp:240
 msgid "Cached"
-msgstr ""
+msgstr "Önbelleklendi"
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr ""
+msgstr "Kullanılabilir takas alanı"
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr ""
+msgstr "Takas alanı kullanımı"
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr ""
+msgstr "Hız:"
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
-msgstr ""
+msgstr "Kullanılan yuvalar:"
 
 #: resources/ui/performance_page/memory.blp:336
 msgid "Form factor:"
-msgstr ""
+msgstr "Katsayı:"
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr ""
+msgstr "Çıktı"
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr ""
+msgstr "Gönder"
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr ""
+msgstr "Al"
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
-msgstr ""
+msgstr "Arayüz adı:"
 
 #: resources/ui/performance_page/network.blp:206
 msgid "Connection type:"
-msgstr ""
+msgstr "Bağlantı türü:"
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
-msgstr ""
+msgstr "_SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr ""
+msgstr "Sinyal kuvveti:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr ""
+msgstr "En Yüksek Bit Oranı:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr ""
+msgstr "Sıklık:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr ""
+msgstr "Donanım adresi:"
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr ""
+msgstr "IPv4 adresi:"
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr ""
+msgstr "IPv6 adresi:"
 
 #: resources/ui/performance_page/network.blp:403
 msgid "Network Se_ttings"
-msgstr ""
+msgstr "Ağ _Ayarları"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr ""
+msgstr "Genel Ayarlar"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr ""
+msgstr "Güncelleme Hızı"
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr ""
+msgstr "Hızlı"
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
-msgstr ""
+msgstr "Yarım saniyede bir yenile"
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
 #: src/preferences/page.rs:282
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr ""
+msgstr "Her saniye yenile"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr ""
+msgstr "Yavaş"
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr ""
+msgstr "Hir bir buçuk saniyede bir yenile"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
 msgid "Very Slow"
-msgstr ""
+msgstr "Çok Yavaş"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr ""
+msgstr "Her 2 saniyede bir yenile"
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
-msgstr ""
+msgstr "Uygulama Sayfası Ayarları"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "İşlemci İstatistiklerini Birleştir"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Sıralamayı Hatırla"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Uygulama yeniden başlatmalarında uygulama ve işlem listesinin sıralamasını "
+"hatırla"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr ""
+msgstr "Aramak için ad veya PID yazın"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Yükleniyor..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr ""
+msgstr "Başarım"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
-msgstr ""
+msgstr "Uygulamalar"
 
 #: resources/ui/window.blp:124
 msgid "_Preferences"
-msgstr ""
+msgstr "_ Tercihler"
 
 #: resources/ui/window.blp:129
 msgid "_About MissionCenter"
-msgstr ""
+msgstr "Görev Merkezi _Hakkında"
 
 #: src/apps_page/mod.rs:992
 msgid "Name"
-msgstr ""
+msgstr "Ad"
 
 #: src/apps_page/mod.rs:998
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:1016
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr ""
+msgstr "Uygulamayı Durdur"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Uygulamayı Durmaya Zorla"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
 msgid "Stop Process"
-msgstr ""
+msgstr "Süreci Durdur"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Süreci Durmaya Zorla"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -730,6 +739,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"Kullanımda ({}B)\n"
+"\n"
+"İşletim sistemi ve çalışan uygulamalar tarafından kullanılan bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
 msgid ""
@@ -738,6 +750,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Değiştirilmiş ({}B)\n"
+"\n"
+"Başka bir işlem tarafından kullanılmadan önce içeriğinin diske yazılması "
+"gereken bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -745,6 +761,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Beklemede ({}B)\n"
+"\n"
+"Önbelleğe alınmış verileri ve aktif olarak kullanılmayan kodu içeren bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -753,30 +772,34 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Boş ({}B)\n"
+"\n"
+"Kullanımda olmayan ve işletim sistemi, sürücüler veya uygulamalar daha fazla "
+"belleğe ihtiyaç duyduğunda ilk olarak yeniden kullanılacak bellek"
 
 #: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Disk {} ({})"
 
 #: src/performance_page/mod.rs:375
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:376
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:377
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:378
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:379
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
 #: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
@@ -785,66 +808,66 @@ msgstr ""
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:404
 #: src/performance_page/network.rs:441 src/performance_page/network.rs:519
 msgid "Unknown"
-msgstr ""
+msgstr "Bilinmiyor"
 
 #: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr ""
+msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Kablosuz"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:340
 msgid "Other"
-msgstr ""
+msgstr "Diğer"
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr ""
+msgstr "Ekran Kartı {}"
 
 #: src/performance_page/mod.rs:695
 msgid "{}: {} {}bps {}: {} {}bps"
-msgstr ""
+msgstr "{}: {} {}bps {}: {} {}bps"
 
 #: src/performance_page/cpu.rs:286
 msgid "Supported"
-msgstr ""
+msgstr "Destekleniyor"
 
 #: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
-msgstr ""
+msgstr "Desteklenmiyor"
 
 #: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
 msgid "No"
-msgstr ""
+msgstr "Hayır"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"
-msgstr ""
+msgstr "% kullanım {} saniyede"
 
 #: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:605
 msgid "{} seconds"
-msgstr ""
+msgstr "{} saniye"
 
 #: src/performance_page/disk.rs:251
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/network.rs:415 src/performance_page/network.rs:421
 #: src/performance_page/network.rs:429
 msgid "{} {}bps"
-msgstr ""
+msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
-msgstr ""
+msgstr "Yok"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr ""
+msgstr "Sabri Ünal <libreajans@gmail.com>"
