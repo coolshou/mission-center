@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-09-09 16:20+0000\n"
+"PO-Revision-Date: 2023-09-13 07:51+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/tr/>\n"
@@ -59,10 +59,12 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Sistem süreçlerini, iş parçacıklarını ve tutacak sayılarını, çalışma "
+"süresini, saat hızını (temel ve geçerli), önbellek boyutlarını görün"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "Bellek ve Takas Alanı kullanımı izleme eklendi"
+msgstr "Bellek ve Takas kullanımı izleme eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
@@ -301,19 +303,19 @@ msgstr "Hız"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
 msgid "Processes"
-msgstr "Süreçler"
+msgstr "Süreç"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr "İş Parçacıkları"
+msgstr "İş Parçacığı"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
-msgstr "İşleyiciler"
+msgstr "İşleyici"
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
-msgstr "Çalışma zamanı"
+msgstr "Çalışma süresi"
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
@@ -321,11 +323,11 @@ msgstr "Taban Hız:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr "Yuvalar:"
+msgstr "Yuva:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr "Sanal işlemciler:"
+msgstr "Sanal işlemci:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
@@ -513,7 +515,7 @@ msgstr "PCI veri yolu adresi:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr "Kimi bilgiler yönetici ayrıcalıkları gerektirir"
+msgstr "Bazı bilgiler yönetici ayrıcalıkları gerektiriyor"
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
@@ -546,11 +548,11 @@ msgstr "Önbelleklendi"
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr "Kullanılabilir takas alanı"
+msgstr "Kullanılabilir takas"
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr "Takas alanı kullanımı"
+msgstr "Kullanılan takas"
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
@@ -570,11 +572,11 @@ msgstr "Çıktı"
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr "Gönder"
+msgstr "Gönderilen"
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr "Al"
+msgstr "Alınan"
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
@@ -586,7 +588,7 @@ msgstr "Bağlantı türü:"
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
-msgstr "_SSID:"
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
@@ -594,11 +596,11 @@ msgstr "Sinyal kuvveti:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "En Yüksek Bit Oranı:"
+msgstr "En yüksek bit oranı:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr "Sıklık:"
+msgstr "Frekans:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
