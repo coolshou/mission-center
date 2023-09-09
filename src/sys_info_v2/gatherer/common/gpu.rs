@@ -18,8 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use super::{ArrayString, ArrayVec};
+use arrayvec::ArrayVec;
 
+pub type ArrayString = arrayvec::ArrayString<256>;
+
+/// Describes the static information of a GPU.
+///
+/// This struct is used to describe the information about a GPU that does not change during the
+/// lifetime of said GPU.
 #[derive(Debug, Default, Clone)]
 pub struct StaticInfoDescriptor {
     pub id: ArrayString,
@@ -35,6 +41,10 @@ pub struct StaticInfoDescriptor {
     pub pcie_lanes: Option<u8>,
 }
 
+/// Describes the dynamic information of a GPU.
+///
+///  This struct is used to describe the information about a GPU that changes during the lifetime
+/// of said GPU.
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfoDescriptor {
     pub temp_celsius: u32,
@@ -53,25 +63,47 @@ pub struct DynamicInfoDescriptor {
     pub decoder_percent: u32,
 }
 
+/// Describes the processes that are currently using a GPU.
 #[derive(Debug, Default, Clone)]
 pub struct GpuProcess {
+    /// The index of the GPU that the process is using.
     pub index: usize,
+    /// The PID of the process.
     pub pid: u32,
+    /// The percentage of GPU used by the process.
     pub usage: f32,
 }
 
+/// Describes the static information of all GPUs present in the system.
+///
+/// Since the maximum number of elements is limited the `is_complete` field is used to indicate
+/// whether or not all the GPUs have been described. If `is_complete` is `false` then the
+/// `desc` field contains only a subset of all the GPUs present in the system, and the providing
+/// function should be called again to get the rest of the GPUs.
 #[derive(Debug, Default, Clone)]
 pub struct StaticInfo {
     pub desc: ArrayVec<StaticInfoDescriptor, 16>,
     pub is_complete: bool,
 }
 
+/// Describes the dynamic information of all GPUs present in the system.
+///
+/// Since the maximum number of elements is limited the `is_complete` field is used to indicate
+/// whether or not all the GPUs have been described. If `is_complete` is `false` then the
+/// `desc` field contains only a subset of all the GPUs present in the system, and the providing
+/// function should be called again to get the rest of the GPUs.
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfo {
     pub desc: ArrayVec<DynamicInfoDescriptor, 16>,
     pub is_complete: bool,
 }
 
+/// Describes the processes that are currently using the GPUs in the system.
+///
+/// Since the maximum number of elements is limited the `is_complete` field is used to indicate
+/// whether or not all the processes have been described. If `is_complete` is `false` then the
+/// `usage` field contains only a subset of all the processes using GPU resources, and the providing
+/// function should be called again to get the rest of the information.
 #[derive(Debug, Default, Clone)]
 pub struct Processes {
     pub usage: ArrayVec<GpuProcess, 64>,

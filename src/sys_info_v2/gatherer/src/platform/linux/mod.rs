@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/src/gpu/mod.rs
+/* sys_info_v2/gatherer/src/platform/linux/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,16 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-mod state {
-    use std::cell::Cell;
+use super::{gpu, GpuInfoExt};
 
-    thread_local! {
-        pub static GPU_USAGE_CACHE: Cell<Vec<(u32, f32)>> = Cell::new(vec![]);
-    }
-}
+mod gpu_info;
 
-include!("../../common/gpu.rs");
-
-#[allow(unused)]
-mod nvtop;
-mod vulkan_info;
+pub type GpuInfo = gpu_info::GpuInfo;

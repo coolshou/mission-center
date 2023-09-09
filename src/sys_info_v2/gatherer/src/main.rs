@@ -61,10 +61,10 @@ mod apps;
 mod cpu;
 #[path = "../common/exit_code.rs"]
 mod exit_code;
-mod gpu;
 #[path = "../common/ipc/mod.rs"]
 mod ipc;
 mod logging;
+mod platform;
 mod processes;
 #[path = "../common/util.rs"]
 mod util;
@@ -74,10 +74,9 @@ pub type ProcessStats = processes::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
 pub type LogicalCpuInfo = cpu::LogicalInfo;
-pub type GpuStaticInfo = gpu::StaticInfo;
-pub type GpuDynamicInfo = gpu::DynamicInfo;
-pub type GpuProcesses = gpu::Processes;
-
+pub type GpuStaticInfo = platform::gpu::StaticInfo;
+pub type GpuDynamicInfo = platform::gpu::DynamicInfo;
+pub type GpuProcesses = platform::gpu::Processes;
 #[path = "../common/shared_data.rs"]
 mod shared_data;
 
@@ -124,6 +123,7 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
 fn main() {
     use exit_code::ExitCode;
     use interprocess::local_socket::*;
+    use platform::GpuInfoExt;
     use shared_data::{SharedData, SharedDataContent};
     use std::io::Read;
 
@@ -158,6 +158,8 @@ fn main() {
             std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
         }
     };
+
+    let mut gpu_info = platform::GpuInfo::new();
 
     let mut message = ipc::Message::Unknown;
     loop {
@@ -239,7 +241,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuStaticInfo(GpuStaticInfo::default());
+                data.content = SharedDataContent::GpuStaticInfo(gpu_info.static_info());
 
                 data_ready!(connection);
             }
@@ -247,7 +249,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuDynamicInfo(GpuDynamicInfo::default());
+                data.content = SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info());
 
                 data_ready!(connection);
             }
@@ -255,7 +257,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuProcesses(GpuProcesses::default());
+                data.content = SharedDataContent::GpuProcesses(gpu_info.processes());
 
                 data_ready!(connection);
             }

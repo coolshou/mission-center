@@ -47,7 +47,7 @@ impl VulkanInfo {
         let lib = match minidl::Library::load("libvulkan.so.1\0") {
             Err(e) => {
                 critical!(
-                    "MissionCenter::GPUInfo",
+                    "Gatherer::GPU",
                     "Failed to get Vulkan information: Could not load 'libvulkan.so.1'; {}",
                     e
                 );
@@ -62,7 +62,7 @@ impl VulkanInfo {
         ) -> *mut Void = match lib.sym::<*const Void>("vkGetInstanceProcAddr\0") {
             Err(e) => {
                 critical!(
-                    "MissionCenter::GPUInfo",
+                    "Gatherer::GPU",
                     "Failed to get Vulkan information: Could not find 'vkGetInstanceProcAddr' in 'libvulkan.so.1'; {}", e
                 );
                 return None;
@@ -74,7 +74,7 @@ impl VulkanInfo {
             vkGetInstanceProcAddr(std::ptr::null_mut(), b"vkCreateInstance\0".as_ptr());
         if vkCreateInstance.is_null() {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: vkCreateInstance not found",
             );
             return None;
@@ -93,7 +93,7 @@ impl VulkanInfo {
         let result = vkCreateInstance(create_info.as_ptr(), allocator, &mut instance);
         if result != 0 || instance.is_null() {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: vkCreateInstance failed ({})",
                 result
             );
@@ -103,7 +103,7 @@ impl VulkanInfo {
         let vkDestroyInstance = vkGetInstanceProcAddr(instance, b"vkDestroyInstance\0".as_ptr());
         if vkDestroyInstance.is_null() {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: vkDestroyInstance not found, leaking instance",
             );
             return None;
@@ -116,7 +116,7 @@ impl VulkanInfo {
             vkGetInstanceProcAddr(instance, b"vkEnumeratePhysicalDevices\0".as_ptr());
         if vkEnumeratePhysicalDevices.is_null() {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: vkEnumeratePhysicalDevices not found",
             );
             return None;
@@ -132,7 +132,7 @@ impl VulkanInfo {
             vkGetInstanceProcAddr(instance, b"vkGetPhysicalDeviceProperties\0".as_ptr());
         if vkGetPhysicalDeviceProperties.is_null() {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: vkGetPhysicalDeviceProperties not found",
             );
             return None;
@@ -149,7 +149,6 @@ impl VulkanInfo {
         })
     }
 
-    #[allow(non_snake_case)]
     unsafe fn supported_vulkan_versions(
         &self,
     ) -> Option<std::collections::HashMap<u32, (u16, u16, u16)>> {
@@ -158,6 +157,7 @@ impl VulkanInfo {
         const SIZE_OF_LIMITS_STRUCT: usize = 504;
         const SIZE_OF_SPARSE_PROPERTIES_STRUCT: usize = 20;
 
+        #[allow(non_snake_case)]
         #[repr(C)]
         #[derive(Debug, Copy, Clone)]
         struct VkPhysicalDeviceProperties {
@@ -180,7 +180,7 @@ impl VulkanInfo {
         );
         if result != 0 || device_count == 0 {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: No Vulkan capable devices found ({})",
                 result
             );
@@ -195,7 +195,7 @@ impl VulkanInfo {
         );
         if result != 0 || device_count == 0 {
             critical!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Failed to get Vulkan information: No Vulkan capable devices found ({})",
                 result
             );
@@ -211,7 +211,7 @@ impl VulkanInfo {
                 &mut properties as *mut VkPhysicalDeviceProperties as *mut _,
             );
             debug!(
-                "MissionCenter::GPUInfo",
+                "Gatherer::GPU",
                 "Found Vulkan device: {:?}",
                 std::ffi::CStr::from_ptr(properties.deviceName.as_ptr())
             );
