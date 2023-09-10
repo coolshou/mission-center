@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-29 00:53+0000\n"
-"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
+"PO-Revision-Date: 2023-09-13 07:51+0000\n"
+"Last-Translator: asilva <andre.f.r.da.silva+weblate@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt/>\n"
 "Language: pt\n"
@@ -62,7 +62,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Monitorizar utilização de RAM e Swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
@@ -74,7 +74,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Monitorizar utilização da rede e velocidades de transferência"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -105,11 +105,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Utiliza GTK4 e Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
-msgstr ""
+msgstr "Desenvolvido em Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
@@ -124,10 +124,12 @@ msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
+"De momento a aplicação apenas suporta monitorização, não é possível parar "
+"processos por exemplo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "Percentagens apresentadas na utilização de Disco podem não ser precisas"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
@@ -141,10 +143,12 @@ msgstr ""
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Suporte de GPU é experimental, apenas podem ser monitorizados GPUs da AMD e "
+"nVidia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Comentários, sugestões, reporte de bugs e contribuições são bem-vindos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
@@ -165,6 +169,8 @@ msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Quando um processo utiliza grandes quantidades de CPU ou RAM, o mesmo agora "
+"é apresentado destacado nas listas dos Processos e Aplicações"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
