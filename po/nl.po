@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-25 20:16+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2023-09-09 16:20+0000\n"
+"Last-Translator: Gert-dev <qnyasgjhapqyuhoibr@kiabws.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -41,7 +43,8 @@ msgstr "Controleer het gebruik van bronnen op je systeem"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Controleer hoe je CPU, geheugen, harde schijf, netwerk en GPU gebruikt worden"
+"Controleer hoe je processor, geheugen, harde schijf, netwerk en grafische "
+"kaart gebruikt worden"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Features:"
@@ -83,16 +86,16 @@ msgid ""
 "address"
 msgstr ""
 "Bekijk informatie over netwerkverbindingen waaronder de naam van de "
-"netwerkkaart, connectietype (Wi-FI of kabel), draadloze overdrachtsnelheden "
-"en frequentie, hardware-adressen en IP-adressen"
+"netwerkkaart, connectietype (Wi-FI of bekabelde verbinding), draadloze "
+"overdrachtsnelheden en frequentie, hardware-adressen en IP-adressen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Controleer het algemene GPU-gebruik, gebruik van video encoders en decoders, "
-"geheugengebruik en stroomverbruik, dankzij het populaire NVTOP-project"
+"Controleer het algemene gebruik van je grafische kaart, video encoders en "
+"decoders, geheugen en je stroomverbruik, dankzij het populaire NVTOP-project"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
@@ -145,14 +148,14 @@ msgstr "Geen netwerkgebruik per proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
-msgstr "Geen GPU-gebruik per proces"
+msgstr "Geen gebruik van grafische kaart uitgesplitst per proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
-"GPU-ondersteuning is experimenteel en enkel AMD- en NVIDIA-GPU's kunnen "
-"gecontroleerd worden"
+"Ondersteuning voor grafische kaarten is experimenteel en enkel AMD- en "
+"NVIDIA-GPU's kunnen gecontroleerd worden"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -245,8 +248,8 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
-"Werk de interface van het GPU-tabblad bij om meer adaptief te zijn op "
-"kleinere resoluties"
+"Werk de interface van het tabblad voor grafische kaarten bij om meer "
+"adaptief te zijn op kleinere resoluties"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
@@ -292,8 +295,8 @@ msgstr "Hoe snel data en de interface bijgewerkt moet worden"
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Informatie over ouder- en kinderprocessen worden individueel getoond of "
-"omhoog samengevoegd"
+"Of informatie over ouder- en kinderprocessen individueel getoond of omhoog "
+"samengevoegd moet worden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
@@ -635,7 +638,7 @@ msgstr "Signaalsterkte:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "Maximum bitrate:"
+msgstr "Maximum-bitrate:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
@@ -722,7 +725,7 @@ msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr "Typ een naam of PID in om te zoeken"
+msgstr "Typ een naam of PID om te zoeken"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
@@ -854,7 +857,7 @@ msgstr "Onbekend"
 
 #: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr "Kabel"
+msgstr "Bekabelde verbinding"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
 msgid "Wi-Fi"

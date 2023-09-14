@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-16 06:10+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"PO-Revision-Date: 2023-09-13 07:51+0000\n"
+"Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -301,18 +301,21 @@ msgstr "À quelle vitesse doivent se rafraîchir les données et l’interface"
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Les statistiques des processus parents et enfants sont affichées séparément "
+"ou fusionnées en amont"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Le tri des colonnes est sauvegardé à la réouverture de l’application"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"L’identifiant de la colonne utilisé pour le tri de la page des applications"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Le sens de tri de la page des Applications"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
@@ -709,24 +712,22 @@ msgid "Refresh every 2 seconds"
 msgstr "Rafraîchit toutes les deux secondes"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
-msgstr "Paramètres génériques"
+msgstr "Paramètres de la page des Applications"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Fusionner les statistiques des processus"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Mémoriser le tri"
 
 #: resources/ui/preferences/page.blp:43
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Correction d’un bogue où la liste des processus et applications était vide "
-"pour certains utilisateurs"
+"Mémoriser le tri effectué dans de la liste des applications et des processus "
+"entre chaque redémarrage"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
