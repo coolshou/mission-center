@@ -1,4 +1,5 @@
 [package]
+build = "build/build.rs"
 name = "gatherer"
 version = "0.3.2"
 edition = "2021"
@@ -16,6 +17,17 @@ rust-ini = { version = "0.19" }
 rustbus = { version = "0.19" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 thiserror = { version = "1.0" }
+
+[build-dependencies]
+cargo-util = { version = "0.2" }
+cc = { version = "1.0" }
+flate2 = { version = "1.0" }
+pkg-config = { version = "0.3" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+sha2 = { version = "0.10" }
+tar = { version = "0.4" }
+ureq = { version = "2.1" }
 
 [profile.release]
 opt-level = 3

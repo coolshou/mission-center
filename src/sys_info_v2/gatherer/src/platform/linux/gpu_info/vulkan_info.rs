@@ -41,7 +41,7 @@ impl Drop for VulkanInfo {
 
 impl VulkanInfo {
     #[allow(non_snake_case)]
-    unsafe fn new() -> Option<Self> {
+    pub unsafe fn new() -> Option<Self> {
         type Void = std::ffi::c_void;
 
         let lib = match minidl::Library::load("libvulkan.so.1\0") {

@@ -74,6 +74,7 @@ pub type ProcessStats = processes::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
 pub type LogicalCpuInfo = cpu::LogicalInfo;
+pub type GpuPciIds = platform::gpu::PciIds;
 pub type GpuStaticInfo = platform::gpu::StaticInfo;
 pub type GpuDynamicInfo = platform::gpu::DynamicInfo;
 pub type GpuProcesses = platform::gpu::Processes;
@@ -237,27 +238,37 @@ fn main() {
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuStaticInfo => {
+            ipc::Message::EnumerateGpus => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuStaticInfo(gpu_info.static_info());
+                data.content = SharedDataContent::GpuPciIds(gpu_info.enumerate());
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuDynamicInfo => {
+            ipc::Message::GetGpuStaticInfo(ref pci_id) => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info());
+                data.content =
+                    SharedDataContent::GpuStaticInfo(gpu_info.static_info(pci_id.as_str()));
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuProcesses => {
+            ipc::Message::GetGpuDynamicInfo(ref pci_id) => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuProcesses(gpu_info.processes());
+                data.content =
+                    SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info(pci_id.as_str()));
+
+                data_ready!(connection);
+            }
+            ipc::Message::GetGpuProcesses(ref pci_id) => {
+                acknowledge!(connection);
+
+                let mut data = unsafe { shared_memory.acquire() };
+                data.content = SharedDataContent::GpuProcesses(gpu_info.processes(pci_id.as_str()));
 
                 data_ready!(connection);
             }

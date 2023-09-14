@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use arrayvec::ArrayString;
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[allow(dead_code)]
 pub enum Message {
@@ -27,9 +29,10 @@ pub enum Message {
     GetCpuStaticInfo,
     GetCpuDynamicInfo,
     GetLogicalCpuInfo,
-    GetGpuStaticInfo,
-    GetGpuDynamicInfo,
-    GetGpuProcesses,
+    EnumerateGpus,
+    GetGpuStaticInfo(ArrayString<16>),
+    GetGpuDynamicInfo(ArrayString<16>),
+    GetGpuProcesses(ArrayString<16>),
     TerminateProcess(u32 /* PID */),
     KillProcess(u32 /* PID */),
     KillProcessTree(u32 /* Parent PID */),

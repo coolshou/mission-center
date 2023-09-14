@@ -1,0 +1,126 @@
+use serde::{Deserialize, Serialize};
+
+mod util;
+
+#[derive(Serialize, Deserialize)]
+struct Package {
+    #[serde(rename = "package-name")]
+    name: String,
+    directory: String,
+    #[serde(rename = "source-url")]
+    source_url: String,
+    #[serde(rename = "source-hash")]
+    source_hash: String,
+    patches: Vec<String>,
+}
+
+fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std::error::Error>> {
+    let third_party_path =
+        std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")? + "/3rdparty");
+    let mut out_dir = std::env::var("OUT_DIR")?;
+    out_dir.push_str("/../../native");
+    std::fs::create_dir_all(&out_dir)?;
+    let out_dir = std::path::PathBuf::from(out_dir).canonicalize()?;
+
+    let patch_executable = match std::env::var("MC_PATH_BINARY") {
+        Ok(p) => {
+            if std::path::Path::new(&p).exists() {
+                p
+            } else {
+                eprintln!("{} does not exist", p);
+                std::process::exit(1);
+            }
+        }
+        Err(_) => util::find_program("patch").unwrap_or_else(|| {
+            eprintln!("`patch` not found");
+            std::process::exit(1);
+        }),
+    };
+
+    let mut result = vec![];
+
+    for dir in std::fs::read_dir(&third_party_path)?.filter_map(|d| d.ok()) {
+        if !dir.file_type()?.is_dir() {
+            continue;
+        }
+
+        for entry in std::fs::read_dir(dir.path())?.filter_map(|e| e.ok()) {
+            let file_name = entry.file_name();
+            let entry_name = file_name.to_string_lossy();
+            if entry_name.ends_with(".json") {
+                let package: Package =
+                    serde_json::from_str(&std::fs::read_to_string(entry.path())?)?;
+
+                let extracted_path = out_dir.join(&package.directory);
+                result.push(extracted_path.clone());
+                if extracted_path.exists() {
+                    break;
+                }
+
+                let output_path = util::download_file(
+                    &package.source_url,
+                    &format!("{}", out_dir.display()),
+                    Some(&package.source_hash),
+                )?;
+
+                let mut archive = std::fs::File::open(&output_path)?;
+                let tar = flate2::read::GzDecoder::new(&mut archive);
+                let mut archive = tar::Archive::new(tar);
+                archive.unpack(&out_dir)?;
+
+                for patch in package.patches.iter().map(|p| p.as_str()) {
+                    let mut cmd = std::process::Command::new(&patch_executable);
+                    cmd.args(["-p1", "-i", &format!("{}/{}", dir.path().display(), patch)]);
+                    cmd.current_dir(&extracted_path);
+                    cmd.stdout(std::process::Stdio::inherit())
+                        .stderr(std::process::Stdio::inherit());
+                    cmd.spawn()?.wait()?;
+                }
+
+                break;
+            }
+        }
+    }
+
+    Ok(result)
+}
+
+fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Error>> {
+    let libdrm = pkg_config::Config::new()
+        .atleast_version("2.4.67")
+        .probe("libdrm")?;
+
+    let libudev = pkg_config::Config::new()
+        .atleast_version("204")
+        .probe("libudev")?;
+
+    cc::Build::new()
+        .define("USING_LIBUDEV", None)
+        .define("_GNU_SOURCE", None)
+        .include(src_dir.join("src"))
+        .include(src_dir.join("include"))
+        .includes(&libdrm.include_paths)
+        .includes(&libudev.include_paths)
+        .files([
+            src_dir.join("src/get_process_info_linux.c"),
+            src_dir.join("src/extract_gpuinfo.c"),
+            src_dir.join("src/extract_processinfo_fdinfo.c"),
+            src_dir.join("src/info_messages_linux.c"),
+            src_dir.join("src/extract_gpuinfo_nvidia.c"),
+            src_dir.join("src/device_discovery_linux.c"),
+            src_dir.join("src/extract_gpuinfo_amdgpu.c"),
+            src_dir.join("src/extract_gpuinfo_amdgpu_utils.c"),
+            src_dir.join("src/extract_gpuinfo_intel.c"),
+            src_dir.join("src/time.c"),
+        ])
+        .compile("nvtop");
+
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let dirs = prepare_third_party_sources()?;
+    build_nvtop(&dirs[0])?;
+
+    Ok(())
+}

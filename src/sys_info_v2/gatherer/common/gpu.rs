@@ -18,9 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use arrayvec::ArrayVec;
-
-pub type ArrayString = arrayvec::ArrayString<256>;
+use arrayvec::{ArrayString, ArrayVec};
 
 /// Describes the static information of a GPU.
 ///
@@ -28,10 +26,8 @@ pub type ArrayString = arrayvec::ArrayString<256>;
 /// lifetime of said GPU.
 #[derive(Debug, Default, Clone)]
 pub struct StaticInfoDescriptor {
-    pub id: ArrayString,
-    pub device_name: ArrayString,
-    pub pci_slot_name: ArrayString,
-    pub dri_path: ArrayString,
+    pub pci_id: ArrayString<16>,
+    pub device_name: ArrayString<256>,
     pub vendor_id: u16,
     pub device_id: u16,
 
@@ -72,6 +68,18 @@ pub struct GpuProcess {
     pub pid: u32,
     /// The percentage of GPU used by the process.
     pub usage: f32,
+}
+
+/// The PCI IDs of all GPUs present in the system.
+///
+/// Since the maximum number of elements is limited the `is_complete` field is used to indicate
+/// whether or not all the GPUs have been described. If `is_complete` is `false` then the
+/// `id` field contains only a subset of all the PCI IDs of the GPUs present in the system,
+/// and the providing function should be called again to get the rest of the IDs.
+#[derive(Debug, Default, Clone)]
+pub struct PciIds {
+    pub ids: ArrayVec<ArrayString<16>, 16>,
+    pub is_complete: bool,
 }
 
 /// Describes the static information of all GPUs present in the system.

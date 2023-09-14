@@ -42,6 +42,7 @@ pub type AppStats = apps::Stats;
 pub type CpuStaticInfo = cpu::StaticInfo;
 pub type CpuDynamicInfo = cpu::DynamicInfo;
 pub type LogicalCpuInfo = cpu::LogicalInfo;
+pub type GpuPciIds = gpu::PciIds;
 pub type GpuStaticInfo = gpu::StaticInfo;
 pub type GpuDynamicInfo = gpu::DynamicInfo;
 pub type GpuProcesses = gpu::Processes;
