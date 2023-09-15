@@ -22,7 +22,7 @@ fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std:
     std::fs::create_dir_all(&out_dir)?;
     let out_dir = std::path::PathBuf::from(out_dir).canonicalize()?;
 
-    let patch_executable = match std::env::var("MC_PATH_BINARY") {
+    let patch_executable = match std::env::var("MC_PATCH_BINARY") {
         Ok(p) => {
             if std::path::Path::new(&p).exists() {
                 p

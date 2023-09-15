@@ -52,6 +52,7 @@
       "build-commands": [
         "echo 'Extract the cross-toolchain manually, it fails otherwise.'",
         "mkdir cross-rootfs && cd cross-rootfs && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
+        "ln -sf /app/clang/bin/ld.lld cross-rootfs/usr/bin/ld",
         "mv * /app/"
       ],
       "sources": [
@@ -60,6 +61,15 @@
           "url": "https://missioncenter.io/build-tools/rust-toolchain-1.71.0-x86_64.tar.zst",
           "dest": "rust-toolchain",
           "sha256": "b5afacde977aa18a59385628dd8ec2bf6f18738b27e009df0c750efc4d5578ee",
+          "only-arches": [
+            "x86_64"
+          ]
+        },
+        {
+          "type": "archive",
+          "url": "https://missioncenter.io/build-tools/clang-15-x86_64.tar.zst",
+          "dest": "clang",
+          "sha256": "1b7747fe83f99ca09d7b82d8b1dee20a03dcac517e3f29e5a38463f8b81385d3",
           "only-arches": [
             "x86_64"
           ]
@@ -77,6 +87,15 @@
           "url": "https://missioncenter.io/build-tools/rust-toolchain-1.71.0-aarch64.tar.zst",
           "dest": "rust-toolchain",
           "sha256": "5bac97fe7f6c16529e952ced5f0e99b614fa246445a092473ad31ba59929b34b",
+          "only-arches": [
+            "aarch64"
+          ]
+        },
+        {
+          "type": "archive",
+          "url": "https://missioncenter.io/build-tools/clang-15-aarch64.tar.zst",
+          "dest": "clang",
+          "sha256": "1caec9da0fde04a5010df8bf26f1fb2cc559792f5dff0d82abb7931e04eb8940",
           "only-arches": [
             "aarch64"
           ]
@@ -135,7 +154,9 @@
       "buildsystem": "simple",
       "build-options": {
         "env": {
-          "CARGO_HOME": "/build-dir/src/gatherer/cargo"
+          "CARGO_HOME": "/build-dir/src/gatherer/cargo",
+          "CC": "/app/clang/bin/clang",
+          "CXX": "/app/clang/bin/clang++"
         }
       },
       "build-commands": [
@@ -144,7 +165,7 @@
         "#rm -rf src/gatherer/target",
         "",
         "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && cp -ar nvtop-* src/sys_info_v2/gatherer/target/release/build/native",
-        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && /app/rust-toolchain/bin/cargo build --offline --release'",
+        "/app/bin/proot -b /app/rust-toolchain:/app/rust-toolchain -b /app/clang:/app/clang -b $PWD:/build-dir -R /app/cross-rootfs /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && /app/rust-toolchain/bin/cargo build --offline --release'",
         "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc"
       ],
       "sources": [
@@ -157,6 +178,12 @@
           "url": "https://github.com/Syllo/nvtop/archive/be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz",
           "sha256": "47c963deb1d22c75e92ca2cc7fcd1e1552cfa6da70e9d51be6a80da45249035f",
           "dest": "nvtop-be47f8c560487efc6e6a419d59c69bfbdb819324"
+        },
+        {
+          "type": "shell",
+          "commands": [
+            "cd nvtop-* && find ../src/sys_info_v2/gatherer/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
+          ]
         },
         {
           "type": "inline",
