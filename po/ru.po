@@ -94,6 +94,7 @@ msgstr ""
 "аппаратный и IP-адрес"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -102,15 +103,18 @@ msgstr ""
 "использования памяти и энергопотребления, используя популярный проект NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Просмотр использования ресурсов для каждого приложения и процесса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
 msgstr ""
 "Поддержка минимизированного представления сводки для простого мониторинга"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -118,39 +122,48 @@ msgstr ""
 "Использование OpenGL-рендеринга для всех графиков для снижения нагрузки"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Использует GTK4 и Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
 msgstr "Написано на языке Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
 msgstr "Изначальная поддержка Flatpak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Ограничения (исправления ведутся):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
 msgstr "Процент использования диска может быть неточным"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
 msgstr "Отсутствие использования сети для каждого процесса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
 msgstr "Отсутствие использования GPU для каждого процесса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr "Поддержка GPU эксперементальна, поддерживаются GPU от AMD и nVidia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Отзывы, предложения, сообщения об ошибках и помощь приветствуются"
 
@@ -351,10 +364,12 @@ msgid "Fixes for Chinese translations by foxer NS"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr "Добавлен испанский перевод Оскара Фернандеса Диаса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
@@ -363,10 +378,12 @@ msgstr ""
 "максимальная, поддерживаемая модулями"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
 msgstr "Добавлен немецкий перевод от TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
@@ -375,10 +392,12 @@ msgstr ""
 "памяти, он теперь выделяется в списке Приложения и Процессы"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
 msgstr "Добавлена начальная поддержка сборки для ARM64"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
@@ -387,6 +406,7 @@ msgstr ""
 "использование кэша"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
@@ -394,14 +414,17 @@ msgstr ""
 "отображаются в Списке приложений"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "Обновлен перевод на традиционный китайский язык от Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "Исправление перевода на португальский язык от Rafael Fontenelle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
@@ -409,14 +432,17 @@ msgstr ""
 "адресов не существует от Maximilian"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "Добавлен перевод на традиционный китайский язык от Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
 msgstr "Добавление категорий для меню приложений от Renner0E"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
@@ -425,6 +451,7 @@ msgstr ""
 "панике"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -434,18 +461,22 @@ msgstr ""
 "существует"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr "Обновлён дизайн вкладки GPU для адаптивности к меньшим разрешениям"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
 msgstr "Добавление перевода на чешский язык от ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "Добавление перевода на португальский язык от Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
@@ -454,16 +485,19 @@ msgstr ""
 "Hannes Kuchelmeister"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 "Исправлена ошибка, из-за которой список приложений и процессов был пуст для "
 "некоторых пользователей"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr "Устранение сбоя, возникающего при высокой нагрузке на систему"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
 msgstr "Первый официальный релиз!"
 
@@ -487,11 +521,10 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "Сортировка столбцов сохраняется после перезапуска приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
-#, fuzzy
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
-"Идентификатор столбца, по которому сортируется представление Страницы "
-"приложений"
+"Идентификатор столбца, по которому сортируется представление страницы "
+"\"Приложения\""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #, fuzzy
@@ -507,13 +540,15 @@ msgid "Show kernel times in the CPU graphs"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Какая страница отображается при запуске приложения на вкладке "
 "производительности"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
-#: src/performance_page/mod.rs:264
+#: src/performance_page/mod.rs:264 src/apps_page/mod.rs:1004
+#: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "ЦП"
 
@@ -532,6 +567,7 @@ msgid "Speed"
 msgstr "Скорость"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
+#: src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Процессы"
 
@@ -600,6 +636,7 @@ msgstr ""
 #: resources/ui/performance_page/gpu.blp:549
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
+#: resources/ui/performance_page/cpu.blp:458
 msgid "Graph _Summary View"
 msgstr "_Сводная диаграмма"
 
@@ -608,6 +645,7 @@ msgstr "_Сводная диаграмма"
 #: resources/ui/performance_page/gpu.blp:554
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
+#: resources/ui/performance_page/cpu.blp:463
 msgid "_View"
 msgstr "_Вид"
 
@@ -616,6 +654,7 @@ msgstr "_Вид"
 #: resources/ui/performance_page/gpu.blp:557
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
+#: resources/ui/performance_page/cpu.blp:466
 msgid "CP_U"
 msgstr "_ЦП"
 
@@ -624,6 +663,7 @@ msgstr "_ЦП"
 #: resources/ui/performance_page/gpu.blp:562
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
+#: resources/ui/performance_page/cpu.blp:471
 msgid "_Memory"
 msgstr "_Память"
 
@@ -632,6 +672,7 @@ msgstr "_Память"
 #: resources/ui/performance_page/gpu.blp:567
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
+#: resources/ui/performance_page/cpu.blp:476
 msgid "_Disk"
 msgstr "_Диск"
 
@@ -640,6 +681,7 @@ msgstr "_Диск"
 #: resources/ui/performance_page/gpu.blp:572
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
+#: resources/ui/performance_page/cpu.blp:481
 msgid "_Network"
 msgstr "_Сеть"
 
@@ -648,6 +690,7 @@ msgstr "_Сеть"
 #: resources/ui/performance_page/gpu.blp:577
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
+#: resources/ui/performance_page/cpu.blp:486
 msgid "_GPU"
 msgstr "_Графический процессор"
 
@@ -656,6 +699,7 @@ msgstr "_Графический процессор"
 #: resources/ui/performance_page/gpu.blp:585
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
+#: resources/ui/performance_page/cpu.blp:494
 msgid "_Copy"
 msgstr "_Копировать"
 
@@ -756,7 +800,8 @@ msgid "_Authenticate"
 msgstr "_Предоставить"
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319
+#: src/performance_page/mod.rs:319 src/apps_page/mod.rs:1010
+#: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Память"
 
@@ -928,6 +973,7 @@ msgid "Performance"
 msgstr "Производительность"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:447
+#: src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Приложения"
 
@@ -939,15 +985,15 @@ msgstr "_Параметры"
 msgid "_About MissionCenter"
 msgstr "_О MissionCenter"
 
-#: src/apps_page/mod.rs:1037
+#: src/apps_page/mod.rs:1037 src/apps_page/mod.rs:992
 msgid "Name"
 msgstr "Имя"
 
-#: src/apps_page/mod.rs:1043
+#: src/apps_page/mod.rs:1043 src/apps_page/mod.rs:998
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1061
+#: src/apps_page/mod.rs:1061 src/apps_page/mod.rs:1016
 msgid "Disk"
 msgstr "Диск"
 
@@ -1015,26 +1061,27 @@ msgstr ""
 "потребуется больше памяти"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
+#: src/performance_page/mod.rs:371
 msgid "Disk {} ({})"
 msgstr "Диск {} ({})"
 
-#: src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:376 src/performance_page/mod.rs:375
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:377 src/performance_page/mod.rs:376
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:378 src/performance_page/mod.rs:377
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:379 src/performance_page/mod.rs:378
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:380
+#: src/performance_page/mod.rs:380 src/performance_page/mod.rs:379
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1044,18 +1091,25 @@ msgstr "iSCSI"
 #: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:405
 #: src/performance_page/network.rs:442 src/performance_page/network.rs:520
+#: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
+#: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
+#: src/performance_page/cpu.rs:307 src/performance_page/network.rs:404
+#: src/performance_page/network.rs:441 src/performance_page/network.rs:519
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:450
 msgid "Ethernet"
 msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
+#: src/performance_page/mod.rs:451
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
+#: src/performance_page/mod.rs:452
 msgid "Other"
 msgstr "Другой"
 
@@ -1068,19 +1122,22 @@ msgstr "GPU {}"
 msgid "{}: {} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/cpu.rs:318
+#: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
 msgid "Supported"
 msgstr "Поддерживается"
 
 #: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
+#: src/performance_page/cpu.rs:288
 msgid "Unsupported"
 msgstr "Не поддерживается"
 
 #: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
+#: src/performance_page/cpu.rs:296
 msgid "Yes"
 msgstr "Да"
 
 #: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
+#: src/performance_page/cpu.rs:298
 msgid "No"
 msgstr "Нет"
 
@@ -1091,6 +1148,8 @@ msgstr "% Использования за {} секунд"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
+#: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
+#: src/performance_page/network.rs:605
 msgid "{} seconds"
 msgstr "{} секунд"
 
@@ -1099,11 +1158,13 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
-#: src/performance_page/network.rs:430
+#: src/performance_page/network.rs:430 src/performance_page/network.rs:415
+#: src/performance_page/network.rs:421 src/performance_page/network.rs:429
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
+#: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
 msgstr "Недоступно"
 
@@ -1111,18 +1172,25 @@ msgstr "Недоступно"
 msgid "translator-credits"
 msgstr "Ivan Maslikhov <qustioof@gmail.com>"
 
-#~ msgid ""
-#~ "The application currently only supports monitoring, you cannot stop "
-#~ "processes for example"
-#~ msgstr ""
-#~ "Приложение поддерживает только мониторинг, отсутствие поддержки "
-#~ "управления процессами"
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+msgid ""
+"The application currently only supports monitoring, you cannot stop "
+"processes for example"
+msgstr ""
+"Приложение поддерживает только мониторинг, отсутствие поддержки управления "
+"процессами"
 
-#~ msgid "% Utilization"
-#~ msgstr "% Использования"
+#: resources/ui/performance_page/cpu.blp:74
+msgid "% Utilization"
+msgstr "% Использования"
 
-#~ msgid "{}: {} {}bps {}: {} {}bps"
-#~ msgstr "{}: {} {}bps {}: {} {}bps"
+#: src/performance_page/mod.rs:695
+msgid "{}: {} {}bps {}: {} {}bps"
+msgstr "{}: {} {}bps {}: {} {}bps"
+
+#: src/performance_page/cpu.rs:655
+msgid "% Utilization over {} seconds"
+msgstr "% Использования за {} секунд"
 
 #~ msgid "_Quit"
 #~ msgstr "_Выйти"
