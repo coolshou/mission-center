@@ -250,8 +250,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content =
-                    SharedDataContent::GpuStaticInfo(gpu_info.static_info(pci_id.as_str()));
+                data.content = SharedDataContent::GpuStaticInfo(gpu_info.static_info());
 
                 data_ready!(connection);
             }
@@ -259,8 +258,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content =
-                    SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info(pci_id.as_str()));
+                data.content = SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info());
 
                 data_ready!(connection);
             }
@@ -268,7 +266,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuProcesses(gpu_info.processes(pci_id.as_str()));
+                data.content = SharedDataContent::GpuProcesses(gpu_info.processes());
 
                 data_ready!(connection);
             }

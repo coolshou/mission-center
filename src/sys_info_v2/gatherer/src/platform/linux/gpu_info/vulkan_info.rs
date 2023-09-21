@@ -44,7 +44,7 @@ impl VulkanInfo {
     pub unsafe fn new() -> Option<Self> {
         type Void = std::ffi::c_void;
 
-        let lib = match minidl::Library::load("libvulkan.so.1\0") {
+        let lib = match minidl::Library::load("/usr/lib/x86_64-linux-gnu/libvulkan.so.1\0") {
             Err(e) => {
                 critical!(
                     "Gatherer::GPU",
@@ -149,7 +149,7 @@ impl VulkanInfo {
         })
     }
 
-    unsafe fn supported_vulkan_versions(
+    pub unsafe fn supported_vulkan_versions(
         &self,
     ) -> Option<std::collections::HashMap<u32, (u16, u16, u16)>> {
         const VK_MAX_PHYSICAL_DEVICE_NAME_SIZE: usize = 256;

@@ -27,14 +27,14 @@ use arrayvec::{ArrayString, ArrayVec};
 #[derive(Debug, Default, Clone)]
 pub struct StaticInfoDescriptor {
     pub pci_id: ArrayString<16>,
-    pub device_name: ArrayString<256>,
+    pub device_name: ArrayString<128>,
     pub vendor_id: u16,
     pub device_id: u16,
 
     pub opengl_version: Option<(u8, u8, bool)>,
     pub vulkan_version: Option<(u16, u16, u16)>,
-    pub pcie_gen: Option<u8>,
-    pub pcie_lanes: Option<u8>,
+    pub pcie_gen: u8,
+    pub pcie_lanes: u8,
 }
 
 /// Describes the dynamic information of a GPU.
@@ -61,7 +61,7 @@ pub struct DynamicInfoDescriptor {
 
 /// Describes the processes that are currently using a GPU.
 #[derive(Debug, Default, Clone)]
-pub struct GpuProcess {
+pub struct Process {
     /// The index of the GPU that the process is using.
     pub index: usize,
     /// The PID of the process.
@@ -114,6 +114,6 @@ pub struct DynamicInfo {
 /// function should be called again to get the rest of the information.
 #[derive(Debug, Default, Clone)]
 pub struct Processes {
-    pub usage: ArrayVec<GpuProcess, 64>,
+    pub usage: ArrayVec<Process, 64>,
     pub is_complete: bool,
 }

@@ -22,8 +22,6 @@ pub mod gpu {
     include!("../../common/gpu.rs");
 }
 
-use arrayvec::{ArrayString, ArrayVec};
-
 /// Trait that provides an interface for gathering GPU information.
 pub trait GpuInfoExt {
     /// Creates a new instance of a struct that implements the `GpuInfo` trait.
@@ -33,19 +31,16 @@ pub trait GpuInfoExt {
 
     /// Returns the static information for all GPUs present in the system.
     ///
-    /// Should be called multiple times, with the same PCI ID, until the
-    /// `GpuStaticInfo::is_complete` filed is true.
-    fn static_info(&mut self, pci_id: &str) -> gpu::StaticInfo;
+    /// Should be called multiple times until the `GpuStaticInfo::is_complete` filed is true.
+    fn static_info(&mut self) -> gpu::StaticInfo;
 
     /// Returns the dynamic information for all GPUs present in the system.
     ///
-    /// Should be called multiple times, with the same PCI ID, until the
-    /// `GpuDynamicInfo::is_complete` filed is true.
-    fn dynamic_info(&mut self, pci_id: &str) -> gpu::DynamicInfo;
+    /// Should be called multiple times until the `GpuDynamicInfo::is_complete` filed is true.
+    fn dynamic_info(&mut self) -> gpu::DynamicInfo;
 
     /// Returns the processes that are currently using the GPUs in the system.
     ///
-    /// Should be called multiple times, with the same PCI ID, until the
-    /// `GpuProcesses::is_complete` filed is true.
-    fn processes(&mut self, pci_id: &str) -> gpu::Processes;
+    /// Should be called multiple times until the `GpuProcesses::is_complete` filed is true.
+    fn processes(&mut self) -> gpu::Processes;
 }
