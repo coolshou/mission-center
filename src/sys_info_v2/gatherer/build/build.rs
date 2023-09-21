@@ -98,7 +98,7 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
         println!("cargo:rustc-link-search=native={}", p.display());
     });
     libdrm.libs.iter().for_each(|a| {
-        println!("cargo:rustc-link-arg={}", a);
+        println!("cargo:rustc-link-arg=-l{}", a);
     });
 
     let libudev = pkg_config::Config::new()
@@ -109,7 +109,7 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
         println!("cargo:rustc-link-search=native={}", p.display());
     });
     libudev.libs.iter().for_each(|a| {
-        println!("cargo:rustc-link-arg={}", a);
+        println!("cargo:rustc-link-arg=-l{}", a);
     });
 
     cc::Build::new()
