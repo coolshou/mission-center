@@ -14,6 +14,7 @@ build-job:
 
     - apt-get update
     - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    - ls -la /usr/lib/x86_64-linux-gnu && ls -la /usr/lib/x86_64-linux-gnu/pkgconfig
     - ln -sf /usr/bin/python3 /usr/local/bin/python
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
