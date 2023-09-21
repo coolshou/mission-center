@@ -33,6 +33,7 @@ lazy_static! {
     };
 }
 
+#[allow(unused)]
 mod nvtop;
 mod vulkan_info;
 
@@ -46,7 +47,7 @@ pub struct GpuInfo {
     pci_ids_cache: Vec<ArrayString<16>>,
     static_info_cache: Vec<gpu::StaticInfoDescriptor>,
     dynamic_info_cache: Vec<gpu::DynamicInfoDescriptor>,
-    processes_cache: Vec<Vec<gpu::Process>>,
+    processes_cache: Vec<gpu::Process>,
 }
 
 impl Drop for GpuInfo {
@@ -126,11 +127,45 @@ impl GpuInfoExt for GpuInfo {
     }
 
     fn dynamic_info(&mut self) -> gpu::DynamicInfo {
-        todo!()
+        let mut result = gpu::DynamicInfo::default();
+
+        if self.dynamic_info_cache.is_empty() {
+            self.load_dynamic_info();
+        }
+
+        let drop_count = self
+            .dynamic_info_cache
+            .chunks(result.desc.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = self.dynamic_info_cache.drain(0..drop_count);
+        result.desc.extend(it);
+        result.is_complete = self.dynamic_info_cache.is_empty();
+
+        result
     }
 
     fn processes(&mut self) -> gpu::Processes {
-        todo!()
+        let mut result = gpu::Processes::default();
+
+        if self.processes_cache.is_empty() {
+            self.load_dynamic_info();
+        }
+
+        let drop_count = self
+            .processes_cache
+            .chunks(result.usage.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = self.processes_cache.drain(0..drop_count);
+        result.usage.extend(it);
+        result.is_complete = self.processes_cache.is_empty();
+
+        result
     }
 }
 
@@ -299,6 +334,102 @@ impl GpuInfo {
 
             self.static_info_cache.push(static_info.clone());
         }
+
+        self.static_info_cache
+            .sort_by(|dev1, dev2| dev1.pci_id.cmp(&dev2.pci_id))
+    }
+
+    fn load_dynamic_info(&mut self) {
+        use crate::critical;
+        use std::fmt::Write;
+
+        self.dynamic_info_cache.clear();
+        self.processes_cache.clear();
+
+        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(self.gpu_list.as_mut()) };
+        if result == 0 {
+            critical!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
+            return;
+        }
+
+        let result = unsafe { nvtop::gpuinfo_refresh_processes(self.gpu_list.as_mut()) };
+        if result == 0 {
+            critical!("Gatherer::GpuInfo", "Unable to refresh GPU processes");
+            return;
+        }
+
+        let result =
+            unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(self.gpu_list.as_mut()) };
+        if result == 0 {
+            critical!(
+                "Gatherer::GpuInfo",
+                "Unable to fix dynamic GPU info from process info"
+            );
+            return;
+        }
+
+        let mut device: *mut nvtop::ListHead = self.gpu_list.next;
+        while device != self.gpu_list.as_mut() {
+            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
+            device = unsafe { (*device).next };
+
+            let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
+            let pdev = match pdev.to_str() {
+                Ok(pd) => pd,
+                Err(_) => {
+                    critical!(
+                        "Gatherer::GpuInfo",
+                        "Unable to convert PCI ID to string: {:?}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+            let mut pci_id = ArrayString::<16>::new();
+            match write!(pci_id, "{}", pdev) {
+                Ok(_) => {}
+                Err(_) => {
+                    critical!(
+                        "Gatherer::GpuInfo",
+                        "PCI ID exceeds 16 characters: {}",
+                        pdev
+                    );
+                    continue;
+                }
+            }
+
+            self.dynamic_info_cache.push(gpu::DynamicInfoDescriptor {
+                pci_id: pci_id.clone(),
+                temp_celsius: dev.dynamic_info.gpu_temp,
+                fan_speed_percent: dev.dynamic_info.fan_speed,
+                util_percent: dev.dynamic_info.gpu_util_rate,
+                power_draw_watts: dev.dynamic_info.power_draw as f32 / 1000.,
+                power_draw_max_watts: dev.dynamic_info.power_draw_max as f32 / 1000.,
+                clock_speed_mhz: dev.dynamic_info.gpu_clock_speed,
+                clock_speed_max_mhz: dev.dynamic_info.gpu_clock_speed_max,
+                mem_speed_mhz: dev.dynamic_info.mem_clock_speed,
+                mem_speed_max_mhz: dev.dynamic_info.mem_clock_speed_max,
+                total_memory: dev.dynamic_info.total_memory,
+                free_memory: dev.dynamic_info.free_memory,
+                used_memory: dev.dynamic_info.used_memory,
+                encoder_percent: dev.dynamic_info.encoder_rate,
+                decoder_percent: dev.dynamic_info.decoder_rate,
+            });
+
+            for i in 0..dev.processes_count as usize {
+                let process = unsafe { &*dev.processes.add(i) };
+                self.processes_cache.push(gpu::Process {
+                    pci_id: pci_id.clone(),
+                    pid: process.pid as _,
+                    usage: process.gpu_usage as f32,
+                });
+            }
+        }
+
+        self.dynamic_info_cache
+            .sort_by(|dev1, dev2| dev1.pci_id.cmp(&dev2.pci_id));
+        self.processes_cache
+            .sort_by(|p1, p2| p1.pci_id.cmp(&p2.pci_id));
     }
 
     #[allow(non_snake_case)]
@@ -540,28 +671,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_new() {
-        let _ = GpuInfo::new();
-    }
-
-    #[test]
-    fn test_enumerate() {
+    fn get_gpu_info() {
         let mut gpu_info = GpuInfo::new();
         let pci_ids = gpu_info.enumerate();
         assert!(!pci_ids.ids.is_empty());
         assert!(pci_ids.is_complete);
-    }
+        dbg!(&pci_ids);
 
-    #[test]
-    fn test_static_info() {
-        let mut gpu_info = GpuInfo::new();
-        let pci_ids = gpu_info.enumerate();
-        assert!(!pci_ids.ids.is_empty());
-        assert!(pci_ids.is_complete);
-
-        let mut static_info = gpu_info.static_info();
+        let static_info = gpu_info.static_info();
         assert!(!static_info.desc.is_empty());
         assert!(static_info.is_complete);
         dbg!(&static_info);
+
+        let dynamic_info = gpu_info.dynamic_info();
+        assert!(!dynamic_info.desc.is_empty());
+        assert!(dynamic_info.is_complete);
+        dbg!(&dynamic_info);
+
+        let processes = gpu_info.processes();
+        dbg!(&processes);
     }
 }

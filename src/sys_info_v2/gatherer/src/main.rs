@@ -78,6 +78,7 @@ pub type GpuPciIds = platform::gpu::PciIds;
 pub type GpuStaticInfo = platform::gpu::StaticInfo;
 pub type GpuDynamicInfo = platform::gpu::DynamicInfo;
 pub type GpuProcesses = platform::gpu::Processes;
+
 #[path = "../common/shared_data.rs"]
 mod shared_data;
 
@@ -246,7 +247,7 @@ fn main() {
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuStaticInfo(ref pci_id) => {
+            ipc::Message::GetGpuStaticInfo => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
@@ -254,7 +255,7 @@ fn main() {
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuDynamicInfo(ref pci_id) => {
+            ipc::Message::GetGpuDynamicInfo => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
@@ -262,7 +263,7 @@ fn main() {
 
                 data_ready!(connection);
             }
-            ipc::Message::GetGpuProcesses(ref pci_id) => {
+            ipc::Message::GetGpuProcesses => {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };

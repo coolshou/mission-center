@@ -9,7 +9,7 @@ anyhow = { version = "1.0" }
 arrayvec = { version = "0.7" }
 drm = { version = "0.9" }
 egl = { version = "0.2" }
-gbm = { version = "0.12" }
+gbm = { version = "0.12", default-features = false, features = ["drm-support"] }
 interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }

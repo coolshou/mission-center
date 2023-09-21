@@ -43,6 +43,7 @@ pub struct StaticInfoDescriptor {
 /// of said GPU.
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfoDescriptor {
+    pub pci_id: ArrayString<16>,
     pub temp_celsius: u32,
     pub fan_speed_percent: u32,
     pub util_percent: u32,
@@ -62,8 +63,8 @@ pub struct DynamicInfoDescriptor {
 /// Describes the processes that are currently using a GPU.
 #[derive(Debug, Default, Clone)]
 pub struct Process {
-    /// The index of the GPU that the process is using.
-    pub index: usize,
+    /// The PCI ID of the GPU that the process is using.
+    pub pci_id: ArrayString<16>,
     /// The PID of the process.
     pub pid: u32,
     /// The percentage of GPU used by the process.
