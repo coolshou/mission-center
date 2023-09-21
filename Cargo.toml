@@ -42,3 +42,4 @@ thiserror = { version = "1.0" }
 [profile.release]
 opt-level = 3
 lto = true
+strip = "debuginfo"

@@ -32,3 +32,4 @@ ureq = { version = "2.1" }
 [profile.release]
 opt-level = 3
 lto = true
+strip = "debuginfo"
