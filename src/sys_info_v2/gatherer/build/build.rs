@@ -94,9 +94,23 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
         .atleast_version("2.4.67")
         .probe("libdrm")?;
 
+    libdrm.link_paths.iter().for_each(|p| {
+        println!("cargo:rustc-link-search=native={}", p.display());
+    });
+    libdrm.libs.iter().for_each(|a| {
+        println!("cargo:rustc-link-arg={}", a);
+    });
+
     let libudev = pkg_config::Config::new()
         .atleast_version("204")
         .probe("libudev")?;
+
+    libudev.link_paths.iter().for_each(|p| {
+        println!("cargo:rustc-link-search=native={}", p.display());
+    });
+    libudev.libs.iter().for_each(|a| {
+        println!("cargo:rustc-link-arg={}", a);
+    });
 
     cc::Build::new()
         .define("USING_LIBUDEV", None)
