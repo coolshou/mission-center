@@ -115,6 +115,6 @@ pub struct DynamicInfo {
 /// function should be called again to get the rest of the information.
 #[derive(Debug, Default, Clone)]
 pub struct Processes {
-    pub usage: ArrayVec<Process, 64>,
+    pub usage: ArrayVec<Process, 128>,
     pub is_complete: bool,
 }

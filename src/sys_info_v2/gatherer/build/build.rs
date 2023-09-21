@@ -1,6 +1,24 @@
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 mod util;
+
+lazy_static! {
+    static ref PATCH_EXECUTABLE: String = match std::env::var("MC_PATCH_BINARY") {
+        Ok(p) => {
+            if std::path::Path::new(&p).exists() {
+                p
+            } else {
+                eprintln!("{} does not exist", p);
+                std::process::exit(1);
+            }
+        }
+        Err(_) => util::find_program("patch").unwrap_or_else(|| {
+            eprintln!("`patch` not found");
+            std::process::exit(1);
+        }),
+    };
+}
 
 #[derive(Serialize, Deserialize)]
 struct Package {
@@ -21,21 +39,6 @@ fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std:
     out_dir.push_str("/../../native");
     std::fs::create_dir_all(&out_dir)?;
     let out_dir = std::path::PathBuf::from(out_dir).canonicalize()?;
-
-    let patch_executable = match std::env::var("MC_PATCH_BINARY") {
-        Ok(p) => {
-            if std::path::Path::new(&p).exists() {
-                p
-            } else {
-                eprintln!("{} does not exist", p);
-                std::process::exit(1);
-            }
-        }
-        Err(_) => util::find_program("patch").unwrap_or_else(|| {
-            eprintln!("`patch` not found");
-            std::process::exit(1);
-        }),
-    };
 
     let mut result = vec![];
 
@@ -68,8 +71,9 @@ fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std:
                 let mut archive = tar::Archive::new(tar);
                 archive.unpack(&out_dir)?;
 
+                let patch_executable = &*PATCH_EXECUTABLE;
                 for patch in package.patches.iter().map(|p| p.as_str()) {
-                    let mut cmd = std::process::Command::new(&patch_executable);
+                    let mut cmd = std::process::Command::new(patch_executable);
                     cmd.args(["-p1", "-i", &format!("{}/{}", dir.path().display(), patch)]);
                     cmd.current_dir(&extracted_path);
                     cmd.stdout(std::process::Stdio::inherit())

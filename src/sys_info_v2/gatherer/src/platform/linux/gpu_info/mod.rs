@@ -686,6 +686,10 @@ mod tests {
         let dynamic_info = gpu_info.dynamic_info();
         assert!(!dynamic_info.desc.is_empty());
         assert!(dynamic_info.is_complete);
+
+        let dynamic_info = gpu_info.dynamic_info();
+        assert!(!dynamic_info.desc.is_empty());
+        assert!(dynamic_info.is_complete);
         dbg!(&dynamic_info);
 
         let processes = gpu_info.processes();
