@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-02 05:53+0000\n"
+"PO-Revision-Date: 2023-09-21 14:30+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -92,20 +92,24 @@ msgstr ""
 "osoite"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Näe erittely, miten sovellukset ja prosessit käyttävät resursseja"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -114,34 +118,42 @@ msgstr ""
 "yleisesti resurssien vähäisen käytön vuoksi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Käyttää GTK4:ää ja Libadwaitaa"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
 msgstr "Kirjoitettu Rustilla"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
 msgstr "Flatpak ensisijaisesti"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Rajoitukset (näiden kaikkien ratkaisemiseksi tehdään töitä):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "No per-process network usage"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
@@ -149,6 +161,7 @@ msgstr ""
 "mahdollista tarkkailla"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
 
@@ -174,7 +187,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Korjaukset:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
@@ -201,9 +214,8 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Virtualisointi:"
+msgstr "Käännökset:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
@@ -339,100 +351,121 @@ msgid "Fixes for Chinese translations by foxer NS"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
 msgstr "Ensimmäinen virallinen julkaisu!"
 
@@ -471,11 +504,13 @@ msgid "Show kernel times in the CPU graphs"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
-#: src/performance_page/mod.rs:264
+#: src/performance_page/mod.rs:264 src/apps_page/mod.rs:1004
+#: src/performance_page/mod.rs:267
 msgid "CPU"
 msgstr "Suoritin"
 
@@ -494,6 +529,7 @@ msgid "Speed"
 msgstr "Nopeus"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
+#: src/apps_page/mod.rs:407
 msgid "Processes"
 msgstr "Prosessit"
 
@@ -555,13 +591,14 @@ msgstr "_Loogiset suorittimet"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Näytä ydinajat"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
 #: resources/ui/performance_page/gpu.blp:549
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
+#: resources/ui/performance_page/cpu.blp:458
 msgid "Graph _Summary View"
 msgstr "Kaavion _yhteenvedon näkymä"
 
@@ -570,6 +607,7 @@ msgstr "Kaavion _yhteenvedon näkymä"
 #: resources/ui/performance_page/gpu.blp:554
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
+#: resources/ui/performance_page/cpu.blp:463
 msgid "_View"
 msgstr "_Näytä"
 
@@ -578,6 +616,7 @@ msgstr "_Näytä"
 #: resources/ui/performance_page/gpu.blp:557
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
+#: resources/ui/performance_page/cpu.blp:466
 msgid "CP_U"
 msgstr "_Suoritin"
 
@@ -586,6 +625,7 @@ msgstr "_Suoritin"
 #: resources/ui/performance_page/gpu.blp:562
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
+#: resources/ui/performance_page/cpu.blp:471
 msgid "_Memory"
 msgstr "_Muisti"
 
@@ -594,6 +634,7 @@ msgstr "_Muisti"
 #: resources/ui/performance_page/gpu.blp:567
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
+#: resources/ui/performance_page/cpu.blp:476
 msgid "_Disk"
 msgstr "_Levy"
 
@@ -602,6 +643,7 @@ msgstr "_Levy"
 #: resources/ui/performance_page/gpu.blp:572
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
+#: resources/ui/performance_page/cpu.blp:481
 msgid "_Network"
 msgstr "_Verkko"
 
@@ -610,6 +652,7 @@ msgstr "_Verkko"
 #: resources/ui/performance_page/gpu.blp:577
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
+#: resources/ui/performance_page/cpu.blp:486
 msgid "_GPU"
 msgstr "_Näytönohjain"
 
@@ -618,6 +661,7 @@ msgstr "_Näytönohjain"
 #: resources/ui/performance_page/gpu.blp:585
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
+#: resources/ui/performance_page/cpu.blp:494
 msgid "_Copy"
 msgstr "_Kopioi"
 
@@ -718,7 +762,8 @@ msgid "_Authenticate"
 msgstr "_Tunnistaudu"
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319
+#: src/performance_page/mod.rs:319 src/apps_page/mod.rs:1010
+#: src/performance_page/mod.rs:318
 msgid "Memory"
 msgstr "Muisti"
 
@@ -890,6 +935,7 @@ msgid "Performance"
 msgstr "Suorituskyky"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:447
+#: src/apps_page/mod.rs:400
 msgid "Apps"
 msgstr "Sovellukset"
 
@@ -901,15 +947,15 @@ msgstr "_Asetukset"
 msgid "_About MissionCenter"
 msgstr "_Tietoja - Tehtäväkeskus"
 
-#: src/apps_page/mod.rs:1037
+#: src/apps_page/mod.rs:1037 src/apps_page/mod.rs:992
 msgid "Name"
 msgstr "Nimi"
 
-#: src/apps_page/mod.rs:1043
+#: src/apps_page/mod.rs:1043 src/apps_page/mod.rs:998
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1061
+#: src/apps_page/mod.rs:1061 src/apps_page/mod.rs:1016
 msgid "Disk"
 msgstr "Levy"
 
@@ -920,7 +966,7 @@ msgstr "Pysäytä sovellus"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr "Pysäytä sovellus pakolla"
+msgstr "Pakota sovelluksen pysäytys"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
@@ -929,7 +975,7 @@ msgstr "Pysäytä prosessi"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr "Pysäytä prosessi pakolla"
+msgstr "Pakota prosessin pysäytys"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -977,26 +1023,27 @@ msgstr ""
 "käyttöjärjestelmä, ajurit tai sovellukset tarvitsevat muistia"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
+#: src/performance_page/mod.rs:371
 msgid "Disk {} ({})"
 msgstr "Levy {} ({})"
 
-#: src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:376 src/performance_page/mod.rs:375
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:377 src/performance_page/mod.rs:376
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:378 src/performance_page/mod.rs:377
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:379 src/performance_page/mod.rs:378
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:380
+#: src/performance_page/mod.rs:380 src/performance_page/mod.rs:379
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1006,18 +1053,25 @@ msgstr "iSCSI"
 #: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:405
 #: src/performance_page/network.rs:442 src/performance_page/network.rs:520
+#: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
+#: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
+#: src/performance_page/cpu.rs:307 src/performance_page/network.rs:404
+#: src/performance_page/network.rs:441 src/performance_page/network.rs:519
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:450
 msgid "Ethernet"
 msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
+#: src/performance_page/mod.rs:451
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
+#: src/performance_page/mod.rs:452
 msgid "Other"
 msgstr "Muu"
 
@@ -1026,33 +1080,36 @@ msgid "GPU {}"
 msgstr "Näytönohjain {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {} bps"
+msgstr "{}: {} {} bps"
 
-#: src/performance_page/cpu.rs:318
+#: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
 msgid "Supported"
 msgstr "Tuettu"
 
 #: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
+#: src/performance_page/cpu.rs:288
 msgid "Unsupported"
 msgstr "Ei tuettu"
 
 #: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
+#: src/performance_page/cpu.rs:296
 msgid "Yes"
 msgstr "Kyllä"
 
 #: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
+#: src/performance_page/cpu.rs:298
 msgid "No"
 msgstr "Ei"
 
 #: src/performance_page/cpu.rs:698
-#, fuzzy
 msgid "Utilization over {} seconds"
-msgstr "%-käyttö {} sekunnin aikana"
+msgstr "Käyttö {} sekunnin aikana"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
+#: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
+#: src/performance_page/network.rs:605
 msgid "{} seconds"
 msgstr "{} sekuntia"
 
@@ -1061,11 +1118,13 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{} t/s"
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
-#: src/performance_page/network.rs:430
+#: src/performance_page/network.rs:430 src/performance_page/network.rs:415
+#: src/performance_page/network.rs:421 src/performance_page/network.rs:429
 msgid "{} {}bps"
 msgstr "{} {} bps"
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
+#: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
 msgstr "-"
 
@@ -1073,11 +1132,23 @@ msgstr "-"
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
-#~ msgid "% Utilization"
-#~ msgstr "%-käyttö"
+#: resources/ui/performance_page/cpu.blp:74
+msgid "% Utilization"
+msgstr "%-käyttö"
 
-#~ msgid "{}: {} {}bps {}: {} {}bps"
-#~ msgstr "{}: {} {} bps {}: {} {} bps"
+#: src/performance_page/mod.rs:695
+msgid "{}: {} {}bps {}: {} {}bps"
+msgstr "{}: {} {} bps {}: {} {} bps"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+msgid ""
+"The application currently only supports monitoring, you cannot stop "
+"processes for example"
+msgstr ""
+
+#: src/performance_page/cpu.rs:655
+msgid "% Utilization over {} seconds"
+msgstr "%-käyttö {} sekunnin aikana"
 
 #~ msgid "_Quit"
 #~ msgstr "_Lopeta"
