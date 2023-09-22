@@ -89,11 +89,13 @@ fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std:
     Ok(result)
 }
 
+#[cfg(target_os = "linux")]
 fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Error>> {
     let libdrm = pkg_config::Config::new()
         .atleast_version("2.4.67")
         .probe("libdrm")?;
 
+    // Work around some linkers being stupid and requiring a certain order for libraries
     libdrm.link_paths.iter().for_each(|p| {
         println!("cargo:rustc-link-search=native={}", p.display());
     });
@@ -105,6 +107,7 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
         .atleast_version("204")
         .probe("libudev")?;
 
+    // Work around some linkers being stupid and requiring a certain order for libraries
     libudev.link_paths.iter().for_each(|p| {
         println!("cargo:rustc-link-search=native={}", p.display());
     });
@@ -138,7 +141,11 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let dirs = prepare_third_party_sources()?;
-    build_nvtop(&dirs[0])?;
+
+    #[cfg(target_os = "linux")]
+    {
+        build_nvtop(&dirs[0])?;
+    }
 
     Ok(())
 }

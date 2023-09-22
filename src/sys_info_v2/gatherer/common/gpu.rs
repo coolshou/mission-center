@@ -31,6 +31,8 @@ pub struct StaticInfoDescriptor {
     pub vendor_id: u16,
     pub device_id: u16,
 
+    pub total_memory: u64,
+
     pub opengl_version: Option<(u8, u8, bool)>,
     pub vulkan_version: Option<(u16, u16, u16)>,
     pub pcie_gen: u8,
@@ -53,7 +55,6 @@ pub struct DynamicInfoDescriptor {
     pub clock_speed_max_mhz: u32,
     pub mem_speed_mhz: u32,
     pub mem_speed_max_mhz: u32,
-    pub total_memory: u64,
     pub free_memory: u64,
     pub used_memory: u64,
     pub encoder_percent: u32,

@@ -52,7 +52,7 @@ impl GathererSupervisor {
                     _ => {
                         g_critical!(
                             "MissionCenter::CpuInfo",
-                            "Shared data content is {:?} instead of CpuStaticInfo; encountered when reading installed apps from gatherer",
+                            "Shared data content is {:?} instead of CpuStaticInfo; encountered when reading response from gatherer",
                             shared_memory.content
                         );
                         false
@@ -117,7 +117,7 @@ impl GathererSupervisor {
                     _ => {
                         g_critical!(
                             "MissionCenter::CpuInfo",
-                            "Shared data content is {:?} instead of CpuDynamicInfo; encountered when reading installed apps from gatherer",
+                            "Shared data content is {:?} instead of CpuDynamicInfo; encountered when reading response from gatherer",
                             shared_memory.content
                         );
                         false
@@ -152,7 +152,7 @@ impl GathererSupervisor {
                     _ => {
                         g_critical!(
                             "MissionCenter::CpuInfo",
-                            "Shared data content is {:?} instead of CpuDynamicInfo; encountered when reading installed apps from gatherer",
+                            "Shared data content is {:?} instead of LogicalCpuInfo; encountered when reading response from gatherer",
                             shared_memory.content
                         );
                         false

@@ -290,6 +290,8 @@ impl GpuInfo {
                 vendor_id: ven_dev_id.0,
                 device_id: ven_dev_id.1,
 
+                total_memory: dev.dynamic_info.total_memory,
+
                 pcie_gen: dev.dynamic_info.pcie_link_gen as _,
                 pcie_lanes: dev.dynamic_info.pcie_link_width as _,
 
@@ -409,7 +411,6 @@ impl GpuInfo {
                 clock_speed_max_mhz: dev.dynamic_info.gpu_clock_speed_max,
                 mem_speed_mhz: dev.dynamic_info.mem_clock_speed,
                 mem_speed_max_mhz: dev.dynamic_info.mem_clock_speed_max,
-                total_memory: dev.dynamic_info.total_memory,
                 free_memory: dev.dynamic_info.free_memory,
                 used_memory: dev.dynamic_info.used_memory,
                 encoder_percent: dev.dynamic_info.encoder_rate,
