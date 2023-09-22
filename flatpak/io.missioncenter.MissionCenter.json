@@ -288,18 +288,6 @@
           "path": ".."
         },
         {
-          "type": "archive",
-          "url": "https://github.com/Syllo/nvtop/archive/be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz",
-          "sha256": "47c963deb1d22c75e92ca2cc7fcd1e1552cfa6da70e9d51be6a80da45249035f",
-          "dest": "subprojects/nvtop-be47f8c560487efc6e6a419d59c69bfbdb819324"
-        },
-        {
-          "type": "shell",
-          "commands": [
-            "cd subprojects/nvtop-* && find ../packagefiles -type f -name 'nvtop-*' -exec sh -c 'patch -p1 < {}' \\;"
-          ]
-        },
-        {
           "type": "inline",
           "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[source.\"https://github.com/servo/pathfinder\"]\ngit = \"https://github.com/servo/pathfinder\"\nreplace-with = \"vendored-sources\"\nrev = \"21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062\"\n",
           "dest": ".cargo",
