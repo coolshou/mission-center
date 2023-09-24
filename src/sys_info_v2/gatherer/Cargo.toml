@@ -1,4 +1,5 @@
 [package]
+build = "build/build.rs"
 name = "gatherer"
 version = "0.3.2"
 edition = "2021"
@@ -6,9 +7,13 @@ edition = "2021"
 [dependencies]
 anyhow = { version = "1.0" }
 arrayvec = { version = "0.7" }
+drm = { version = "0.9" }
+egl = { version = "0.2" }
+gbm = { version = "0.12", default-features = false, features = ["drm-support"] }
 interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
+minidl = { version = "0.1" }
 num_cpus = { version = "1" }
 raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.19" }
@@ -16,6 +21,19 @@ rustbus = { version = "0.19" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 thiserror = { version = "1.0" }
 
+[build-dependencies]
+cargo-util = { version = "0.2" }
+cc = { version = "1.0" }
+flate2 = { version = "1.0" }
+lazy_static = { version = "1.4" }
+pkg-config = { version = "0.3" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+sha2 = { version = "0.10" }
+tar = { version = "0.4" }
+ureq = { version = "2.1" }
+
 [profile.release]
 opt-level = 3
 lto = true
+strip = "debuginfo"

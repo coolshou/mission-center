@@ -7,10 +7,7 @@ build = "build/build.rs"
 [dependencies]
 adw = { package = "libadwaita", version = "0.5", features = ["v1_3"] }
 arrayvec = { version = "0.7" }
-drm = { version = "0.9" }
-egl = { version = "0.2" }
 errno-sys = { version = "0.1" }
-gbm = { version = "0.12" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
 gtk = { package = "gtk4", version = "0.7", features = ["gnome_44"] }
@@ -42,3 +39,4 @@ thiserror = { version = "1.0" }
 [profile.release]
 opt-level = 3
 lto = true
+strip = "debuginfo"

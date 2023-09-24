@@ -163,6 +163,32 @@ template $AppsPage : Box {
           }
         };
       }
+
+      ColumnViewColumn gpu_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "%";
+                value: bind (expander.item as <$ViewModel>).gpu-usage;
+                usage-percent: bind (expander.item as <$ViewModel>).gpu-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
     }
   }
 }

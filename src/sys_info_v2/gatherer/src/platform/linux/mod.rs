@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/ipc/message.rs
+/* sys_info_v2/gatherer/src/platform/linux/mod.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,23 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-#[allow(dead_code)]
-pub enum Message {
-    GetProcesses,
-    GetApps,
-    GetAppPIDs,
-    GetCpuStaticInfo,
-    GetCpuDynamicInfo,
-    GetLogicalCpuInfo,
-    EnumerateGpus,
-    GetGpuStaticInfo,
-    GetGpuDynamicInfo,
-    TerminateProcess(u32 /* PID */),
-    KillProcess(u32 /* PID */),
-    KillProcessTree(u32 /* Parent PID */),
-    Acknowledge,
-    DataReady,
-    Exit,
-    Unknown,
-}
+use super::{gpu, GpuInfoExt};
+
+mod gpu_info;
+
+pub type GpuInfo = gpu_info::GpuInfo;

@@ -84,12 +84,8 @@ pub type NetInfo = net_info::NetInfo;
 pub type NetworkDevice = net_info::NetworkDevice;
 pub type NetDeviceType = net_info::NetDeviceType;
 
-#[allow(dead_code)]
-pub type GPUStaticInformation = gpu_info::StaticInfo;
-#[allow(dead_code)]
-pub type GPUDynamicInformation = gpu_info::DynamicInfo;
-pub type GPU = gpu_info::GPU;
-pub type GPUInfo = gpu_info::GPUInfo;
+pub type GpuStaticInfo = gpu_info::StaticInfo;
+pub type GpuDynamicInfo = gpu_info::DynamicInfo;
 
 pub type App = app_info::App;
 pub type Process = proc_info::Process;
@@ -209,7 +205,8 @@ pub struct Readings {
     pub mem_info: MemInfo,
     pub disks: Vec<Disk>,
     pub network_devices: Vec<NetworkDevice>,
-    pub gpus: Vec<GPU>,
+    pub gpu_static_info: Vec<gpu_info::StaticInfo>,
+    pub gpu_dynamic_info: Vec<gpu_info::DynamicInfo>,
 
     pub running_apps: std::collections::HashMap<String, App>,
     pub process_tree: Process,
@@ -219,13 +216,16 @@ impl Readings {
     pub fn new(gatherer_supervisor: &mut GathererSupervisor) -> Self {
         use std::collections::HashMap;
 
+        let _ = gatherer_supervisor.enumerate_gpus();
+
         Self {
             cpu_static_info: gatherer_supervisor.cpu_static_info(),
             cpu_dynamic_info: gatherer_supervisor.cpu_dynamic_info(),
             mem_info: MemInfo::load().expect("Unable to get memory info"),
             disks: vec![],
             network_devices: vec![],
-            gpus: vec![],
+            gpu_static_info: gatherer_supervisor.gpu_static_info(),
+            gpu_dynamic_info: gatherer_supervisor.gpu_dynamic_info(),
 
             running_apps: HashMap::new(),
             process_tree: Process::default(),
@@ -495,27 +495,14 @@ impl SysInfoV2 {
                     vec![]
                 };
 
-                let mut gpu_info = GPUInfo::new();
-                readings.gpus = if let Some(gpu_info) = gpu_info.as_mut() {
-                    gpu_info.load_gpus()
-                } else {
-                    vec![]
-                };
-
-                let mut processes = gatherer_supervisor.processes();
-                for gpu in &readings.gpus {
-                    for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                        if let Some(process) = processes.get_mut(&(*pid as u32)) {
-                            process.stats_mut().gpu_usage = *gpu_usage;
-                        }
-                    }
-                }
+                let processes = gatherer_supervisor.processes();
                 let merged_stats = mps.load(Ordering::Acquire);
                 readings.process_tree =
                     proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
                 readings.running_apps = gatherer_supervisor.apps();
 
                 let cpu_static_info = readings.cpu_static_info.clone();
+                let gpu_static_info = readings.gpu_static_info.clone();
 
                 idle_add_once(move || {
                     use gtk::glib::*;
@@ -570,11 +557,7 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let gpus = if let Some(gpu_info) = gpu_info.as_mut() {
-                        gpu_info.load_gpus()
-                    } else {
-                        vec![]
-                    };
+                    let gpu_dynamic_info = gatherer_supervisor.gpu_dynamic_info();
                     g_debug!(
                         "MissionCenter::Perf",
                         "GPU load took: {:?}",
@@ -582,14 +565,7 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let mut processes = gatherer_supervisor.processes();
-                    for gpu in &gpus {
-                        for (pid, gpu_usage) in &gpu.dynamic_info.processes {
-                            if let Some(process) = processes.get_mut(&(*pid as u32)) {
-                                process.stats_mut().gpu_usage = *gpu_usage;
-                            }
-                        }
-                    }
+                    let processes = gatherer_supervisor.processes();
                     g_debug!(
                         "MissionCenter::Perf",
                         "Process load took: {:?}",
@@ -620,7 +596,8 @@ impl SysInfoV2 {
                         mem_info,
                         disks,
                         network_devices,
-                        gpus,
+                        gpu_static_info: gpu_static_info.clone(),
+                        gpu_dynamic_info,
 
                         running_apps,
                         process_tree,
