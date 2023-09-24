@@ -47,7 +47,6 @@ pub struct GpuInfo {
     pci_ids_cache: Vec<ArrayString<16>>,
     static_info_cache: Vec<gpu::StaticInfoDescriptor>,
     dynamic_info_cache: Vec<gpu::DynamicInfoDescriptor>,
-    processes_cache: Vec<gpu::Process>,
 }
 
 impl Drop for GpuInfo {
@@ -80,7 +79,6 @@ impl GpuInfoExt for GpuInfo {
             pci_ids_cache: Vec::new(),
             static_info_cache: Vec::new(),
             dynamic_info_cache: Vec::new(),
-            processes_cache: Vec::new(),
         }
     }
 
@@ -146,27 +144,6 @@ impl GpuInfoExt for GpuInfo {
 
         result
     }
-
-    fn processes(&mut self) -> gpu::Processes {
-        let mut result = gpu::Processes::default();
-
-        if self.processes_cache.is_empty() {
-            self.load_dynamic_info();
-        }
-
-        let drop_count = self
-            .processes_cache
-            .chunks(result.usage.capacity())
-            .next()
-            .unwrap_or(&[])
-            .len();
-
-        let it = self.processes_cache.drain(0..drop_count);
-        result.usage.extend(it);
-        result.is_complete = self.processes_cache.is_empty();
-
-        result
-    }
 }
 
 impl GpuInfo {
@@ -201,7 +178,6 @@ impl GpuInfo {
         self.static_info.clear();
         self.static_info_cache.clear();
         self.dynamic_info_cache.clear();
-        self.processes_cache.clear();
 
         let mut device: *mut nvtop::ListHead = self.gpu_list.next;
         while device != self.gpu_list.as_mut() {
@@ -346,7 +322,6 @@ impl GpuInfo {
         use std::fmt::Write;
 
         self.dynamic_info_cache.clear();
-        self.processes_cache.clear();
 
         let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(self.gpu_list.as_mut()) };
         if result == 0 {
@@ -369,6 +344,8 @@ impl GpuInfo {
             );
             return;
         }
+
+        let processes = crate::Processes::process_cache();
 
         let mut device: *mut nvtop::ListHead = self.gpu_list.next;
         while device != self.gpu_list.as_mut() {
@@ -419,18 +396,14 @@ impl GpuInfo {
 
             for i in 0..dev.processes_count as usize {
                 let process = unsafe { &*dev.processes.add(i) };
-                self.processes_cache.push(gpu::Process {
-                    pci_id: pci_id.clone(),
-                    pid: process.pid as _,
-                    usage: process.gpu_usage as f32,
-                });
+                if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
+                    proc.descriptor.stats.gpu_usage = process.gpu_usage as f32;
+                }
             }
         }
 
         self.dynamic_info_cache
             .sort_by(|dev1, dev2| dev1.pci_id.cmp(&dev2.pci_id));
-        self.processes_cache
-            .sort_by(|p1, p2| p1.pci_id.cmp(&p2.pci_id));
     }
 
     #[allow(non_snake_case)]
@@ -692,8 +665,5 @@ mod tests {
         assert!(!dynamic_info.desc.is_empty());
         assert!(dynamic_info.is_complete);
         dbg!(&dynamic_info);
-
-        let processes = gpu_info.processes();
-        dbg!(&processes);
     }
 }

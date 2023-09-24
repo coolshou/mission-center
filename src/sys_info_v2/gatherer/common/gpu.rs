@@ -61,17 +61,6 @@ pub struct DynamicInfoDescriptor {
     pub decoder_percent: u32,
 }
 
-/// Describes the processes that are currently using a GPU.
-#[derive(Debug, Default, Clone)]
-pub struct Process {
-    /// The PCI ID of the GPU that the process is using.
-    pub pci_id: ArrayString<16>,
-    /// The PID of the process.
-    pub pid: u32,
-    /// The percentage of GPU used by the process.
-    pub usage: f32,
-}
-
 /// The PCI IDs of all GPUs present in the system.
 ///
 /// Since the maximum number of elements is limited the `is_complete` field is used to indicate
@@ -105,17 +94,5 @@ pub struct StaticInfo {
 #[derive(Debug, Default, Clone)]
 pub struct DynamicInfo {
     pub desc: ArrayVec<DynamicInfoDescriptor, 16>,
-    pub is_complete: bool,
-}
-
-/// Describes the processes that are currently using the GPUs in the system.
-///
-/// Since the maximum number of elements is limited the `is_complete` field is used to indicate
-/// whether or not all the processes have been described. If `is_complete` is `false` then the
-/// `usage` field contains only a subset of all the processes using GPU resources, and the providing
-/// function should be called again to get the rest of the information.
-#[derive(Debug, Default, Clone)]
-pub struct Processes {
-    pub usage: ArrayVec<Process, 128>,
     pub is_complete: bool,
 }

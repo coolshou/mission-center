@@ -906,7 +906,7 @@ mod imp {
                     .map(|g| g.util_percent())
                     .sum::<u32>() as f32
                     / readings.gpu_dynamic_info.len() as f32;
-                column_header_gpu.set_heading(format!("{:.2}%", avg));
+                column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
             }
             self.column_header_gpu.set(column_header_gpu);
         }

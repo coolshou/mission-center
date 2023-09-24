@@ -27,15 +27,11 @@ pub type StaticInfo = super::gatherer::GpuStaticInfoDescriptor;
 #[derive(Debug, Clone)]
 pub struct DynamicInfo {
     desc: super::gatherer::GpuDynamicInfoDescriptor,
-    pub processes: Vec<super::gatherer::GpuProcess>,
 }
 
 impl DynamicInfo {
     fn new(desc: super::gatherer::GpuDynamicInfoDescriptor) -> Self {
-        Self {
-            desc,
-            processes: vec![],
-        }
+        Self { desc }
     }
 
     #[inline]
@@ -228,45 +224,6 @@ impl GathererSupervisor {
                         g_critical!(
                             "MissionCenter::GpuInfo",
                             "Shared data content is {:?} instead of GpuDynamicInfo; encountered when reading response from gatherer",
-                            shared_memory.content
-                        );
-                        false
-                    }
-                }
-            },
-        );
-
-        let mut current_index = 0;
-        self.execute(
-            super::gatherer::Message::GetGpuProcesses,
-            |gatherer, _| {
-                let shared_memory = match gatherer.shared_memory() {
-                    Ok(shm) => shm,
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::GpuInfo",
-                            "Unable to to access shared memory: {}",
-                            e
-                        );
-                        return false;
-                    }
-                };
-
-                match shared_memory.content {
-                    SharedDataContent::GpuProcesses(ref processes) => {
-                        for process in &processes.usage {
-                            if process.pci_id.as_str() != result[current_index].pci_id() {
-                                current_index += 1;
-                            }
-                            result[current_index].processes.push(process.clone());
-                        }
-
-                        return processes.is_complete;
-                    }
-                    _ => {
-                        g_critical!(
-                            "MissionCenter::GpuInfo",
-                            "Shared data content is {:?} instead of GpuProcesses; encountered when reading response from gatherer",
                             shared_memory.content
                         );
                         false

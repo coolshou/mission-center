@@ -495,14 +495,7 @@ impl SysInfoV2 {
                     vec![]
                 };
 
-                let mut processes = gatherer_supervisor.processes();
-                for dyn_info in &readings.gpu_dynamic_info {
-                    for proc in &dyn_info.processes {
-                        if let Some(process) = processes.get_mut(&proc.pid) {
-                            process.stats_mut().gpu_usage = proc.usage;
-                        }
-                    }
-                }
+                let processes = gatherer_supervisor.processes();
                 let merged_stats = mps.load(Ordering::Acquire);
                 readings.process_tree =
                     proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
@@ -572,14 +565,7 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let mut processes = gatherer_supervisor.processes();
-                    for dyn_info in &gpu_dynamic_info {
-                        for proc in &dyn_info.processes {
-                            if let Some(process) = processes.get_mut(&proc.pid) {
-                                process.stats_mut().gpu_usage = proc.usage;
-                            }
-                        }
-                    }
+                    let processes = gatherer_supervisor.processes();
                     g_debug!(
                         "MissionCenter::Perf",
                         "Process load took: {:?}",

@@ -38,9 +38,4 @@ pub trait GpuInfoExt {
     ///
     /// Should be called multiple times until the `GpuDynamicInfo::is_complete` filed is true.
     fn dynamic_info(&mut self) -> gpu::DynamicInfo;
-
-    /// Returns the processes that are currently using the GPUs in the system.
-    ///
-    /// Should be called multiple times until the `GpuProcesses::is_complete` filed is true.
-    fn processes(&mut self) -> gpu::Processes;
 }

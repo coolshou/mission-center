@@ -32,7 +32,6 @@ pub enum SharedDataContent {
     GpuPciIds(GpuPciIds),
     GpuStaticInfo(GpuStaticInfo),
     GpuDynamicInfo(GpuDynamicInfo),
-    GpuProcesses(GpuProcesses),
 }
 
 impl std::fmt::Debug for SharedDataContent {
@@ -48,7 +47,6 @@ impl std::fmt::Debug for SharedDataContent {
             SharedDataContent::GpuPciIds(_) => f.write_str("GpuPciIds"),
             SharedDataContent::GpuStaticInfo(_) => f.write_str("GpuStaticInfo"),
             SharedDataContent::GpuDynamicInfo(_) => f.write_str("GpuDynamicInfo"),
-            SharedDataContent::GpuProcesses(_) => f.write_str("GpuProcesses"),
         }
     }
 }

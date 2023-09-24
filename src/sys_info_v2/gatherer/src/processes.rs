@@ -158,8 +158,8 @@ impl Processes {
         this
     }
 
-    pub fn process_cache() -> &'static HashMap<u32, Process> {
-        state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &*state.as_ptr() })
+    pub fn process_cache() -> &'static mut HashMap<u32, Process> {
+        state::PERSISTENT_PROCESS_CACHE.with(|state| unsafe { &mut *state.as_ptr() })
     }
 
     #[allow(dead_code)]

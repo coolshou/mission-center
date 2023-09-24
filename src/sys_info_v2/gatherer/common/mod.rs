@@ -47,5 +47,3 @@ pub type GpuStaticInfoDescriptor = gpu::StaticInfoDescriptor;
 pub type GpuStaticInfo = gpu::StaticInfo;
 pub type GpuDynamicInfoDescriptor = gpu::DynamicInfoDescriptor;
 pub type GpuDynamicInfo = gpu::DynamicInfo;
-pub type GpuProcess = gpu::Process;
-pub type GpuProcesses = gpu::Processes;

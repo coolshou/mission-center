@@ -30,7 +30,6 @@ pub enum Message {
     EnumerateGpus,
     GetGpuStaticInfo,
     GetGpuDynamicInfo,
-    GetGpuProcesses,
     TerminateProcess(u32 /* PID */),
     KillProcess(u32 /* PID */),
     KillProcessTree(u32 /* Parent PID */),
