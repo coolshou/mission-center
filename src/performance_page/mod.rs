@@ -534,15 +534,18 @@ mod imp {
 
             let mut gpus = HashMap::new();
 
-            for (i, gpu) in readings.gpus.iter().enumerate() {
+            for (i, static_info) in readings.gpu_static_info.iter().enumerate() {
+                let dynamic_info = &readings.gpu_dynamic_info[i];
+
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(&gpu.static_info.id);
+                summary.set_widget_name(static_info.pci_id.as_str());
 
                 summary.set_heading(i18n_f("GPU {}", &[&format!("{}", i)]));
-                summary.set_info1(gpu.static_info.device_name.clone());
+                summary.set_info1(static_info.device_name.as_str());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
-                    gpu.dynamic_info.util_percent, gpu.dynamic_info.temp_celsius
+                    dynamic_info.util_percent(),
+                    dynamic_info.temp_celsius()
                 ));
                 summary.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
@@ -551,14 +554,14 @@ mod imp {
                     1.,
                 ));
 
-                let page = GpuPage::new(&gpu.static_info.device_name);
+                let page = GpuPage::new(&static_info.device_name);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                page.set_static_information(i, gpu);
+                page.set_static_information(i, static_info);
 
                 self.obj()
                     .as_ref()
@@ -567,7 +570,7 @@ mod imp {
                     .build();
 
                 self.sidebar.append(&summary);
-                self.page_stack.add_named(&page, Some(&gpu.static_info.id));
+                self.page_stack.add_named(&page, Some(&static_info.pci_id));
 
                 let mut actions = self.context_menu_view_actions.take();
                 match actions.get("gpu") {
@@ -575,16 +578,16 @@ mod imp {
                         g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up GPU action for {}, logic bug?",
-                            &gpu.static_info.device_name
+                            &static_info.device_name
                         );
                     }
                     Some(action) => {
-                        actions.insert(gpu.static_info.id.clone(), action.clone());
+                        actions.insert(static_info.pci_id.as_str().into(), action.clone());
                     }
                 }
                 self.context_menu_view_actions.set(actions);
 
-                gpus.insert(gpu.static_info.device_name.clone(), (summary, page));
+                gpus.insert(static_info.pci_id.as_str().into(), (summary, page));
             }
 
             pages.push(Pages::Gpu(gpus));
@@ -720,14 +723,14 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in &readings.gpus {
-                            if let Some((summary, page)) = pages.get(&gpu.static_info.device_name) {
+                        for gpu in &readings.gpu_dynamic_info {
+                            if let Some((summary, page)) = pages.get(gpu.pci_id()) {
                                 let graph_widget = summary.graph_widget();
-                                graph_widget
-                                    .add_data_point(0, gpu.dynamic_info.util_percent as f32);
+                                graph_widget.add_data_point(0, gpu.util_percent() as f32);
                                 summary.set_info2(format!(
                                     "{}% ({} °C)",
-                                    gpu.dynamic_info.util_percent, gpu.dynamic_info.temp_celsius
+                                    gpu.util_percent(),
+                                    gpu.temp_celsius()
                                 ));
 
                                 result &= page.update_readings(gpu);

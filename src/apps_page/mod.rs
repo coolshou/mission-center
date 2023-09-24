@@ -52,6 +52,8 @@ mod imp {
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub gpu_column: TemplateChild<gtk::ColumnViewColumn>,
 
         #[template_child]
         pub context_menu: TemplateChild<gtk::PopoverMenu>,
@@ -61,6 +63,7 @@ mod imp {
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
 
         pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
 
@@ -87,6 +90,7 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
+                gpu_column: TemplateChild::default(),
 
                 context_menu: TemplateChild::default(),
 
@@ -95,6 +99,7 @@ mod imp {
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
+                column_header_gpu: Cell::new(None),
 
                 tree_list_sorter: Cell::new(None),
 
@@ -892,6 +897,18 @@ mod imp {
                 }
             }
             self.column_header_disk.set(column_header_disk);
+
+            let column_header_gpu = self.column_header_gpu.take();
+            if let Some(column_header_gpu) = &column_header_gpu {
+                let avg = readings
+                    .gpu_dynamic_info
+                    .iter()
+                    .map(|g| g.util_percent())
+                    .sum::<u32>() as f32
+                    / readings.gpu_dynamic_info.len() as f32;
+                column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
+            }
+            self.column_header_gpu.set(column_header_gpu);
         }
 
         fn update_process_model(
@@ -1056,9 +1073,15 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
-            let (_, column_header_disk) = self.configure_column_header(
+            let (column_view_title, column_header_disk) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("Disk"),
+                "0%",
+                gtk::Align::End,
+            );
+            let (_, column_header_gpu) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("GPU"),
                 "0%",
                 gtk::Align::End,
             );
@@ -1068,6 +1091,7 @@ mod imp {
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_disk.set(Some(column_header_disk));
+            self.column_header_gpu.set(Some(column_header_gpu));
         }
     }
 

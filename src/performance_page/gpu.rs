@@ -187,7 +187,7 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageGpu,
             index: usize,
-            gpu: &crate::sys_info_v2::GPU,
+            gpu: &crate::sys_info_v2::GpuStaticInfo,
         ) -> bool {
             this.imp()
                 .usage_graph_overall
@@ -229,93 +229,79 @@ mod imp {
 
             this.gpu_id.set_text(&format!("GPU {}", index));
 
-            this.device_name.set_text(&gpu.static_info.device_name);
+            this.device_name.set_text(&gpu.device_name);
 
             this.usage_graph_memory
-                .set_value_range_max(gpu.dynamic_info.total_memory as f32);
+                .set_value_range_max(gpu.total_memory as f32);
 
-            let total_memory =
-                crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
+            let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
             this.total_memory.set_text(&format!(
-                "{} {}{}B",
+                "{0:.2$} {1}{3}B",
                 total_memory.0,
                 total_memory.1,
+                total_memory.2,
                 if total_memory.1.is_empty() { "" } else { "i" }
             ));
 
-            let opengl_version =
-                if let Some(opengl_version) = gpu.static_info.opengl_version.as_ref() {
-                    format!(
-                        "{}{}.{}",
-                        if opengl_version.2 { "ES " } else { "" },
-                        opengl_version.0,
-                        opengl_version.1
-                    )
-                } else {
-                    i18n("Unknown")
-                };
+            this.memory_usage_max.set_text(&this.total_memory.label());
+
+            let opengl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
+                format!(
+                    "{}{}.{}",
+                    if opengl_version.2 { "ES " } else { "" },
+                    opengl_version.0,
+                    opengl_version.1
+                )
+            } else {
+                i18n("Unknown")
+            };
             this.opengl_version.set_text(&opengl_version);
 
-            let vulkan_version =
-                if let Some(vulkan_version) = gpu.static_info.vulkan_version.as_ref() {
-                    format!(
-                        "{}.{}.{}",
-                        vulkan_version.0, vulkan_version.1, vulkan_version.2
-                    )
-                } else {
-                    i18n("Unsupported")
-                };
+            let vulkan_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
+                format!(
+                    "{}.{}.{}",
+                    vulkan_version.0, vulkan_version.1, vulkan_version.2
+                )
+            } else {
+                i18n("Unsupported")
+            };
             this.vulkan_version.set_text(&vulkan_version);
 
-            let pcie_info_known = if let Some(pcie_gen) = gpu.static_info.pcie_gen {
-                if let Some(pcie_lanes) = gpu.static_info.pcie_lanes {
-                    this.pcie_speed
-                        .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
-                    true
-                } else {
-                    false
-                }
-            } else {
-                false
-            };
-            if !pcie_info_known {
-                this.pcie_speed.set_text("Unknown");
-            }
+            this.pcie_speed
+                .set_text(&format!("PCIe Gen {} x{} ", gpu.pcie_gen, gpu.pcie_lanes));
 
-            this.pci_addr.set_text(&gpu.static_info.pci_slot_name);
+            this.pci_addr.set_text(&gpu.pci_id);
 
             true
         }
 
         pub(crate) fn update_readings(
             this: &super::PerformancePageGpu,
-            gpu: &crate::sys_info_v2::GPU,
+            gpu: &crate::sys_info_v2::GpuDynamicInfo,
         ) -> bool {
             let this = this.imp();
 
             this.overall_percent
-                .set_text(&format!("{}%", gpu.dynamic_info.util_percent));
+                .set_text(&format!("{}%", gpu.util_percent()));
             this.usage_graph_overall
-                .add_data_point(0, gpu.dynamic_info.util_percent as f32);
+                .add_data_point(0, gpu.util_percent() as f32);
             this.utilization
-                .set_text(&format!("{}%", gpu.dynamic_info.util_percent));
+                .set_text(&format!("{}%", gpu.util_percent()));
 
             this.encode_percent
-                .set_text(&format!("{}%", gpu.dynamic_info.encoder_percent));
+                .set_text(&format!("{}%", gpu.encoder_percent()));
             this.usage_graph_encode
-                .add_data_point(0, gpu.dynamic_info.encoder_percent as f32);
+                .add_data_point(0, gpu.encoder_percent() as f32);
 
             this.decode_percent
-                .set_text(&format!("{}%", gpu.dynamic_info.decoder_percent));
+                .set_text(&format!("{}%", gpu.decoder_percent()));
             this.usage_graph_decode
-                .add_data_point(0, gpu.dynamic_info.decoder_percent as f32);
+                .add_data_point(0, gpu.decoder_percent() as f32);
 
             this.usage_graph_memory
-                .add_data_point(0, gpu.dynamic_info.used_memory as f32);
+                .add_data_point(0, gpu.used_memory() as f32);
 
-            let used_memory = crate::to_human_readable(gpu.dynamic_info.used_memory as f32, 1024.);
-            let total_memory =
-                crate::to_human_readable(gpu.dynamic_info.total_memory as f32, 1024.);
+            let used_memory = crate::to_human_readable(gpu.used_memory() as f32, 1024.);
             this.memory_usage_current.set_text(&format!(
                 "{0:.2$} {1}{3}B",
                 used_memory.0,
@@ -324,22 +310,10 @@ mod imp {
                 if used_memory.1.is_empty() { "" } else { "i" },
             ));
 
-            this.memory_usage_max.set_text(&format!(
-                "{0:.2$} {1}{3}B",
-                total_memory.0,
-                total_memory.1,
-                total_memory.2,
-                if total_memory.1.is_empty() { "" } else { "i" }
-            ));
-
-            let clock_speed = crate::to_human_readable(
-                gpu.dynamic_info.clock_speed_mhz as f32 * 1_000_000.,
-                1000.,
-            );
-            let clock_speed_max = crate::to_human_readable(
-                gpu.dynamic_info.clock_speed_max_mhz as f32 * 1_000_000.,
-                1000.,
-            );
+            let clock_speed =
+                crate::to_human_readable(gpu.clock_speed_mhz() as f32 * 1_000_000., 1000.);
+            let clock_speed_max =
+                crate::to_human_readable(gpu.clock_speed_max_mhz() as f32 * 1_000_000., 1000.);
             this.clock_speed_current.set_text(&format!(
                 "{0:.2$} {1}Hz",
                 clock_speed.0, clock_speed.1, clock_speed.2
@@ -350,11 +324,9 @@ mod imp {
             ));
 
             let memory_speed =
-                crate::to_human_readable(gpu.dynamic_info.mem_speed_mhz as f32 * 1_000_000., 1000.);
-            let memory_speed_max = crate::to_human_readable(
-                gpu.dynamic_info.mem_speed_max_mhz as f32 * 1_000_000.,
-                1000.,
-            );
+                crate::to_human_readable(gpu.mem_speed_mhz() as f32 * 1_000_000., 1000.);
+            let memory_speed_max =
+                crate::to_human_readable(gpu.mem_speed_max_mhz() as f32 * 1_000_000., 1000.);
             this.memory_speed_current.set_text(&format!(
                 "{0:.2$} {1}Hz",
                 memory_speed.0, memory_speed.1, memory_speed.2
@@ -364,10 +336,8 @@ mod imp {
                 memory_speed_max.0, memory_speed_max.1, memory_speed_max.2
             ));
 
-            let power_draw =
-                crate::to_human_readable(gpu.dynamic_info.power_draw_watts as f32, 1000.);
-            let power_limit =
-                crate::to_human_readable(gpu.dynamic_info.power_draw_max_watts as f32, 1000.);
+            let power_draw = crate::to_human_readable(gpu.power_draw_watts(), 1000.);
+            let power_limit = crate::to_human_readable(gpu.power_draw_max_watts(), 1000.);
             this.power_draw_current.set_text(&format!(
                 "{0:.2$} {1}W",
                 power_draw.0, power_draw.1, power_draw.2
@@ -378,7 +348,7 @@ mod imp {
             ));
 
             this.temperature
-                .set_text(&format!("{}°C", gpu.dynamic_info.temp_celsius));
+                .set_text(&format!("{}°C", gpu.temp_celsius()));
 
             true
         }
@@ -486,11 +456,15 @@ impl PerformancePageGpu {
         this
     }
 
-    pub fn set_static_information(&self, index: usize, gpu: &crate::sys_info_v2::GPU) -> bool {
+    pub fn set_static_information(
+        &self,
+        index: usize,
+        gpu: &crate::sys_info_v2::GpuStaticInfo,
+    ) -> bool {
         imp::PerformancePageGpu::set_static_information(self, index, gpu)
     }
 
-    pub fn update_readings(&self, gpu: &crate::sys_info_v2::GPU) -> bool {
+    pub fn update_readings(&self, gpu: &crate::sys_info_v2::GpuDynamicInfo) -> bool {
         imp::PerformancePageGpu::update_readings(self, gpu)
     }
 }

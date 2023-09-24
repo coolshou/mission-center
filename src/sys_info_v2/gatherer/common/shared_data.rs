@@ -29,6 +29,9 @@ pub enum SharedDataContent {
     CpuStaticInfo(CpuStaticInfo),
     CpuDynamicInfo(CpuDynamicInfo),
     LogicalCpuInfo(LogicalCpuInfo),
+    GpuPciIds(GpuPciIds),
+    GpuStaticInfo(GpuStaticInfo),
+    GpuDynamicInfo(GpuDynamicInfo),
 }
 
 impl std::fmt::Debug for SharedDataContent {
@@ -41,6 +44,9 @@ impl std::fmt::Debug for SharedDataContent {
             SharedDataContent::CpuStaticInfo(_) => f.write_str("CpuStaticInfo"),
             SharedDataContent::CpuDynamicInfo(_) => f.write_str("CpuDynamicInfo"),
             SharedDataContent::LogicalCpuInfo(_) => f.write_str("LogicalCpuInfo"),
+            SharedDataContent::GpuPciIds(_) => f.write_str("GpuPciIds"),
+            SharedDataContent::GpuStaticInfo(_) => f.write_str("GpuStaticInfo"),
+            SharedDataContent::GpuDynamicInfo(_) => f.write_str("GpuDynamicInfo"),
         }
     }
 }

@@ -6,11 +6,6 @@ endif
 
 gnome = import('gnome')
 libudev = dependency('libudev', required: true)
-libnvtop = dependency(
-  'nvtop',
-  fallback : ['nvtop', 'nvtop'],
-  default_options: ['default_library=static']
-)
 
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
