@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-18 19:41+0300\n"
-"PO-Revision-Date: 2023-08-25 20:16+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2023-09-20 08:11+0300\n"
+"PO-Revision-Date: 2023-09-09 16:20+0000\n"
+"Last-Translator: Gert-dev <qnyasgjhapqyuhoibr@kiabws.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -41,9 +43,12 @@ msgstr "Controleer het gebruik van bronnen op je systeem"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Controleer hoe je CPU, geheugen, harde schijf, netwerk en GPU gebruikt worden"
+"Controleer hoe je processor, geheugen, harde schijf, netwerk en grafische "
+"kaart gebruikt worden"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
 msgstr "Functies:"
 
@@ -83,27 +88,27 @@ msgid ""
 "address"
 msgstr ""
 "Bekijk informatie over netwerkverbindingen waaronder de naam van de "
-"netwerkkaart, connectietype (Wi-FI of kabel), draadloze overdrachtsnelheden "
-"en frequentie, hardware-adressen en IP-adressen"
+"netwerkkaart, connectietype (Wi-FI of bekabelde verbinding), draadloze "
+"overdrachtsnelheden en frequentie, hardware-adressen en IP-adressen"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Controleer het algemene GPU-gebruik, gebruik van video encoders en decoders, "
-"geheugengebruik en stroomverbruik, dankzij het populaire NVTOP-project"
+"Controleer het algemene gebruik van je grafische kaart, video encoders en "
+"decoders, geheugen en je stroomverbruik, dankzij het populaire NVTOP-project"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Bekijk een overzicht van gebruik van bronnen per app en proces"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
 msgstr ""
 "Ondersteunt een minimale samenvattingsweergave voor eenvoudige opvolging"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
@@ -111,59 +116,247 @@ msgstr ""
 "Gebruik OpenGL-rendering voor alle grafieken in een poging om CPU- en "
 "systeembelasting over het algemeen te verlagen"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Gebruikt GTK4 en Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Written in Rust"
 msgstr "Geschreven in Rust"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
 msgstr "Flatpak eerst"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Limitaties (we werken momenteel aan oplossingen hiervoor):"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-msgid ""
-"The application currently only supports monitoring, you cannot stop "
-"processes for example"
-msgstr ""
-"De applicatie ondersteunt momenteel enkel het controleren van bronnen, het "
-"is bijvoorbeeld nog niet mogelijk om processen stop te zetten"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Disk utilization percentage might not be accurate"
 msgstr "Het percentage schijfgebruik is mogelijk niet accuraat"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
 msgstr "Geen netwerkgebruik per proces"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process GPU usage"
-msgstr "Geen GPU-gebruik per proces"
+msgstr "Geen gebruik van grafische kaart uitgesplitst per proces"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
-"GPU-ondersteuning is experimenteel en enkel AMD- en NVIDIA-GPU's kunnen "
-"gecontroleerd worden"
+"Ondersteuning voor grafische kaarten is experimenteel en enkel AMD- en "
+"NVIDIA-GPU's kunnen gecontroleerd worden"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
 "Opmerkingen, suggesties, foutrapporten en steun (bijdragen) zijn welkom"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
+msgid ""
+"Add an option, to the context menu, to show kernel times, in the CPU graphs"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
+msgid "Add CPU temperature, where possible"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
+msgid ""
+"Implement smarter rounding and display precision of values throughout the "
+"app by QwertyChouskie"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
+msgid ""
+"Use metainfo instead of appdata for application metadata by David Guglielmi"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
+msgid "Fixes:"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
+#, fuzzy
+msgid ""
+"Fixed a regression where natively installed browsers were not showing up in "
+"the apps list on Fedora"
+msgstr ""
+"Los een probleem op waarbij browsers die 'native' geïnstalleerd werden niet "
+"opduiken in de applicatielijst"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
+msgid ""
+"Fixed a regression where Flatpak apps were not showing up in the apps list "
+"on ArchLinux Plasma"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
+#, fuzzy
+msgid ""
+"Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
+msgstr ""
+"Los een probleem op waarbij de applicatie- en processenlijst leeg was voor "
+"sommige gebruikers"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
+msgid ""
+"Moved some performance related logs to g_debug to prevent spamming of system "
+"logs"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
+#, fuzzy
+msgid "Translations:"
+msgstr "Virtualisatie:"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
+msgid "New translation to Korean by Seong-ho Cho"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
+msgid "New translation to Dutch by Gert"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
+msgid "New translation to Polish by _Ghost_"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
+msgid "New translation to Italian by beppeilgommista"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
+#, fuzzy
+msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
+msgstr "Vertalingsverbeteringen voor Portugees door Rafael Fontenelle"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
+msgid "Updated Spanish translation"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
+msgid "Updated Finnish translation"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
+msgid "Updated Russian translation"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
+msgid "Updated Chinese (Simplified) translation"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
+msgid "Updated Greek translation"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
+#, fuzzy
+msgid "Updated German translation"
+msgstr "Voeg Duitse vertaling toe door TecCheck"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
+msgid ""
+"Hotfix release to fix a bug that caused the app to not display any "
+"information for some users"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
+msgid "New app icon by QwertyChouskie"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
+msgid "Add ability to stop and force stop apps and processes"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
+msgid ""
+"Running apps are now shown more reliably, and should reflect most if not all "
+"running apps"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
+msgid "Experimental support for Snap apps in the running apps list"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
+msgid ""
+"Added a setting to show resource consumption individually per process or "
+"cumulated with their descendants"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
+msgid ""
+"Added a setting to enable persistent sorting in the apps and processes list"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
+msgid ""
+"Data gathering is now more versatile and will permit new features to be "
+"added quicker and easier"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
+msgid "App can now be built from GNOME Builder"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
+msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
+msgid "New translation to Russian by Ivan Maslikhov"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
+msgid "New translation to Slovak by mthw0"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
+msgid "New translation to Greek by Yiannis Ioannides"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
+msgid "New translation to Chinese (Simplified) by foxer NS"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
+msgid "New translation to French by Link Mauve"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
+msgid "New translation to Hungarian by Kovács Bálint Hunor"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
+#, fuzzy
+msgid "Updated Czech translation"
+msgstr "Voeg een Tsjechische vertaling toe door ondra05"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
+#, fuzzy
+msgid "Updated Portuguese translation"
+msgstr "Voeg een Portugese vertaling toe door Rilson Joás"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
+msgid "Fixes for Chinese translations by foxer NS"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid "Add Spanish translation by Óscar Fernández Díaz"
 msgstr "Voeg Spaanse vertaling toe door Óscar Fernández Díaz"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
@@ -171,11 +364,11 @@ msgstr ""
 "Het geheugentabblad toont nu de geconfigureerde geheugensnelheid i.p.v. het "
 "maximum dat de modules ondersteunen"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
 msgid "Add German translation by TecCheck"
 msgstr "Voeg Duitse vertaling toe door TecCheck"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
@@ -183,11 +376,11 @@ msgstr ""
 "Wanneer een proces de processor of het geheugen zwaar belast, zal het nu "
 "gemarkeerd worden in de applicatie- en processenlijst"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 msgid "Add initial support for building for ARM64"
 msgstr "Voeg initiële ondersteuning toe om te bouwen voor ARM64"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
@@ -195,37 +388,37 @@ msgstr ""
 "Hou rekening met meerdere processorkernen en gedeelde caches bij het "
 "berekenen de grootte van de cache"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
 "Los een probleem op waarbij browsers die 'native' geïnstalleerd werden niet "
 "opduiken in de applicatielijst"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr "Vertalingsupdates voor traditioneel Chinees door Peter Dave Hello"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
 msgstr "Vertalingsverbeteringen voor Portugees door Rafael Fontenelle"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
 "Toon enkel een link-local IPv6-adres als er geen ander IPv6-adres bestaat "
 "door Maximilian"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr "Voeg traditioneel Chinees toe als taalgebied door Peter Dave Hello"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 msgid "Add category for application menu by Renner0E"
 msgstr "Voeg een categorie toe voor het applicatiemenu door Renner0E"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
@@ -233,7 +426,7 @@ msgstr ""
 "Los een probleem op bij het ontleden van de uitvoer van `dmidecode` dat "
 "resulteerde in een crash"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
@@ -242,21 +435,21 @@ msgstr ""
 "base_frequency` niet bestaat bij het ophalen van informatie over de "
 "basissnelheid van de processor"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
-"Werk de interface van het GPU-tabblad bij om meer adaptief te zijn op "
-"kleinere resoluties"
+"Werk de interface van het tabblad voor grafische kaarten bij om meer "
+"adaptief te zijn op kleinere resoluties"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 msgid "Added Czech translation by ondra05"
 msgstr "Voeg een Tsjechische vertaling toe door ondra05"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 msgid "Added Portuguese translation by Rilson Joás"
 msgstr "Voeg een Portugese vertaling toe door Rilson Joás"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
@@ -264,19 +457,19 @@ msgstr ""
 "Voeg sleutelwoorden toe aan het desktop-bestand om zoekopdrachten in "
 "bureaubladomgevingen makkelijker te maken door Hannes Kuchelmeister"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
 "Los een probleem op waarbij de applicatie- en processenlijst leeg was voor "
 "sommige gebruikers"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr ""
 "Los een probleem op waarbij de applicatie crasht als het systeem zwaar "
 "belast wordt"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 msgid "First official release!"
 msgstr "Eerste officiële uitgave!"
 
@@ -292,8 +485,8 @@ msgstr "Hoe snel data en de interface bijgewerkt moet worden"
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Informatie over ouder- en kinderprocessen worden individueel getoond of "
-"omhoog samengevoegd"
+"Of informatie over ouder- en kinderprocessen individueel getoond of omhoog "
+"samengevoegd moet worden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
@@ -313,34 +506,35 @@ msgid "Which graph is shown on the CPU performance page"
 msgstr "Welke grafiek getoond wordt op de processorpagina"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
+msgid "Show kernel times in the CPU graphs"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Welke pagina in het performantietabblad getoond wordt bij het opstarten van "
 "de applicatie"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1004
-#: src/performance_page/mod.rs:267
+#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
+#: src/performance_page/mod.rs:264
 msgid "CPU"
 msgstr "Processor"
 
 #: resources/ui/performance_page/cpu.blp:74
-msgid "% Utilization"
-msgstr "% Gebruik"
-
-#: resources/ui/performance_page/cpu.blp:84
-msgid "100%"
-msgstr "100%"
-
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
 msgstr "Gebruik"
 
+#: resources/ui/performance_page/cpu.blp:84
+msgid "100%"
+msgstr "100%"
+
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
 msgstr "Snelheid"
 
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:407
+#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
 msgid "Processes"
 msgstr "Processen"
 
@@ -400,7 +594,11 @@ msgstr "_Algemeen gebruik"
 msgid "Logical _Processors"
 msgstr "Logische _processoren"
 
-#: resources/ui/performance_page/cpu.blp:458
+#: resources/ui/performance_page/cpu.blp:456
+msgid "Show Kernel Times"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
 #: resources/ui/performance_page/gpu.blp:549
 #: resources/ui/performance_page/memory.blp:402
@@ -408,7 +606,7 @@ msgstr "Logische _processoren"
 msgid "Graph _Summary View"
 msgstr "_Samenvattingsweergave met grafiek"
 
-#: resources/ui/performance_page/cpu.blp:463
+#: resources/ui/performance_page/cpu.blp:468
 #: resources/ui/performance_page/disk.blp:391
 #: resources/ui/performance_page/gpu.blp:554
 #: resources/ui/performance_page/memory.blp:407
@@ -416,7 +614,7 @@ msgstr "_Samenvattingsweergave met grafiek"
 msgid "_View"
 msgstr "_Weergave"
 
-#: resources/ui/performance_page/cpu.blp:466
+#: resources/ui/performance_page/cpu.blp:471
 #: resources/ui/performance_page/disk.blp:394
 #: resources/ui/performance_page/gpu.blp:557
 #: resources/ui/performance_page/memory.blp:410
@@ -424,7 +622,7 @@ msgstr "_Weergave"
 msgid "CP_U"
 msgstr "_Processor"
 
-#: resources/ui/performance_page/cpu.blp:471
+#: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:399
 #: resources/ui/performance_page/gpu.blp:562
 #: resources/ui/performance_page/memory.blp:415
@@ -432,7 +630,7 @@ msgstr "_Processor"
 msgid "_Memory"
 msgstr "_Geheugen"
 
-#: resources/ui/performance_page/cpu.blp:476
+#: resources/ui/performance_page/cpu.blp:481
 #: resources/ui/performance_page/disk.blp:404
 #: resources/ui/performance_page/gpu.blp:567
 #: resources/ui/performance_page/memory.blp:420
@@ -440,7 +638,7 @@ msgstr "_Geheugen"
 msgid "_Disk"
 msgstr "_Opslag"
 
-#: resources/ui/performance_page/cpu.blp:481
+#: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:409
 #: resources/ui/performance_page/gpu.blp:572
 #: resources/ui/performance_page/memory.blp:425
@@ -448,7 +646,7 @@ msgstr "_Opslag"
 msgid "_Network"
 msgstr "_Netwerk"
 
-#: resources/ui/performance_page/cpu.blp:486
+#: resources/ui/performance_page/cpu.blp:491
 #: resources/ui/performance_page/disk.blp:414
 #: resources/ui/performance_page/gpu.blp:577
 #: resources/ui/performance_page/memory.blp:430
@@ -456,7 +654,7 @@ msgstr "_Netwerk"
 msgid "_GPU"
 msgstr "Gra_fische kaart"
 
-#: resources/ui/performance_page/cpu.blp:494
+#: resources/ui/performance_page/cpu.blp:499
 #: resources/ui/performance_page/disk.blp:422
 #: resources/ui/performance_page/gpu.blp:585
 #: resources/ui/performance_page/memory.blp:438
@@ -560,8 +758,8 @@ msgstr "Sommige informatie vereist administratieve privileges"
 msgid "_Authenticate"
 msgstr "_Authenticeren"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
-#: src/performance_page/mod.rs:318
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
+#: src/performance_page/mod.rs:319
 msgid "Memory"
 msgstr "Geheugen"
 
@@ -635,7 +833,7 @@ msgstr "Signaalsterkte:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "Maximum bitrate:"
+msgstr "Maximum-bitrate:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
@@ -722,7 +920,7 @@ msgstr ""
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr "Typ een naam of PID in om te zoeken"
+msgstr "Typ een naam of PID om te zoeken"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
@@ -732,7 +930,7 @@ msgstr "Laden..."
 msgid "Performance"
 msgstr "Performantie"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:447
 msgid "Apps"
 msgstr "Applicaties"
 
@@ -744,15 +942,15 @@ msgstr "_Voorkeuren"
 msgid "_About MissionCenter"
 msgstr "_Over MissionCenter"
 
-#: src/apps_page/mod.rs:992
+#: src/apps_page/mod.rs:1037
 msgid "Name"
 msgstr "Naam"
 
-#: src/apps_page/mod.rs:998
+#: src/apps_page/mod.rs:1043
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1016
+#: src/apps_page/mod.rs:1061
 msgid "Disk"
 msgstr "Opslag"
 
@@ -819,48 +1017,48 @@ msgstr ""
 "worden zodra het besturingssysteem, stuurprogramma's, of applicaties meer "
 "geheugen nodig hebben"
 
-#: src/performance_page/mod.rs:371 src/performance_page/disk.rs:195
+#: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
 msgstr "Opslag {} ({})"
 
-#: src/performance_page/mod.rs:375
+#: src/performance_page/mod.rs:376
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:377
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:378
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:379
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:380
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
-#: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
-#: src/performance_page/cpu.rs:307 src/performance_page/gpu.rs:255
+#: src/performance_page/mod.rs:381 src/performance_page/cpu.rs:310
+#: src/performance_page/cpu.rs:323 src/performance_page/cpu.rs:333
+#: src/performance_page/cpu.rs:339 src/performance_page/gpu.rs:255
 #: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
-#: src/performance_page/network.rs:396 src/performance_page/network.rs:404
-#: src/performance_page/network.rs:441 src/performance_page/network.rs:519
+#: src/performance_page/network.rs:396 src/performance_page/network.rs:405
+#: src/performance_page/network.rs:442 src/performance_page/network.rs:520
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: src/performance_page/mod.rs:450 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr "Kabel"
+msgstr "Bekabelde verbinding"
 
-#: src/performance_page/mod.rs:451 src/performance_page/network.rs:338
+#: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/performance_page/mod.rs:452 src/performance_page/network.rs:340
+#: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
 msgid "Other"
 msgstr "Andere"
 
@@ -868,32 +1066,34 @@ msgstr "Andere"
 msgid "GPU {}"
 msgstr "Grafische kaart {}"
 
-#: src/performance_page/mod.rs:695
-msgid "{}: {} {}bps {}: {} {}bps"
-msgstr "{}: {} {}bps {}: {} {}bps"
+#: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
+#, fuzzy
+msgid "{}: {} {}bps"
+msgstr "{} {}bps"
 
-#: src/performance_page/cpu.rs:286
+#: src/performance_page/cpu.rs:318
 msgid "Supported"
 msgstr "Ondersteund"
 
-#: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
+#: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
 msgid "Unsupported"
 msgstr "Niet-ondersteund"
 
-#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
+#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
 msgid "Yes"
 msgstr "Ja"
 
-#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
+#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
 msgid "No"
 msgstr "Neen"
 
-#: src/performance_page/cpu.rs:655
-msgid "% Utilization over {} seconds"
+#: src/performance_page/cpu.rs:698
+#, fuzzy
+msgid "Utilization over {} seconds"
 msgstr "% gebruik over {} seconden"
 
-#: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
-#: src/performance_page/memory.rs:401 src/performance_page/network.rs:605
+#: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
+#: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
 msgid "{} seconds"
 msgstr "{} seconden"
 
@@ -901,15 +1101,28 @@ msgstr "{} seconden"
 msgid "{} {}{}B/s"
 msgstr "{} {}{} B/s"
 
-#: src/performance_page/network.rs:415 src/performance_page/network.rs:421
-#: src/performance_page/network.rs:429
+#: src/performance_page/network.rs:416 src/performance_page/network.rs:422
+#: src/performance_page/network.rs:430
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/network.rs:454 src/performance_page/network.rs:470
+#: src/performance_page/network.rs:455 src/performance_page/network.rs:471
 msgid "N/A"
 msgstr "N.v.t."
 
 #: src/application.rs:261
 msgid "translator-credits"
 msgstr "Gert-dev"
+
+#~ msgid ""
+#~ "The application currently only supports monitoring, you cannot stop "
+#~ "processes for example"
+#~ msgstr ""
+#~ "De applicatie ondersteunt momenteel enkel het controleren van bronnen, "
+#~ "het is bijvoorbeeld nog niet mogelijk om processen stop te zetten"
+
+#~ msgid "% Utilization"
+#~ msgstr "% Gebruik"
+
+#~ msgid "{}: {} {}bps {}: {} {}bps"
+#~ msgstr "{}: {} {}bps {}: {} {}bps"

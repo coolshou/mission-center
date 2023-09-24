@@ -8,78 +8,82 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-21 14:30+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
-"Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/fi/>\n"
-"Language: fi\n"
+"PO-Revision-Date: 2023-09-16 06:51+0000\n"
+"Last-Translator: yanuch <yan_m@ukr.net>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/uk/>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
+#, fuzzy
 msgid "Mission Center"
-msgstr "Tehtäväkeskus"
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Mission "
-"Center;tehtäväkeskus;resurssit;suoritin;prosessit;suorituskyky;näytönohjain;"
-"levy;muisti;verkko"
+"Диспетчер завдань; Монітор ресурсів; Системний монітор; Процесор; Процеси; "
+"Монітор продуктивності; ЦП; ГП; Диск; Диск; Пам’ять; Мережа; Використання; "
+"Використання"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Mission Center -kehittäjät"
+msgstr "Розробники Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr "Tarkkaile järjestelmän resurssien käyttöä"
+msgstr "Моніторинг використання системних ресурсів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Tarkkaile suorittimen, muistin, levyn, verkon ja näytönohjaimen käyttöä"
+"Відстежуйте використання процесора, пам'яті, диска, мережі та графічного "
+"процесора"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
-msgstr "Ominaisuudet:"
+msgstr "Особливості:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Tarkkaile suorittimen käyttöä yleisesti tai säiekohtaisesti"
+msgstr ""
+"Відстежуйте загальне використання процесора або використання по кожному "
+"потоку"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Näe järjestelmän prosessi-, säie- ja kahvamäärät, toiminta-aika, "
-"kellotaajuus (perustaajuus ja nykyinen taajuus) ja välimuistien koot"
+"Переглянути кількість системних процесів, потоків і дескрипторів, час "
+"роботи, тактову частоту (базову та поточну), розмір кешу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "Tarkkaile keskusmuistin ja swapin käyttöä"
+msgstr "Моніторинг використання оперативної пам'яті та файла підкачки"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Näe erittely, miten järjestelmä käyttää muistia"
+msgstr "Подивитися, як система використовує пам'ять"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Tarkkaile levyn käyttöä ja siirtonopeuksia"
+msgstr "Моніторинг використання диска та швидкості передачі даних"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Tarkkaile verkon käyttöä ja siirtonopeuksia"
+msgstr "Моніторинг завантаження мережі та швидкості передачі даних"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -87,9 +91,9 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Näe verkkoliitäntöjen tiedot kuten verkkokortin nimi, yhteyden tyyppi (Wi-Fi "
-"tai Ethernet), langattoman verkon nopeus ja taajuus, laiteosoite sekä IP-"
-"osoite"
+"Перегляньте інформацію про мережевий інтерфейс, таку як ім'я мережевої "
+"карти, тип з'єднання (Wi-Fi або Ethernet), швидкість і частоту бездротового "
+"зв'язку, апаратну адресу, IP-адресу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
@@ -97,16 +101,19 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Відстежуйте загальне використання графічного процесора, відеокодерів і "
+"декодерів, використання пам'яті та енергоспоживання за допомогою популярного "
+"проекту NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Näe erittely, miten sovellukset ja prosessit käyttävät resursseja"
+msgstr "Подивіться розподіл використання ресурсів за додатками та процесами"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Підтримує мініатюрні зведені дані для простого моніторингу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
@@ -114,56 +121,58 @@ msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
-"Käytä OpenGL-piirtoa kaikilla kaavioille suoritinkäytön vähentämiseksi ja "
-"yleisesti resurssien vähäisen käytön vuoksi"
+"Використовуйте рендеринг OpenGL для всіх графіків, щоб зменшити використання "
+"процесора та загальних ресурсів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Käyttää GTK4:ää ja Libadwaitaa"
+msgstr "Використовує GTK4 та Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
-msgstr "Kirjoitettu Rustilla"
+msgstr "Написано на Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
-msgstr "Flatpak ensisijaisesti"
+msgstr "Спочатку Flatpak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Rajoitukset (näiden kaikkien ratkaisemiseksi tehdään töitä):"
+msgstr "Обмеження (ведеться постійна робота над їх подоланням):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "Відсоток використання диска може бути неточним"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#, fuzzy
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Відсутнє використання мережі по кожному процесу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
+#, fuzzy
 msgid "No per-process GPU usage"
-msgstr ""
+msgstr "Відсутність використання графічного процесора для кожного процесу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
-"Näytönohjaintuki on kokeellinen, ja vain AMD:n ja nVidian näytönohjaimia on "
-"mahdollista tarkkailla"
+"Підтримка графічних процесорів є експериментальною, можна відстежувати лише "
+"графічні процесори AMD та nVidia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Вітаються коментарі, пропозиції, повідомлення про помилки та внески"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
@@ -187,13 +196,16 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr "Korjaukset:"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
+#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
+"Виправлено помилку, коли браузери, встановлені як рідні пакунки, не "
+"відображаються у списку програм"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
@@ -202,9 +214,12 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
+#, fuzzy
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
+"Виправлено помилку, коли список програм і процесів був порожнім для деяких "
+"користувачів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
@@ -214,8 +229,9 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
+#, fuzzy
 msgid "Translations:"
-msgstr "Käännökset:"
+msgstr "Віртуалізація:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
@@ -234,8 +250,9 @@ msgid "New translation to Italian by beppeilgommista"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
+#, fuzzy
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr ""
+msgstr "Виправлення перекладу португальської мови від Рафаеля Фонтенеля"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
@@ -262,8 +279,9 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
+#, fuzzy
 msgid "Updated German translation"
-msgstr ""
+msgstr "Додати німецький переклад від TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
@@ -339,12 +357,14 @@ msgid "New translation to Hungarian by Kovács Bálint Hunor"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
+#, fuzzy
 msgid "Updated Czech translation"
-msgstr ""
+msgstr "Додано чеський переклад від ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
+#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr ""
+msgstr "Додано переклад португальською мовою від Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
@@ -353,7 +373,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Додати іспанський переклад Оскара Фернандеса Діаса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
@@ -361,11 +381,13 @@ msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"На вкладці пам'яті тепер відображається налаштована швидкість пам'яті "
+"замість максимальної, яку підтримують модулі"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
-msgstr ""
+msgstr "Додати німецький переклад від TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
@@ -373,11 +395,13 @@ msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Коли процес використовує велику кількість процесора або оперативної пам'яті, "
+"він буде виділений у списку програм і процесів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "Додано початкову підтримку збірки для ARM64"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
@@ -385,38 +409,45 @@ msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"Враховуйте кілька ядер процесора та спільне використання кешу при обчисленні "
+"розміру кеш-пам'яті"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"Виправлено помилку, коли браузери, встановлені як рідні пакунки, не "
+"відображаються у списку програм"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
 msgstr ""
+"Оновлення перекладу традиційної китайської мови від Пітера Дейва Привіт"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
+msgstr "Виправлення перекладу португальської мови від Рафаеля Фонтенеля"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
+"Показувати локальну IPv6-адресу посилання лише за відсутності інших IPv6-"
+"адрес від Maximilian"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
+msgstr "Додати Традиційна китайська локаль від Пітера Дейва Привіт"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "Додавання категорії для меню додатків від Renner0E"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
@@ -424,6 +455,7 @@ msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
+"Виправлено помилку при розборі виводу `dmidecode`, що призводила до паніки"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
@@ -431,21 +463,26 @@ msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
+"Використовувати запасний варіант, якщо `/sys/devices/system/cpu/cpu0/cpufreq/"
+"base_requency` не існує, під час отримання інформації про базову частоту "
+"процесора"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
+"Оновлення інтерфейсу вкладки \"Графічний процесор\", щоб зробити його більш "
+"адаптивним для менших роздільних здатностей"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "Додано чеський переклад від ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "Додано переклад португальською мовою від Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
@@ -453,51 +490,58 @@ msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
+"Додавання ключових слів до файлу робочого столу для покращення функції "
+"пошуку в середовищі робочого столу від Hannes Kuchelmeister"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
+"Виправлено помилку, коли список програм і процесів був порожнім для деяких "
+"користувачів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "Виправлено збій, що виникає під час високого навантаження на систему"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
-msgstr "Ensimmäinen virallinen julkaisu!"
+msgstr "Перший офіційний реліз!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr "Sovelluksen käynnistyessä avattava sivu"
+msgstr "Яку сторінку відображати при запуску програми"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr "Kuinka nopeasti data päivitetään käyttöliittymään"
+msgstr ""
+"Як швидко повинні оновлюватися дані та оновлюватися користувацький інтерфейс"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Prosessin ja sen lapsiprosessin tilastot näytetään yksittäin tai yhdistettynä"
+"Статистика батьківських і дочірніх процесів відображається окремо або "
+"об'єднана зверху"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sarakejärjestys säilyy sovelluksen uudelleenkäynnistysten välillä"
+msgstr "Сортування стовпців збережеться після перезапуску програми"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"Ідентифікатор стовпчика, за яким сортується вигляд сторінки \"Программи\""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Напрямок сортування перегляду сторінки \"Програми\""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Який графік відображається на сторінці продуктивності процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
@@ -507,91 +551,98 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
+"Яка сторінка відображається під час запуску програми на вкладці "
+"продуктивності"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
 #: src/performance_page/mod.rs:264 src/apps_page/mod.rs:1004
 #: src/performance_page/mod.rs:267
 msgid "CPU"
-msgstr "Suoritin"
+msgstr "ЦП"
 
 #: resources/ui/performance_page/cpu.blp:74
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr "Käyttö"
+msgstr "Використання"
 
 #: resources/ui/performance_page/cpu.blp:84
+#, fuzzy
 msgid "100%"
-msgstr "100 %"
+msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr "Nopeus"
+msgstr "Швидкість"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
 #: src/apps_page/mod.rs:407
 msgid "Processes"
-msgstr "Prosessit"
+msgstr "Процеси"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr "Säikeet"
+msgstr "Потоки"
 
 #: resources/ui/performance_page/cpu.blp:245
+#, fuzzy
 msgid "Handles"
-msgstr "Kahvat"
+msgstr "Ручки"
 
 #: resources/ui/performance_page/cpu.blp:268
+#, fuzzy
 msgid "Up time"
-msgstr "Toiminta-aika"
+msgstr "Аптайм"
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr "Perusnopeus:"
+msgstr "Базова швидкість:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr "Kantoja:"
+msgstr "Сокети:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr "Virtuaalisia suorittimia:"
+msgstr "Віртуальні процесори:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr "Virtualisointi:"
+msgstr "Віртуалізація:"
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
-msgstr "Virtuaalikone:"
+msgstr "Віртуальна машина:"
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr "L1-välimuisti:"
+msgstr "Кеш 1-го рівня:"
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr "L2-välimuisti:"
+msgstr "Кеш 2-го рівня:"
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr "L3-välimuisti:"
+msgstr "Кеш 3-го рівня:"
 
 #: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
-msgstr "Vaih_da kaavioksi"
+msgstr "Змінити G_raph на"
 
 #: resources/ui/performance_page/cpu.blp:445
+#, fuzzy
 msgid "Overall U_tilization"
-msgstr "Käytt_ö yhteensä"
+msgstr "Загальне U_tilization"
 
 #: resources/ui/performance_page/cpu.blp:450
+#, fuzzy
 msgid "Logical _Processors"
-msgstr "_Loogiset suorittimet"
+msgstr "Logical _Processors"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr "Näytä ydinajat"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -599,8 +650,9 @@ msgstr "Näytä ydinajat"
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
 #: resources/ui/performance_page/cpu.blp:458
+#, fuzzy
 msgid "Graph _Summary View"
-msgstr "Kaavion _yhteenvedon näkymä"
+msgstr "Graph _Summary View"
 
 #: resources/ui/performance_page/cpu.blp:468
 #: resources/ui/performance_page/disk.blp:391
@@ -608,8 +660,9 @@ msgstr "Kaavion _yhteenvedon näkymä"
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
 #: resources/ui/performance_page/cpu.blp:463
+#, fuzzy
 msgid "_View"
-msgstr "_Näytä"
+msgstr "_View"
 
 #: resources/ui/performance_page/cpu.blp:471
 #: resources/ui/performance_page/disk.blp:394
@@ -617,8 +670,9 @@ msgstr "_Näytä"
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
 #: resources/ui/performance_page/cpu.blp:466
+#, fuzzy
 msgid "CP_U"
-msgstr "_Suoritin"
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:399
@@ -626,8 +680,9 @@ msgstr "_Suoritin"
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
 #: resources/ui/performance_page/cpu.blp:471
+#, fuzzy
 msgid "_Memory"
-msgstr "_Muisti"
+msgstr "_Memory"
 
 #: resources/ui/performance_page/cpu.blp:481
 #: resources/ui/performance_page/disk.blp:404
@@ -635,8 +690,9 @@ msgstr "_Muisti"
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
 #: resources/ui/performance_page/cpu.blp:476
+#, fuzzy
 msgid "_Disk"
-msgstr "_Levy"
+msgstr "_Disk"
 
 #: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:409
@@ -644,8 +700,9 @@ msgstr "_Levy"
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
 #: resources/ui/performance_page/cpu.blp:481
+#, fuzzy
 msgid "_Network"
-msgstr "_Verkko"
+msgstr "_Network"
 
 #: resources/ui/performance_page/cpu.blp:491
 #: resources/ui/performance_page/disk.blp:414
@@ -653,8 +710,9 @@ msgstr "_Verkko"
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
 #: resources/ui/performance_page/cpu.blp:486
+#, fuzzy
 msgid "_GPU"
-msgstr "_Näytönohjain"
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:499
 #: resources/ui/performance_page/disk.blp:422
@@ -662,388 +720,403 @@ msgstr "_Näytönohjain"
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
 #: resources/ui/performance_page/cpu.blp:494
+#, fuzzy
 msgid "_Copy"
-msgstr "_Kopioi"
+msgstr "_Copy"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
 msgid "Active time"
-msgstr "Aktiivisuusaika"
+msgstr "Час активності"
 
 #: resources/ui/performance_page/disk.blp:122
 msgid "Disk transfer rate"
-msgstr "Levyn siirtonopeus"
+msgstr "Швидкість передачі даних диска"
 
 #: resources/ui/performance_page/disk.blp:211
 msgid "Average response time"
-msgstr "Keskimääräinen vasteaika"
+msgstr "Середній час відгуку"
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr "Lukunopeus"
+msgstr "Швидкість зчитування"
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr "Kirjoitusnopeus"
+msgstr "Швидкість запису"
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr "Kapasiteetti:"
+msgstr "Ємність:"
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
-msgstr "Alustettu:"
+msgstr "Відформатований:"
 
 #: resources/ui/performance_page/disk.blp:325
 msgid "System disk:"
-msgstr "Järjestelmälevy:"
+msgstr "Системний диск:"
 
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
 msgid "Type:"
-msgstr "Tyyppi:"
+msgstr "Тип:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr "Käyttö yhteensä"
+msgstr "Загальне використання"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr "Videon enkoodaus"
+msgstr "Кодування відео"
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr "Videon dekoodaus"
+msgstr "Декодування відео"
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr "Muistinkulutus"
+msgstr "Використання пам'яті"
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
-msgstr "Kellotaajuus"
+msgstr "Тактова частота"
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr "Virrankulutus"
+msgstr "Енергоспоживання"
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr "Muistin nopeus"
+msgstr "Швидкість пам'яті"
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
-msgstr "Lämpötila"
+msgstr "Температура"
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr "OpenGL-versio:"
+msgstr "OpenGL версія:"
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr "Vulkan-versio:"
+msgstr "Vulkan версія:"
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr "PCI Express -nopeus:"
+msgstr "Швидкість PCI Express:"
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr "PCI-väylän osoite:"
+msgstr "Адреса шини PCI:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr "Jotkin tiedot vaativat ylläpitäjän oikeuksia"
+msgstr "Для отримання певної інформації потрібні права адміністратора"
 
 #: resources/ui/performance_page/memory.blp:29
+#, fuzzy
 msgid "_Authenticate"
-msgstr "_Tunnistaudu"
+msgstr "_Authenticate"
 
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319 src/apps_page/mod.rs:1010
+#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1010
 #: src/performance_page/mod.rs:318
 msgid "Memory"
-msgstr "Muisti"
+msgstr "Пам'ять"
 
 #: resources/ui/performance_page/memory.blp:130
+#, fuzzy
 msgid "Memory composition"
-msgstr "Muistin kulutus"
+msgstr "Складові пам'яті"
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr "Käytössä"
+msgstr "Використовується"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr "Saatavilla"
+msgstr "Доступно"
 
 #: resources/ui/performance_page/memory.blp:217
+#, fuzzy
 msgid "Committed"
-msgstr "Kommitoitu"
+msgstr "Committed"
 
 #: resources/ui/performance_page/memory.blp:240
 msgid "Cached"
-msgstr "Välimuistissa"
+msgstr "Кешовано"
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr "Swap-tilaa saatavilla"
+msgstr "Доступний своп"
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr "Swap-tilaa käytetty"
+msgstr "Використаний своп"
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr "Nopeus:"
+msgstr "Швидкість:"
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
-msgstr "Paikkoja käytetty:"
+msgstr "Слоти використані:"
 
 #: resources/ui/performance_page/memory.blp:336
 msgid "Form factor:"
-msgstr "Kantakoko:"
+msgstr "Форм-фактор:"
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr "Läpivienti"
+msgstr "Пропускна здатність"
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr "Lähetys"
+msgstr "Надіслати"
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr "Vastaanotto"
+msgstr "Отримано"
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
-msgstr "Liitännän nimi:"
+msgstr "Ім'я інтерфейсу:"
 
 #: resources/ui/performance_page/network.blp:206
 msgid "Connection type:"
-msgstr "Yhteyden tyyppi:"
+msgstr "Тип з'єднання:"
 
 #: resources/ui/performance_page/network.blp:216
+#, fuzzy
 msgid "SSID:"
 msgstr "SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr "Signaalin voimakkuus:"
+msgstr "Сила сигналу:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "Enimmäisnopeus;:"
+msgstr "Максимальний бітрейт:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr "Taajuus:"
+msgstr "Частота:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr "Laiteosoite:"
+msgstr "Апаратна адреса:"
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr "IPv4-osoite:"
+msgstr "IPv4 адреса:"
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr "IPv6-osoite:"
+msgstr "IPv6 адреса:"
 
 #: resources/ui/performance_page/network.blp:403
+#, fuzzy
 msgid "Network Se_ttings"
-msgstr "_Verkkoasetukset"
+msgstr "Мережеві Se_ttings"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr "Yleiset asetukset"
+msgstr "Загальні параметри"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr "Päivitysnopeus"
+msgstr "Швидкість оновлення"
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr "Nopea"
+msgstr "Швидко"
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
-msgstr "Päivitä puolen sekunnin välein"
+msgstr "Оновлювати кожні півсекунди"
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
 #: src/preferences/page.rs:282
 msgid "Normal"
-msgstr "Tavallinen"
+msgstr "Нормально"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr "Päivitä sekunnin välein"
+msgstr "Оновлювати щосекунди"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr "Hidas"
+msgstr "Повільно"
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr "Päivitä 1,5 sekunnin välein"
+msgstr "Оновлюйте кожні півтори секунди"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
 msgid "Very Slow"
-msgstr "Erittäin hidas"
+msgstr "Дуже повільно"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr "Päivitä kahden sekunnin välein"
+msgstr "Оновлювати кожні 2 секунди"
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
-msgstr "Sovellussivun asetukset"
+msgstr "Сторінка налаштування програми"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr "Yhdistä prosessitilastot"
+msgstr "Об'єднана статистика процесів"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr "Muista järjestys"
+msgstr "Запам'ятати сортування"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-"uudelleenkäynnistyksen välillä"
+"Пам'ятати сортування списку програм і процесів під час перезапуску програми"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr "Kirjoita nimi tai PID etsiäksesi"
+msgstr "Введіть назву або PID для пошуку"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr "Ladataan..."
+msgstr "Завантаження..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr "Suorituskyky"
+msgstr "Продуктивність"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:447
-#: src/apps_page/mod.rs:400
+#: resources/ui/window.blp:113 src/apps_page/mod.rs:400
 msgid "Apps"
-msgstr "Sovellukset"
+msgstr "Програми"
 
 #: resources/ui/window.blp:124
+#, fuzzy
 msgid "_Preferences"
-msgstr "_Asetukset"
+msgstr "_Preferences"
 
 #: resources/ui/window.blp:129
+#, fuzzy
 msgid "_About MissionCenter"
-msgstr "_Tietoja - Tehtäväkeskus"
+msgstr "_About MissionCenter"
 
-#: src/apps_page/mod.rs:1037 src/apps_page/mod.rs:992
+#: src/apps_page/mod.rs:992
 msgid "Name"
-msgstr "Nimi"
+msgstr "Назва"
 
 #: src/apps_page/mod.rs:1043 src/apps_page/mod.rs:998
+#, fuzzy
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1061 src/apps_page/mod.rs:1016
+#: src/apps_page/mod.rs:1016
 msgid "Disk"
-msgstr "Levy"
+msgstr "Диск"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr "Pysäytä sovellus"
+msgstr "Зупинити програму"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr "Pakota sovelluksen pysäytys"
+msgstr "Примусова зупинка"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
 msgid "Stop Process"
-msgstr "Pysäytä prosessi"
+msgstr "Зупинити процес"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr "Pakota prosessin pysäytys"
+msgstr "Примусова зупинка процесу"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
+#, fuzzy
 msgid ""
 "In use ({}B)\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Käytössä ({} B)\n"
+"In use ({}B)\n"
 "\n"
-"Muistin käyttö käyttöjärjestelmän ja käynnissä olevien sovellusten toimesta"
+"Memory used by the operating system and running applications"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
+#, fuzzy
 msgid ""
 "Modified ({}B)\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Muokattu ({} t)\n"
+"Modified ({}B)\n"
 "\n"
-"Muisti, jonka sisältö tulee kirjoittaa levylle, ennen kuin sitä on "
-"mahdollista käyttää toisen prosessin toimesta"
+"Memory whose contents must be written to disk before it can be used by "
+"another process"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
+#, fuzzy
 msgid ""
 "Standby ({}B)\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Lepo ({} t)\n"
+"Standby ({}B)\n"
 "\n"
-"Muisti, joka sisältää välimuistiin asetettua dataa ja koodia, joka ei ole "
-"aktiivisessa käytössä"
+"Memory that contains cached data and code that is not actively in use"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
+#, fuzzy
 msgid ""
 "Free ({}B)\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Vapaa ({} t)\n"
+"Free ({}B)\n"
 "\n"
-"Muisti, joka ei tällä hetkellä ole käytössä, ja otetaan käyttöön, kun "
-"käyttöjärjestelmä, ajurit tai sovellukset tarvitsevat muistia"
+"Memory that is not currently in use, and that will be repurposed first when "
+"the operating system, drivers, or applications need more memory"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
 #: src/performance_page/mod.rs:371
+#, fuzzy
 msgid "Disk {} ({})"
-msgstr "Levy {} ({})"
+msgstr "Disk {} ({})"
 
 #: src/performance_page/mod.rs:376 src/performance_page/mod.rs:375
+#, fuzzy
 msgid "HDD"
 msgstr "HDD"
 
 #: src/performance_page/mod.rs:377 src/performance_page/mod.rs:376
+#, fuzzy
 msgid "SSD"
 msgstr "SSD"
 
 #: src/performance_page/mod.rs:378 src/performance_page/mod.rs:377
+#, fuzzy
 msgid "NVMe"
 msgstr "NVMe"
 
 #: src/performance_page/mod.rs:379 src/performance_page/mod.rs:378
+#, fuzzy
 msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/mod.rs:380 src/performance_page/mod.rs:379
+#, fuzzy
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1057,98 +1130,105 @@ msgstr "iSCSI"
 #: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
 #: src/performance_page/cpu.rs:307 src/performance_page/network.rs:404
 #: src/performance_page/network.rs:441 src/performance_page/network.rs:519
+#, fuzzy
 msgid "Unknown"
-msgstr "Tuntematon"
+msgstr "Unknown"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
 #: src/performance_page/mod.rs:450
+#, fuzzy
 msgid "Ethernet"
 msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
 #: src/performance_page/mod.rs:451
+#, fuzzy
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
 #: src/performance_page/mod.rs:452
+#, fuzzy
 msgid "Other"
-msgstr "Muu"
+msgstr "Other"
 
 #: src/performance_page/mod.rs:541
+#, fuzzy
 msgid "GPU {}"
-msgstr "Näytönohjain {}"
+msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
 msgid "{}: {} {}bps"
-msgstr "{}: {} {} bps"
+msgstr ""
 
-#: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
+#: src/performance_page/cpu.rs:286
 msgid "Supported"
-msgstr "Tuettu"
+msgstr "Підтримується"
 
-#: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
-#: src/performance_page/cpu.rs:288
+#: src/performance_page/cpu.rs:288 src/performance_page/gpu.rs:266
 msgid "Unsupported"
-msgstr "Ei tuettu"
+msgstr "Не підтримується"
 
-#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
-#: src/performance_page/cpu.rs:296
+#: src/performance_page/cpu.rs:296 src/performance_page/disk.rs:223
 msgid "Yes"
-msgstr "Kyllä"
+msgstr "Так"
 
-#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
-#: src/performance_page/cpu.rs:298
+#: src/performance_page/cpu.rs:298 src/performance_page/disk.rs:225
 msgid "No"
-msgstr "Ei"
+msgstr "Ні"
 
 #: src/performance_page/cpu.rs:698
 msgid "Utilization over {} seconds"
-msgstr "Käyttö {} sekunnin aikana"
+msgstr ""
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
 #: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
 #: src/performance_page/network.rs:605
+#, fuzzy
 msgid "{} seconds"
-msgstr "{} sekuntia"
+msgstr "{} seconds"
 
 #: src/performance_page/disk.rs:251
+#, fuzzy
 msgid "{} {}{}B/s"
-msgstr "{} {}{} t/s"
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
 #: src/performance_page/network.rs:430 src/performance_page/network.rs:415
 #: src/performance_page/network.rs:421 src/performance_page/network.rs:429
+#, fuzzy
 msgid "{} {}bps"
-msgstr "{} {} bps"
+msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
+#, fuzzy
 msgid "N/A"
-msgstr "-"
+msgstr "N/A"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr "Jiri Grönroos"
-
-#: resources/ui/performance_page/cpu.blp:74
-msgid "% Utilization"
-msgstr "%-käyttö"
-
-#: src/performance_page/mod.rs:695
-msgid "{}: {} {}bps {}: {} {}bps"
-msgstr "{}: {} {} bps {}: {} {} bps"
+msgstr "Перекладач"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
+"Наразі програма підтримує лише моніторинг, наприклад, ви не можете зупиняти "
+"процеси"
+
+#: resources/ui/performance_page/cpu.blp:74
+msgid "% Utilization"
+msgstr "% Використання"
+
+#: src/performance_page/mod.rs:695
+#, fuzzy
+msgid "{}: {} {}bps {}: {} {}bps"
+msgstr "{}: {} {}bps {}: {} {}bps"
 
 #: src/performance_page/cpu.rs:655
+#, fuzzy
 msgid "% Utilization over {} seconds"
-msgstr "%-käyttö {} sekunnin aikana"
-
-#~ msgid "_Quit"
-#~ msgstr "_Lopeta"
+msgstr "% Utilization over {} seconds"
