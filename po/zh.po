@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-21 14:30+0000\n"
+"PO-Revision-Date: 2023-09-26 10:21+0000\n"
 "Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
@@ -162,26 +162,26 @@ msgid ""
 msgstr "通过 QwertyChouskie 在整个应用程序中实现更智能的四舍五入和数值显示精度"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
+#, fuzzy
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
-msgstr ""
+msgstr "使用 metainfo 而不是 appdata 作为 metadata， by David Guglielmi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "修复："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
-#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
-msgstr "修复作为本机软件包安装时未在菜单的应用程序列表中显示的问题"
+msgstr "修复了本机安装的浏览器未显示在 Fedora 的应用程序列表中的回归问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
-msgstr ""
+msgstr "修复了 Flatpak 应用程序未显示在 Archlinux Plasma 上的应用程序列表中的回归"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 #, fuzzy
@@ -193,29 +193,29 @@ msgstr "修复某些用户的应用程序和进程列表为空的bug"
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
-msgstr ""
+msgstr "将一些与性能相关的日志移至 g_debug，以防止系统日志滥发"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "虚拟化："
+msgstr "翻译："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "新韩文翻译 by Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "新荷兰语翻译 by Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "新波兰语翻译 by _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
+#, fuzzy
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "New translation to Italian by beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 #, fuzzy
@@ -224,26 +224,30 @@ msgstr "由 Rafael Fontenelle 修复葡萄牙语翻译"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
+#, fuzzy
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Updated Spanish translation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
+#, fuzzy
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Updated Finnish translation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
+#, fuzzy
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Updated Russian translation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "更新的简体中文翻译"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
+#, fuzzy
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Updated Greek translation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
@@ -469,7 +473,7 @@ msgstr "在CPU性能页面上展示哪个图表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "在CPU图形中显示内核时钟"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "Which page is shown on application startup, in the performance tab"
@@ -556,7 +560,7 @@ msgstr "逻辑处理器"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "显示内核时钟"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
