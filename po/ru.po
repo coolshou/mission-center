@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-26 10:21+0000\n"
-"Last-Translator: Alex Mit <klepoz.672@mail.ru>\n"
+"PO-Revision-Date: 2023-09-26 16:17+0000\n"
+"Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -99,8 +99,9 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Мониторинг общего использования GPU, использования видеокодеров и декодеров, "
-"использования памяти и энергопотребления, используя популярный проект NVTOP"
+"Мониторинг общего использования графического процессора, использования "
+"видеокодеров и декодеров, использования памяти и энергопотребления, "
+"используя популярный проект NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
@@ -154,13 +155,15 @@ msgstr "Отсутствие использования сети для кажд
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "No per-process GPU usage"
-msgstr "Отсутствие использования GPU для каждого процесса"
+msgstr "Отсутствие использования графического процессора для каждого процесса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-msgstr "Поддержка GPU эксперементальна, поддерживаются GPU от AMD и nVidia"
+msgstr ""
+"Поддержка графического процессора экспериментальна, поддерживаются "
+"графические процессоры от AMD и nVidia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
@@ -480,7 +483,9 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-msgstr "Обновлён дизайн вкладки GPU для адаптивности к меньшим разрешениям"
+msgstr ""
+"Обновлён дизайн вкладки графического процессора для адаптивности к меньшим "
+"разрешениям"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
