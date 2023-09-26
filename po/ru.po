@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-08-29 00:53+0000\n"
-"Last-Translator: Alex Mit <klepoz.672@mail.ru>\n"
+"PO-Revision-Date: 2023-09-26 10:21+0000\n"
+"Last-Translator: Alexmelman88 <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -171,202 +171,219 @@ msgstr "Отзывы, предложения, сообщения об ошибк
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"Добавлена опция в контекстное меню для отображения времени работы ядра на "
+"графиках процессора"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Добавлена температура процессора, где это возможно"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"Реализация более точного округления и отображения точности значений во всем "
+"приложении от QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"Использование metainfo вместо appdata для метаданных приложения by David "
+"Guglielmi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Исправления:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
-#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
-"Исправить браузеры, установленных как нативные пакеты, которые не "
-"отображаются в Списке приложений"
+"Исправлена ошибка, из-за которой нативно установленные браузеры не "
+"отображались в списке приложений в Fedora"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"Исправлена ошибка, из-за которой приложения Flatpak не отображались в списке "
+"приложений в ArchLinux Plasma"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
-#, fuzzy
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
-"Исправлена ошибка, из-за которой список приложений и процессов был пуст для "
-"некоторых пользователей"
+"Исправлена ошибка, при которой некорректно обрабатывался файл рабочего стола "
+"приложения Карты"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"Перемещены некоторые журналы, связанные с производительностью, в g_debug для "
+"предотвращения спама в системных журналах"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Виртуализация:"
+msgstr "Переводы:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Новый перевод на корейский язык от Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Новый перевод на голландский язык от Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Новый перевод на польский язык от _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "Новый перевод на итальянский язык от beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
-#, fuzzy
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr "Исправление перевода на португальский язык от Rafael Fontenelle"
+msgstr ""
+"Новый перевод на португальский язык (Бразилия) от Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Обновлен перевод на испанский язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Обновлен перевод на финский язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Обновлен перевод на русский язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "Обновлен перевод на китайский (упрощенный) язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Обновлен перевод на греческий язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Добавлен немецкий перевод от TecCheck"
+msgstr "Обновлен перевод на немецкий язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"Выпущено исправление, устраняющее ошибку, из-за которой у некоторых "
+"пользователей приложение не отображало никакой информации"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "Новый значок приложения от QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Добавлена возможность остановки и принудительной остановки приложений и "
+"процессов"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"Запущенные приложения теперь отображаются более достоверно и должны "
+"отображаться если не все, то большинство запущенных приложений"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
 msgstr ""
+"Экспериментальная поддержка приложений Snap в списке запущенных приложений"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"Добавлена настройка отображения потребления ресурсов отдельно для каждого "
+"процесса или суммарно с их дочерними процессами"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"Добавлена настройка для включения постоянной сортировки в списке приложений "
+"и процессов"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"Сбор данных стал более универсальным и позволяет быстрее и проще добавлять "
+"новые функции"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "Теперь приложение может быть собрано из GNOME Builder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Новый перевод на норвежский язык Bokmål от Allan Nordhøy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Новый перевод на русский язык от Ивана Маслихова"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "Новый перевод на словацкий язык от mthw0"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Новый перевод на греческий язык от Yiannis Ioannides"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "Новый перевод на китайский (упрощенный) язык от foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Новый перевод на французский язык от Link Mauve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Новый перевод на венгерский язык от Kovács Bálint Hunor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
-#, fuzzy
 msgid "Updated Czech translation"
-msgstr "Добавление перевода на чешский язык от ondra05"
+msgstr "Обновлен перевод на чешский язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
-#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr "Добавление перевода на португальский язык от Rilson Joás"
+msgstr "Обновлен перевод на португальский язык"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Исправления в переводах на китайский язык от foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr "Добавлен испанский перевод Оскара Фернандеса Диаса"
+msgstr "Добавлен перевод на испанский язык от Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
@@ -402,16 +419,16 @@ msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
-"При расчете размеров кэша учитывайте несколько ядер ЦП и совместное "
-"использование кэша"
+"Учет нескольких ядер процессора и совместного использования кэш-памяти при "
+"расчете объема кэш-памяти"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
-"Исправить браузеры, установленных как нативные пакеты, которые не "
-"отображаются в Списке приложений"
+"Исправлена ситуация, когда браузеры, установленные как нативные пакеты, не "
+"отображались в списке \"Приложения\""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
@@ -527,9 +544,8 @@ msgstr ""
 "\"Приложения\""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
-#, fuzzy
 msgid "The sorting direction of the Apps page view"
-msgstr "Направление сортировки представления Страницы приложений"
+msgstr "Направление сортировки представления страницы \"Приложения\""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
@@ -537,7 +553,7 @@ msgstr "Какой график отображается на странице �
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Показывать время работы ядра на графиках ЦП"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
@@ -617,7 +633,7 @@ msgstr "L3 кэш:"
 
 #: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
-msgstr "Поменять Г_раф на"
+msgstr "Изменить г_рафик на"
 
 #: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
@@ -629,7 +645,7 @@ msgstr "_Логические процессоры"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Показать время работы ядра"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -983,7 +999,7 @@ msgstr "_Параметры"
 
 #: resources/ui/window.blp:129
 msgid "_About MissionCenter"
-msgstr "_О MissionCenter"
+msgstr "_О приложении"
 
 #: src/apps_page/mod.rs:1037 src/apps_page/mod.rs:992
 msgid "Name"
@@ -1115,12 +1131,11 @@ msgstr "Другой"
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr "GPU {}"
+msgstr "Графический процессор {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}бит/с"
 
 #: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
 msgid "Supported"
@@ -1142,9 +1157,8 @@ msgid "No"
 msgstr "Нет"
 
 #: src/performance_page/cpu.rs:698
-#, fuzzy
 msgid "Utilization over {} seconds"
-msgstr "% Использования за {} секунд"
+msgstr "Использование за {} секунд"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
@@ -1155,13 +1169,13 @@ msgstr "{} секунд"
 
 #: src/performance_page/disk.rs:251
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}Б/c"
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
 #: src/performance_page/network.rs:430 src/performance_page/network.rs:415
 #: src/performance_page/network.rs:421 src/performance_page/network.rs:429
 msgid "{} {}bps"
-msgstr "{} {}bps"
+msgstr "{} {}бит/с"
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
 #: src/performance_page/network.rs:454 src/performance_page/network.rs:470
@@ -1170,15 +1184,17 @@ msgstr "Недоступно"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr "Ivan Maslikhov <qustioof@gmail.com>"
+msgstr ""
+"Ivan Maslikhov <qustioof@gmail.com>\n"
+"Aleksandr Melman <alexmelman88@gmail.com>"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "The application currently only supports monitoring, you cannot stop "
 "processes for example"
 msgstr ""
-"Приложение поддерживает только мониторинг, отсутствие поддержки управления "
-"процессами"
+"В настоящее время приложение поддерживает только мониторинг, вы не можете "
+"остановить процессы, например"
 
 #: resources/ui/performance_page/cpu.blp:74
 msgid "% Utilization"
@@ -1186,7 +1202,7 @@ msgstr "% Использования"
 
 #: src/performance_page/mod.rs:695
 msgid "{}: {} {}bps {}: {} {}bps"
-msgstr "{}: {} {}bps {}: {} {}bps"
+msgstr "{}: {} {}бит/с {}: {} {}бит/с"
 
 #: src/performance_page/cpu.rs:655
 msgid "% Utilization over {} seconds"
