@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
 "PO-Revision-Date: 2023-09-26 10:21+0000\n"
-"Last-Translator: Alexmelman88 <alexmelman88@gmail.com>\n"
+"Last-Translator: Alex Mit <klepoz.672@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -406,7 +406,7 @@ msgid ""
 "Apps and Processes list"
 msgstr ""
 "Если процесс использует большое количество процессора или оперативной "
-"памяти, он теперь выделяется в списке Приложения и Процессы"
+"памяти, он теперь выделяется в списке \"Приложения\" и \"Процессы\""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
