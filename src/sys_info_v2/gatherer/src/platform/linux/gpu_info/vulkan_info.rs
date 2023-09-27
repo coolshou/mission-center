@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/src/gpu/vulkan_info.rs
+/* sys_info_v2/gatherer/src/platform/linux/gpu_info/vulkan_info.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -44,7 +44,7 @@ impl VulkanInfo {
     pub unsafe fn new() -> Option<Self> {
         type Void = std::ffi::c_void;
 
-        let lib = match minidl::Library::load("/usr/lib/x86_64-linux-gnu/libvulkan.so.1\0") {
+        let lib = match minidl::Library::load("libvulkan.so.1\0") {
             Err(e) => {
                 critical!(
                     "Gatherer::GPU",
