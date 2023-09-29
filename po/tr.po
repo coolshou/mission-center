@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-13 07:51+0000\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"PO-Revision-Date: 2023-09-30 11:01+0000\n"
+"Last-Translator: Emre <emregokcew10@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -161,193 +161,217 @@ msgstr "Yorum, öneri, hata raporu ve katkılarınızı bekliyoruz"
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"CPU grafiklerinde çekirdek zamanlarını göstermek için içerik menüsüne bir "
+"seçenek ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Mümkünse CPU sıcaklığını ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"QwertyChouskie tarafından uygulama genelinde daha akıllı yuvarlama ve "
+"değerlerin hassasiyetini görüntüleme"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"David Guglielmi tarafından uygulama meta verileri için appdata yerine "
+"metainfo kullanın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Düzeltmeler:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
+"Fedora'da yerel olarak yüklenen tarayıcıların uygulamalar listesinde "
+"görünmemesine neden olan bir gerileme düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"Flatpak uygulamalarının ArchLinux Plasma'daki uygulamalar listesinde "
+"görünmemesine neden olan bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
+"Haritalar uygulaması masaüstü dosyasının doğru şekilde ayrıştırılmamasına "
+"neden olan bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"Sistem günlüklerinin spamlanmasını önlemek için performansla ilgili bazı "
+"günlükler g_debug'a taşındı"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Sanallaştırma:"
+msgstr "Çeviriler:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Seong-ho Cho tarafından Korece'ye yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Gert tarafından Felemenkçe'ye yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Lehçe'ye _Ghost_ tarafından yapılan yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "beppeilgommista tarafından İtalyanca'ya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
 msgstr ""
+"Gérson da Fonseca Henzel tarafından Portekizce'ye (Brezilya) yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "İspanyolca çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Fince çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Güncellenmiş Rusça çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "Çince (Basitleştirilmiş) çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Yunanca çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Almanca çeviri eklendi, teşekkürler TecCheck"
+msgstr "Almanca çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"Uygulamanın bazı kullanıcılar için herhangi bir bilgi görüntülememesine "
+"neden olan bir hatayı düzeltmek için düzeltme sürümü"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "QwertyChouskie'den yeni uygulama simgesi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Uygulamaları ve işlemleri durdurma ve durdurmaya zorlama özelliği ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"Çalışan uygulamalar artık daha güvenilir bir şekilde gösterilmektedir ve "
+"çalışan tüm uygulamaları olmasa da çoğunu yansıtmalıdır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
+msgstr "Çalışan uygulamalar listesinde Snap uygulamaları için deneysel destek"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"Kaynak tüketimini süreç başına ayrı ayrı veya alt süreçlerle birlikte "
+"kümelenmiş olarak göstermek için bir ayar eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"Uygulamalar ve işlemler listesinde kalıcı sıralamayı etkinleştirmek için bir "
+"ayar eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"Veri toplama artık daha çok yönlüdür ve yeni özelliklerin daha hızlı ve daha "
+"kolay eklenmesine olanak tanıyacaktır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "Uygulama artık GNOME Builder'dan oluşturulabilir"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Norveççe Bokmål diline Allan Nordhøy tarafından yapılan yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Ivan Maslikhov tarafından Rusça'ya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "mthw0 tarafından Slovakça'ya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Yiannis Ioannides tarafından Yunancaya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "foxer NS tarafından Çinceye (Basitleştirilmiş) yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Link Mauve tarafından Fransızca'ya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Kovács Bálint Hunor tarafından Macarcaya yeni çeviri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
 msgid "Updated Czech translation"
-msgstr ""
+msgstr "Çekçe çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
 msgid "Updated Portuguese translation"
-msgstr ""
+msgstr "Portekizce çeviri güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Foxer NS tarafından yapılan Çince çeviriler için düzeltmeler"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Óscar Fernández Díaz'ın İspanyolca çevirisini ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
 msgid ""
@@ -368,11 +392,13 @@ msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Bir işlem büyük miktarda CPU veya RAM kullandığında artık Uygulamalar ve "
+"İşlemler listesinde vurgulanır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "ARM64 için derlemeye destek ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
@@ -380,38 +406,44 @@ msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"Önbellek boyutlarını hesaplarken birden fazla CPU çekirdeğini ve önbellek "
+"paylaşımını dikkate alın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"Yerel paket olarak yüklenen tarayıcıların Uygulamalar listesinde görünmemesi "
+"sorunu giderildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr ""
+msgstr "Peter Dave Hello tarafından Geleneksel Çince için çeviri güncellemeleri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
+msgstr "Rafael Fontenelle tarafından Portekizce için çeviri düzeltmeleri"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
+"Maximilian'dan yalnızca başka bir IPv6 yoksa bağlantı yerel IPv6 adresini "
+"göster"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
+msgstr "Peter Dave Hello tarafından Geleneksel Çince yerel ayarı ekle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "Renner0E tarafından uygulama menüsü için kategori ekle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
@@ -419,6 +451,8 @@ msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
+"dmidecode` çıktısını ayrıştırırken paniğe yol açan bir ayrıştırma hatasını "
+"düzeltin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
@@ -426,21 +460,25 @@ msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
+"CPU temel hız bilgisi alınırken `/sys/devices/system/cpu/cpu0/cpufreq/"
+"base_frequency` mevcut değilse bir geri dönüş kullanın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
+"GPU sekmesi kullanıcı arayüzünü daha küçük çözünürlükler için daha "
+"uyarlanabilir olacak şekilde güncelleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "ondra05 tarafından Çekçe çeviri eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "Rilson Joás tarafından Portekizce çeviri eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
@@ -448,16 +486,20 @@ msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
+"Hannes Kuchelmeister tarafından masaüstü ortamlarının arama işlevini "
+"geliştirmek için masaüstü dosyasına anahtar kelimeler ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
+"Bazı kullanıcılar için uygulama ve işlem listesinin boş olmasına neden olan "
+"bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "Sistem ağır yük altındayken meydana gelen bir çökmeyi düzeltin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
@@ -466,41 +508,46 @@ msgstr "İlk resmi sürüm!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Uygulama başlatıldığında hangi sayfa gösterilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
+"Veriler ne kadar hızlı yenilenmeli ve kullanıcı arayüzü ne kadar hızlı "
+"güncellenmelidir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Üst ve alt süreç istatistikleri ayrı ayrı gösterilir veya yukarı doğru "
+"birleştirilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Sütun sıralaması uygulama yeniden başlatıldığında da korunur"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Uygulamalar sayfa görünümünün sıralandığı sütun kimliği"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Uygulamalar sayfa görünümünün sıralama yönü"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "CPU performansı sayfasında hangi grafik gösterilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "CPU grafiklerinde çekirdek sürelerini gösterme"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
+"Uygulama başlangıcında hangi sayfanın gösterileceği, performans sekmesinde"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
 #: src/performance_page/mod.rs:264 src/apps_page/mod.rs:1004
@@ -585,7 +632,7 @@ msgstr "Mantıksal İşl_emciler"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Çekirdek Zamanlarını Göster"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -1073,9 +1120,8 @@ msgid "GPU {}"
 msgstr "Ekran Kartı {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
 msgid "Supported"
@@ -1097,9 +1143,8 @@ msgid "No"
 msgstr "Hayır"
 
 #: src/performance_page/cpu.rs:698
-#, fuzzy
 msgid "Utilization over {} seconds"
-msgstr "% kullanım {} saniyede"
+msgstr "{} saniye boyunca kullanım"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
