@@ -8,18 +8,21 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-10-02 17:53+0000\n"
+"Last-Translator: Aly Mokhtari <alymokhtari7@gmail.com>\n"
+"Language-Team: Persian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/fa/>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "مرکز‌ مأموریت"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -29,21 +32,23 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "توسعه دهندگان مرکز مأموریت"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "میزان استفادهٔ منابع سیستم را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
+"میزان استفاده از پرادازشگر, حافظه، دیسک ذخیره سازی، شبکه و کارت گرافیگ سیستم "
+"خود را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
-msgstr ""
+msgstr "ویژگی‌ها:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
@@ -57,19 +62,19 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "میزان استفادهٔ رم و Swap را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "ببینید چگونه حافظه توسط سیستم مورد استفاده قرار می گیرد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "استفاده از دیسک و نرخ انتقال آن را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "استفاده از شبکه و سرعت انتقال آن را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -77,16 +82,20 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"اطلاعات رابط شبکه مانند نام کارت شبکه، نوع اتصال (Wi-Fi یا Ethernet)، سرعت "
+"های بی سیم و فرکانس، آدرس سخت افزار IP را مشاهده کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"پایش استفاده کلی کارت گرافیک، رمزگذاری ویدئو و استفاده از رمزگشایی، استفاده "
+"از حافظه و مصرف انرژی، توسط پروژه محبوب NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "تجزیه و تحلیل استفاده از منابع توسط برنامه و فرآیند"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
@@ -100,23 +109,24 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "استفاده از GTK4 و Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Written in Rust"
-msgstr ""
+msgstr "نوشته شده با زبان برنامه نویسی راست (Rust)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr ""
+msgstr "قرار‌دادن Flatpak در اولویت"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
+"محدودیت ها برنامه (کار هايي در زمینه رفع محدودیت‌ها برنامه در حال انجام است):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "درصد استفاده از دیسک ممکن است دقیق نباشد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
@@ -157,7 +167,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "اصلاحات:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
@@ -185,61 +195,64 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
 msgid "Translations:"
-msgstr ""
+msgstr "ترجمه‌ها:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "ترجمه‌ای جدید به زبان کره‌ای توسط Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "ترجمه‌ای جدید به زبان هلندی توسط Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "ترجمه‌ای جدید به زبان لهستانی توسط _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "ترجمه‌ای جدید به زبان ایتالیایی توسط beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
 msgstr ""
+"ترجمه‌ای جدید به زبان پرتغالی (پرتغالی برزیل) توسط Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه اسپانیایی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه فنلاندی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه روسی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه چینی (نسخه ساده‌شده)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه یونانی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
 msgid "Updated German translation"
-msgstr ""
+msgstr "به روز رسانی ترجمه آلمانی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"انتشار اصلاحیه موقت (Hotfix) برای رفع یک مشکل که باعث شد برنامه هیچ گونه "
+"اطلاعاتی را برای برخی از کاربران نشان ندهد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
