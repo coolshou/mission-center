@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
 "PO-Revision-Date: 2023-10-01 13:16+0000\n"
-"Last-Translator: Eryk Michalak <gnu.ewm@protonmail.com>\n"
+"Last-Translator: _Ghost_ <Krzysztof.siekierski@interia.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
 "Language: pl\n"
@@ -513,7 +513,7 @@ msgstr "Wątki"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
-msgstr ""
+msgstr "Uchwyty"
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
@@ -675,7 +675,7 @@ msgstr "Ogólne w_ykorzystanie"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr ""
+msgstr "Kodowanie wideo"
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
