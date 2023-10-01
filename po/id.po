@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-24 09:07+0000\n"
-"Last-Translator: Muhammad Hasan Firdaus <hasanteam008@gmail.com>\n"
+"PO-Revision-Date: 2023-10-01 13:16+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/id/>\n"
 "Language: id\n"
@@ -93,93 +93,112 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Pantau penggunaan GPU secara keseluruhan, penggunaan encoder dan decoder "
+"video, penggunaan memori, dan konsumsi daya, didukung oleh proyek NVTOP yang "
+"populer"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Lihat rincian penggunaan sumber daya berdasarkan aplikasi dan proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Mendukung tampilan ringkasan yang diperkecil untuk pemantauan sederhana"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"Gunakan rendering OpenGL untuk semua grafik dalam upaya mengurangi CPU dan "
+"penggunaan sumber daya secara keseluruhan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Menggunakan GTK4 dan Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Written in Rust"
-msgstr ""
+msgstr "Dibuat dengan Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak pertama"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
+"Keterbatasan (ada pekerjaan yang sedang berlangsung untuk mengatasi semua "
+"ini):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "Persentase pemanfaatan disk mungkin tidak akurat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Tidak ada penggunaan jaringan per proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process GPU usage"
-msgstr ""
+msgstr "Tidak ada penggunaan GPU per proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Dukungan GPU bersifat eksperimental dan hanya GPU AMD dan nVidia yang dapat "
+"dimonitor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Komentar, saran, laporan bug, dan kontribusi dipersilakan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"Tambahkan opsi, ke menu konteks, untuk menunjukkan waktu kernel, dalam "
+"grafik CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Tambahkan suhu CPU, jika memungkinkan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"Penerapan pembulatan yang lebih cerdas dan menampilkan ketepatan nilai di "
+"seluruh aplikasi oleh QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"Gunakan metainfo sebagai pengganti appdata untuk metadata aplikasi oleh "
+"David Guglielmi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Perbaikan:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
+"Memperbaiki regresi di mana peramban yang terinstal secara bawaan tidak "
+"muncul di daftar aplikasi di Fedora"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"Memperbaiki masalah dimana aplikasi Flatpak tidak muncul di daftar aplikasi "
+"pada ArchLinux Plasma"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 msgid ""
