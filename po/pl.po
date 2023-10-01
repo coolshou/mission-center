@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-10-01 13:20+0000\n"
-"Last-Translator: _Ghost_ <Krzysztof.siekierski@interia.pl>\n"
+"PO-Revision-Date: 2023-10-02 17:53+0000\n"
+"Last-Translator: Eryk Michalak <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
 "Language: pl\n"
@@ -359,7 +359,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
 msgid "Add German translation by TecCheck"
-msgstr "Dodaj tłumaczenie niemieckie autorstwa TecCheck"
+msgstr "Dodano niemieckie tłumaczenie autorstwa TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid ""
@@ -449,7 +449,7 @@ msgstr "Pierwsze oficjalne wydanie!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Która strona jest pokazywana po uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
@@ -462,7 +462,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Sortowanie kolumn jest zachowywane po ponownym uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
@@ -470,11 +470,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Kolejność sortowania na stronie widoku aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Który wykres jest pokazywany na stronie wydajności procesora"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
