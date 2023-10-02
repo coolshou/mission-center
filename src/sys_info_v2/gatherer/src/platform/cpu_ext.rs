@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/src/platform/gpu_ext.rs
+/* sys_info_v2/gatherer/src/platform/cpu_ext.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,24 +18,23 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub mod gpu {
-    include!("../../common/gpu.rs");
+pub mod cpu {
+    include!("../../common/cpu.rs");
 }
 
-/// Trait that provides an interface for gathering GPU information.
-pub trait GpuInfoExt {
-    /// Creates a new instance of a struct that implements the `GpuInfo` trait.
+/// Trait that provides an interface for gathering CPU information.
+pub trait CpuInfoExt {
+    /// Creates a new instance of a struct that implements the `CpuInfo` trait.
     fn new() -> Self;
 
-    fn enumerate(&mut self) -> gpu::PciIds;
+    /// Returns the static information for the CPU.
+    fn static_info(&mut self) -> cpu::StaticInfo;
 
-    /// Returns the static information for all GPUs present in the system.
-    ///
-    /// Should be called multiple times until the `GpuStaticInfo::is_complete` filed is true.
-    fn static_info(&mut self) -> gpu::StaticInfo;
+    /// Returns the dynamic information for the CPU.
+    fn dynamic_info(&mut self) -> cpu::DynamicInfo;
 
-    /// Returns the dynamic information for all GPUs present in the system.
+    /// Returns dynamic information for each logical CPU present in the system.
     ///
-    /// Should be called multiple times until the `GpuDynamicInfo::is_complete` filed is true.
-    fn dynamic_info(&mut self) -> gpu::DynamicInfo;
+    /// Should be called multiple times until the `cpu::LogicalInfo::is_complete` filed is true.
+    fn logical_cpu_info(&mut self) -> cpu::LogicalInfo;
 }

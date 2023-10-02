@@ -18,10 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pub use cpu_ext::{cpu, CpuInfoExt};
 pub use gpu_ext::{gpu, GpuInfoExt};
-#[allow(unused_imports)]
-pub use platform_impl::GpuInfo;
+pub use platform_impl::{CpuInfo, GpuInfo};
 
+mod cpu_ext;
 mod gpu_ext;
 
 #[cfg(target_os = "linux")]

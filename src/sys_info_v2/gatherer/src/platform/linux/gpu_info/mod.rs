@@ -23,8 +23,7 @@ use std::collections::HashMap;
 use arrayvec::ArrayString;
 use lazy_static::lazy_static;
 
-use super::gpu;
-use super::GpuInfoExt;
+use super::{gpu, GpuInfoExt};
 
 lazy_static! {
     static ref INIT_NVTOP: () = unsafe {
