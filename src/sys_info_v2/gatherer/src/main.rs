@@ -21,10 +21,10 @@
 #[allow(unused_imports)]
 pub use arrayvec::ArrayVec;
 
-pub use apps::{AppDescriptor, AppPIDs, Apps};
+pub use apps::{AppPIDs, Apps};
 #[allow(unused_imports)]
 pub(crate) use logging::{critical, debug, error, info, message, warning};
-pub use processes::{ProcessDescriptor, ProcessState, Processes};
+pub use processes::Processes;
 pub use util::{to_binary, to_binary_mut};
 
 macro_rules! acknowledge {
@@ -58,7 +58,6 @@ macro_rules! data_ready {
 }
 
 mod apps;
-mod cpu;
 #[path = "../common/exit_code.rs"]
 mod exit_code;
 #[path = "../common/ipc/mod.rs"]
@@ -71,9 +70,9 @@ mod util;
 
 pub type ArrayString = arrayvec::ArrayString<256>;
 pub type ProcessStats = processes::Stats;
-pub type CpuStaticInfo = cpu::StaticInfo;
-pub type CpuDynamicInfo = cpu::DynamicInfo;
-pub type LogicalCpuInfo = cpu::LogicalInfo;
+pub type CpuStaticInfo = platform::cpu::StaticInfo;
+pub type CpuDynamicInfo = platform::cpu::DynamicInfo;
+pub type LogicalCpuInfo = platform::cpu::LogicalInfo;
 pub type GpuPciIds = platform::gpu::PciIds;
 pub type GpuStaticInfo = platform::gpu::StaticInfo;
 pub type GpuDynamicInfo = platform::gpu::DynamicInfo;
@@ -124,7 +123,7 @@ impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
 fn main() {
     use exit_code::ExitCode;
     use interprocess::local_socket::*;
-    use platform::GpuInfoExt;
+    use platform::{CpuInfoExt, GpuInfoExt};
     use shared_data::{SharedData, SharedDataContent};
     use std::io::Read;
 
@@ -160,6 +159,7 @@ fn main() {
         }
     };
 
+    let mut cpu_info = platform::CpuInfo::new();
     let mut gpu_info = platform::GpuInfo::new();
 
     let mut message = ipc::Message::Unknown;
@@ -218,7 +218,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::CpuStaticInfo(CpuStaticInfo::new());
+                data.content = SharedDataContent::CpuStaticInfo(cpu_info.static_info());
 
                 data_ready!(connection);
             }
@@ -226,7 +226,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::CpuDynamicInfo(CpuDynamicInfo::new());
+                data.content = SharedDataContent::CpuDynamicInfo(cpu_info.dynamic_info());
 
                 data_ready!(connection);
             }
@@ -234,7 +234,7 @@ fn main() {
                 acknowledge!(connection);
 
                 let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::LogicalCpuInfo(LogicalCpuInfo::new());
+                data.content = SharedDataContent::LogicalCpuInfo(cpu_info.logical_cpu_info());
 
                 data_ready!(connection);
             }

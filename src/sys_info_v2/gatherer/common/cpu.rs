@@ -18,11 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use super::{ArrayString, ArrayVec};
+use arrayvec::{ArrayString, ArrayVec};
 
 #[derive(Debug, Default, Clone)]
 pub struct StaticInfo {
-    pub name: ArrayString,
+    pub name: ArrayString<128>,
     pub logical_cpu_count: u32,
     pub socket_count: Option<u8>,
     pub base_frequency_khz: Option<u64>,
