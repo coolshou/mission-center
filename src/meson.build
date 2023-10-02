@@ -20,13 +20,20 @@ configure_file(
 )
 
 cargo_bin  = find_program('cargo')
+cargo_env = [ ]
+cargo_opt  = [ ]
+target_dir = ''
 
-cargo_env = get_option('cargo_env')
 if get_option('flatpak') == false
     cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
-    cargo_opt  = []
-else
-    cargo_opt  = []
+endif
+
+if get_option('sanitize') != 'none'
+    cargo_env += [ 'RUSTFLAGS=-Zsanitizer=' + get_option('sanitize') ]
+    cargo_env += [ 'CFLAGS=-fsanitize=' + get_option('sanitize') ]
+    cargo_env += [ 'CXXFLAGS=-fsanitize=' + get_option('sanitize') ]
+    cargo_opt += [ '-Zbuild-std', '--target=x86_64-unknown-linux-gnu' ]
+    target_dir = 'x86_64-unknown-linux-gnu'
 endif
 
 cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
@@ -40,6 +47,14 @@ else
   rust_target = 'debug'
 endif
 
+cargo_cmd = [
+  'env', cargo_env, cargo_bin
+]
+
+if get_option('sanitize') != 'none'
+    cargo_cmd += [ '+nightly' ]
+endif
+
 cargo_build = custom_target(
   'cargo-build',
   build_by_default: true,
@@ -50,7 +65,7 @@ cargo_build = custom_target(
   install_dir: get_option('bindir'),
   command: [
     'env', cargo_env,
-    cargo_bin, 'build',
-    cargo_opt, '&&', 'cp', 'src' / rust_target / meson.project_name(), '@OUTPUT@',
+    cargo_cmd, 'build', cargo_opt, '&&',
+    'cp', 'src' / target_dir / rust_target / meson.project_name(), '@OUTPUT@',
   ]
 )

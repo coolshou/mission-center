@@ -279,8 +279,7 @@
       "config-opts": [
         "-Dbuildtype=release",
         "-Db_lto=true",
-        "-Dflatpak=true",
-        "-Dcargo_env='CARGO_HOME=/run/build/missioncenter/cargo'"
+        "-Dflatpak=true"
       ],
       "sources": [
         {
