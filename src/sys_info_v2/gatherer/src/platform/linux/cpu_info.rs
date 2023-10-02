@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/src/cpu.rs
+/* sys_info_v2/gatherer/src/platform/linux/cpu_info.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,92 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use arrayvec::ArrayString;
 use lazy_static::lazy_static;
 
-use state::CpuStats;
-
-lazy_static! {
-    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
-    static ref CPU_COUNT: usize = num_cpus::get();
-}
-
-mod state {
-    use std::{cell::Cell, thread_local};
-
-    use super::*;
-
-    #[derive(Debug, Copy, Clone)]
-    pub struct CpuStats {
-        pub user: u64,
-        pub nice: u64,
-        pub system: u64,
-        pub irq: u64,
-        pub softirq: u64,
-        pub timestamp: std::time::Instant,
-    }
-
-    impl Default for CpuStats {
-        fn default() -> Self {
-            Self {
-                user: 0,
-                nice: 0,
-                system: 0,
-                irq: 0,
-                softirq: 0,
-                timestamp: std::time::Instant::now(),
-            }
-        }
-    }
-
-    impl CpuStats {
-        pub fn cpu_usage(&self, prev_measurement: &Self, core_count: usize) -> f32 {
-            let delta_time = self.timestamp - prev_measurement.timestamp;
-            let delta_work_time = ((self
-                .work_time()
-                .saturating_sub(prev_measurement.work_time())
-                as f32)
-                * 1000.)
-                / *HZ as f32;
-
-            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32)
-                .min(100.)
-        }
-
-        pub fn cpu_usage_kernel(&self, prev_measurement: &Self, core_count: usize) -> f32 {
-            let delta_time = self.timestamp - prev_measurement.timestamp;
-            let delta_work_time = ((self
-                .kernel_work_time()
-                .saturating_sub(prev_measurement.kernel_work_time())
-                as f32)
-                * 1000.)
-                / *HZ as f32;
-
-            (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32)
-                .min(100.)
-        }
-
-        fn work_time(&self) -> u64 {
-            self.user
-                .saturating_add(self.nice)
-                .saturating_add(self.system)
-                .saturating_add(self.irq)
-                .saturating_add(self.softirq)
-        }
-
-        fn kernel_work_time(&self) -> u64 {
-            self.system
-                .saturating_add(self.irq)
-                .saturating_add(self.softirq)
-        }
-    }
-
-    thread_local! {
-        pub static CPU_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; *CPU_COUNT]);
-        pub static KERNEL_USAGE_CACHE: Cell<Vec<f32>> = Cell::new(vec![0.; *CPU_COUNT]);
-
-        pub static CPU_STATS_CACHE: Cell<Vec<CpuStats>>  = Cell::new(vec![Default::default(); *CPU_COUNT + 1]);
-    }
-}
+use super::{cpu, CpuInfoExt};
 
 const PROC_STAT_USER: usize = 0;
 const PROC_STAT_NICE: usize = 1;
@@ -113,11 +31,99 @@ const PROC_STAT_SOFTIRQ: usize = 6;
 const PROC_STAT_GUEST: usize = 8;
 const PROC_STAT_GUEST_NICE: usize = 9;
 
-include!("../common/cpu.rs");
+lazy_static! {
+    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
+    static ref CPU_COUNT: usize = num_cpus::get();
+}
 
-impl StaticInfo {
-    pub fn new() -> Self {
-        use super::ToArrayStringLossy;
+#[derive(Debug, Copy, Clone)]
+struct CpuStats {
+    pub user: u64,
+    pub nice: u64,
+    pub system: u64,
+    pub irq: u64,
+    pub softirq: u64,
+    pub timestamp: std::time::Instant,
+}
+
+impl Default for CpuStats {
+    fn default() -> Self {
+        Self {
+            user: 0,
+            nice: 0,
+            system: 0,
+            irq: 0,
+            softirq: 0,
+            timestamp: std::time::Instant::now(),
+        }
+    }
+}
+
+impl CpuStats {
+    pub fn cpu_usage(&self, prev_measurement: &Self, core_count: usize) -> f32 {
+        let delta_time = self.timestamp - prev_measurement.timestamp;
+        let delta_work_time = ((self
+            .work_time()
+            .saturating_sub(prev_measurement.work_time()) as f32)
+            * 1000.)
+            / *HZ as f32;
+
+        (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32).min(100.)
+    }
+
+    pub fn cpu_usage_kernel(&self, prev_measurement: &Self, core_count: usize) -> f32 {
+        let delta_time = self.timestamp - prev_measurement.timestamp;
+        let delta_work_time = ((self
+            .kernel_work_time()
+            .saturating_sub(prev_measurement.kernel_work_time())
+            as f32)
+            * 1000.)
+            / *HZ as f32;
+
+        (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32).min(100.)
+    }
+
+    fn work_time(&self) -> u64 {
+        self.user
+            .saturating_add(self.nice)
+            .saturating_add(self.system)
+            .saturating_add(self.irq)
+            .saturating_add(self.softirq)
+    }
+
+    fn kernel_work_time(&self) -> u64 {
+        self.system
+            .saturating_add(self.irq)
+            .saturating_add(self.softirq)
+    }
+}
+
+pub struct CpuInfo {
+    cpu_usage_cache: Vec<f32>,
+    kernel_usage_cache: Vec<f32>,
+    cpu_stats_cache: Vec<CpuStats>,
+}
+
+impl CpuInfoExt for CpuInfo {
+    fn new() -> Self {
+        let mut cpu_usage_cache = Vec::with_capacity(*CPU_COUNT);
+        cpu_usage_cache.resize(*CPU_COUNT, 0.0);
+
+        let mut kernel_usage_cache = Vec::with_capacity(*CPU_COUNT);
+        kernel_usage_cache.resize(*CPU_COUNT, 0.0);
+
+        let mut cpu_stats_cache = Vec::with_capacity(*CPU_COUNT + 1);
+        cpu_stats_cache.resize(*CPU_COUNT + 1, CpuStats::default());
+
+        Self {
+            cpu_usage_cache,
+            kernel_usage_cache,
+            cpu_stats_cache,
+        }
+    }
+
+    fn static_info(&mut self) -> cpu::StaticInfo {
+        use crate::ToArrayStringLossy;
 
         let name = Self::name()
             .replace("(R)", "®")
@@ -127,7 +133,7 @@ impl StaticInfo {
 
         let cache_info = Self::cache_info();
 
-        Self {
+        cpu::StaticInfo {
             name,
             logical_cpu_count: Self::logical_cpu_count(),
             socket_count: Self::socket_count(),
@@ -141,11 +147,57 @@ impl StaticInfo {
         }
     }
 
-    // Code lifted and adapted from `sysinfo` crate, found in src/linux/cpu.rs
-    fn name() -> ArrayString {
-        use super::ToArrayStringLossy;
+    fn dynamic_info(&mut self) -> cpu::DynamicInfo {
+        let (cpu_usage, kernel_usage) = self.cpu_usage();
 
-        fn get_value(s: &str) -> ArrayString {
+        cpu::DynamicInfo {
+            utilization_percent: cpu_usage,
+            kernel_utilization_percent: kernel_usage,
+            current_frequency_mhz: Self::cpu_frequency_mhz(),
+            temperature: Self::temperature(),
+            process_count: Self::process_count(),
+            thread_count: Self::thread_count() as _,
+            handle_count: Self::handle_count(),
+            uptime_seconds: Self::uptime().as_secs(),
+        }
+    }
+
+    fn logical_cpu_info(&mut self) -> cpu::LogicalInfo {
+        let mut this = cpu::LogicalInfo::default();
+
+        if self.cpu_usage_cache.is_empty() {
+            return this;
+        }
+
+        if self.kernel_usage_cache.is_empty() {
+            return this;
+        }
+
+        let drop_count = self
+            .cpu_usage_cache
+            .chunks(this.utilization_percent.capacity())
+            .next()
+            .unwrap_or(&[])
+            .len();
+
+        let it = self.cpu_usage_cache.drain(0..drop_count);
+        this.utilization_percent.extend(it);
+
+        let it = self.kernel_usage_cache.drain(0..drop_count);
+        this.kernel_utilization_percent.extend(it);
+
+        this.is_complete = self.cpu_usage_cache.is_empty() && self.kernel_usage_cache.is_empty();
+
+        this
+    }
+}
+
+impl CpuInfo {
+    // Code lifted and adapted from `sysinfo` crate, found in src/linux/cpu.rs
+    fn name() -> ArrayString<128> {
+        use crate::ToArrayStringLossy;
+
+        fn get_value(s: &str) -> ArrayString<128> {
             s.split(':')
                 .last()
                 .map(|x| x.trim().to_array_string_lossy())
@@ -519,74 +571,141 @@ impl StaticInfo {
     fn base_frequency_khz() -> Option<u64> {
         use crate::critical;
 
-        match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
-            Ok(content) => {
-                let content = match std::str::from_utf8(&content) {
-                    Ok(content) => content,
-                    Err(e) => {
-                        critical!("Gatherer::CPU", "Could not read base frequency: {}", e);
-                        return None;
-                    }
-                };
+        fn read_from_sys_base_frequency() -> Option<u64> {
+            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
+                Ok(content) => {
+                    let content = match std::str::from_utf8(&content) {
+                        Ok(content) => content,
+                        Err(e) => {
+                            critical!(
+                                "Gatherer::CPU",
+                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
+                                e
+                            );
+                            return None;
+                        }
+                    };
 
-                match content.trim().parse() {
-                    Ok(freq) => Some(freq),
-                    Err(e) => {
-                        critical!("Gatherer::CPU", "Could not read base frequency: {}", e);
-                        None
+                    match content.trim().parse() {
+                        Ok(freq) => Some(freq),
+                        Err(e) => {
+                            critical!(
+                                "Gatherer::CPU",
+                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
+                                e
+                            );
+                            None
+                        }
                     }
                 }
-            }
-            Err(e) => {
-                critical!(
-                    "Gatherer::CPU",
-                    "Could not read base frequency: {}; trying /proc/cpuinfo",
-                    e
-                );
+                Err(e) => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
+                        e
+                    );
 
-                let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
-                    Ok(output) => output,
-                    Err(e) => {
-                        critical!("Gatherer::CPU", "Could not read /proc/cpuinfo: {}", e);
-                        return None;
-                    }
-                };
-
-                let index = match cpuinfo.find("cpu MHz") {
-                    Some(index) => index,
-                    None => {
-                        critical!("Gatherer::CPU", "Could not find `cpu MHz` in /proc/cpuinfo",);
-                        return None;
-                    }
-                };
-
-                let base_frequency = match cpuinfo[index..]
-                    .lines()
-                    .next()
-                    .map(|line| line.split(':').nth(1).unwrap_or("").trim())
-                    .map(|mhz| mhz.parse::<f32>())
-                {
-                    None => {
-                        critical!(
-                            "Gatherer::CPU",
-                            "Failed to parse `cpu MHz` in /proc/cpuinfo",
-                        );
-                        return None;
-                    }
-                    Some(Ok(bf)) => bf,
-                    Some(Err(e)) => {
-                        critical!(
-                            "Gatherer::CPU",
-                            "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
-                            e
-                        );
-                        return None;
-                    }
-                };
-
-                Some((base_frequency * 1000.).round() as u64)
+                    None
+                }
             }
         }
+
+        fn read_from_sys_bios_limit() -> Option<u64> {
+            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/bios_limit") {
+                Ok(content) => {
+                    let content = match std::str::from_utf8(&content) {
+                        Ok(content) => content,
+                        Err(e) => {
+                            critical!(
+                                "Gatherer::CPU",
+                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
+                                e
+                            );
+                            return None;
+                        }
+                    };
+
+                    match content.trim().parse() {
+                        Ok(freq) => Some(freq),
+                        Err(e) => {
+                            critical!(
+                                "Gatherer::CPU",
+                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
+                                e
+                            );
+                            None
+                        }
+                    }
+                }
+                Err(e) => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
+                        e
+                    );
+
+                    None
+                }
+            }
+        }
+
+        fn read_from_proc_cpuinfo() -> Option<u64> {
+            let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
+                Ok(output) => output,
+                Err(e) => {
+                    critical!("Gatherer::CPU", "Could not read /proc/cpuinfo: {}", e);
+                    return None;
+                }
+            };
+
+            let index = match cpuinfo.find("cpu MHz") {
+                Some(index) => index,
+                None => {
+                    critical!("Gatherer::CPU", "Could not find `cpu MHz` in /proc/cpuinfo",);
+                    return None;
+                }
+            };
+
+            let base_frequency = match cpuinfo[index..]
+                .lines()
+                .next()
+                .map(|line| line.split(':').nth(1).unwrap_or("").trim())
+                .map(|mhz| mhz.parse::<f32>())
+            {
+                None => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Failed to parse `cpu MHz` in /proc/cpuinfo",
+                    );
+                    return None;
+                }
+                Some(Ok(bf)) => bf,
+                Some(Err(e)) => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
+                        e
+                    );
+                    return None;
+                }
+            };
+
+            Some((base_frequency * 1000.).round() as u64)
+        }
+
+        const FNS: [fn() -> Option<u64>; 3] = [
+            read_from_sys_base_frequency,
+            read_from_sys_bios_limit,
+            read_from_proc_cpuinfo,
+        ];
+
+        for f in &FNS {
+            if let Some(freq) = f() {
+                return Some(freq);
+            }
+        }
+
+        None
     }
 
     fn virtualization() -> Option<bool> {
@@ -1015,35 +1134,16 @@ impl StaticInfo {
         }
         result
     }
-}
 
-impl DynamicInfo {
-    pub fn new() -> Self {
-        let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        cpu_usage_cache.resize(*CPU_COUNT, 0.);
-
-        let kernel_usage_cache =
-            state::KERNEL_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        kernel_usage_cache.resize(*CPU_COUNT, 0.);
-
-        let (cpu_usage, kernel_usage) = Self::cpu_usage(cpu_usage_cache, kernel_usage_cache);
-
-        Self {
-            utilization_percent: cpu_usage,
-            kernel_utilization_percent: kernel_usage,
-            current_frequency_mhz: Self::cpu_frequency_mhz(),
-            temperature: Self::temperature(),
-            process_count: Self::process_count(),
-            thread_count: Self::thread_count() as _,
-            handle_count: Self::handle_count(),
-            uptime_seconds: Self::uptime().as_secs(),
-        }
-    }
-
-    fn cpu_usage(per_core_usage: &mut [f32], per_core_kernel_usage: &mut [f32]) -> (f32, f32) {
+    fn cpu_usage(&mut self) -> (f32, f32) {
         use crate::critical;
 
-        pub fn extract_cpu_stats(line: &str) -> CpuStats {
+        self.cpu_usage_cache.resize(*CPU_COUNT, 0.0);
+        self.kernel_usage_cache.resize(*CPU_COUNT, 0.0);
+        let per_core_usage = &mut self.cpu_usage_cache[..*CPU_COUNT];
+        let per_core_kernel_usage = &mut self.kernel_usage_cache[..*CPU_COUNT];
+
+        fn extract_cpu_stats(line: &str) -> CpuStats {
             let mut result = CpuStats::default();
 
             for (i, value) in line.split_whitespace().skip(1).enumerate() {
@@ -1086,7 +1186,7 @@ impl DynamicInfo {
             Ok(s) => s,
         };
 
-        let stats_cache = state::CPU_STATS_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
+        let stats_cache = &mut self.cpu_stats_cache;
 
         let mut result = (0., 0.);
         let mut line_iter = proc_stat
@@ -1210,11 +1310,11 @@ impl DynamicInfo {
     }
 
     fn process_count() -> u32 {
-        super::Processes::process_cache().len() as _
+        crate::Processes::process_cache().len() as _
     }
 
     fn thread_count() -> usize {
-        super::Processes::process_cache()
+        crate::Processes::process_cache()
             .iter()
             .map(|(_, p)| p.task_count)
             .sum()
@@ -1287,38 +1387,5 @@ impl DynamicInfo {
                 std::time::Duration::from_millis(0)
             }
         }
-    }
-}
-
-impl LogicalInfo {
-    pub fn new() -> Self {
-        let mut this = Self::default();
-
-        let cpu_usage_cache = state::CPU_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        if cpu_usage_cache.is_empty() {
-            return this;
-        }
-
-        let kernel_usage_cache =
-            state::KERNEL_USAGE_CACHE.with(|state| unsafe { &mut *state.as_ptr() });
-        if kernel_usage_cache.is_empty() {
-            return this;
-        }
-
-        let drop_count = cpu_usage_cache
-            .chunks(this.utilization_percent.capacity())
-            .next()
-            .unwrap_or(&[])
-            .len();
-
-        let it = cpu_usage_cache.drain(0..drop_count);
-        this.utilization_percent.extend(it);
-
-        let it = kernel_usage_cache.drain(0..drop_count);
-        this.kernel_utilization_percent.extend(it);
-
-        this.is_complete = cpu_usage_cache.is_empty() && kernel_usage_cache.is_empty();
-
-        this
     }
 }
