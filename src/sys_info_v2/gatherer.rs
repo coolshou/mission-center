@@ -88,8 +88,8 @@ impl<SharedData: Sized> Gatherer<SharedData> {
         let commandline = format!(
             "{} {} {}",
             executable_path.display(),
-            socket_path.as_str(),
-            shm_file_link.as_str()
+            socket_path.replace(" ", "\\ "),
+            shm_file_link.replace(" ", "\\ ")
         );
         let mut command = cmd!(&commandline);
         command
