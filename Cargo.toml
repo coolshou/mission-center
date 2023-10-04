@@ -19,6 +19,7 @@ minidl = { version = "0.1" }
 num_cpus = { version = "1" }
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_color = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
+pathfinder_content = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_geometry = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_gl = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_gpu = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
