@@ -116,7 +116,7 @@
     <releases>
 
         <release version="0.3.2" date="2023-09-08">
-            <description>
+            <description translatable="no">
                 <p>Features:</p>
                 <ul>
                     <li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
@@ -150,7 +150,7 @@
         </release>
 
         <release version="0.3.1" date="2023-08-22">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>Hotfix release to fix a bug that caused the app to not display any information for some users</li>
                 </ul>
@@ -158,7 +158,7 @@
         </release>
 
         <release version="0.3.0" date="2023-08-22">
-            <description>
+            <description translatable="no">
                 <p>Features:</p>
                 <ul>
                     <li>New app icon by QwertyChouskie</li>
@@ -194,7 +194,7 @@
         </release>
 
         <release version="0.2.5" date="2023-07-24">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>Add Spanish translation by Óscar Fernández Díaz</li>
                     <li>The memory tab now shows configured memory speed instead of the maximum supported by the
@@ -213,7 +213,7 @@
         </release>
 
         <release version="0.2.4" date="2023-07-16">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>Translation fixes for Portuguese by Rafael Fontenelle</li>
                     <li>Only show a link-local IPv6 address if no other IPv6 exists by Maximilian</li>
@@ -229,7 +229,7 @@
         </release>
 
         <release version="0.2.3" date="2023-07-13">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>Added Czech translation by ondra05</li>
                     <li>Added Portuguese translation by Rilson Joás</li>
@@ -242,7 +242,7 @@
         </release>
 
         <release version="0.2.2" date="2023-07-12">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>Fix a crash that occurs when the system is under heavy load</li>
                 </ul>
@@ -250,7 +250,7 @@
         </release>
 
         <release version="0.2.0" date="2023-07-10">
-            <description>
+            <description translatable="no">
                 <ul>
                     <li>First official release!</li>
                 </ul>
