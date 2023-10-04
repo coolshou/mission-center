@@ -68,13 +68,70 @@ mod imp {
 
     impl MemoryCompositionWidget {
         #[inline]
+        fn generate_pattern(
+            &self,
+            scale_factor: f32,
+            color: gdk::RGBA,
+        ) -> pathfinder_content::pattern::Pattern {
+            use pathfinder_color::*;
+            use pathfinder_content::pattern::*;
+            use pathfinder_geometry::vector::*;
+
+            let pixel_size = scale_factor.trunc() as i32;
+            let pattern_width = pixel_size * 2;
+            let pattern_height = pixel_size * 2;
+
+            let mut pattern_data = Vec::with_capacity((pattern_width * pattern_height) as usize);
+            for _ in 0..pixel_size {
+                for _ in 0..pixel_size {
+                    pattern_data.push(ColorU::new(
+                        (color.red() * 255.) as u8,
+                        (color.green() * 255.) as u8,
+                        (color.blue() * 255.) as u8,
+                        50,
+                    ));
+                }
+            }
+            for _ in 0..pixel_size {
+                for _ in 0..pixel_size {
+                    pattern_data.push(ColorU::new(0, 0, 0, 0));
+                }
+            }
+            for _ in 0..pixel_size {
+                for _ in 0..pixel_size {
+                    pattern_data.push(ColorU::new(0, 0, 0, 0));
+                }
+            }
+            for _ in 0..pixel_size {
+                for _ in 0..pixel_size {
+                    pattern_data.push(ColorU::new(
+                        (color.red() * 255.) as u8,
+                        (color.green() * 255.) as u8,
+                        (color.blue() * 255.) as u8,
+                        50,
+                    ));
+                }
+            }
+            let image = Image::new(
+                Vector2I::new(pattern_width, pattern_height),
+                std::sync::Arc::new(pattern_data),
+            );
+
+            let mut pattern = Pattern::from_image(image);
+            pattern.set_repeat_x(true);
+            pattern.set_repeat_y(true);
+            pattern.set_smoothing_enabled(false);
+
+            pattern
+        }
+        #[inline]
         fn render_bar(
             &self,
             canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
             x: f32,
             width: f32,
             height: i32,
-            fill: bool,
+            fill_style: Option<pathfinder_canvas::FillStyle>,
         ) -> f32 {
             use pathfinder_canvas::*;
 
@@ -83,7 +140,8 @@ mod imp {
             path.line_to(vec2f(x, height as f32));
             canvas.stroke_path(path);
 
-            if fill {
+            if let Some(fill_style) = fill_style {
+                canvas.set_fill_style(fill_style);
                 canvas.fill_rect(RectF::new(vec2f(x, 0.), vec2f(width, height as f32)));
             }
 
@@ -193,33 +251,40 @@ mod imp {
                 Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});
 
             let base_color = this.imp().base_color.get();
-            canvas.set_fill_style(FillStyle::Color(ColorU::new(
+
+            let fill_background_pattern =
+                FillStyle::Pattern(self.generate_pattern(scale_factor, base_color));
+            let fill_background_solid = FillStyle::Color(ColorU::new(
                 (base_color.red() * 255.) as u8,
                 (base_color.green() * 255.) as u8,
                 (base_color.blue() * 255.) as u8,
                 50,
-            )));
+            ));
+
             canvas.set_stroke_style(FillStyle::Color(ColorU::new(
                 (base_color.red() * 255.) as u8,
                 (base_color.green() * 255.) as u8,
                 (base_color.blue() * 255.) as u8,
                 255,
             )));
-            canvas.set_line_width(scale_factor as f32);
+            canvas.set_line_width(scale_factor);
 
             let mut tooltip_texts = self.tooltip_texts.take();
             tooltip_texts.clear();
 
-            let used = (mem_info.mem_total - mem_info.mem_available) as f32;
-            let x = self.render_bar(&mut canvas, 0., width as f32 * (used / total), height, true);
-            let used_hr = crate::to_human_readable(used, 1024.);
+            // Used memory
+            let used = (mem_info.mem_total - (mem_info.mem_available + mem_info.dirty)) as f32;
+            let x = self.render_bar(
+                &mut canvas,
+                0.,
+                (width as f32 * (used / total)).trunc(),
+                height,
+                Some(fill_background_solid.clone()),
+            );
 
-            let modified = mem_info.dirty as f32;
-            let bar_width = width as f32 * (modified / total);
-            let x = self.render_bar(&mut canvas, x - bar_width, bar_width, height, false);
-            let modified = crate::to_human_readable(modified, 1024.);
+            let used_hr = crate::to_human_readable(used, 1024.);
             tooltip_texts.push((
-                x - bar_width,
+                x,
                 i18n_f(
                     "In use ({}B)\n\nMemory used by the operating system and running applications",
                     &[&format!(
@@ -230,41 +295,64 @@ mod imp {
                     )],
                 ),
             ));
+
+            // Dirty memory
+            let modified = mem_info.dirty as f32;
+            let bar_width = (width as f32 * (modified / total)).trunc();
+            self.render_bar(
+                &mut canvas,
+                x.trunc(),
+                bar_width,
+                height,
+                Some(fill_background_solid),
+            );
+            let x = self.render_bar(
+                &mut canvas,
+                x.trunc(),
+                bar_width,
+                height,
+                Some(fill_background_pattern.clone()),
+            );
+
+            let modified_hr = crate::to_human_readable(modified, 1024.);
             tooltip_texts.push((
                 x,
                 i18n_f(
                     "Modified ({}B)\n\nMemory whose contents must be written to disk before it can be used by another process",
-                    &[&format!("{:.2} {}{}", modified.0, modified.1, if modified.1.is_empty() { "" } else { "i" })],
+                    &[&format!("{:.2} {}{}", modified_hr.0, modified_hr.1, if modified_hr.1.is_empty() { "" } else { "i" })],
                 )
             ));
 
-            self.render_bar(&mut canvas, x, 1., height, false);
-
-            let free = mem_info.mem_free as f32;
-            let bar_width = width as f32 * (free / total);
-            self.render_bar(
+            // Stand-by memory
+            let standby = total - (used + mem_info.mem_free as f32);
+            let bar_width = (width as f32 * (standby / total)).trunc();
+            let x = self.render_bar(
                 &mut canvas,
-                width as f32 - bar_width,
+                x.trunc(),
                 bar_width,
                 height,
-                false,
+                Some(fill_background_pattern),
             );
 
-            let standby = crate::to_human_readable(total - (used + free), 1024.);
+            let standby_hr = crate::to_human_readable(standby, 1024.);
             tooltip_texts.push((
-                width as f32 - bar_width,
+                x,
                 i18n_f(
                     "Standby ({}B)\n\nMemory that contains cached data and code that is not actively in use",
-                    &[&format!("{:.2} {}{}", standby.0, standby.1, if standby.1.is_empty() { "" } else { "i" })],
+                    &[&format!("{:.2} {}{}", standby_hr.0, standby_hr.1, if standby_hr.1.is_empty() { "" } else { "i" })],
                 )
             ));
 
-            let free = crate::to_human_readable(free, 1024.);
+            // Free memory
+            let free = mem_info.mem_free as f32;
+            self.render_bar(&mut canvas, x, 1., height, None);
+
+            let free_hr = crate::to_human_readable(free, 1024.);
             tooltip_texts.push((
                 width as f32 + 1.,
                 i18n_f(
                     "Free ({}B)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
-                    &[&format!("{:.2} {}{}", free.0, free.1, if free.1.is_empty() { "" } else { "i" })],
+                    &[&format!("{:.2} {}{}", free_hr.0, free_hr.1, if free_hr.1.is_empty() { "" } else { "i" })],
                 ),
             ));
 
