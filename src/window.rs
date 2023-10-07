@@ -224,8 +224,8 @@ impl MissionCenterWindow {
             .build();
 
         if let Some(settings) = settings {
-            sys_info.set_update_speed(settings.int("update-speed").into());
-            sys_info.set_merged_process_stats(settings.boolean("apps-page-merged-process-stats"));
+            // sys_info.set_update_speed(settings.int("update-speed").into());
+            // sys_info.set_merged_process_stats(settings.boolean("apps-page-merged-process-stats"));
 
             settings.connect_changed(
                 Some("update-speed"),
@@ -242,7 +242,7 @@ impl MissionCenterWindow {
                     };
                     match app.sys_info() {
                         Ok(sys_info) => {
-                            sys_info.set_update_speed(update_speed);
+                            // sys_info.set_update_speed(update_speed);
                         }
                         Err(e) => {
                             g_critical!("MissionCenter", "Failed to get sys_info from MissionCenterApplication: {}", e);
@@ -265,7 +265,7 @@ impl MissionCenterWindow {
 
                 match app.sys_info() {
                     Ok(sys_info) => {
-                        sys_info.set_merged_process_stats(merged_process_stats);
+                        // sys_info.set_merged_process_stats(merged_process_stats);
                     }
                     Err(e) => {
                         g_critical!("MissionCenter", "Failed to get sys_info from MissionCenterApplication: {}", e);

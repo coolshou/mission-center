@@ -213,8 +213,6 @@ mod imp {
                         return;
                     }
                 };
-
-                sys_info.terminate_process(terminate_type, pid);
             }
 
             let this = self.obj();

@@ -71,39 +71,7 @@ impl<SharedData: Sized> Gatherer<SharedData> {
     pub fn new<P: AsRef<std::path::Path>>(
         executable_path: P,
     ) -> Result<Gatherer<SharedData>, GathererError> {
-        let executable_path = executable_path.as_ref();
-
-        let process_pid = unsafe { libc::getpid() };
-
-        let socket_path = format!("{}/sock_{}", super::STATE_DIR.as_str(), process_pid);
-        if (std::path::Path::new(socket_path.as_str())).exists() {
-            std::fs::remove_file(socket_path.as_str())?;
-        }
-        let listener = LocalSocketListener::bind(socket_path.as_str())?;
-        listener.set_nonblocking(true)?;
-
-        let shm_file_link = format!("{}/shm_{}", super::STATE_DIR.as_str(), process_pid);
-        let shared_memory = SharedMemory::<SharedData>::new(shm_file_link.as_str(), true)?;
-
-        let commandline = format!(
-            "{} {} {}",
-            executable_path.display(),
-            socket_path.replace(" ", "\\ "),
-            shm_file_link.replace(" ", "\\ ")
-        );
-        let mut command = cmd!(&commandline);
-        command
-            .stdout(std::process::Stdio::inherit())
-            .stderr(std::process::Stdio::inherit());
-
-        Ok(Gatherer {
-            listener,
-            shared_memory,
-
-            command,
-            child: None,
-            connection: None,
-        })
+        Err(GathererError::Disconnected)
     }
 
     pub fn start(&mut self) -> Result<(), GathererError> {

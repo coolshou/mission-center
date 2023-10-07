@@ -69,6 +69,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
     Box loading_box {
       orientation: vertical;
+      visible: false;
 
       spacing: 12;
 
@@ -93,7 +94,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
     }
 
     Adw.ViewStack stack {
-      visible: false;
+      visible: true;
 
       hexpand: true;
       vexpand: true;

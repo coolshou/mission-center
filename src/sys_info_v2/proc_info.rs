@@ -82,56 +82,6 @@ impl Process {
     }
 }
 
-impl super::GathererSupervisor {
-    pub fn processes(&mut self) -> std::collections::HashMap<u32, Process> {
-        use super::gatherer::SharedDataContent;
-        use gtk::glib::*;
-        use std::collections::HashMap;
-
-        let mut result = HashMap::new();
-
-        self.execute(
-            super::gatherer::Message::GetProcesses,
-            |gatherer, process_restarted| {
-                let shared_memory = match gatherer.shared_memory() {
-                    Ok(shm) => shm,
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::ProcInfo",
-                            "Unable to to access shared memory: {}",
-                            e
-                        );
-                        return false;
-                    }
-                };
-
-                match shared_memory.content {
-                    SharedDataContent::Processes(ref proceses) => {
-                        if process_restarted {
-                            result.clear();
-                        }
-
-                        for proc in &proceses.processes {
-                            result.insert(proc.pid, Process::new(proc.clone()));
-                        }
-                        proceses.is_complete
-                    }
-                    _ => {
-                        g_critical!(
-                            "MissionCenter::ProcInfo",
-                            "Shared data content is {:?} instead of Processes; encountered when reading installed apps from gatherer",
-                            shared_memory.content
-                        );
-                        false
-                    }
-                }
-            },
-        );
-
-        result
-    }
-}
-
 pub fn process_hierarchy(
     processes: &std::collections::HashMap<u32, Process>,
     merged_stats: bool,
