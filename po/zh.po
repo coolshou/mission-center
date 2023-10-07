@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-26 10:21+0000\n"
-"Last-Translator: detiam <dehe_tian@outlook.com>\n"
+"PO-Revision-Date: 2023-10-06 14:11+0000\n"
+"Last-Translator: Ruan Xuebin <qqice@srhaze.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
 "Language: zh\n"
@@ -259,15 +259,15 @@ msgstr "由 TecCheck 新增德语翻译"
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
-msgstr ""
+msgstr "热更新版本，修复了“应用可能对特定用户不显示任何信息”的bug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "新版应用图标（由QwertyChouskie制作）"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
-msgstr ""
+msgstr "新增停止/强制停止应用/进程的功能"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
