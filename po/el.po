@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-02 05:53+0000\n"
+"PO-Revision-Date: 2023-10-08 17:01+0000\n"
 "Last-Translator: yiannis ioannides <sub@wai.ai>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/el/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -159,197 +159,212 @@ msgstr "Σχόλια, προτάσεις, αναφορά σφαλμάτων κα
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"Προσθέστε μια επιλογή, στο μενού πλαισίου, για να εμφανίσετε τους χρόνους "
+"του πυρήνα, στα γράφημα του επεξεργαστή"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Προσθέστε θερμοκρασία επεξεργαστή, όπου είναι δυνατόν"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"Εφαρμογή πιο έξυπνης στρογγυλοποίησης και προβολής ακρίβειας των τιμών σε "
+"όλη την εφαρμογή, από QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"Χρήση metainfo αντί για appdata για μεταδεδομένα εφαρμογών, από David "
+"Guglielmi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Διορθώσεις:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
-#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
 "Διόρθωση του προβλήματος προβολής των browsers, εγκατεστημένων ως native "
-"πακέτα που δεν εμφανίζονται στη λίστα Εφαρμογές"
+"πακέτα που δεν εμφανίζονται στη λίστα εφαρμογών στο Fedora"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"Διόρθωση σφάλματος μη εμφάνισης εφαρμογών Flatpak στη λίστα εφαρμογών στο "
+"ArchLinux Plasma"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
-#, fuzzy
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
-"Διόρθωση σφάλματος οπού η λίστα εφαρμογών και διεργασιών ήταν άδεια για "
-"κάποιους χρήστες"
+"Διόρθωση σφάλματος οπού το αρχείο desktop της εφαρμογής Χάρτες δεν "
+"εμφανιζόταν σωστά"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"Μετακίνηση ορισμένων αρχείων που σχετίζονται με την απόδοση στο g_debug, για "
+"να αποτραπεί το spamming των logs του συστήματος"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Εικονικοποίηση:"
+msgstr "Μεταφράσεις:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Νέα μετάφραση στα κορεάτικα από Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Νέα μετάφραση στα ολλανδικά από Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Νέα μετάφραση στα πολωνικά από _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "Νέα μετάφραση στα ιταλικά από beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
-#, fuzzy
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr "Διόρθωση μετάφρασης Πορτογαλικών από Rafael Fontenelle"
+msgstr ""
+"Διόρθωση μετάφρασης πορτογαλικών (Βραζιλίας) από Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Ανανέωση ισπανικής μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Ανανέωση φινλανδικής μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Ανανέωση ρώσικης μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "Ανανέωση κινέζικης (παραδοσιακά) μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Ανανέωση ελληνικής μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Προσθήκη μετάφρασης Γερμανικών από TecCheck"
+msgstr "Ανανέωση γερμανικής μετάφρασης"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"Hotfix έκδοση για επίλυση σφάλματος μη προβολής δεδομένων σε κάποιους χρήστες"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "Νέο εικονίδιο εφαρμογής από QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Προσθήκη ικανότητας διακοπής και εξαναγκαστικής διακοπής εφαρμογών και "
+"διεργασιών"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"Οι τρέχων εφαρμογές εμφανίζονται πλέον πιο αξιόπιστα, με προβολή των "
+"περισσοτέρων ή όλων των τρέχων εφαρμογών"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
+msgstr "Πειραματική υποστήριξη για εφαρμογές Snap στη λίστα τρέχων εφαρμογών"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"Προσθήκη ρύθμισης για την εμφάνιση κατανάλωσης πόρων ατομικώς ανά διαδικασία "
+"ή ολικώς με όλες τις υποεργασίες"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"Προσθήκη ρύθμισης που επιτρέπει την μόνιμη ταξινόμηση στη λίστα εφαρμογών "
+"και διεργασιών"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"Η συγκέντρωση δεδομένων είναι πλέον πιο ευέλικτη και θα επιτρέψει νέα "
+"χαρακτηριστικά να προστεθούν ταχύτερα και ευκολότερα"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "Η εφαρμογή μπορεί τώρα να κατασκευαστεί από το GNOME Builder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Νέα μετάφραση στα νορβηγικά bokmål από Allan Nordhøy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Νέα μετάφραση στα ρώσικα από Ivan Maslikhov"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "Νέα μετάφραση στα σλοβάκικα από mthw0"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Νέα μετάφραση στα ελληνικά από τον Γιάννη Ιωαννίδη"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "Νέα μετάφραση στα κινέζικα (απλουστευμένα) από foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Νέα μετάφραση στα γαλλικά από Link Mauve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Νέα μετάφραση στα ουγγρικά από Kovács Bálint Hunor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
-#, fuzzy
 msgid "Updated Czech translation"
-msgstr "Προσθήκη μετάφρασης Τσέχικων από ondra05"
+msgstr "Ανανέωση μετάφρασης τσέχικων από ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
-#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr "Προσθήκη μετάφρασης Πορτογαλικών από Rilson Joás"
+msgstr "Ανανέωση μετάφρασης πορτογαλικών"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Διόρθωση κινέζικων μεταφράσεων από foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid "Add Spanish translation by Óscar Fernández Díaz"
@@ -411,7 +426,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr "Προσθήκη μετάφρασης παραδοσιακών Κινέζικων από Peter Dave Hello"
+msgstr "Προσθήκη μετάφρασης παραδοσιακών κινέζικων από Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 msgid "Add category for application menu by Renner0E"
@@ -502,7 +517,7 @@ msgstr "Ποιό γράφημα θα φαίνεται στη σελίδα επί
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Εμφάνιση χρόνων πυρήνα στο γράφημα επεξεργαστή"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "Which page is shown on application startup, in the performance tab"
@@ -590,7 +605,7 @@ msgstr "Λογικές _διεργασίες"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Εμφάνιση χρόνων πυρήνα"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -1060,9 +1075,8 @@ msgid "GPU {}"
 msgstr "Κάρτα γραφικών {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:318
 msgid "Supported"
@@ -1081,9 +1095,8 @@ msgid "No"
 msgstr "Όχι"
 
 #: src/performance_page/cpu.rs:698
-#, fuzzy
 msgid "Utilization over {} seconds"
-msgstr "% χρήση σε {} δευτερόλεπτα"
+msgstr "Χρήση σε διάστημα {} δευτερολέπτων"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
