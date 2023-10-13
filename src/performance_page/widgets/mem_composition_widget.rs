@@ -91,8 +91,6 @@ mod imp {
                         50,
                     ));
                 }
-            }
-            for _ in 0..pixel_size {
                 for _ in 0..pixel_size {
                     pattern_data.push(ColorU::new(0, 0, 0, 0));
                 }
@@ -101,8 +99,6 @@ mod imp {
                 for _ in 0..pixel_size {
                     pattern_data.push(ColorU::new(0, 0, 0, 0));
                 }
-            }
-            for _ in 0..pixel_size {
                 for _ in 0..pixel_size {
                     pattern_data.push(ColorU::new(
                         (color.red() * 255.) as u8,
