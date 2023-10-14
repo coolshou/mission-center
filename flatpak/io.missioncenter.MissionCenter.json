@@ -1,7 +1,7 @@
 {
   "app-id": "io.missioncenter.MissionCenter",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "44",
+  "runtime-version": "45",
   "sdk": "org.gnome.Sdk",
   "command": "missioncenter",
   "build-options": {
@@ -327,7 +327,7 @@
             {
               "type": "git",
               "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-              "commit": "2a39a16391122af2f3d812e478c1c1398c98b972"
+              "commit": "09bed9a9f53e11218be9b7c70dac516986e2ecdb"
             }
           ],
           "cleanup": [

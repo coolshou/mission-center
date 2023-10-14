@@ -28,10 +28,18 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
   default-height: 300;
 
   content: Adw.OverlaySplitView {
-    content: Box {
-      orientation: vertical;
+    show-sidebar: bind toggle_sidebar_button.active bidirectional;
 
+    content: Adw.ToolbarView {
+      [top]
       Adw.HeaderBar header_bar {
+        [start]
+        ToggleButton toggle_sidebar_button {
+          icon-name: "view-sidebar-start-symbolic";
+          tooltip-text: _("Toggle Sidebar");
+          active: false;
+        }
+
         title-widget: Stack header_stack {
           transition-type: crossfade;
 
@@ -69,6 +77,9 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
           }
         }
       }
+
+      content: Box {
+      orientation: vertical;
 
       Box loading_box {
         orientation: vertical;
@@ -118,6 +129,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
           };
         }
       }
+      };
     };
   };
 }
