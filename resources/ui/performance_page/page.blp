@@ -28,19 +28,6 @@ template $PerformancePage : Box {
     margin-bottom: 15;
     margin-end: 20;
 
-    ScrolledWindow {
-      visible: bind template.summary-mode inverted;
-      width-request: 220;
-
-      hscrollbar-policy: never;
-
-      ListBox sidebar {
-        styles [
-          "navigation-sidebar",
-        ]
-      }
-    }
-
     Stack page_stack {
       margin-start: 20;
       transition-type: slide_up_down;

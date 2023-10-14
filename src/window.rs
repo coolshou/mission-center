@@ -20,8 +20,8 @@
 
 use std::cell::Cell;
 
-use adw::subclass::prelude::*;
-use gtk::{gio, glib, prelude::*};
+use adw::{prelude::*, subclass::prelude::*};
+use gtk::{gio, glib};
 
 use crate::sys_info_v2::Readings;
 
@@ -31,6 +31,10 @@ mod imp {
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
+        #[template_child]
+        pub breakpoint: TemplateChild<adw::Breakpoint>,
+        #[template_child]
+        pub split_view: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
@@ -54,6 +58,8 @@ mod imp {
     impl Default for MissionCenterWindow {
         fn default() -> Self {
             Self {
+                breakpoint: TemplateChild::default(),
+                split_view: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
@@ -222,6 +228,15 @@ impl MissionCenterWindow {
         let this: Self = Object::builder()
             .property("application", application)
             .build();
+
+        let split_view = this.imp().split_view.get();
+        let breakpoint = this.imp().breakpoint.get();
+        breakpoint.set_condition(
+            adw::BreakpointCondition::parse("max-width: 805sp")
+                .ok()
+                .as_ref(),
+        );
+        breakpoint.add_setter(&split_view, "collapsed", &true.into());
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());

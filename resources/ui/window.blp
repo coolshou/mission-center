@@ -22,13 +22,40 @@ using Gtk 4.0;
 using Adw 1;
 
 template $MissionCenterWindow : Adw.ApplicationWindow {
-  width-request: 360;
-  height-request: 200;
+  width-request: 585;
+  height-request: 560;
   default-width: 600;
   default-height: 300;
 
-  content: Adw.OverlaySplitView {
+  Adw.Breakpoint breakpoint {
+  }
+
+  content: Adw.OverlaySplitView split_view {
     show-sidebar: bind toggle_sidebar_button.active bidirectional;
+
+    sidebar: Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        [end]
+        Box {
+          MenuButton {
+            icon-name: "open-menu-symbolic";
+            menu-model: primary_menu;
+          }
+        }
+      }
+
+      ScrolledWindow {
+        width-request: 220;
+        hscrollbar-policy: never;
+
+        ListBox sidebar {
+          styles [
+            "navigation-sidebar",
+          ]
+        }
+      }
+    };
 
     content: Adw.ToolbarView {
       [top]
@@ -69,11 +96,6 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             ]
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
-          }
-
-          MenuButton {
-            icon-name: "open-menu-symbolic";
-            menu-model: primary_menu;
           }
         }
       }
@@ -118,6 +140,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
           title: _("Performance");
           child: $PerformancePage performance_page {
             summary-mode: bind header_bar.visible bidirectional inverted;
+            sidebar: sidebar;
           };
         }
 
