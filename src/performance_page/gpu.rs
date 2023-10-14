@@ -194,8 +194,8 @@ mod imp {
                 .connect_resize(clone!(@weak this => move |_, _, _| {
                     let this = this.imp();
 
-                    let width = this.usage_graph_overall.allocated_width() as f32;
-                    let height = this.usage_graph_overall.allocated_height() as f32;
+                    let width = this.usage_graph_overall.width() as f32;
+                    let height = this.usage_graph_overall.height() as f32;
 
                     let mut a = width;
                     let mut b = height;
@@ -210,8 +210,8 @@ mod imp {
                     this.usage_graph_memory
                         .set_vertical_line_count((width / 40.).round() as u32);
 
-                    let width = this.usage_graph_encode.allocated_width() as f32;
-                    let height = this.usage_graph_encode.allocated_height() as f32;
+                    let width = this.usage_graph_encode.width() as f32;
+                    let height = this.usage_graph_encode.height() as f32;
 
                     let mut a = width;
                     let mut b = height;
@@ -414,11 +414,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-
-            self.clock_speed_current
-                .connect_width_request_notify(move |_| {
-                    dbg!(this.imp().clock_speed_current.allocated_width());
-                });
         }
 
         fn properties() -> &'static [ParamSpec] {

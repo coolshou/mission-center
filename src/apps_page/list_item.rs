@@ -205,13 +205,13 @@ mod imp {
 
             let css_provider = unsafe { &*self.css_provider.as_ptr() };
             if usage_percent >= 90.0 {
-                css_provider.load_from_data(CSS_CELL_USAGE_HIGH);
+                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_HIGH));
             } else if usage_percent >= 80.0 {
-                css_provider.load_from_data(CSS_CELL_USAGE_MEDIUM);
+                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_MEDIUM));
             } else if usage_percent >= 70.0 {
-                css_provider.load_from_data(CSS_CELL_USAGE_LOW);
+                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_LOW));
             } else {
-                css_provider.load_from_data("");
+                css_provider.load_from_bytes(&glib::Bytes::from_static(b""));
             }
         }
     }

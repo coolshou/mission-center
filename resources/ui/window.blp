@@ -22,99 +22,103 @@ using Gtk 4.0;
 using Adw 1;
 
 template $MissionCenterWindow : Adw.ApplicationWindow {
+  width-request: 360;
+  height-request: 200;
   default-width: 600;
   default-height: 300;
 
-  content: Box {
-    orientation: vertical;
-
-    Adw.HeaderBar header_bar {
-      title-widget: Stack header_stack {
-        transition-type: crossfade;
-
-        StackPage {
-          name: "view-switcher";
-          child: Adw.ViewSwitcher title {
-            halign: center;
-            policy: wide;
-            stack: stack;
-          };
-        }
-
-        StackPage {
-          name: "search-entry";
-          child: SearchEntry search_entry {
-            width-request: 400;
-            placeholder-text: _("Type a name or PID to search");
-          };
-        }
-      };
-
-      [end]
-      Box {
-        ToggleButton search_button {
-          styles [
-            "flat"
-          ]
-          action-name: "win.toggle-search";
-          icon-name: "system-search-symbolic";
-        }
-
-        MenuButton {
-          icon-name: "open-menu-symbolic";
-          menu-model: primary_menu;
-        }
-      }
-    }
-
-    Box loading_box {
+  content: Adw.OverlaySplitView {
+    content: Box {
       orientation: vertical;
 
-      spacing: 12;
+      Adw.HeaderBar header_bar {
+        title-widget: Stack header_stack {
+          transition-type: crossfade;
 
-      valign: center;
-      vexpand: true;
-      halign: center;
-      hexpand: true;
+          StackPage {
+            name: "view-switcher";
+            child: Adw.ViewSwitcher title {
+              halign: center;
+              policy: wide;
+              stack: stack;
+            };
+          }
 
-      Spinner loading_spinner {
-        spinning: true;
-        halign: center;
-      }
-
-      Label {
-        styles [
-          "title-4"
-        ]
-
-        label: _("Loading...");
-        halign: center;
-      }
-    }
-
-    Adw.ViewStack stack {
-      visible: false;
-
-      hexpand: true;
-      vexpand: true;
-
-      Adw.ViewStackPage {
-        name: "performance-page";
-        icon-name: "speedometer-symbolic";
-        title: _("Performance");
-        child: $PerformancePage performance_page {
-          summary-mode: bind header_bar.visible bidirectional inverted;
+          StackPage {
+            name: "search-entry";
+            child: SearchEntry search_entry {
+              width-request: 400;
+              placeholder-text: _("Type a name or PID to search");
+            };
+          }
         };
+
+        [end]
+        Box {
+          ToggleButton search_button {
+            styles [
+              "flat"
+            ]
+            action-name: "win.toggle-search";
+            icon-name: "system-search-symbolic";
+          }
+
+          MenuButton {
+            icon-name: "open-menu-symbolic";
+            menu-model: primary_menu;
+          }
+        }
       }
 
-      Adw.ViewStackPage {
-        name: "apps-page";
-        icon-name: "overlapping-windows-symbolic";
-        title: _("Apps");
-        child: $AppsPage apps_page {
-        };
+      Box loading_box {
+        orientation: vertical;
+
+        spacing: 12;
+
+        valign: center;
+        vexpand: true;
+        halign: center;
+        hexpand: true;
+
+        Spinner loading_spinner {
+          spinning: true;
+          halign: center;
+        }
+
+        Label {
+          styles [
+            "title-4"
+          ]
+
+          label: _("Loading...");
+          halign: center;
+        }
       }
-    }
+
+      Adw.ViewStack stack {
+        visible: false;
+
+        hexpand: true;
+        vexpand: true;
+
+        Adw.ViewStackPage {
+          name: "performance-page";
+          icon-name: "speedometer-symbolic";
+          title: _("Performance");
+          child: $PerformancePage performance_page {
+            summary-mode: bind header_bar.visible bidirectional inverted;
+          };
+        }
+
+        Adw.ViewStackPage {
+          name: "apps-page";
+          icon-name: "overlapping-windows-symbolic";
+          title: _("Apps");
+          child: $AppsPage apps_page {
+          };
+        }
+      }
+    };
   };
 }
 

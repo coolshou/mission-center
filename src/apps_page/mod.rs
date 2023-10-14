@@ -30,9 +30,9 @@ mod pid_column;
 mod stat_column;
 mod view_model;
 
-pub const CSS_CELL_USAGE_LOW: &str = "cell { background-color: rgba(246, 211, 45, 0.3); }";
-pub const CSS_CELL_USAGE_MEDIUM: &str = "cell { background-color: rgba(230, 97, 0, 0.3); }";
-pub const CSS_CELL_USAGE_HIGH: &str = "cell { background-color: rgba(165, 29, 45, 0.3); }";
+pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
+pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97, 0, 0.3); }";
+pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 45, 0.3); }";
 
 mod imp {
     use super::*;
@@ -1072,6 +1072,7 @@ mod imp {
             self.parent_realize();
 
             let list_item_widget = self.column_view.first_child().unwrap();
+            list_item_widget.add_css_class("app-list-header");
 
             let column_view_title = list_item_widget.first_child().unwrap();
             let (column_view_title, column_header_name) = self.configure_column_header(

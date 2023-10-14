@@ -7,14 +7,14 @@ edition = "2021"
 [dependencies]
 anyhow = { version = "1.0" }
 arrayvec = { version = "0.7" }
-drm = { version = "0.9" }
+drm = { version = "0.10" }
 egl = { version = "0.2" }
-gbm = { version = "0.12", default-features = false, features = ["drm-support"] }
+gbm = { version = "0.13", default-features = false, features = ["drm-support"] }
 interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 minidl = { version = "0.1" }
-num_cpus = { version = "1" }
+num_cpus = { version = "1.16" }
 raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.19" }
 rustbus = { version = "0.19" }
@@ -31,7 +31,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 sha2 = { version = "0.10" }
 tar = { version = "0.4" }
-ureq = { version = "2.1" }
+ureq = { version = "2.8" }
 
 [profile.release]
 opt-level = 3

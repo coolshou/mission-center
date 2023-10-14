@@ -524,8 +524,8 @@ mod imp {
             graph_widgets[0].connect_resize(move |_, _, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
-                let width = graph_widgets[0].allocated_width() as f32;
-                let height = graph_widgets[0].allocated_height() as f32;
+                let width = graph_widgets[0].width() as f32;
+                let height = graph_widgets[0].height() as f32;
 
                 let mut a = width;
                 let mut b = height;
@@ -560,8 +560,8 @@ mod imp {
                         let graph_widgets = this.imp().graph_widgets.take();
 
                         for graph_widget in graph_widgets.iter().skip(1) {
-                            let width = graph_widget.allocated_width() as f32;
-                            let height = graph_widget.allocated_height() as f32;
+                            let width = graph_widget.width() as f32;
+                            let height = graph_widget.height() as f32;
 
                             let mut a = width;
                             let mut b = height;
