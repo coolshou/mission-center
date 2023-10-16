@@ -34,8 +34,6 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
         #[template_child]
-        pub breakpoint: TemplateChild<adw::Breakpoint>,
-        #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
@@ -62,7 +60,6 @@ mod imp {
     impl Default for MissionCenterWindow {
         fn default() -> Self {
             Self {
-                breakpoint: TemplateChild::default(),
                 split_view: TemplateChild::default(),
                 toggle_sidebar_button: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
@@ -141,11 +138,16 @@ mod imp {
                     this.search_entry
                         .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
 
-                    if this.obj().width() >= FOLD_THRESHOLD {
-                        this.toggle_sidebar_button.set_visible(false);
-                        this.split_view.set_collapsed(false);
+                    if !this.performance_page.summary_mode() {
+                        if this.obj().width() > FOLD_THRESHOLD {
+                            this.toggle_sidebar_button.set_visible(false);
+                            this.split_view.set_collapsed(false);
+                        } else {
+                            this.toggle_sidebar_button.set_visible(true);
+                            this.split_view.set_collapsed(true);
+                        }
                     } else {
-                        this.toggle_sidebar_button.set_visible(true);
+                        this.toggle_sidebar_button.set_visible(false);
                         this.split_view.set_collapsed(true);
                     }
                 }
@@ -166,13 +168,15 @@ mod imp {
                     this.search_entry
                         .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
 
-                    if this.obj().width() >= FOLD_THRESHOLD {
-                        this.toggle_sidebar_button.set_active(true);
-                        this.toggle_sidebar_button.set_visible(false);
-                        this.split_view.set_collapsed(false);
-                    } else {
-                        this.toggle_sidebar_button.set_visible(true);
-                        this.split_view.set_collapsed(true);
+                    if !this.performance_page.summary_mode() {
+                        if this.obj().default_width() >= FOLD_THRESHOLD {
+                            this.toggle_sidebar_button.set_active(true);
+                            this.toggle_sidebar_button.set_visible(false);
+                            this.split_view.set_collapsed(false);
+                        } else {
+                            this.toggle_sidebar_button.set_visible(true);
+                            this.split_view.set_collapsed(true);
+                        }
                     }
                 } else if visible_child_name == "apps-page" {
                     this.search_button.set_visible(true);
@@ -182,21 +186,6 @@ mod imp {
                     this.toggle_sidebar_button.set_visible(true);
                     this.split_view.set_collapsed(true);
                 }
-
-                this.obj().connect_default_width_notify(
-                    clone!(@weak this as this => move |_| {
-                        let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
-                        if visible_child_name == "performance-page" {
-                            if this.obj().width() >= FOLD_THRESHOLD {
-                                this.toggle_sidebar_button.set_visible(false);
-                                this.split_view.set_collapsed(false);
-                            } else {
-                                this.toggle_sidebar_button.set_visible(true);
-                                this.split_view.set_collapsed(true);
-                            }
-                        }
-                    }),
-                );
 
                 if let Some(settings) = this.settings.take() {
                     settings
@@ -219,6 +208,40 @@ mod imp {
                             this.toggle_sidebar_button.set_visible(true);
                         } else {
                             this.toggle_sidebar_button.set_visible(false);
+                        }
+                    }
+                }),
+            );
+
+            self.obj()
+                .connect_default_width_notify(clone!(@weak self as this => move |_| {
+                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
+                    if visible_child_name == "performance-page" && !this.performance_page.summary_mode() {
+                        if this.obj().default_width() > FOLD_THRESHOLD {
+                            this.toggle_sidebar_button.set_visible(false);
+                            this.split_view.set_collapsed(false);
+                        } else {
+                            this.toggle_sidebar_button.set_visible(true);
+                            this.split_view.set_collapsed(true);
+                        }
+                    }
+                }));
+
+            self.performance_page.connect_summary_mode_notify(
+                clone!(@weak self as this => move |_| {
+                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
+                    if visible_child_name == "performance-page" {
+                        if !this.performance_page.summary_mode() {
+                            if this.obj().default_width() > FOLD_THRESHOLD {
+                                this.toggle_sidebar_button.set_visible(false);
+                                this.split_view.set_collapsed(false);
+                            } else {
+                                this.toggle_sidebar_button.set_visible(true);
+                                this.split_view.set_collapsed(true);
+                            }
+                        } else {
+                            this.toggle_sidebar_button.set_visible(false);
+                            this.split_view.set_collapsed(true);
                         }
                     }
                 }),
@@ -283,15 +306,6 @@ impl MissionCenterWindow {
         let this: Self = Object::builder()
             .property("application", application)
             .build();
-
-        // let split_view = this.imp().split_view.get();
-        // let breakpoint = this.imp().breakpoint.get();
-        // breakpoint.set_condition(
-        //     adw::BreakpointCondition::parse("max-width: 805sp")
-        //         .ok()
-        //         .as_ref(),
-        // );
-        // breakpoint.add_setter(&split_view, "collapsed", &true.into());
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());

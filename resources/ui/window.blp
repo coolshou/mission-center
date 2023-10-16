@@ -27,9 +27,6 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
   default-width: 600;
   default-height: 300;
 
-  Adw.Breakpoint breakpoint {
-  }
-
   content: Adw.OverlaySplitView split_view {
     show-sidebar: bind toggle_sidebar_button.active bidirectional;
     collapsed: true;
