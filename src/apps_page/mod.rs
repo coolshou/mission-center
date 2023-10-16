@@ -696,6 +696,27 @@ mod imp {
             });
             self.disk_column.set_sorter(Some(&sorter));
 
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("gpu-usage");
+                        let rhs = rhs.property::<f32>("gpu-usage");
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.gpu_column.set_sorter(Some(&sorter));
+
             let column_view_sorter = self.column_view.sorter();
             if let Some(column_view_sorter) = column_view_sorter.as_ref() {
                 column_view_sorter.connect_changed({
@@ -729,6 +750,7 @@ mod imp {
                             let cc = this.imp().cpu_column.as_ptr() as usize;
                             let mc = this.imp().memory_column.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
+                            let gc = this.imp().gpu_column.as_ptr() as usize;
 
                             if let Err(e) = if sort_column == nc {
                                 settings.set_enum("apps-page-sorting-column", 0)
@@ -740,6 +762,8 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 3)
                             } else if sort_column == dc {
                                 settings.set_enum("apps-page-sorting-column", 4)
+                            } else if sort_column == gc {
+                                settings.set_enum("apps-page-sorting-column", 5)
                             } else {
                                 g_critical!(
                                         "MissionCenter::AppsPage",
@@ -810,6 +834,7 @@ mod imp {
                     2 => &self.cpu_column,
                     3 => &self.memory_column,
                     4 => &self.disk_column,
+                    5 => &self.gpu_column,
                     255 => return,
                     _ => {
                         glib::g_critical!(
@@ -1077,19 +1102,22 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
-            let (_, column_header_gpu) = self.configure_column_header(
-                &column_view_title.unwrap(),
-                &i18n("GPU"),
-                "0%",
-                gtk::Align::End,
-            );
+            if let Some(column_view_title) = column_view_title {
+                let (_, column_header_gpu) = self.configure_column_header(
+                    &column_view_title,
+                    &i18n("GPU"),
+                    "0%",
+                    gtk::Align::End,
+                );
+
+                self.column_header_gpu.set(Some(column_header_gpu));
+            }
 
             self.column_header_name.set(Some(column_header_name));
             self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_disk.set(Some(column_header_disk));
-            self.column_header_gpu.set(Some(column_header_gpu));
         }
     }
 
@@ -1111,6 +1139,10 @@ impl AppsPage {
         use std::collections::HashMap;
 
         let this = self.imp();
+
+        if readings.gpu_static_info.is_empty() {
+            this.column_view.remove_column(&this.gpu_column);
+        }
 
         this.max_cpu_usage.set(num_cpus::get() as f32 * 100.0);
         this.max_memory_usage

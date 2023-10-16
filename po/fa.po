@@ -8,77 +8,73 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-30 11:01+0000\n"
-"Last-Translator: Emre <emregokcew10@gmail.com>\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/tr/>\n"
-"Language: tr\n"
+"PO-Revision-Date: 2023-10-02 17:53+0000\n"
+"Last-Translator: Aly Mokhtari <alymokhtari7@gmail.com>\n"
+"Language-Team: Persian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/fa/>\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Görev Merkezi"
+msgstr "مرکز‌ مأموریت"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Görev "
-"yöneticisi;Kaynak İzleyici;Sistem Gözlemcisi;Süreç;Performans;Başarım;"
-"İşlemci;Ekran Kartı;Bellek;Ağ;Kullanım"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Görev Merkezi Geliştiricileri"
+msgstr "توسعه دهندگان مرکز مأموریت"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr "Sistem kaynakları kullanımını izle"
+msgstr "میزان استفادهٔ منابع سیستم را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "İşlemci, Bellek, Disk, Ağ ve Ekran Kartı kullanımlarınızı izleyin"
+msgstr ""
+"میزان استفاده از پرادازشگر, حافظه، دیسک ذخیره سازی، شبکه و کارت گرافیگ سیستم "
+"خود را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
-msgstr "Özellikler:"
+msgstr "ویژگی‌ها:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Genel veya işlemci başına kullanımı izleyin"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Sistem süreçlerini, iş parçacıklarını ve tutacak sayılarını, çalışma "
-"süresini, saat hızını (temel ve geçerli), önbellek boyutlarını görün"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "Bellek ve Takas kullanımı izleme eklendi"
+msgstr "میزان استفادهٔ رم و Swap را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Belleğin sistem tarafından nasıl kullanıldığının bir dökümünü görün"
+msgstr "ببینید چگونه حافظه توسط سیستم مورد استفاده قرار می گیرد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Disk kullanımını ve aktarım hızlarını izleyin"
+msgstr "استفاده از دیسک و نرخ انتقال آن را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Ağ kullanımını ve aktarım hızlarını izleyin"
+msgstr "استفاده از شبکه و سرعت انتقال آن را پایش کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -86,937 +82,846 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Ağ kartı adı, bağlantı türü (Wi-Fi veya Ethernet), kablosuz hızları ve "
-"frekansı, donanım adresi, IP adresi gibi ağ arayüzü bilgilerini görün"
+"اطلاعات رابط شبکه مانند نام کارت شبکه، نوع اتصال (Wi-Fi یا Ethernet)، سرعت "
+"های بی سیم و فرکانس، آدرس سخت افزار IP را مشاهده کنید"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Popüler NVTOP projesi tarafından desteklenen genel GPU kullanımını, video "
-"kodlayıcı ve kod çözücü kullanımını, bellek kullanımını ve güç tüketimini "
-"izleyin"
+"پایش استفاده کلی کارت گرافیک، رمزگذاری ویدئو و استفاده از رمزگشایی، استفاده "
+"از حافظه و مصرف انرژی، توسط پروژه محبوب NVTOP"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Uygulamaya ve sürece göre kaynak kullanımının dökümünü görün"
+msgstr "تجزیه و تحلیل استفاده از منابع توسط برنامه و فرآیند"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Basit izleme için küçültülmüş özet görünümünü destekler"
+msgstr ""
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
-"CPU ve genel kaynak kullanımını azaltmak amacıyla tüm grafikler için OpenGL "
-"işleme kullanın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid "Uses GTK4 and Libadwaita"
-msgstr "GTK4 ve Libadwaita kullanır"
+msgstr "استفاده از GTK4 و Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "Written in Rust"
-msgstr "Rust ile yazıldı"
+msgstr "نوشته شده با زبان برنامه نویسی راست (Rust)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Flatpak first"
-msgstr "Flatpak öncelikli"
+msgstr "قرار‌دادن Flatpak در اولویت"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
-"Sınırlamalar (tüm bunların üstesinden gelmek için çalışmalar devam "
-"etmektedir):"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
-msgid "Disk utilization percentage might not be accurate"
-msgstr "Disk kullanım yüzdesi doğru olmayabilir"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
-msgid "No per-process network usage"
-msgstr "İşlem başına ağ kullanımı yok"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
-msgid "No per-process GPU usage"
-msgstr "İşlem başına GPU kullanımı yok"
+"محدودیت ها برنامه (کار هايي در زمینه رفع محدودیت‌ها برنامه در حال انجام است):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
-msgid ""
-"GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-msgstr "GPU desteği deneyseldir ve yalnızca AMD ve nVidia GPU'lar izlenebilir"
+msgid "Disk utilization percentage might not be accurate"
+msgstr "درصد استفاده از دیسک ممکن است دقیق نباشد"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
+msgid "No per-process network usage"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+msgid "No per-process GPU usage"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+msgid ""
+"GPU support is experimental and only AMD and nVidia GPUs can be monitored"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "Yorum, öneri, hata raporu ve katkılarınızı bekliyoruz"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
-"CPU grafiklerinde çekirdek zamanlarını göstermek için içerik menüsüne bir "
-"seçenek ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr "Mümkünse CPU sıcaklığını ekleyin"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
-"QwertyChouskie tarafından uygulama genelinde daha akıllı yuvarlama ve "
-"değerlerin hassasiyetini görüntüleme"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
-"David Guglielmi tarafından uygulama meta verileri için appdata yerine "
-"metainfo kullanın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr "Düzeltmeler:"
+msgstr "اصلاحات:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
-"Fedora'da yerel olarak yüklenen tarayıcıların uygulamalar listesinde "
-"görünmemesine neden olan bir gerileme düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
-"Flatpak uygulamalarının ArchLinux Plasma'daki uygulamalar listesinde "
-"görünmemesine neden olan bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
-"Haritalar uygulaması masaüstü dosyasının doğru şekilde ayrıştırılmamasına "
-"neden olan bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
-"Sistem günlüklerinin spamlanmasını önlemek için performansla ilgili bazı "
-"günlükler g_debug'a taşındı"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
 msgid "Translations:"
-msgstr "Çeviriler:"
+msgstr "ترجمه‌ها:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr "Seong-ho Cho tarafından Korece'ye yeni çeviri"
+msgstr "ترجمه‌ای جدید به زبان کره‌ای توسط Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr "Gert tarafından Felemenkçe'ye yeni çeviri"
+msgstr "ترجمه‌ای جدید به زبان هلندی توسط Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr "Lehçe'ye _Ghost_ tarafından yapılan yeni çeviri"
+msgstr "ترجمه‌ای جدید به زبان لهستانی توسط _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr "beppeilgommista tarafından İtalyanca'ya yeni çeviri"
+msgstr "ترجمه‌ای جدید به زبان ایتالیایی توسط beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
 msgstr ""
-"Gérson da Fonseca Henzel tarafından Portekizce'ye (Brezilya) yeni çeviri"
+"ترجمه‌ای جدید به زبان پرتغالی (پرتغالی برزیل) توسط Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr "İspanyolca çeviri güncellendi"
+msgstr "به روز رسانی ترجمه اسپانیایی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr "Fince çeviri güncellendi"
+msgstr "به روز رسانی ترجمه فنلاندی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr "Güncellenmiş Rusça çeviri"
+msgstr "به روز رسانی ترجمه روسی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr "Çince (Basitleştirilmiş) çeviri güncellendi"
+msgstr "به روز رسانی ترجمه چینی (نسخه ساده‌شده)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr "Yunanca çeviri güncellendi"
+msgstr "به روز رسانی ترجمه یونانی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
 msgid "Updated German translation"
-msgstr "Almanca çeviri güncellendi"
+msgstr "به روز رسانی ترجمه آلمانی"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
-"Uygulamanın bazı kullanıcılar için herhangi bir bilgi görüntülememesine "
-"neden olan bir hatayı düzeltmek için düzeltme sürümü"
+"انتشار اصلاحیه موقت (Hotfix) برای رفع یک مشکل که باعث شد برنامه هیچ گونه "
+"اطلاعاتی را برای برخی از کاربران نشان ندهد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr "QwertyChouskie'den yeni uygulama simgesi"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
-"Uygulamaları ve işlemleri durdurma ve durdurmaya zorlama özelliği ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
-"Çalışan uygulamalar artık daha güvenilir bir şekilde gösterilmektedir ve "
-"çalışan tüm uygulamaları olmasa da çoğunu yansıtmalıdır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
-msgstr "Çalışan uygulamalar listesinde Snap uygulamaları için deneysel destek"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
-"Kaynak tüketimini süreç başına ayrı ayrı veya alt süreçlerle birlikte "
-"kümelenmiş olarak göstermek için bir ayar eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
-"Uygulamalar ve işlemler listesinde kalıcı sıralamayı etkinleştirmek için bir "
-"ayar eklendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
-"Veri toplama artık daha çok yönlüdür ve yeni özelliklerin daha hızlı ve daha "
-"kolay eklenmesine olanak tanıyacaktır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr "Uygulama artık GNOME Builder'dan oluşturulabilir"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr "Norveççe Bokmål diline Allan Nordhøy tarafından yapılan yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr "Ivan Maslikhov tarafından Rusça'ya yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr "mthw0 tarafından Slovakça'ya yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr "Yiannis Ioannides tarafından Yunancaya yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr "foxer NS tarafından Çinceye (Basitleştirilmiş) yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr "Link Mauve tarafından Fransızca'ya yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr "Kovács Bálint Hunor tarafından Macarcaya yeni çeviri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
 msgid "Updated Czech translation"
-msgstr "Çekçe çeviri güncellendi"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
 msgid "Updated Portuguese translation"
-msgstr "Portekizce çeviri güncellendi"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr "Foxer NS tarafından yapılan Çince çeviriler için düzeltmeler"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:103
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr "Óscar Fernández Díaz'ın İspanyolca çevirisini ekleyin"
+msgstr ""
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:104
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
-"Bellek sekmesi artık modüller tarafından desteklenen maksimum hız yerine "
-"yapılandırılmış bellek hızını gösteriyor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:105
 msgid "Add German translation by TecCheck"
-msgstr "Almanca çeviri eklendi, teşekkürler TecCheck"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:106
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
-"Bir işlem büyük miktarda CPU veya RAM kullandığında artık Uygulamalar ve "
-"İşlemler listesinde vurgulanır"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Add initial support for building for ARM64"
-msgstr "ARM64 için derlemeye destek ekleyin"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
-"Önbellek boyutlarını hesaplarken birden fazla CPU çekirdeğini ve önbellek "
-"paylaşımını dikkate alın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
-"Yerel paket olarak yüklenen tarayıcıların Uygulamalar listesinde görünmemesi "
-"sorunu giderildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr "Peter Dave Hello tarafından Geleneksel Çince için çeviri güncellemeleri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:118
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr "Rafael Fontenelle tarafından Portekizce için çeviri düzeltmeleri"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:119
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
-"Maximilian'dan yalnızca başka bir IPv6 yoksa bağlantı yerel IPv6 adresini "
-"göster"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr "Peter Dave Hello tarafından Geleneksel Çince yerel ayarı ekle"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:121
 msgid "Add category for application menu by Renner0E"
-msgstr "Renner0E tarafından uygulama menüsü için kategori ekle"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
-"dmidecode` çıktısını ayrıştırırken paniğe yol açan bir ayrıştırma hatasını "
-"düzeltin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
-"CPU temel hız bilgisi alınırken `/sys/devices/system/cpu/cpu0/cpufreq/"
-"base_frequency` mevcut değilse bir geri dönüş kullanın"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
-"GPU sekmesi kullanıcı arayüzünü daha küçük çözünürlükler için daha "
-"uyarlanabilir olacak şekilde güncelleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid "Added Czech translation by ondra05"
-msgstr "ondra05 tarafından Çekçe çeviri eklendi"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:133
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr "Rilson Joás tarafından Portekizce çeviri eklendi"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
-"Hannes Kuchelmeister tarafından masaüstü ortamlarının arama işlevini "
-"geliştirmek için masaüstü dosyasına anahtar kelimeler ekleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:135
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
-"Bazı kullanıcılar için uygulama ve işlem listesinin boş olmasına neden olan "
-"bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr "Sistem ağır yük altındayken meydana gelen bir çökmeyi düzeltin"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid "First official release!"
-msgstr "İlk resmi sürüm!"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr "Uygulama başlatıldığında hangi sayfa gösterilir"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
-"Veriler ne kadar hızlı yenilenmeli ve kullanıcı arayüzü ne kadar hızlı "
-"güncellenmelidir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Üst ve alt süreç istatistikleri ayrı ayrı gösterilir veya yukarı doğru "
-"birleştirilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sütun sıralaması uygulama yeniden başlatıldığında da korunur"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
-msgstr "Uygulamalar sayfa görünümünün sıralandığı sütun kimliği"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr "Uygulamalar sayfa görünümünün sıralama yönü"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr "CPU performansı sayfasında hangi grafik gösterilir"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr "CPU grafiklerinde çekirdek sürelerini gösterme"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
-#: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
-"Uygulama başlangıcında hangi sayfanın gösterileceği, performans sekmesinde"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
-#: src/performance_page/mod.rs:264 src/apps_page/mod.rs:1004
-#: src/performance_page/mod.rs:267
+#: src/performance_page/mod.rs:264
 msgid "CPU"
-msgstr "İşlemci"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:74
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr "Kullanım"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:84
 msgid "100%"
-msgstr "%100"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr "Hız"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
-#: src/apps_page/mod.rs:407
 msgid "Processes"
-msgstr "Süreç"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr "İş Parçacığı"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
-msgstr "İşleyici"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
-msgstr "Çalışma süresi"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr "Taban Hız:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr "Yuva:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr "Sanal işlemci:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr "Sanallaştırma:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
-msgstr "Sanal makine:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr "L1 önbellek:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr "L2 önbellek:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr "L3 önbellek:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
-msgstr "G_rafiği Değiştir"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
-msgstr "Genel _Kullanım"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:450
 msgid "Logical _Processors"
-msgstr "Mantıksal İşl_emciler"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr "Çekirdek Zamanlarını Göster"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
 #: resources/ui/performance_page/gpu.blp:549
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
-#: resources/ui/performance_page/cpu.blp:458
 msgid "Graph _Summary View"
-msgstr "_Özet Grafiğini Çiz"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:468
 #: resources/ui/performance_page/disk.blp:391
 #: resources/ui/performance_page/gpu.blp:554
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
-#: resources/ui/performance_page/cpu.blp:463
 msgid "_View"
-msgstr "G_örünüm"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:471
 #: resources/ui/performance_page/disk.blp:394
 #: resources/ui/performance_page/gpu.blp:557
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
-#: resources/ui/performance_page/cpu.blp:466
 msgid "CP_U"
-msgstr "İşl_emci"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:399
 #: resources/ui/performance_page/gpu.blp:562
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
-#: resources/ui/performance_page/cpu.blp:471
 msgid "_Memory"
-msgstr "_Bellek"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:481
 #: resources/ui/performance_page/disk.blp:404
 #: resources/ui/performance_page/gpu.blp:567
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
-#: resources/ui/performance_page/cpu.blp:476
 msgid "_Disk"
-msgstr "_Disk"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:409
 #: resources/ui/performance_page/gpu.blp:572
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
-#: resources/ui/performance_page/cpu.blp:481
 msgid "_Network"
-msgstr "_Ağ"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:491
 #: resources/ui/performance_page/disk.blp:414
 #: resources/ui/performance_page/gpu.blp:577
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
-#: resources/ui/performance_page/cpu.blp:486
 msgid "_GPU"
-msgstr "_Ekran Kartı"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:499
 #: resources/ui/performance_page/disk.blp:422
 #: resources/ui/performance_page/gpu.blp:585
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
-#: resources/ui/performance_page/cpu.blp:494
 msgid "_Copy"
-msgstr "K_opyala"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
 msgid "Active time"
-msgstr "Aktif zaman"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:122
 msgid "Disk transfer rate"
-msgstr "Disk aktarım oranı"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:211
 msgid "Average response time"
-msgstr "Ortalama yanıt zamanı"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr "Okuma hızı"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr "Yazma hızı"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr "Kapasite:"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
-msgstr "Biçimlendirilmiş:"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:325
 msgid "System disk:"
-msgstr "Sistem diski:"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
 msgid "Type:"
-msgstr "Tür:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr "Genel kullanım"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr "Video kodla"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr "Video kod çözme"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr "Bellek kullanımı"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
-msgstr "Saat Hızı"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr "Güç kullanımı"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr "Bellek hızı"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
-msgstr "Sıcaklık"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr "OpenGL sürümü:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr "Vulkan sürümü:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr "PCI Express hızı:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr "PCI veri yolu adresi:"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr "Bazı bilgiler yönetici ayrıcalıkları gerektiriyor"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
-msgstr "_Kimlik Doğrula"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319 src/apps_page/mod.rs:1010
-#: src/performance_page/mod.rs:318
+#: src/performance_page/mod.rs:319
 msgid "Memory"
-msgstr "Bellek"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:130
 msgid "Memory composition"
-msgstr "Bellek kompozisyonu"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr "Kullanımda"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr "Kullanılabilir"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:217
 msgid "Committed"
-msgstr "Kullanıldı"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:240
 msgid "Cached"
-msgstr "Önbelleklendi"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr "Kullanılabilir takas"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr "Kullanılan takas"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr "Hız:"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
-msgstr "Kullanılan yuvalar:"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:336
 msgid "Form factor:"
-msgstr "Katsayı:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr "Çıktı"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr "Gönderilen"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr "Alınan"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
-msgstr "Arayüz adı:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:206
 msgid "Connection type:"
-msgstr "Bağlantı türü:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
-msgstr "SSID:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr "Sinyal kuvveti:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr "En yüksek bit oranı:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr "Frekans:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr "Donanım adresi:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr "IPv4 adresi:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr "IPv6 adresi:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:403
 msgid "Network Se_ttings"
-msgstr "Ağ _Ayarları"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr "Genel Ayarlar"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr "Güncelleme Hızı"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr "Hızlı"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
-msgstr "Yarım saniyede bir yenile"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
 #: src/preferences/page.rs:282
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr "Her saniye yenile"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr "Yavaş"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr "Hir bir buçuk saniyede bir yenile"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
 msgid "Very Slow"
-msgstr "Çok Yavaş"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr "Her 2 saniyede bir yenile"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
-msgstr "Uygulama Sayfası Ayarları"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr "İşlemci İstatistiklerini Birleştir"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr "Sıralamayı Hatırla"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Uygulama yeniden başlatmalarında uygulama ve işlem listesinin sıralamasını "
-"hatırla"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr "Aramak için ad veya PID yazın"
+msgstr ""
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr "Yükleniyor..."
+msgstr ""
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr "Başarım"
+msgstr ""
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:447
-#: src/apps_page/mod.rs:400
 msgid "Apps"
-msgstr "Uygulamalar"
+msgstr ""
 
 #: resources/ui/window.blp:124
 msgid "_Preferences"
-msgstr "_ Tercihler"
+msgstr ""
 
 #: resources/ui/window.blp:129
 msgid "_About MissionCenter"
-msgstr "Görev Merkezi _Hakkında"
+msgstr ""
 
-#: src/apps_page/mod.rs:1037 src/apps_page/mod.rs:992
+#: src/apps_page/mod.rs:1037
 msgid "Name"
-msgstr "Ad"
+msgstr ""
 
-#: src/apps_page/mod.rs:1043 src/apps_page/mod.rs:998
+#: src/apps_page/mod.rs:1043
 msgid "PID"
-msgstr "PID"
+msgstr ""
 
-#: src/apps_page/mod.rs:1061 src/apps_page/mod.rs:1016
+#: src/apps_page/mod.rs:1061
 msgid "Disk"
-msgstr "Disk"
+msgstr ""
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr "Uygulamayı Durdur"
+msgstr ""
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr "Uygulamayı Durmaya Zorla"
+msgstr ""
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
 msgid "Stop Process"
-msgstr "Süreci Durdur"
+msgstr ""
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr "Süreci Durmaya Zorla"
+msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -1024,9 +929,6 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Kullanımda ({}B)\n"
-"\n"
-"İşletim sistemi ve çalışan uygulamalar tarafından kullanılan bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
 msgid ""
@@ -1035,10 +937,6 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Değiştirilmiş ({}B)\n"
-"\n"
-"Başka bir işlem tarafından kullanılmadan önce içeriğinin diske yazılması "
-"gereken bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -1046,9 +944,6 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Beklemede ({}B)\n"
-"\n"
-"Önbelleğe alınmış verileri ve aktif olarak kullanılmayan kodu içeren bellek"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -1057,35 +952,30 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Boş ({}B)\n"
-"\n"
-"Kullanımda olmayan ve işletim sistemi, sürücüler veya uygulamalar daha fazla "
-"belleğe ihtiyaç duyduğunda ilk olarak yeniden kullanılacak bellek"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
-#: src/performance_page/mod.rs:371
 msgid "Disk {} ({})"
-msgstr "Disk {} ({})"
+msgstr ""
 
-#: src/performance_page/mod.rs:376 src/performance_page/mod.rs:375
+#: src/performance_page/mod.rs:376
 msgid "HDD"
-msgstr "HDD"
+msgstr ""
 
-#: src/performance_page/mod.rs:377 src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:377
 msgid "SSD"
-msgstr "SSD"
+msgstr ""
 
-#: src/performance_page/mod.rs:378 src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:378
 msgid "NVMe"
-msgstr "NVMe"
+msgstr ""
 
-#: src/performance_page/mod.rs:379 src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:379
 msgid "eMMC"
-msgstr "eMMC"
+msgstr ""
 
-#: src/performance_page/mod.rs:380 src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:380
 msgid "iSCSI"
-msgstr "iSCSI"
+msgstr ""
 
 #: src/performance_page/mod.rs:381 src/performance_page/cpu.rs:310
 #: src/performance_page/cpu.rs:323 src/performance_page/cpu.rs:333
@@ -1093,101 +983,67 @@ msgstr "iSCSI"
 #: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:405
 #: src/performance_page/network.rs:442 src/performance_page/network.rs:520
-#: src/performance_page/mod.rs:380 src/performance_page/cpu.rs:278
-#: src/performance_page/cpu.rs:291 src/performance_page/cpu.rs:301
-#: src/performance_page/cpu.rs:307 src/performance_page/network.rs:404
-#: src/performance_page/network.rs:441 src/performance_page/network.rs:519
 msgid "Unknown"
-msgstr "Bilinmiyor"
+msgstr ""
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
-#: src/performance_page/mod.rs:450
 msgid "Ethernet"
-msgstr "Ethernet"
+msgstr ""
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
-#: src/performance_page/mod.rs:451
 msgid "Wi-Fi"
-msgstr "Kablosuz"
+msgstr ""
 
 #: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
-#: src/performance_page/mod.rs:452
 msgid "Other"
-msgstr "Diğer"
+msgstr ""
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr "Ekran Kartı {}"
+msgstr ""
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
 msgid "{}: {} {}bps"
-msgstr "{}: {} {}bps"
+msgstr ""
 
-#: src/performance_page/cpu.rs:318 src/performance_page/cpu.rs:286
+#: src/performance_page/cpu.rs:318
 msgid "Supported"
-msgstr "Destekleniyor"
+msgstr ""
 
 #: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
-#: src/performance_page/cpu.rs:288
 msgid "Unsupported"
-msgstr "Desteklenmiyor"
+msgstr ""
 
 #: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
-#: src/performance_page/cpu.rs:296
 msgid "Yes"
-msgstr "Evet"
+msgstr ""
 
 #: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
-#: src/performance_page/cpu.rs:298
 msgid "No"
-msgstr "Hayır"
+msgstr ""
 
 #: src/performance_page/cpu.rs:698
 msgid "Utilization over {} seconds"
-msgstr "{} saniye boyunca kullanım"
+msgstr ""
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
-#: src/performance_page/cpu.rs:659 src/performance_page/disk.rs:376
-#: src/performance_page/network.rs:605
 msgid "{} seconds"
-msgstr "{} saniye"
+msgstr ""
 
 #: src/performance_page/disk.rs:251
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/s"
+msgstr ""
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
-#: src/performance_page/network.rs:430 src/performance_page/network.rs:415
-#: src/performance_page/network.rs:421 src/performance_page/network.rs:429
+#: src/performance_page/network.rs:430
 msgid "{} {}bps"
-msgstr "{} {}bps"
+msgstr ""
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
-#: src/performance_page/network.rs:454 src/performance_page/network.rs:470
 msgid "N/A"
-msgstr "Yok"
+msgstr ""
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr "Sabri Ünal <libreajans@gmail.com>"
-
-#: resources/ui/performance_page/cpu.blp:74
-msgid "% Utilization"
-msgstr "% Kullanım"
-
-#: src/performance_page/mod.rs:695
-msgid "{}: {} {}bps {}: {} {}bps"
-msgstr "{}: {} {}bps {}: {} {}bps"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-msgid ""
-"The application currently only supports monitoring, you cannot stop "
-"processes for example"
 msgstr ""
-"Uygulama şu anda yalnızca izlemeyi desteklemektedir, örneğin işlemleri "
-"durduramazsınız"
-
-#: src/performance_page/cpu.rs:655
-msgid "% Utilization over {} seconds"
-msgstr "% kullanım {} saniyede"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-24 09:07+0000\n"
+"PO-Revision-Date: 2023-10-02 17:53+0000\n"
 "Last-Translator: Muhammad Hasan Firdaus <hasanteam008@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/id/>\n"
@@ -93,460 +93,518 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Pantau penggunaan GPU secara keseluruhan, penggunaan encoder dan decoder "
+"video, penggunaan memori, dan konsumsi daya, didukung oleh proyek NVTOP yang "
+"populer"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Lihat rincian penggunaan sumber daya berdasarkan aplikasi dan proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Mendukung tampilan ringkasan yang diperkecil untuk pemantauan sederhana"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"Gunakan rendering OpenGL untuk semua grafik dalam upaya mengurangi CPU dan "
+"penggunaan sumber daya secara keseluruhan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Menggunakan GTK4 dan Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Written in Rust"
-msgstr ""
+msgstr "Dibuat dengan Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak pertama"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
+"Keterbatasan (ada pekerjaan yang sedang berlangsung untuk mengatasi semua "
+"ini):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Disk utilization percentage might not be accurate"
-msgstr ""
+msgstr "Persentase pemanfaatan disk mungkin tidak akurat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Tidak ada penggunaan jaringan per proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process GPU usage"
-msgstr ""
+msgstr "Tidak ada penggunaan GPU per proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Dukungan GPU bersifat eksperimental dan hanya GPU AMD dan nVidia yang dapat "
+"dimonitor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Komentar, saran, laporan bug, dan kontribusi dipersilakan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"Tambahkan opsi, ke menu konteks, untuk menunjukkan waktu kernel, dalam "
+"grafik CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Tambahkan suhu CPU, jika memungkinkan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"Penerapan pembulatan yang lebih cerdas dan menampilkan ketepatan nilai di "
+"seluruh aplikasi oleh QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"Gunakan metainfo sebagai pengganti appdata untuk metadata aplikasi oleh "
+"David Guglielmi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Perbaikan:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
+"Memperbaiki regresi di mana peramban yang terinstal secara bawaan tidak "
+"muncul di daftar aplikasi di Fedora"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"Memperbaiki masalah dimana aplikasi Flatpak tidak muncul di daftar aplikasi "
+"pada ArchLinux Plasma"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
+"Memperbaiki masalah ketika Peta berkas aplikasi desktop tidak diuraikan "
+"dengan benar"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"Memindahkan log beberapa hal terkait performa ke g_debug untuk menghindari "
+"spam ke log sistem"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
 msgid "Translations:"
-msgstr ""
+msgstr "Terjemahan:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Korea oleh Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Belanda oleh Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Polandia oleh _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Italia oleh beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Portugis (Brazil) oleh Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Spanyol diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Finlandia diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Rusia diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Mandarin (Sederhana) diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Yunani diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
 msgid "Updated German translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Jerman diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"Rilis perbaikan terbaru untuk memperbaiki bug yang menyebabkan aplikasi "
+"tidak menampilkan informasi apa pun untuk beberapa pengguna"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "Ikon aplikasi baru oleh QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Menambahkan kemampuan untuk menghentikan dan menghentikan paksa aplikasi dan "
+"proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"Aplikasi berjalan kini ditampilkan dengan lebih andal, dan mencerminkan "
+"sebagian besar jika tidak seluruh aplikasi berjalan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
+msgstr "Dukungan eksperimental untuk aplikasi Snap di daftar aplikasi berjalan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"Menambahkan pengaturan untuk menampilkan konsumsi daya individual per proses "
+"atau gabungan dengan proses turunan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"Menambahkan pengaturan untuk mengaktifkan pengurutan tetap dalam daftar "
+"aplikasi dan proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"Pengumpulan data sekarang lebih serbaguna dan akan memungkinkan fitur baru "
+"untuk ditambahkan lebih cepat dan mudah"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "Sekarang aplikasi dapat dibuat dari GNOME Builder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Norwegia Bokmål oleh Allan Nordhøy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Rusia oleh Ivan Maslikhov"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Slovakia oleh mthw0"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Yunani oleh Yiannis Ioannides"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Mandarin (Sederhana) oleh foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Prancis oleh Link Mauve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Terjemahan baru Bahasa Hungaria oleh Kovács Bálint Hunor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
 msgid "Updated Czech translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Ceko diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
 msgid "Updated Portuguese translation"
-msgstr ""
+msgstr "Terjemahan Bahasa Portugal diperbarui"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Perbaikan untuk terjemahan Bahasa Mandarin oleh foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "Menambahkan terjemahan Bahasa Spanyol oleh Óscar Fernández Díaz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"Tab memori kini menampilkan kecepatan memori yang dikonfigurasi, bukan "
+"kecepatan maksimal yang didukung oleh modul"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
 msgid "Add German translation by TecCheck"
-msgstr ""
+msgstr "Menambahkan terjemahan Bahasa Jerman oleh TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"Ketika proses menggunakan CPU atau RAM dengan jumlah besar sekarang disorot "
+"di daftar Aplikasi dan Proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "Menambahkan dukungan awal untuk ARM64"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"Menghitung multi CPU core dan pembagian cache ketika menghitung ukuran cache"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"Memperbaiki browser, pemasangan sebagai paket native, tidak muncul di daftar "
+"Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr ""
+msgstr "Terjemahan Bahasa Mandarin Tradisional diperbarui oleh Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
+msgstr "Perbaikan terjemahan Bahasa Portugal oleh Rafael Fontenelle"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
+"Hanya menampilkan alamat link IPv6 lokal jika tidak ada IPv6 lain oleh "
+"Maximilian"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
 msgstr ""
+"Menambahkan terjemahan Bahasa Mandarin Tradisional oleh Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "Menambahkan kategori untuk menu aplikasi oleh Renner0E"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
+"Memperbaiki kesalahan parsing ketika menguraikan hasil dari `dmidecode` yang "
+"menyebabkan panik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
+"Menggunakan cadangan ketika `/sys/devices/system/cpu/cpu0/cpufreq/"
+"base_frequency` tidak ada, ketika mendapatkan informasi basis kecepatan CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
+"Memperbarui tampilan tab GPU supaya lebih adaptif untuk resolusi yang lebih "
+"kecil"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "Terjemahan Bahasa Ceko ditambahkan oleh ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "Terjemahan Bahasa Portugal ditambahkan oleh Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
+"Menambahkan kata kunci ke file desktop untuk memperbaiki performa fungsi "
+"pencarian dari lingkungan desktop oleh Hannes Kuchelmeister"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
+"Memperbaiki bug ketika daftar aplikasi dan proses kosong untuk beberapa "
+"pengguna"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "Memperbaiki crash yang terjadi ketika sistem dalam beban berat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 msgid "First official release!"
-msgstr ""
+msgstr "Rilis resmi pertama!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Halaman mana yang akan ditampilkan saat aplikasi dimulai"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:35
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "Seberapa cepat data dan tampilan diperbarui"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:40
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Statistik proses induk dan turunan ditampilkan terpisah atau digabungkan "
+"keatas"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:45
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Pengurutan kolom dipertahankan saat aplikasi dimulai ulang"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Id kolom yang digunakan untuk mengurutkan tampilan halaman Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Arah pengurutan tampilan halaman Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Grafik mana yang ditampilkan dalam halaman performa CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:66
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Tampilkan waktu kernel dalam grafik CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
+"Halaman mana yang akan ditampilkan saat aplikasi dimulai, dalam tab performa"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
 #: src/performance_page/mod.rs:264
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:74
 #: resources/ui/performance_page/cpu.blp:152
 #: resources/ui/performance_page/gpu.blp:227
 msgid "Utilization"
-msgstr ""
+msgstr "Pemanfaatan"
 
 #: resources/ui/performance_page/cpu.blp:84
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:174
 msgid "Speed"
-msgstr ""
+msgstr "Kecepatan"
 
 #: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
 msgid "Processes"
-msgstr ""
+msgstr "Proses"
 
 #: resources/ui/performance_page/cpu.blp:223
 msgid "Threads"
-msgstr ""
+msgstr "Utas"
 
 #: resources/ui/performance_page/cpu.blp:245
 msgid "Handles"
-msgstr ""
+msgstr "Pegangan"
 
 #: resources/ui/performance_page/cpu.blp:268
 msgid "Up time"
-msgstr ""
+msgstr "Waktu aktif"
 
 #: resources/ui/performance_page/cpu.blp:294
 msgid "Base Speed:"
-msgstr ""
+msgstr "Basis Kecepatan:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr ""
+msgstr "Soket:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Prosesor virtual:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
-msgstr ""
+msgstr "Virtualisasi:"
 
 #: resources/ui/performance_page/cpu.blp:330
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Mesin virtual:"
 
 #: resources/ui/performance_page/cpu.blp:339
 msgid "L1 cache:"
-msgstr ""
+msgstr "Cache L1:"
 
 #: resources/ui/performance_page/cpu.blp:348
 msgid "L2 cache:"
-msgstr ""
+msgstr "Cache L2:"
 
 #: resources/ui/performance_page/cpu.blp:357
 msgid "L3 cache:"
-msgstr ""
+msgstr "Cache L3:"
 
 #: resources/ui/performance_page/cpu.blp:442
 msgid "Change G_raph To"
-msgstr ""
+msgstr "Ubah G_rafik Ke"
 
 #: resources/ui/performance_page/cpu.blp:445
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "Keseluruhan P_emanfaatan"
 
 #: resources/ui/performance_page/cpu.blp:450
 msgid "Logical _Processors"
-msgstr ""
+msgstr "_Prosesor Logikal"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Tampilkan Waktu Kernel"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -554,7 +612,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:402
 #: resources/ui/performance_page/network.blp:369
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "Grafik _Ringkasan Tampilan"
 
 #: resources/ui/performance_page/cpu.blp:468
 #: resources/ui/performance_page/disk.blp:391
@@ -562,7 +620,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:407
 #: resources/ui/performance_page/network.blp:374
 msgid "_View"
-msgstr ""
+msgstr "_Tampilan"
 
 #: resources/ui/performance_page/cpu.blp:471
 #: resources/ui/performance_page/disk.blp:394
@@ -570,7 +628,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:410
 #: resources/ui/performance_page/network.blp:377
 msgid "CP_U"
-msgstr ""
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:476
 #: resources/ui/performance_page/disk.blp:399
@@ -578,7 +636,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:415
 #: resources/ui/performance_page/network.blp:382
 msgid "_Memory"
-msgstr ""
+msgstr "_Memori"
 
 #: resources/ui/performance_page/cpu.blp:481
 #: resources/ui/performance_page/disk.blp:404
@@ -586,7 +644,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:420
 #: resources/ui/performance_page/network.blp:387
 msgid "_Disk"
-msgstr ""
+msgstr "_Disk"
 
 #: resources/ui/performance_page/cpu.blp:486
 #: resources/ui/performance_page/disk.blp:409
@@ -594,7 +652,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:425
 #: resources/ui/performance_page/network.blp:392
 msgid "_Network"
-msgstr ""
+msgstr "_Jaringan"
 
 #: resources/ui/performance_page/cpu.blp:491
 #: resources/ui/performance_page/disk.blp:414
@@ -602,7 +660,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:430
 #: resources/ui/performance_page/network.blp:397
 msgid "_GPU"
-msgstr ""
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:499
 #: resources/ui/performance_page/disk.blp:422
@@ -610,315 +668,316 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:438
 #: resources/ui/performance_page/network.blp:410
 msgid "_Copy"
-msgstr ""
+msgstr "_Salin"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk.blp:188
 msgid "Active time"
-msgstr ""
+msgstr "Waktu aktif"
 
 #: resources/ui/performance_page/disk.blp:122
 msgid "Disk transfer rate"
-msgstr ""
+msgstr "Kecepatan transfer disk"
 
 #: resources/ui/performance_page/disk.blp:211
 msgid "Average response time"
-msgstr ""
+msgstr "Rata-rata waktu respon"
 
 #: resources/ui/performance_page/disk.blp:247
 msgid "Read speed"
-msgstr ""
+msgstr "Kecepatan baca"
 
 #: resources/ui/performance_page/disk.blp:279
 msgid "Write speed"
-msgstr ""
+msgstr "Kecepatan tulis"
 
 #: resources/ui/performance_page/disk.blp:307
 msgid "Capacity:"
-msgstr ""
+msgstr "Kapasitas:"
 
 #: resources/ui/performance_page/disk.blp:316
 msgid "Formatted:"
-msgstr ""
+msgstr "Terformat:"
 
 #: resources/ui/performance_page/disk.blp:325
 msgid "System disk:"
-msgstr ""
+msgstr "Disk sistem:"
 
 #: resources/ui/performance_page/disk.blp:334
 #: resources/ui/performance_page/memory.blp:345
 msgid "Type:"
-msgstr ""
+msgstr "Tipe:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr ""
+msgstr "Keseluruhan pemanfaatan"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode"
-msgstr ""
+msgstr "Encode video"
 
 #: resources/ui/performance_page/gpu.blp:143
 msgid "Video decode"
-msgstr ""
+msgstr "Decode video"
 
 #: resources/ui/performance_page/gpu.blp:180
 #: resources/ui/performance_page/gpu.blp:350
 #: resources/ui/performance_page/memory.blp:73
 msgid "Memory usage"
-msgstr ""
+msgstr "Penggunaan Memori"
 
 #: resources/ui/performance_page/gpu.blp:250
 msgid "Clock Speed"
-msgstr ""
+msgstr "Kecepatan Clock"
 
 #: resources/ui/performance_page/gpu.blp:295
 msgid "Power draw"
-msgstr ""
+msgstr "Mengambil power"
 
 #: resources/ui/performance_page/gpu.blp:395
 msgid "Memory speed"
-msgstr ""
+msgstr "Kecepatan Memori"
 
 #: resources/ui/performance_page/gpu.blp:440
 msgid "Temperature"
-msgstr ""
+msgstr "Suhu"
 
 #: resources/ui/performance_page/gpu.blp:470
 msgid "OpenGL version:"
-msgstr ""
+msgstr "Versi OpenGL:"
 
 #: resources/ui/performance_page/gpu.blp:479
 msgid "Vulkan version:"
-msgstr ""
+msgstr "Versi Vulkan:"
 
 #: resources/ui/performance_page/gpu.blp:488
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "Kecepatan PCI Express:"
 
 #: resources/ui/performance_page/gpu.blp:497
 msgid "PCI bus address:"
-msgstr ""
+msgstr "Alamat bus PCI:"
 
 #: resources/ui/performance_page/memory.blp:28
 msgid "Some information requires administrative privileges"
-msgstr ""
+msgstr "Beberapa informasi memerlukan hak istimewa administrator"
 
 #: resources/ui/performance_page/memory.blp:29
 msgid "_Authenticate"
-msgstr ""
+msgstr "_Autentikasi"
 
 #: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
 #: src/performance_page/mod.rs:319
 msgid "Memory"
-msgstr ""
+msgstr "Memori"
 
 #: resources/ui/performance_page/memory.blp:130
 msgid "Memory composition"
-msgstr ""
+msgstr "Komposisi Memori"
 
 #: resources/ui/performance_page/memory.blp:166
 msgid "In use"
-msgstr ""
+msgstr "Digunakan"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Available"
-msgstr ""
+msgstr "Tersedia"
 
 #: resources/ui/performance_page/memory.blp:217
 msgid "Committed"
-msgstr ""
+msgstr "Terikat"
 
 #: resources/ui/performance_page/memory.blp:240
 msgid "Cached"
-msgstr ""
+msgstr "Tercache"
 
 #: resources/ui/performance_page/memory.blp:267
 msgid "Swap available"
-msgstr ""
+msgstr "Swap tersedia"
 
 #: resources/ui/performance_page/memory.blp:290
 msgid "Swap used"
-msgstr ""
+msgstr "Swap digunakan"
 
 #: resources/ui/performance_page/memory.blp:318
 msgid "Speed:"
-msgstr ""
+msgstr "Kecepatan:"
 
 #: resources/ui/performance_page/memory.blp:327
 msgid "Slots used:"
-msgstr ""
+msgstr "Slot digunakan:"
 
 #: resources/ui/performance_page/memory.blp:336
 msgid "Form factor:"
-msgstr ""
+msgstr "Faktor bentuk:"
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr ""
+msgstr "Hasil"
 
 #: resources/ui/performance_page/network.blp:139
 msgid "Send"
-msgstr ""
+msgstr "Kirim"
 
 #: resources/ui/performance_page/network.blp:170
 msgid "Receive"
-msgstr ""
+msgstr "Terima"
 
 #: resources/ui/performance_page/network.blp:197
 msgid "Interface name:"
-msgstr ""
+msgstr "Nama antarmuka:"
 
 #: resources/ui/performance_page/network.blp:206
 msgid "Connection type:"
-msgstr ""
+msgstr "Jenis koneksi:"
 
 #: resources/ui/performance_page/network.blp:216
 msgid "SSID:"
-msgstr ""
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network.blp:226
 msgid "Signal strength:"
-msgstr ""
+msgstr "Kekuatan sinyal:"
 
 #: resources/ui/performance_page/network.blp:236
 msgid "Maximum Bitrate:"
-msgstr ""
+msgstr "Bitrate maksimal:"
 
 #: resources/ui/performance_page/network.blp:246
 msgid "Frequency:"
-msgstr ""
+msgstr "Frekuensi:"
 
 #: resources/ui/performance_page/network.blp:255
 msgid "Hardware address:"
-msgstr ""
+msgstr "Alamat Hardware:"
 
 #: resources/ui/performance_page/network.blp:264
 msgid "IPv4 address:"
-msgstr ""
+msgstr "Alamat IPv4:"
 
 #: resources/ui/performance_page/network.blp:273
 msgid "IPv6 address:"
-msgstr ""
+msgstr "Alamat IPv6:"
 
 #: resources/ui/performance_page/network.blp:403
 msgid "Network Se_ttings"
-msgstr ""
+msgstr "Pe_ngaturan Jaringan"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr ""
+msgstr "Pengaturan Umum"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr ""
+msgstr "Kecepatan Pembaruan"
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr ""
+msgstr "Cepat"
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
-msgstr ""
+msgstr "Perbarui setiap setengah detik"
 
 #: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
 #: src/preferences/page.rs:282
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr ""
+msgstr "Perbarui setiap detik"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr ""
+msgstr "Lambat"
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr ""
+msgstr "Perbarui setiap satu setengah detik"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
 msgid "Very Slow"
-msgstr ""
+msgstr "Sangat Lambat"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr ""
+msgstr "Perbarui setiap 2 detik"
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
-msgstr ""
+msgstr "Pengaturan Halaman Aplikasi"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Satukan Statistik Proses"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Ingat Pengurutan"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Ingat pengurutan daftar aplikasi dan proses setelah aplikasi dimulai ulang"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
-msgstr ""
+msgstr "Ketik nama atau PID untuk mencari"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Memuat..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr ""
+msgstr "Performa"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:447
 msgid "Apps"
-msgstr ""
+msgstr "Aplikasi"
 
 #: resources/ui/window.blp:124
 msgid "_Preferences"
-msgstr ""
+msgstr "_Preferensi"
 
 #: resources/ui/window.blp:129
 msgid "_About MissionCenter"
-msgstr ""
+msgstr "_Tentang MissionCenter"
 
 #: src/apps_page/mod.rs:1037
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #: src/apps_page/mod.rs:1043
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: src/apps_page/mod.rs:1061
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr ""
+msgstr "Hentikan Aplikasi"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Hentikan Paksa Aplikasi"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
 msgid "Stop Process"
-msgstr ""
+msgstr "Hentikan Proses"
 
 #: src/apps_page/list_item.rs:319
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Hentikan Paksa Proses"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
 msgid ""
@@ -926,6 +985,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"({}B) digunakan\n"
+"\n"
+"Memori digunakan oleh sistem operasi dan aplikasi berjalan"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
 msgid ""
@@ -934,6 +996,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"({}B) Termodifikasi\n"
+"\n"
+"Memori yang isinya harus ditulis ke disk sebelum dapat digunakan oleh proses "
+"lain"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
 msgid ""
@@ -941,6 +1007,10 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"({}B) Siap Digunakan\n"
+"\n"
+"Memori yang berisikan data tercache dan kode yang tidak sedang aktif "
+"digunakan"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
 msgid ""
@@ -949,30 +1019,35 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"({}B) Tersedia\n"
+"\n"
+"Memori yang saat ini tidak sedang digunakan, dan akan digunakan terlebih "
+"dahulu saat sistem operasi, driver, atau aplikasi yang memerlukan memori "
+"tambahan"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Disk {} ({})"
 
 #: src/performance_page/mod.rs:376
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:377
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:378
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:379
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:380
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:381 src/performance_page/cpu.rs:310
 #: src/performance_page/cpu.rs:323 src/performance_page/cpu.rs:333
@@ -981,66 +1056,66 @@ msgstr ""
 #: src/performance_page/network.rs:396 src/performance_page/network.rs:405
 #: src/performance_page/network.rs:442 src/performance_page/network.rs:520
 msgid "Unknown"
-msgstr ""
+msgstr "Tak diketahui"
 
 #: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
 msgid "Ethernet"
-msgstr ""
+msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
 msgid "Other"
-msgstr ""
+msgstr "Lainnya"
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr ""
+msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
 msgid "{}: {} {}bps"
-msgstr ""
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:318
 msgid "Supported"
-msgstr ""
+msgstr "Didukung"
 
 #: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
 msgid "Unsupported"
-msgstr ""
+msgstr "Tidak didukung"
 
 #: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
 msgid "Yes"
-msgstr ""
+msgstr "Ya"
 
 #: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
 msgid "No"
-msgstr ""
+msgstr "Tidak"
 
 #: src/performance_page/cpu.rs:698
 msgid "Utilization over {} seconds"
-msgstr ""
+msgstr "Pemanfaatan lebih dari {} detik"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
 msgid "{} seconds"
-msgstr ""
+msgstr "{} detik"
 
 #: src/performance_page/disk.rs:251
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/network.rs:416 src/performance_page/network.rs:422
 #: src/performance_page/network.rs:430
 msgid "{} {}bps"
-msgstr ""
+msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:455 src/performance_page/network.rs:471
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr ""
+msgstr "Muhammad Hasan Firdaus <hasanteam008@gmail.com>"

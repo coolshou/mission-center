@@ -264,35 +264,22 @@ impl MissionCenterApplication {
             .copyright("© 2023 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
-            .release_notes(r#"<p>Features:</p>
+            .release_notes(
+                r#"<p>Features:</p>
 <ul>
-<li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
-<li>Add CPU temperature, where possible</li>
-<li>Implement smarter rounding and display precision of values throughout the app by QwertyChouskie</li>
-<li>Use metainfo instead of appdata for application metadata by David Guglielmi</li>
+<li>Improve memory composition graph</li>
+<li>Add GPU usage column in the Apps tab</li>
+<li>Reduce memory usage and fix a memory leak in the main app</li>
 </ul>
 <p>Fixes:</p>
 <ul>
-<li>Fixed a regression where natively installed browsers were not showing up in the apps list on Fedora</li>
-<li>Fixed a regression where Flatpak apps were not showing up in the apps list on ArchLinux Plasma</li>
-<li>Fixed a bug where the Maps app desktop file wasn't being parsed correctly</li>
-<li>Moved some performance related logs to g_debug to prevent spamming of system logs</li>
+<li>Fix a crash at start-up when flatpak data is stored in a path with spaces</li>
+<li>Fix incorrect base frequency in AMD CPUs</li>
+<li>Fix missing video encode/decode information in the GPU tab</li>
 </ul>
-<p>Translations:</p>
-<ul>
-<li>New translation to Korean by Seong-ho Cho</li>
-<li>New translation to Dutch by Gert</li>
-<li>New translation to Polish by _Ghost_</li>
-<li>New translation to Italian by beppeilgommista</li>
-<li>New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel</li>
-<li>Updated Spanish translation</li>
-<li>Updated Finnish translation</li>
-<li>Updated Russian translation</li>
-<li>Updated Chinese (Simplified) translation</li>
-<li>Updated Finnish translation</li>
-<li>Updated Greek translation</li>
-<li>Updated German translation</li>
-</ul>"#).build();
+<p>A lot of new translations and fixes to existing ones</p>"#,
+            )
+            .build();
 
         about.add_credit_section(
             Some("Standing on the shoulders of giants"),

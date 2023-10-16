@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-09 16:20+0000\n"
-"Last-Translator: net zack <netzack@gmail.com>\n"
+"PO-Revision-Date: 2023-10-02 17:53+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -181,7 +181,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
-msgstr ""
+msgstr "Korrekturen:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 #, fuzzy
@@ -211,9 +211,8 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Virtualisierung:"
+msgstr "Übersetzungen:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
@@ -238,17 +237,17 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Aktualisierte spanische Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Aktualisierte finnische Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Aktualisierte russische Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
@@ -256,13 +255,12 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Aktualisierte griechische Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Deutsche Übersetzung von TecCheck hinzufügt"
+msgstr "Aktualisierte deutsche Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
@@ -575,7 +573,7 @@ msgstr "Logische _Kerne"
 
 #: resources/ui/performance_page/cpu.blp:456
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Kernel-Zeiten anzeigen"
 
 #: resources/ui/performance_page/cpu.blp:463
 #: resources/ui/performance_page/disk.blp:386
@@ -880,21 +878,21 @@ msgid "Refresh every 2 seconds"
 msgstr "Aktu"
 
 #: resources/ui/preferences/page.blp:34
-#, fuzzy
 msgid "App Page Settings"
-msgstr "Allgemeine Einstellungen"
+msgstr "App-Seiteneinstellungen"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Prozessstatistiken zusammenführen"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Sortierung merken"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Die Sortierung der App- und Prozessliste über App-Neustarts hinweg merken"
 
 #: resources/ui/window.blp:48
 msgid "Type a name or PID to search"
@@ -902,7 +900,7 @@ msgstr "Gib einen Name oder eine PID zum suchen ein"
 
 #: resources/ui/window.blp:90
 msgid "Loading..."
-msgstr ""
+msgstr "Wird geladen..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
@@ -922,84 +920,81 @@ msgstr "_Über MissionCenter"
 
 #: src/apps_page/mod.rs:1037
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: src/apps_page/mod.rs:1043
 msgid "PID"
 msgstr ""
 
 #: src/apps_page/mod.rs:1061
-#, fuzzy
 msgid "Disk"
-msgstr "_Datenträger"
+msgstr "Datenträger"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
 msgid "Stop Application"
-msgstr ""
+msgstr "Anwendung stoppen"
 
 #: src/apps_page/list_item.rs:315
+#, fuzzy
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Anwendung stoppen erzwingen"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
-#, fuzzy
 msgid "Stop Process"
-msgstr "Prozesse"
+msgstr "Prozess stoppen"
 
 #: src/apps_page/list_item.rs:319
+#, fuzzy
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Prozess stoppen erzwingen"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:224
-#, fuzzy
 msgid ""
 "In use ({}B)\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"In verwendung ({}iB)\n"
+"In Verwendung ({}B)\n"
 "\n"
-"Von Betriebssystem oder Prozessen verwendeter Arbeitsspeicher"
+"Vom Betriebssystem und den laufenden Anwendungen genutzter Speicher"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:236
-#, fuzzy
 msgid ""
 "Modified ({}B)\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Geändert ({}iB)\n"
+"Geändert ({}B)\n"
 "\n"
-"Arbeitsspeicher, dessen Inhalt auf einen Datenträget geschrieben werden "
-"muss, bevor er von einem anderen Prozess verwendet werden kann"
+"Speicher, dessen Inhalt auf die Festplatte geschrieben werden muss, bevor er "
+"von einem anderen Prozess verwendet werden kann"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:257
-#, fuzzy
 msgid ""
 "Standby ({}B)\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Standby ({}iB)\n"
+"Standby ({}B)\n"
 "\n"
-"Arbeitsspeicher, der zwischengespeicherte Data und Code enthält, die nicht "
-"aktiv verwendet werden"
+"Speicher, der zwischengespeicherte Daten und Code enthält, der nicht aktiv "
+"genutzt wird"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:266
-#, fuzzy
 msgid ""
 "Free ({}B)\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Frei ({}iB)\n"
+"Frei ({}B)\n"
 "\n"
-"Arbeitsspeicher, der zurzeit nicht verwendet wird und erst verwendet wird, "
-"wenn das Betriebssystem, Treiber oder Apps mehr Speicher benötigen"
+"Speicher, der derzeit nicht verwendet wird und der erst wieder verwendet "
+"wird, wenn das Betriebssystem, die Treiber oder die Anwendungen mehr "
+"Speicher benötigen"
 
 #: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
 msgid "Disk {} ({})"
@@ -1051,9 +1046,8 @@ msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {} bps"
 
 #: src/performance_page/cpu.rs:318
 msgid "Supported"
@@ -1072,9 +1066,8 @@ msgid "No"
 msgstr "Nein"
 
 #: src/performance_page/cpu.rs:698
-#, fuzzy
 msgid "Utilization over {} seconds"
-msgstr "% Auslastung über {} Sekunden"
+msgstr "Auslastung über {} Sekunden"
 
 #: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
 #: src/performance_page/memory.rs:401 src/performance_page/network.rs:606

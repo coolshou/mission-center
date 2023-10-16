@@ -37,9 +37,7 @@
         </ul>
         <p>Limitations (there is ongoing work to overcome all of these):</p>
         <ul>
-            <li>Disk utilization percentage might not be accurate</li>
             <li>No per-process network usage</li>
-            <li>No per-process GPU usage</li>
             <li>GPU support is experimental and only AMD and nVidia GPUs can be monitored</li>
         </ul>
         <p>Comments, suggestions, bug reports and contributions welcome</p>
@@ -114,6 +112,24 @@
     <content_rating type="oars-1.1"></content_rating>
 
     <releases>
+
+        <release version="0.3.3" date="2023-10-13">
+            <description translatable="no">
+                <p>Features:</p>
+                <ul>
+                    <li>Improve memory composition graph</li>
+                    <li>Add GPU usage column in the Apps tab</li>
+                    <li>Reduce memory usage and fix a memory leak in the main app</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fix a crash at start-up when flatpak data is stored in a path with spaces</li>
+                    <li>Fix incorrect base frequency in AMD CPUs</li>
+                    <li>Fix missing video encode/decode information in the GPU tab</li>
+                </ul>
+                <p>A lot of new translations and fixes to existing ones</p>
+            </description>
+        </release>
 
         <release version="0.3.2" date="2023-09-08">
             <description translatable="no">
