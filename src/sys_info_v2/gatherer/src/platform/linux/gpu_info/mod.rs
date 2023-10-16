@@ -27,6 +27,7 @@ use super::{gpu, GpuInfoExt};
 
 lazy_static! {
     static ref INIT_NVTOP: () = unsafe {
+        nvtop::init_extract_gpuinfo_intel();
         nvtop::init_extract_gpuinfo_amdgpu();
         nvtop::init_extract_gpuinfo_nvidia();
     };
