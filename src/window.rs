@@ -38,6 +38,8 @@ mod imp {
         #[template_child]
         pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
+        pub sidebar: TemplateChild<gtk::ListBox>,
+        #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
@@ -62,6 +64,7 @@ mod imp {
             Self {
                 split_view: TemplateChild::default(),
                 toggle_sidebar_button: TemplateChild::default(),
+                sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
@@ -152,6 +155,11 @@ mod imp {
                     }
                 }
             }));
+
+            self.sidebar
+                .connect_row_activated(clone!(@weak self as this => move |_, _| {
+                    this.stack.set_visible_child_name("performance-page");
+                }));
 
             let this = self.obj().downgrade();
             self.stack.connect_visible_child_notify(move |stack| {
