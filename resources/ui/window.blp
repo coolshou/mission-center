@@ -32,17 +32,19 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
   content: Adw.OverlaySplitView split_view {
     show-sidebar: bind toggle_sidebar_button.active bidirectional;
+    collapsed: true;
 
     sidebar: Adw.ToolbarView {
       [top]
       Adw.HeaderBar {
-        [end]
-        Box {
-          MenuButton {
-            icon-name: "open-menu-symbolic";
-            menu-model: primary_menu;
-          }
-        }
+        title-widget: Label {
+          styles [
+            "heading"
+          ]
+
+          label: _("Resources");
+          halign: center;
+        };
       }
 
       ScrolledWindow {
@@ -62,7 +64,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
       Adw.HeaderBar header_bar {
         [start]
         ToggleButton toggle_sidebar_button {
-          icon-name: "view-sidebar-start-symbolic";
+          icon-name: "sidebar-toggle-left-symbolic";
           tooltip-text: _("Toggle Sidebar");
           active: false;
         }
@@ -96,6 +98,11 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             ]
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
+          }
+
+          MenuButton {
+            icon-name: "open-menu-symbolic";
+            menu-model: primary_menu;
           }
         }
       }

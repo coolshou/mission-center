@@ -25,6 +25,8 @@ use gtk::{gio, glib};
 
 use crate::sys_info_v2::Readings;
 
+const FOLD_THRESHOLD: i32 = 805;
+
 mod imp {
     use super::*;
 
@@ -35,6 +37,8 @@ mod imp {
         pub breakpoint: TemplateChild<adw::Breakpoint>,
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
@@ -60,6 +64,7 @@ mod imp {
             Self {
                 breakpoint: TemplateChild::default(),
                 split_view: TemplateChild::default(),
+                toggle_sidebar_button: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
@@ -129,12 +134,22 @@ mod imp {
                 }
             }));
 
-            let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
-            if visible_child_name == "performance-page" {
-                self.search_button.set_visible(false);
-                self.search_entry
-                    .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-            }
+            idle_add_local_once(clone!(@weak self as this => move || {
+                let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
+                if visible_child_name == "performance-page" {
+                    this.search_button.set_visible(false);
+                    this.search_entry
+                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
+
+                    if this.obj().width() >= FOLD_THRESHOLD {
+                        this.toggle_sidebar_button.set_visible(false);
+                        this.split_view.set_collapsed(false);
+                    } else {
+                        this.toggle_sidebar_button.set_visible(true);
+                        this.split_view.set_collapsed(true);
+                    }
+                }
+            }));
 
             let this = self.obj().downgrade();
             self.stack.connect_visible_child_notify(move |stack| {
@@ -150,11 +165,38 @@ mod imp {
                     this.search_button.set_visible(false);
                     this.search_entry
                         .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-                } else {
+
+                    if this.obj().width() >= FOLD_THRESHOLD {
+                        this.toggle_sidebar_button.set_active(true);
+                        this.toggle_sidebar_button.set_visible(false);
+                        this.split_view.set_collapsed(false);
+                    } else {
+                        this.toggle_sidebar_button.set_visible(true);
+                        this.split_view.set_collapsed(true);
+                    }
+                } else if visible_child_name == "apps-page" {
                     this.search_button.set_visible(true);
                     this.search_entry
                         .set_state_flags(gtk::StateFlags::NORMAL, true);
+                    this.toggle_sidebar_button.set_active(false);
+                    this.toggle_sidebar_button.set_visible(true);
+                    this.split_view.set_collapsed(true);
                 }
+
+                this.obj().connect_default_width_notify(
+                    clone!(@weak this as this => move |_| {
+                        let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
+                        if visible_child_name == "performance-page" {
+                            if this.obj().width() >= FOLD_THRESHOLD {
+                                this.toggle_sidebar_button.set_visible(false);
+                                this.split_view.set_collapsed(false);
+                            } else {
+                                this.toggle_sidebar_button.set_visible(true);
+                                this.split_view.set_collapsed(true);
+                            }
+                        }
+                    }),
+                );
 
                 if let Some(settings) = this.settings.take() {
                     settings
@@ -168,6 +210,19 @@ mod imp {
                     this.settings.set(Some(settings));
                 }
             });
+
+            self.split_view.connect_collapsed_notify(
+                clone!(@weak self as this => move |split_view| {
+                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
+                    if visible_child_name == "performance-page" {
+                        if split_view.is_collapsed() {
+                            this.toggle_sidebar_button.set_visible(true);
+                        } else {
+                            this.toggle_sidebar_button.set_visible(false);
+                        }
+                    }
+                }),
+            );
 
             self.search_entry
                 .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
@@ -229,14 +284,14 @@ impl MissionCenterWindow {
             .property("application", application)
             .build();
 
-        let split_view = this.imp().split_view.get();
-        let breakpoint = this.imp().breakpoint.get();
-        breakpoint.set_condition(
-            adw::BreakpointCondition::parse("max-width: 805sp")
-                .ok()
-                .as_ref(),
-        );
-        breakpoint.add_setter(&split_view, "collapsed", &true.into());
+        // let split_view = this.imp().split_view.get();
+        // let breakpoint = this.imp().breakpoint.get();
+        // breakpoint.set_condition(
+        //     adw::BreakpointCondition::parse("max-width: 805sp")
+        //         .ok()
+        //         .as_ref(),
+        // );
+        // breakpoint.add_setter(&split_view, "collapsed", &true.into());
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());
