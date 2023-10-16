@@ -27,6 +27,7 @@ use super::{gpu, GpuInfoExt};
 
 lazy_static! {
     static ref INIT_NVTOP: () = unsafe {
+        nvtop::init_extract_gpuinfo_intel();
         nvtop::init_extract_gpuinfo_amdgpu();
         nvtop::init_extract_gpuinfo_nvidia();
     };
@@ -259,6 +260,11 @@ impl GpuInfo {
                 (0, 0)
             };
 
+            // Skip Intel GPUs
+            if ven_dev_id.0 == 0x8086 {
+                continue;
+            }
+
             let static_info = gpu::StaticInfoDescriptor {
                 pci_id: pci_id.clone(),
                 device_name: device_name.to_array_string_lossy(),
@@ -374,6 +380,10 @@ impl GpuInfo {
                     );
                     continue;
                 }
+            }
+
+            if let None = self.static_info.get(&pci_id) {
+                continue;
             }
 
             self.dynamic_info_cache.push(gpu::DynamicInfoDescriptor {
