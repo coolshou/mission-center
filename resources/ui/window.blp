@@ -27,6 +27,8 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
   default-width: 600;
   default-height: 300;
 
+  title: "Mission Center";
+
   content: Adw.OverlaySplitView split_view {
     show-sidebar: bind toggle_sidebar_button.active bidirectional;
     collapsed: true;
@@ -34,13 +36,8 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
     sidebar: Adw.ToolbarView {
       [top]
       Adw.HeaderBar {
-        title-widget: Label {
-          styles [
-            "heading"
-          ]
-
-          label: _("Resources");
-          halign: center;
+        title-widget: Adw.WindowTitle {
+          title: _("Resources");
         };
       }
 
@@ -68,6 +65,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
         title-widget: Stack header_stack {
           transition-type: crossfade;
+          hhomogeneous: false;
 
           StackPage {
             name: "view-switcher";
