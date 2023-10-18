@@ -970,6 +970,19 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/gl_loader/gl_loader-0.1.2.crate",
+    "sha256": "e32d96dd5f881490e537041d5532320812ba096097f07fccb4626578da0b99d3",
+    "dest": "cargo/vendor/gl_loader-0.1.2"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"e32d96dd5f881490e537041d5532320812ba096097f07fccb4626578da0b99d3\", \"files\": {}}",
+    "dest": "cargo/vendor/gl_loader-0.1.2",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/glib/glib-0.18.2.crate",
     "sha256": "1c316afb01ce8067c5eaab1fc4f2cd47dc21ce7b6296358605e2ffab23ccbd19",
     "dest": "cargo/vendor/glib-0.18.2"
@@ -1472,19 +1485,6 @@
     "type": "inline",
     "contents": "{\"package\": \"5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c\", \"files\": {}}",
     "dest": "cargo/vendor/memoffset-0.9.0",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/minidl/minidl-0.1.5.crate",
-    "sha256": "87d3d8666e5ed22230c0096edcccf7097905b1e2975869e1b9fe5df40d26d801",
-    "dest": "cargo/vendor/minidl-0.1.5"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"87d3d8666e5ed22230c0096edcccf7097905b1e2975869e1b9fe5df40d26d801\", \"files\": {}}",
-    "dest": "cargo/vendor/minidl-0.1.5",
     "dest-filename": ".cargo-checksum.json"
   },
   {
