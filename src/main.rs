@@ -116,11 +116,8 @@ fn main() {
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
-    let lib = minidl::Library::load("libGL.so.1\0").expect("Unable to load libGL.so.1");
-    gl::load_with(move |symbol| {
-        let symbol_name = format!("{}\0", symbol);
-        unsafe { lib.sym(&symbol_name).unwrap() }
-    });
+    gl_loader::init_gl();
+    gl::load_with(|symbol| gl_loader::get_proc_address(symbol) as *const _);
 
     let app = MissionCenterApplication::new(
         "io.missioncenter.MissionCenter",

@@ -10,12 +10,12 @@ arrayvec = { version = "0.7" }
 errno-sys = { version = "0.1" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
+gl_loader = { version = "0.1" }
 gtk = { package = "gtk4", version = "0.7", features = ["gnome_44"] }
 interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 libudev-sys = { version = "0.1" }
-minidl = { version = "0.1" }
 num_cpus = { version = "1" }
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 pathfinder_color = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
