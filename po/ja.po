@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
 "PO-Revision-Date: 2023-10-18 19:00+0000\n"
-"Last-Translator: \"Rinrin.rs\" <rinrin0413.valley@gmail.com>\n"
+"Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
 "Language: ja\n"
@@ -60,25 +60,24 @@ msgstr "全体またはスレッドあたりのCPUの使用率を監視"
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
-msgstr ""
-"システムプロセス、スレッド、処理回数、稼働時間、クロック速度（ベース速度と現"
-"在）、キャッシュサイズを確認"
+msgstr "システムプロセス、スレッド、処理回数、稼働時間、クロック速度（ベース速度と現"
+"在）、キャッシュサイズを見る"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "RAMとSwapの使用率を監視"
+msgstr "RAMとSwapの使用率をモニタリング"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "メモリがシステムにどう使われているかの内訳を見る"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "ディスクの使用量と転送速度をモニタリング"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "ネットワークの利用と通信速度をモニタリング"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -86,16 +85,19 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"ネットワークカードの名前、接続タイプ（Wi-Fiまたは有線）、ワイヤレス速度、周波"
+"数、ハードウェアアドレス、IPアドレスとネットワークインターフェイスの情報"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
-msgstr ""
+msgstr "定評のあるNVTOPプロジェクトにより、GPU 使用率、ビデオエンコーダーとデコーダー"
+"の使用率、メモリ使用量、電源消費量をモニタリング"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "アプリとプロセスのリソース使用率を見る"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
