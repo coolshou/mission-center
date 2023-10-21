@@ -30,7 +30,7 @@ msgid ""
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
 "Taakbeheerder;Broncontrole;Systeemcontrole;Processor;Processen;"
-"Performantiemonitor;CPU;GPU;Harde schijf;Geheugen;Netwerk;Gebruik"
+"Prestatiemonitor;CPU;GPU;Harde schijf;Geheugen;Netwerk;Gebruik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -213,7 +213,7 @@ msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
-"Verplaats enkele performantie-gerelateerde logboeken naar g_debug om te "
+"Verplaats enkele prestatie-gerelateerde logboeken naar g_debug om te "
 "vermijden dat de systeemlogboeken volgespamd worden"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
@@ -527,7 +527,7 @@ msgstr "Toon kernel-tijden in de processorgrafieken"
 #: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
-"Welke pagina in het performantietabblad getoond wordt bij het opstarten van "
+"Welke pagina in het tabblad prestaties getoond wordt bij het opstarten van "
 "de applicatie"
 
 #: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
@@ -943,7 +943,7 @@ msgstr "Laden..."
 
 #: resources/ui/window.blp:104
 msgid "Performance"
-msgstr "Performantie"
+msgstr "Prestaties"
 
 #: resources/ui/window.blp:113 src/apps_page/mod.rs:447
 msgid "Apps"
