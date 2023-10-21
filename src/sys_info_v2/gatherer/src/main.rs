@@ -31,8 +31,10 @@ macro_rules! acknowledge {
     ($connection: ident) => {{
         use std::io::Write;
 
+        $crate::message!("Gatherer::Main", "Sending Acknowledge");
+
         if let Err(e) = $connection.write_all(to_binary(&ipc::Message::Acknowledge)) {
-            crate::critical!(
+            $crate::critical!(
                 "Gatherer::Main",
                 "Failed to write to IPC socket, exiting: {:#?}",
                 e
@@ -46,8 +48,10 @@ macro_rules! data_ready {
     ($connection: ident) => {{
         use std::io::Write;
 
+        $crate::message!("Gatherer::Main", "Sending DataReady");
+
         if let Err(e) = $connection.write_all(to_binary(&ipc::Message::DataReady)) {
-            crate::critical!(
+            $crate::critical!(
                 "Gatherer::Main",
                 "Failed to write to IPC socket, exiting: {:#?}",
                 e
@@ -127,13 +131,22 @@ fn main() {
     use shared_data::{SharedData, SharedDataContent};
     use std::io::Read;
 
+    message!("Gatherer::Main", "Starting gatherer");
+
     let parent_pid = unsafe { libc::getppid() };
+    message!("Gatherer::Main", "Parent PID: {}", parent_pid);
 
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() < 3 {
         critical!("Gatherer::Main", "Not enough arguments");
         std::process::exit(ExitCode::MissingProgramArgument as i32);
     }
+
+    message!(
+        "Gatherer::Main",
+        "Connecting to parent IPC socket '{}'",
+        args[1]
+    );
 
     if !std::path::Path::new(&args[1]).exists() {
         critical!("Gatherer::Main", "IPC socket '{}' does not exist", args[1]);
@@ -146,6 +159,12 @@ fn main() {
             std::process::exit(ExitCode::SocketConnectionFailed as i32);
         }
     };
+
+    message!(
+        "Gatherer::Main",
+        "Connecting to shared memory '{}'",
+        args[2]
+    );
 
     if !std::path::Path::new(&args[2]).exists() {
         critical!("Gatherer::Main", "File link '{}' does not exist", args[2]);
@@ -172,6 +191,8 @@ fn main() {
             break;
         }
 
+        message!("Gatherer::Main", "Waiting for message...");
+
         if let Err(e) = connection.read_exact(to_binary_mut(&mut message)) {
             if e.kind() == std::io::ErrorKind::UnexpectedEof {
                 message!(
@@ -188,6 +209,7 @@ fn main() {
                 std::process::exit(ExitCode::ReadFromSocketFailed as i32);
             }
         }
+        message!("Gatherer::Main", "Received message: {:?}", message);
 
         match message {
             ipc::Message::GetProcesses => {
