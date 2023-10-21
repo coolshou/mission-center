@@ -28,10 +28,11 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
   default-height: 300;
 
   title: "Mission Center";
+  summary-mode: bind performance_page.summary-mode;
+  collapse-threshold: 805;
 
   content: Adw.OverlaySplitView split_view {
     show-sidebar: bind toggle_sidebar_button.active bidirectional;
-    collapsed: true;
 
     sidebar: Adw.ToolbarView {
       [top]
@@ -53,7 +54,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
       }
     };
 
-    content: Adw.ToolbarView {
+    content: Adw.ToolbarView window_content {
       [top]
       Adw.HeaderBar header_bar {
         [start]
@@ -93,6 +94,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             ]
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
+            visible: bind MissionCenterWindow.apps_page_active;
           }
 
           MenuButton {
@@ -103,57 +105,57 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
       }
 
       content: Box {
-      orientation: vertical;
-
-      Box loading_box {
         orientation: vertical;
 
-        spacing: 12;
+        Box loading_box {
+          orientation: vertical;
 
-        valign: center;
-        vexpand: true;
-        halign: center;
-        hexpand: true;
+          spacing: 12;
 
-        Spinner loading_spinner {
-          spinning: true;
+          valign: center;
+          vexpand: true;
           halign: center;
+          hexpand: true;
+
+          Spinner loading_spinner {
+            spinning: true;
+            halign: center;
+          }
+
+          Label {
+            styles [
+              "title-4"
+            ]
+
+            label: _("Loading...");
+            halign: center;
+          }
         }
 
-        Label {
-          styles [
-            "title-4"
-          ]
+        Adw.ViewStack stack {
+          visible: false;
 
-          label: _("Loading...");
-          halign: center;
+          hexpand: true;
+          vexpand: true;
+
+          Adw.ViewStackPage {
+            name: "performance-page";
+            icon-name: "speedometer-symbolic";
+            title: _("Performance");
+            child: $PerformancePage performance_page {
+              summary-mode: bind header_bar.visible bidirectional inverted;
+              sidebar: sidebar;
+            };
+          }
+
+          Adw.ViewStackPage {
+            name: "apps-page";
+            icon-name: "overlapping-windows-symbolic";
+            title: _("Apps");
+            child: $AppsPage apps_page {
+            };
+          }
         }
-      }
-
-      Adw.ViewStack stack {
-        visible: false;
-
-        hexpand: true;
-        vexpand: true;
-
-        Adw.ViewStackPage {
-          name: "performance-page";
-          icon-name: "speedometer-symbolic";
-          title: _("Performance");
-          child: $PerformancePage performance_page {
-            summary-mode: bind header_bar.visible bidirectional inverted;
-            sidebar: sidebar;
-          };
-        }
-
-        Adw.ViewStackPage {
-          name: "apps-page";
-          icon-name: "overlapping-windows-symbolic";
-          title: _("Apps");
-          child: $AppsPage apps_page {
-          };
-        }
-      }
       };
     };
   };

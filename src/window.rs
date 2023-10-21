@@ -21,20 +21,23 @@
 use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
+use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
 use crate::sys_info_v2::Readings;
 
-const FOLD_THRESHOLD: i32 = 805;
-
 mod imp {
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::MissionCenterWindow)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub window_content: TemplateChild<adw::ToolbarView>,
         #[template_child]
         pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
@@ -43,6 +46,8 @@ mod imp {
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
+        #[template_child]
+        pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub header_stack: TemplateChild<gtk::Stack>,
         #[template_child]
@@ -56,6 +61,16 @@ mod imp {
         #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
+        #[property(get)]
+        performance_page_active: Cell<bool>,
+        #[property(get)]
+        apps_page_active: Cell<bool>,
+
+        #[property(get, set)]
+        summary_mode: Cell<bool>,
+        #[property(get, set)]
+        collapse_threshold: Cell<i32>,
+
         pub settings: Cell<Option<gio::Settings>>,
     }
 
@@ -63,10 +78,12 @@ mod imp {
         fn default() -> Self {
             Self {
                 split_view: TemplateChild::default(),
+                window_content: TemplateChild::default(),
                 toggle_sidebar_button: TemplateChild::default(),
                 sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
+                header_bar: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
                 search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
@@ -74,8 +91,63 @@ mod imp {
                 loading_spinner: TemplateChild::default(),
                 stack: TemplateChild::default(),
 
+                performance_page_active: Cell::new(true),
+                apps_page_active: Cell::new(false),
+
+                summary_mode: Cell::new(false),
+                collapse_threshold: Cell::new(805),
+
                 settings: Cell::new(None),
             }
+        }
+    }
+
+    impl MissionCenterWindow {
+        fn update_active_page(&self) {
+            use glib::g_critical;
+
+            let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
+            if visible_child_name == "performance-page" {
+                if self.performance_page_active.get() {
+                    return;
+                }
+
+                self.performance_page_active.set(true);
+                self.obj().notify_performance_page_active();
+
+                self.apps_page_active.set(false);
+                self.obj().notify_apps_page_active();
+            } else if visible_child_name == "apps-page" {
+                if self.apps_page_active.get() {
+                    return;
+                }
+
+                self.performance_page_active.set(false);
+                self.obj().notify_performance_page_active();
+
+                self.apps_page_active.set(true);
+                self.obj().notify_apps_page_active();
+            }
+
+            if let Some(settings) = self.settings.take() {
+                settings
+                    .set_string("window-selected-page", &visible_child_name)
+                    .unwrap_or_else(|_| {
+                        g_critical!(
+                            "MissionCenter",
+                            "Failed to set window-selected-page setting"
+                        );
+                    });
+                self.settings.set(Some(settings));
+            }
+        }
+    }
+
+    #[gtk::template_callbacks]
+    impl MissionCenterWindow {
+        #[template_callback]
+        fn should_collapse(&self, window_width: i32, summary_mode: bool) -> bool {
+            summary_mode || (window_width < self.collapse_threshold.get())
         }
     }
 
@@ -100,6 +172,18 @@ mod imp {
     }
 
     impl ObjectImpl for MissionCenterWindow {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec);
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+
         fn constructed(&self) {
             use glib::*;
 
@@ -112,15 +196,7 @@ mod imp {
             let toggle_search =
                 gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
             toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
-                let current_state = action.state();
-                if current_state.is_none() {
-                    g_critical!("MissionCenter", "Failed to get search action state");
-                    action.set_state(&false.to_variant());
-                    return;
-                }
-                let current_state = current_state.unwrap();
-
-                let new_state = !current_state.get::<bool>().unwrap_or(false);
+                let new_state = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(true);
                 action.set_state(&new_state.to_variant());
                 this.search_button.set_active(new_state);
 
@@ -135,25 +211,7 @@ mod imp {
             }));
 
             idle_add_local_once(clone!(@weak self as this => move || {
-                let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
-                if visible_child_name == "performance-page" {
-                    this.search_button.set_visible(false);
-                    this.search_entry
-                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-
-                    if !this.performance_page.summary_mode() {
-                        if this.obj().width() > FOLD_THRESHOLD {
-                            this.toggle_sidebar_button.set_visible(false);
-                            this.split_view.set_collapsed(false);
-                        } else {
-                            this.toggle_sidebar_button.set_visible(true);
-                            this.split_view.set_collapsed(true);
-                        }
-                    } else {
-                        this.toggle_sidebar_button.set_visible(false);
-                        this.split_view.set_collapsed(true);
-                    }
-                }
+                this.update_active_page();
             }));
 
             self.sidebar
@@ -161,99 +219,22 @@ mod imp {
                     this.stack.set_visible_child_name("performance-page");
                 }));
 
-            let this = self.obj().downgrade();
-            self.stack.connect_visible_child_notify(move |stack| {
-                let this = this.upgrade();
-                if this.is_none() {
-                    return;
-                }
-                let this = this.unwrap();
-                let this = this.imp();
-
-                let visible_child_name = stack.visible_child_name().unwrap_or("".into());
-                if visible_child_name == "performance-page" {
-                    this.search_button.set_visible(false);
-                    this.search_entry
-                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-
-                    if !this.performance_page.summary_mode() {
-                        if this.obj().default_width() >= FOLD_THRESHOLD {
-                            this.toggle_sidebar_button.set_active(true);
-                            this.toggle_sidebar_button.set_visible(false);
-                            this.split_view.set_collapsed(false);
-                        } else {
-                            this.toggle_sidebar_button.set_visible(true);
-                            this.split_view.set_collapsed(true);
-                        }
-                    }
-                } else if visible_child_name == "apps-page" {
-                    this.search_button.set_visible(true);
-                    this.search_entry
-                        .set_state_flags(gtk::StateFlags::NORMAL, true);
-                    this.toggle_sidebar_button.set_active(false);
-                    this.toggle_sidebar_button.set_visible(true);
-                    this.split_view.set_collapsed(true);
-                }
-
-                if let Some(settings) = this.settings.take() {
-                    settings
-                        .set_string("window-selected-page", &visible_child_name)
-                        .unwrap_or_else(|_| {
-                            g_critical!(
-                                "MissionCenter",
-                                "Failed to set window-selected-page setting"
-                            );
-                        });
-                    this.settings.set(Some(settings));
-                }
-            });
-
-            self.split_view.connect_collapsed_notify(
-                clone!(@weak self as this => move |split_view| {
-                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
-                    if visible_child_name == "performance-page" {
-                        if split_view.is_collapsed() {
-                            this.toggle_sidebar_button.set_visible(true);
-                        } else {
-                            this.toggle_sidebar_button.set_visible(false);
-                        }
-                    }
-                }),
-            );
-
-            self.obj()
-                .connect_default_width_notify(clone!(@weak self as this => move |_| {
-                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
-                    if visible_child_name == "performance-page" && !this.performance_page.summary_mode() {
-                        if this.obj().default_width() > FOLD_THRESHOLD {
-                            this.toggle_sidebar_button.set_visible(false);
-                            this.split_view.set_collapsed(false);
-                        } else {
-                            this.toggle_sidebar_button.set_visible(true);
-                            this.split_view.set_collapsed(true);
-                        }
-                    }
+            self.stack
+                .connect_visible_child_notify(clone!(@weak self as this => move |_| {
+                    this.update_active_page();
                 }));
 
-            self.performance_page.connect_summary_mode_notify(
-                clone!(@weak self as this => move |_| {
-                    let visible_child_name = this.stack.visible_child_name().unwrap_or("".into());
-                    if visible_child_name == "performance-page" {
-                        if !this.performance_page.summary_mode() {
-                            if this.obj().default_width() > FOLD_THRESHOLD {
-                                this.toggle_sidebar_button.set_visible(false);
-                                this.split_view.set_collapsed(false);
-                            } else {
-                                this.toggle_sidebar_button.set_visible(true);
-                                this.split_view.set_collapsed(true);
-                            }
-                        } else {
-                            this.toggle_sidebar_button.set_visible(false);
-                            this.split_view.set_collapsed(true);
-                        }
-                    }
-                }),
-            );
+            self.obj().connect_apps_page_active_notify(|this| {
+                let search_state_flags = if this.imp().apps_page_active.get() {
+                    gtk::StateFlags::NORMAL
+                } else {
+                    gtk::StateFlags::INSENSITIVE
+                };
+
+                this.imp()
+                    .search_entry
+                    .set_state_flags(search_state_flags, true);
+            });
 
             self.search_entry
                 .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
@@ -314,6 +295,10 @@ impl MissionCenterWindow {
         let this: Self = Object::builder()
             .property("application", application)
             .build();
+
+        this.imp()
+            .window_content
+            .add_bottom_bar(&*this.imp().header_bar);
 
         if let Some(settings) = settings {
             sys_info.set_update_speed(settings.int("update-speed").into());
