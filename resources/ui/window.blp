@@ -94,7 +94,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             ]
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
-            visible: bind MissionCenterWindow.apps_page_active;
+            visible: bind template.apps_page_active;
           }
 
           MenuButton {
