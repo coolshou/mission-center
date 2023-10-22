@@ -143,11 +143,34 @@ mod imp {
         }
     }
 
-    #[gtk::template_callbacks]
     impl MissionCenterWindow {
-        #[template_callback]
-        fn should_collapse(&self, window_width: i32, summary_mode: bool) -> bool {
-            summary_mode || (window_width < self.collapse_threshold.get())
+        fn configure_actions(&self) {
+            let toggle_search =
+                gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
+            toggle_search.connect_activate(glib::clone!(@weak self as this => move |action, _| {
+                let new_state = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(true);
+                action.set_state(&new_state.to_variant());
+                this.search_button.set_active(new_state);
+
+                if new_state {
+                    this.header_stack.set_visible_child_name("search-entry");
+                    this.search_entry.grab_focus();
+                    this.search_entry.select_region(-1, -1);
+                } else {
+                    this.search_entry.set_text("");
+                    this.header_stack.set_visible_child_name("view-switcher");
+                }
+            }));
+            self.obj().add_action(&toggle_search);
+        }
+
+        #[inline]
+        fn should_collapse(&self) -> bool {
+            let window_width = self.obj().default_width();
+            let summary_mode = self.summary_mode.get();
+            let collapse_threshold = self.collapse_threshold.get();
+
+            summary_mode || (window_width < collapse_threshold)
         }
     }
 
@@ -193,22 +216,7 @@ mod imp {
                 self.settings.set(app.settings());
             }
 
-            let toggle_search =
-                gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
-            toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
-                let new_state = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(true);
-                action.set_state(&new_state.to_variant());
-                this.search_button.set_active(new_state);
-
-                if new_state {
-                    this.header_stack.set_visible_child_name("search-entry");
-                    this.search_entry.grab_focus();
-                    this.search_entry.select_region(-1, -1);
-                } else {
-                    this.search_entry.set_text("");
-                    this.header_stack.set_visible_child_name("view-switcher");
-                }
-            }));
+            self.configure_actions();
 
             idle_add_local_once(clone!(@weak self as this => move || {
                 this.update_active_page();
@@ -224,18 +232,6 @@ mod imp {
                     this.update_active_page();
                 }));
 
-            self.obj().connect_apps_page_active_notify(|this| {
-                let search_state_flags = if this.imp().apps_page_active.get() {
-                    gtk::StateFlags::NORMAL
-                } else {
-                    gtk::StateFlags::INSENSITIVE
-                };
-
-                this.imp()
-                    .search_entry
-                    .set_state_flags(search_state_flags, true);
-            });
-
             self.search_entry
                 .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
 
@@ -243,6 +239,10 @@ mod imp {
             self.search_entry.connect_search_started(move |_| {
                 let this = this.upgrade();
                 if let Some(this) = this {
+                    if !this.imp().apps_page_active.get() {
+                        return;
+                    }
+
                     let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
                 }
             });
@@ -255,7 +255,27 @@ mod imp {
                 }
             });
 
-            self.obj().add_action(&toggle_search);
+            self.obj()
+                .connect_default_width_notify(clone!(@weak self as this => move |_| {
+                    if !this.performance_page_active.get() {
+                        return;
+                    }
+
+                    this.split_view.set_collapsed(this.should_collapse());
+                }));
+
+            self.obj().connect_performance_page_active_notify(
+                clone!(@weak self as this => move |_| {
+                    if this.performance_page_active.get() {
+                        let should_collapse = this.should_collapse();
+                        this.split_view.set_show_sidebar(!should_collapse);
+                        this.split_view.set_collapsed(should_collapse);
+                    } else {
+                        this.split_view.set_show_sidebar(false);
+                        this.split_view.set_collapsed(true);
+                    }
+                }),
+            );
         }
     }
 
