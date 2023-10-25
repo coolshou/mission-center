@@ -19,6 +19,7 @@
  */
 
 use arrayvec::{ArrayString, ArrayVec};
+use std::fmt::Debug;
 
 /// Describes the static information of a GPU.
 ///
@@ -67,10 +68,19 @@ pub struct DynamicInfoDescriptor {
 /// whether or not all the GPUs have been described. If `is_complete` is `false` then the
 /// `id` field contains only a subset of all the PCI IDs of the GPUs present in the system,
 /// and the providing function should be called again to get the rest of the IDs.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct PciIds {
     pub ids: ArrayVec<ArrayString<16>, 16>,
     pub is_complete: bool,
+}
+
+impl Default for PciIds {
+    fn default() -> Self {
+        Self {
+            ids: ArrayVec::new(),
+            is_complete: true,
+        }
+    }
 }
 
 /// Describes the static information of all GPUs present in the system.
@@ -79,10 +89,19 @@ pub struct PciIds {
 /// whether or not all the GPUs have been described. If `is_complete` is `false` then the
 /// `desc` field contains only a subset of all the GPUs present in the system, and the providing
 /// function should be called again to get the rest of the GPUs.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct StaticInfo {
     pub desc: ArrayVec<StaticInfoDescriptor, 16>,
     pub is_complete: bool,
+}
+
+impl Default for StaticInfo {
+    fn default() -> Self {
+        Self {
+            desc: ArrayVec::new(),
+            is_complete: true,
+        }
+    }
 }
 
 /// Describes the dynamic information of all GPUs present in the system.
@@ -91,8 +110,17 @@ pub struct StaticInfo {
 /// whether or not all the GPUs have been described. If `is_complete` is `false` then the
 /// `desc` field contains only a subset of all the GPUs present in the system, and the providing
 /// function should be called again to get the rest of the GPUs.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct DynamicInfo {
     pub desc: ArrayVec<DynamicInfoDescriptor, 16>,
     pub is_complete: bool,
+}
+
+impl Default for DynamicInfo {
+    fn default() -> Self {
+        Self {
+            desc: ArrayVec::new(),
+            is_complete: true,
+        }
+    }
 }

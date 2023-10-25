@@ -35,6 +35,7 @@ lazy_static! {
 
 #[allow(unused)]
 mod nvtop;
+#[path = "vulkan_info_v2.rs"]
 mod vulkan_info;
 
 pub struct GpuInfo {
