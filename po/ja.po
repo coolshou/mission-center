@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-10-20 04:21+0000\n"
-"Last-Translator: \"Rinrin.rs\" <rinrin0413.valley@gmail.com>\n"
+"PO-Revision-Date: 2023-10-27 09:27+0000\n"
+"Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -151,11 +151,11 @@ msgstr "コメントや提案、バグレポート、貢献を歓迎していま
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
-msgstr ""
+msgstr "カーネル時間を表示するオプションをメニューに追加"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "可能なCPU温度の表示を追加"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
@@ -164,9 +164,11 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
+#, fuzzy
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
-msgstr ""
+msgstr "David Guglielmi "
+"氏により、アプリケーションのメタデータとしてappdataの代わりにmetainfoを使用"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
 msgid "Fixes:"
@@ -176,18 +178,19 @@ msgstr "修正:"
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
-msgstr ""
+msgstr "Fedoraで、ネイティブにインストールされたブラウザーがアプリリストに表示されな"
+"い不具合を修正"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
-msgstr ""
+msgstr "Arch LinuxのPlasmaで、Flatpakアプリがアプリリストに表示されない不具合を修正"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-msgstr ""
+msgstr "Maps（地図）アプリのデスクトップファイルが正しくパースされないバグを修正"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
 msgid ""
@@ -223,30 +226,30 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "スペイン語の翻訳がアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "フィンランド語の翻訳をアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "ロシア語の翻訳をアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "中国語（簡体字）の翻訳をアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "ギリシャ語の翻訳をアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
 msgid "Updated German translation"
-msgstr ""
+msgstr "ドイツ語の翻訳をアップデート"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
@@ -256,7 +259,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "QwertyChouskie 氏による新しいアプリアイコン"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
@@ -1059,4 +1062,6 @@ msgstr "該当なし"
 
 #: src/application.rs:261
 msgid "translator-credits"
-msgstr "Rinrin.rs <rinrin0413.valley@gmail.com>"
+msgstr ""
+"Rinrin.rs <rinrin0413.valley@gmail.com>\n"
+"Gnuey56 <gnuey56@proton.me>"
