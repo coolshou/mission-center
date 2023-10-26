@@ -259,7 +259,7 @@ impl MissionCenterApplication {
             .developer_name("Mission Center Developers")
             .developers(["Romeo Calota"])
             .translator_credits(i18n("translator-credits"))
-            .version("bla8")
+            .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
             .copyright("© 2023 Mission Center Developers")
             .license_type(gtk::License::Gpl30)

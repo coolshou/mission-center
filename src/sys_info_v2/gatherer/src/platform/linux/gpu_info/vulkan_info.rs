@@ -152,8 +152,6 @@ impl VulkanInfo {
     pub unsafe fn supported_vulkan_versions(
         &self,
     ) -> Option<std::collections::HashMap<u32, (u16, u16, u16)>> {
-        return None;
-
         const VK_MAX_PHYSICAL_DEVICE_NAME_SIZE: usize = 256;
         const VK_UUID_SIZE: usize = 16;
         const SIZE_OF_LIMITS_STRUCT: usize = 504;
