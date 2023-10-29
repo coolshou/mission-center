@@ -3,6 +3,7 @@ image: "ubuntu:23.04"
 stages:
   - build
   - package
+  - appimage
 
 build-job:
   stage: build
@@ -46,5 +47,35 @@ package-job:
   artifacts:
     paths:
       - flatpak/missioncenter.flatpak
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+package-job:
+  stage: appimage
+  environment: production
+  script:
+    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update
+    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils squashfs-tools zsync patchelf fakeroot binutils strace
+    - ln -sf /usr/bin/python3 /usr/local/bin/python
+
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    - export PATH="$HOME/.cargo/bin:$PATH"
+
+    - pip install meson ninja appimage-builder --break-system-packages
+
+    - meson setup _build -Dbuildtype=release
+    - ninja -C _build
+    - glib-compile-schemas --strict data/
+    - meson install -C _build --no-rebuild --destdir "AppDir"
+    - appimage-builder --appdir _build/AppDir/ 
+    
+  artifacts:
+    paths:
+      - 'Mission Center-0.3.3-x86_64.AppImage'
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

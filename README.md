@@ -141,6 +141,30 @@ And run the app from your launcher or from the command-line:
 missioncenter
 ```
 
+### Building - AppImage
+
+```bash
+# On Ubuntu 23.04 all dependencies, except for the Rust toolchain, can be installed with:
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+
+meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
+ninja -C _build
+```
+
+And then build the AppImage:
+
+```bash
+meson install -C _build --no-rebuild --destdir "AppDir"
+
+appimage-builder --appdir _build/AppDir/ 
+```
+
+And run the app from the command-line:
+
+```bash
+./"Mission Center-${version}-${arch}.AppImage"
+```
+
 ### Building - Flatpak
 
 **Requirements:**
