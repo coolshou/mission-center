@@ -3,7 +3,6 @@ image: "ubuntu:23.04"
 stages:
   - build
   - package
-  - appimage
 
 build-job:
   stage: build
@@ -28,7 +27,7 @@ build-job:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
-package-job:
+flatpak-job:
   stage: package
   environment: production
   script:
@@ -50,8 +49,8 @@ package-job:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
-package-job:
-  stage: appimage
+appimage-job:
+  stage: package
   environment: production
   script:
     - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
