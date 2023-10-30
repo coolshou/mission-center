@@ -20,11 +20,11 @@
 
 use std::sync::Arc;
 
+use dbus::arg::{Append, Arg, ArgType};
+use dbus::Signature;
 use lazy_static::lazy_static;
 
 use crate::platform::processes::*;
-
-type DBusProcess<'a> = crate::dbus::Process<'a>;
 
 lazy_static! {
     static ref PAGE_SIZE: usize = unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize };
@@ -147,19 +147,6 @@ impl<'a> ProcessExt<'a> for LinuxProcess {
     fn task_count(&self) -> usize {
         self.task_count
     }
-
-    fn as_bus_process(&'a self) -> DBusProcess<'a> {
-        DBusProcess {
-            name: self.name.as_ref(),
-            cmd: self.cmd(),
-            exe: self.exe.as_ref(),
-            state: self.state,
-            pid: self.pid,
-            parent: self.parent,
-            usage_stats: &self.usage_stats,
-            task_count: self.task_count,
-        }
-    }
 }
 
 pub struct LinuxProcesses {
@@ -174,7 +161,43 @@ impl LinuxProcesses {
     }
 }
 
-impl ProcessesExt<'_> for LinuxProcesses {
+impl Arg for LinuxProcesses {
+    const ARG_TYPE: ArgType = ArgType::Array;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("a(sassyuu(ddddd)t)")
+    }
+}
+
+impl Append for LinuxProcesses {
+    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+        ia.append(
+            self.process_cache
+                .iter()
+                .map(|(_, p)| {
+                    (
+                        p.name.as_ref(),
+                        p.cmd.iter().map(|s| s.as_ref()).collect::<Vec<_>>(),
+                        p.exe.as_ref(),
+                        p.state as u8,
+                        p.pid,
+                        p.parent,
+                        (
+                            p.usage_stats.cpu_usage as f64,
+                            p.usage_stats.memory_usage as f64,
+                            p.usage_stats.disk_usage as f64,
+                            p.usage_stats.network_usage as f64,
+                            p.usage_stats.gpu_usage as f64,
+                        ),
+                        p.task_count as u64,
+                    )
+                })
+                .collect::<Vec<_>>(),
+        );
+    }
+}
+
+impl<'a> ProcessesExt<'a> for LinuxProcesses {
     type P = LinuxProcess;
 
     fn refresh_cache(&mut self) {
@@ -574,7 +597,7 @@ impl ProcessesExt<'_> for LinuxProcesses {
         }
     }
 
-    fn process_list(&self) -> &std::collections::HashMap<u32, LinuxProcess> {
+    fn process_list(&'a self) -> &'a std::collections::HashMap<u32, LinuxProcess> {
         &self.process_cache
     }
 }
@@ -600,38 +623,5 @@ mod test {
             .map(|p| p.1)
             .take(10);
         dbg!(sample);
-    }
-
-    #[test]
-    fn process_into_dbus_type() {
-        let p = LinuxProcess {
-            name: "ProcessWithAName".into(),
-            cmd: vec!["ProcessBinaryName.exe".into(), "arg1".into(), "arg2".into()],
-            exe: "ProcessBinaryName.exe".into(),
-            state: ProcessState::Running,
-            pid: 32489,
-            parent: 2847,
-            usage_stats: ProcessUsageStats {
-                cpu_usage: 3.2,
-                memory_usage: 82.19,
-                disk_usage: 28.2,
-                network_usage: 34.64,
-                gpu_usage: 2.1,
-            },
-            task_count: 12,
-            cgroup: Some("app-cgroup".into()),
-            raw_stats: RawStats {
-                user_jiffies: 123,
-                kernel_jiffies: 485,
-                disk_read_bytes: 45,
-                disk_write_bytes: 8088,
-                net_bytes_sent: 765,
-                net_bytes_recv: 9324,
-                timestamp: std::time::Instant::now(),
-            },
-        };
-
-        let dbus_p = p.as_bus_process();
-        dbg!(dbus_p);
     }
 }

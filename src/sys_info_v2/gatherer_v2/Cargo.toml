@@ -20,7 +20,7 @@ raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.20" }
 shared_memory = { package = "shared_memory_extended", version = "0.13" }
 thiserror = { version = "1.0" }
-dbus = { version = "0.9" }
+dbus = { version = "0.9", default-features = false, features = ["vendored"] }
 dbus-crossroads = { version = "0.5" }
 
 [build-dependencies]

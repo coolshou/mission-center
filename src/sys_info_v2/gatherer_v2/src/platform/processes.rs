@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use dbus::arg::{Append, Arg};
+
 /// State of a running process
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
@@ -67,11 +69,10 @@ pub trait ProcessExt<'a> {
     fn parent(&self) -> u32;
     fn usage_stats(&self) -> &ProcessUsageStats;
     fn task_count(&self) -> usize;
-    fn as_bus_process(&'a self) -> crate::dbus::Process<'a>;
 }
 
 /// The public interface that describes how the list of running processes is obtained
-pub trait ProcessesExt<'a> {
+pub trait ProcessesExt<'a>: Append + Arg {
     type P: ProcessExt<'a>;
 
     /// Refreshes the internal process cache
@@ -81,5 +82,5 @@ pub trait ProcessesExt<'a> {
     fn refresh_cache(&mut self);
 
     /// Return the (cached) list of processes
-    fn process_list(&self) -> &std::collections::HashMap<u32, Self::P>;
+    fn process_list(&'a self) -> &'a std::collections::HashMap<u32, Self::P>;
 }
