@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-26 16:17+0000\n"
+"PO-Revision-Date: 2023-10-30 21:00+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -33,7 +33,7 @@ msgstr ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Диспетчер "
 "задач;Мониторинг ресорсов;Системный монитор;Процессор;Процессы;Мониторинг "
-"производительности;Диск;Память;Сеть;Использование"
+"производительности;Диск;Память;Сеть;Использование;ЦП;ГП"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -610,11 +610,11 @@ msgstr "Базовая скорость:"
 
 #: resources/ui/performance_page/cpu.blp:303
 msgid "Sockets:"
-msgstr "Сокетов:"
+msgstr "Сокеты:"
 
 #: resources/ui/performance_page/cpu.blp:312
 msgid "Virtual processors:"
-msgstr "Виртуальных процессоров:"
+msgstr "Виртуальные процессоры:"
 
 #: resources/ui/performance_page/cpu.blp:321
 msgid "Virtualization:"
@@ -713,7 +713,7 @@ msgstr "_Сеть"
 #: resources/ui/performance_page/network.blp:397
 #: resources/ui/performance_page/cpu.blp:486
 msgid "_GPU"
-msgstr "_Графический процессор"
+msgstr "_ГП"
 
 #: resources/ui/performance_page/cpu.blp:499
 #: resources/ui/performance_page/disk.blp:422
@@ -1136,7 +1136,7 @@ msgstr "Другой"
 
 #: src/performance_page/mod.rs:541
 msgid "GPU {}"
-msgstr "Графический процессор {}"
+msgstr "ГП {}"
 
 #: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
 msgid "{}: {} {}bps"
