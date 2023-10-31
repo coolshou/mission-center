@@ -19,7 +19,9 @@
  */
 
 pub use apps::*;
+pub use cpu_info::*;
 pub use processes::*;
 
 mod apps;
+mod cpu_info;
 mod processes;

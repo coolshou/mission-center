@@ -19,6 +19,7 @@
  */
 
 pub use apps::*;
+pub use cpu_info::*;
 pub use processes::*;
 
 #[cfg(target_os = "linux")]
@@ -33,10 +34,14 @@ mod linux {
     pub type Processes = platform_impl::LinuxProcesses;
     pub type App = platform_impl::LinuxApp;
     pub type Apps = platform_impl::LinuxApps;
+    pub type CpuStaticInfo = platform_impl::LinuxCpuStaticInfo;
+    pub type CpuDynamicInfo = platform_impl::LinuxCpuDynamicInfo;
+    pub type CpuInfo = platform_impl::LinuxCpuInfo;
 }
 
 #[cfg(target_os = "linux")]
 pub use linux::*;
 
 mod apps;
+mod cpu_info;
 mod processes;
