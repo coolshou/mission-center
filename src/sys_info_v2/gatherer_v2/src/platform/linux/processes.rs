@@ -47,6 +47,8 @@ const PROC_PID_NET_DEV_RECV_BYTES: usize = 0;
 #[allow(dead_code)]
 const PROC_PID_NET_DEV_SENT_BYTES: usize = 8;
 
+const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
+
 #[derive(Debug, Copy, Clone)]
 struct RawStats {
     pub user_jiffies: u64,
@@ -149,12 +151,15 @@ impl<'a> ProcessExt<'a> for LinuxProcess {
 
 pub struct LinuxProcesses {
     process_cache: std::collections::HashMap<u32, LinuxProcess>,
+    refresh_timestamp: std::time::Instant,
 }
 
 impl LinuxProcesses {
     pub fn new() -> Self {
         Self {
             process_cache: std::collections::HashMap::new(),
+            refresh_timestamp: std::time::Instant::now()
+                - (STALE_DELTA + std::time::Duration::from_millis(1)),
         }
     }
 }
@@ -557,10 +562,12 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
 
             result.insert(pid, process);
         }
+
+        self.refresh_timestamp = std::time::Instant::now();
     }
 
     fn is_cache_stale(&self) -> bool {
-        false
+        std::time::Instant::now().duration_since(self.refresh_timestamp) > STALE_DELTA
     }
 
     fn process_list(&'a self) -> &'a std::collections::HashMap<u32, LinuxProcess> {

@@ -1,7 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
-use crate::platform::apps::*;
 use lazy_static::lazy_static;
+
+use crate::platform::apps::*;
 
 const COMMAND_IGNORELIST: &[&str] = &[
     "/usr/bin/sh",
@@ -14,6 +15,8 @@ const COMMAND_IGNORELIST: &[&str] = &[
     "/usr/bin/python",
     "/usr/bin/python2",
     "/usr/bin/python3",
+    "/usr/bin/distrobox",
+    "/usr/bin/waydroid",
     "/bin/sh",
     "/bin/bash",
     "/bin/zsh",
@@ -34,9 +37,12 @@ const COMMAND_IGNORELIST: &[&str] = &[
     "python",
     "python2",
     "python3",
+    "distrobox",
+    "waydroid",
 ];
 
 const APP_IGNORELIST: &[&str] = &["guake-prefs"];
+const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
 
 lazy_static! {
     static ref PATH: Vec<String> = {
@@ -116,11 +122,16 @@ impl<'a> AppExt<'a> for LinuxApp {
 
 pub struct LinuxApps {
     app_cache: Vec<LinuxApp>,
+    refresh_timestamp: std::time::Instant,
 }
 
 impl LinuxApps {
     pub fn new() -> Self {
-        Self { app_cache: vec![] }
+        Self {
+            app_cache: vec![],
+            refresh_timestamp: std::time::Instant::now()
+                - (STALE_DELTA + std::time::Duration::from_millis(1)),
+        }
     }
 
     fn extract_app_id(cgroup: &str) -> Option<Arc<str>> {
@@ -414,13 +425,37 @@ impl<'a> AppsExt<'a> for LinuxApps {
                 self.app_cache.push(app)
             }
         }
+
+        self.refresh_timestamp = std::time::Instant::now();
     }
 
     fn is_cache_stale(&self) -> bool {
-        false
+        std::time::Instant::now().duration_since(self.refresh_timestamp) > STALE_DELTA
     }
 
     fn app_list(&self) -> &[Self::A] {
         &self.app_cache
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::platform::{AppsExt, Processes, ProcessesExt};
+
+    use super::*;
+
+    #[test]
+    fn test_refresh_cache() {
+        let mut p = Processes::new();
+        p.refresh_cache();
+
+        let mut apps = LinuxApps::new();
+        assert!(apps.app_cache.is_empty());
+
+        apps.refresh_cache(p.process_list());
+        assert!(!apps.app_cache.is_empty());
+
+        let sample = apps.app_cache.iter().take(10);
+        dbg!(sample);
     }
 }

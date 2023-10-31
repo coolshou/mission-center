@@ -3,11 +3,8 @@ use std::error::Error;
 use dbus::blocking::Connection;
 use dbus_crossroads::Crossroads;
 
-use crate::platform::ProcessesExt;
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
-#[allow(unused_imports)]
-use utils::arraystring::ToArrayStringLossy;
 
 // mod dbus;
 mod logging;
@@ -30,10 +27,10 @@ impl SystemStatistics {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let c = Connection::new_session()?;
-    c.request_name("io.missioncenter.MissionCenter", true, true, false)?;
+    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, false)?;
 
     let mut cr = Crossroads::new();
-    let iface_token = cr.register("io.missioncenter.MissionCenter", |builder| {
+    let iface_token = cr.register("io.missioncenter.MissionCenter.Gatherer", |builder| {
         builder.method(
             "GetProcesses",
             (),
@@ -67,9 +64,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
     });
 
+    let peer_itf = cr.register("org.freedesktop.DBus.Peer", |builder| {
+        builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
+            Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
+                .map_or("UNKONWN".into(), |s| s.trim().to_owned()),))
+        });
+        builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
+    });
+
     cr.insert(
-        "/io/missioncenter/MissionCenter",
-        &[iface_token],
+        "/io/missioncenter/MissionCenter/Gatherer",
+        &[peer_itf, iface_token],
         SystemStatistics::new(),
     );
 
