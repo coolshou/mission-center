@@ -18,5 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-mod processes;
+pub use apps::*;
 pub use processes::*;
+
+mod apps;
+mod processes;

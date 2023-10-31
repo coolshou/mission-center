@@ -18,14 +18,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pub use apps::*;
+pub use processes::*;
+
 #[cfg(target_os = "linux")]
 #[path = "linux/mod.rs"]
 mod platform_impl;
 
 #[cfg(target_os = "linux")]
-pub type Process = platform_impl::LinuxProcess;
-#[cfg(target_os = "linux")]
-pub type Processes = platform_impl::LinuxProcesses;
+#[allow(unused)]
+mod linux {
+    use super::*;
+    pub type Process = platform_impl::LinuxProcess;
+    pub type Processes = platform_impl::LinuxProcesses;
+    pub type App = platform_impl::LinuxApp;
+    pub type Apps = platform_impl::LinuxApps;
+}
 
+#[cfg(target_os = "linux")]
+pub use linux::*;
+
+mod apps;
 mod processes;
-pub use processes::*;

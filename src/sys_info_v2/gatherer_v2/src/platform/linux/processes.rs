@@ -20,8 +20,6 @@
 
 use std::sync::Arc;
 
-use dbus::arg::{Append, Arg, ArgType};
-use dbus::Signature;
 use lazy_static::lazy_static;
 
 use crate::platform::processes::*;
@@ -158,42 +156,6 @@ impl LinuxProcesses {
         Self {
             process_cache: std::collections::HashMap::new(),
         }
-    }
-}
-
-impl Arg for LinuxProcesses {
-    const ARG_TYPE: ArgType = ArgType::Array;
-
-    fn signature() -> Signature<'static> {
-        Signature::from("a(sassyuu(ddddd)t)")
-    }
-}
-
-impl Append for LinuxProcesses {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append(
-            self.process_cache
-                .iter()
-                .map(|(_, p)| {
-                    (
-                        p.name.as_ref(),
-                        p.cmd.iter().map(|s| s.as_ref()).collect::<Vec<_>>(),
-                        p.exe.as_ref(),
-                        p.state as u8,
-                        p.pid,
-                        p.parent,
-                        (
-                            p.usage_stats.cpu_usage as f64,
-                            p.usage_stats.memory_usage as f64,
-                            p.usage_stats.disk_usage as f64,
-                            p.usage_stats.network_usage as f64,
-                            p.usage_stats.gpu_usage as f64,
-                        ),
-                        p.task_count as u64,
-                    )
-                })
-                .collect::<Vec<_>>(),
-        );
     }
 }
 
@@ -595,6 +557,10 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
 
             result.insert(pid, process);
         }
+    }
+
+    fn is_cache_stale(&self) -> bool {
+        false
     }
 
     fn process_list(&'a self) -> &'a std::collections::HashMap<u32, LinuxProcess> {

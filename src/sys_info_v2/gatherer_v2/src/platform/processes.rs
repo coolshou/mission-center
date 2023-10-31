@@ -81,6 +81,45 @@ pub trait ProcessesExt<'a>: Append + Arg {
     /// the underlying OS
     fn refresh_cache(&mut self);
 
+    /// Implementation specific understanding of whether the cache is too old to be relevant
+    fn is_cache_stale(&self) -> bool;
+
     /// Return the (cached) list of processes
     fn process_list(&'a self) -> &'a std::collections::HashMap<u32, Self::P>;
+}
+
+impl Arg for crate::platform::Processes {
+    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Array;
+
+    fn signature() -> dbus::Signature<'static> {
+        dbus::Signature::from("a(sassyuu(ddddd)t)")
+    }
+}
+
+impl Append for crate::platform::Processes {
+    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+        ia.append(
+            self.process_list()
+                .iter()
+                .map(|(_, p)| {
+                    (
+                        p.name(),
+                        p.cmd().clone().collect::<Vec<_>>(),
+                        p.exe(),
+                        p.state() as u8,
+                        p.pid(),
+                        p.parent(),
+                        (
+                            p.usage_stats().cpu_usage as f64,
+                            p.usage_stats().memory_usage as f64,
+                            p.usage_stats().disk_usage as f64,
+                            p.usage_stats().network_usage as f64,
+                            p.usage_stats().gpu_usage as f64,
+                        ),
+                        p.task_count() as u64,
+                    )
+                })
+                .collect::<Vec<_>>(),
+        );
+    }
 }
