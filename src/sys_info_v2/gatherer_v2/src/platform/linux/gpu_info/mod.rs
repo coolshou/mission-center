@@ -39,8 +39,6 @@ pub struct LinuxGpuStaticInfo {
     total_memory: u64,
     opengl_version: Option<OpenGLApiVersion>,
     vulkan_version: Option<ApiVersion>,
-    metal_version: Option<ApiVersion>,
-    direct3d_version: Option<ApiVersion>,
     pcie_gen: u8,
     pcie_lanes: u8,
 }
@@ -55,8 +53,6 @@ impl Default for LinuxGpuStaticInfo {
             total_memory: 0,
             opengl_version: None,
             vulkan_version: None,
-            metal_version: None,
-            direct3d_version: None,
             pcie_gen: 0,
             pcie_lanes: 0,
         }
@@ -93,11 +89,11 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
     }
 
     fn metal_version(&self) -> Option<&ApiVersion> {
-        self.metal_version.as_ref()
+        None
     }
 
     fn direct3d_version(&self) -> Option<&ApiVersion> {
-        self.direct3d_version.as_ref()
+        None
     }
 
     fn pcie_gen(&self) -> u8 {
@@ -181,6 +177,8 @@ pub struct LinuxGpuInfo {
     gpu_list: Arc<RwLock<nvtop::ListHead>>,
     static_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuStaticInfo>,
     dynamic_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuDynamicInfo>,
+
+    gpu_list_refreshed: bool,
 }
 
 impl Drop for LinuxGpuInfo {
@@ -204,7 +202,7 @@ impl LinuxGpuInfo {
             nvtop::init_extract_gpuinfo_nvidia();
         }
 
-        let mut gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
+        let gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
             prev: std::ptr::null_mut(),
         }));
@@ -215,13 +213,250 @@ impl LinuxGpuInfo {
         }
 
         Self {
-            vk_info: unsafe { vulkan_info::VulkanInfo::new() },
+            vk_info: vulkan_info::VulkanInfo::new(),
 
             gpu_list,
 
             static_info: HashMap::new(),
             dynamic_info: HashMap::new(),
+
+            gpu_list_refreshed: false,
         }
+    }
+
+    #[allow(non_snake_case)]
+    unsafe fn supported_opengl_version(dri_path: &str) -> Option<OpenGLApiVersion> {
+        use crate::{error, platform::OpenGLApi};
+        use gbm::AsRaw;
+        use std::os::fd::*;
+
+        type Void = std::ffi::c_void;
+
+        pub struct DrmDevice(std::fs::File);
+
+        impl AsFd for DrmDevice {
+            fn as_fd(&self) -> BorrowedFd<'_> {
+                self.0.as_fd()
+            }
+        }
+
+        impl DrmDevice {
+            pub fn open(path: &str) -> std::io::Result<Self> {
+                let mut options = std::fs::OpenOptions::new();
+                options.read(true);
+                options.write(true);
+
+                Ok(Self(options.open(path)?))
+            }
+        }
+
+        impl drm::Device for DrmDevice {}
+
+        let drm_device = match DrmDevice::open(dri_path) {
+            Err(e) => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: {}", e
+                );
+                return None;
+            }
+            Ok(drm_device) => drm_device,
+        };
+
+        let gbm_device = match gbm::Device::new(drm_device) {
+            Err(e) => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: {}", e
+                );
+                return None;
+            }
+            Ok(gbm_device) => gbm_device,
+        };
+
+        const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::EGLint = 0x3098;
+        const EGL_CONTEXT_MINOR_VERSION_KHR: egl::EGLint = 0x30FB;
+        const EGL_PLATFORM_GBM_KHR: egl::EGLenum = 0x31D7;
+        const EGL_OPENGL_ES3_BIT: egl::EGLint = 0x0040;
+
+        let eglGetPlatformDisplayEXT =
+            egl::get_proc_address("eglGetPlatformDisplayEXT") as *const Void;
+        let egl_display = if !eglGetPlatformDisplayEXT.is_null() {
+            let eglGetPlatformDisplayEXT: extern "C" fn(
+                egl::EGLenum,
+                *mut Void,
+                *const egl::EGLint,
+            ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplayEXT);
+            eglGetPlatformDisplayEXT(
+                EGL_PLATFORM_GBM_KHR,
+                gbm_device.as_raw() as *mut Void,
+                std::ptr::null(),
+            )
+        } else {
+            let eglGetPlatformDisplay =
+                egl::get_proc_address("eglGetPlatformDisplay") as *const Void;
+            if !eglGetPlatformDisplay.is_null() {
+                let eglGetPlatformDisplay: extern "C" fn(
+                    egl::EGLenum,
+                    *mut Void,
+                    *const egl::EGLint,
+                ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplay);
+                eglGetPlatformDisplay(
+                    EGL_PLATFORM_GBM_KHR,
+                    gbm_device.as_raw() as *mut Void,
+                    std::ptr::null(),
+                )
+            } else {
+                egl::get_display(gbm_device.as_raw() as *mut Void)
+                    .map_or(std::ptr::null_mut(), |d| d)
+            }
+        };
+        if egl_display.is_null() {
+            error!(
+                "Gatherer::GpuInfo",
+                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                egl::get_error()
+            );
+            return None;
+        }
+
+        let mut egl_major = 0;
+        let mut egl_minor = 0;
+        if !egl::initialize(egl_display, &mut egl_major, &mut egl_minor) {
+            error!(
+                "Gathereer::GpuInfo",
+                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                egl::get_error()
+            );
+            return None;
+        }
+
+        if egl_major < 1 || (egl_major == 1 && egl_minor < 4) {
+            error!(
+                "Gatherer::GpuInfo",
+                "Failed to get OpenGL information: EGL version 1.4 or higher is required to test OpenGL support"
+            );
+            return None;
+        }
+
+        let mut gl_api = egl::EGL_OPENGL_API;
+        if !egl::bind_api(gl_api) {
+            gl_api = egl::EGL_OPENGL_ES_API;
+            if !egl::bind_api(gl_api) {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to bind an EGL API ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        }
+
+        let egl_config = if gl_api == egl::EGL_OPENGL_ES_API {
+            let mut config_attribs = [
+                egl::EGL_SURFACE_TYPE,
+                egl::EGL_WINDOW_BIT,
+                egl::EGL_RENDERABLE_TYPE,
+                EGL_OPENGL_ES3_BIT,
+                egl::EGL_NONE,
+            ];
+
+            let mut egl_config = egl::choose_config(egl_display, &config_attribs, 1);
+            if egl_config.is_some() {
+                egl_config
+            } else {
+                config_attribs[3] = egl::EGL_OPENGL_ES2_BIT;
+                egl_config = egl::choose_config(egl_display, &config_attribs, 1);
+                if egl_config.is_some() {
+                    egl_config
+                } else {
+                    config_attribs[3] = egl::EGL_OPENGL_ES_BIT;
+                    egl::choose_config(egl_display, &config_attribs, 1)
+                }
+            }
+        } else {
+            let config_attribs = [
+                egl::EGL_SURFACE_TYPE,
+                egl::EGL_WINDOW_BIT,
+                egl::EGL_RENDERABLE_TYPE,
+                egl::EGL_OPENGL_BIT,
+                egl::EGL_NONE,
+            ];
+
+            egl::choose_config(egl_display, &config_attribs, 1)
+        };
+
+        if egl_config.is_none() {
+            return None;
+        }
+        let egl_config = match egl_config {
+            Some(ec) => ec,
+            None => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        };
+
+        let mut ver_major = if gl_api == egl::EGL_OPENGL_API { 4 } else { 3 };
+        let mut ver_minor = if gl_api == egl::EGL_OPENGL_API { 6 } else { 0 };
+
+        let mut context_attribs = [
+            EGL_CONTEXT_MAJOR_VERSION_KHR,
+            ver_major,
+            EGL_CONTEXT_MINOR_VERSION_KHR,
+            ver_minor,
+            egl::EGL_NONE,
+        ];
+
+        let mut egl_context;
+        loop {
+            egl_context = egl::create_context(
+                egl_display,
+                egl_config,
+                egl::EGL_NO_CONTEXT,
+                &context_attribs,
+            );
+
+            if egl_context.is_some() || (ver_major == 1 && ver_minor == 0) {
+                break;
+            }
+
+            if ver_minor > 0 {
+                ver_minor -= 1;
+            } else {
+                ver_major -= 1;
+                ver_minor = 9;
+            }
+
+            context_attribs[1] = ver_major;
+            context_attribs[3] = ver_minor;
+        }
+
+        match egl_context {
+            Some(ec) => egl::destroy_context(egl_display, ec),
+            None => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
+                    egl::get_error()
+                );
+                return None;
+            }
+        };
+
+        Some(OpenGLApiVersion {
+            major: ver_major as u8,
+            minor: ver_minor as u8,
+            api: if gl_api != egl::EGL_OPENGL_API {
+                OpenGLApi::OpenGLES
+            } else {
+                OpenGLApi::OpenGL
+            },
+        })
     }
 }
 
@@ -238,6 +473,12 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         use crate::{critical, warning};
         use arrayvec::ArrayString;
         use std::{io::Read, ops::DerefMut};
+
+        if self.gpu_list_refreshed {
+            return;
+        }
+
+        self.gpu_list_refreshed = true;
 
         let mut gpu_list = self.gpu_list.write().unwrap();
         let gpu_list = gpu_list.deref_mut();
@@ -262,7 +503,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
         let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list) };
         if result == 0 {
-            warning!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
+            critical!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
             return;
         }
 
@@ -400,22 +641,52 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
     }
 
     fn refresh_static_info_cache(&mut self) {
-        todo!()
+        use arrayvec::ArrayString;
+        use std::fmt::Write;
+
+        let vulkan_versions = if let Some(vulkan_info) = &self.vk_info {
+            unsafe { vulkan_info.supported_vulkan_versions() }.unwrap_or(HashMap::new())
+        } else {
+            HashMap::new()
+        };
+
+        let mut dri_path = ArrayString::<64>::new_const();
+        for (pci_id, static_info) in &mut self.static_info {
+            let _ = write!(dri_path, "/dev/dri/by-path/pci-{}-card", pci_id);
+            if !std::path::Path::new(dri_path.as_str()).exists() {
+                let _ = write!(
+                    dri_path,
+                    "/dev/dri/by-path/pci-{}-card",
+                    pci_id.to_lowercase()
+                );
+            }
+            static_info.opengl_version =
+                unsafe { Self::supported_opengl_version(dri_path.as_str()) };
+
+            let device_id = ((static_info.vendor_id as u32) << 16) | static_info.device_id as u32;
+            if let Some(vulkan_version) = vulkan_versions.get(&device_id) {
+                static_info.vulkan_version = Some(*vulkan_version);
+            }
+        }
     }
 
-    fn refresh_dynamic_info_cache(&mut self, processes: &Self::P) {
-        todo!()
-    }
+    fn refresh_dynamic_info_cache(&mut self, processes: &Self::P) {}
 
     fn enumerate(&'a self) -> Self::Iter {
         self.static_info.keys().map(|k| k.as_str())
     }
 
-    fn static_info(&self, pci_id: u32) -> Option<&Self::S> {
-        todo!()
+    fn static_info(&self, id: &str) -> Option<&Self::S> {
+        use arrayvec::ArrayString;
+
+        self.static_info
+            .get(&ArrayString::<16>::from(id).unwrap_or_default())
     }
 
-    fn dynamic_info(&self, pci_id: u32) -> Option<&Self::D> {
-        todo!()
+    fn dynamic_info(&self, id: &str) -> Option<&Self::D> {
+        use arrayvec::ArrayString;
+
+        self.dynamic_info
+            .get(&ArrayString::<16>::from(id).unwrap_or_default())
     }
 }

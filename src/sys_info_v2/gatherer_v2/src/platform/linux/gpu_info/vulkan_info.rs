@@ -18,8 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use crate::logging::warning;
-
 pub struct VulkanInfo {
     _entry: ash::Entry,
     vk_instance: ash::Instance,

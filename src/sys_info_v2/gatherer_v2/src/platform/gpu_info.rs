@@ -263,8 +263,8 @@ pub trait GpuInfoExt<'a> {
     fn enumerate(&'a self) -> Self::Iter;
 
     /// Returns the static information for the GPU with the PCI id \ref pci_id.
-    fn static_info(&self, pci_id: u32) -> Option<&Self::S>;
+    fn static_info(&self, id: &str) -> Option<&Self::S>;
 
     /// Returns the dynamic information for the GPU with the PCI id \ref pci_id.
-    fn dynamic_info(&self, pci_id: u32) -> Option<&Self::D>;
+    fn dynamic_info(&self, id: &str) -> Option<&Self::D>;
 }

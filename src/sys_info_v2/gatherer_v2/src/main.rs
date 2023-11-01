@@ -78,6 +78,29 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         builder.method(
+            "GetGPUStaticInfo",
+            ("gpu_id",),
+            ("static_info",),
+            |ctx, sys_stats: &mut SystemStatistics, (gpu_id,): (String,)| {
+                sys_stats.gpu_info.refresh_static_info_cache();
+
+                match sys_stats.gpu_info.static_info(&gpu_id) {
+                    None => {
+                        ctx.reply::<(platform::GpuStaticInfo,)>(Err(dbus::MethodErr::invalid_arg(
+                            "The `id` parameter is not a valid GPU id",
+                        )));
+                    }
+                    Some(static_info) => {
+                        ctx.reply(Ok((static_info,)));
+                    }
+                }
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::GpuStaticInfo::default(),))
+            },
+        );
+
+        builder.method(
             "GetProcesses",
             (),
             ("processes",),
