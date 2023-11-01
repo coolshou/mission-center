@@ -32,6 +32,8 @@ const PROC_STAT_SOFTIRQ: usize = 6;
 const PROC_STAT_GUEST: usize = 8;
 const PROC_STAT_GUEST_NICE: usize = 9;
 
+const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
+
 lazy_static! {
     static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
     static ref CPU_COUNT: usize = num_cpus::get();
@@ -246,32 +248,25 @@ impl<'a> CpuDynamicInfoExt<'a> for LinuxCpuDynamicInfo {
 }
 
 pub struct LinuxCpuInfo {
-    cpu_static_info: LinuxCpuStaticInfo,
-    cpu_dynamic_info: LinuxCpuDynamicInfo,
-
-    cpu_usage_cache: Vec<f32>,
-    kernel_usage_cache: Vec<f32>,
+    static_info: LinuxCpuStaticInfo,
+    dynamic_info: LinuxCpuDynamicInfo,
 
     cpu_stats_cache: Vec<CpuStats>,
+    refresh_timestamp: std::time::Instant,
 }
 
 impl LinuxCpuInfo {
     pub fn new() -> Self {
-        let mut cpu_usage_cache = Vec::with_capacity(*CPU_COUNT);
-        cpu_usage_cache.resize(*CPU_COUNT, 0.0);
-
-        let mut kernel_usage_cache = Vec::with_capacity(*CPU_COUNT);
-        kernel_usage_cache.resize(*CPU_COUNT, 0.0);
-
         let mut cpu_stats_cache = Vec::with_capacity(*CPU_COUNT + 1);
         cpu_stats_cache.resize(*CPU_COUNT + 1, CpuStats::default());
 
         Self {
-            cpu_static_info: LinuxCpuStaticInfo::new(),
-            cpu_dynamic_info: LinuxCpuDynamicInfo::new(),
-            cpu_usage_cache,
-            kernel_usage_cache,
+            static_info: LinuxCpuStaticInfo::new(),
+            dynamic_info: LinuxCpuDynamicInfo::new(),
+
             cpu_stats_cache,
+            refresh_timestamp: std::time::Instant::now()
+                - (STALE_DELTA + std::time::Duration::from_millis(1)),
         }
     }
 
@@ -845,111 +840,41 @@ impl LinuxCpuInfo {
     }
 
     fn virtual_machine() -> Option<bool> {
-        // use crate::critical;
-        // use rustbus::*;
-        // use std::time::Duration;
-        //
-        // let mut rpc_con = match RpcConn::system_conn(connection::Timeout::Duration(
-        //     Duration::from_millis(1000),
-        // )) {
-        //     Ok(rpc_con) => rpc_con,
-        //     Err(e) => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Failed to connect to D-Bus: {}",
-        //             e
-        //         );
-        //         return None;
-        //     }
-        // };
-        //
-        // let mut call = MessageBuilder::new()
-        //     .call("Get")
-        //     .at("org.freedesktop.systemd1")
-        //     .on("/org/freedesktop/systemd1")
-        //     .with_interface("org.freedesktop.DBus.Properties")
-        //     .build();
-        //
-        // match call
-        //     .body
-        //     .push_param2("org.freedesktop.systemd1.Manager", "Virtualization")
-        // {
-        //     Ok(_) => {}
-        //     Err(e) => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Failed to marshal parameters: {}",
-        //             e
-        //         );
-        //         return None;
-        //     }
-        // }
-        //
-        // let id = match rpc_con
-        //     .send_message(&mut call)
-        //     .and_then(|smc| smc.write_all().map_err(|e| e.1))
-        // {
-        //     Ok(id) => id,
-        //     Err(e) => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Failed to send message: {}",
-        //             e
-        //         );
-        //         return None;
-        //     }
-        // };
-        //
-        // let message = match rpc_con.wait_response(
-        //     id,
-        //     connection::Timeout::Duration(Duration::from_millis(1000)),
-        // ) {
-        //     Ok(message) => message,
-        //     Err(e) => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Failed to retrieve response: {}",
-        //             e
-        //         );
-        //         return None;
-        //     }
-        // };
-        //
-        // match message.typ {
-        //     MessageType::Error => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Received error message: {}: {}",
-        //             message.dynheader.error_name.unwrap_or_default(),
-        //             message
-        //                 .body
-        //                 .parser()
-        //                 .get::<&str>()
-        //                 .unwrap_or("Unknown error")
-        //         );
-        //         return None;
-        //     }
-        //     MessageType::Reply => {
-        //         use wire::unmarshal::traits::Variant;
-        //
-        //         let reply = message
-        //             .body
-        //             .parser()
-        //             .get::<Variant>()
-        //             .and_then(|v| v.get::<&str>());
-        //
-        //         return Some(reply.unwrap_or_default().len() > 0);
-        //     }
-        //     _ => {
-        //         critical!(
-        //             "Gatherer::CPU",
-        //             "Failed to determine VM: Expected message type Reply got: {:?}",
-        //             message.typ
-        //         );
-        //     }
-        // }
+        use crate::critical;
+        use dbus::blocking::{stdintf::org_freedesktop_dbus::Properties, *};
 
-        None
+        let conn = match Connection::new_system() {
+            Ok(c) => c,
+            Err(e) => {
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to connect to D-Bus: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        let proxy = conn.with_proxy(
+            "org.freedesktop.systemd1",
+            "/org/freedesktop/systemd1",
+            std::time::Duration::from_millis(1000),
+        );
+
+        let response: String = match proxy.get("org.freedesktop.systemd1.Manager", "Virtualization")
+        {
+            Ok(m) => m,
+            Err(e) => {
+                critical!(
+                    "Gatherer::CPU",
+                    "Failed to determine VM: Failed to get Virtualization property: {}",
+                    e
+                );
+                return None;
+            }
+        };
+
+        Some(response.len() > 0)
     }
 
     fn cache_info() -> [Option<u64>; 5] {
@@ -1209,87 +1134,6 @@ impl LinuxCpuInfo {
         result
     }
 
-    fn cpu_usage(&mut self) -> (f32, f32) {
-        use crate::critical;
-
-        self.cpu_usage_cache.resize(*CPU_COUNT, 0.0);
-        self.kernel_usage_cache.resize(*CPU_COUNT, 0.0);
-        let per_core_usage = &mut self.cpu_usage_cache[..*CPU_COUNT];
-        let per_core_kernel_usage = &mut self.kernel_usage_cache[..*CPU_COUNT];
-
-        fn extract_cpu_stats(line: &str) -> CpuStats {
-            let mut result = CpuStats::default();
-
-            for (i, value) in line.split_whitespace().skip(1).enumerate() {
-                match i {
-                    PROC_STAT_USER => {
-                        result.user = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_NICE => {
-                        result.nice = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_SYSTEM => {
-                        result.system = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_IRQ => {
-                        result.irq = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_SOFTIRQ => {
-                        result.softirq = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_GUEST => {
-                        let guest = value.parse::<u64>().unwrap_or(0);
-                        result.user = result.user.saturating_sub(guest);
-                    }
-                    PROC_STAT_GUEST_NICE => {
-                        let guest_nice = value.parse::<u64>().unwrap_or(0);
-                        result.nice = result.nice.saturating_sub(guest_nice);
-                    }
-                    _ => {}
-                }
-            }
-
-            result
-        }
-
-        let proc_stat = match std::fs::read_to_string("/proc/stat") {
-            Err(e) => {
-                critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
-                return (0., 0.);
-            }
-            Ok(s) => s,
-        };
-
-        let stats_cache = &mut self.cpu_stats_cache;
-
-        let mut result = (0., 0.);
-        let mut line_iter = proc_stat
-            .lines()
-            .map(|l| l.trim())
-            .skip_while(|l| !l.starts_with("cpu"));
-        if let Some(cpu_overall_line) = line_iter.next() {
-            let overall_stats = extract_cpu_stats(cpu_overall_line);
-            result.0 = overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
-            result.1 = overall_stats.cpu_usage_kernel(&stats_cache[0], *CPU_COUNT);
-            stats_cache[0] = overall_stats;
-        } else {
-            return (0., 0.);
-        }
-
-        for (i, line) in line_iter.enumerate() {
-            if !line.starts_with("cpu") {
-                break;
-            }
-
-            let stats = extract_cpu_stats(line);
-            per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1], 1);
-            per_core_kernel_usage[i] = stats.cpu_usage_kernel(&stats_cache[i + 1], 1);
-            stats_cache[i + 1] = stats;
-        }
-
-        result
-    }
-
     // Adapted from `sysinfo` crate, linux/cpu.rs:415
     fn cpu_frequency_mhz() -> u64 {
         use crate::critical;
@@ -1383,23 +1227,23 @@ impl LinuxCpuInfo {
         None
     }
 
-    fn process_count(processes: &crate::platform::Processes) -> u32 {
+    fn process_count(processes: &crate::platform::Processes) -> u64 {
         use crate::platform::ProcessesExt;
 
         processes.process_list().len() as _
     }
 
-    fn thread_count(processes: &crate::platform::Processes) -> usize {
+    fn thread_count(processes: &crate::platform::Processes) -> u64 {
         use crate::platform::{ProcessExt, ProcessesExt};
 
         processes
             .process_list()
             .iter()
             .map(|(_, p)| p.task_count())
-            .sum()
+            .sum::<usize>() as _
     }
 
-    fn handle_count() -> u32 {
+    fn handle_count() -> u64 {
         use crate::critical;
 
         let file_nr = match std::fs::read_to_string("/proc/sys/fs/file-nr") {
@@ -1477,7 +1321,7 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
     fn refresh_static_info_cache(&mut self) {
         let cache_info = Self::cache_info();
 
-        self.cpu_static_info = LinuxCpuStaticInfo {
+        self.static_info = LinuxCpuStaticInfo {
             name: Self::name(),
             logical_cpu_count: Self::logical_cpu_count(),
             socket_count: Self::socket_count(),
@@ -1492,19 +1336,114 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
     }
 
     fn refresh_dynamic_info_cache(&mut self, processes: &crate::platform::Processes) {
-        todo!()
+        use crate::critical;
+
+        self.dynamic_info
+            .per_logical_cpu_utilization_percent
+            .resize(*CPU_COUNT, 0.0);
+        self.dynamic_info
+            .per_logical_cpu_kernel_utilization_percent
+            .resize(*CPU_COUNT, 0.0);
+
+        let per_core_usage =
+            &mut self.dynamic_info.per_logical_cpu_utilization_percent[..*CPU_COUNT];
+        let per_core_kernel_usage =
+            &mut self.dynamic_info.per_logical_cpu_kernel_utilization_percent[..*CPU_COUNT];
+
+        fn extract_cpu_stats(line: &str) -> CpuStats {
+            let mut result = CpuStats::default();
+
+            for (i, value) in line.split_whitespace().skip(1).enumerate() {
+                match i {
+                    PROC_STAT_USER => {
+                        result.user = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_NICE => {
+                        result.nice = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_SYSTEM => {
+                        result.system = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_IRQ => {
+                        result.irq = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_SOFTIRQ => {
+                        result.softirq = value.parse::<u64>().unwrap_or(0);
+                    }
+                    PROC_STAT_GUEST => {
+                        let guest = value.parse::<u64>().unwrap_or(0);
+                        result.user = result.user.saturating_sub(guest);
+                    }
+                    PROC_STAT_GUEST_NICE => {
+                        let guest_nice = value.parse::<u64>().unwrap_or(0);
+                        result.nice = result.nice.saturating_sub(guest_nice);
+                    }
+                    _ => {}
+                }
+            }
+
+            result
+        }
+
+        let proc_stat = match std::fs::read_to_string("/proc/stat") {
+            Err(e) => {
+                critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
+                "".to_owned()
+            }
+            Ok(s) => s,
+        };
+
+        let stats_cache = &mut self.cpu_stats_cache;
+
+        let mut line_iter = proc_stat
+            .lines()
+            .map(|l| l.trim())
+            .skip_while(|l| !l.starts_with("cpu"));
+        if let Some(cpu_overall_line) = line_iter.next() {
+            let overall_stats = extract_cpu_stats(cpu_overall_line);
+            self.dynamic_info.overall_utilization_percent =
+                overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
+            self.dynamic_info.overall_kernel_utilization_percent =
+                overall_stats.cpu_usage_kernel(&stats_cache[0], *CPU_COUNT);
+            stats_cache[0] = overall_stats;
+
+            for (i, line) in line_iter.enumerate() {
+                if !line.starts_with("cpu") {
+                    break;
+                }
+
+                let stats = extract_cpu_stats(line);
+                per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1], 1);
+                per_core_kernel_usage[i] = stats.cpu_usage_kernel(&stats_cache[i + 1], 1);
+                stats_cache[i + 1] = stats;
+            }
+        } else {
+            self.dynamic_info.overall_utilization_percent = 0.;
+            self.dynamic_info.overall_kernel_utilization_percent = 0.;
+            per_core_usage.fill(0.);
+            per_core_kernel_usage.fill(0.);
+        }
+
+        self.dynamic_info.current_frequency_mhz = Self::cpu_frequency_mhz();
+        self.dynamic_info.temperature = Self::temperature();
+        self.dynamic_info.process_count = Self::process_count(processes);
+        self.dynamic_info.thread_count = Self::thread_count(processes);
+        self.dynamic_info.handle_count = Self::handle_count();
+        self.dynamic_info.uptime_seconds = Self::uptime().as_secs();
+
+        self.refresh_timestamp = std::time::Instant::now();
     }
 
     fn is_dynamic_info_cache_stale(&self) -> bool {
-        false
+        std::time::Instant::now().duration_since(self.refresh_timestamp) > STALE_DELTA
     }
 
     fn static_info(&self) -> &Self::S {
-        &self.cpu_static_info
+        &self.static_info
     }
 
     fn dynamic_info(&self) -> &Self::D {
-        todo!()
+        &self.dynamic_info
     }
 }
 

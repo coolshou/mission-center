@@ -5,6 +5,7 @@ use dbus_crossroads::Crossroads;
 
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
+use platform::CpuInfoExt;
 
 // mod dbus;
 mod logging;
@@ -38,13 +39,25 @@ fn main() -> Result<(), Box<dyn Error>> {
             (),
             ("static_info",),
             |ctx, sys_stats: &mut SystemStatistics, (): ()| {
-                use platform::{CpuInfoExt, CpuStaticInfoExt};
-
-                sys_stats.cpu_info.refresh_static_info_cache();
                 ctx.reply(Ok((sys_stats.cpu_info.static_info(),)));
 
                 // Make the scaffolding happy, since the reply was already set
                 Ok((platform::CpuStaticInfo::new(),))
+            },
+        );
+
+        builder.method(
+            "GetCpuDynamicInfo",
+            (),
+            ("static_info",),
+            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+                sys_stats
+                    .cpu_info
+                    .refresh_dynamic_info_cache(&sys_stats.processes);
+                ctx.reply(Ok((sys_stats.cpu_info.dynamic_info(),)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::CpuDynamicInfo::new(),))
             },
         );
 
@@ -93,10 +106,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
     });
 
+    let mut sys_stats = SystemStatistics::new();
+    sys_stats.cpu_info.refresh_static_info_cache();
+
     cr.insert(
         "/io/missioncenter/MissionCenter/Gatherer",
         &[peer_itf, iface_token],
-        SystemStatistics::new(),
+        sys_stats,
     );
 
     cr.serve(&c)?;
