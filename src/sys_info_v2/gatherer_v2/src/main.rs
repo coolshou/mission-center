@@ -3,6 +3,7 @@ use std::error::Error;
 use dbus::blocking::Connection;
 use dbus_crossroads::Crossroads;
 
+use crate::platform::GpuInfoExt;
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
 use platform::CpuInfoExt;
@@ -14,6 +15,7 @@ mod utils;
 
 struct SystemStatistics {
     cpu_info: platform::CpuInfo,
+    gpu_info: platform::GpuInfo,
     processes: platform::Processes,
     apps: platform::Apps,
 }
@@ -22,6 +24,7 @@ impl SystemStatistics {
     pub fn new() -> Self {
         Self {
             cpu_info: platform::CpuInfo::new(),
+            gpu_info: platform::GpuInfo::new(),
             processes: platform::Processes::new(),
             apps: platform::Apps::new(),
         }
@@ -58,6 +61,19 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 // Make the scaffolding happy, since the reply was already set
                 Ok((platform::CpuDynamicInfo::new(),))
+            },
+        );
+
+        builder.method(
+            "EnumerateGPUs",
+            (),
+            ("gpu_ids",),
+            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+                sys_stats.gpu_info.refresh_gpu_list();
+                ctx.reply(Ok((sys_stats.gpu_info.enumerate().collect::<Vec<_>>(),)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((Vec::<&str>::new(),))
             },
         );
 

@@ -101,6 +101,7 @@ impl CpuStats {
     }
 }
 
+#[derive(Debug)]
 pub struct LinuxCpuStaticInfo {
     name: Arc<str>,
     logical_cpu_count: u32,
@@ -173,6 +174,7 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
     }
 }
 
+#[derive(Debug)]
 pub struct LinuxCpuDynamicInfo {
     overall_utilization_percent: f32,
     overall_kernel_utilization_percent: f32,
@@ -247,6 +249,7 @@ impl<'a> CpuDynamicInfoExt<'a> for LinuxCpuDynamicInfo {
     }
 }
 
+#[derive(Debug)]
 pub struct LinuxCpuInfo {
     static_info: LinuxCpuStaticInfo,
     dynamic_info: LinuxCpuDynamicInfo,
@@ -1452,5 +1455,25 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_refresh_cache() {}
+    fn test_static_info() {
+        let mut cpu = LinuxCpuInfo::new();
+        cpu.refresh_static_info_cache();
+        assert!(!cpu.static_info().name().is_empty());
+
+        dbg!(cpu.static_info());
+    }
+
+    #[test]
+    fn test_dynamic_info() {
+        use crate::platform::{Processes, ProcessesExt};
+
+        let mut p = Processes::new();
+        p.refresh_cache();
+
+        let mut cpu = LinuxCpuInfo::new();
+        cpu.refresh_dynamic_info_cache(&p);
+        assert!(!cpu.dynamic_info().process_count() > 0);
+
+        dbg!(cpu.dynamic_info());
+    }
 }

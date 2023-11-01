@@ -39,16 +39,36 @@ impl From<Option<bool>> for OptionalBool {
     }
 }
 
+/// Describes the static (unchanging) information about the CPU/system
 pub trait CpuStaticInfoExt: Append + Arg {
+    /// The CPU vendor and model
     fn name(&self) -> &str;
+
+    /// The number of logical CPUs (i.e. including SMT)
     fn logical_cpu_count(&self) -> u32;
+
+    /// The number of physical CPU sockets
     fn socket_count(&self) -> Option<u8>;
+
+    /// The base CPU frequency in kHz
     fn base_frequency_khz(&self) -> Option<u64>;
+
+    /// Tests if the CPU supports hardware assisted virtualization
     fn virtualization_supported(&self) -> Option<bool>;
+
+    /// Check if the OS is running in a virtual machine
     fn is_virtual_machine(&self) -> Option<bool>;
+
+    /// The total amount of L1 cache (instruction and data)
     fn l1_combined_cache(&self) -> Option<u64>;
+
+    /// The amount of L2 cache
     fn l2_cache(&self) -> Option<u64>;
+
+    /// The amount of L3 cache
     fn l3_cache(&self) -> Option<u64>;
+
+    /// The amount of L4 cache
     fn l4_cache(&self) -> Option<u64>;
 }
 
@@ -77,18 +97,45 @@ impl Append for crate::platform::CpuStaticInfo {
     }
 }
 
+/// Describes CPU/system information that changes over time
 pub trait CpuDynamicInfoExt<'a>: Append + Arg {
+    /// An iterator that yields number of logical core f32 percentage values
+    ///
+    /// It is expected that the iterator yields as many values as exactly the number
+    /// of CPU logical cores
     type Iter: Iterator<Item = &'a f32>;
 
+    /// The overall utilization of the CPU(s)
     fn overall_utilization_percent(&self) -> f32;
+
+    /// The overall utilization of the CPU(s) by the OS kernel
     fn overall_kernel_utilization_percent(&self) -> f32;
+
+    /// The overall utilization of each logical core
     fn per_logical_cpu_utilization_percent(&'a self) -> Self::Iter;
+
+    /// The overall utilization of each logical core by the OS kernel
     fn per_logical_cpu_kernel_utilization_percent(&'a self) -> Self::Iter;
+
+    /// The current average CPU frequency
     fn current_frequency_mhz(&self) -> u64;
+
+    /// The temperature of the CPU
+    ///
+    /// While all modern chips report several temperatures from the CPU die, it is expected that
+    /// implementations provide the most user relevant value here
     fn temperature(&self) -> Option<f32>;
+
+    /// The number of running processes in the system
     fn process_count(&self) -> u64;
+
+    /// The number of active threads in the system
     fn thread_count(&self) -> u64;
+
+    /// The number of open file handles in the system
     fn handle_count(&self) -> u64;
+
+    /// The number of seconds that have passed since the OS was booted
     fn uptime_seconds(&self) -> u64;
 }
 

@@ -20,6 +20,7 @@
 
 pub use apps::*;
 pub use cpu_info::*;
+pub use gpu_info::*;
 pub use processes::*;
 
 #[cfg(target_os = "linux")]
@@ -37,6 +38,10 @@ mod linux {
     pub type CpuStaticInfo = platform_impl::LinuxCpuStaticInfo;
     pub type CpuDynamicInfo = platform_impl::LinuxCpuDynamicInfo;
     pub type CpuInfo = platform_impl::LinuxCpuInfo;
+
+    pub type GpuStaticInfo = platform_impl::LinuxGpuStaticInfo;
+    pub type GpuDynamicInfo = platform_impl::LinuxGpuDynamicInfo;
+    pub type GpuInfo = platform_impl::LinuxGpuInfo;
 }
 
 #[cfg(target_os = "linux")]
@@ -44,4 +49,5 @@ pub use linux::*;
 
 mod apps;
 mod cpu_info;
+mod gpu_info;
 mod processes;
