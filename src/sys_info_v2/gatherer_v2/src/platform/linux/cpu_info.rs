@@ -115,8 +115,8 @@ pub struct LinuxCpuStaticInfo {
     l4_cache: Option<u64>,
 }
 
-impl LinuxCpuStaticInfo {
-    pub fn new() -> Self {
+impl Default for LinuxCpuStaticInfo {
+    fn default() -> Self {
         Self {
             name: Arc::from(""),
             logical_cpu_count: 0,
@@ -129,6 +129,12 @@ impl LinuxCpuStaticInfo {
             l3_cache: None,
             l4_cache: None,
         }
+    }
+}
+
+impl LinuxCpuStaticInfo {
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 
@@ -174,7 +180,7 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
     }
 }
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct LinuxCpuDynamicInfo {
     overall_utilization_percent: f32,
     overall_kernel_utilization_percent: f32,

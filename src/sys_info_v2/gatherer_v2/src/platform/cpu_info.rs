@@ -40,7 +40,7 @@ impl From<Option<bool>> for OptionalBool {
 }
 
 /// Describes the static (unchanging) information about the CPU/system
-pub trait CpuStaticInfoExt: Append + Arg {
+pub trait CpuStaticInfoExt: Default + Append + Arg {
     /// The CPU vendor and model
     fn name(&self) -> &str;
 
@@ -98,7 +98,7 @@ impl Append for crate::platform::CpuStaticInfo {
 }
 
 /// Describes CPU/system information that changes over time
-pub trait CpuDynamicInfoExt<'a>: Append + Arg {
+pub trait CpuDynamicInfoExt<'a>: Default + Append + Arg {
     /// An iterator that yields number of logical core f32 percentage values
     ///
     /// It is expected that the iterator yields as many values as exactly the number

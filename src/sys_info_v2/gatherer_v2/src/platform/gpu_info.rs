@@ -21,7 +21,7 @@
 use dbus::arg::{Append, Arg};
 
 #[repr(u8)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum OpenGLApi {
     OpenGL,
     OpenGLES,
@@ -34,7 +34,7 @@ impl Default for OpenGLApi {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct OpenGLApiVersion {
     pub major: u8,
     pub minor: u8,
@@ -55,7 +55,7 @@ impl Append for OpenGLApiVersion {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct ApiVersion {
     pub major: u16,
     pub minor: u16,
@@ -77,7 +77,7 @@ impl Append for ApiVersion {
 }
 
 /// Describes the static (unchanging) information about a GPU
-pub trait GpuStaticInfoExt: Append + Arg {
+pub trait GpuStaticInfoExt: Default + Append + Arg {
     /// Platform specific unique identifier for a GPU
     ///
     /// Implementations must ensure that two separate GPUs never have the same id, even if they are
@@ -152,7 +152,7 @@ impl Append for crate::platform::GpuStaticInfo {
 }
 
 /// Describes GPU information that changes over time
-pub trait GpuDynamicInfoExt: Append + Arg {
+pub trait GpuDynamicInfoExt: Default + Append + Arg {
     /// Platform specific unique identifier for a GPU
     ///
     /// Implementations must ensure that two separate GPUs never have the same id, even if they are
@@ -257,7 +257,7 @@ pub trait GpuInfoExt<'a> {
     ///
     /// It is expected that implementors of this trait cache this information, once obtained
     /// from the underlying OS
-    fn refresh_dynamic_info_cache(&mut self, processes: &Self::P);
+    fn refresh_dynamic_info_cache(&mut self, processes: &mut Self::P);
 
     /// Returns the number of GPUs present in the system
     fn enumerate(&'a self) -> Self::Iter;

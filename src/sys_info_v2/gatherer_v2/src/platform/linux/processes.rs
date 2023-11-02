@@ -88,7 +88,8 @@ pub struct LinuxProcess {
     state: ProcessState,
     pid: u32,
     parent: u32,
-    usage_stats: ProcessUsageStats,
+    // Needs to be pub to be accessible from GPU info
+    pub usage_stats: ProcessUsageStats,
     task_count: usize,
 
     pub cgroup: Option<Arc<str>>,
@@ -156,6 +157,16 @@ pub struct LinuxProcesses {
 
 impl LinuxProcesses {
     pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn process_list_mut(&mut self) -> &mut std::collections::HashMap<u32, LinuxProcess> {
+        &mut self.process_cache
+    }
+}
+
+impl Default for LinuxProcesses {
+    fn default() -> Self {
         Self {
             process_cache: std::collections::HashMap::new(),
             refresh_timestamp: std::time::Instant::now()

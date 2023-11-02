@@ -112,6 +112,20 @@ pub struct LinuxApp {
     pub usage_stats: AppUsageStats,
 }
 
+impl Default for LinuxApp {
+    fn default() -> Self {
+        let empty_arc = Arc::<str>::from("");
+        Self {
+            name: empty_arc.clone(),
+            icon: None,
+            id: empty_arc.clone(),
+            command: empty_arc.clone(),
+            pids: vec![],
+            usage_stats: Default::default(),
+        }
+    }
+}
+
 impl<'a> AppExt<'a> for LinuxApp {
     type Iter = std::slice::Iter<'a, u32>;
 
@@ -145,13 +159,19 @@ pub struct LinuxApps {
     refresh_timestamp: std::time::Instant,
 }
 
-impl LinuxApps {
-    pub fn new() -> Self {
+impl Default for LinuxApps {
+    fn default() -> Self {
         Self {
             app_cache: vec![],
             refresh_timestamp: std::time::Instant::now()
                 - (STALE_DELTA + std::time::Duration::from_millis(1)),
         }
+    }
+}
+
+impl LinuxApps {
+    pub fn new() -> Self {
+        Default::default()
     }
 
     fn extract_app_id(cgroup: &str) -> Option<Arc<str>> {

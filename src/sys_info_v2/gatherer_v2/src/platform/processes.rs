@@ -72,7 +72,7 @@ pub trait ProcessExt<'a> {
 }
 
 /// The public interface that describes how the list of running processes is obtained
-pub trait ProcessesExt<'a>: Append + Arg {
+pub trait ProcessesExt<'a>: Default + Append + Arg {
     type P: ProcessExt<'a>;
 
     /// Refreshes the internal process cache

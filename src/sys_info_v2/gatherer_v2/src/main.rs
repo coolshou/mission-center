@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ctx.reply(Ok((sys_stats.cpu_info.static_info(),)));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::CpuStaticInfo::new(),))
+                Ok((platform::CpuStaticInfo::default(),))
             },
         );
 
@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ctx.reply(Ok((sys_stats.cpu_info.dynamic_info(),)));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::CpuDynamicInfo::new(),))
+                Ok((platform::CpuDynamicInfo::default(),))
             },
         );
 
@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 match sys_stats.gpu_info.static_info(&gpu_id) {
                     None => {
                         ctx.reply::<(platform::GpuStaticInfo,)>(Err(dbus::MethodErr::invalid_arg(
-                            "The `id` parameter is not a valid GPU id",
+                            &format!("`{}` is not a valid GPU id", gpu_id),
                         )));
                     }
                     Some(static_info) => {
@@ -97,6 +97,34 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 // Make the scaffolding happy, since the reply was already set
                 Ok((platform::GpuStaticInfo::default(),))
+            },
+        );
+
+        builder.method(
+            "GetGPUDynamicInfo",
+            ("gpu_id",),
+            ("dynamic_info",),
+            |ctx, sys_stats: &mut SystemStatistics, (gpu_id,): (String,)| {
+                sys_stats
+                    .gpu_info
+                    .refresh_dynamic_info_cache(&mut sys_stats.processes);
+
+                match sys_stats.gpu_info.dynamic_info(&gpu_id) {
+                    None => {
+                        ctx.reply::<(platform::GpuDynamicInfo,)>(Err(
+                            dbus::MethodErr::invalid_arg(&format!(
+                                "`{}` is not a valid GPU id",
+                                gpu_id
+                            )),
+                        ));
+                    }
+                    Some(dynamic_info) => {
+                        ctx.reply(Ok((dynamic_info,)));
+                    }
+                }
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::GpuDynamicInfo::default(),))
             },
         );
 
@@ -111,7 +139,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ctx.reply(Ok((&sys_stats.processes,)));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::Processes::new(),))
+                Ok((platform::Processes::default(),))
             },
         );
 
@@ -132,7 +160,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ctx.reply(Ok((&sys_stats.apps,)));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::Apps::new(),))
+                Ok((platform::Apps::default(),))
             },
         );
     });

@@ -23,7 +23,7 @@ use dbus::arg::{Append, Arg};
 pub type AppUsageStats = crate::platform::ProcessUsageStats;
 
 /// A running application
-pub trait AppExt<'a>: Append + Arg {
+pub trait AppExt<'a>: Default + Append + Arg {
     type Iter: Iterator<Item = &'a u32>;
 
     /// The name of the app in human readable form
@@ -73,7 +73,7 @@ impl Append for crate::platform::App {
 }
 
 /// The public interface that describes how the list of running apps is obtained
-pub trait AppsExt<'a>: Append + Arg {
+pub trait AppsExt<'a>: Default + Append + Arg {
     type A: AppExt<'a>;
     type P: crate::platform::ProcessExt<'a>;
 
