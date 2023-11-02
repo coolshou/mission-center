@@ -3,10 +3,11 @@ use std::error::Error;
 use dbus::blocking::Connection;
 use dbus_crossroads::Crossroads;
 
-use crate::platform::GpuInfoExt;
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
 use platform::CpuInfoExt;
+
+use crate::platform::GpuInfoExt;
 
 // mod dbus;
 mod logging;
@@ -32,6 +33,23 @@ impl SystemStatistics {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // Set up so that the child process exits when the parent dies
+    #[cfg(target_os = "linux")]
+    {
+        use libc::*;
+        unsafe {
+            prctl(PR_SET_PDEATHSIG, SIGTERM);
+        }
+    }
+
+    // Exit if any arguments are passed to this executable. This is done since the main app needs
+    // to check if the executable can be run in its current environment (glibc or musl libc)
+    for (i, _) in std::env::args().enumerate() {
+        if i > 0 {
+            std::process::exit(0);
+        }
+    }
+
     let c = Connection::new_session()?;
     c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, false)?;
 

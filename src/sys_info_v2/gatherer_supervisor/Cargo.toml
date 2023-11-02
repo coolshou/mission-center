@@ -1,0 +1,15 @@
+[package]
+name = "gatherer_supervisor"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+dbus = { version = "0.9" }
+gtk = { package = "gtk4", version = "0.7", features = ["gnome_44"] }
+lazy_static = { version = "1.4" }
+rust-ini = { version = "0.20" }
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = "debuginfo"

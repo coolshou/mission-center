@@ -214,21 +214,22 @@ impl Arg for crate::platform::GpuDynamicInfo {
 
 impl Append for crate::platform::GpuDynamicInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.id(),
-            self.temp_celsius(),
-            self.fan_speed_percent(),
-            self.util_percent(),
-            self.power_draw_watts() as f64,
-            self.power_draw_max_watts() as f64,
-            self.clock_speed_mhz(),
-            self.clock_speed_max_mhz(),
-            self.mem_speed_mhz(),
-            self.mem_speed_max_mhz(),
-            self.free_memory(),
-            self.used_memory(),
-        ));
-        ia.append((self.encoder_percent(), self.decoder_percent()));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.temp_celsius());
+            ia.append(self.fan_speed_percent());
+            ia.append(self.util_percent());
+            ia.append(self.power_draw_watts() as f64);
+            ia.append(self.power_draw_max_watts() as f64);
+            ia.append(self.clock_speed_mhz());
+            ia.append(self.clock_speed_max_mhz());
+            ia.append(self.mem_speed_mhz());
+            ia.append(self.mem_speed_max_mhz());
+            ia.append(self.free_memory());
+            ia.append(self.used_memory());
+            ia.append(self.encoder_percent());
+            ia.append(self.decoder_percent());
+        });
     }
 }
 
