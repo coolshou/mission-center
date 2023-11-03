@@ -24,17 +24,17 @@ use dbus::arg::{Append, Arg};
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
 pub enum ProcessState {
-    Running,
-    Sleeping,
-    SleepingUninterruptible,
-    Zombie,
-    Stopped,
-    Tracing,
-    Dead,
-    WakeKill,
-    Waking,
-    Parked,
-    Unknown,
+    Running = 0,
+    Sleeping = 1,
+    SleepingUninterruptible = 2,
+    Zombie = 3,
+    Stopped = 4,
+    Tracing = 5,
+    Dead = 6,
+    WakeKill = 7,
+    Waking = 8,
+    Parked = 9,
+    Unknown = 10, // Keep this last
 }
 
 /// Statistics associated with a process

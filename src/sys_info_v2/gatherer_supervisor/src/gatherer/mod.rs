@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use lazy_static::lazy_static;
 
 use dbus_interface::IoMissioncenterMissionCenterGatherer;
-pub use dbus_interface::{CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo};
+pub use dbus_interface::{CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process};
 
 mod dbus_interface;
 
@@ -172,6 +172,10 @@ impl<'a> Gatherer<'a> {
 
     pub fn gpu_dynamic_info(&self, id: &str) -> GpuDynamicInfo {
         dbus_call!(self, gpu_dynamic_info, "GetGPUDynamicInfo", id);
+    }
+
+    pub fn processes(&self) -> Vec<Process> {
+        dbus_call!(self, processes, "GetProcesses");
     }
 
     pub fn is_running(&self) -> Result<(), i32> {
