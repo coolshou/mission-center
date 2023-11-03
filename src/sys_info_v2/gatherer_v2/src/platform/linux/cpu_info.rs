@@ -155,7 +155,7 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
         self.base_frequency_khz
     }
 
-    fn virtualization_supported(&self) -> Option<bool> {
+    fn is_virtualization_supported(&self) -> Option<bool> {
         self.virtualization_supported
     }
 

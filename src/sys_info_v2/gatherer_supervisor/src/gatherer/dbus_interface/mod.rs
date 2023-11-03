@@ -1,8 +1,12 @@
 use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
 
+pub use cpu_dynamic_info::*;
+pub use cpu_static_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
 
+mod cpu_dynamic_info;
+mod cpu_static_info;
 mod gpu_dynamic_info;
 mod gpu_static_info;
 
@@ -30,16 +34,42 @@ fn dbus_method_call<
 }
 
 pub trait IoMissioncenterMissionCenterGatherer {
+    fn cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
+    fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn enumerate_gpus(&self) -> Result<Vec<String>, dbus::Error>;
-    // fn get_apps(&self) -> Result<Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, dbus::Error>;
-    // fn get_cpu_dynamic_info(&self) -> Result<(f64, f64, Vec<f64>, Vec<f64>, u64, f64, u64, u64, u64, u64), dbus::Error>;
-    // fn get_cpu_static_info(&self) -> Result<(String, u32, u8, u64, u8, u8, u64, u64, u64, u64), dbus::Error>;
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
+    // fn get_apps(&self) -> Result<Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, dbus::Error>;
     // fn get_processes(&self) -> Result<Vec<(String, Vec<String>, String, u8, u32, u32, (f64, f64, f64, f64, f64), u64)>, dbus::Error>;
 }
 
 impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::Connection> {
+    fn cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetCpuStaticInfo",
+            (),
+        )
+        .and_then(|r: (CpuStaticInfo,)| Ok(r.0))
+    }
+
+    fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetCpuDynamicInfo",
+            (),
+        )
+        .and_then(|r: (CpuDynamicInfo,)| Ok(r.0))
+    }
+
     fn enumerate_gpus(&self) -> Result<Vec<String>, dbus::Error> {
         dbus_method_call(
             &self.connection,
@@ -58,16 +88,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
     //         .and_then(|r: (Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, )| Ok(r.0, ))
     // }
     //
-    // fn get_cpu_dynamic_info(&self) -> Result<(f64, f64, Vec<f64>, Vec<f64>, u64, f64, u64, u64, u64, u64), dbus::Error> {
-    //     self.method_call("io.missioncenter.MissionCenter.Gatherer", "GetCpuDynamicInfo", ())
-    //         .and_then(|r: ((f64, f64, Vec<f64>, Vec<f64>, u64, f64, u64, u64, u64, u64), )| Ok(r.0, ))
-    // }
-    //
-    // fn get_cpu_static_info(&self) -> Result<(String, u32, u8, u64, u8, u8, u64, u64, u64, u64), dbus::Error> {
-    //     self.method_call("io.missioncenter.MissionCenter.Gatherer", "GetCpuStaticInfo", ())
-    //         .and_then(|r: ((String, u32, u8, u64, u8, u8, u64, u64, u64, u64), )| Ok(r.0, ))
-    // }
-    //
+
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error> {
         dbus_method_call(
             &self.connection,

@@ -2,9 +2,8 @@ use std::cell::RefCell;
 
 use lazy_static::lazy_static;
 
-pub use dbus_interface::{ApiVersion, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, OpenGLApiVersion};
-
 use dbus_interface::IoMissioncenterMissionCenterGatherer;
+pub use dbus_interface::{CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo};
 
 mod dbus_interface;
 
@@ -153,6 +152,14 @@ impl<'a> Gatherer<'a> {
         //
         // // Let the child process start up
         // std::thread::sleep(std::time::Duration::from_millis(50));
+    }
+
+    pub fn cpu_static_info(&self) -> CpuStaticInfo {
+        dbus_call!(self, cpu_static_info, "GetCPUStaticInfo");
+    }
+
+    pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
+        dbus_call!(self, cpu_dynamic_info, "GetCPUDynamicInfo");
     }
 
     pub fn enumerate_gpus(&self) -> Vec<String> {
