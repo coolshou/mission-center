@@ -1,11 +1,13 @@
 use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
 
+pub use apps::*;
 pub use cpu_dynamic_info::*;
 pub use cpu_static_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
 pub use processes::*;
 
+mod apps;
 mod cpu_dynamic_info;
 mod cpu_static_info;
 mod gpu_dynamic_info;
@@ -42,7 +44,7 @@ pub trait IoMissioncenterMissionCenterGatherer {
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
     fn processes(&self) -> Result<Vec<Process>, dbus::Error>;
-    // fn get_apps(&self) -> Result<Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, dbus::Error>;
+    fn apps(&self) -> Result<Vec<App>, dbus::Error>;
 }
 
 impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::Connection> {
@@ -85,12 +87,6 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|r: (Vec<String>,)| Ok(r.0))
     }
 
-    // fn get_apps(&self) -> Result<Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, dbus::Error> {
-    //     self.method_call("io.missioncenter.MissionCenter.Gatherer", "GetApps", ())
-    //         .and_then(|r: (Vec<(String, String, String, String, Vec<u32>, (f64, f64, f64, f64, f64))>, )| Ok(r.0, ))
-    // }
-    //
-
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error> {
         dbus_method_call(
             &self.connection,
@@ -128,6 +124,19 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             (),
         )
         .and_then(|r: (Vec<Process>,)| Ok(r.0))
+    }
+
+    fn apps(&self) -> Result<Vec<App>, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetApps",
+            (),
+        )
+        .and_then(|r: (Vec<App>,)| Ok(r.0))
     }
 }
 

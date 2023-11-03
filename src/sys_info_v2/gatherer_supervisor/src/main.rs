@@ -10,6 +10,7 @@ fn main() {
     dbg!(gatherer.gpu_static_info("0000:01:00.0"));
     dbg!(gatherer.gpu_dynamic_info("0000:01:00.0"));
     dbg!(gatherer.processes());
+    dbg!(gatherer.apps());
 
     dbg!(now.elapsed());
 }
