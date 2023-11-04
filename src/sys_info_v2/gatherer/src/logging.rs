@@ -19,7 +19,7 @@ pub(crate) use critical;
 #[allow(unused)]
 macro_rules! warning {
     ($domain:literal, $($arg:tt)*) => {{
-        $crate::logging::Logger::log_warning($domain, format_args!($($arg)*));
+        $crate::logging::Logger::log_warn($domain, format_args!($($arg)*));
     }}
 }
 pub(crate) use warning;
@@ -49,27 +49,29 @@ macro_rules! debug {
 pub(crate) use debug;
 
 macro_rules! now {
-    () => {{
-        let now = unsafe { libc::time(std::ptr::null_mut()) };
-        if now == unsafe { core::mem::transmute(-1_i64) } {
-            unsafe { std::mem::zeroed() }
-        } else {
-            let tm = unsafe { libc::localtime(&now) };
-            if tm.is_null() {
-                unsafe { std::mem::zeroed() }
+    () => {
+        unsafe {
+            let now = libc::time(std::ptr::null_mut());
+            if now == core::mem::transmute(-1_i64) {
+                std::mem::zeroed()
             } else {
-                unsafe { *tm }
+                let tm = libc::localtime(&now);
+                if tm.is_null() {
+                    std::mem::zeroed()
+                } else {
+                    *tm
+                }
             }
         }
-    }};
+    };
 }
 
 lazy_static! {
     static ref PID: u32 = unsafe { libc::getpid() } as _;
-    static ref G_MESSAGES_DEBUG: Vec<String> = std::env::var("G_MESSAGES_DEBUG")
+    static ref G_MESSAGES_DEBUG: Vec<std::sync::Arc<str>> = std::env::var("G_MESSAGES_DEBUG")
         .unwrap_or_default()
         .split(";")
-        .map(|s| s.to_owned())
+        .map(|s| std::sync::Arc::<str>::from(s))
         .collect();
 }
 
@@ -168,8 +170,8 @@ impl Logger {
 
     pub fn log_info(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
-            && (!G_MESSAGES_DEBUG.contains(&domain.to_owned())
-                && !G_MESSAGES_DEBUG.contains(&"all".to_owned()))
+            && (!G_MESSAGES_DEBUG.contains(&domain.into())
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }
@@ -194,8 +196,8 @@ impl Logger {
 
     pub fn log_debug(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
-            && (!G_MESSAGES_DEBUG.contains(&domain.to_owned())
-                && !G_MESSAGES_DEBUG.contains(&"all".to_owned()))
+            && (!G_MESSAGES_DEBUG.contains(&domain.into())
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }
