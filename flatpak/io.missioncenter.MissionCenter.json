@@ -178,104 +178,56 @@
       ]
     },
     {
-      "name": "missioncenter-gatherer",
-      "buildsystem": "simple",
-      "build-options": {
-        "env": {
-          "CARGO_HOME": "/build-dir/src/gatherer/cargo",
-          "CC": "clang"
-        }
-      },
-      "build-commands": [
-        "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && cp -ar nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
-        "/app/bin/proot -b /app/rust-toolchain-glibc:/app/rust-toolchain-glibc -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-glibc/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-glibc/rustup cargo build --offline --release'",
-        "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc",
-        "",
-        "rm -rf src/sys_info_v2/gatherer/target",
-        "",
-        "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && mv nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
-        "/app/bin/proot -b /app/rust-toolchain-musl:/app/rust-toolchain-musl -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-musl/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-musl/rustup cargo build --offline --release '",
-        "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-musl"
+      "name": "eudev",
+      "buildsystem": "autotools",
+      "cleanup": [
+        "/bin",
+        "/sbin",
+        "/etc",
+        "/lib/udev"
       ],
       "sources": [
         {
-          "type": "dir",
-          "path": ".."
-        },
+          "type": "git",
+          "url": "https://github.com/eudev-project/eudev.git",
+          "commit": "39979ddf46e75d1b75bf381e1c73914c226c4302"
+        }
+      ]
+    },
+    {
+      "name": "blueprint-compiler",
+      "buildsystem": "meson",
+      "sources": [
         {
-          "type": "archive",
-          "url": "https://github.com/Syllo/nvtop/archive/be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz",
-          "sha256": "47c963deb1d22c75e92ca2cc7fcd1e1552cfa6da70e9d51be6a80da45249035f",
-          "dest": "nvtop-be47f8c560487efc6e6a419d59c69bfbdb819324"
-        },
-        {
-          "type": "shell",
-          "commands": [
-            "cd nvtop-* && find ../src/sys_info_v2/gatherer/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
-          ]
-        },
-        {
-          "type": "inline",
-          "contents": "[source.vendored-sources]\ndirectory = \"../../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n\n[target.aarch64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n",
-          "dest": "src/sys_info_v2/gatherer/.cargo",
-          "dest-filename": "config.toml"
-        },
-        "cargo-sources-gatherer.json"
+          "type": "git",
+          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
+          "commit": "2a39a16391122af2f3d812e478c1c1398c98b972"
+        }
+      ],
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "static-binaries",
+      "buildsystem": "simple",
+      "build-commands": [
+        "/bin/true"
       ],
       "modules": [
         {
-          "name": "proot",
+          "name": "dmidecode",
           "buildsystem": "simple",
           "build-commands": [
-            "make -C src loader.elf build.h",
-            "make -C src proot",
-            "install -v -p -m 755 src/proot /app/bin/proot"
+            "make CC=/app/musl-libc/bin/musl-gcc CFLAGS=\"-static -I/app/musl-libc/include\" LDFLAGS=\"-static -L/app/musl-libc/lib\" install-bin prefix=/app",
+            "install -v -p -m 755 /app/sbin/dmidecode /app/bin/dmidecode"
           ],
           "sources": [
             {
-              "type": "git",
-              "url": "https://github.com/proot-me/proot.git",
-              "tag": "v5.4.0",
-              "commit": "bd5a5f63d72f8210d8cee76195eb9f0749e5bd70"
+              "type": "archive",
+              "url": "https://git.savannah.nongnu.org/cgit/dmidecode.git/snapshot/dmidecode-3-5.tar.gz",
+              "sha256": "8b1465a1afa71f9ffb0206ba5ffc435c46c0281d089552578f600879728a1b23"
             }
-          ],
-          "modules": [
-            {
-              "name": "libarchive",
-              "buildsystem": "autotools",
-              "config-opts": [
-                "--disable-bsdcat",
-                "--disable-bsdcpio",
-                "--disable-bsdtar"
-              ],
-              "sources": [
-                {
-                  "type": "archive",
-                  "url": "https://libarchive.org/downloads/libarchive-3.6.2.tar.xz",
-                  "sha256": "9e2c1b80d5fbe59b61308fdfab6c79b5021d7ff4ff2489fb12daf0a96a83551d"
-                }
-              ],
-              "cleanup": [
-                "*"
-              ]
-            },
-            {
-              "name": "libtalloc",
-              "buildsystem": "autotools",
-              "sources": [
-                {
-                  "type": "archive",
-                  "url": "https://www.samba.org/ftp/talloc/talloc-2.4.1.tar.gz",
-                  "sha256": "410a547f08557007be0e88194f218868358edc0ab98c98ba8c167930db3d33f9"
-                }
-              ],
-              "cleanup": [
-                "*"
-              ]
-            }
-          ],
-          "cleanup": [
-            "*"
           ]
         }
       ]
@@ -305,56 +257,104 @@
       ],
       "modules": [
         {
-          "name": "eudev",
-          "buildsystem": "autotools",
-          "cleanup": [
-            "/bin",
-            "/sbin",
-            "/etc",
-            "/lib/udev"
-          ],
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://github.com/eudev-project/eudev.git",
-              "commit": "39979ddf46e75d1b75bf381e1c73914c226c4302"
-            }
-          ]
-        },
-        {
-          "name": "blueprint-compiler",
-          "buildsystem": "meson",
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-              "commit": "2a39a16391122af2f3d812e478c1c1398c98b972"
-            }
-          ],
-          "cleanup": [
-            "*"
-          ]
-        },
-        {
-          "name": "static-binaries",
+          "name": "missioncenter-gatherer",
           "buildsystem": "simple",
+          "build-options": {
+            "env": {
+              "CARGO_HOME": "/build-dir/src/gatherer/cargo",
+              "CC": "clang"
+            }
+          },
           "build-commands": [
-            "/bin/true"
+            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && cp -ar nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
+            "/app/bin/proot -b /app/rust-toolchain-glibc:/app/rust-toolchain-glibc -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-glibc/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-glibc/rustup cargo build --offline --release'",
+            "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc",
+            "",
+            "rm -rf src/sys_info_v2/gatherer/target",
+            "",
+            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && mv nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
+            "/app/bin/proot -b /app/rust-toolchain-musl:/app/rust-toolchain-musl -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-musl/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-musl/rustup cargo build --offline --release '",
+            "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-musl"
+          ],
+          "sources": [
+            {
+              "type": "dir",
+              "path": ".."
+            },
+            {
+              "type": "archive",
+              "url": "https://github.com/Syllo/nvtop/archive/be47f8c560487efc6e6a419d59c69bfbdb819324.tar.gz",
+              "sha256": "47c963deb1d22c75e92ca2cc7fcd1e1552cfa6da70e9d51be6a80da45249035f",
+              "dest": "nvtop-be47f8c560487efc6e6a419d59c69bfbdb819324"
+            },
+            {
+              "type": "shell",
+              "commands": [
+                "cd nvtop-* && find ../src/sys_info_v2/gatherer/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
+              ]
+            },
+            {
+              "type": "inline",
+              "contents": "[source.vendored-sources]\ndirectory = \"../../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n\n[target.aarch64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static' ]\n",
+              "dest": "src/sys_info_v2/gatherer/.cargo",
+              "dest-filename": "config.toml"
+            },
+            "cargo-sources-gatherer.json"
           ],
           "modules": [
             {
-              "name": "dmidecode",
+              "name": "proot",
               "buildsystem": "simple",
               "build-commands": [
-                "make CC=/app/musl-libc/bin/musl-gcc CFLAGS=\"-static -I/app/musl-libc/include\" LDFLAGS=\"-static -L/app/musl-libc/lib\" install-bin prefix=/app",
-                "install -v -p -m 755 /app/sbin/dmidecode /app/bin/dmidecode"
+                "make -C src loader.elf build.h",
+                "make -C src proot",
+                "install -v -p -m 755 src/proot /app/bin/proot"
               ],
               "sources": [
                 {
-                  "type": "archive",
-                  "url": "https://git.savannah.nongnu.org/cgit/dmidecode.git/snapshot/dmidecode-3-5.tar.gz",
-                  "sha256": "8b1465a1afa71f9ffb0206ba5ffc435c46c0281d089552578f600879728a1b23"
+                  "type": "git",
+                  "url": "https://github.com/proot-me/proot.git",
+                  "tag": "v5.4.0",
+                  "commit": "bd5a5f63d72f8210d8cee76195eb9f0749e5bd70"
                 }
+              ],
+              "modules": [
+                {
+                  "name": "libarchive",
+                  "buildsystem": "autotools",
+                  "config-opts": [
+                    "--disable-bsdcat",
+                    "--disable-bsdcpio",
+                    "--disable-bsdtar"
+                  ],
+                  "sources": [
+                    {
+                      "type": "archive",
+                      "url": "https://libarchive.org/downloads/libarchive-3.6.2.tar.xz",
+                      "sha256": "9e2c1b80d5fbe59b61308fdfab6c79b5021d7ff4ff2489fb12daf0a96a83551d"
+                    }
+                  ],
+                  "cleanup": [
+                    "*"
+                  ]
+                },
+                {
+                  "name": "libtalloc",
+                  "buildsystem": "autotools",
+                  "sources": [
+                    {
+                      "type": "archive",
+                      "url": "https://www.samba.org/ftp/talloc/talloc-2.4.1.tar.gz",
+                      "sha256": "410a547f08557007be0e88194f218868358edc0ab98c98ba8c167930db3d33f9"
+                    }
+                  ],
+                  "cleanup": [
+                    "*"
+                  ]
+                }
+              ],
+              "cleanup": [
+                "*"
               ]
             }
           ]

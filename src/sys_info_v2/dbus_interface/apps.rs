@@ -34,16 +34,8 @@ pub struct App {
     pub usage_stats: AppUsageStats,
 }
 
-impl Arg for App {
-    const ARG_TYPE: ArgType = ArgType::Struct;
-
-    fn signature() -> Signature<'static> {
-        Signature::from("(ssssau(ddddd))")
-    }
-}
-
-impl<'a> Get<'a> for App {
-    fn get(i: &mut Iter<'a>) -> Option<Self> {
+impl From<&dyn RefArg> for App {
+    fn from(value: &dyn RefArg) -> Self {
         use gtk::glib::g_critical;
 
         let empty_string = Arc::<str>::from("");
@@ -57,24 +49,13 @@ impl<'a> Get<'a> for App {
             usage_stats: Default::default(),
         };
 
-        let app = match Iterator::next(i) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '0: STRUCT', got None",
-                );
-                return None;
-            }
-            Some(id) => id,
-        };
-
-        let mut app = match app.as_iter() {
+        let mut app = match value.as_iter() {
             None => {
                 g_critical!(
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '0: STRUCT', got None, failed to iterate over fields",
                 );
-                return None;
+                return this;
             }
             Some(i) => i,
         };
@@ -86,7 +67,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '0: s', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -95,7 +76,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '0: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(n) => Arc::from(n),
             },
@@ -107,7 +88,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '1: s', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -116,7 +97,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '1: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(icon) => {
                     if icon.is_empty() {
@@ -134,7 +115,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '2: s', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -143,7 +124,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '2: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(id) => Arc::from(id),
             },
@@ -155,7 +136,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '3: 2', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -164,7 +145,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '3: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(c) => Arc::from(c),
             },
@@ -176,7 +157,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '4: ARRAY', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -185,7 +166,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '4: ARRAY', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(pids) => {
                     for p in pids {
@@ -203,7 +184,7 @@ impl<'a> Get<'a> for App {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get App: Expected '6: STRUCT', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -212,7 +193,7 @@ impl<'a> Get<'a> for App {
                         "Failed to get App: Expected '6: STRUCT', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(stats) => {
                     let mut values = [0_f32; 5];
@@ -230,7 +211,7 @@ impl<'a> Get<'a> for App {
             },
         };
 
-        Some(this)
+        this
     }
 }
 
@@ -281,9 +262,11 @@ impl<'a> Get<'a> for AppMap {
                 }
                 Some(arr) => {
                     for a in arr {
-                        if let Some(a) = cast::<App>(unsafe { core::mem::transmute(a) }) {
-                            this.insert(a.id.clone(), a.clone());
+                        let a = App::from(a);
+                        if a.name.as_ref().is_empty() {
+                            continue;
                         }
+                        this.insert(a.id.clone(), a);
                     }
                 }
             },

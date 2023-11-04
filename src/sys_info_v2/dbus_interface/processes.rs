@@ -88,30 +88,19 @@ impl Default for Process {
     }
 }
 
-impl<'a> Get<'a> for Process {
-    fn get(i: &mut Iter<'a>) -> Option<Self> {
+impl From<&dyn RefArg> for Process {
+    fn from(value: &dyn RefArg) -> Self {
         use gtk::glib::g_critical;
 
-        let mut this = Process::default();
+        let mut this = Self::default();
 
-        let process = match Iterator::next(i) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '0: STRUCT', got None",
-                );
-                return None;
-            }
-            Some(id) => id,
-        };
-
-        let mut process = match process.as_iter() {
+        let mut process = match value.as_iter() {
             None => {
                 g_critical!(
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '0: STRUCT', got None, failed to iterate over fields",
                 );
-                return None;
+                return this;
             }
             Some(i) => i,
         };
@@ -123,7 +112,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '0: s', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -132,7 +121,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '0: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(n) => Arc::from(n),
             },
@@ -144,7 +133,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '1: ARRAY', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -153,7 +142,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '1: ARRAY', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(cmds) => {
                     for c in cmds {
@@ -171,7 +160,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '3: s', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_str() {
                 None => {
@@ -180,7 +169,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '3: s', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(e) => Arc::from(e),
             },
@@ -192,7 +181,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '4: y', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_u64() {
                 None => {
@@ -201,10 +190,10 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '4: y', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(u) => {
-                    if u >= 0 && u < ProcessState::Unknown as u64 {
+                    if u < ProcessState::Unknown as u64 {
                         unsafe { core::mem::transmute(u as u8) }
                     } else {
                         ProcessState::Unknown
@@ -219,7 +208,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '5: u', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_u64() {
                 None => {
@@ -228,7 +217,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '5: u', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(p) => p as _,
             },
@@ -240,7 +229,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '6: u', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_u64() {
                 None => {
@@ -249,7 +238,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '6: u', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(p) => p as _,
             },
@@ -261,7 +250,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '7: STRUCT', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -270,7 +259,7 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '7: STRUCT', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(stats) => {
                     let mut values = [0_f32; 5];
@@ -294,7 +283,7 @@ impl<'a> Get<'a> for Process {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Process: Expected '14: t', got None",
                 );
-                return None;
+                return this;
             }
             Some(arg) => match arg.as_u64() {
                 None => {
@@ -303,13 +292,13 @@ impl<'a> Get<'a> for Process {
                         "Failed to get Process: Expected '14: t', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    return this;
                 }
                 Some(tc) => tc as _,
             },
         };
 
-        Some(this)
+        this
     }
 }
 
@@ -360,9 +349,11 @@ impl<'a> Get<'a> for ProcessMap {
                 }
                 Some(arr) => {
                     for p in arr {
-                        if let Some(p) = cast::<Process>(unsafe { core::mem::transmute(p) }) {
-                            this.insert(p.pid, p.clone());
+                        let p = Process::from(p);
+                        if p.pid == 0 {
+                            continue;
                         }
+                        this.insert(p.pid, p.clone());
                     }
                 }
             },

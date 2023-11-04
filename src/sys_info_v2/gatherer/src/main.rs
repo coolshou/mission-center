@@ -46,6 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // to check if the executable can be run in its current environment (glibc or musl libc)
     for (i, _) in std::env::args().enumerate() {
         if i > 0 {
+            eprintln!("👋");
             std::process::exit(0);
         }
     }
