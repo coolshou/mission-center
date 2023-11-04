@@ -4,6 +4,7 @@ fn main() {
     let now = std::time::Instant::now();
 
     let gatherer = gatherer::Gatherer::new();
+
     dbg!(gatherer.cpu_static_info());
     dbg!(gatherer.cpu_dynamic_info());
     dbg!(gatherer.enumerate_gpus());

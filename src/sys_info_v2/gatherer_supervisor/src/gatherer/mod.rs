@@ -13,26 +13,38 @@ macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
         use gtk::glib::g_critical;
 
-        for i in 0..2 {
+        for i in 1..=3 {
             match $self.dbus_proxy.$method($($args)*) {
                 Ok(reply) => {
                     return reply;
                 }
                 Err(e) => match $self.is_running() {
                     Ok(()) => {
-                        g_critical!(
-                            "MissionCenter::Gatherer",
-                            "DBus call '{}' failed on try {}: {}",
-                            $dbus_method_name,
-                            i + 1,
-                            e
-                        );
+                        if e.name() == Some("org.freedesktop.DBus.Error.NoReply") {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "DBus call '{}' timed out, on try {}",
+                                $dbus_method_name, i,
+                            );
+
+                            if i == 2 {
+                                g_critical!("MissionCenter::Gatherer", "Restarting Gatherer...");
+                                $self.stop();
+                                $self.start();
+                            }
+                        } else {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "DBus call '{}' failed on try {}: {}",
+                                $dbus_method_name, i, e,
+                            );
+                        }
                     }
                     Err(exit_code) => {
                         g_critical!(
                             "MissionCenter::Gatherer",
-                            "Child failed with exit code {}. Restarting Gatherer...",
-                            exit_code
+                            "Child failed, on try {}, with exit code {}. Restarting Gatherer...",
+                            i, exit_code,
                         );
                         $self.start();
                     }
@@ -40,6 +52,7 @@ macro_rules! dbus_call {
             }
         }
 
+        // TODO: Show error dialog and bail
         std::process::exit(-1);
     }};
 }
@@ -84,13 +97,15 @@ pub struct Gatherer<'a> {
     dbus_proxy: dbus::blocking::Proxy<'a, dbus::blocking::Connection>,
 
     command: RefCell<std::process::Command>,
-    child: Option<RefCell<std::process::Child>>,
+    child: RefCell<Option<std::process::Child>>,
 }
 
 impl Drop for Gatherer<'_> {
     fn drop(&mut self) {
-        if let Some(child) = &mut self.child {
-            let _ = child.borrow_mut().kill();
+        use std::ops::DerefMut;
+
+        if let Some(child) = self.child.borrow_mut().deref_mut() {
+            let _ = child.kill();
         }
     }
 }
@@ -120,6 +135,7 @@ impl<'a> Gatherer<'a> {
                     "Failed to connect to DBus session bus: {}",
                     e
                 );
+                // TODO: Show error dialog and bail
                 std::process::exit(-1);
             }
         };
@@ -135,25 +151,42 @@ impl<'a> Gatherer<'a> {
             dbus_proxy,
 
             command: RefCell::new(command),
-            child: None,
+            child: RefCell::new(None),
         }
     }
 
     pub fn start(&self) {
-        // self.child = Some(match self.command.spawn() {
-        //     Ok(c) => c,
-        //     Err(e) => {
-        //         g_critical!(
-        //             "MissionCenter::Gatherer",
-        //             "Failed to spawn Gatherer process: {}",
-        //             e
-        //         );
-        //         std::process::exit(-1);
-        //     }
-        // });
-        //
-        // // Let the child process start up
-        // std::thread::sleep(std::time::Duration::from_millis(50));
+        use gtk::glib::g_critical;
+        use std::ops::DerefMut;
+
+        std::mem::swap(
+            self.child.borrow_mut().deref_mut(),
+            &mut Some(match self.command.borrow_mut().spawn() {
+                Ok(c) => c,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to spawn Gatherer process: {}",
+                        e
+                    );
+                    // TODO: Show error dialog and bail
+                    std::process::exit(-1);
+                }
+            }),
+        );
+
+        // Let the child process start up
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
+
+    pub fn stop(&self) {
+        use std::ops::DerefMut;
+
+        let mut child = self.child.borrow_mut();
+        if let Some(child) = child.as_mut() {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
     }
 
     pub fn cpu_static_info(&self) -> CpuStaticInfo {
@@ -185,8 +218,9 @@ impl<'a> Gatherer<'a> {
     }
 
     pub fn is_running(&self) -> Result<(), i32> {
-        let mut child = match self.child.as_ref() {
-            Some(child) => child.borrow_mut(),
+        let mut child = self.child.borrow_mut();
+        let mut child = match child.as_mut() {
+            Some(child) => child,
             None => return Err(-1),
         };
 
