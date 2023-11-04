@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
 
@@ -231,5 +231,64 @@ impl<'a> Get<'a> for App {
         };
 
         Some(this)
+    }
+}
+
+pub struct AppMap(HashMap<Arc<str>, App>);
+
+impl From<HashMap<Arc<str>, App>> for AppMap {
+    fn from(value: HashMap<Arc<str>, App>) -> Self {
+        Self(value)
+    }
+}
+
+impl From<AppMap> for HashMap<Arc<str>, App> {
+    fn from(value: AppMap) -> Self {
+        value.0
+    }
+}
+
+impl Arg for AppMap {
+    const ARG_TYPE: ArgType = ArgType::Array;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("a(ssssau(ddddd))")
+    }
+}
+
+impl<'a> Get<'a> for AppMap {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
+        let mut this = HashMap::new();
+
+        match Iterator::next(i) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get HashMap<AppId, App>: Expected '0: ARRAY', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_iter() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get HashMap<AppId, APp>: Expected '0: ARRAY', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(arr) => {
+                    for a in arr {
+                        if let Some(a) = cast::<App>(a) {
+                            this.insert(a.id.clone(), a.clone());
+                        }
+                    }
+                }
+            },
+        }
+
+        Some(this.into())
     }
 }

@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
 
@@ -47,6 +47,16 @@ pub struct ProcessUsageStats {
     pub gpu_usage: f32,
 }
 
+impl ProcessUsageStats {
+    pub fn merge(&mut self, other: &Self) {
+        self.cpu_usage += other.cpu_usage;
+        self.memory_usage += other.memory_usage;
+        self.disk_usage += other.disk_usage;
+        self.network_usage += other.network_usage;
+        self.gpu_usage += other.gpu_usage;
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Process {
     pub name: Arc<str>,
@@ -57,23 +67,14 @@ pub struct Process {
     pub parent: u32,
     pub usage_stats: ProcessUsageStats,
     pub task_count: usize,
+    pub children: HashMap<u32, Process>,
 }
 
-impl Arg for Process {
-    const ARG_TYPE: ArgType = ArgType::Struct;
-
-    fn signature() -> Signature<'static> {
-        Signature::from("(sassyuu(ddddd)t)")
-    }
-}
-
-impl<'a> Get<'a> for Process {
-    fn get(i: &mut Iter<'a>) -> Option<Self> {
-        use gtk::glib::g_critical;
-
+impl Default for Process {
+    fn default() -> Self {
         let empty_string = Arc::<str>::from("");
 
-        let mut this = Process {
+        Self {
             name: empty_string.clone(),
             cmd: vec![],
             exe: empty_string,
@@ -82,7 +83,16 @@ impl<'a> Get<'a> for Process {
             parent: 0,
             usage_stats: Default::default(),
             task_count: 0,
-        };
+            children: HashMap::new(),
+        }
+    }
+}
+
+impl<'a> Get<'a> for Process {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
+        let mut this = Process::default();
 
         let process = match Iterator::next(i) {
             None => {
@@ -300,5 +310,64 @@ impl<'a> Get<'a> for Process {
         };
 
         Some(this)
+    }
+}
+
+pub struct ProcessMap(HashMap<u32, Process>);
+
+impl From<HashMap<u32, Process>> for ProcessMap {
+    fn from(value: HashMap<u32, Process>) -> Self {
+        Self(value)
+    }
+}
+
+impl From<ProcessMap> for HashMap<u32, Process> {
+    fn from(value: ProcessMap) -> Self {
+        value.0
+    }
+}
+
+impl Arg for ProcessMap {
+    const ARG_TYPE: ArgType = ArgType::Array;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("a(sassyuu(ddddd)t)")
+    }
+}
+
+impl<'a> Get<'a> for ProcessMap {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
+        let mut this = HashMap::new();
+
+        match Iterator::next(i) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get HashMap<Pid, Process>: Expected '0: ARRAY', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_iter() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get HashMap<Pid, Process>: Expected '0: ARRAY', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(arr) => {
+                    for p in arr {
+                        if let Some(p) = cast::<Process>(p) {
+                            this.insert(p.pid, p.clone());
+                        }
+                    }
+                }
+            },
+        }
+
+        Some(this.into())
     }
 }

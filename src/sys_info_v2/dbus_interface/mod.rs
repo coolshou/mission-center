@@ -1,13 +1,18 @@
+use std::{collections::HashMap, sync::Arc};
+
 use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
 
 pub use apps::*;
+use arc_str_vec::*;
 pub use cpu_dynamic_info::*;
 pub use cpu_static_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
-pub use processes::*;
+use processes::ProcessMap;
+pub use processes::{Process, ProcessState, ProcessUsageStats};
 
 mod apps;
+mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
 mod gpu_dynamic_info;
@@ -40,11 +45,11 @@ fn dbus_method_call<
 pub trait IoMissioncenterMissionCenterGatherer {
     fn cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
-    fn enumerate_gpus(&self) -> Result<Vec<String>, dbus::Error>;
+    fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
-    fn processes(&self) -> Result<Vec<Process>, dbus::Error>;
-    fn apps(&self) -> Result<Vec<App>, dbus::Error>;
+    fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error>;
+    fn apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error>;
 }
 
 impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::Connection> {
@@ -74,7 +79,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|r: (CpuDynamicInfo,)| Ok(r.0))
     }
 
-    fn enumerate_gpus(&self) -> Result<Vec<String>, dbus::Error> {
+    fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -84,7 +89,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "EnumerateGPUs",
             (),
         )
-        .and_then(|r: (Vec<String>,)| Ok(r.0))
+        .and_then(|r: (ArcStrVec,)| Ok(r.0.into()))
     }
 
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error> {
@@ -113,7 +118,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|r: (GpuStaticInfo,)| Ok(r.0))
     }
 
-    fn processes(&self) -> Result<Vec<Process>, dbus::Error> {
+    fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -123,10 +128,10 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetProcesses",
             (),
         )
-        .and_then(|r: (Vec<Process>,)| Ok(r.0))
+        .and_then(|r: (ProcessMap,)| Ok(r.0.into()))
     }
 
-    fn apps(&self) -> Result<Vec<App>, dbus::Error> {
+    fn apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -136,7 +141,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetApps",
             (),
         )
-        .and_then(|r: (Vec<App>,)| Ok(r.0))
+        .and_then(|r: (AppMap,)| Ok(r.0.into()))
     }
 }
 

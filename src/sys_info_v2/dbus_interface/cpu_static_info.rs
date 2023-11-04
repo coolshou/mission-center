@@ -36,6 +36,23 @@ pub struct CpuStaticInfo {
     pub l4_cache: Option<u64>,
 }
 
+impl Default for CpuStaticInfo {
+    fn default() -> Self {
+        Self {
+            name: Arc::from(""),
+            logical_cpu_count: 0,
+            socket_count: None,
+            base_frequency_khz: None,
+            is_virtualization_supported: None,
+            is_virtual_machine: None,
+            l1_combined_cache: None,
+            l2_cache: None,
+            l3_cache: None,
+            l4_cache: None,
+        }
+    }
+}
+
 impl Arg for CpuStaticInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -48,18 +65,7 @@ impl<'a> Get<'a> for CpuStaticInfo {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
 
-        let mut this = CpuStaticInfo {
-            name: Arc::from(""),
-            logical_cpu_count: 0,
-            socket_count: None,
-            base_frequency_khz: None,
-            is_virtualization_supported: None,
-            is_virtual_machine: None,
-            l1_combined_cache: None,
-            l2_cache: None,
-            l3_cache: None,
-            l4_cache: None,
-        };
+        let mut this = Self::default();
 
         let static_info = match Iterator::next(i) {
             None => {

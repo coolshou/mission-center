@@ -20,7 +20,7 @@
 
 use dbus::{arg::*, strings::*};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct CpuDynamicInfo {
     pub overall_utilization_percent: f32,
     pub overall_kernel_utilization_percent: f32,

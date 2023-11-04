@@ -1,8 +1,9 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use super::dbus_interface::IoMissioncenterMissionCenterGatherer;
 pub use super::dbus_interface::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process,
+    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process, ProcessState,
+    ProcessUsageStats,
 };
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 
@@ -180,7 +181,7 @@ impl<'a> Gatherer<'a> {
         dbus_call!(self, cpu_dynamic_info, "GetCPUDynamicInfo");
     }
 
-    pub fn enumerate_gpus(&self) -> Vec<String> {
+    pub fn enumerate_gpus(&self) -> Vec<std::sync::Arc<str>> {
         dbus_call!(self, enumerate_gpus, "EnumerateGPUs");
     }
 
@@ -192,11 +193,11 @@ impl<'a> Gatherer<'a> {
         dbus_call!(self, gpu_dynamic_info, "GetGPUDynamicInfo", id);
     }
 
-    pub fn processes(&self) -> Vec<Process> {
+    pub fn processes(&self) -> HashMap<u32, Process> {
         dbus_call!(self, processes, "GetProcesses");
     }
 
-    pub fn apps(&self) -> Vec<App> {
+    pub fn apps(&self) -> HashMap<Arc<str>, App> {
         dbus_call!(self, apps, "GetApps");
     }
 

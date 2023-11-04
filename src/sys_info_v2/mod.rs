@@ -18,12 +18,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::collections::HashMap;
+use std::sync::Arc;
+
 use lazy_static::lazy_static;
 
-use crate::i18n::*;
-
 use gatherer::Gatherer;
-pub use gatherer::{App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process};
+pub use gatherer::{
+    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process, ProcessUsageStats,
+};
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -61,12 +64,9 @@ macro_rules! cmd_flatpak_host {
     }};
 }
 
-mod app_info;
-mod cpu_info;
 mod dbus_interface;
 mod disk_info;
 mod gatherer;
-mod gpu_info;
 mod mem_info;
 mod net_info;
 mod proc_info;
@@ -202,24 +202,20 @@ pub struct Readings {
     pub gpu_static_info: Vec<GpuStaticInfo>,
     pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
 
-    pub running_apps: std::collections::HashMap<String, App>,
+    pub running_apps: HashMap<Arc<str>, App>,
     pub process_tree: Process,
 }
 
 impl Readings {
-    pub fn new(gatherer: &Gatherer) -> Self {
-        use std::collections::HashMap;
-
-        let _ = gatherer.enumerate_gpus();
-
+    pub fn new() -> Self {
         Self {
-            cpu_static_info: gatherer.cpu_static_info(),
-            cpu_dynamic_info: gatherer.cpu_dynamic_info(),
-            mem_info: MemInfo::load().expect("Unable to get memory info"),
+            cpu_static_info: Default::default(),
+            cpu_dynamic_info: Default::default(),
+            mem_info: MemInfo::default(),
             disks: vec![],
             network_devices: vec![],
-            gpu_static_info: vec![gatherer.gpu_static_info("")],
-            gpu_dynamic_info: vec![gatherer.gpu_dynamic_info("")],
+            gpu_static_info: vec![],
+            gpu_dynamic_info: vec![],
 
             running_apps: HashMap::new(),
             process_tree: Process::default(),
@@ -228,11 +224,11 @@ impl Readings {
 }
 
 pub struct SysInfoV2 {
-    refresh_interval: std::sync::Arc<std::sync::atomic::AtomicU8>,
-    merged_process_stats: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    refresh_interval: Arc<std::sync::atomic::AtomicU8>,
+    merged_process_stats: Arc<std::sync::atomic::AtomicBool>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
-    refresh_thread_running: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    refresh_thread_running: Arc<std::sync::atomic::AtomicBool>,
 
     sender: std::sync::mpsc::Sender<()>,
 }
@@ -286,26 +282,17 @@ impl SysInfoV2 {
             refresh_interval,
             merged_process_stats,
             refresh_thread: Some(std::thread::spawn(move || {
-                use adw::prelude::*;
                 use gtk::glib::*;
 
-                let mut gatherer_supervisor = match GathererSupervisor::new() {
-                    Ok(gs) => gs,
-                    Err(e) => {
-                        idle_add_once(move || {
-                            g_critical!(
-                                "MissionCenter::SysInfo",
-                                "Unable to start gatherer: {:#?}",
-                                &e
-                            );
+                let gatherer = Gatherer::new();
 
-                        });
-
-                        return;
-                    }
-                };
-
-                let mut readings = Readings::new(&mut gatherer_supervisor);
+                let mut readings = Readings::new();
+                readings.process_tree = proc_info::process_hierarchy(
+                    &gatherer.processes(),
+                    mps.load(Ordering::Acquire),
+                )
+                .unwrap_or_default();
+                readings.running_apps = gatherer.apps();
 
                 let mut disk_stats = vec![];
                 readings.disks = DiskInfo::load(&mut disk_stats);
@@ -317,14 +304,22 @@ impl SysInfoV2 {
                     vec![]
                 };
 
-                let processes = gatherer_supervisor.processes();
-                let merged_stats = mps.load(Ordering::Acquire);
-                readings.process_tree =
-                    proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
-                readings.running_apps = gatherer_supervisor.apps();
+                readings.mem_info = MemInfo::load().unwrap_or(MemInfo::default());
 
+                readings.cpu_static_info = gatherer.cpu_static_info();
                 let cpu_static_info = readings.cpu_static_info.clone();
+                readings.cpu_dynamic_info = gatherer.cpu_dynamic_info();
+
+                let gpu_ids = gatherer.enumerate_gpus();
+                readings.gpu_static_info = gpu_ids
+                    .iter()
+                    .map(|id| gatherer.gpu_static_info(id.as_ref()))
+                    .collect();
                 let gpu_static_info = readings.gpu_static_info.clone();
+                readings.gpu_dynamic_info = gpu_ids
+                    .iter()
+                    .map(|id| gatherer.gpu_dynamic_info(id.as_ref()))
+                    .collect();
 
                 idle_add_once(move || {
                     use gtk::glib::*;
@@ -343,7 +338,33 @@ impl SysInfoV2 {
                     let loop_start = std::time::Instant::now();
 
                     let timer = std::time::Instant::now();
-                    let cpu_info = gatherer_supervisor.cpu_dynamic_info();
+                    let processes = gatherer.processes();
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Process load took: {:?}",
+                        timer.elapsed()
+                    );
+
+                    let timer = std::time::Instant::now();
+                    let merged_stats = mps.load(Ordering::Acquire);
+                    let process_tree =
+                        proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "Process tree load took: {:?}",
+                        timer.elapsed()
+                    );
+
+                    let timer = std::time::Instant::now();
+                    let running_apps = gatherer.apps();
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "App load took: {:?}",
+                        timer.elapsed()
+                    );
+
+                    let timer = std::time::Instant::now();
+                    let cpu_dynamic_info = gatherer.cpu_dynamic_info();
                     g_debug!(
                         "MissionCenter::Perf",
                         "CPU load took: {:?}",
@@ -379,42 +400,19 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let gpu_dynamic_info = gatherer_supervisor.gpu_dynamic_info();
+                    let gpu_dynamic_info = gpu_ids
+                        .iter()
+                        .map(|id| gatherer.gpu_dynamic_info(id.as_ref()))
+                        .collect();
                     g_debug!(
                         "MissionCenter::Perf",
                         "GPU load took: {:?}",
                         timer.elapsed()
                     );
 
-                    let timer = std::time::Instant::now();
-                    let processes = gatherer_supervisor.processes();
-                    g_debug!(
-                        "MissionCenter::Perf",
-                        "Process load took: {:?}",
-                        timer.elapsed()
-                    );
-
-                    let timer = std::time::Instant::now();
-                    let merged_stats = mps.load(Ordering::Acquire);
-                    let process_tree =
-                        proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
-                    g_debug!(
-                        "MissionCenter::Perf",
-                        "Process tree load took: {:?}",
-                        timer.elapsed()
-                    );
-
-                    let timer = std::time::Instant::now();
-                    let running_apps = gatherer_supervisor.apps();
-                    g_debug!(
-                        "MissionCenter::Perf",
-                        "App load took: {:?}",
-                        timer.elapsed()
-                    );
-
                     let mut readings = Readings {
                         cpu_static_info: cpu_static_info.clone(),
-                        cpu_dynamic_info: cpu_info,
+                        cpu_dynamic_info,
                         mem_info,
                         disks,
                         network_devices,
@@ -458,7 +456,7 @@ impl SysInfoV2 {
                         let timer = std::time::Instant::now();
 
                         match rx.recv_timeout(sleep_duration_fraction) {
-                            Ok(message) => gatherer_supervisor.send_message(message),
+                            Ok(message) => {} //gatherer_supervisor.send_message(message),
                             Err(e) => {
                                 if e != mpsc::RecvTimeoutError::Timeout {
                                     g_warning!(
@@ -536,33 +534,33 @@ impl SysInfoV2 {
     }
 
     pub fn terminate_process(&self, terminate_type: TerminateType, pid: u32) {
-        use gtk::glib::g_critical;
-
-        match terminate_type {
-            TerminateType::Normal => {
-                match self.sender.send(gatherer::Message::TerminateProcess(pid)) {
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::SysInfo",
-                            "Error sending TerminateProcess({}) to gatherer: {}",
-                            pid,
-                            e
-                        );
-                    }
-                    _ => {}
-                }
-            }
-            TerminateType::Force => match self.sender.send(gatherer::Message::KillProcess(pid)) {
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Error sending KillProcess({}) to gatherer: {}",
-                        pid,
-                        e
-                    );
-                }
-                _ => {}
-            },
-        }
+        // use gtk::glib::g_critical;
+        //
+        // match terminate_type {
+        //     TerminateType::Normal => {
+        //         match self.sender.send(gatherer::Message::TerminateProcess(pid)) {
+        //             Err(e) => {
+        //                 g_critical!(
+        //                     "MissionCenter::SysInfo",
+        //                     "Error sending TerminateProcess({}) to gatherer: {}",
+        //                     pid,
+        //                     e
+        //                 );
+        //             }
+        //             _ => {}
+        //         }
+        //     }
+        //     TerminateType::Force => match self.sender.send(gatherer::Message::KillProcess(pid)) {
+        //         Err(e) => {
+        //             g_critical!(
+        //                 "MissionCenter::SysInfo",
+        //                 "Error sending KillProcess({}) to gatherer: {}",
+        //                 pid,
+        //                 e
+        //             );
+        //         }
+        //         _ => {}
+        //     },
+        // }
     }
 }
