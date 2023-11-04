@@ -2,8 +2,8 @@ use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use super::dbus_interface::IoMissioncenterMissionCenterGatherer;
 pub use super::dbus_interface::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process, ProcessState,
-    ProcessUsageStats,
+    ApiVersion, App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi,
+    OpenGLApiVersion, Process, ProcessUsageStats,
 };
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 
@@ -58,24 +58,28 @@ fn show_error_dialog_and_exit(message: &str) -> ! {
     use crate::i18n::*;
     use adw::prelude::*;
 
-    let app_window =
-        crate::MissionCenterApplication::default_instance().and_then(|app| app.active_window());
+    gtk::glib::idle_add_once(|| {
+        let app_window =
+            crate::MissionCenterApplication::default_instance().and_then(|app| app.active_window());
 
-    let error_dialog = adw::MessageDialog::new(
-        app_window.as_ref(),
-        Some("A fatal error has occurred"),
-        Some(message),
-    );
-    error_dialog.set_modal(true);
-    error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
-    error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
-    error_dialog.connect_response(None, |dialog, _| {
-        dialog.close();
-        std::process::exit(1);
+        let error_dialog = adw::MessageDialog::new(
+            app_window.as_ref(),
+            Some("A fatal error has occurred"),
+            Some(message),
+        );
+        error_dialog.set_modal(true);
+        error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
+        error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
+        error_dialog.connect_response(None, |dialog, _| {
+            dialog.close();
+            std::process::exit(1);
+        });
+        error_dialog.present();
+
+        std::process::exit(-1);
     });
-    error_dialog.present();
 
-    std::process::exit(-1);
+    loop {}
 }
 
 pub struct Gatherer<'a> {
@@ -203,7 +207,7 @@ impl<'a> Gatherer<'a> {
 
     pub fn is_running(&self) -> Result<(), i32> {
         let mut child = self.child.borrow_mut();
-        let mut child = match child.as_mut() {
+        let child = match child.as_mut() {
             Some(child) => child,
             None => return Err(-1),
         };

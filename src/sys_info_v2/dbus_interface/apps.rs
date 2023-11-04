@@ -281,7 +281,7 @@ impl<'a> Get<'a> for AppMap {
                 }
                 Some(arr) => {
                     for a in arr {
-                        if let Some(a) = cast::<App>(a) {
+                        if let Some(a) = cast::<App>(unsafe { core::mem::transmute(a) }) {
                             this.insert(a.id.clone(), a.clone());
                         }
                     }

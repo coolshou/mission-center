@@ -360,7 +360,7 @@ impl<'a> Get<'a> for ProcessMap {
                 }
                 Some(arr) => {
                     for p in arr {
-                        if let Some(p) = cast::<Process>(p) {
+                        if let Some(p) = cast::<Process>(unsafe { core::mem::transmute(p) }) {
                             this.insert(p.pid, p.clone());
                         }
                     }

@@ -25,7 +25,8 @@ use lazy_static::lazy_static;
 
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, Process, ProcessUsageStats,
+    ApiVersion, App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi,
+    OpenGLApiVersion, Process, ProcessUsageStats,
 };
 
 macro_rules! cmd {

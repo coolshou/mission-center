@@ -7,7 +7,7 @@ edition = "2021"
 [dependencies]
 arrayvec = { version = "0.7" }
 ash = { version = "0.37" }
-dbus = { version = "0.9" }
+dbus = { version = "0.9", default-features = false, features = ["vendored"] }
 dbus-crossroads = { version = "0.5" }
 drm = { version = "0.10" }
 egl = { version = "0.2" }

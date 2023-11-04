@@ -74,7 +74,7 @@ mod imp {
         pub max_memory_usage: Cell<f32>,
         pub max_disk_usage: Cell<f32>,
 
-        pub apps: Cell<std::collections::HashMap<String, crate::sys_info_v2::App>>,
+        pub apps: Cell<std::collections::HashMap<std::sync::Arc<str>, crate::sys_info_v2::App>>,
         pub process_tree: Cell<crate::sys_info_v2::Process>,
     }
 
@@ -121,7 +121,7 @@ mod imp {
             root_process: &crate::sys_info_v2::Process,
             pid: u32,
         ) -> Option<&crate::sys_info_v2::Process> {
-            if root_process.pid() == pid {
+            if root_process.pid == pid {
                 return Some(root_process);
             }
 
@@ -177,7 +177,7 @@ mod imp {
                 // and terminate that instead.
                 fn find_first_non_bwrap_child(root: &Process) -> Option<&Process> {
                     for (_, child) in &root.children {
-                        if child.name() != "bwrap" {
+                        if child.name.as_ref() != "bwrap" {
                             return Some(child);
                         }
                     }
@@ -194,9 +194,9 @@ mod imp {
                     if let Some(process) =
                         AppsPage::find_process(unsafe { &*this.imp().process_tree.as_ptr() }, pid)
                     {
-                        if process.name() == "bwrap" {
+                        if process.name.as_ref() == "bwrap" {
                             if let Some(child) = find_first_non_bwrap_child(process) {
-                                pid = child.pid();
+                                pid = child.pid;
                             }
                         }
                     }
@@ -283,7 +283,7 @@ mod imp {
                         }
                         let current = current.unwrap();
 
-                        current.id().as_str() == app_id
+                        current.id().as_str() == app_id.as_ref()
                     })
                 } else {
                     None
@@ -302,7 +302,7 @@ mod imp {
                         if let Some(process) = Self::find_process(&process_tree, *pid) {
                             if process.children.len() > 0 || index == app.pids.len() - 1 {
                                 primary_process = Some(process);
-                                primary_pid = process.pid();
+                                primary_pid = process.pid;
                                 break;
                             }
                         }
@@ -312,17 +312,21 @@ mod imp {
                 };
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
-                        .name(&app.name())
-                        .id(&app.id())
-                        .icon(app.icon().as_ref().unwrap_or(&"application-x-executable"))
+                        .name(app.name.as_ref())
+                        .id(app.id.as_ref())
+                        .icon(
+                            Option::as_ref(&app.icon)
+                                .map(|i| i.as_ref())
+                                .unwrap_or("application-x-executable"),
+                        )
                         .pid(primary_pid)
                         .content_type(ContentType::App)
                         .expanded(false)
-                        .cpu_usage(app.stats().cpu_usage)
-                        .memory_usage(app.stats().memory_usage)
-                        .disk_usage(app.stats().disk_usage)
-                        .network_usage(app.stats().network_usage)
-                        .gpu_usage(app.stats().gpu_usage)
+                        .cpu_usage(app.usage_stats.cpu_usage)
+                        .memory_usage(app.usage_stats.memory_usage)
+                        .disk_usage(app.usage_stats.disk_usage)
+                        .network_usage(app.usage_stats.network_usage)
+                        .gpu_usage(app.usage_stats.gpu_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -340,11 +344,11 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     view_model.set_pid(primary_pid);
-                    view_model.set_cpu_usage(app.stats().cpu_usage);
-                    view_model.set_memory_usage(app.stats().memory_usage);
-                    view_model.set_disk_usage(app.stats().disk_usage);
-                    view_model.set_network_usage(app.stats().network_usage);
-                    view_model.set_gpu_usage(app.stats().gpu_usage);
+                    view_model.set_cpu_usage(app.usage_stats.cpu_usage);
+                    view_model.set_memory_usage(app.usage_stats.memory_usage);
+                    view_model.set_disk_usage(app.usage_stats.disk_usage);
+                    view_model.set_network_usage(app.usage_stats.network_usage);
+                    view_model.set_gpu_usage(app.usage_stats.gpu_usage);
 
                     view_model
                 };
@@ -358,7 +362,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::AppsPage",
                         "Failed to find process in process tree, for App {}",
-                        app.name()
+                        app.name.as_ref()
                     );
                 }
             }
@@ -889,7 +893,10 @@ mod imp {
             if let Some(column_header_cpu) = &column_header_cpu {
                 column_header_cpu.set_heading(format!(
                     "{}%",
-                    readings.cpu_dynamic_info.utilization_percent.round()
+                    readings
+                        .cpu_dynamic_info
+                        .overall_utilization_percent
+                        .round()
                 ));
             }
             self.column_header_cpu.set(column_header_cpu);
@@ -928,7 +935,7 @@ mod imp {
                 let avg = readings
                     .gpu_dynamic_info
                     .iter()
-                    .map(|g| g.util_percent())
+                    .map(|g| g.util_percent)
                     .sum::<u32>() as f32
                     / readings.gpu_dynamic_info.len() as f32;
                 column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
@@ -975,28 +982,29 @@ mod imp {
                     None
                 };
 
-                let entry_name = if !child.exe().is_empty() {
-                    let entry_name = std::path::Path::new(child.exe())
+                let entry_name = if !child.exe.as_ref().is_empty() {
+                    let entry_name = std::path::Path::new(child.exe.as_ref())
                         .file_name()
-                        .map(|name| name.to_str().unwrap_or(child.name()))
-                        .unwrap_or(child.name());
+                        .map(|name| name.to_str().unwrap_or(child.name.as_ref()))
+                        .unwrap_or(child.name.as_ref());
                     if entry_name.starts_with("wine") {
-                        if child.cmd().is_empty() {
-                            child.name()
+                        if child.cmd.is_empty() {
+                            child.name.as_ref()
                         } else {
-                            child.cmd()[0]
+                            child.cmd[0]
+                                .as_ref()
                                 .split("\\")
                                 .last()
-                                .unwrap_or(child.name())
+                                .unwrap_or(child.name.as_ref())
                                 .split("/")
                                 .last()
-                                .unwrap_or(child.name())
+                                .unwrap_or(child.name.as_ref())
                         }
                     } else {
                         entry_name
                     }
                 } else {
-                    child.name()
+                    child.name.as_ref()
                 };
 
                 let child_model = if pos.is_none() {
@@ -1004,11 +1012,11 @@ mod imp {
                         .name(entry_name)
                         .content_type(ContentType::Process)
                         .pid(*pid)
-                        .cpu_usage(child.stats().cpu_usage)
-                        .memory_usage(child.stats().memory_usage)
-                        .disk_usage(child.stats().disk_usage)
-                        .network_usage(child.stats().network_usage)
-                        .gpu_usage(child.stats().gpu_usage)
+                        .cpu_usage(child.usage_stats.cpu_usage)
+                        .memory_usage(child.usage_stats.memory_usage)
+                        .disk_usage(child.usage_stats.disk_usage)
+                        .network_usage(child.usage_stats.network_usage)
+                        .gpu_usage(child.usage_stats.gpu_usage)
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
                         .build();
@@ -1022,11 +1030,11 @@ mod imp {
                         .downcast::<ViewModel>()
                         .unwrap();
 
-                    view_model.set_cpu_usage(child.stats().cpu_usage);
-                    view_model.set_memory_usage(child.stats().memory_usage);
-                    view_model.set_disk_usage(child.stats().disk_usage);
-                    view_model.set_network_usage(child.stats().network_usage);
-                    view_model.set_gpu_usage(child.stats().gpu_usage);
+                    view_model.set_cpu_usage(child.usage_stats.cpu_usage);
+                    view_model.set_memory_usage(child.usage_stats.memory_usage);
+                    view_model.set_disk_usage(child.usage_stats.disk_usage);
+                    view_model.set_network_usage(child.usage_stats.network_usage);
+                    view_model.set_gpu_usage(child.usage_stats.gpu_usage);
 
                     view_model.children().clone()
                 };
