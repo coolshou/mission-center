@@ -252,7 +252,7 @@ impl LinuxGpuInfo {
             gl.prev = gl.deref_mut();
         }
 
-        Self {
+        let mut this = Self {
             vk_info: vulkan_info::VulkanInfo::new(),
 
             gpu_list,
@@ -261,7 +261,10 @@ impl LinuxGpuInfo {
             dynamic_info: HashMap::new(),
 
             gpu_list_refreshed: false,
-        }
+        };
+        this.refresh_gpu_list();
+
+        this
     }
 
     #[allow(non_snake_case)]

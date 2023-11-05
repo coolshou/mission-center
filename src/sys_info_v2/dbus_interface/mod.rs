@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
+use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*, Error};
 
 pub use apps::*;
 use arc_str_vec::*;
@@ -50,6 +50,9 @@ pub trait IoMissioncenterMissionCenterGatherer {
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
     fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error>;
     fn apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error>;
+
+    fn terminate_process(&self, process_id: u32) -> Result<(), dbus::Error>;
+    fn kill_process(&self, process_id: u32) -> Result<(), dbus::Error>;
 }
 
 impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::Connection> {
@@ -142,6 +145,32 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             (),
         )
         .and_then(|r: (AppMap,)| Ok(r.0.into()))
+    }
+
+    fn terminate_process(&self, process_id: u32) -> Result<(), Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "TerminateProcess",
+            (process_id,),
+        )
+        .and_then(|_: ()| Ok(()))
+    }
+
+    fn kill_process(&self, process_id: u32) -> Result<(), Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "KillProcess",
+            (process_id,),
+        )
+        .and_then(|_: ()| Ok(()))
     }
 }
 

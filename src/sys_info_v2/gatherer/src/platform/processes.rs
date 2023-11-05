@@ -86,6 +86,20 @@ pub trait ProcessesExt<'a>: Default + Append + Arg {
 
     /// Return the (cached) list of processes
     fn process_list(&'a self) -> &'a std::collections::HashMap<u32, Self::P>;
+
+    /// Ask a process to terminate
+    ///
+    /// On Linux this would be the equivalent of sending a SIGTERM signal to the process
+    /// Optionally, a platform implementation can ask a user to authenticate if the process is not
+    /// owned by the current user
+    fn terminate_process(&self, pid: u32);
+
+    /// Force a process to terminate
+    ///
+    /// On Linux this would be the equivalent of sending a SIGKILL signal to the process
+    /// Optionally, a platform implementation can ask a user to authenticate if the process is not
+    /// owned by the current user
+    fn kill_process(&self, pid: u32);
 }
 
 impl Arg for crate::platform::Processes {

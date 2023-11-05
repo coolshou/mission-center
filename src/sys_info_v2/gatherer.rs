@@ -254,6 +254,14 @@ impl<'a> Gatherer<'a> {
         dbus_call!(self, apps, "GetApps");
     }
 
+    pub fn terminate_process(&self, process_id: u32) {
+        dbus_call!(self, terminate_process, "TerminateProcess", process_id);
+    }
+
+    pub fn kill_process(&self, process_id: u32) {
+        dbus_call!(self, kill_process, "KillProcess", process_id);
+    }
+
     pub fn is_running(&self) -> Result<(), i32> {
         let mut child = self.child.borrow_mut();
         let child = match child.as_mut() {

@@ -39,6 +39,8 @@ pub trait AppExt<'a>: Default + Append + Arg {
     fn command(&self) -> &str;
 
     /// The list of processes that the app uses
+    /// 
+    /// It is expected that the the iterator yields the elements from smallest to largest
     fn pids(&'a self) -> Self::Iter;
 
     /// The system usage statistics for the app

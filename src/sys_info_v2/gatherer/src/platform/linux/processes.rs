@@ -584,6 +584,22 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
     fn process_list(&'a self) -> &'a std::collections::HashMap<u32, LinuxProcess> {
         &self.process_cache
     }
+
+    fn terminate_process(&self, pid: u32) {
+        use libc::*;
+
+        unsafe {
+            kill(pid as pid_t, SIGTERM);
+        }
+    }
+
+    fn kill_process(&self, pid: u32) {
+        use libc::*;
+
+        unsafe {
+            kill(pid as pid_t, SIGKILL);
+        }
+    }
 }
 
 #[cfg(test)]

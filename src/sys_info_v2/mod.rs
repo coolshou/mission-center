@@ -25,8 +25,8 @@ use lazy_static::lazy_static;
 
 use gatherer::Gatherer;
 pub use gatherer::{
-    ApiVersion, App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi,
-    OpenGLApiVersion, Process, ProcessUsageStats,
+    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
+    ProcessUsageStats,
 };
 
 macro_rules! cmd {
@@ -158,18 +158,17 @@ lazy_static! {
     };
 }
 
+enum Message {
+    TerminateProcess(Pid),
+    KillProcess(Pid),
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdateSpeed {
     VerySlow = 4,
     Slow = 3,
     Normal = 2,
     Fast = 1,
-}
-
-#[derive(Debug)]
-pub enum TerminateType {
-    Normal,
-    Force,
 }
 
 impl From<i32> for UpdateSpeed {
@@ -231,7 +230,7 @@ pub struct SysInfoV2 {
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: Arc<std::sync::atomic::AtomicBool>,
 
-    sender: std::sync::mpsc::Sender<()>,
+    sender: std::sync::mpsc::Sender<Message>,
 }
 
 impl Drop for SysInfoV2 {
@@ -252,7 +251,7 @@ impl Default for SysInfoV2 {
     fn default() -> Self {
         use std::sync::*;
 
-        let (tx, _) = mpsc::channel::<()>();
+        let (tx, _) = mpsc::channel::<Message>();
 
         Self {
             refresh_interval: Arc::new(0.into()),
@@ -278,7 +277,7 @@ impl SysInfoV2 {
         let mps = merged_process_stats.clone();
         let run = refresh_thread_running.clone();
 
-        let (tx, rx) = mpsc::channel::<()>();
+        let (tx, rx) = mpsc::channel::<Message>();
         Self {
             refresh_interval,
             merged_process_stats,
@@ -457,12 +456,19 @@ impl SysInfoV2 {
                         let timer = std::time::Instant::now();
 
                         match rx.recv_timeout(sleep_duration_fraction) {
-                            Ok(message) => {} //gatherer_supervisor.send_message(message),
+                            Ok(message) => match message {
+                                Message::TerminateProcess(pid) => {
+                                    gatherer.terminate_process(pid);
+                                }
+                                Message::KillProcess(pid) => {
+                                    gatherer.kill_process(pid);
+                                }
+                            },
                             Err(e) => {
                                 if e != mpsc::RecvTimeoutError::Timeout {
                                     g_warning!(
                                         "MissionCenter::SysInfo",
-                                        "Error receiving message from gatherer: {}",
+                                        "Error receiving message from channel: {}",
                                         e
                                     );
                                 }
@@ -534,34 +540,35 @@ impl SysInfoV2 {
             .store(merged_stats, std::sync::atomic::Ordering::Release);
     }
 
-    pub fn terminate_process(&self, terminate_type: TerminateType, pid: u32) {
-        // use gtk::glib::g_critical;
-        //
-        // match terminate_type {
-        //     TerminateType::Normal => {
-        //         match self.sender.send(gatherer::Message::TerminateProcess(pid)) {
-        //             Err(e) => {
-        //                 g_critical!(
-        //                     "MissionCenter::SysInfo",
-        //                     "Error sending TerminateProcess({}) to gatherer: {}",
-        //                     pid,
-        //                     e
-        //                 );
-        //             }
-        //             _ => {}
-        //         }
-        //     }
-        //     TerminateType::Force => match self.sender.send(gatherer::Message::KillProcess(pid)) {
-        //         Err(e) => {
-        //             g_critical!(
-        //                 "MissionCenter::SysInfo",
-        //                 "Error sending KillProcess({}) to gatherer: {}",
-        //                 pid,
-        //                 e
-        //             );
-        //         }
-        //         _ => {}
-        //     },
-        // }
+    pub fn terminate_process(&self, pid: u32) {
+        use gtk::glib::g_critical;
+
+        match self.sender.send(Message::TerminateProcess(pid)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending TerminateProcess({}) to gatherer: {}",
+                    pid,
+                    e
+                );
+            }
+            _ => {}
+        }
+    }
+
+    pub fn kill_process(&self, pid: u32) {
+        use gtk::glib::g_critical;
+
+        match self.sender.send(Message::KillProcess(pid)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending KillProcess({}) to gatherer: {}",
+                    pid,
+                    e
+                );
+            }
+            _ => {}
+        }
     }
 }

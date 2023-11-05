@@ -7,21 +7,18 @@ use dbus_crossroads::Crossroads;
 use logging::{critical, debug, error, info, message, warning};
 use platform::CpuInfoExt;
 
-use crate::platform::GpuInfoExt;
-
-// mod dbus;
 mod logging;
 mod platform;
 mod utils;
 
-struct SystemStatistics {
+struct System {
     cpu_info: platform::CpuInfo,
     gpu_info: platform::GpuInfo,
     processes: platform::Processes,
     apps: platform::Apps,
 }
 
-impl SystemStatistics {
+impl System {
     pub fn new() -> Self {
         Self {
             cpu_info: platform::CpuInfo::new(),
@@ -60,7 +57,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetCpuStaticInfo",
             (),
             ("static_info",),
-            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+            |ctx, sys_stats: &mut System, (): ()| {
                 ctx.reply(Ok((sys_stats.cpu_info.static_info(),)));
 
                 // Make the scaffolding happy, since the reply was already set
@@ -72,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetCpuDynamicInfo",
             (),
             ("static_info",),
-            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+            |ctx, sys_stats: &mut System, (): ()| {
                 sys_stats
                     .cpu_info
                     .refresh_dynamic_info_cache(&sys_stats.processes);
@@ -87,7 +84,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             "EnumerateGPUs",
             (),
             ("gpu_ids",),
-            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+            |ctx, sys_stats: &mut System, (): ()| {
+                use platform::GpuInfoExt;
+
                 sys_stats.gpu_info.refresh_gpu_list();
                 ctx.reply(Ok((sys_stats.gpu_info.enumerate().collect::<Vec<_>>(),)));
 
@@ -100,7 +99,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetGPUStaticInfo",
             ("gpu_id",),
             ("static_info",),
-            |ctx, sys_stats: &mut SystemStatistics, (gpu_id,): (String,)| {
+            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+                use platform::GpuInfoExt;
+
                 sys_stats.gpu_info.refresh_static_info_cache();
 
                 match sys_stats.gpu_info.static_info(&gpu_id) {
@@ -123,7 +124,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetGPUDynamicInfo",
             ("gpu_id",),
             ("dynamic_info",),
-            |ctx, sys_stats: &mut SystemStatistics, (gpu_id,): (String,)| {
+            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+                use platform::GpuInfoExt;
+
                 sys_stats
                     .gpu_info
                     .refresh_dynamic_info_cache(&mut sys_stats.processes);
@@ -151,7 +154,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetProcesses",
             (),
             ("processes",),
-            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+            |ctx, sys_stats: &mut System, (): ()| {
                 use platform::ProcessesExt;
 
                 sys_stats.processes.refresh_cache();
@@ -166,7 +169,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "GetApps",
             (),
             ("apps",),
-            |ctx, sys_stats: &mut SystemStatistics, (): ()| {
+            |ctx, sys_stats: &mut System, (): ()| {
                 use platform::{AppsExt, ProcessesExt};
 
                 if sys_stats.processes.is_cache_stale() {
@@ -182,6 +185,32 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Ok((platform::Apps::default(),))
             },
         );
+
+        builder.method(
+            "TerminateProcess",
+            ("process_id",),
+            (),
+            |_, sys_stats: &mut System, (pid,): (u32,)| {
+                use platform::ProcessesExt;
+
+                sys_stats.processes.terminate_process(pid);
+
+                Ok(())
+            },
+        );
+
+        builder.method(
+            "KillProcess",
+            ("process_id",),
+            (),
+            |_, system: &mut System, (pid,): (u32,)| {
+                use platform::ProcessesExt;
+
+                system.processes.kill_process(pid);
+
+                Ok(())
+            },
+        );
     });
 
     let peer_itf = cr.register("org.freedesktop.DBus.Peer", |builder| {
@@ -192,13 +221,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
     });
 
-    let mut sys_stats = SystemStatistics::new();
-    sys_stats.cpu_info.refresh_static_info_cache();
+    let mut system = System::new();
+    system.cpu_info.refresh_static_info_cache();
 
     cr.insert(
         "/io/missioncenter/MissionCenter/Gatherer",
         &[peer_itf, iface_token],
-        sys_stats,
+        system,
     );
 
     cr.serve(&c)?;

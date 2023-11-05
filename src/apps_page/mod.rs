@@ -141,33 +141,26 @@ mod imp {
         }
 
         fn configure_actions(&self) {
-            use crate::sys_info_v2::{Process, TerminateType};
+            use crate::sys_info_v2::Process;
             use gtk::glib::*;
 
-            fn stop_process(
+            fn find_pid(
                 this: Option<super::AppsPage>,
-                app: Option<crate::MissionCenterApplication>,
                 pid_and_bool: Option<&glib::Variant>,
-                terminate_type: TerminateType,
-            ) {
+            ) -> Option<u32> {
                 let this = match this {
-                    None => return,
+                    None => return None,
                     Some(this) => this,
-                };
-
-                let app = match app {
-                    None => return,
-                    Some(app) => app,
                 };
 
                 let (mut pid, is_app) = match pid_and_bool.and_then(|p| p.get::<(u32, bool)>()) {
                     Some(pid) => pid,
                     None => {
                         g_critical!(
-                                "MissionCenter::AppsPage",
-                                "Invalid data encountered for 'pid' and 'is_app' parameter when stopping process via {:?}", terminate_type
-                            );
-                        return;
+                            "MissionCenter::AppsPage",
+                            "Invalid data encountered for 'pid' and 'is_app' parameter when stopping process",
+                        );
+                        return None;
                     }
                 };
 
@@ -202,19 +195,7 @@ mod imp {
                     }
                 }
 
-                let sys_info = match app.sys_info() {
-                    Ok(si) => si,
-                    Err(err) => {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to terminate process: {}",
-                            err
-                        );
-                        return;
-                    }
-                };
-
-                sys_info.terminate_process(terminate_type, pid);
+                Some(pid)
             }
 
             let this = self.obj();
@@ -231,7 +212,43 @@ mod imp {
                 let app = app.downgrade();
                 let this = self.obj().downgrade();
                 move |_action, pid| {
-                    stop_process(this.upgrade(), app.upgrade(), pid, TerminateType::Normal);
+                    let pid = match find_pid(this.upgrade(), pid) {
+                        None => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to terminate app: Failed to find PID",
+                            );
+                            return;
+                        }
+                        Some(pid) => pid,
+                    };
+
+                    let app = match app.upgrade() {
+                        None => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to terminate app PID '{}': Failed to get app instance",
+                                pid,
+                            );
+                            return;
+                        }
+                        Some(app) => app,
+                    };
+
+                    let sys_info = match app.sys_info() {
+                        Ok(si) => si,
+                        Err(err) => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to terminate app PID '{}': {}",
+                                pid,
+                                err,
+                            );
+                            return;
+                        }
+                    };
+
+                    sys_info.terminate_process(pid);
                 }
             });
             actions.add_action(&action);
@@ -241,7 +258,43 @@ mod imp {
                 let app = app.downgrade();
                 let this = self.obj().downgrade();
                 move |_action, pid| {
-                    stop_process(this.upgrade(), app.upgrade(), pid, TerminateType::Force);
+                    let pid = match find_pid(this.upgrade(), pid) {
+                        None => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to kill app: Failed to find PID",
+                            );
+                            return;
+                        }
+                        Some(pid) => pid,
+                    };
+
+                    let app = match app.upgrade() {
+                        None => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to kill app PID '{}': Failed to get app instance",
+                                pid,
+                            );
+                            return;
+                        }
+                        Some(app) => app,
+                    };
+
+                    let sys_info = match app.sys_info() {
+                        Ok(si) => si,
+                        Err(err) => {
+                            g_critical!(
+                                "MissionCenter::AppsPage",
+                                "Failed to kill app PID '{}': {}",
+                                pid,
+                                err,
+                            );
+                            return;
+                        }
+                    };
+
+                    sys_info.kill_process(pid);
                 }
             });
             actions.add_action(&action);

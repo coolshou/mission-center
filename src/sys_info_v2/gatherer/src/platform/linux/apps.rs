@@ -18,7 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{BTreeSet, HashMap},
+    sync::Arc,
+};
 
 use lazy_static::lazy_static;
 
@@ -108,7 +111,7 @@ pub struct LinuxApp {
     pub icon: Option<Arc<str>>,
     pub id: Arc<str>,
     pub command: Arc<str>,
-    pub pids: Vec<u32>,
+    pub pids: BTreeSet<u32>,
     pub usage_stats: AppUsageStats,
 }
 
@@ -120,14 +123,14 @@ impl Default for LinuxApp {
             icon: None,
             id: empty_arc.clone(),
             command: empty_arc.clone(),
-            pids: vec![],
+            pids: BTreeSet::new(),
             usage_stats: Default::default(),
         }
     }
 }
 
 impl<'a> AppExt<'a> for LinuxApp {
-    type Iter = std::slice::Iter<'a, u32>;
+    type Iter = std::collections::btree_set::Iter<'a, u32>;
 
     fn name(&self) -> &str {
         self.name.as_ref()
@@ -223,10 +226,10 @@ impl LinuxApps {
         use crate::platform::ProcessExt;
 
         if running_apps.contains(&app.id) {
-            app.pids.push(process.pid());
+            app.pids.insert(process.pid());
             app.usage_stats.merge(process.usage_stats());
         } else {
-            app.pids.push(process.pid());
+            app.pids.insert(process.pid());
             app.usage_stats.merge(process.usage_stats());
             running_apps.insert(Arc::clone(&app.id));
         }
@@ -358,7 +361,7 @@ impl LinuxApps {
             icon: section.get("Icon").map(|s| s.into()),
             id: app_id,
             command,
-            pids: vec![],
+            pids: BTreeSet::new(),
             usage_stats: Default::default(),
         })
     }
