@@ -1,15 +1,35 @@
-use std::error::Error;
-
-use dbus::blocking::Connection;
+use dbus::{arg, blocking::Connection};
 use dbus_crossroads::Crossroads;
 
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
-use platform::CpuInfoExt;
+use platform::{CpuInfoExt, PlatformUtilitiesExt};
 
 mod logging;
 mod platform;
 mod utils;
+
+#[derive(Debug)]
+pub struct OrgFreedesktopDBusNameLost {
+    pub arg0: String,
+}
+
+impl arg::AppendAll for OrgFreedesktopDBusNameLost {
+    fn append(&self, i: &mut arg::IterAppend) {
+        arg::RefArg::append(&self.arg0, i);
+    }
+}
+
+impl arg::ReadAll for OrgFreedesktopDBusNameLost {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(OrgFreedesktopDBusNameLost { arg0: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
+    const NAME: &'static str = "NameLost";
+    const INTERFACE: &'static str = "org.freedesktop.DBus";
+}
 
 struct System {
     cpu_info: platform::CpuInfo,
@@ -29,16 +49,7 @@ impl System {
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    // Set up so that the child process exits when the parent dies
-    #[cfg(target_os = "linux")]
-    {
-        use libc::*;
-        unsafe {
-            prctl(PR_SET_PDEATHSIG, SIGTERM);
-        }
-    }
-
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Exit if any arguments are passed to this executable. This is done since the main app needs
     // to check if the executable can be run in its current environment (glibc or musl libc)
     for (i, _) in std::env::args().enumerate() {
@@ -48,8 +59,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    let plat_utils = platform::PlatformUtilities::default();
+
+    // Set up so that the Gatherer exists when the main app exits
+    plat_utils.on_main_app_exit(Box::new(|| {
+        message!("Gatherer::Main", "Parent process exited, exiting...");
+        std::process::exit(0);
+    }));
+
     let c = Connection::new_session()?;
-    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, false)?;
+    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, true)?;
+
+    let proxy = c.with_proxy(
+        "org.freedesktop.DBus",
+        "/org/freedesktop/DBus",
+        std::time::Duration::from_millis(5000),
+    );
+    let _id = proxy.match_signal(
+        |h: OrgFreedesktopDBusNameLost, _: &Connection, _: &dbus::Message| {
+            if h.arg0 != "io.missioncenter.MissionCenter.Gatherer" {
+                return true;
+            }
+
+            message!("Gatherer::Main", "Bus name {} lost, exiting...", &h.arg0);
+            std::process::exit(0);
+        },
+    )?;
 
     let mut cr = Crossroads::new();
     let iface_token = cr.register("io.missioncenter.MissionCenter.Gatherer", |builder| {

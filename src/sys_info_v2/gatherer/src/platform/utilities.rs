@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/src/platform/linux/mod.rs
+/* sys_info_v2/gatherer/src/platform/utilities.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,14 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use apps::*;
-pub use cpu_info::*;
-pub use gpu_info::*;
-pub use processes::*;
-pub use utilities::*;
-
-mod apps;
-mod cpu_info;
-mod gpu_info;
-mod processes;
-mod utilities;
+/// This trait is used to provide platform specific behavior to the Gatherer
+pub trait PlatformUtilitiesExt: Default {
+    /// Sets up a callback that should be called when the main app exits
+    fn on_main_app_exit(&self, callback: Box<dyn FnMut() + Send>);
+}

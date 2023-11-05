@@ -15,43 +15,44 @@ AppDir:
       MC_RESOURCE_DIR: $APPDIR/usr/local/share/missioncenter
   apt:
     arch:
-    - amd64
+      - amd64
     allow_unauthenticated: true
     sources:
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic main restricted
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic-updates main restricted
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic universe
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic-updates universe
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic multiverse
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic-updates multiverse
-    - sourceline: deb http://co.archive.ubuntu.com/ubuntu/ mantic-backports main restricted
-        universe multiverse
-    - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security main restricted
-    - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security universe
-    - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security multiverse
-    - sourceline: deb https://thepbone.github.io/PPA-Repository ./
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic main restricted
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic-updates main restricted
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic-updates universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic-updates multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ mantic-backports main restricted
+          universe multiverse
+      - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security main restricted
+      - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security universe
+      - sourceline: deb http://security.ubuntu.com/ubuntu/ mantic-security multiverse
+      - sourceline: deb https://thepbone.github.io/PPA-Repository ./
     include:
-    - libbz2-1.0:amd64
-    - libcap2:amd64
-    - libcom-err2:amd64
-    - libexpat1:amd64
-    - libgcc-s1:amd64
-    - libgpg-error0:amd64
-    - libkeyutils1:amd64
-    - liblzma5:amd64
-    - liblzo2-2:amd64
-    - libselinux1:amd64
-    - zlib1g:amd64
+      - libbz2-1.0:amd64
+      - libcap2:amd64
+      - libcom-err2:amd64
+      - libexpat1:amd64
+      - libgcc-s1:amd64
+      - libgpg-error0:amd64
+      - libkeyutils1:amd64
+      - liblzma5:amd64
+      - liblzo2-2:amd64
+      - libselinux1:amd64
+      - zlib1g:amd64
+      - libdbus-1-3:amd64
   files:
     include:
-    - /lib/x86_64-linux-gnu/libadwaita-1.so.0
-    - /lib/x86_64-linux-gnu/libudev.so.1
+      - /lib/x86_64-linux-gnu/libadwaita-1.so.0
+      - /lib/x86_64-linux-gnu/libudev.so.1
     exclude:
-    - usr/share/man
-    - usr/share/doc/*/README.*
-    - usr/share/doc/*/changelog.*
-    - usr/share/doc/*/NEWS.*
-    - usr/share/doc/*/TODO.*
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
   test:
     fedora-30:
       image: appimagecrafters/tests-env:fedora-30
