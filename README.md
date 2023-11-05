@@ -27,14 +27,13 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 
 ## Limitations
 
-Please note there is ongoing work to overcome all of these
+Please note there is ongoing work to overcome all of these.
 
-* Disk utilization percentage might not be
-  accurate [#2](https://gitlab.com/mission-center-devs/mission-center/-/issues/2)
 * No per-process network usage [#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3)
-* No per-process GPU usage [#4](https://gitlab.com/mission-center-devs/mission-center/-/issues/4)
 * GPU support is experimental and only AMD and nVidia GPUs can be
   monitored [#5](https://gitlab.com/mission-center-devs/mission-center/-/issues/5)
+
+Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes).  If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
 
 ## Installing
 
