@@ -1134,6 +1134,9 @@ mod imp {
 
             let list_item_widget = self.column_view.first_child().unwrap();
 
+            // Remove padding added in GTK 4.12
+            list_item_widget.add_css_class("app-list-header");
+
             let column_view_title = list_item_widget.first_child().unwrap();
             let (column_view_title, column_header_name) = self.configure_column_header(
                 &column_view_title,
