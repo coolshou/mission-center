@@ -267,13 +267,13 @@
             }
           },
           "build-commands": [
-            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && cp -ar nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
+            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && cp -ar nvtop-* src/sys_info_v2/gatherer/target/debug/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-glibc:/app/rust-toolchain-glibc -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-glibc/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-glibc/rustup cargo build --offline'",
             "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-glibc",
             "",
             "rm -rf src/sys_info_v2/gatherer/target",
             "",
-            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && mv nvtop-* src/sys_info_v2/gatherer/target/release/build/native/",
+            "mkdir -p src/sys_info_v2/gatherer/target/release/build/native && mv nvtop-* src/sys_info_v2/gatherer/target/debug/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-musl:/app/rust-toolchain-musl -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/src/sys_info_v2/gatherer && env PATH=/app/rust-toolchain-musl/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-musl/rustup cargo build --offline'",
             "install -v -p -m 755 src/sys_info_v2/gatherer/target/release/gatherer /app/bin/missioncenter-gatherer-musl"
           ],
