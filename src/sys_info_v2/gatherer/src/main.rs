@@ -59,22 +59,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    message!("Gatherer::Main", "Starting...");
+
+    message!("Gatherer::Main", "Initializing platform utilities...");
     let plat_utils = platform::PlatformUtilities::default();
 
+    message!("Gatherer::Main", "Setting up connection to main app...");
     // Set up so that the Gatherer exists when the main app exits
     plat_utils.on_main_app_exit(Box::new(|| {
         message!("Gatherer::Main", "Parent process exited, exiting...");
         std::process::exit(0);
     }));
 
+    message!("Gatherer::Main", "Setting up D-Bus connection...");
     let c = Connection::new_session()?;
-    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, true)?;
 
+    message!("Gatherer::Main", "Requesting bus name...");
+    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, true)?;
+    message!("Gatherer::Main", "Bus name acquired");
+
+    message!("Gatherer::Main", "Setting up D-Bus proxy...");
     let proxy = c.with_proxy(
         "org.freedesktop.DBus",
         "/org/freedesktop/DBus",
         std::time::Duration::from_millis(5000),
     );
+
+    message!("Gatherer::Main", "Setting up D-Bus signal match...");
     let _id = proxy.match_signal(
         |h: OrgFreedesktopDBusNameLost, _: &Connection, _: &dbus::Message| {
             if h.arg0 != "io.missioncenter.MissionCenter.Gatherer" {
@@ -86,8 +97,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
 
+    message!("Gatherer::Main", "Setting up D-Bus crossroads...");
     let mut cr = Crossroads::new();
     let iface_token = cr.register("io.missioncenter.MissionCenter.Gatherer", |builder| {
+        message!("Gatherer::Main", "Registering D-Bus methods...");
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetCpuStaticInfo`..."
+        );
         builder.method(
             "GetCpuStaticInfo",
             (),
@@ -100,6 +118,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetCpuDynamicInfo`..."
+        );
         builder.method(
             "GetCpuDynamicInfo",
             (),
@@ -115,6 +137,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!("Gatherer::Main", "Registering D-Bus method `GetGPUs`...");
         builder.method(
             "EnumerateGPUs",
             (),
@@ -130,6 +153,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetGPUStaticInfo`..."
+        );
         builder.method(
             "GetGPUStaticInfo",
             ("gpu_id",),
@@ -155,6 +182,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetGPUDynamicInfo`..."
+        );
         builder.method(
             "GetGPUDynamicInfo",
             ("gpu_id",),
@@ -185,6 +216,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetProcesses`..."
+        );
         builder.method(
             "GetProcesses",
             (),
@@ -200,6 +235,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!("Gatherer::Main", "Registering D-Bus method `GetApps`...");
         builder.method(
             "GetApps",
             (),
@@ -221,6 +257,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `TerminateProcess`..."
+        );
         builder.method(
             "TerminateProcess",
             ("process_id",),
@@ -234,6 +274,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `KillProcess`..."
+        );
         builder.method(
             "KillProcess",
             ("process_id",),
@@ -248,23 +292,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     });
 
+    message!(
+        "Gatherer::Main",
+        "Registering D-Bus interface `org.freedesktop.DBus.Peer`..."
+    );
     let peer_itf = cr.register("org.freedesktop.DBus.Peer", |builder| {
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetMachineId`..."
+        );
         builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
             Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
                 .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
         });
+
+        message!("Gatherer::Main", "Registering D-Bus method `Ping`...");
         builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
     });
 
+    message!("Gatherer::Main", "Instatiating System...");
     let mut system = System::new();
+
+    message!("Gatherer::Main", "Refreshing CPU static info cache...");
     system.cpu_info.refresh_static_info_cache();
 
+    message!("Gatherer::Main", "Inserting system into Crossroads...");
     cr.insert(
         "/io/missioncenter/MissionCenter/Gatherer",
         &[peer_itf, iface_token],
         system,
     );
 
+    message!("Gatherer::Main", "Serving D-Bus requests...");
     cr.serve(&c)?;
+
     unreachable!()
 }
