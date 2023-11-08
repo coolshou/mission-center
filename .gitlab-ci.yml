@@ -1,4 +1,4 @@
-image: "ubuntu:23.04"
+image: "ubuntu:23.10"
 
 stages:
   - build
@@ -7,23 +7,24 @@ stages:
 build-job:
   stage: build
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo "all good"
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
-    - ln -sf /usr/bin/python3 /usr/local/bin/python
+    #- apt-get update && apt-get dist-upgrade -y
+    #- apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    #- ln -sf /usr/bin/python3 /usr/local/bin/python
 
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - export PATH="$HOME/.cargo/bin:$PATH"
+    #- curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    #- export PATH="$HOME/.cargo/bin:$PATH"
 
-    - pip install meson ninja --break-system-packages
+    #- pip install meson ninja --break-system-packages
 
-    - meson setup _build -Dbuildtype=release
-    - ninja -C _build
-    - glib-compile-schemas --strict data/
+    #- meson setup _build -Dbuildtype=release
+    #- ninja -C _build
+    #- glib-compile-schemas --strict data/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
@@ -31,18 +32,19 @@ flatpak-job:
   stage: package
   environment: production
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo "all good"
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    #- echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
-    - apt-get install -y build-essential flatpak flatpak-builder
-    - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
+    #- apt-get update && apt-get dist-upgrade -y
+    #- apt-get install -y build-essential flatpak flatpak-builder
+    #- flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+    #- flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
 
-    - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
-    - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
+    #- cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
+    #- flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
   artifacts:
     paths:
       - flatpak/missioncenter.flatpak
@@ -53,25 +55,25 @@ appimage-job:
   stage: package
   environment: production
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils squashfs-tools zsync patchelf fakeroot binutils strace
-    - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y podman
+    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+    - podman pull ubuntu:20.04
+    - podman run --arch=x86_64 -itd --name appimage -v $PWD/appimage:/libraries:Z ubuntu:20.04
+    - podman exec appimage /libraries/build.sh
 
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - export PATH="$HOME/.cargo/bin:$PATH"
+    #- pip install meson ninja appimage-builder
 
-    - pip install meson ninja appimage-builder --break-system-packages
-
-    - meson setup _build -Dbuildtype=release
-    - ninja -C _build
-    - glib-compile-schemas --strict data/
-    - meson install -C _build --no-rebuild --destdir "AppDir"
-    - appimage-builder --appdir _build/AppDir/
+    #- meson setup _build -Dbuildtype=release
+    #- ninja -C _build
+    #- glib-compile-schemas --strict data/
+    #- meson install -C _build --no-rebuild --destdir "AppDir"
+    #- appimage-builder --appdir _build/AppDir/
 
   artifacts:
     paths:
