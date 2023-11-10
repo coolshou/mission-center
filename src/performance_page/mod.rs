@@ -538,14 +538,13 @@ mod imp {
                 let dynamic_info = &readings.gpu_dynamic_info[i];
 
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(static_info.pci_id.as_str());
+                summary.set_widget_name(static_info.id.as_ref());
 
                 summary.set_heading(i18n_f("GPU {}", &[&format!("{}", i)]));
-                summary.set_info1(static_info.device_name.as_str());
+                summary.set_info1(static_info.device_name.as_ref());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
-                    dynamic_info.util_percent(),
-                    dynamic_info.temp_celsius()
+                    dynamic_info.util_percent, dynamic_info.temp_celsius
                 ));
                 summary.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
@@ -570,7 +569,8 @@ mod imp {
                     .build();
 
                 self.sidebar.append(&summary);
-                self.page_stack.add_named(&page, Some(&static_info.pci_id));
+                self.page_stack
+                    .add_named(&page, Some(static_info.id.as_ref()));
 
                 let mut actions = self.context_menu_view_actions.take();
                 match actions.get("gpu") {
@@ -582,12 +582,12 @@ mod imp {
                         );
                     }
                     Some(action) => {
-                        actions.insert(static_info.pci_id.as_str().into(), action.clone());
+                        actions.insert(static_info.id.as_ref().into(), action.clone());
                     }
                 }
                 self.context_menu_view_actions.set(actions);
 
-                gpus.insert(static_info.pci_id.as_str().into(), (summary, page));
+                gpus.insert(static_info.id.as_ref().into(), (summary, page));
             }
 
             pages.push(Pages::Gpu(gpus));
@@ -638,12 +638,16 @@ mod imp {
             for page in &pages {
                 match page {
                     Pages::Cpu((summary, page)) => {
-                        summary
-                            .graph_widget()
-                            .add_data_point(0, readings.cpu_dynamic_info.utilization_percent);
+                        summary.graph_widget().add_data_point(
+                            0,
+                            readings.cpu_dynamic_info.overall_utilization_percent,
+                        );
                         summary.set_info1(format!(
                             "{}% {:.2} Ghz",
-                            readings.cpu_dynamic_info.utilization_percent.round(),
+                            readings
+                                .cpu_dynamic_info
+                                .overall_utilization_percent
+                                .round(),
                             readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
                         match readings.cpu_dynamic_info.temperature.as_ref() {
@@ -724,13 +728,12 @@ mod imp {
                     }
                     Pages::Gpu(pages) => {
                         for gpu in &readings.gpu_dynamic_info {
-                            if let Some((summary, page)) = pages.get(gpu.pci_id()) {
+                            if let Some((summary, page)) = pages.get(gpu.id.as_ref()) {
                                 let graph_widget = summary.graph_widget();
-                                graph_widget.add_data_point(0, gpu.util_percent() as f32);
+                                graph_widget.add_data_point(0, gpu.util_percent as f32);
                                 summary.set_info2(format!(
                                     "{}% ({} °C)",
-                                    gpu.util_percent(),
-                                    gpu.temp_celsius()
+                                    gpu.util_percent, gpu.temp_celsius
                                 ));
 
                                 result &= page.update_readings(gpu);

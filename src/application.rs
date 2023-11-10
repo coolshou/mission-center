@@ -115,6 +115,15 @@ mod imp {
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
+                let provider = gtk::CssProvider::new();
+                provider.load_from_data(include_str!("../resources/ui/style.css"));
+
+                gtk::style_context_add_provider_for_display(
+                    &gtk::gdk::Display::default().expect("Could not connect to a display."),
+                    &provider,
+                    gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+                );
+
                 window.upcast()
             };
 

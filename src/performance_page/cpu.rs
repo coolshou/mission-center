@@ -313,7 +313,7 @@ mod imp {
             this.virt_proc
                 .set_text(&format!("{}", static_cpu_info.logical_cpu_count));
 
-            if let Some(virtualization) = static_cpu_info.virtualization {
+            if let Some(virtualization) = static_cpu_info.is_virtualization_supported {
                 if virtualization {
                     this.virtualization.set_text(&i18n("Supported"));
                 } else {
@@ -323,7 +323,7 @@ mod imp {
                 this.virtualization.set_text(&i18n("Unknown"));
             }
 
-            if let Some(is_vm) = static_cpu_info.virtual_machine {
+            if let Some(is_vm) = static_cpu_info.is_virtual_machine {
                 if is_vm {
                     this.virt_machine.set_text(&i18n("Yes"));
                 } else {
@@ -339,7 +339,7 @@ mod imp {
                 this.sockets.set_text(&i18n("Unknown"));
             }
 
-            let l1_cache_size = if let Some(size) = static_cpu_info.l1_cache {
+            let l1_cache_size = if let Some(size) = static_cpu_info.l1_combined_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
                     "{} {}{}B",
@@ -402,15 +402,18 @@ mod imp {
             let dynamic_cpu_info = &readings.cpu_dynamic_info;
 
             // Update global CPU graph
-            graph_widgets[0].add_data_point(0, dynamic_cpu_info.utilization_percent);
-            graph_widgets[0].add_data_point(1, dynamic_cpu_info.kernel_utilization_percent);
+            graph_widgets[0].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
+            graph_widgets[0].add_data_point(1, dynamic_cpu_info.overall_kernel_utilization_percent);
 
             // Update per-core graphs
-            for i in 0..dynamic_cpu_info.utilization_percent_per_core.len() {
+            for i in 0..dynamic_cpu_info.per_logical_cpu_utilization_percent.len() {
                 let graph_widget = &mut graph_widgets[i + 1];
-                graph_widget.add_data_point(0, dynamic_cpu_info.utilization_percent_per_core[i]);
                 graph_widget
-                    .add_data_point(1, dynamic_cpu_info.kernel_utilization_percent_per_core[i]);
+                    .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
+                graph_widget.add_data_point(
+                    1,
+                    dynamic_cpu_info.per_logical_cpu_kernel_utilization_percent[i],
+                );
             }
 
             this.imp().graph_widgets.set(graph_widgets);
@@ -419,7 +422,7 @@ mod imp {
             {
                 this.imp().utilization.set_text(&format!(
                     "{}%",
-                    dynamic_cpu_info.utilization_percent.round()
+                    dynamic_cpu_info.overall_utilization_percent.round()
                 ));
                 this.imp().speed.set_text(&format!(
                     "{:.2} GHz",

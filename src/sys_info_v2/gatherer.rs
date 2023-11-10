@@ -1,319 +1,337 @@
-/* sys_info_v2/gatherer.rs
- *
- * Copyright 2023 Romeo Calota
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
+use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
-use common::ipc::{LocalSocketListener, LocalSocketStream, SharedMemory, SharedMemoryContent};
+use super::dbus_interface::IoMissioncenterMissionCenterGatherer;
+pub use super::dbus_interface::{
+    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
+    ProcessUsageStats,
+};
+use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 
-const DEFAULT_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(100);
+macro_rules! dbus_call {
+    ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
+        use gtk::glib::g_critical;
 
-pub type ArrayString = common::ArrayString;
-pub type SharedData = common::SharedData;
-pub type SharedDataContent = common::SharedDataContent;
-pub type Message = common::ipc::Message;
-pub type AppDescriptor = common::AppDescriptor;
-pub type AppStats = common::AppStats;
-pub type ExitCode = common::ExitCode;
-pub type ProcessDescriptor = common::ProcessDescriptor;
-pub type ProcessState = common::ProcessState;
-#[allow(dead_code)]
-pub type ProcessStats = common::ProcessStats;
-pub type CpuStaticInfo = common::CpuStaticInfo;
-pub type GpuStaticInfoDescriptor = common::GpuStaticInfoDescriptor;
-pub type GpuDynamicInfoDescriptor = common::GpuDynamicInfoDescriptor;
+        let mut start = false;
+        for i in 1..=3 {
+            if start {
+                $self.start();
+            }
 
-#[path = "gatherer/common/mod.rs"]
-mod common;
+            match $self.dbus_proxy.borrow().as_ref().and_then(|f|Some(f.$method($($args)*))) {
+                None => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "DBus proxy is not initialized, on try {}",
+                        i,
+                    );
+                    if i == 3 {
+                        show_error_dialog_and_exit(&format!("DBus proxy is not initialized after 3 retries 😟. The app will now close."));
+                    }
+                    start = true;
+                    continue;
+                }
+                Some(Ok(reply)) => {
+                    return reply;
+                }
+                Some(Err(e)) => {
+                    dbg!(&e);
+                    match $self.is_running() {
+                    Ok(()) => {
+                        if e.name() == Some("org.freedesktop.DBus.Error.NoReply") {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "DBus call '{}' timed out, on try {}",
+                                $dbus_method_name, i,
+                            );
 
-#[derive(Debug, thiserror::Error)]
-pub enum GathererError {
-    #[error(transparent)]
-    IoError(#[from] std::io::Error),
-    #[error(transparent)]
-    SharedMemory(#[from] common::ipc::SharedMemoryError),
-    #[error("Expected message {0:?}, got {1:?}")]
-    MessageMissmatch(common::ipc::Message, Message),
-    #[error("Failed to send message: {0:?}")]
-    MessageSendFailed(#[from] std::sync::mpsc::SendError<Message>),
-    #[error("Disconnected")]
-    Disconnected,
-    #[error("Timeout")]
-    Timeout,
-}
-
-pub struct Gatherer<SharedData: Sized> {
-    listener: LocalSocketListener,
-    shared_memory: SharedMemory<SharedData>,
-
-    command: std::process::Command,
-    child: Option<std::process::Child>,
-    connection: Option<LocalSocketStream>,
-}
-
-unsafe impl<SharedData: Sized> Send for Gatherer<SharedData> {}
-
-impl<SharedData: Sized> Gatherer<SharedData> {
-    pub fn new<P: AsRef<std::path::Path>>(
-        executable_path: P,
-    ) -> Result<Gatherer<SharedData>, GathererError> {
-        let executable_path = executable_path.as_ref();
-
-        let process_pid = unsafe { libc::getpid() };
-
-        let socket_path = format!("{}/sock_{}", super::STATE_DIR.as_str(), process_pid);
-        if (std::path::Path::new(socket_path.as_str())).exists() {
-            std::fs::remove_file(socket_path.as_str())?;
+                            if i == 2 {
+                                g_critical!("MissionCenter::Gatherer", "Restarting Gatherer...");
+                                $self.stop();
+                                $self.start();
+                            }
+                        } else {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "DBus call '{}' failed on try {}: {}",
+                                $dbus_method_name, i, e,
+                            );
+                        }
+                    }
+                    Err(exit_code) => {
+                        g_critical!(
+                            "MissionCenter::Gatherer",
+                            "Child failed, on try {}, with exit code {}. Restarting Gatherer...",
+                            i, exit_code,
+                        );
+                        $self.start();
+                    }
+                }}
+            }
         }
-        let listener = LocalSocketListener::bind(socket_path.as_str())?;
-        listener.set_nonblocking(true)?;
 
-        let shm_file_link = format!("{}/shm_{}", super::STATE_DIR.as_str(), process_pid);
-        let shared_memory = SharedMemory::<SharedData>::new(shm_file_link.as_str(), true)?;
+        show_error_dialog_and_exit(&format!("DBus call '{}' failed after 3 retries 😟. The app will now close.", $dbus_method_name));
+    }};
+}
 
-        let commandline = format!(
-            "{} {} {}",
-            executable_path.display(),
-            socket_path.replace(" ", "\\ "),
-            shm_file_link.replace(" ", "\\ ")
+fn show_error_dialog_and_exit(message: &str) -> ! {
+    use crate::i18n::*;
+    use adw::prelude::*;
+
+    let message = Arc::<str>::from(message);
+    gtk::glib::idle_add_once(move || {
+        let app_window =
+            crate::MissionCenterApplication::default_instance().and_then(|app| app.active_window());
+
+        let error_dialog = adw::MessageDialog::new(
+            app_window.as_ref(),
+            Some("A fatal error has occurred"),
+            Some(message.as_ref()),
         );
-        let mut command = cmd!(&commandline);
+        error_dialog.set_modal(true);
+        error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
+        error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
+        error_dialog.connect_response(None, |dialog, _| {
+            dialog.close();
+            std::process::exit(-1);
+        });
+        error_dialog.present();
+    });
+
+    loop {}
+}
+
+pub struct Gatherer<'a> {
+    dbus_proxy: RefCell<Option<dbus::blocking::Proxy<'a, dbus::blocking::Connection>>>,
+
+    command: RefCell<std::process::Command>,
+    child: RefCell<Option<std::process::Child>>,
+}
+
+impl Drop for Gatherer<'_> {
+    fn drop(&mut self) {
+        self.stop();
+    }
+}
+
+impl<'a> Gatherer<'a> {
+    pub fn new() -> Self {
+        let mut command = if *IS_FLATPAK {
+            const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+
+            let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+            cmd.env_remove("LD_PRELOAD");
+            cmd.arg("-v")
+                .arg("--watch-bus")
+                .arg("--host")
+                .arg(Self::executable());
+
+            cmd
+        } else {
+            let mut cmd = std::process::Command::new("sh");
+            cmd.env_remove("LD_PRELOAD");
+            cmd.arg("-c");
+            cmd.arg(Self::executable());
+
+            cmd
+        };
         command
             .stdout(std::process::Stdio::inherit())
             .stderr(std::process::Stdio::inherit());
 
-        Ok(Gatherer {
-            listener,
-            shared_memory,
+        Self {
+            dbus_proxy: RefCell::new(None),
 
-            command,
-            child: None,
-            connection: None,
-        })
+            command: RefCell::new(command),
+            child: RefCell::new(None),
+        }
     }
 
-    pub fn start(&mut self) -> Result<(), GathererError> {
-        if self.is_running().is_ok() {
-            return Ok(());
-        }
+    pub fn start(&self) {
+        use gtk::glib::g_critical;
 
-        let child = self.command.spawn()?;
-        self.child = Some(child);
+        self.child
+            .replace(Some(match self.command.borrow_mut().spawn() {
+                Ok(c) => c,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to spawn Gatherer process: {}",
+                        &e
+                    );
+                    show_error_dialog_and_exit(&format!("Failed to spawn Gatherer process: {}", e));
+                }
+            }));
 
         // Let the child process start up
         std::thread::sleep(std::time::Duration::from_millis(50));
 
-        // Try to connect multiple times, if not successful, then bail
-        for _ in 0..10 {
-            self.connection = match self.listener.accept() {
-                Ok(connection) => {
-                    connection.set_nonblocking(true)?;
-                    Some(connection)
+        if self.dbus_proxy.borrow().is_none() {
+            let connection = match dbus::blocking::Connection::new_session() {
+                Ok(c) => c,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to connect to DBus session bus: {}",
+                        &e
+                    );
+                    show_error_dialog_and_exit(&format!(
+                        "Failed to connect to the DBus session bus: {}",
+                        e
+                    ));
                 }
-                Err(e) => match e.kind() {
-                    std::io::ErrorKind::WouldBlock => {
-                        // Wait a bit and try again, the child process might just be slow to start
-                        std::thread::sleep(std::time::Duration::from_millis(10));
-                        continue;
-                    }
-                    _ => return Err(e.into()),
-                },
             };
 
-            break;
+            let dbus_proxy = dbus::blocking::Proxy::new(
+                "io.missioncenter.MissionCenter.Gatherer",
+                "/io/missioncenter/MissionCenter/Gatherer",
+                std::time::Duration::from_millis(5000),
+                connection,
+            );
+            self.dbus_proxy.replace(Some(dbus_proxy));
         }
-
-        if self.connection.is_none() {
-            return Err(GathererError::Timeout);
-        }
-
-        Ok(())
     }
 
-    pub fn stop(&mut self) -> Result<(), GathererError> {
-        if self.is_running().is_err() {
-            return Ok(());
-        }
+    pub fn stop(&self) {
+        use gtk::glib::g_critical;
 
-        let child = core::mem::take(&mut self.child);
-        if let Some(mut child) = child {
-            'outter: for _ in 0..2 {
-                let _ = self.send_message(Message::Exit);
-
-                for _ in 0..2 {
-                    match child.try_wait()? {
-                        Some(_) => break 'outter,
-                        None => {
-                            // Wait a bit and try again, the child process might just be slow to stop
-                            std::thread::sleep(std::time::Duration::from_millis(10));
-                            continue;
-                        }
-                    }
-                }
-
-                // Try to get the child to wake up in case it's stuck
-                unsafe {
-                    libc::kill(child.id() as _, libc::SIGCONT);
-                }
+        let mut child = self.child.borrow_mut();
+        if let Some(child) = child.as_mut() {
+            // Try to get the child to wake up in case it's stuck
+            #[cfg(target_family = "unix")]
+            unsafe {
+                libc::kill(child.id() as _, libc::SIGCONT);
             }
 
-            // Either way sever the connection with the child process
-            self.connection = None;
-
-            if child.try_wait()?.is_none() {
-                match child.kill() {
-                    Ok(_) => {}
+            let _ = child.kill();
+            for _ in 0..2 {
+                match child.try_wait() {
+                    Ok(Some(_)) => return,
+                    Ok(None) => {
+                        // Wait a bit and try again, the child process might just be slow to stop
+                        std::thread::sleep(std::time::Duration::from_millis(20));
+                        continue;
+                    }
                     Err(e) => {
-                        if e.kind() == std::io::ErrorKind::InvalidInput {
-                            // The process has already exited
-                            return Ok(());
-                        }
+                        g_critical!(
+                            "MissionCenter::Gatherer",
+                            "Failed to wait for Gatherer process to stop: {}",
+                            &e
+                        );
 
-                        return Err(e.into());
+                        show_error_dialog_and_exit(&format!(
+                            "Failed to wait for Gatherer process to stop: {}",
+                            e
+                        ));
                     }
                 }
             }
         }
-
-        Ok(())
     }
 
-    pub fn send_message(&mut self, message: Message) -> Result<(), GathererError> {
-        use std::io::Write;
-
-        if let Some(connection) = self.connection.as_mut() {
-            connection.write(common::to_binary(&message))?;
-
-            let reply = Self::read_message(connection, DEFAULT_TIMEOUT)?;
-            if reply != Message::Acknowledge {
-                return Err(GathererError::MessageMissmatch(Message::Acknowledge, reply));
-            }
-
-            Ok(())
-        } else {
-            Err(GathererError::Disconnected)
-        }
+    pub fn cpu_static_info(&self) -> CpuStaticInfo {
+        dbus_call!(self, cpu_static_info, "GetCPUStaticInfo");
     }
 
-    pub fn shared_memory(&mut self) -> Result<SharedMemoryContent<SharedData>, GathererError> {
-        if let Some(connection) = self.connection.as_mut() {
-            let message = Self::read_message(connection, std::time::Duration::from_millis(5000))?;
-            if message != Message::DataReady {
-                return Err(GathererError::MessageMissmatch(Message::DataReady, message));
-            }
-
-            Ok(unsafe { self.shared_memory.acquire() })
-        } else {
-            Err(GathererError::Disconnected)
-        }
+    pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
+        dbus_call!(self, cpu_dynamic_info, "GetCPUDynamicInfo");
     }
 
-    pub unsafe fn shared_memory_unchecked(&mut self) -> SharedMemoryContent<SharedData> {
-        self.shared_memory.acquire()
+    pub fn enumerate_gpus(&self) -> Vec<Arc<str>> {
+        dbus_call!(self, enumerate_gpus, "EnumerateGPUs");
     }
 
-    pub fn is_running(&mut self) -> Result<(), (ExitCode, i32)> {
-        let child = match self.child.as_mut() {
+    pub fn gpu_static_info(&self, id: &str) -> GpuStaticInfo {
+        dbus_call!(self, gpu_static_info, "GetGPUStaticInfo", id);
+    }
+
+    pub fn gpu_dynamic_info(&self, id: &str) -> GpuDynamicInfo {
+        dbus_call!(self, gpu_dynamic_info, "GetGPUDynamicInfo", id);
+    }
+
+    pub fn processes(&self) -> HashMap<u32, Process> {
+        dbus_call!(self, processes, "GetProcesses");
+    }
+
+    pub fn apps(&self) -> HashMap<Arc<str>, App> {
+        dbus_call!(self, apps, "GetApps");
+    }
+
+    pub fn terminate_process(&self, process_id: u32) {
+        dbus_call!(self, terminate_process, "TerminateProcess", process_id);
+    }
+
+    pub fn kill_process(&self, process_id: u32) {
+        dbus_call!(self, kill_process, "KillProcess", process_id);
+    }
+
+    pub fn is_running(&self) -> Result<(), i32> {
+        let mut child = self.child.borrow_mut();
+        let child = match child.as_mut() {
             Some(child) => child,
-            None => return Err((ExitCode::Unknown, -1)),
+            None => return Err(-1),
         };
 
         let status = match child.try_wait() {
             Ok(None) => return Ok(()),
             Ok(Some(status)) => status,
             Err(_) => {
-                return Err((ExitCode::Unknown, -1));
+                return Err(-1);
             }
         };
 
         match status.code() {
-            Some(status_code) => {
-                if status_code < u8::MAX as _ && status_code > 0 {
-                    Err((ExitCode::from(status_code as u8), status_code))
-                } else {
-                    Err((ExitCode::Unknown, status_code))
-                }
-            }
-            None => Err((ExitCode::Unknown, -1)),
+            Some(status_code) => Err(status_code),
+            None => Err(-1),
         }
     }
 
-    fn read_message(
-        connection: &mut LocalSocketStream,
-        timeout: std::time::Duration,
-    ) -> Result<Message, GathererError> {
-        use gtk::glib::ffi::*;
-        use std::{io::Read, os::fd::AsRawFd};
+    fn executable() -> String {
+        use gtk::glib::g_debug;
 
-        let mut poll_fd = [GPollFD {
-            fd: connection.as_raw_fd(),
-            events: (G_IO_IN | G_IO_HUP | G_IO_ERR) as _,
-            revents: 0,
-        }];
-        let ret = unsafe {
-            g_poll(
-                poll_fd.as_mut_ptr(),
-                poll_fd.len() as _,
-                timeout.as_millis() as _,
-            )
-        };
-        if ret == 0 {
-            return Err(GathererError::Timeout);
-        } else if ret < 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
+        let exe_simple = "missioncenter-gatherer".to_owned();
 
-        if poll_fd[0].revents & G_IO_HUP as u16 > 0 {
-            return Err(GathererError::Disconnected);
-        }
+        if *IS_FLATPAK {
+            let flatpak_app_path = FLATPAK_APP_PATH.as_str();
 
-        if poll_fd[0].revents & G_IO_ERR as u16 > 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
+            let cmd_glibc_status = cmd_flatpak_host!(&format!(
+                "{}/bin/missioncenter-gatherer-glibc just-testing",
+                flatpak_app_path
+            ))
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
+            if cmd_glibc_status {
+                let exe_glibc = format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path);
+                g_debug!(
+                    "MissionCenter::Gatherer",
+                    "Gatherer executable name: {}",
+                    &exe_glibc
+                );
+                return exe_glibc;
+            }
 
-        let mut reply = Message::Unknown;
-        let reply_bin = common::to_binary_mut(&mut reply);
-
-        for byte in 0..core::mem::size_of::<Message>() {
-            const RETRIES: usize = 2;
-            for i in 0..RETRIES {
-                // We know there is data ready on the file descriptor, so we can safely read
-                match connection.read_exact(&mut reply_bin[byte..byte + 1]) {
-                    Err(e) => {
-                        // In case there was only a partial read, try again
-                        if e.kind() == std::io::ErrorKind::WouldBlock {
-                            if i == RETRIES - 1 {
-                                return Err(GathererError::Timeout);
-                            } else {
-                                std::thread::sleep(std::time::Duration::from_millis(5));
-                                continue;
-                            }
-                        }
-                        return if e.kind() == std::io::ErrorKind::UnexpectedEof {
-                            Err(GathererError::Disconnected)
-                        } else {
-                            Err(e.into())
-                        };
-                    }
-                    _ => break,
-                }
+            let cmd_musl_status = cmd_flatpak_host!(&format!(
+                "{}/bin/missioncenter-gatherer-musl just-testing",
+                flatpak_app_path
+            ))
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
+            if cmd_musl_status {
+                let exe_musl = format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path);
+                g_debug!(
+                    "MissionCenter::Gatherer",
+                    "Gatherer executable name: {}",
+                    &exe_musl
+                );
+                return exe_musl;
             }
         }
 
-        Ok(reply)
+        g_debug!(
+            "MissionCenter::Gatherer",
+            "Gatherer executable name: {}",
+            &exe_simple
+        );
+
+        exe_simple
     }
 }

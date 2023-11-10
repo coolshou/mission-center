@@ -18,11 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use super::{cpu, CpuInfoExt};
-use super::{gpu, GpuInfoExt};
+pub use apps::*;
+pub use cpu_info::*;
+pub use gpu_info::*;
+pub use processes::*;
+pub use utilities::*;
 
+mod apps;
 mod cpu_info;
 mod gpu_info;
-
-pub type GpuInfo = gpu_info::GpuInfo;
-pub type CpuInfo = cpu_info::CpuInfo;
+mod processes;
+mod utilities;

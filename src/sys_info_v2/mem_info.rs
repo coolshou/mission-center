@@ -198,12 +198,14 @@ impl MemInfo {
         let mut cmd = if !is_flatpak {
             let mut cmd = Command::new("pkexec");
             cmd.arg("dmidecode").arg("--type").arg("17");
+            cmd.env_remove("LD_PRELOAD");
             cmd
         } else {
-            let cmd = cmd_flatpak_host!(format!(
+            let mut cmd = cmd_flatpak_host!(format!(
                 "pkexec {}/bin/dmidecode --type 17",
                 &*FLATPAK_APP_PATH
             ));
+            cmd.env_remove("LD_PRELOAD");
             cmd
         };
 

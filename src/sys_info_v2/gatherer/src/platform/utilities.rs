@@ -1,4 +1,4 @@
-/* sys_info_v2/gatherer/common/ipc/message.rs
+/* sys_info_v2/gatherer/src/platform/utilities.rs
  *
  * Copyright 2023 Romeo Calota
  *
@@ -18,23 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-#[allow(dead_code)]
-pub enum Message {
-    GetProcesses,
-    GetApps,
-    GetAppPIDs,
-    GetCpuStaticInfo,
-    GetCpuDynamicInfo,
-    GetLogicalCpuInfo,
-    EnumerateGpus,
-    GetGpuStaticInfo,
-    GetGpuDynamicInfo,
-    TerminateProcess(u32 /* PID */),
-    KillProcess(u32 /* PID */),
-    KillProcessTree(u32 /* Parent PID */),
-    Acknowledge,
-    DataReady,
-    Exit,
-    Unknown,
+/// This trait is used to provide platform specific behavior to the Gatherer
+pub trait PlatformUtilitiesExt: Default {
+    /// Sets up a callback that should be called when the main app exits
+    fn on_main_app_exit(&self, callback: Box<dyn FnMut() + Send>);
 }
