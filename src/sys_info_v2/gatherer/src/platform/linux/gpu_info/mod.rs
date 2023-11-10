@@ -18,396 +18,259 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
-use arrayvec::ArrayString;
-use lazy_static::lazy_static;
-
-use super::{gpu, GpuInfoExt};
-
-lazy_static! {
-    static ref INIT_NVTOP: () = unsafe {
-        nvtop::init_extract_gpuinfo_amdgpu();
-        nvtop::init_extract_gpuinfo_nvidia();
-    };
-}
+use crate::platform::{
+    ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, OpenGLApiVersion,
+};
 
 #[allow(unused)]
 mod nvtop;
 mod vulkan_info;
 
-pub struct GpuInfo {
-    vk_info: Option<vulkan_info::VulkanInfo>,
-
-    gpu_list: Box<nvtop::ListHead>,
-
-    static_info: HashMap<ArrayString<16>, gpu::StaticInfoDescriptor>,
-
-    pci_ids_cache: Vec<ArrayString<16>>,
-    static_info_cache: Vec<gpu::StaticInfoDescriptor>,
-    dynamic_info_cache: Vec<gpu::DynamicInfoDescriptor>,
+#[derive(Debug)]
+pub struct LinuxGpuStaticInfo {
+    id: Arc<str>,
+    device_name: Arc<str>,
+    vendor_id: u16,
+    device_id: u16,
+    total_memory: u64,
+    opengl_version: Option<OpenGLApiVersion>,
+    vulkan_version: Option<ApiVersion>,
+    pcie_gen: u8,
+    pcie_lanes: u8,
 }
 
-impl Drop for GpuInfo {
-    fn drop(&mut self) {
-        unsafe {
-            nvtop::gpuinfo_shutdown_info_extraction(self.gpu_list.as_mut());
+impl LinuxGpuStaticInfo {}
+
+impl Default for LinuxGpuStaticInfo {
+    fn default() -> Self {
+        Self {
+            id: Arc::from(""),
+            device_name: Arc::from(""),
+            vendor_id: 0,
+            device_id: 0,
+            total_memory: 0,
+            opengl_version: None,
+            vulkan_version: None,
+            pcie_gen: 0,
+            pcie_lanes: 0,
         }
     }
 }
 
-impl GpuInfoExt for GpuInfo {
-    fn new() -> Self {
-        #[allow(unused_variables)]
-        let init = *INIT_NVTOP;
+impl GpuStaticInfoExt for LinuxGpuStaticInfo {
+    fn id(&self) -> &str {
+        self.id.as_ref()
+    }
 
-        let mut gpu_list = Box::new(nvtop::ListHead {
+    fn device_name(&self) -> &str {
+        self.device_name.as_ref()
+    }
+
+    fn vendor_id(&self) -> u16 {
+        self.vendor_id
+    }
+
+    fn device_id(&self) -> u16 {
+        self.device_id
+    }
+
+    fn total_memory(&self) -> u64 {
+        self.total_memory
+    }
+
+    fn opengl_version(&self) -> Option<&OpenGLApiVersion> {
+        self.opengl_version.as_ref()
+    }
+
+    fn vulkan_version(&self) -> Option<&ApiVersion> {
+        self.vulkan_version.as_ref()
+    }
+
+    fn metal_version(&self) -> Option<&ApiVersion> {
+        None
+    }
+
+    fn direct3d_version(&self) -> Option<&ApiVersion> {
+        None
+    }
+
+    fn pcie_gen(&self) -> u8 {
+        self.pcie_gen
+    }
+
+    fn pcie_lanes(&self) -> u8 {
+        self.pcie_lanes
+    }
+}
+
+#[derive(Debug)]
+pub struct LinuxGpuDynamicInfo {
+    id: Arc<str>,
+    temp_celsius: u32,
+    fan_speed_percent: u32,
+    util_percent: u32,
+    power_draw_watts: f32,
+    power_draw_max_watts: f32,
+    clock_speed_mhz: u32,
+    clock_speed_max_mhz: u32,
+    mem_speed_mhz: u32,
+    mem_speed_max_mhz: u32,
+    free_memory: u64,
+    used_memory: u64,
+    encoder_percent: u32,
+    decoder_percent: u32,
+}
+
+impl Default for LinuxGpuDynamicInfo {
+    fn default() -> Self {
+        Self {
+            id: Arc::from(""),
+            temp_celsius: 0,
+            fan_speed_percent: 0,
+            util_percent: 0,
+            power_draw_watts: 0.0,
+            power_draw_max_watts: 0.0,
+            clock_speed_mhz: 0,
+            clock_speed_max_mhz: 0,
+            mem_speed_mhz: 0,
+            mem_speed_max_mhz: 0,
+            free_memory: 0,
+            used_memory: 0,
+            encoder_percent: 0,
+            decoder_percent: 0,
+        }
+    }
+}
+
+impl LinuxGpuDynamicInfo {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+
+impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
+    fn id(&self) -> &str {
+        self.id.as_ref()
+    }
+
+    fn temp_celsius(&self) -> u32 {
+        self.temp_celsius
+    }
+
+    fn fan_speed_percent(&self) -> u32 {
+        self.fan_speed_percent
+    }
+
+    fn util_percent(&self) -> u32 {
+        self.util_percent
+    }
+
+    fn power_draw_watts(&self) -> f32 {
+        self.power_draw_watts
+    }
+
+    fn power_draw_max_watts(&self) -> f32 {
+        self.power_draw_max_watts
+    }
+
+    fn clock_speed_mhz(&self) -> u32 {
+        self.clock_speed_mhz
+    }
+
+    fn clock_speed_max_mhz(&self) -> u32 {
+        self.clock_speed_max_mhz
+    }
+
+    fn mem_speed_mhz(&self) -> u32 {
+        self.mem_speed_mhz
+    }
+
+    fn mem_speed_max_mhz(&self) -> u32 {
+        self.mem_speed_max_mhz
+    }
+
+    fn free_memory(&self) -> u64 {
+        self.free_memory
+    }
+
+    fn used_memory(&self) -> u64 {
+        self.used_memory
+    }
+
+    fn encoder_percent(&self) -> u32 {
+        self.encoder_percent
+    }
+
+    fn decoder_percent(&self) -> u32 {
+        self.decoder_percent
+    }
+}
+
+pub struct LinuxGpuInfo {
+    vk_info: Option<vulkan_info::VulkanInfo>,
+
+    gpu_list: Arc<RwLock<nvtop::ListHead>>,
+    static_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuStaticInfo>,
+    dynamic_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuDynamicInfo>,
+
+    gpu_list_refreshed: bool,
+}
+
+impl Drop for LinuxGpuInfo {
+    fn drop(&mut self) {
+        use std::ops::DerefMut;
+
+        let mut gl = self.gpu_list.write().unwrap();
+        unsafe {
+            nvtop::gpuinfo_shutdown_info_extraction(gl.deref_mut());
+        }
+    }
+}
+
+impl LinuxGpuInfo {
+    pub fn new() -> Self {
+        use std::ops::DerefMut;
+
+        unsafe {
+            nvtop::init_extract_gpuinfo_intel();
+            nvtop::init_extract_gpuinfo_amdgpu();
+            nvtop::init_extract_gpuinfo_nvidia();
+        }
+
+        let gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
             prev: std::ptr::null_mut(),
-        });
-        gpu_list.next = gpu_list.as_mut();
-        gpu_list.prev = gpu_list.as_mut();
+        }));
+        {
+            let mut gl = gpu_list.write().unwrap();
+            gl.next = gl.deref_mut();
+            gl.prev = gl.deref_mut();
+        }
 
-        Self {
-            vk_info: unsafe { vulkan_info::VulkanInfo::new() },
+        let mut this = Self {
+            vk_info: vulkan_info::VulkanInfo::new(),
 
             gpu_list,
 
             static_info: HashMap::new(),
+            dynamic_info: HashMap::new(),
 
-            pci_ids_cache: Vec::new(),
-            static_info_cache: Vec::new(),
-            dynamic_info_cache: Vec::new(),
-        }
-    }
-
-    fn enumerate(&mut self) -> gpu::PciIds {
-        let mut result = gpu::PciIds::default();
-
-        if self.pci_ids_cache.is_empty() {
-            self.load_pci_ids();
-        }
-
-        let drop_count = self
-            .pci_ids_cache
-            .chunks(result.ids.capacity())
-            .next()
-            .unwrap_or(&[])
-            .len();
-
-        let it = self.pci_ids_cache.drain(0..drop_count);
-        result.ids.extend(it);
-        result.is_complete = self.pci_ids_cache.is_empty();
-
-        result
-    }
-
-    fn static_info(&mut self) -> gpu::StaticInfo {
-        let mut result = gpu::StaticInfo::default();
-
-        if self.static_info_cache.is_empty() {
-            self.load_static_info();
-        }
-
-        let drop_count = self
-            .static_info_cache
-            .chunks(result.desc.capacity())
-            .next()
-            .unwrap_or(&[])
-            .len();
-
-        let it = self.static_info_cache.drain(0..drop_count);
-        result.desc.extend(it);
-        result.is_complete = self.static_info_cache.is_empty();
-
-        result
-    }
-
-    fn dynamic_info(&mut self) -> gpu::DynamicInfo {
-        let mut result = gpu::DynamicInfo::default();
-
-        if self.dynamic_info_cache.is_empty() {
-            self.load_dynamic_info();
-        }
-
-        let drop_count = self
-            .dynamic_info_cache
-            .chunks(result.desc.capacity())
-            .next()
-            .unwrap_or(&[])
-            .len();
-
-        let it = self.dynamic_info_cache.drain(0..drop_count);
-        result.desc.extend(it);
-        result.is_complete = self.dynamic_info_cache.is_empty();
-
-        result
-    }
-}
-
-impl GpuInfo {
-    fn load_pci_ids(&mut self) {
-        use crate::{critical, ToArrayStringLossy};
-
-        let mut gpu_count: u32 = 0;
-        let nvt_result =
-            unsafe { nvtop::gpuinfo_init_info_extraction(&mut gpu_count, self.gpu_list.as_mut()) };
-        if nvt_result == 0 {
-            critical!(
-                "Gatherer::GpuInfo",
-                "Unable to initialize GPU info extraction"
-            );
-            return;
-        }
-
-        let nvt_result = unsafe { nvtop::gpuinfo_populate_static_infos(self.gpu_list.as_mut()) };
-        if nvt_result == 0 {
-            unsafe { nvtop::gpuinfo_shutdown_info_extraction(self.gpu_list.as_mut()) };
-
-            critical!("Gatherer::GPUInfo", "Unable to populate static GPU info");
-            return;
-        }
-
-        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(self.gpu_list.as_mut()) };
-        if result == 0 {
-            critical!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
-            return;
-        }
-
-        self.static_info.clear();
-        self.static_info_cache.clear();
-        self.dynamic_info_cache.clear();
-
-        let mut device: *mut nvtop::ListHead = self.gpu_list.next;
-        while device != self.gpu_list.as_mut() {
-            use std::fmt::Write;
-
-            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
-            device = unsafe { (*device).next };
-
-            let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
-            let pdev = match pdev.to_str() {
-                Ok(pd) => pd,
-                Err(_) => {
-                    critical!(
-                        "Gatherer::GpuInfo",
-                        "Unable to convert PCI ID to string: {:?}",
-                        pdev
-                    );
-                    continue;
-                }
-            };
-            let mut pci_id = ArrayString::<16>::new();
-            match write!(pci_id, "{}", pdev) {
-                Ok(_) => {}
-                Err(_) => {
-                    critical!(
-                        "Gatherer::GpuInfo",
-                        "PCI ID exceeds 16 characters: {}",
-                        pdev
-                    );
-                    continue;
-                }
-            }
-
-            let device_name =
-                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) };
-            let device_name = match device_name.to_str() {
-                Ok(dn) => dn,
-                Err(_) => "Unknown",
-            };
-
-            let mut uevent_path = ArrayString::<64>::new();
-            let _ = write!(uevent_path, "/sys/bus/pci/devices/{}/uevent", pdev);
-            let mut uevent = std::fs::read_to_string(uevent_path.as_str());
-            if uevent.is_err() {
-                uevent_path.clear();
-                let _ = write!(
-                    uevent_path,
-                    "/sys/bus/pci/devices/{}/uevent",
-                    pdev.to_lowercase()
-                );
-                uevent = std::fs::read_to_string(uevent_path.as_str());
-            }
-            let ven_dev_id = if let Ok(uevent) = uevent {
-                let mut vendor_id = 0;
-                let mut device_id = 0;
-
-                for line in uevent.lines().map(|l| l.trim()) {
-                    if line.starts_with("PCI_ID=") {
-                        let mut ids = line[7..].split(':');
-                        vendor_id = ids
-                            .next()
-                            .and_then(|id| u16::from_str_radix(id, 16).ok())
-                            .unwrap_or(0);
-                        device_id = ids
-                            .next()
-                            .and_then(|id| u16::from_str_radix(id, 16).ok())
-                            .unwrap_or(0);
-                        break;
-                    }
-                }
-
-                (vendor_id, device_id)
-            } else {
-                critical!(
-                    "Gatherer::GPUInfo",
-                    "Unable to read uevent for device {}",
-                    pdev
-                );
-
-                (0, 0)
-            };
-
-            let static_info = gpu::StaticInfoDescriptor {
-                pci_id: pci_id.clone(),
-                device_name: device_name.to_array_string_lossy(),
-                vendor_id: ven_dev_id.0,
-                device_id: ven_dev_id.1,
-
-                total_memory: dev.dynamic_info.total_memory,
-
-                pcie_gen: dev.dynamic_info.pcie_link_gen as _,
-                pcie_lanes: dev.dynamic_info.pcie_link_width as _,
-
-                // Leave the rest for when static info is actually requested
-                ..Default::default()
-            };
-
-            self.pci_ids_cache.push(pci_id);
-            self.static_info.insert(pci_id, static_info);
-        }
-    }
-
-    fn load_static_info(&mut self) {
-        use std::fmt::Write;
-
-        let vulkan_versions = if let Some(vulkan_info) = &self.vk_info {
-            unsafe { vulkan_info.supported_vulkan_versions() }.unwrap_or(HashMap::new())
-        } else {
-            HashMap::new()
+            gpu_list_refreshed: false,
         };
 
-        self.static_info_cache.clear();
-        for (pci_id, static_info) in &mut self.static_info {
-            let mut dri_path = ArrayString::<64>::new();
-            let _ = write!(dri_path, "/dev/dri/by-path/pci-{}-card", pci_id);
-            let mut opengl_version = unsafe { Self::supported_opengl_version(dri_path.as_str()) };
-            if opengl_version.is_none() {
-                dri_path.clear();
-                let _ = write!(
-                    dri_path,
-                    "/dev/dri/by-path/pci-{}-card",
-                    pci_id.to_lowercase()
-                );
-                opengl_version = unsafe { Self::supported_opengl_version(dri_path.as_str()) };
-            }
-            static_info.opengl_version = opengl_version;
+        this.refresh_gpu_list();
 
-            let device_id = ((static_info.vendor_id as u32) << 16) | static_info.device_id as u32;
-            if let Some(vulkan_version) = vulkan_versions.get(&device_id) {
-                static_info.vulkan_version = Some(*vulkan_version);
-            }
-
-            self.static_info_cache.push(static_info.clone());
-        }
-
-        self.static_info_cache
-            .sort_by(|dev1, dev2| dev1.pci_id.cmp(&dev2.pci_id))
-    }
-
-    fn load_dynamic_info(&mut self) {
-        use crate::critical;
-        use std::fmt::Write;
-
-        self.dynamic_info_cache.clear();
-
-        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(self.gpu_list.as_mut()) };
-        if result == 0 {
-            critical!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
-            return;
-        }
-
-        let result = unsafe { nvtop::gpuinfo_refresh_processes(self.gpu_list.as_mut()) };
-        if result == 0 {
-            critical!("Gatherer::GpuInfo", "Unable to refresh GPU processes");
-            return;
-        }
-
-        let result =
-            unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(self.gpu_list.as_mut()) };
-        if result == 0 {
-            critical!(
-                "Gatherer::GpuInfo",
-                "Unable to fix dynamic GPU info from process info"
-            );
-            return;
-        }
-
-        let processes = crate::Processes::process_cache();
-
-        let mut device: *mut nvtop::ListHead = self.gpu_list.next;
-        while device != self.gpu_list.as_mut() {
-            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
-            device = unsafe { (*device).next };
-
-            let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
-            let pdev = match pdev.to_str() {
-                Ok(pd) => pd,
-                Err(_) => {
-                    critical!(
-                        "Gatherer::GpuInfo",
-                        "Unable to convert PCI ID to string: {:?}",
-                        pdev
-                    );
-                    continue;
-                }
-            };
-            let mut pci_id = ArrayString::<16>::new();
-            match write!(pci_id, "{}", pdev) {
-                Ok(_) => {}
-                Err(_) => {
-                    critical!(
-                        "Gatherer::GpuInfo",
-                        "PCI ID exceeds 16 characters: {}",
-                        pdev
-                    );
-                    continue;
-                }
-            }
-
-            self.dynamic_info_cache.push(gpu::DynamicInfoDescriptor {
-                pci_id: pci_id.clone(),
-                temp_celsius: dev.dynamic_info.gpu_temp,
-                fan_speed_percent: dev.dynamic_info.fan_speed,
-                util_percent: dev.dynamic_info.gpu_util_rate,
-                power_draw_watts: dev.dynamic_info.power_draw as f32 / 1000.,
-                power_draw_max_watts: dev.dynamic_info.power_draw_max as f32 / 1000.,
-                clock_speed_mhz: dev.dynamic_info.gpu_clock_speed,
-                clock_speed_max_mhz: dev.dynamic_info.gpu_clock_speed_max,
-                mem_speed_mhz: dev.dynamic_info.mem_clock_speed,
-                mem_speed_max_mhz: dev.dynamic_info.mem_clock_speed_max,
-                free_memory: dev.dynamic_info.free_memory,
-                used_memory: dev.dynamic_info.used_memory,
-                encoder_percent: dev.dynamic_info.encoder_rate,
-                decoder_percent: dev.dynamic_info.decoder_rate,
-            });
-
-            for i in 0..dev.processes_count as usize {
-                let process = unsafe { &*dev.processes.add(i) };
-                if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
-                    proc.descriptor.stats.gpu_usage = process.gpu_usage as f32;
-                }
-            }
-        }
-
-        self.dynamic_info_cache
-            .sort_by(|dev1, dev2| dev1.pci_id.cmp(&dev2.pci_id));
+        this
     }
 
     #[allow(non_snake_case)]
-    unsafe fn supported_opengl_version(dri_path: &str) -> Option<(u8, u8, bool)> {
-        use crate::critical;
+    unsafe fn supported_opengl_version(dri_path: &str) -> Option<OpenGLApiVersion> {
+        use crate::{error, platform::OpenGLApi};
         use gbm::AsRaw;
         use std::os::fd::*;
 
@@ -435,10 +298,9 @@ impl GpuInfo {
 
         let drm_device = match DrmDevice::open(dri_path) {
             Err(e) => {
-                critical!(
+                error!(
                     "Gatherer::GpuInfo",
-                    "Failed to get OpenGL information: {}",
-                    e
+                    "Failed to get OpenGL information: {}", e
                 );
                 return None;
             }
@@ -447,10 +309,9 @@ impl GpuInfo {
 
         let gbm_device = match gbm::Device::new(drm_device) {
             Err(e) => {
-                critical!(
+                error!(
                     "Gatherer::GpuInfo",
-                    "Failed to get OpenGL information: {}",
-                    e
+                    "Failed to get OpenGL information: {}", e
                 );
                 return None;
             }
@@ -495,7 +356,7 @@ impl GpuInfo {
             }
         };
         if egl_display.is_null() {
-            critical!(
+            error!(
                 "Gatherer::GpuInfo",
                 "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
                 egl::get_error()
@@ -506,7 +367,7 @@ impl GpuInfo {
         let mut egl_major = 0;
         let mut egl_minor = 0;
         if !egl::initialize(egl_display, &mut egl_major, &mut egl_minor) {
-            critical!(
+            error!(
                 "Gathereer::GpuInfo",
                 "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
                 egl::get_error()
@@ -515,7 +376,7 @@ impl GpuInfo {
         }
 
         if egl_major < 1 || (egl_major == 1 && egl_minor < 4) {
-            critical!(
+            error!(
                 "Gatherer::GpuInfo",
                 "Failed to get OpenGL information: EGL version 1.4 or higher is required to test OpenGL support"
             );
@@ -526,7 +387,7 @@ impl GpuInfo {
         if !egl::bind_api(gl_api) {
             gl_api = egl::EGL_OPENGL_ES_API;
             if !egl::bind_api(gl_api) {
-                critical!(
+                error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to bind an EGL API ({:X})",
                     egl::get_error()
@@ -575,7 +436,7 @@ impl GpuInfo {
         let egl_config = match egl_config {
             Some(ec) => ec,
             None => {
-                critical!(
+                error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
                     egl::get_error()
@@ -622,7 +483,7 @@ impl GpuInfo {
         match egl_context {
             Some(ec) => egl::destroy_context(egl_display, ec),
             None => {
-                critical!(
+                error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
                     egl::get_error()
@@ -631,11 +492,340 @@ impl GpuInfo {
             }
         };
 
-        Some((
-            ver_major as u8,
-            ver_minor as u8,
-            gl_api != egl::EGL_OPENGL_API,
-        ))
+        Some(OpenGLApiVersion {
+            major: ver_major as u8,
+            minor: ver_minor as u8,
+            api: if gl_api != egl::EGL_OPENGL_API {
+                OpenGLApi::OpenGLES
+            } else {
+                OpenGLApi::OpenGL
+            },
+        })
+    }
+}
+
+impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
+    type S = LinuxGpuStaticInfo;
+    type D = LinuxGpuDynamicInfo;
+    type P = crate::platform::Processes;
+    type Iter = std::iter::Map<
+        std::collections::hash_map::Keys<'a, arrayvec::ArrayString<16>, LinuxGpuStaticInfo>,
+        fn(&arrayvec::ArrayString<16>) -> &str,
+    >;
+
+    fn refresh_gpu_list(&mut self) {
+        use crate::{critical, warning};
+        use arrayvec::ArrayString;
+        use std::{io::Read, ops::DerefMut};
+
+        if self.gpu_list_refreshed {
+            return;
+        }
+
+        self.gpu_list_refreshed = true;
+
+        let mut gpu_list = self.gpu_list.write().unwrap();
+        let gpu_list = gpu_list.deref_mut();
+
+        let mut gpu_count: u32 = 0;
+        let nvt_result = unsafe { nvtop::gpuinfo_init_info_extraction(&mut gpu_count, gpu_list) };
+        if nvt_result == 0 {
+            critical!(
+                "Gatherer::GpuInfo",
+                "Unable to initialize GPU info extraction"
+            );
+            return;
+        }
+
+        let nvt_result = unsafe { nvtop::gpuinfo_populate_static_infos(gpu_list) };
+        if nvt_result == 0 {
+            unsafe { nvtop::gpuinfo_shutdown_info_extraction(gpu_list) };
+
+            critical!("Gatherer::GPUInfo", "Unable to populate static GPU info");
+            return;
+        }
+
+        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list) };
+        if result == 0 {
+            critical!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
+            return;
+        }
+
+        self.static_info.clear();
+        self.dynamic_info.clear();
+
+        let mut buffer = String::new();
+
+        let mut device = gpu_list.next;
+        while device != gpu_list {
+            use std::fmt::Write;
+
+            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
+            device = unsafe { (*device).next };
+
+            let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
+            let pdev = match pdev.to_str() {
+                Ok(pd) => pd,
+                Err(_) => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "Unable to convert PCI ID to string: {:?}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+            let mut pci_bus_id = ArrayString::<16>::new();
+            match write!(pci_bus_id, "{}", pdev) {
+                Ok(_) => {}
+                Err(_) => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "PCI ID exceeds 16 characters: {}",
+                        pdev
+                    );
+                    continue;
+                }
+            }
+
+            let device_name =
+                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) };
+            let device_name = match device_name.to_str() {
+                Ok(dn) => dn,
+                Err(_) => "Unknown",
+            };
+
+            let mut uevent_path = ArrayString::<64>::new();
+            let _ = write!(uevent_path, "/sys/bus/pci/devices/{}/uevent", pdev);
+            let uevent_file = match std::fs::OpenOptions::new()
+                .read(true)
+                .open(uevent_path.as_str())
+            {
+                Ok(f) => Some(f),
+                Err(_) => {
+                    uevent_path.clear();
+                    let _ = write!(
+                        uevent_path,
+                        "/sys/bus/pci/devices/{}/uevent",
+                        pdev.to_lowercase()
+                    );
+                    match std::fs::OpenOptions::new()
+                        .read(true)
+                        .open(uevent_path.as_str())
+                    {
+                        Ok(f) => Some(f),
+                        Err(_) => {
+                            warning!(
+                                "Gatherer::GPUInfo",
+                                "Unable to open `uevent` file for device {}",
+                                pdev
+                            );
+                            None
+                        }
+                    }
+                }
+            };
+
+            let ven_dev_id = if let Some(mut f) = uevent_file {
+                buffer.clear();
+                match f.read_to_string(&mut buffer) {
+                    Ok(_) => {
+                        let mut vendor_id = 0;
+                        let mut device_id = 0;
+
+                        for line in buffer.lines().map(|l| l.trim()) {
+                            if line.starts_with("PCI_ID=") {
+                                let mut ids = line[7..].split(':');
+                                vendor_id = ids
+                                    .next()
+                                    .and_then(|id| u16::from_str_radix(id, 16).ok())
+                                    .unwrap_or(0);
+                                device_id = ids
+                                    .next()
+                                    .and_then(|id| u16::from_str_radix(id, 16).ok())
+                                    .unwrap_or(0);
+                                break;
+                            }
+                        }
+
+                        (vendor_id, device_id)
+                    }
+                    Err(_) => {
+                        warning!(
+                            "Gatherer::GPUInfo",
+                            "Unable to read `uevent` file content for device {}",
+                            pdev
+                        );
+                        (0, 0)
+                    }
+                }
+            } else {
+                (0, 0)
+            };
+
+            let static_info = LinuxGpuStaticInfo {
+                id: Arc::from(pdev),
+                device_name: Arc::from(device_name),
+                vendor_id: ven_dev_id.0,
+                device_id: ven_dev_id.1,
+
+                total_memory: dev.dynamic_info.total_memory,
+
+                pcie_gen: dev.dynamic_info.pcie_link_gen as _,
+                pcie_lanes: dev.dynamic_info.pcie_link_width as _,
+
+                // Leave the rest for when static info is actually requested
+                ..Default::default()
+            };
+
+            self.static_info.insert(pci_bus_id.clone(), static_info);
+            self.dynamic_info
+                .insert(pci_bus_id, LinuxGpuDynamicInfo::new());
+        }
+    }
+
+    fn refresh_static_info_cache(&mut self) {
+        use arrayvec::ArrayString;
+        use std::fmt::Write;
+
+        if !self.gpu_list_refreshed {
+            return;
+        }
+
+        let vulkan_versions = if let Some(vulkan_info) = &self.vk_info {
+            unsafe { vulkan_info.supported_vulkan_versions() }.unwrap_or(HashMap::new())
+        } else {
+            HashMap::new()
+        };
+
+        let mut dri_path = ArrayString::<64>::new_const();
+        for (pci_id, static_info) in &mut self.static_info {
+            let _ = write!(dri_path, "/dev/dri/by-path/pci-{}-card", pci_id);
+            if !std::path::Path::new(dri_path.as_str()).exists() {
+                let _ = write!(
+                    dri_path,
+                    "/dev/dri/by-path/pci-{}-card",
+                    pci_id.to_lowercase()
+                );
+            }
+            static_info.opengl_version =
+                unsafe { Self::supported_opengl_version(dri_path.as_str()) };
+
+            let device_id = ((static_info.vendor_id as u32) << 16) | static_info.device_id as u32;
+            if let Some(vulkan_version) = vulkan_versions.get(&device_id) {
+                static_info.vulkan_version = Some(*vulkan_version);
+            }
+        }
+    }
+
+    fn refresh_dynamic_info_cache(&mut self, processes: &mut Self::P) {
+        use crate::{error, warning};
+        use std::ops::DerefMut;
+
+        if !self.gpu_list_refreshed {
+            return;
+        }
+
+        let mut gpu_list = self.gpu_list.write().unwrap();
+        let gpu_list = gpu_list.deref_mut();
+
+        let result = unsafe { nvtop::gpuinfo_refresh_dynamic_info(gpu_list) };
+        if result == 0 {
+            error!("Gatherer::GpuInfo", "Unable to refresh dynamic GPU info");
+            return;
+        }
+
+        let result = unsafe { nvtop::gpuinfo_refresh_processes(gpu_list) };
+        if result == 0 {
+            error!("Gatherer::GpuInfo", "Unable to refresh GPU processes");
+            return;
+        }
+
+        let result = unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(gpu_list) };
+        if result == 0 {
+            error!(
+                "Gatherer::GpuInfo",
+                "Unable to fix dynamic GPU info from process info"
+            );
+            return;
+        }
+
+        let processes = processes.process_list_mut();
+
+        let mut device: *mut nvtop::ListHead = gpu_list.next;
+        while device != gpu_list {
+            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
+            device = unsafe { (*device).next };
+
+            let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
+            let pdev = match pdev.to_str() {
+                Ok(pd) => pd,
+                Err(_) => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "Unable to convert PCI ID to string: {:?}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+            let pci_id = match arrayvec::ArrayString::<16>::from(pdev) {
+                Ok(id) => id,
+                Err(_) => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "PCI ID exceeds 16 characters: {}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+
+            let dynamic_info = self.dynamic_info.get_mut(&pci_id);
+            if dynamic_info.is_none() {
+                continue;
+            }
+            let dynamic_info = unsafe { dynamic_info.unwrap_unchecked() };
+            dynamic_info.id = Arc::from(pdev);
+            dynamic_info.temp_celsius = dev.dynamic_info.gpu_temp;
+            dynamic_info.fan_speed_percent = dev.dynamic_info.fan_speed;
+            dynamic_info.util_percent = dev.dynamic_info.gpu_util_rate;
+            dynamic_info.power_draw_watts = dev.dynamic_info.power_draw as f32 / 1000.;
+            dynamic_info.power_draw_max_watts = dev.dynamic_info.power_draw_max as f32 / 1000.;
+            dynamic_info.clock_speed_mhz = dev.dynamic_info.gpu_clock_speed;
+            dynamic_info.clock_speed_max_mhz = dev.dynamic_info.gpu_clock_speed_max;
+            dynamic_info.mem_speed_mhz = dev.dynamic_info.mem_clock_speed;
+            dynamic_info.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
+            dynamic_info.free_memory = dev.dynamic_info.free_memory;
+            dynamic_info.used_memory = dev.dynamic_info.used_memory;
+            dynamic_info.encoder_percent = dev.dynamic_info.encoder_rate;
+            dynamic_info.decoder_percent = dev.dynamic_info.decoder_rate;
+
+            for i in 0..dev.processes_count as usize {
+                let process = unsafe { &*dev.processes.add(i) };
+                if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
+                    proc.usage_stats.gpu_usage = process.gpu_usage as f32;
+                }
+            }
+        }
+    }
+
+    fn enumerate(&'a self) -> Self::Iter {
+        self.static_info.keys().map(|k| k.as_str())
+    }
+
+    fn static_info(&self, id: &str) -> Option<&Self::S> {
+        use arrayvec::ArrayString;
+
+        self.static_info
+            .get(&ArrayString::<16>::from(id).unwrap_or_default())
+    }
+
+    fn dynamic_info(&self, id: &str) -> Option<&Self::D> {
+        use arrayvec::ArrayString;
+
+        self.dynamic_info
+            .get(&ArrayString::<16>::from(id).unwrap_or_default())
     }
 }
 
@@ -645,24 +835,29 @@ mod tests {
 
     #[test]
     fn get_gpu_info() {
-        let mut gpu_info = GpuInfo::new();
-        let pci_ids = gpu_info.enumerate();
-        assert!(!pci_ids.ids.is_empty());
-        assert!(pci_ids.is_complete);
-        dbg!(&pci_ids);
+        use crate::platform::Processes;
 
-        let static_info = gpu_info.static_info();
-        assert!(!static_info.desc.is_empty());
-        assert!(static_info.is_complete);
+        let mut gpu_info = LinuxGpuInfo::new();
+        gpu_info.refresh_gpu_list();
+        let pci_id = {
+            let pci_ids = gpu_info.enumerate();
+            dbg!(&pci_ids);
+
+            gpu_info.enumerate().next().unwrap_or("").to_owned()
+        };
+
+        gpu_info.refresh_static_info_cache();
+        let static_info = gpu_info.static_info(&pci_id);
         dbg!(&static_info);
 
-        let dynamic_info = gpu_info.dynamic_info();
-        assert!(!dynamic_info.desc.is_empty());
-        assert!(dynamic_info.is_complete);
+        let mut p = Processes::default();
+        gpu_info.refresh_dynamic_info_cache(&mut p);
+        let _ = gpu_info.dynamic_info(&pci_id);
 
-        let dynamic_info = gpu_info.dynamic_info();
-        assert!(!dynamic_info.desc.is_empty());
-        assert!(dynamic_info.is_complete);
+        std::thread::sleep(std::time::Duration::from_millis(500));
+
+        gpu_info.refresh_dynamic_info_cache(&mut p);
+        let dynamic_info = gpu_info.dynamic_info(&pci_id);
         dbg!(&dynamic_info);
     }
 }

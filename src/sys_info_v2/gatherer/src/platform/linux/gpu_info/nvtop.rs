@@ -29,7 +29,6 @@ pub struct ListHead {
 }
 
 unsafe impl Send for ListHead {}
-
 unsafe impl Sync for ListHead {}
 
 #[repr(C)]

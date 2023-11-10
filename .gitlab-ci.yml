@@ -1,4 +1,4 @@
-image: "ubuntu:23.04"
+image: "ubuntu:23.10"
 
 stages:
   - build
@@ -7,13 +7,13 @@ stages:
 build-job:
   stage: build
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
     - ln -sf /usr/bin/python3 /usr/local/bin/python
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -29,14 +29,13 @@ build-job:
 
 flatpak-job:
   stage: package
-  environment: production
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
+    - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak install -y org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.gnome.Platform//44 org.gnome.Sdk//44
@@ -51,30 +50,21 @@ flatpak-job:
 
 appimage-job:
   stage: package
-  environment: production
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-backports main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu lunar-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - apt-get update
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils squashfs-tools zsync patchelf fakeroot binutils strace
-    - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y podman
+    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+    - podman pull ubuntu:20.04
+    - podman run --arch=x86_64 -itd --name appimage -v $PWD:/src:Z ubuntu:20.04
+    - podman exec appimage /src/appimage/build.sh
 
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - export PATH="$HOME/.cargo/bin:$PATH"
-
-    - pip install meson ninja appimage-builder --break-system-packages
-
-    - meson setup _build -Dbuildtype=release
-    - ninja -C _build
-    - glib-compile-schemas --strict data/
-    - meson install -C _build --no-rebuild --destdir "AppDir"
-    - appimage-builder --appdir _build/AppDir/ 
-    
   artifacts:
     paths:
-      - 'Mission Center-0.3.3-x86_64.AppImage'
+      - 'MissionCenter-x86_64.AppImage'
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

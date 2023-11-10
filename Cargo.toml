@@ -7,7 +7,8 @@ build = "build/build.rs"
 [dependencies]
 adw = { package = "libadwaita", version = "0.5", features = ["v1_3"] }
 arrayvec = { version = "0.7" }
-errno-sys = { version = "0.1" }
+dbus = { version = "0.9" }
+errno-sys = { version = "0.2.0" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gl = { version = "0.14" }
 gl_loader = { version = "0.1" }
@@ -27,7 +28,7 @@ pathfinder_renderer = { git = "https://github.com/servo/pathfinder", rev = "21ec
 pathfinder_resources = { git = "https://github.com/servo/pathfinder", rev = "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062" }
 raw-cpuid = { version = "11.0", default-features = false }
 regex = { version = "1.8" }
-rust-ini = { version = "0.19" }
+rust-ini = { version = "0.20.0" }
 rusqlite = { version = "0.29", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }

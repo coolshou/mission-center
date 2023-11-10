@@ -1,3 +1,23 @@
+/* sys_info_v2/gatherer/src/logging.rs
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 use lazy_static::lazy_static;
 
 #[allow(unused)]
@@ -19,7 +39,7 @@ pub(crate) use critical;
 #[allow(unused)]
 macro_rules! warning {
     ($domain:literal, $($arg:tt)*) => {{
-        $crate::logging::Logger::log_warning($domain, format_args!($($arg)*));
+        $crate::logging::Logger::log_warn($domain, format_args!($($arg)*));
     }}
 }
 pub(crate) use warning;
@@ -49,27 +69,29 @@ macro_rules! debug {
 pub(crate) use debug;
 
 macro_rules! now {
-    () => {{
-        let now = unsafe { libc::time(std::ptr::null_mut()) };
-        if now == unsafe { core::mem::transmute(-1_i64) } {
-            unsafe { std::mem::zeroed() }
-        } else {
-            let tm = unsafe { libc::localtime(&now) };
-            if tm.is_null() {
-                unsafe { std::mem::zeroed() }
+    () => {
+        unsafe {
+            let now = libc::time(std::ptr::null_mut());
+            if now == core::mem::transmute(-1_i64) {
+                std::mem::zeroed()
             } else {
-                unsafe { *tm }
+                let tm = libc::localtime(&now);
+                if tm.is_null() {
+                    std::mem::zeroed()
+                } else {
+                    *tm
+                }
             }
         }
-    }};
+    };
 }
 
 lazy_static! {
     static ref PID: u32 = unsafe { libc::getpid() } as _;
-    static ref G_MESSAGES_DEBUG: Vec<String> = std::env::var("G_MESSAGES_DEBUG")
+    static ref G_MESSAGES_DEBUG: Vec<std::sync::Arc<str>> = std::env::var("G_MESSAGES_DEBUG")
         .unwrap_or_default()
         .split(";")
-        .map(|s| s.to_owned())
+        .map(|s| std::sync::Arc::<str>::from(s))
         .collect();
 }
 
@@ -168,8 +190,8 @@ impl Logger {
 
     pub fn log_info(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
-            && (!G_MESSAGES_DEBUG.contains(&domain.to_owned())
-                && !G_MESSAGES_DEBUG.contains(&"all".to_owned()))
+            && (!G_MESSAGES_DEBUG.contains(&domain.into())
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }
@@ -194,8 +216,8 @@ impl Logger {
 
     pub fn log_debug(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
-            && (!G_MESSAGES_DEBUG.contains(&domain.to_owned())
-                && !G_MESSAGES_DEBUG.contains(&"all".to_owned()))
+            && (!G_MESSAGES_DEBUG.contains(&domain.into())
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }

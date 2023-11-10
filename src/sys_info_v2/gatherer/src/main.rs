@@ -18,280 +18,333 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use dbus::{arg, blocking::Connection};
+use dbus_crossroads::Crossroads;
+
 #[allow(unused_imports)]
-pub use arrayvec::ArrayVec;
+use logging::{critical, debug, error, info, message, warning};
+use platform::{CpuInfoExt, PlatformUtilitiesExt};
 
-pub use apps::{AppPIDs, Apps};
-#[allow(unused_imports)]
-pub(crate) use logging::{critical, debug, error, info, message, warning};
-pub use processes::Processes;
-pub use util::{to_binary, to_binary_mut};
-
-macro_rules! acknowledge {
-    ($connection: ident) => {{
-        use std::io::Write;
-
-        if let Err(e) = $connection.write_all(to_binary(&ipc::Message::Acknowledge)) {
-            crate::critical!(
-                "Gatherer::Main",
-                "Failed to write to IPC socket, exiting: {:#?}",
-                e
-            );
-            std::process::exit(exit_code::ExitCode::SendAcknowledgeFailed as i32);
-        }
-    }};
-}
-
-macro_rules! data_ready {
-    ($connection: ident) => {{
-        use std::io::Write;
-
-        if let Err(e) = $connection.write_all(to_binary(&ipc::Message::DataReady)) {
-            crate::critical!(
-                "Gatherer::Main",
-                "Failed to write to IPC socket, exiting: {:#?}",
-                e
-            );
-            std::process::exit(exit_code::ExitCode::SendDataReadyFailed as i32);
-        }
-    }};
-}
-
-mod apps;
-#[path = "../common/exit_code.rs"]
-mod exit_code;
-#[path = "../common/ipc/mod.rs"]
-mod ipc;
 mod logging;
 mod platform;
-mod processes;
-#[path = "../common/util.rs"]
-mod util;
+mod utils;
 
-pub type ArrayString = arrayvec::ArrayString<256>;
-pub type ProcessStats = processes::Stats;
-pub type CpuStaticInfo = platform::cpu::StaticInfo;
-pub type CpuDynamicInfo = platform::cpu::DynamicInfo;
-pub type LogicalCpuInfo = platform::cpu::LogicalInfo;
-pub type GpuPciIds = platform::gpu::PciIds;
-pub type GpuStaticInfo = platform::gpu::StaticInfo;
-pub type GpuDynamicInfo = platform::gpu::DynamicInfo;
-
-#[path = "../common/shared_data.rs"]
-mod shared_data;
-
-pub trait ToArrayStringLossy {
-    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY>;
+#[derive(Debug)]
+pub struct OrgFreedesktopDBusNameLost {
+    pub arg0: String,
 }
 
-impl ToArrayStringLossy for str {
-    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY> {
-        let mut result = arrayvec::ArrayString::new();
-        if self.len() > CAPACITY {
-            for i in (0..CAPACITY).rev() {
-                if self.is_char_boundary(i) {
-                    result.push_str(&self[0..i]);
-                    break;
-                }
-            }
-        } else {
-            result.push_str(self);
-        }
-
-        result
+impl arg::AppendAll for OrgFreedesktopDBusNameLost {
+    fn append(&self, i: &mut arg::IterAppend) {
+        arg::RefArg::append(&self.arg0, i);
     }
 }
 
-impl ToArrayStringLossy for std::borrow::Cow<'_, str> {
-    fn to_array_string_lossy<const CAPACITY: usize>(&self) -> arrayvec::ArrayString<CAPACITY> {
-        let mut result = arrayvec::ArrayString::new();
-        if self.len() > CAPACITY {
-            for i in (0..CAPACITY).rev() {
-                if self.is_char_boundary(i) {
-                    result.push_str(&self[0..i]);
-                    break;
-                }
-            }
-        } else {
-            result.push_str(self);
-        }
-
-        result
+impl arg::ReadAll for OrgFreedesktopDBusNameLost {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(OrgFreedesktopDBusNameLost { arg0: i.read()? })
     }
 }
 
-fn main() {
-    use exit_code::ExitCode;
-    use interprocess::local_socket::*;
-    use platform::{CpuInfoExt, GpuInfoExt};
-    use shared_data::{SharedData, SharedDataContent};
-    use std::io::Read;
+impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
+    const NAME: &'static str = "NameLost";
+    const INTERFACE: &'static str = "org.freedesktop.DBus";
+}
 
-    let parent_pid = unsafe { libc::getppid() };
+struct System {
+    cpu_info: platform::CpuInfo,
+    gpu_info: platform::GpuInfo,
+    processes: platform::Processes,
+    apps: platform::Apps,
+}
 
-    let args = std::env::args().collect::<Vec<_>>();
-    if args.len() < 3 {
-        critical!("Gatherer::Main", "Not enough arguments");
-        std::process::exit(ExitCode::MissingProgramArgument as i32);
+impl System {
+    pub fn new() -> Self {
+        Self {
+            cpu_info: platform::CpuInfo::new(),
+            gpu_info: platform::GpuInfo::new(),
+            processes: platform::Processes::new(),
+            apps: platform::Apps::new(),
+        }
+    }
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Exit if any arguments are passed to this executable. This is done since the main app needs
+    // to check if the executable can be run in its current environment (glibc or musl libc)
+    for (i, _) in std::env::args().enumerate() {
+        if i > 0 {
+            eprintln!("👋");
+            std::process::exit(0);
+        }
     }
 
-    if !std::path::Path::new(&args[1]).exists() {
-        critical!("Gatherer::Main", "IPC socket '{}' does not exist", args[1]);
-        std::process::exit(ExitCode::SocketConnectionFailed as i32);
-    }
-    let mut connection = match LocalSocketStream::connect(args[1].as_str()) {
-        Ok(c) => c,
-        Err(e) => {
-            critical!("Gatherer::Main", "Unable to connect to parent: {}", e);
-            std::process::exit(ExitCode::SocketConnectionFailed as i32);
-        }
-    };
+    message!("Gatherer::Main", "Starting...");
 
-    if !std::path::Path::new(&args[2]).exists() {
-        critical!("Gatherer::Main", "File link '{}' does not exist", args[2]);
-        std::process::exit(ExitCode::FileLinkNotFound as i32);
-    }
-    let mut shared_memory = match ipc::SharedMemory::<SharedData>::new(&args[2], false) {
-        Ok(sm) => sm,
-        Err(e) => {
-            critical!("Gatherer::Main", "Unable to create shared memory: {}", e);
-            std::process::exit(ExitCode::UnableToCreateSharedMemory as i32);
-        }
-    };
+    message!("Gatherer::Main", "Initializing platform utilities...");
+    let plat_utils = platform::PlatformUtilities::default();
 
-    let mut cpu_info = platform::CpuInfo::new();
-    let mut gpu_info = platform::GpuInfo::new();
+    message!("Gatherer::Main", "Setting up connection to main app...");
+    // Set up so that the Gatherer exists when the main app exits
+    plat_utils.on_main_app_exit(Box::new(|| {
+        message!("Gatherer::Main", "Parent process exited, exiting...");
+        std::process::exit(0);
+    }));
 
-    let mut message = ipc::Message::Unknown;
-    loop {
-        if unsafe { libc::getppid() } != parent_pid {
-            message!(
-                "Gatherer::Main",
-                "Parent process no longer running, exiting"
-            );
-            break;
-        }
+    message!("Gatherer::Main", "Setting up D-Bus connection...");
+    let c = Connection::new_session()?;
 
-        if let Err(e) = connection.read_exact(to_binary_mut(&mut message)) {
-            if e.kind() == std::io::ErrorKind::UnexpectedEof {
-                message!(
-                    "Gatherer::Main",
-                    "Main application has disconnected, shutting down"
-                );
-                std::process::exit(0);
-            } else {
-                critical!(
-                    "Gatherer::Main",
-                    "Failed to read from IPC socket, exiting: {}",
-                    e
-                );
-                std::process::exit(ExitCode::ReadFromSocketFailed as i32);
+    message!("Gatherer::Main", "Requesting bus name...");
+    c.request_name("io.missioncenter.MissionCenter.Gatherer", true, true, true)?;
+    message!("Gatherer::Main", "Bus name acquired");
+
+    message!("Gatherer::Main", "Setting up D-Bus proxy...");
+    let proxy = c.with_proxy(
+        "org.freedesktop.DBus",
+        "/org/freedesktop/DBus",
+        std::time::Duration::from_millis(5000),
+    );
+
+    message!("Gatherer::Main", "Setting up D-Bus signal match...");
+    let _id = proxy.match_signal(
+        |h: OrgFreedesktopDBusNameLost, _: &Connection, _: &dbus::Message| {
+            if h.arg0 != "io.missioncenter.MissionCenter.Gatherer" {
+                return true;
             }
-        }
 
-        match message {
-            ipc::Message::GetProcesses => {
-                acknowledge!(connection);
+            message!("Gatherer::Main", "Bus name {} lost, exiting...", &h.arg0);
+            std::process::exit(0);
+        },
+    )?;
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::Processes(Processes::new());
+    message!("Gatherer::Main", "Setting up D-Bus crossroads...");
+    let mut cr = Crossroads::new();
+    let iface_token = cr.register("io.missioncenter.MissionCenter.Gatherer", |builder| {
+        message!("Gatherer::Main", "Registering D-Bus methods...");
 
-                data_ready!(connection);
-            }
-            ipc::Message::GetApps => {
-                acknowledge!(connection);
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetCpuStaticInfo`..."
+        );
+        builder.method(
+            "GetCpuStaticInfo",
+            (),
+            ("static_info",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                ctx.reply(Ok((sys_stats.cpu_info.static_info(),)));
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::Apps(Apps::new());
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::CpuStaticInfo::default(),))
+            },
+        );
 
-                data_ready!(connection);
-            }
-            ipc::Message::GetAppPIDs => {
-                acknowledge!(connection);
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetCpuDynamicInfo`..."
+        );
+        builder.method(
+            "GetCpuDynamicInfo",
+            (),
+            ("static_info",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                sys_stats
+                    .cpu_info
+                    .refresh_dynamic_info_cache(&sys_stats.processes);
+                ctx.reply(Ok((sys_stats.cpu_info.dynamic_info(),)));
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::AppPIDs(AppPIDs::new());
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::CpuDynamicInfo::default(),))
+            },
+        );
 
-                data_ready!(connection);
-            }
-            ipc::Message::GetCpuStaticInfo => {
-                acknowledge!(connection);
+        message!("Gatherer::Main", "Registering D-Bus method `GetGPUs`...");
+        builder.method(
+            "EnumerateGPUs",
+            (),
+            ("gpu_ids",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                use platform::GpuInfoExt;
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::CpuStaticInfo(cpu_info.static_info());
+                sys_stats.gpu_info.refresh_gpu_list();
+                ctx.reply(Ok((sys_stats.gpu_info.enumerate().collect::<Vec<_>>(),)));
 
-                data_ready!(connection);
-            }
-            ipc::Message::GetCpuDynamicInfo => {
-                acknowledge!(connection);
+                // Make the scaffolding happy, since the reply was already set
+                Ok((Vec::<&str>::new(),))
+            },
+        );
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::CpuDynamicInfo(cpu_info.dynamic_info());
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetGPUStaticInfo`..."
+        );
+        builder.method(
+            "GetGPUStaticInfo",
+            ("gpu_id",),
+            ("static_info",),
+            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+                use platform::GpuInfoExt;
 
-                data_ready!(connection);
-            }
-            ipc::Message::GetLogicalCpuInfo => {
-                acknowledge!(connection);
+                sys_stats.gpu_info.refresh_static_info_cache();
 
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::LogicalCpuInfo(cpu_info.logical_cpu_info());
-
-                data_ready!(connection);
-            }
-            ipc::Message::EnumerateGpus => {
-                acknowledge!(connection);
-
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuPciIds(gpu_info.enumerate());
-
-                data_ready!(connection);
-            }
-            ipc::Message::GetGpuStaticInfo => {
-                acknowledge!(connection);
-
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuStaticInfo(gpu_info.static_info());
-
-                data_ready!(connection);
-            }
-            ipc::Message::GetGpuDynamicInfo => {
-                acknowledge!(connection);
-
-                let mut data = unsafe { shared_memory.acquire() };
-                data.content = SharedDataContent::GpuDynamicInfo(gpu_info.dynamic_info());
-
-                data_ready!(connection);
-            }
-            ipc::Message::TerminateProcess(pid) => {
-                acknowledge!(connection);
-
-                unsafe {
-                    libc::kill(pid as _, libc::SIGTERM);
+                match sys_stats.gpu_info.static_info(&gpu_id) {
+                    None => {
+                        ctx.reply::<(platform::GpuStaticInfo,)>(Err(dbus::MethodErr::invalid_arg(
+                            &format!("`{}` is not a valid GPU id", gpu_id),
+                        )));
+                    }
+                    Some(static_info) => {
+                        ctx.reply(Ok((static_info,)));
+                    }
                 }
-            }
-            ipc::Message::KillProcess(pid) => {
-                acknowledge!(connection);
 
-                unsafe {
-                    libc::kill(pid as _, libc::SIGKILL);
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::GpuStaticInfo::default(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetGPUDynamicInfo`..."
+        );
+        builder.method(
+            "GetGPUDynamicInfo",
+            ("gpu_id",),
+            ("dynamic_info",),
+            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+                use platform::GpuInfoExt;
+
+                sys_stats
+                    .gpu_info
+                    .refresh_dynamic_info_cache(&mut sys_stats.processes);
+
+                match sys_stats.gpu_info.dynamic_info(&gpu_id) {
+                    None => {
+                        ctx.reply::<(platform::GpuDynamicInfo,)>(Err(
+                            dbus::MethodErr::invalid_arg(&format!(
+                                "`{}` is not a valid GPU id",
+                                gpu_id
+                            )),
+                        ));
+                    }
+                    Some(dynamic_info) => {
+                        ctx.reply(Ok((dynamic_info,)));
+                    }
                 }
-            }
-            ipc::Message::KillProcessTree(_ppid) => {
-                acknowledge!(connection);
-            }
-            ipc::Message::Acknowledge | ipc::Message::DataReady => {
-                // Wierd thing to send, but there you go, send Acknowledge back anyway
-                acknowledge!(connection);
-            }
-            ipc::Message::Exit => {
-                acknowledge!(connection);
 
-                std::process::exit(0);
-            }
-            ipc::Message::Unknown => {
-                critical!("Gatherer::Main", "Unknown message received; exiting");
-                std::process::exit(ExitCode::UnknownMessageReceived as i32);
-            }
-        }
-    }
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::GpuDynamicInfo::default(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetProcesses`..."
+        );
+        builder.method(
+            "GetProcesses",
+            (),
+            ("processes",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                use platform::ProcessesExt;
+
+                sys_stats.processes.refresh_cache();
+                ctx.reply(Ok((&sys_stats.processes,)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::Processes::default(),))
+            },
+        );
+
+        message!("Gatherer::Main", "Registering D-Bus method `GetApps`...");
+        builder.method(
+            "GetApps",
+            (),
+            ("apps",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                use platform::{AppsExt, ProcessesExt};
+
+                if sys_stats.processes.is_cache_stale() {
+                    sys_stats.processes.refresh_cache();
+                }
+
+                sys_stats
+                    .apps
+                    .refresh_cache(sys_stats.processes.process_list());
+                ctx.reply(Ok((&sys_stats.apps,)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((platform::Apps::default(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `TerminateProcess`..."
+        );
+        builder.method(
+            "TerminateProcess",
+            ("process_id",),
+            (),
+            |_, sys_stats: &mut System, (pid,): (u32,)| {
+                use platform::ProcessesExt;
+
+                sys_stats.processes.terminate_process(pid);
+
+                Ok(())
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `KillProcess`..."
+        );
+        builder.method(
+            "KillProcess",
+            ("process_id",),
+            (),
+            |_, system: &mut System, (pid,): (u32,)| {
+                use platform::ProcessesExt;
+
+                system.processes.kill_process(pid);
+
+                Ok(())
+            },
+        );
+    });
+
+    message!(
+        "Gatherer::Main",
+        "Registering D-Bus interface `org.freedesktop.DBus.Peer`..."
+    );
+    let peer_itf = cr.register("org.freedesktop.DBus.Peer", |builder| {
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetMachineId`..."
+        );
+        builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
+            Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
+                .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
+        });
+
+        message!("Gatherer::Main", "Registering D-Bus method `Ping`...");
+        builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
+    });
+
+    message!("Gatherer::Main", "Instatiating System...");
+    let mut system = System::new();
+
+    message!("Gatherer::Main", "Refreshing CPU static info cache...");
+    system.cpu_info.refresh_static_info_cache();
+
+    message!("Gatherer::Main", "Inserting system into Crossroads...");
+    cr.insert(
+        "/io/missioncenter/MissionCenter/Gatherer",
+        &[peer_itf, iface_token],
+        system,
+    );
+
+    message!("Gatherer::Main", "Serving D-Bus requests...");
+    cr.serve(&c)?;
+
+    unreachable!()
 }

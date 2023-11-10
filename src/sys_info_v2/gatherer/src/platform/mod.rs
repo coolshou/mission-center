@@ -18,13 +18,39 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use cpu_ext::{cpu, CpuInfoExt};
-pub use gpu_ext::{gpu, GpuInfoExt};
-pub use platform_impl::{CpuInfo, GpuInfo};
-
-mod cpu_ext;
-mod gpu_ext;
+pub use apps::*;
+pub use cpu_info::*;
+pub use gpu_info::*;
+pub use processes::*;
+pub use utilities::*;
 
 #[cfg(target_os = "linux")]
 #[path = "linux/mod.rs"]
 mod platform_impl;
+
+#[cfg(target_os = "linux")]
+#[allow(unused)]
+mod linux {
+    use super::*;
+    pub type Process = platform_impl::LinuxProcess;
+    pub type Processes = platform_impl::LinuxProcesses;
+    pub type App = platform_impl::LinuxApp;
+    pub type Apps = platform_impl::LinuxApps;
+    pub type CpuStaticInfo = platform_impl::LinuxCpuStaticInfo;
+    pub type CpuDynamicInfo = platform_impl::LinuxCpuDynamicInfo;
+    pub type CpuInfo = platform_impl::LinuxCpuInfo;
+
+    pub type GpuStaticInfo = platform_impl::LinuxGpuStaticInfo;
+    pub type GpuDynamicInfo = platform_impl::LinuxGpuDynamicInfo;
+    pub type GpuInfo = platform_impl::LinuxGpuInfo;
+    pub type PlatformUtilities = platform_impl::LinuxPlatformUtilities;
+}
+
+#[cfg(target_os = "linux")]
+pub use linux::*;
+
+mod apps;
+mod cpu_info;
+mod gpu_info;
+mod processes;
+mod utilities;

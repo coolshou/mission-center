@@ -115,7 +115,8 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
         println!("cargo:rustc-link-arg=-l{}", a);
     });
 
-    cc::Build::new()
+    let mut build_def = cc::Build::new();
+    build_def
         .define("USING_LIBUDEV", None)
         .define("_GNU_SOURCE", None)
         .include(src_dir.join("src"))
@@ -133,8 +134,11 @@ fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Erro
             src_dir.join("src/extract_gpuinfo_amdgpu_utils.c"),
             src_dir.join("src/extract_gpuinfo_intel.c"),
             src_dir.join("src/time.c"),
-        ])
-        .compile("nvtop");
+        ]);
+    #[cfg(not(debug_assertions))]
+    build_def.flag("-flto");
+
+    build_def.compile("nvtop");
 
     Ok(())
 }
