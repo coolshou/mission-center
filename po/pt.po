@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-20 08:11+0300\n"
-"PO-Revision-Date: 2023-09-13 07:51+0000\n"
-"Last-Translator: asilva <andre.f.r.da.silva+weblate@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/pt/>\n"
+"PO-Revision-Date: 2023-11-15 06:05+0000\n"
+"Last-Translator: Tiago Lucas Flach <tiagolucas9830@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -68,7 +68,7 @@ msgstr "Monitorizar utilização de RAM e Swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Veja um detalhamento de como a memória está sendo usada pelo sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Veja um detalhamento do uso de recursos por aplicativo e processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
@@ -152,7 +152,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "Adicione a temperatura da CPU, quando possível"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
 msgid ""
@@ -194,57 +194,56 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
 msgid "Translations:"
-msgstr "Virtualização:"
+msgstr "Traduções:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Nova tradução para o coreano por Seong-ho Cho"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Nova tradução para holandês por Gert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Nova tradução para polonês por _Ghost_"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "Nova tradução para o italiano por beppeilgommista"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr ""
+msgstr "Nova tradução para o português (Brasil) de Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "Tradução atualizada em espanhol"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "Tradução finlandesa atualizada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "Tradução russa atualizada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "Tradução atualizada do chinês (simplificado)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "Tradução grega atualizada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
 msgid "Updated German translation"
-msgstr ""
+msgstr "Tradução alemã atualizada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 msgid ""
@@ -254,17 +253,21 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "Novo ícone do aplicativo por QwertyChouskie"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Adicionada capacidade de interromper e forçar a interrupção de aplicativos e "
+"processos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"Os aplicativos em execução agora são mostrados de forma mais confiável e "
+"devem refletir a maioria, se não todos, os aplicativos em execução"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
 msgid "Experimental support for Snap apps in the running apps list"
@@ -289,39 +292,39 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "O aplicativo agora pode ser criado a partir do GNOME Builder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Nova tradução para o norueguês Bokmål por Allan Nordhøy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Nova tradução para o russo por Ivan Maslikhov"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "Nova tradução para eslovaco por mthw0"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Nova tradução para o grego por Yiannis Ioannides"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "Nova tradução para chinês (simplificado) por foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Nova tradução para o francês por Link Mauve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Nova tradução para o húngaro por Kovács Bálint Hunor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
 msgid "Updated Czech translation"
-msgstr ""
+msgstr "Tradução tcheca atualizada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
 msgid "Updated Portuguese translation"
@@ -329,7 +332,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Correções para traduções chinesas por foxer NS"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid "Add Spanish translation by Óscar Fernández Díaz"
@@ -382,54 +385,65 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
+#, fuzzy
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
+msgstr "Adicionado chinês tradicional por Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "Adicionar categoria ao menu do aplicativo Renner0E"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
+"Corrigido um erro de análise ao analisar a saída de `dmidecode` que causava "
+"pânico"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
+"Use um fallback se `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` não "
+"existir, ao obter informações de velocidade básica da CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
+"Atualizada a interface da guia GPU para ser mais adaptável para resoluções "
+"menores"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "Adicionada tradução em tcheco por ondra05"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "Adicionada tradução para o português de Rilson Joás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
+"Adicionadas palavras-chave ao arquivo da área de trabalho para melhorar a "
+"função de pesquisa de ambientes de área de trabalho por Hannes Kuchelmeister"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
+"Corrigido um bug onde a lista de aplicativos e processos estava vazia para "
+"alguns usuários"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "Corrija uma falha que ocorre quando o sistema está sob carga pesada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 msgid "First official release!"
-msgstr ""
+msgstr "Primeiro lançamento oficial!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:29
 msgid "Which page is shown on application startup"
