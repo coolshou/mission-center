@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 08:11+0300\n"
+"POT-Creation-Date: 2023-11-19 20:59+0200\n"
 "PO-Revision-Date: 2023-08-23 08:36+0000\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/mission-center/"
@@ -47,8 +47,6 @@ msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr "CPU, 메모리, 디스크, 네트워크, GPU 이용률을 감시합니다"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
 msgstr "기능:"
 
@@ -128,547 +126,241 @@ msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "제약 사항 (앞으로 해결할 작업 중인 문제):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
-msgid "Disk utilization percentage might not be accurate"
-msgstr "디스크 이용률 백분율 수치가 정확하지 않을 수 있습니다"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
 msgstr "프로세스별 네트워크 사용량 정보가 없습니다"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
-msgid "No per-process GPU usage"
-msgstr "프로세스별 GPU 사용량이 없습니다"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
 "GPU 지원 기능은 아직 실험중이며 AMD와 nVidia에서 제조한 GPU만 감시할 수 있습"
 "니다"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "첨언, 제안, 문제 보고, 기여를 환영합니다"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
-msgid ""
-"Add an option, to the context menu, to show kernel times, in the CPU graphs"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
-msgid "Add CPU temperature, where possible"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
-msgid ""
-"Implement smarter rounding and display precision of values throughout the "
-"app by QwertyChouskie"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
-msgid ""
-"Use metainfo instead of appdata for application metadata by David Guglielmi"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
-msgid "Fixes:"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
-#, fuzzy
-msgid ""
-"Fixed a regression where natively installed browsers were not showing up in "
-"the apps list on Fedora"
-msgstr "자체 패키지로 설치하여 앱 목록에 나타나지 않는 브라우저 문제 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
-msgid ""
-"Fixed a regression where Flatpak apps were not showing up in the apps list "
-"on ArchLinux Plasma"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
-#, fuzzy
-msgid ""
-"Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-msgstr "앱 및 프로세스 목록이 일부 사용자에게서 비어 보인느 문제 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
-msgid ""
-"Moved some performance related logs to g_debug to prevent spamming of system "
-"logs"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-#, fuzzy
-msgid "Translations:"
-msgstr "가상화 수단:"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
-msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
-msgid "New translation to Dutch by Gert"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
-msgid "New translation to Polish by _Ghost_"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
-msgid "New translation to Italian by beppeilgommista"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
-#, fuzzy
-msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr "Rafael Fontenelle가 포르투갈어 번역 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
-msgid "Updated Spanish translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
-msgid "Updated Finnish translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
-msgid "Updated Russian translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
-msgid "Updated Chinese (Simplified) translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-msgid "Updated Greek translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-#, fuzzy
-msgid "Updated German translation"
-msgstr "TecCheck가 독일어 번역 추가함"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
-msgid ""
-"Hotfix release to fix a bug that caused the app to not display any "
-"information for some users"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
-msgid "New app icon by QwertyChouskie"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
-msgid "Add ability to stop and force stop apps and processes"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
-msgid ""
-"Running apps are now shown more reliably, and should reflect most if not all "
-"running apps"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
-msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
-msgid ""
-"Added a setting to show resource consumption individually per process or "
-"cumulated with their descendants"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
-msgid ""
-"Added a setting to enable persistent sorting in the apps and processes list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-msgid ""
-"Data gathering is now more versatile and will permit new features to be "
-"added quicker and easier"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
-msgid "App can now be built from GNOME Builder"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
-msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
-msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
-msgid "New translation to Slovak by mthw0"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
-msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
-msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
-msgid "New translation to French by Link Mauve"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
-msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
-#, fuzzy
-msgid "Updated Czech translation"
-msgstr "ondra05가 체코어 번역 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
-#, fuzzy
-msgid "Updated Portuguese translation"
-msgstr "Rilson Joás가 포르투갈어 번역 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
-msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
-msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr "Óscar Fernández Díaz가 스페인어 번역 추가함"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
-msgid ""
-"The memory tab now shows configured memory speed instead of the maximum "
-"supported by the modules"
-msgstr ""
-"이제 메모리탭에서 모듈에서 지원하는 최대 속도 대신 설정 메모리 속도를 보여줍"
-"니다"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
-msgid "Add German translation by TecCheck"
-msgstr "TecCheck가 독일어 번역 추가함"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
-msgid ""
-"When a process uses large amounts of CPU or RAM it is now highlighted in the "
-"Apps and Processes list"
-msgstr ""
-"이제 프로세스에서 상당양의 CPU 또는 RAM을 활용할 경우 앱 및 프로세스 목록에 "
-"강조합니다"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
-msgid "Add initial support for building for ARM64"
-msgstr "ARM64 빌드 지원을 처음으로 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
-msgid ""
-"Take into account multiple CPU cores and cache sharing when calculating "
-"cache sizes"
-msgstr "캐시 용량을 계산할 때 CPU 코어 수와 공유 캐시 용량을 고려합니다"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
-msgid ""
-"Fix browsers, installed as native packages, not showing up in the Apps list"
-msgstr "자체 패키지로 설치하여 앱 목록에 나타나지 않는 브라우저 문제 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
-msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr "Peter Dave Hello가 중국어 번체 번역 업데이트"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
-msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr "Rafael Fontenelle가 포르투갈어 번역 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
-msgid ""
-"Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
-msgstr ""
-"Maximilian이 기타 IPv6 값이 없을 경우 link-local IPv6 주소만 나타내도록 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
-msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr "Peter Dave Hello가 중국어 번체 로캘 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
-msgid "Add category for application menu by Renner0E"
-msgstr "Renner0E가 앱 메뉴의 카테고리 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
-msgid ""
-"Fix a parsing error when parsing the output of `dmidecode` that lead to a "
-"panic"
-msgstr "`dmidecode` 출력 해석시 갑작스레 끝나는 해석 오류 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
-msgid ""
-"Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
-"not exist, when getting CPU base speed information"
-msgstr ""
-"CPU 기본 속도 정보를 가져올 때 `/sys/devices/system/cpu/cpu0/cpufreq/"
-"base_frequency` 파일이 없을 경우 대체 정보 사용"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
-msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-msgstr "낮은 해상도에서도 적절하게 나타나도록 GPU 탭 인터페이스 업데이트"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
-msgid "Added Czech translation by ondra05"
-msgstr "ondra05가 체코어 번역 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
-msgid "Added Portuguese translation by Rilson Joás"
-msgstr "Rilson Joás가 포르투갈어 번역 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
-msgid ""
-"Add keywords to desktop file to improve search function of desktop "
-"environments by Hannes Kuchelmeister"
-msgstr ""
-"Hannes Kuchelmeister가 데스크톱 환경의 검색 기능 개선 목적으로 desktop 파일"
-"에 키워드 추가"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
-msgid "Fixed a bug where the app and process list was empty for some users"
-msgstr "앱 및 프로세스 목록이 일부 사용자에게서 비어 보인느 문제 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
-msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr "시스템에 과부하가 걸렸을 때 프로그램이 갑자기 끝나는 문제 수정"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-msgid "First official release!"
-msgstr "공식 첫 출시!"
-
-#: data/io.missioncenter.MissionCenter.gschema.xml:29
+#: data/io.missioncenter.MissionCenter.gschema.xml:30
 msgid "Which page is shown on application startup"
 msgstr "이 페이지는 앱을 시작할 때 나타납니다"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:35
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr "데이터를 새로 고치고 인터페이스를 업데이트하는 속도"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "상위 하위 프로세스 상태를 개별 표시하거나 상위 프로세스에 합쳐서 나타냅니다"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:45
+#: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
 msgstr "열 정렬 상태는 앱을 다시 시작해도 그대로 유지합니다"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:50
+#: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
 msgstr "앱 페이지 보기를 정렬할 열 ID"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:55
+#: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
 msgstr "앱 페이지 보기 정렬 순서"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:61
+#: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
 msgstr "CPU 성능 페이지에 나타낼 그래프"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:66
+#: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:71
+#: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "앱 시작시 성능 탭에서 나타낼 페이지"
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
-#: src/performance_page/mod.rs:264
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "CPU"
 
-#: resources/ui/performance_page/cpu.blp:74
-#: resources/ui/performance_page/cpu.blp:152
-#: resources/ui/performance_page/gpu.blp:227
+#: resources/ui/performance_page/cpu.blp:76
+#: resources/ui/performance_page/cpu_details.blp:26
+#: resources/ui/performance_page/gpu_details.blp:24
 msgid "Utilization"
 msgstr "이용"
 
-#: resources/ui/performance_page/cpu.blp:84
+#: resources/ui/performance_page/cpu.blp:86
 msgid "100%"
 msgstr "100%"
 
-#: resources/ui/performance_page/cpu.blp:174
-msgid "Speed"
-msgstr "속도"
-
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
-msgid "Processes"
-msgstr "프로세스"
-
-#: resources/ui/performance_page/cpu.blp:223
-msgid "Threads"
-msgstr "스레드"
-
-#: resources/ui/performance_page/cpu.blp:245
-msgid "Handles"
-msgstr "핸들"
-
-#: resources/ui/performance_page/cpu.blp:268
-msgid "Up time"
-msgstr "가동 시간"
-
-#: resources/ui/performance_page/cpu.blp:294
-msgid "Base Speed:"
-msgstr "기본 속도:"
-
-#: resources/ui/performance_page/cpu.blp:303
-msgid "Sockets:"
-msgstr "소켓:"
-
-#: resources/ui/performance_page/cpu.blp:312
-msgid "Virtual processors:"
-msgstr "가상 프로세서:"
-
-#: resources/ui/performance_page/cpu.blp:321
-msgid "Virtualization:"
-msgstr "가상화 수단:"
-
-#: resources/ui/performance_page/cpu.blp:330
-msgid "Virtual machine:"
-msgstr "가상 머신:"
-
-#: resources/ui/performance_page/cpu.blp:339
-msgid "L1 cache:"
-msgstr "L1 캐시:"
-
-#: resources/ui/performance_page/cpu.blp:348
-msgid "L2 cache:"
-msgstr "L2 캐시:"
-
-#: resources/ui/performance_page/cpu.blp:357
-msgid "L3 cache:"
-msgstr "L3 캐시:"
-
-#: resources/ui/performance_page/cpu.blp:442
+#: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
 msgstr "그래프 변경(_G)"
 
-#: resources/ui/performance_page/cpu.blp:445
+#: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
 msgstr "전체 이용률(_T)"
 
-#: resources/ui/performance_page/cpu.blp:450
+#: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
 msgstr "논리 프로세서(_P)"
 
-#: resources/ui/performance_page/cpu.blp:456
+#: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:463
-#: resources/ui/performance_page/disk.blp:386
-#: resources/ui/performance_page/gpu.blp:549
-#: resources/ui/performance_page/memory.blp:402
-#: resources/ui/performance_page/network.blp:369
+#: resources/ui/performance_page/cpu.blp:163
+#: resources/ui/performance_page/disk.blp:179
+#: resources/ui/performance_page/gpu.blp:219
+#: resources/ui/performance_page/memory.blp:152
+#: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
 msgstr "그래프 요약 보기(_S)"
 
-#: resources/ui/performance_page/cpu.blp:468
-#: resources/ui/performance_page/disk.blp:391
-#: resources/ui/performance_page/gpu.blp:554
-#: resources/ui/performance_page/memory.blp:407
-#: resources/ui/performance_page/network.blp:374
+#: resources/ui/performance_page/cpu.blp:168
+#: resources/ui/performance_page/disk.blp:184
+#: resources/ui/performance_page/gpu.blp:224
+#: resources/ui/performance_page/memory.blp:157
+#: resources/ui/performance_page/network.blp:126
 msgid "_View"
 msgstr "보기(_V)"
 
-#: resources/ui/performance_page/cpu.blp:471
-#: resources/ui/performance_page/disk.blp:394
-#: resources/ui/performance_page/gpu.blp:557
-#: resources/ui/performance_page/memory.blp:410
-#: resources/ui/performance_page/network.blp:377
+#: resources/ui/performance_page/cpu.blp:171
+#: resources/ui/performance_page/disk.blp:187
+#: resources/ui/performance_page/gpu.blp:227
+#: resources/ui/performance_page/memory.blp:160
+#: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
 msgstr "CPU(_U)"
 
-#: resources/ui/performance_page/cpu.blp:476
-#: resources/ui/performance_page/disk.blp:399
-#: resources/ui/performance_page/gpu.blp:562
-#: resources/ui/performance_page/memory.blp:415
-#: resources/ui/performance_page/network.blp:382
+#: resources/ui/performance_page/cpu.blp:176
+#: resources/ui/performance_page/disk.blp:192
+#: resources/ui/performance_page/gpu.blp:232
+#: resources/ui/performance_page/memory.blp:165
+#: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
 msgstr "메모리(_M)"
 
-#: resources/ui/performance_page/cpu.blp:481
-#: resources/ui/performance_page/disk.blp:404
-#: resources/ui/performance_page/gpu.blp:567
-#: resources/ui/performance_page/memory.blp:420
-#: resources/ui/performance_page/network.blp:387
+#: resources/ui/performance_page/cpu.blp:181
+#: resources/ui/performance_page/disk.blp:197
+#: resources/ui/performance_page/gpu.blp:237
+#: resources/ui/performance_page/memory.blp:170
+#: resources/ui/performance_page/network.blp:139
 msgid "_Disk"
 msgstr "디스크(_D)"
 
-#: resources/ui/performance_page/cpu.blp:486
-#: resources/ui/performance_page/disk.blp:409
-#: resources/ui/performance_page/gpu.blp:572
-#: resources/ui/performance_page/memory.blp:425
-#: resources/ui/performance_page/network.blp:392
+#: resources/ui/performance_page/cpu.blp:186
+#: resources/ui/performance_page/disk.blp:202
+#: resources/ui/performance_page/gpu.blp:242
+#: resources/ui/performance_page/memory.blp:175
+#: resources/ui/performance_page/network.blp:144
 msgid "_Network"
 msgstr "네트워크(_N)"
 
-#: resources/ui/performance_page/cpu.blp:491
-#: resources/ui/performance_page/disk.blp:414
-#: resources/ui/performance_page/gpu.blp:577
-#: resources/ui/performance_page/memory.blp:430
-#: resources/ui/performance_page/network.blp:397
+#: resources/ui/performance_page/cpu.blp:191
+#: resources/ui/performance_page/disk.blp:207
+#: resources/ui/performance_page/gpu.blp:247
+#: resources/ui/performance_page/memory.blp:180
+#: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
 msgstr "GPU(_G)"
 
-#: resources/ui/performance_page/cpu.blp:499
-#: resources/ui/performance_page/disk.blp:422
-#: resources/ui/performance_page/gpu.blp:585
-#: resources/ui/performance_page/memory.blp:438
-#: resources/ui/performance_page/network.blp:410
+#: resources/ui/performance_page/cpu.blp:199
+#: resources/ui/performance_page/disk.blp:215
+#: resources/ui/performance_page/gpu.blp:255
+#: resources/ui/performance_page/memory.blp:188
+#: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
 msgstr "복사(_C)"
 
+#: resources/ui/performance_page/cpu_details.blp:48
+msgid "Speed"
+msgstr "속도"
+
+#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+msgid "Processes"
+msgstr "프로세스"
+
+#: resources/ui/performance_page/cpu_details.blp:97
+msgid "Threads"
+msgstr "스레드"
+
+#: resources/ui/performance_page/cpu_details.blp:119
+msgid "Handles"
+msgstr "핸들"
+
+#: resources/ui/performance_page/cpu_details.blp:142
+msgid "Up time"
+msgstr "가동 시간"
+
+#: resources/ui/performance_page/cpu_details.blp:168
+msgid "Base Speed:"
+msgstr "기본 속도:"
+
+#: resources/ui/performance_page/cpu_details.blp:177
+msgid "Sockets:"
+msgstr "소켓:"
+
+#: resources/ui/performance_page/cpu_details.blp:186
+msgid "Virtual processors:"
+msgstr "가상 프로세서:"
+
+#: resources/ui/performance_page/cpu_details.blp:195
+msgid "Virtualization:"
+msgstr "가상화 수단:"
+
+#: resources/ui/performance_page/cpu_details.blp:204
+msgid "Virtual machine:"
+msgstr "가상 머신:"
+
+#: resources/ui/performance_page/cpu_details.blp:213
+msgid "L1 cache:"
+msgstr "L1 캐시:"
+
+#: resources/ui/performance_page/cpu_details.blp:222
+msgid "L2 cache:"
+msgstr "L2 캐시:"
+
+#: resources/ui/performance_page/cpu_details.blp:231
+msgid "L3 cache:"
+msgstr "L3 캐시:"
+
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk.blp:188
+#: resources/ui/performance_page/disk_details.blp:26
 msgid "Active time"
 msgstr "활성 시간"
 
-#: resources/ui/performance_page/disk.blp:122
+#: resources/ui/performance_page/disk.blp:123
 msgid "Disk transfer rate"
 msgstr "디스크 전송율"
 
-#: resources/ui/performance_page/disk.blp:211
-msgid "Average response time"
+#: resources/ui/performance_page/disk_details.blp:49
+#, fuzzy
+msgid "Avg. response time"
 msgstr "평균 응답시간"
 
-#: resources/ui/performance_page/disk.blp:247
+#: resources/ui/performance_page/disk_details.blp:85
 msgid "Read speed"
 msgstr "읽기 속도"
 
-#: resources/ui/performance_page/disk.blp:279
+#: resources/ui/performance_page/disk_details.blp:117
 msgid "Write speed"
 msgstr "쓰기 속도"
 
-#: resources/ui/performance_page/disk.blp:307
+#: resources/ui/performance_page/disk_details.blp:145
 msgid "Capacity:"
 msgstr "용량:"
 
-#: resources/ui/performance_page/disk.blp:316
+#: resources/ui/performance_page/disk_details.blp:154
 msgid "Formatted:"
 msgstr "포맷:"
 
-#: resources/ui/performance_page/disk.blp:325
+#: resources/ui/performance_page/disk_details.blp:163
 msgid "System disk:"
 msgstr "시스템 디스크:"
 
-#: resources/ui/performance_page/disk.blp:334
-#: resources/ui/performance_page/memory.blp:345
+#: resources/ui/performance_page/disk_details.blp:172
+#: resources/ui/performance_page/memory_details.blp:205
 msgid "Type:"
 msgstr "종류:"
 
@@ -676,102 +368,94 @@ msgstr "종류:"
 msgid "Overall utilization"
 msgstr "전체 이용률"
 
-#: resources/ui/performance_page/gpu.blp:110
+#: resources/ui/performance_page/gpu.blp:111
 msgid "Video encode"
 msgstr "영상 인코딩"
 
-#: resources/ui/performance_page/gpu.blp:143
+#: resources/ui/performance_page/gpu.blp:147
 msgid "Video decode"
 msgstr "영상 디코딩"
 
-#: resources/ui/performance_page/gpu.blp:180
-#: resources/ui/performance_page/gpu.blp:350
-#: resources/ui/performance_page/memory.blp:73
+#: resources/ui/performance_page/gpu.blp:186
+#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "메모리 사용량"
 
-#: resources/ui/performance_page/gpu.blp:250
+#: resources/ui/performance_page/gpu_details.blp:47
 msgid "Clock Speed"
 msgstr "클록 속도"
 
-#: resources/ui/performance_page/gpu.blp:295
+#: resources/ui/performance_page/gpu_details.blp:92
 msgid "Power draw"
 msgstr "전력 부하"
 
-#: resources/ui/performance_page/gpu.blp:395
+#: resources/ui/performance_page/gpu_details.blp:182
 msgid "Memory speed"
 msgstr "메모리 속도"
 
-#: resources/ui/performance_page/gpu.blp:440
+#: resources/ui/performance_page/gpu_details.blp:227
 msgid "Temperature"
 msgstr "온도"
 
-#: resources/ui/performance_page/gpu.blp:470
+#: resources/ui/performance_page/gpu_details.blp:255
 msgid "OpenGL version:"
 msgstr "OpenGL 버전:"
 
-#: resources/ui/performance_page/gpu.blp:479
+#: resources/ui/performance_page/gpu_details.blp:264
 msgid "Vulkan version:"
 msgstr "벌컨 버전:"
 
-#: resources/ui/performance_page/gpu.blp:488
+#: resources/ui/performance_page/gpu_details.blp:273
 msgid "PCI Express speed:"
 msgstr "PCI 익스프레스 속도:"
 
-#: resources/ui/performance_page/gpu.blp:497
+#: resources/ui/performance_page/gpu_details.blp:282
 msgid "PCI bus address:"
 msgstr "PCI 버스 주소:"
 
-#: resources/ui/performance_page/memory.blp:28
-msgid "Some information requires administrative privileges"
-msgstr "일부 정보를 보려면 관리자 권한이 필요합니다"
-
-#: resources/ui/performance_page/memory.blp:29
-msgid "_Authenticate"
-msgstr "인증(_A)"
-
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "메모리"
 
-#: resources/ui/performance_page/memory.blp:130
+#: resources/ui/performance_page/memory.blp:126
 msgid "Memory composition"
 msgstr "메모리 사용량"
 
-#: resources/ui/performance_page/memory.blp:166
+#: resources/ui/performance_page/memory_details.blp:27
 msgid "In use"
 msgstr "사용중"
 
-#: resources/ui/performance_page/memory.blp:189
+#: resources/ui/performance_page/memory_details.blp:50
 msgid "Available"
 msgstr "가용량"
 
-#: resources/ui/performance_page/memory.blp:217
+#: resources/ui/performance_page/memory_details.blp:78
 msgid "Committed"
 msgstr "커밋함"
 
-#: resources/ui/performance_page/memory.blp:240
+#: resources/ui/performance_page/memory_details.blp:101
 msgid "Cached"
 msgstr "캐시함"
 
-#: resources/ui/performance_page/memory.blp:267
+#: resources/ui/performance_page/memory_details.blp:128
 msgid "Swap available"
 msgstr "가용 스왑"
 
-#: resources/ui/performance_page/memory.blp:290
+#: resources/ui/performance_page/memory_details.blp:151
 msgid "Swap used"
 msgstr "사용 스왑"
 
-#: resources/ui/performance_page/memory.blp:318
+#: resources/ui/performance_page/memory_details.blp:178
 msgid "Speed:"
 msgstr "속도:"
 
-#: resources/ui/performance_page/memory.blp:327
+#: resources/ui/performance_page/memory_details.blp:187
 msgid "Slots used:"
 msgstr "사용 슬롯:"
 
-#: resources/ui/performance_page/memory.blp:336
+#: resources/ui/performance_page/memory_details.blp:196
 msgid "Form factor:"
 msgstr "폼팩터:"
 
@@ -779,53 +463,53 @@ msgstr "폼팩터:"
 msgid "Throughput"
 msgstr "처리량"
 
-#: resources/ui/performance_page/network.blp:139
-msgid "Send"
-msgstr "전송"
+#: resources/ui/performance_page/network.blp:155
+msgid "Network Se_ttings"
+msgstr "네트워크 설정(_T)"
 
-#: resources/ui/performance_page/network.blp:170
+#: resources/ui/performance_page/network_details.blp:31
 msgid "Receive"
 msgstr "수신"
 
-#: resources/ui/performance_page/network.blp:197
+#: resources/ui/performance_page/network_details.blp:63
+msgid "Send"
+msgstr "전송"
+
+#: resources/ui/performance_page/network_details.blp:90
 msgid "Interface name:"
 msgstr "인터페이스 이름:"
 
-#: resources/ui/performance_page/network.blp:206
+#: resources/ui/performance_page/network_details.blp:99
 msgid "Connection type:"
 msgstr "연결 형식:"
 
-#: resources/ui/performance_page/network.blp:216
+#: resources/ui/performance_page/network_details.blp:109
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network.blp:226
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Signal strength:"
 msgstr "신호 세기:"
 
-#: resources/ui/performance_page/network.blp:236
+#: resources/ui/performance_page/network_details.blp:129
 msgid "Maximum Bitrate:"
 msgstr "최대 비트전송율:"
 
-#: resources/ui/performance_page/network.blp:246
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Frequency:"
 msgstr "연결 주파수:"
 
-#: resources/ui/performance_page/network.blp:255
+#: resources/ui/performance_page/network_details.blp:148
 msgid "Hardware address:"
 msgstr "하드웨어 주소:"
 
-#: resources/ui/performance_page/network.blp:264
+#: resources/ui/performance_page/network_details.blp:231
 msgid "IPv4 address:"
 msgstr "IPv4 주소:"
 
-#: resources/ui/performance_page/network.blp:273
+#: resources/ui/performance_page/network_details.blp:240
 msgid "IPv6 address:"
 msgstr "IPv6 주소:"
-
-#: resources/ui/performance_page/network.blp:403
-msgid "Network Se_ttings"
-msgstr "네트워크 설정(_T)"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
@@ -888,41 +572,54 @@ msgstr "정렬 상태 기억"
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr "앱을 다시 시작할 때마다 앱 및 프로세스 목록의 정렬 상태를 기억합니다"
 
-#: resources/ui/window.blp:48
+#: resources/ui/window.blp:43
+msgid "Resources"
+msgstr ""
+
+#: resources/ui/window.blp:69
+msgid "Toggle Sidebar"
+msgstr ""
+
+#: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
 msgstr "검색할 이름 또는 PID를 입력하십시오"
 
-#: resources/ui/window.blp:90
+#: resources/ui/window.blp:148
 msgid "Loading..."
 msgstr "불러오는 중..."
 
-#: resources/ui/window.blp:104
+#: resources/ui/window.blp:162
 msgid "Performance"
 msgstr "성능"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:447
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
 msgid "Apps"
 msgstr "앱"
 
-#: resources/ui/window.blp:124
+#: resources/ui/window.blp:192
 msgid "_Preferences"
 msgstr "기본 설정(_P)"
 
-#: resources/ui/window.blp:129
+#: resources/ui/window.blp:197
 msgid "_About MissionCenter"
 msgstr "미션 센터 정보(_A)"
 
-#: src/apps_page/mod.rs:1037
+#: src/apps_page/mod.rs:1143
 msgid "Name"
 msgstr "이름"
 
-#: src/apps_page/mod.rs:1043
+#: src/apps_page/mod.rs:1149
 msgid "PID"
 msgstr "프로세스 ID"
 
-#: src/apps_page/mod.rs:1061
+#: src/apps_page/mod.rs:1167
 msgid "Disk"
 msgstr "디스크"
+
+#: src/apps_page/mod.rs:1174
+#, fuzzy
+msgid "GPU"
+msgstr "GPU(_G)"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -942,7 +639,7 @@ msgstr "프로세스 중단"
 msgid "Force Stop Process"
 msgstr "프로세스 강제 중단"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:224
+#: src/performance_page/widgets/mem_composition_widget.rs:285
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -952,7 +649,7 @@ msgstr ""
 "\n"
 "운영체제와 실행 앱에서 사용하고 있는 메모리 용량"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:236
+#: src/performance_page/widgets/mem_composition_widget.rs:317
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -964,7 +661,7 @@ msgstr ""
 "다른 프로세스에서 사용하기 전에 디스크에 기록해야 할 내용이 들어간 메모리 용"
 "량"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:257
+#: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -974,7 +671,7 @@ msgstr ""
 "\n"
 "현재 사용하지 않고 있는 캐시 데이터와 코드가 들어간 메모리 용량"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:266
+#: src/performance_page/widgets/mem_composition_widget.rs:350
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -986,102 +683,242 @@ msgstr ""
 "현재 사용하지 않아, 운영체제, 드라이버, 앱에서 더 많은 메모리 용량이 필요할 "
 "때 재할당할 메모리 용량"
 
-#: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
+#: src/performance_page/mod.rs:489 src/performance_page/disk.rs:196
 msgid "Disk {} ({})"
 msgstr "{}번 디스크 ({})"
 
-#: src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:493
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:494
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:495
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:496
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:380
+#: src/performance_page/mod.rs:497
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:381 src/performance_page/cpu.rs:310
-#: src/performance_page/cpu.rs:323 src/performance_page/cpu.rs:333
-#: src/performance_page/cpu.rs:339 src/performance_page/gpu.rs:255
-#: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
-#: src/performance_page/network.rs:396 src/performance_page/network.rs:405
-#: src/performance_page/network.rs:442 src/performance_page/network.rs:520
+#: src/performance_page/mod.rs:498 src/performance_page/cpu.rs:305
+#: src/performance_page/cpu.rs:321 src/performance_page/cpu.rs:333
+#: src/performance_page/cpu.rs:341 src/performance_page/disk.rs:301
+#: src/performance_page/gpu.rs:300 src/performance_page/gpu.rs:417
+#: src/performance_page/memory.rs:261 src/performance_page/network.rs:392
+#: src/performance_page/network.rs:416 src/performance_page/network.rs:426
+#: src/performance_page/network.rs:465 src/performance_page/network.rs:515
+#: src/performance_page/network.rs:551
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:577 src/performance_page/network.rs:331
 msgid "Ethernet"
 msgstr "이더넷"
 
-#: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
+#: src/performance_page/mod.rs:578 src/performance_page/network.rs:346
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
+#: src/performance_page/mod.rs:579 src/performance_page/network.rs:348
 msgid "Other"
 msgstr "기타"
 
-#: src/performance_page/mod.rs:541
+#: src/performance_page/mod.rs:678
 msgid "GPU {}"
 msgstr "{}번 GPU"
 
-#: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
+#: src/performance_page/mod.rs:853 src/performance_page/mod.rs:861
 #, fuzzy
 msgid "{}: {} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/cpu.rs:318
+#: src/performance_page/cpu.rs:316
 msgid "Supported"
 msgstr "지원"
 
-#: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
+#: src/performance_page/cpu.rs:318 src/performance_page/gpu.rs:312
 msgid "Unsupported"
 msgstr "미지원"
 
-#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
+#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:232
 msgid "Yes"
 msgstr "예"
 
-#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
+#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:234
 msgid "No"
 msgstr "아니요"
 
-#: src/performance_page/cpu.rs:698
+#: src/performance_page/cpu.rs:869
 #, fuzzy
 msgid "Utilization over {} seconds"
 msgstr "% 활용 / {} 초"
 
-#: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
-#: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
+#: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
+#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
 msgid "{} seconds"
 msgstr "{} 초"
 
-#: src/performance_page/disk.rs:251
+#: src/performance_page/disk.rs:263
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/network.rs:416 src/performance_page/network.rs:422
-#: src/performance_page/network.rs:430
+#: src/performance_page/gpu.rs:265
+#, fuzzy
+msgid "Video encode/decode"
+msgstr "영상 인코딩"
+
+#: src/performance_page/memory.rs:477
+#, fuzzy
+msgid "Authentication failed"
+msgstr "인증(_A)"
+
+#: src/performance_page/network.rs:438 src/performance_page/network.rs:445
+#: src/performance_page/network.rs:455
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/network.rs:455 src/performance_page/network.rs:471
+#: src/performance_page/network.rs:477 src/performance_page/network.rs:492
 msgid "N/A"
 msgstr "(없음)"
 
-#: src/application.rs:261
+#: src/application.rs:272
 msgid "translator-credits"
 msgstr "Seong-ho Cho <shcho@gnome.org>"
+
+#~ msgid "Disk utilization percentage might not be accurate"
+#~ msgstr "디스크 이용률 백분율 수치가 정확하지 않을 수 있습니다"
+
+#~ msgid "No per-process GPU usage"
+#~ msgstr "프로세스별 GPU 사용량이 없습니다"
+
+#, fuzzy
+#~ msgid ""
+#~ "Fixed a regression where natively installed browsers were not showing up "
+#~ "in the apps list on Fedora"
+#~ msgstr "자체 패키지로 설치하여 앱 목록에 나타나지 않는 브라우저 문제 수정"
+
+#, fuzzy
+#~ msgid ""
+#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
+#~ msgstr "앱 및 프로세스 목록이 일부 사용자에게서 비어 보인느 문제 수정"
+
+#, fuzzy
+#~ msgid "Translations:"
+#~ msgstr "가상화 수단:"
+
+#, fuzzy
+#~ msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
+#~ msgstr "Rafael Fontenelle가 포르투갈어 번역 수정"
+
+#, fuzzy
+#~ msgid "Updated German translation"
+#~ msgstr "TecCheck가 독일어 번역 추가함"
+
+#, fuzzy
+#~ msgid "Updated Czech translation"
+#~ msgstr "ondra05가 체코어 번역 추가"
+
+#, fuzzy
+#~ msgid "Updated Portuguese translation"
+#~ msgstr "Rilson Joás가 포르투갈어 번역 추가"
+
+#~ msgid "Add Spanish translation by Óscar Fernández Díaz"
+#~ msgstr "Óscar Fernández Díaz가 스페인어 번역 추가함"
+
+#~ msgid ""
+#~ "The memory tab now shows configured memory speed instead of the maximum "
+#~ "supported by the modules"
+#~ msgstr ""
+#~ "이제 메모리탭에서 모듈에서 지원하는 최대 속도 대신 설정 메모리 속도를 보여"
+#~ "줍니다"
+
+#~ msgid "Add German translation by TecCheck"
+#~ msgstr "TecCheck가 독일어 번역 추가함"
+
+#~ msgid ""
+#~ "When a process uses large amounts of CPU or RAM it is now highlighted in "
+#~ "the Apps and Processes list"
+#~ msgstr ""
+#~ "이제 프로세스에서 상당양의 CPU 또는 RAM을 활용할 경우 앱 및 프로세스 목록"
+#~ "에 강조합니다"
+
+#~ msgid "Add initial support for building for ARM64"
+#~ msgstr "ARM64 빌드 지원을 처음으로 추가"
+
+#~ msgid ""
+#~ "Take into account multiple CPU cores and cache sharing when calculating "
+#~ "cache sizes"
+#~ msgstr "캐시 용량을 계산할 때 CPU 코어 수와 공유 캐시 용량을 고려합니다"
+
+#~ msgid ""
+#~ "Fix browsers, installed as native packages, not showing up in the Apps "
+#~ "list"
+#~ msgstr "자체 패키지로 설치하여 앱 목록에 나타나지 않는 브라우저 문제 수정"
+
+#~ msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
+#~ msgstr "Peter Dave Hello가 중국어 번체 번역 업데이트"
+
+#~ msgid "Translation fixes for Portuguese by Rafael Fontenelle"
+#~ msgstr "Rafael Fontenelle가 포르투갈어 번역 수정"
+
+#~ msgid ""
+#~ "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
+#~ msgstr ""
+#~ "Maximilian이 기타 IPv6 값이 없을 경우 link-local IPv6 주소만 나타내도록 수"
+#~ "정"
+
+#~ msgid "Add Traditional Chinese locale by Peter Dave Hello"
+#~ msgstr "Peter Dave Hello가 중국어 번체 로캘 추가"
+
+#~ msgid "Add category for application menu by Renner0E"
+#~ msgstr "Renner0E가 앱 메뉴의 카테고리 추가"
+
+#~ msgid ""
+#~ "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
+#~ "panic"
+#~ msgstr "`dmidecode` 출력 해석시 갑작스레 끝나는 해석 오류 수정"
+
+#~ msgid ""
+#~ "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` "
+#~ "does not exist, when getting CPU base speed information"
+#~ msgstr ""
+#~ "CPU 기본 속도 정보를 가져올 때 `/sys/devices/system/cpu/cpu0/cpufreq/"
+#~ "base_frequency` 파일이 없을 경우 대체 정보 사용"
+
+#~ msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
+#~ msgstr "낮은 해상도에서도 적절하게 나타나도록 GPU 탭 인터페이스 업데이트"
+
+#~ msgid "Added Czech translation by ondra05"
+#~ msgstr "ondra05가 체코어 번역 추가"
+
+#~ msgid "Added Portuguese translation by Rilson Joás"
+#~ msgstr "Rilson Joás가 포르투갈어 번역 추가"
+
+#~ msgid ""
+#~ "Add keywords to desktop file to improve search function of desktop "
+#~ "environments by Hannes Kuchelmeister"
+#~ msgstr ""
+#~ "Hannes Kuchelmeister가 데스크톱 환경의 검색 기능 개선 목적으로 desktop 파"
+#~ "일에 키워드 추가"
+
+#~ msgid "Fixed a bug where the app and process list was empty for some users"
+#~ msgstr "앱 및 프로세스 목록이 일부 사용자에게서 비어 보인느 문제 수정"
+
+#~ msgid "Fix a crash that occurs when the system is under heavy load"
+#~ msgstr "시스템에 과부하가 걸렸을 때 프로그램이 갑자기 끝나는 문제 수정"
+
+#~ msgid "First official release!"
+#~ msgstr "공식 첫 출시!"
+
+#~ msgid "Some information requires administrative privileges"
+#~ msgstr "일부 정보를 보려면 관리자 권한이 필요합니다"
 
 #~ msgid ""
 #~ "The application currently only supports monitoring, you cannot stop "

@@ -19,31 +19,35 @@
  */
 
 using Gtk 4.0;
+using Adw 1;
 
-template $PerformancePage : Box {
-  orientation: vertical;
+template $PerformancePage : Adw.BreakpointBin {
+  width-request: 300;
+  height-request: 200;
 
-  Box page_content {
-    margin-top: 10;
-    margin-bottom: 15;
-    margin-end: 20;
+  Adw.Breakpoint breakpoint {}
 
-    ScrolledWindow {
-      visible: bind template.summary-mode inverted;
-      width-request: 220;
+  Adw.OverlaySplitView page_content {
+    sidebar-position: end;
+    min-sidebar-width: 240;
+    max-sidebar-width: 250;
 
+    sidebar: ScrolledWindow {
       hscrollbar-policy: never;
 
-      ListBox sidebar {
-        styles [
-          "navigation-sidebar",
-        ]
+      Adw.Bin info_bar {
+        margin-start: 5;
+        margin-end: 5;
+        halign: center;
       }
-    }
+    };
 
-    Stack page_stack {
-      margin-start: 20;
-      transition-type: slide_up_down;
-    }
+    content: Stack page_stack {
+      margin-top: 10;
+      margin-start: 10;
+      margin-end: 10;
+
+      transition-type: crossfade;
+    };
   }
 }

@@ -25,9 +25,9 @@ cd ../.. && rm -rf fribidi-1.0.13*
 # https://www.linuxfromscratch.org/blfs/view/stable/general/glib2.html
 # --------------------------------------------------------------------
 rm -rf /usr/include/glib-2.0/
-curl -LO https://download.gnome.org/sources/glib/2.76/glib-2.76.4.tar.xz
-tar xvf glib-2.76.4.tar.xz
-cd glib-2.76.4
+curl -LO https://download.gnome.org/sources/glib/2.78/glib-2.78.1.tar.xz
+tar xvf glib-2.78.1.tar.xz
+cd glib-2.78.1
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
@@ -35,7 +35,7 @@ mkdir build && cd build
     --buildtype=release                \
     -Dman=false
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../.. && rm -rf glib-2.76.4*
+cd ../.. && rm -rf glib-2.78.1*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/gobject-introspection.html
 # ------------------------------------------------------------------------------------
@@ -128,18 +128,19 @@ cd ../../ && rm -rf wayland-protocols-1.32*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
 # ---------------------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/adwaita-icon-theme/44/adwaita-icon-theme-44.0.tar.xz
-tar xvf adwaita-icon-theme-44.0.tar.xz
-cd adwaita-icon-theme-44.0
-./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu
-make && make install && make DESTDIR=/src/appimage install
-cd ../ && rm -rf adwaita-icon-theme-44.0*
+curl -LO https://download.gnome.org/sources/adwaita-icon-theme/45/adwaita-icon-theme-45.0.tar.xz
+tar xvf adwaita-icon-theme-45.0.tar.xz
+cd adwaita-icon-theme-45.0
+mkdir build && cd build
+/usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
+ninja && ninja install && env DESTDIR=/src/appimage ninja install
+cd ../ && rm -rf adwaita-icon-theme-45.0*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
 # ------------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/pango/1.50/pango-1.50.14.tar.xz
-tar xvf pango-1.50.14.tar.xz
-cd pango-1.50.14
+curl -LO https://download.gnome.org/sources/pango/1.51/pango-1.51.0.tar.xz
+tar xvf pango-1.51.0.tar.xz
+cd pango-1.51.0
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
@@ -155,7 +156,7 @@ mkdir build && cd build
     --prefix=/usr                      \
     --libdir=/usr/lib/x86_64-linux-gnu \
     --buildtype=release                \
-    -Dgraphite2=enabled
+    -Dgraphite2=disabled
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
 cd ../../ && rm -rf harfbuzz-8.1.1*
 
@@ -173,7 +174,7 @@ mkdir build && cd build
     -Dintrospection=enabled            \
     -Dbuild-examples=false             \
     -Dbuild-tests=false                \
-    -Ddemos=false                      \
+    -Dbuild-demos=false                      \
     -Dbuild-testsuite=false
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
 cd ../../ && rm -rf gtk-4.12.3*
@@ -219,6 +220,22 @@ mkdir build && cd build
     -Dexamples=false
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
 cd ../../ && rm -rf libadwaita-1.4.0*
+
+# Blueprint Compiler
+# ------------------
+curl -LO https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/80aaee374d332b0c7e04a132cce9c472d6427a1e/blueprint-compiler-80aaee374d332b0c7e04a132cce9c472d6427a1e.tar.bz2
+tar xvf blueprint-compiler-*.tar.bz2 && rm blueprint-compiler-*.tar.bz2
+cd blueprint-compiler-*
+mkdir build && cd build
+/usr/local/bin/meson setup ..          \
+    --prefix=/usr                      \
+    --libdir=/usr/lib/x86_64-linux-gnu \
+    --buildtype=release
+ninja && ninja install
+cd ../../ && rm -rf blueprint-compiler-*
+# Patch for compatibility with Python 3.8
+sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/gir.py
+sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/ast_utils.py
 
 # Rust
 # ----

@@ -19,8 +19,7 @@ configure_file(
     configuration: conf
 )
 
-cargo_bin  = find_program('cargo')
-
+cargo_bin = find_program('cargo')
 cargo_env = get_option('cargo_env')
 if get_option('flatpak') == false
     cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]

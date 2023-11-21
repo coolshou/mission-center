@@ -23,11 +23,11 @@ using Adw 1;
 
 template $PerformancePageGpu: Box {
   orientation: vertical;
+  margin-bottom: 10;
 
   WindowHandle {
     child: Box description {
       orientation: vertical;
-      margin-top: 10;
       spacing: 7;
       hexpand: true;
 
@@ -82,7 +82,8 @@ template $PerformancePageGpu: Box {
       vexpand: true;
       hexpand: true;
 
-      height-request: 100;
+      width-request: 100;
+      height-request: 50;
 
       base-color: bind template.base-color;
       data-set-count: 1;
@@ -100,7 +101,7 @@ template $PerformancePageGpu: Box {
       orientation: vertical;
 
       Box {
-        Label {
+        Label encode_label {
           styles [
             "caption",
           ]
@@ -108,6 +109,7 @@ template $PerformancePageGpu: Box {
           hexpand: true;
           halign: start;
           label: _("Video encode");
+          ellipsize: middle;
         }
 
         Label encode_percent {
@@ -117,15 +119,17 @@ template $PerformancePageGpu: Box {
         }
       }
 
-      $GraphWidget usage_graph_encode {
-        vexpand: true;
-        hexpand: true;
+      Adw.Clamp {
+        orientation: vertical;
 
-        height-request: 50;
+        width-request: 40;
+        maximum-size: 170;
 
-        base-color: bind template.base-color;
-        data-set-count: 1;
-        scroll: true;
+        child: $GraphWidget usage_graph_encode {
+          base-color: bind template.base-color;
+          data-set-count: 1;
+          scroll: true;
+        };
       }
     }
 
@@ -141,6 +145,7 @@ template $PerformancePageGpu: Box {
           hexpand: true;
           halign: start;
           label: _("Video decode");
+          ellipsize: middle;
         }
 
         Label decode_percent {
@@ -150,15 +155,17 @@ template $PerformancePageGpu: Box {
         }
       }
 
-      $GraphWidget usage_graph_decode {
-        vexpand: true;
-        hexpand: true;
+      Adw.Clamp {
+        orientation: vertical;
 
-        height-request: 50;
+        width-request: 40;
+        maximum-size: 170;
 
-        base-color: bind template.base-color;
-        data-set-count: 1;
-        scroll: true;
+        child: $GraphWidget usage_graph_decode {
+          base-color: bind template.base-color;
+          data-set-count: 1;
+          scroll: true;
+        };
       }
     }
   }
@@ -167,7 +174,6 @@ template $PerformancePageGpu: Box {
     orientation: vertical;
 
     margin-top: 10;
-    margin-bottom: 10;
 
     Box {
       Label {
@@ -187,353 +193,17 @@ template $PerformancePageGpu: Box {
       }
     }
 
-    $GraphWidget usage_graph_memory {
-      hexpand: true;
-
-      height-request: 70;
-
-      base-color: bind template.base-color;
-      data-set-count: 1;
-      scroll: true;
-    }
-  }
-
-  Box details {
-    spacing: 20;
-
-    visible: bind template.summary-mode inverted;
-
-    Box dynamic_data {
-      spacing: 10;
-
-      Adw.Clamp {
-        orientation: horizontal;
-        maximum-size: 250;
-
-        child: Box left_column {
-          orientation: vertical;
-          spacing: 10;
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Utilization");
-            }
-
-            Label utilization {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Clock Speed");
-            }
-
-            Box {
-              Label clock_speed_current {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-
-              Label {
-                styles [
-                  "title-4",
-                ]
-
-                halign: start;
-                label: " / ";
-              }
-
-              Label clock_speed_max {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Power draw");
-            }
-
-            Box {
-              Label power_draw_current {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-
-              Label {
-                styles [
-                  "title-4",
-                ]
-
-                halign: start;
-                label: " / ";
-              }
-
-              Label power_draw_max {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-            }
-          }
-        };
-      }
-
-      Adw.Clamp {
-        orientation: horizontal;
-        maximum-size: 250;
-
-        child: Box right_column {
-          orientation: vertical;
-          spacing: 10;
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Memory usage");
-            }
-
-            Box {
-              Label memory_usage_current {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-
-              Label {
-                styles [
-                  "title-4",
-                ]
-
-                halign: start;
-                label: " / ";
-              }
-
-              Label memory_usage_max {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Memory speed");
-            }
-
-            Box {
-              Label memory_speed_current {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-
-              Label {
-                styles [
-                  "title-4",
-                ]
-
-                halign: start;
-                label: " / ";
-              }
-
-              Label memory_speed_max {
-                styles [
-                  "title-4",
-                ]
-
-                ellipsize: middle;
-
-                halign: start;
-              }
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Temperature");
-            }
-
-            Label temperature {
-              styles [
-                "title-4",
-              ]
-
-              ellipsize: middle;
-
-              halign: start;
-            }
-          }
-        };
-      }
-    }
-
-    Box system_info {
-      spacing: 10;
-
-      Box labels {
-        orientation: vertical;
-        spacing: 3;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("OpenGL version:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Vulkan version:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("PCI Express speed:");
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("PCI bus address:");
-        }
-      }
-
-      Box values {
-        orientation: vertical;
-        spacing: 3;
-
-        Label opengl_version {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-        }
-
-        Label vulkan_version {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-        }
-
-        Label pcie_speed {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-        }
-
-        Label pci_addr {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-        }
-      }
+    Adw.Clamp {
+      orientation: vertical;
+
+      width-request: 40;
+      maximum-size: 70;
+
+      child: $GraphWidget usage_graph_memory {
+        base-color: bind template.base-color;
+        data-set-count: 1;
+        scroll: true;
+      };
     }
   }
 

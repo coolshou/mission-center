@@ -1,0 +1,325 @@
+/* ui/performance_page/cpu_details.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+using Gtk 4.0;
+
+Box root {
+  margin-top: 65;
+  margin-bottom: 10;
+  orientation: vertical;
+  spacing: 20;
+
+  Box dynamic_data {
+    orientation: vertical;
+    spacing: 10;
+
+    Box top_row {
+      spacing: 15;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Utilization");
+        }
+
+        Label utilization {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Speed");
+        }
+
+        Label speed {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box mid_row {
+      spacing: 15;
+      width-request: 200;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Processes");
+        }
+
+        Label processes {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Threads");
+        }
+
+        Label threads {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Handles");
+        }
+
+        Label handles {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Up time");
+      }
+
+      Label uptime {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+  }
+
+  Box system_info {
+    spacing: 10;
+
+    Box labels {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Base Speed:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Sockets:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Virtual processors:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Virtualization:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Virtual machine:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("L1 cache:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("L2 cache:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("L3 cache:");
+      }
+    }
+
+    Box values {
+      orientation: vertical;
+      spacing: 3;
+
+      Label base_speed {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label sockets {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label virt_proc {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label virtualization {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: "Unknown";
+      }
+
+      Label virt_machine {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label l1_cache {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label l2_cache {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label l3_cache {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+    }
+  }
+}

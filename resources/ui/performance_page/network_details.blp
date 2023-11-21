@@ -1,0 +1,286 @@
+/* ui/performance_page/network_details.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+using Gtk 4.0;
+
+Box root {
+  margin-top: 65;
+  margin-bottom: 10;
+  orientation: vertical;
+  spacing: 20;
+
+  Box dynamic_data {
+    orientation: vertical;
+    spacing: 10;
+
+    Box {
+      spacing: 5;
+
+      Picture legend_recv {
+        can-shrink: false;
+        content-fit: scale_down;
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Receive");
+        }
+
+        Label speed_recv {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box {
+      spacing: 5;
+
+      Picture legend_send {
+        can-shrink: false;
+        content-fit: scale_down;
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Send");
+        }
+
+        Label speed_send {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+  }
+
+  Box interface_info {
+    spacing: 10;
+
+    Box labels {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Interface name:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Connection type:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: bind ssid.visible;
+        label: _("SSID:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: bind signal_strength.visible;
+        label: _("Signal strength:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: bind max_bitrate.visible;
+        label: _("Maximum Bitrate:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: bind frequency.visible;
+        label: _("Frequency:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Hardware address:");
+      }
+    }
+
+    Box values {
+      orientation: vertical;
+      spacing: 3;
+
+      Label interface_name_label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label connection_type_label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label ssid {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: false;
+      }
+
+      Image signal_strength {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: false;
+      }
+
+      Label max_bitrate {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: false;
+      }
+
+      Label frequency {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        visible: false;
+      }
+
+      Label hw_address {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+    }
+  }
+
+  Box ip_info {
+    spacing: 10;
+
+    Box {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("IPv4 address:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("IPv6 address:");
+      }
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 3;
+
+      Label ipv4_address {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label ipv6_address {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        ellipsize: middle;
+      }
+    }
+  }
+}

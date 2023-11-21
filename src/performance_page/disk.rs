@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, OnceCell};
 
 use adw;
 use adw::subclass::prelude::*;
@@ -50,26 +50,6 @@ mod imp {
         #[template_child]
         pub disk_transfer_rate_graph: TemplateChild<GraphWidget>,
         #[template_child]
-        pub active_time: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub avg_response_time: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub legend_read: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub read_speed: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub legend_write: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub write_speed: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub capacity: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub formatted: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub system_disk: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub disk_type: TemplateChild<gtk::Label>,
-        #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get = Self::name, set = Self::set_name, type = String)]
@@ -78,6 +58,20 @@ mod imp {
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
+
+        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        pub infobar_content: OnceCell<gtk::Box>,
+
+        pub active_time: OnceCell<gtk::Label>,
+        pub avg_response_time: OnceCell<gtk::Label>,
+        pub legend_read: OnceCell<gtk::Picture>,
+        pub read_speed: OnceCell<gtk::Label>,
+        pub legend_write: OnceCell<gtk::Picture>,
+        pub write_speed: OnceCell<gtk::Label>,
+        pub capacity: OnceCell<gtk::Label>,
+        pub formatted: OnceCell<gtk::Label>,
+        pub system_disk: OnceCell<gtk::Label>,
+        pub disk_type: OnceCell<gtk::Label>,
     }
 
     impl Default for PerformancePageDisk {
@@ -89,6 +83,14 @@ mod imp {
                 max_y: Default::default(),
                 graph_max_duration: Default::default(),
                 disk_transfer_rate_graph: Default::default(),
+                context_menu: Default::default(),
+
+                name: Cell::new(String::new()),
+                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
+                summary_mode: Cell::new(false),
+
+                infobar_content: Default::default(),
+
                 active_time: Default::default(),
                 avg_response_time: Default::default(),
                 legend_read: Default::default(),
@@ -99,11 +101,6 @@ mod imp {
                 formatted: Default::default(),
                 system_disk: Default::default(),
                 disk_type: Default::default(),
-                context_menu: Default::default(),
-
-                name: Cell::new(String::new()),
-                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
-                summary_mode: Cell::new(false),
             }
         }
     }
@@ -122,6 +119,10 @@ mod imp {
             }
 
             self.name.replace(name);
+        }
+
+        fn infobar_content(&self) -> Option<gtk::Widget> {
+            self.infobar_content.get().map(|ic| ic.clone().into())
         }
     }
 
@@ -195,46 +196,57 @@ mod imp {
                 .set_text(&i18n_f("Disk {} ({})", &[&format!("{}", index), &disk.id]));
             this.model.set_text(&disk.model);
 
-            this.disk_transfer_rate_graph.set_dashed(0, true);
-            this.disk_transfer_rate_graph.set_filled(0, false);
+            this.disk_transfer_rate_graph.set_dashed(1, true);
+            this.disk_transfer_rate_graph.set_filled(1, false);
 
-            this.legend_read
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
-            this.legend_write
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
+            if let Some(legend_read) = this.legend_read.get() {
+                legend_read
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
+            }
+            if let Some(legend_write) = this.legend_write.get() {
+                legend_write
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
+            }
 
-            let capacity = crate::to_human_readable(disk.capacity as f32, 1024.);
-            this.capacity.set_text(&format!(
-                "{:.2} {}{}B",
-                capacity.0,
-                capacity.1,
-                if capacity.1.is_empty() { "" } else { "i" }
-            ));
+            let cap = crate::to_human_readable(disk.capacity as f32, 1024.);
+            if let Some(capacity) = this.capacity.get() {
+                capacity.set_text(&format!(
+                    "{:.2} {}{}B",
+                    cap.0,
+                    cap.1,
+                    if cap.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
-            let formatted = crate::to_human_readable(disk.formatted as f32, 1024.);
-            this.formatted.set_text(&format!(
-                "{:.2} {}{}B",
-                formatted.0,
-                formatted.1,
-                if formatted.1.is_empty() { "" } else { "i" }
-            ));
+            let fmt = crate::to_human_readable(disk.formatted as f32, 1024.);
+            if let Some(formatted) = this.formatted.get() {
+                formatted.set_text(&format!(
+                    "{:.2} {}{}B",
+                    fmt.0,
+                    fmt.1,
+                    if fmt.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
             let is_system_disk = if disk.system_disk {
                 i18n("Yes")
             } else {
                 i18n("No")
             };
-            this.system_disk.set_text(&is_system_disk);
+            if let Some(system_disk) = this.system_disk.get() {
+                system_disk.set_text(&is_system_disk);
+            }
 
-            this.disk_type.set_text(match disk.r#type {
-                DiskType::HDD => "HDD",
-                DiskType::SSD => "SSD",
-                DiskType::NVMe => "NVMe",
-                DiskType::eMMC => "eMMC",
-                DiskType::iSCSI => "iSCSI",
-                DiskType::Unknown => "Unknown",
-            });
-
+            if let Some(disk_type) = this.disk_type.get() {
+                disk_type.set_text(match disk.r#type {
+                    DiskType::HDD => "HDD",
+                    DiskType::SSD => "SSD",
+                    DiskType::NVMe => "NVMe",
+                    DiskType::eMMC => "eMMC",
+                    DiskType::iSCSI => "iSCSI",
+                    DiskType::Unknown => "Unknown",
+                });
+            }
             true
         }
 
@@ -256,36 +268,39 @@ mod imp {
                 ],
             ));
 
-            this.usage_graph.add_data_point(0, disk.busy_percent as f32);
+            this.usage_graph.add_data_point(0, disk.busy_percent);
 
-            this.active_time
-                .set_text(&format!("{}%", disk.busy_percent.round() as u8));
+            if let Some(active_time) = this.active_time.get() {
+                active_time.set_text(&format!("{}%", disk.busy_percent.round() as u8));
+            }
 
-            this.avg_response_time
-                .set_text(&format!("{:.2} ms", disk.response_time_ms));
+            if let Some(avg_response_time) = this.avg_response_time.get() {
+                avg_response_time.set_text(&format!("{:.2} ms", disk.response_time_ms));
+            }
 
             this.disk_transfer_rate_graph
                 .add_data_point(0, disk.read_speed as f32);
-            let read_speed = crate::to_human_readable(disk.read_speed as f32, 1024.);
-            let i = if read_speed.1.is_empty() { "" } else { "i" };
-            this.read_speed.set_text(&format!(
-                "{0:.2$} {1}{3}B/s",
-                read_speed.0, read_speed.1, read_speed.2, i,
-            ));
+            let rsp = crate::to_human_readable(disk.read_speed as f32, 1024.);
+            let i = if rsp.1.is_empty() { "" } else { "i" };
+            if let Some(read_speed) = this.read_speed.get() {
+                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
+            }
 
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.write_speed as f32);
-            let write_speed = crate::to_human_readable(disk.write_speed as f32, 1024.);
-            let i = if write_speed.1.is_empty() { "" } else { "i" };
-            this.write_speed.set_text(&format!(
-                "{0:.2$} {1}{3}B/s",
-                write_speed.0, write_speed.1, write_speed.2, i,
-            ));
+            let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
+            let i = if wsp.1.is_empty() { "" } else { "i" };
+            if let Some(write_speed) = this.write_speed.get() {
+                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
+            }
 
             true
         }
 
         fn data_summary(&self) -> String {
+            let unknown = i18n("Unknown");
+            let unknown = unknown.as_str();
+
             format!(
                 r#"{}
 
@@ -302,14 +317,38 @@ mod imp {
     Average response time: {}"#,
                 self.disk_id.label(),
                 self.model.label(),
-                self.capacity.label(),
-                self.formatted.label(),
-                self.system_disk.label(),
-                self.disk_type.label(),
-                self.read_speed.label(),
-                self.write_speed.label(),
-                self.active_time.label(),
-                self.avg_response_time.label(),
+                self.capacity
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.formatted
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.system_disk
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.disk_type
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.read_speed
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.write_speed
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.active_time
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.avg_response_time
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
             )
         }
     }
@@ -330,16 +369,6 @@ mod imp {
     }
 
     impl ObjectImpl for PerformancePageDisk {
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformancePageDisk>().clone();
-
-            Self::configure_actions(&this);
-            Self::configure_context_menu(&this);
-        }
-
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -350,6 +379,77 @@ mod imp {
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
+        }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformancePageDisk>().clone();
+
+            Self::configure_actions(&this);
+            Self::configure_context_menu(&this);
+
+            let sidebar_content_builder = gtk::Builder::from_resource(
+                "/io/missioncenter/MissionCenter/ui/performance_page/disk_details.ui",
+            );
+
+            let _ = self.infobar_content.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("root")
+                    .expect("Could not find `root` object in details pane"),
+            );
+
+            let _ = self.active_time.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("active_time")
+                    .expect("Could not find `active_time` object in details pane"),
+            );
+            let _ = self.avg_response_time.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("avg_response_time")
+                    .expect("Could not find `avg_response_time` object in details pane"),
+            );
+            let _ = self.legend_read.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_read")
+                    .expect("Could not find `legend_read` object in details pane"),
+            );
+            let _ = self.read_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("read_speed")
+                    .expect("Could not find `read_speed` object in details pane"),
+            );
+            let _ = self.legend_write.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_write")
+                    .expect("Could not find `legend_write` object in details pane"),
+            );
+            let _ = self.write_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("write_speed")
+                    .expect("Could not find `write_speed` object in details pane"),
+            );
+            let _ = self.capacity.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("capacity")
+                    .expect("Could not find `capacity` object in details pane"),
+            );
+            let _ = self.formatted.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("formatted")
+                    .expect("Could not find `formatted` object in details pane"),
+            );
+            let _ = self.system_disk.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("system_disk")
+                    .expect("Could not find `system_disk` object in details pane"),
+            );
+            let _ = self.disk_type.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("disk_type")
+                    .expect("Could not find `disk_type` object in details pane"),
+            );
         }
     }
 
@@ -397,5 +497,19 @@ impl PerformancePageDisk {
 
     pub fn update_readings(&self, disk: &crate::sys_info_v2::Disk) -> bool {
         imp::PerformancePageDisk::update_readings(self, disk)
+    }
+
+    pub fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    pub fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }

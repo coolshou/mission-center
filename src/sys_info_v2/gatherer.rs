@@ -1,11 +1,11 @@
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
-use super::dbus_interface::IoMissioncenterMissionCenterGatherer;
+use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 pub use super::dbus_interface::{
     App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
     ProcessUsageStats,
 };
-use super::{FLATPAK_APP_PATH, IS_FLATPAK};
+use super::dbus_interface::{IoMissioncenterMissionCenterGatherer, OrgFreedesktopDBusPeer};
 
 macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
@@ -34,7 +34,6 @@ macro_rules! dbus_call {
                     return reply;
                 }
                 Some(Err(e)) => {
-                    dbg!(&e);
                     match $self.is_running() {
                     Ok(()) => {
                         if e.name() == Some("org.freedesktop.DBus.Error.NoReply") {
@@ -132,6 +131,12 @@ impl<'a> Gatherer<'a> {
             cmd.arg("-c");
             cmd.arg(Self::executable());
 
+            if let Some(mut appdir) = std::env::var_os("APPDIR") {
+                appdir.push("/runtime/default");
+                dbg!(&appdir);
+                cmd.current_dir(appdir);
+            }
+
             cmd
         };
         command
@@ -162,9 +167,6 @@ impl<'a> Gatherer<'a> {
                 }
             }));
 
-        // Let the child process start up
-        std::thread::sleep(std::time::Duration::from_millis(50));
-
         if self.dbus_proxy.borrow().is_none() {
             let connection = match dbus::blocking::Connection::new_session() {
                 Ok(c) => c,
@@ -189,6 +191,24 @@ impl<'a> Gatherer<'a> {
             );
             self.dbus_proxy.replace(Some(dbus_proxy));
         }
+
+        // Let the child process start up
+        for i in 0..8 {
+            std::thread::sleep(std::time::Duration::from_millis(25));
+            match self.ping() {
+                Ok(()) => return,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Call to Gatherer Ping method failed on try {}: {}",
+                        i,
+                        e,
+                    );
+                }
+            }
+        }
+
+        show_error_dialog_and_exit("Failed to spawn Gatherer process: Did not respond to Ping");
     }
 
     pub fn stop(&self) {
@@ -285,6 +305,20 @@ impl<'a> Gatherer<'a> {
         }
     }
 
+    fn ping(&self) -> Result<(), Box<dyn std::error::Error>> {
+        match self.dbus_proxy.borrow().as_ref().and_then(|f| Some(f.ping())) {
+            None => {
+                Err("Not initialized".into())
+            }
+            Some(Ok(reply)) => {
+                Ok(reply)
+            }
+            Some(Err(e)) => {
+                Err(e.into())
+            }
+        }
+    }
+
     fn executable() -> String {
         use gtk::glib::g_debug;
 
@@ -297,8 +331,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-glibc just-testing",
                 flatpak_app_path
             ))
-            .status()
-            .is_ok_and(|exit_status| exit_status.success());
+                .status()
+                .is_ok_and(|exit_status| exit_status.success());
             if cmd_glibc_status {
                 let exe_glibc = format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path);
                 g_debug!(
@@ -313,8 +347,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-musl just-testing",
                 flatpak_app_path
             ))
-            .status()
-            .is_ok_and(|exit_status| exit_status.success());
+                .status()
+                .is_ok_and(|exit_status| exit_status.success());
             if cmd_musl_status {
                 let exe_musl = format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path);
                 g_debug!(

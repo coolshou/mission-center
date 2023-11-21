@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, OnceCell};
 
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
@@ -52,36 +52,7 @@ mod imp {
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
-        pub utilization: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub speed: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub processes: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub threads: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub handles: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub uptime: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub base_speed: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub sockets: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub virt_proc: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub virtualization: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub virt_machine: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub l1_cache: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub l2_cache: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub l3_cache: TemplateChild<gtk::Label>,
-        #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
-
         #[property(get, set = Self::set_base_color)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
@@ -90,6 +61,24 @@ mod imp {
         pub graph_widgets: Cell<Vec<GraphWidget>>,
 
         pub settings: Cell<Option<gio::Settings>>,
+
+        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        pub infobar_content: OnceCell<gtk::Box>,
+
+        pub utilization: OnceCell<gtk::Label>,
+        pub speed: OnceCell<gtk::Label>,
+        pub processes: OnceCell<gtk::Label>,
+        pub threads: OnceCell<gtk::Label>,
+        pub handles: OnceCell<gtk::Label>,
+        pub uptime: OnceCell<gtk::Label>,
+        pub base_speed: OnceCell<gtk::Label>,
+        pub sockets: OnceCell<gtk::Label>,
+        pub virt_proc: OnceCell<gtk::Label>,
+        pub virtualization: OnceCell<gtk::Label>,
+        pub virt_machine: OnceCell<gtk::Label>,
+        pub l1_cache: OnceCell<gtk::Label>,
+        pub l2_cache: OnceCell<gtk::Label>,
+        pub l3_cache: OnceCell<gtk::Label>,
     }
 
     impl Default for PerformancePageCpu {
@@ -101,6 +90,15 @@ mod imp {
                 usage_graphs: Default::default(),
                 overall_graph_labels: Default::default(),
                 graph_max_duration: Default::default(),
+                context_menu: Default::default(),
+                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
+                summary_mode: Cell::new(false),
+
+                graph_widgets: Cell::new(Vec::new()),
+
+                settings: Cell::new(None),
+
+                infobar_content: Default::default(),
                 utilization: Default::default(),
                 speed: Default::default(),
                 processes: Default::default(),
@@ -115,14 +113,6 @@ mod imp {
                 l1_cache: Default::default(),
                 l2_cache: Default::default(),
                 l3_cache: Default::default(),
-                context_menu: Default::default(),
-
-                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
-                summary_mode: Cell::new(false),
-
-                graph_widgets: Cell::new(Vec::new()),
-
-                settings: Cell::new(None),
             }
         }
     }
@@ -136,6 +126,10 @@ mod imp {
             self.graph_widgets.set(graph_widgets);
 
             self.base_color.set(base_color);
+        }
+
+        fn infobar_content(&self) -> Option<gtk::Widget> {
+            self.infobar_content.get().map(|ic| ic.clone().into())
         }
     }
 
@@ -301,42 +295,51 @@ mod imp {
 
             this.populate_usage_graphs(static_cpu_info.logical_cpu_count as usize);
 
-            if let Some(base_frequency) = static_cpu_info.base_frequency_khz {
-                this.base_speed.set_text(&format!(
-                    "{:.2} GHz",
-                    base_frequency as f32 / (1000. * 1000.)
-                ));
-            } else {
-                this.base_speed.set_text(&i18n("Unknown"));
-            }
-
-            this.virt_proc
-                .set_text(&format!("{}", static_cpu_info.logical_cpu_count));
-
-            if let Some(virtualization) = static_cpu_info.is_virtualization_supported {
-                if virtualization {
-                    this.virtualization.set_text(&i18n("Supported"));
+            if let Some(base_speed) = this.base_speed.get() {
+                if let Some(base_frequency) = static_cpu_info.base_frequency_khz {
+                    base_speed.set_text(&format!(
+                        "{:.2} GHz",
+                        base_frequency as f32 / (1000. * 1000.)
+                    ));
                 } else {
-                    this.virtualization.set_text(&i18n("Unsupported"));
+                    base_speed.set_text(&i18n("Unknown"));
                 }
-            } else {
-                this.virtualization.set_text(&i18n("Unknown"));
             }
 
-            if let Some(is_vm) = static_cpu_info.is_virtual_machine {
-                if is_vm {
-                    this.virt_machine.set_text(&i18n("Yes"));
+            if let Some(virt_proc) = this.virt_proc.get() {
+                virt_proc.set_text(&format!("{}", static_cpu_info.logical_cpu_count));
+            }
+
+            if let Some(virtualization) = this.virtualization.get() {
+                if let Some(vs) = static_cpu_info.is_virtualization_supported {
+                    if vs {
+                        virtualization.set_text(&i18n("Supported"));
+                    } else {
+                        virtualization.set_text(&i18n("Unsupported"));
+                    }
                 } else {
-                    this.virt_machine.set_text(&i18n("No"));
+                    virtualization.set_text(&i18n("Unknown"));
                 }
-            } else {
-                this.virt_machine.set_text(&i18n("Unknown"));
             }
 
-            if let Some(socket_count) = static_cpu_info.socket_count {
-                this.sockets.set_text(&format!("{}", socket_count));
-            } else {
-                this.sockets.set_text(&i18n("Unknown"));
+            if let Some(virt_machine) = this.virt_machine.get() {
+                if let Some(is_vm) = static_cpu_info.is_virtual_machine {
+                    if is_vm {
+                        virt_machine.set_text(&i18n("Yes"));
+                    } else {
+                        virt_machine.set_text(&i18n("No"));
+                    }
+                } else {
+                    virt_machine.set_text(&i18n("Unknown"));
+                }
+            }
+
+            if let Some(sockets) = this.sockets.get() {
+                if let Some(socket_count) = static_cpu_info.socket_count {
+                    sockets.set_text(&format!("{}", socket_count));
+                } else {
+                    sockets.set_text(&i18n("Unknown"));
+                }
             }
 
             let l1_cache_size = if let Some(size) = static_cpu_info.l1_combined_cache {
@@ -350,7 +353,9 @@ mod imp {
             } else {
                 format!("N/A")
             };
-            this.l1_cache.set_text(&l1_cache_size);
+            if let Some(l1_cache) = this.l1_cache.get() {
+                l1_cache.set_text(&l1_cache_size);
+            }
 
             let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
@@ -363,7 +368,9 @@ mod imp {
             } else {
                 format!("N/A")
             };
-            this.l2_cache.set_text(&l2_cache_size);
+            if let Some(l2_cache) = this.l2_cache.get() {
+                l2_cache.set_text(&l2_cache_size);
+            }
 
             let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
@@ -376,7 +383,9 @@ mod imp {
             } else {
                 format!("N/A")
             };
-            this.l3_cache.set_text(&l3_cache_size);
+            if let Some(l3_cache) = this.l3_cache.get() {
+                l3_cache.set_text(&l3_cache_size);
+            }
 
             let _ = if let Some(size) = static_cpu_info.l4_cache {
                 let size = crate::to_human_readable(size as f32, 1024.);
@@ -418,32 +427,40 @@ mod imp {
 
             this.imp().graph_widgets.set(graph_widgets);
 
-            // Update footer labels
-            {
-                this.imp().utilization.set_text(&format!(
+            if let Some(utilization) = this.imp().utilization.get() {
+                utilization.set_text(&format!(
                     "{}%",
                     dynamic_cpu_info.overall_utilization_percent.round()
                 ));
-                this.imp().speed.set_text(&format!(
+            }
+
+            if let Some(speed) = this.imp().speed.get() {
+                speed.set_text(&format!(
                     "{:.2} GHz",
                     readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                 ));
-                this.imp()
-                    .processes
-                    .set_text(&format!("{}", dynamic_cpu_info.process_count));
-                this.imp()
-                    .threads
-                    .set_text(&format!("{}", dynamic_cpu_info.thread_count));
-                this.imp()
-                    .handles
-                    .set_text(&format!("{}", dynamic_cpu_info.handle_count));
+            }
 
-                let uptime = dynamic_cpu_info.uptime_seconds;
-                let days = uptime / 86400;
-                let hours = (uptime % 86400) / 3600;
-                let minutes = (uptime % 3600) / 60;
-                let seconds = uptime % 60;
-                this.imp().uptime.set_text(&format!(
+            if let Some(processes) = this.imp().processes.get() {
+                processes.set_text(&format!("{}", dynamic_cpu_info.process_count));
+            }
+
+            if let Some(threads) = this.imp().threads.get() {
+                threads.set_text(&format!("{}", dynamic_cpu_info.thread_count));
+            }
+
+            if let Some(handles) = this.imp().handles.get() {
+                handles.set_text(&format!("{}", dynamic_cpu_info.handle_count));
+            }
+
+            let uptime = dynamic_cpu_info.uptime_seconds;
+            let days = uptime / 86400;
+            let hours = (uptime % 86400) / 3600;
+            let minutes = (uptime % 3600) / 60;
+            let seconds = uptime % 60;
+
+            if let Some(uptime) = this.imp().uptime.get() {
+                uptime.set_text(&format!(
                     "{:02}:{:02}:{:02}:{:02}",
                     days, hours, minutes, seconds
                 ));
@@ -453,41 +470,112 @@ mod imp {
         }
 
         fn data_summary(&self) -> String {
+            let base_speed = self
+                .base_speed
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let sockets = self
+                .sockets
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let virt_proc = self
+                .virt_proc
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let virtualization = self
+                .virtualization
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let virt_machine = self
+                .virt_machine
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let l1_cache = self
+                .l1_cache
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let l2_cache = self
+                .l2_cache
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let l3_cache = self
+                .l3_cache
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let utilization = self
+                .utilization
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let speed = self
+                .speed
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let processes = self
+                .processes
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let threads = self
+                .threads
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let handles = self
+                .handles
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let uptime = self
+                .uptime
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+
             format!(
                 r#"CPU
-
-    {}
-
-    Base speed:         {}
-    Sockets:            {}
-    Virtual processors: {}
-    Virtualization:     {}
-    Virtual machine:    {}
-    L1 cache:           {}
-    L2 cache:           {}
-    L3 cache:           {}
-
-    Utilization: {}
-    Speed:       {}
-    Processes:   {}
-    Threads:     {}
-    Handles:     {}
-    Up time:     {}"#,
+            
+            {}
+            
+            Base speed:         {}
+            Sockets:            {}
+            Virtual processors: {}
+            Virtualization:     {}
+            Virtual machine:    {}
+            L1 cache:           {}
+            L2 cache:           {}
+            L3 cache:           {}
+            
+            Utilization: {}
+            Speed:       {}
+            Processes:   {}
+            Threads:     {}
+            Handles:     {}
+            Up time:     {}"#,
                 self.cpu_name.label(),
-                self.base_speed.label(),
-                self.sockets.label(),
-                self.virt_proc.label(),
-                self.virtualization.label(),
-                self.virt_machine.label(),
-                self.l1_cache.label(),
-                self.l2_cache.label(),
-                self.l3_cache.label(),
-                self.utilization.label(),
-                self.speed.label(),
-                self.processes.label(),
-                self.threads.label(),
-                self.handles.label(),
-                self.uptime.label()
+                base_speed,
+                sockets,
+                virt_proc,
+                virtualization,
+                virt_machine,
+                l1_cache,
+                l2_cache,
+                l3_cache,
+                utilization,
+                speed,
+                processes,
+                threads,
+                handles,
+                uptime
             )
         }
 
@@ -527,8 +615,8 @@ mod imp {
             graph_widgets[0].connect_resize(move |_, _, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
-                let width = graph_widgets[0].allocated_width() as f32;
-                let height = graph_widgets[0].allocated_height() as f32;
+                let width = graph_widgets[0].width() as f32;
+                let height = graph_widgets[0].height() as f32;
 
                 let mut a = width;
                 let mut b = height;
@@ -563,8 +651,8 @@ mod imp {
                         let graph_widgets = this.imp().graph_widgets.take();
 
                         for graph_widget in graph_widgets.iter().skip(1) {
-                            let width = graph_widget.allocated_width() as f32;
-                            let height = graph_widget.allocated_height() as f32;
+                            let width = graph_widget.width() as f32;
+                            let height = graph_widget.height() as f32;
 
                             let mut a = width;
                             let mut b = height;
@@ -647,6 +735,18 @@ mod imp {
     }
 
     impl ObjectImpl for PerformancePageCpu {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec);
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -659,18 +759,86 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-        }
 
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
+            let sidebar_content_builder = gtk::Builder::from_resource(
+                "/io/missioncenter/MissionCenter/ui/performance_page/cpu_details.ui",
+            );
 
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec);
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
+            let _ = self.infobar_content.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("root")
+                    .expect("Could not find `root` object in details pane"),
+            );
+            let _ = self.utilization.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("utilization")
+                    .expect("Could not find `utilization` object in details pane"),
+            );
+            let _ = self.speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("speed")
+                    .expect("Could not find `speed` object in details pane"),
+            );
+            let _ = self.processes.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("processes")
+                    .expect("Could not find `processes` object in details pane"),
+            );
+            let _ = self.threads.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("threads")
+                    .expect("Could not find `threads` object in details pane"),
+            );
+            let _ = self.handles.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("handles")
+                    .expect("Could not find `handles` object in details pane"),
+            );
+            let _ = self.uptime.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("uptime")
+                    .expect("Could not find `uptime` object in details pane"),
+            );
+            let _ = self.base_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("base_speed")
+                    .expect("Could not find `base_speed` object in details pane"),
+            );
+            let _ = self.sockets.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("sockets")
+                    .expect("Could not find `sockets` object in details pane"),
+            );
+            let _ = self.virt_proc.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("virt_proc")
+                    .expect("Could not find `virt_proc` object in details pane"),
+            );
+            let _ = self.virtualization.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("virtualization")
+                    .expect("Could not find `virtualization` object in details pane"),
+            );
+            let _ = self.virt_machine.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("virt_machine")
+                    .expect("Could not find `virt_machine` object in details pane"),
+            );
+            let _ = self.l1_cache.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("l1_cache")
+                    .expect("Could not find `l1_cache` object in details pane"),
+            );
+            let _ = self.l2_cache.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("l2_cache")
+                    .expect("Could not find `l2_cache` object in details pane"),
+            );
+            let _ = self.l3_cache.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("l3_cache")
+                    .expect("Could not find `l3_cache` object in details pane"),
+            );
         }
     }
 
@@ -722,5 +890,19 @@ impl PerformancePageCpu {
 
     pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
         imp::PerformancePageCpu::update_readings(self, readings)
+    }
+
+    pub fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    pub fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }
