@@ -9,10 +9,15 @@ resources/ui/apps_page/pid_column.blp
 resources/ui/apps_page/stat_column.blp
 
 resources/ui/performance_page/cpu.blp
+resources/ui/performance_page/cpu_details.blp
 resources/ui/performance_page/disk.blp
+resources/ui/performance_page/disk_details.blp
 resources/ui/performance_page/gpu.blp
+resources/ui/performance_page/gpu_details.blp
 resources/ui/performance_page/memory.blp
+resources/ui/performance_page/memory_details.blp
 resources/ui/performance_page/network.blp
+resources/ui/performance_page/network_details.blp
 resources/ui/performance_page/page.blp
 resources/ui/performance_page/summary_graph.blp
 

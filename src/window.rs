@@ -20,25 +20,44 @@
 
 use std::cell::Cell;
 
-use adw::subclass::prelude::*;
-use gtk::{gio, glib, prelude::*};
+use adw::{prelude::*, subclass::prelude::*};
+use glib::{ParamSpec, Properties, Value};
+use gtk::{gio, glib};
 
 use crate::sys_info_v2::Readings;
 
 mod imp {
     use super::*;
 
+    #[derive(Properties)]
+    #[properties(wrapper_type = super::MissionCenterWindow)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/window.ui")]
     pub struct MissionCenterWindow {
+        #[template_child]
+        pub breakpoint: TemplateChild<adw::Breakpoint>,
+        #[template_child]
+        pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub window_content: TemplateChild<adw::ToolbarView>,
+        #[template_child]
+        pub bottom_bar: TemplateChild<adw::ViewSwitcherBar>,
+        #[template_child]
+        pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub sidebar: TemplateChild<gtk::ListBox>,
         #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
         #[template_child]
+        pub header_bar: TemplateChild<adw::HeaderBar>,
+        #[template_child]
         pub header_stack: TemplateChild<gtk::Stack>,
         #[template_child]
-        pub search_entry: TemplateChild<gtk::SearchEntry>,
+        pub header_tabs: TemplateChild<adw::ViewSwitcher>,
+        #[template_child]
+        pub header_search_entry: TemplateChild<gtk::SearchEntry>,
         #[template_child]
         pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
@@ -48,23 +67,143 @@ mod imp {
         #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
+        #[property(get)]
+        performance_page_active: Cell<bool>,
+        #[property(get)]
+        apps_page_active: Cell<bool>,
+        #[property(get)]
+        user_hid_sidebar: Cell<bool>,
+
+        #[property(get, set)]
+        summary_mode: Cell<bool>,
+        #[property(get, set)]
+        collapse_threshold: Cell<i32>,
+
         pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for MissionCenterWindow {
         fn default() -> Self {
             Self {
+                breakpoint: TemplateChild::default(),
+                split_view: TemplateChild::default(),
+                window_content: TemplateChild::default(),
+                bottom_bar: TemplateChild::default(),
+                toggle_sidebar_button: TemplateChild::default(),
+                sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
+                header_bar: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
-                search_entry: TemplateChild::default(),
+                header_tabs: TemplateChild::default(),
+                header_search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
                 loading_box: TemplateChild::default(),
                 loading_spinner: TemplateChild::default(),
                 stack: TemplateChild::default(),
 
+                performance_page_active: Cell::new(true),
+                apps_page_active: Cell::new(false),
+                user_hid_sidebar: Cell::new(false),
+
+                summary_mode: Cell::new(false),
+                collapse_threshold: Cell::new(0),
+
                 settings: Cell::new(None),
             }
+        }
+    }
+
+    impl MissionCenterWindow {
+        fn update_active_page(&self) {
+            use glib::g_critical;
+
+            let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
+            if visible_child_name == "performance-page" {
+                if self.performance_page_active.get() {
+                    return;
+                }
+
+                self.performance_page_active.set(true);
+                self.obj().notify_performance_page_active();
+
+                self.apps_page_active.set(false);
+                self.obj().notify_apps_page_active();
+            } else if visible_child_name == "apps-page" {
+                if self.apps_page_active.get() {
+                    return;
+                }
+
+                self.performance_page_active.set(false);
+                self.obj().notify_performance_page_active();
+
+                self.apps_page_active.set(true);
+                self.obj().notify_apps_page_active();
+            }
+
+            if let Some(settings) = self.settings.take() {
+                settings
+                    .set_string("window-selected-page", &visible_child_name)
+                    .unwrap_or_else(|_| {
+                        g_critical!(
+                            "MissionCenter",
+                            "Failed to set window-selected-page setting"
+                        );
+                    });
+                self.settings.set(Some(settings));
+            }
+        }
+    }
+
+    impl MissionCenterWindow {
+        fn configure_actions(&self) {
+            let toggle_search =
+                gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
+            toggle_search.connect_activate(glib::clone!(@weak self as this => move |action, _| {
+                let new_state = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(true);
+                action.set_state(&new_state.to_variant());
+                this.search_button.set_active(new_state);
+
+                if new_state {
+                    this.header_stack.set_visible_child_name("search-entry");
+                    this.header_search_entry.grab_focus();
+                    this.header_search_entry.select_region(-1, -1);
+
+                    this.header_stack.set_visible(true);
+                } else {
+                    if this.window_width_below_threshold() {
+                        this.header_stack.set_visible(false);
+                    }
+
+                    this.header_search_entry.set_text("");
+                    this.header_stack.set_visible_child_name("view-switcher");
+                }
+            }));
+            self.obj().add_action(&toggle_search);
+        }
+
+        #[inline]
+        fn window_width_below_threshold(&self) -> bool {
+            let window_width = adw::LengthUnit::from_px(
+                adw::LengthUnit::Sp,
+                self.obj().default_width() as _,
+                None,
+            );
+            let collapse_threshold = self.collapse_threshold.get() as f64;
+
+            window_width < collapse_threshold
+        }
+
+        #[inline]
+        pub(crate) fn should_hide_sidebar(&self) -> bool {
+            let performance_page_active = self.performance_page_active.get();
+            let summary_mode = self.summary_mode.get();
+            let user_hid_sidebar = self.user_hid_sidebar.get();
+
+            !performance_page_active
+                || user_hid_sidebar
+                || summary_mode
+                || self.window_width_below_threshold()
         }
     }
 
@@ -89,6 +228,18 @@ mod imp {
     }
 
     impl ObjectImpl for MissionCenterWindow {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec);
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+
         fn constructed(&self) {
             use glib::*;
 
@@ -98,91 +249,109 @@ mod imp {
                 self.settings.set(app.settings());
             }
 
-            let toggle_search =
-                gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
-            toggle_search.connect_activate(clone!(@weak self as this => move |action, _| {
-                let current_state = action.state();
-                if current_state.is_none() {
-                    g_critical!("MissionCenter", "Failed to get search action state");
-                    action.set_state(&false.to_variant());
-                    return;
-                }
-                let current_state = current_state.unwrap();
+            self.configure_actions();
 
-                let new_state = !current_state.get::<bool>().unwrap_or(false);
-                action.set_state(&new_state.to_variant());
-                this.search_button.set_active(new_state);
-
-                if new_state {
-                    this.header_stack.set_visible_child_name("search-entry");
-                    this.search_entry.grab_focus();
-                    this.search_entry.select_region(-1, -1);
-                } else {
-                    this.search_entry.set_text("");
-                    this.header_stack.set_visible_child_name("view-switcher");
-                }
+            idle_add_local_once(clone!(@weak self as this => move || {
+                this.update_active_page();
             }));
 
-            let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
-            if visible_child_name == "performance-page" {
-                self.search_button.set_visible(false);
-                self.search_entry
-                    .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-            }
+            self.sidebar
+                .connect_row_activated(clone!(@weak self as this => move |_, _| {
+                    this.stack.set_visible_child_name("performance-page");
+                }));
 
-            let this = self.obj().downgrade();
-            self.stack.connect_visible_child_notify(move |stack| {
-                let this = this.upgrade();
-                if this.is_none() {
-                    return;
-                }
-                let this = this.unwrap();
-                let this = this.imp();
+            self.stack
+                .connect_visible_child_notify(clone!(@weak self as this => move |_| {
+                    if this.search_button.is_active() {
+                        let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
+                    }
+                    this.update_active_page();
+                }));
 
-                let visible_child_name = stack.visible_child_name().unwrap_or("".into());
-                if visible_child_name == "performance-page" {
-                    this.search_button.set_visible(false);
-                    this.search_entry
-                        .set_state_flags(gtk::StateFlags::INSENSITIVE, true);
-                } else {
-                    this.search_button.set_visible(true);
-                    this.search_entry
-                        .set_state_flags(gtk::StateFlags::NORMAL, true);
-                }
-
-                if let Some(settings) = this.settings.take() {
-                    settings
-                        .set_string("window-selected-page", &visible_child_name)
-                        .unwrap_or_else(|_| {
-                            g_critical!(
-                                "MissionCenter",
-                                "Failed to set window-selected-page setting"
-                            );
-                        });
-                    this.settings.set(Some(settings));
-                }
-            });
-
-            self.search_entry
+            self.header_search_entry
                 .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
 
-            let this = self.obj().downgrade();
-            self.search_entry.connect_search_started(move |_| {
-                let this = this.upgrade();
-                if let Some(this) = this {
-                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
-                }
-            });
+            self.header_search_entry
+                .connect_search_started(clone!(@weak self as this => move |_| {
+                    if !this.apps_page_active.get() {
+                        return;
+                    }
 
-            let this = self.obj().downgrade();
-            self.search_entry.connect_stop_search(move |_| {
-                let this = this.upgrade();
-                if let Some(this) = this {
-                    let _ = WidgetExt::activate_action(&this, "win.toggle-search", None);
-                }
-            });
+                    let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
+                }));
 
-            self.obj().add_action(&toggle_search);
+            self.header_search_entry
+                .connect_stop_search(clone!(@weak self as this => move |_| {
+                    let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
+                }));
+
+            // Triggered when user interacts with the sidebar toggle button
+            // via any means (clicking, keyboard shortcut, etc.)
+            self.toggle_sidebar_button.connect_clicked(
+                clone!(@weak self as this => move |button| {
+                    let user_hid_sidebar = !button.is_active();
+                    if user_hid_sidebar != this.user_hid_sidebar.get() {
+                        this.user_hid_sidebar.set(user_hid_sidebar);
+                        if this.performance_page_active.get() {
+                            if !this.window_width_below_threshold() {
+                                this.split_view.set_collapsed(false);
+                            }
+                        }
+                        this.obj().notify_user_hid_sidebar();
+                    }
+                }),
+            );
+
+            self.breakpoint.set_condition(Some(
+                &adw::BreakpointCondition::parse(&format!(
+                    "max-width: {}sp",
+                    self.collapse_threshold.get()
+                ))
+                .unwrap(),
+            ));
+            self.breakpoint
+                .connect_apply(clone!(@weak self as this => move |_| {
+                    this.bottom_bar.set_reveal(true);
+                    if !this.search_button.is_active() {
+                        this.header_stack.set_visible(false);
+                    }
+
+                    if !this.performance_page_active.get() {
+                        return;
+                    }
+
+                    this.split_view.set_collapsed(this.should_hide_sidebar());
+                }));
+            self.breakpoint
+                .connect_unapply(clone!(@weak self as this => move |_| {
+                    this.header_stack.set_visible(true);
+                    this.bottom_bar.set_reveal(false);
+
+                    this.split_view.set_collapsed(this.should_hide_sidebar());
+                }));
+
+            self.obj().connect_performance_page_active_notify(
+                clone!(@weak self as this => move |_| {
+                    if this.performance_page_active.get() {
+                        let should_hide_sidebar = this.should_hide_sidebar();
+                        this.split_view.set_show_sidebar(!should_hide_sidebar);
+                        this.split_view.set_collapsed(should_hide_sidebar);
+                    } else {
+                        this.split_view.set_show_sidebar(false);
+                        this.split_view.set_collapsed(true);
+                    }
+                }),
+            );
+
+            self.obj()
+                .connect_summary_mode_notify(clone!(@weak self as this => move |_| {
+                    if this.summary_mode.get() {
+                        this.split_view.set_show_sidebar(false);
+                    } else if !this.window_width_below_threshold() {
+                        this.split_view.set_collapsed(false);
+                        this.split_view.set_show_sidebar(!this.user_hid_sidebar.get());
+                    }
+                }));
         }
     }
 
@@ -280,7 +449,7 @@ impl MissionCenterWindow {
     pub fn set_initial_readings(&self, mut readings: Readings) {
         use gtk::glib::*;
 
-        let ok = self.imp().performance_page.set_up_pages(&readings);
+        let ok = self.imp().performance_page.set_initial_readings(&readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
@@ -298,7 +467,17 @@ impl MissionCenterWindow {
 
         self.imp().loading_spinner.set_spinning(false);
         self.imp().loading_box.set_visible(false);
+        self.imp().header_bar.set_visible(true);
         self.imp().stack.set_visible(true);
+
+        self.imp().bottom_bar.set_visible(true);
+        self.bind_property("summary-mode", &self.imp().bottom_bar.get(), "visible")
+            .flags(BindingFlags::INVERT_BOOLEAN)
+            .build();
+
+        self.imp()
+            .split_view
+            .set_collapsed(self.imp().should_hide_sidebar());
     }
 
     pub fn update_readings(&self, readings: &mut Readings) -> bool {

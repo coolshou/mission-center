@@ -263,7 +263,7 @@ mod imp {
                         x as f32 * spacing_x - scale_factor / 2.,
                         height
                             - ((y.clamp(val_min, val_max) / val_max)
-                                * (height - scale_factor / 2.)),
+                            * (height - scale_factor / 2.)),
                     )
                 });
 
@@ -350,6 +350,14 @@ mod imp {
 
             let mut renderer = self.renderer.take().expect("Uninitialized renderer");
             renderer.options_mut().dest = DestFramebuffer::full_window(framebuffer_size);
+
+            // Make sure the frambuffer binding is up to date
+            let mut fboid: gl::types::GLint = 0;
+            unsafe {
+                gl::GetIntegerv(gl::FRAMEBUFFER_BINDING, &mut fboid);
+            }
+            // FIXME: This causes flickering on startup... seems to work fine without it
+            // renderer.device_mut().set_default_framebuffer(fboid as _);
 
             let mut canvas =
                 Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});

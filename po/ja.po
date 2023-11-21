@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 08:11+0300\n"
+"POT-Creation-Date: 2023-11-19 20:59+0200\n"
 "PO-Revision-Date: 2023-10-27 09:27+0000\n"
 "Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
@@ -44,11 +44,10 @@ msgstr "システムリソース使用状況を監視"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "CPU、メモリ、ディスク、ネットワーク、GPUなどの使用状況をモニタリングします"
+msgstr ""
+"CPU、メモリ、ディスク、ネットワーク、GPUなどの使用状況をモニタリングします"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Features:"
 msgstr "機能:"
 
@@ -60,7 +59,8 @@ msgstr "全体またはスレッドあたりのCPU使用率のモニタリング
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
-msgstr "システムプロセス、スレッド、ハンドル数、稼働時間、クロック速度（ベース速度と"
+msgstr ""
+"システムプロセス、スレッド、ハンドル数、稼働時間、クロック速度（ベース速度と"
 "現在）、キャッシュサイズを見る"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
@@ -93,7 +93,8 @@ msgstr ""
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
-msgstr "定評のあるNVTOPプロジェクトによる、GPU使用率、ビデオエンコーダーとデコーダー"
+msgstr ""
+"定評のあるNVTOPプロジェクトによる、GPU使用率、ビデオエンコーダーとデコーダー"
 "の使用率、メモリ使用量、消費電力のモニタリング"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
@@ -127,532 +128,240 @@ msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "制限事項 (これらの問題を解決するために現在取り組んでいます):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
-msgid "Disk utilization percentage might not be accurate"
-msgstr "ディスク使用率が正しくない場合がある"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
 msgstr "プロセスごとのネットワーク使用率を見られない"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
-msgid "No per-process GPU usage"
-msgstr "プロセスごとのGPU使用率を見られない"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-msgstr "GPUのモニタリングは実験的であり、AMDおよびNVIDIAのGPUのみがサポートされていま"
+msgstr ""
+"GPUのモニタリングは実験的であり、AMDおよびNVIDIAのGPUのみがサポートされていま"
 "す"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "コメントや提案、バグレポート、貢献を歓迎しています"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:122
-msgid ""
-"Add an option, to the context menu, to show kernel times, in the CPU graphs"
-msgstr "カーネル時間を表示するオプションをメニューに追加"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:123
-msgid "Add CPU temperature, where possible"
-msgstr "可能なCPU温度の表示を追加"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:124
-msgid ""
-"Implement smarter rounding and display precision of values throughout the "
-"app by QwertyChouskie"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:125
-#, fuzzy
-msgid ""
-"Use metainfo instead of appdata for application metadata by David Guglielmi"
-msgstr "David Guglielmi "
-"氏により、アプリケーションのメタデータとしてappdataの代わりにmetainfoを使用"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:127
-msgid "Fixes:"
-msgstr "修正:"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
-msgid ""
-"Fixed a regression where natively installed browsers were not showing up in "
-"the apps list on Fedora"
-msgstr "Fedoraで、ネイティブにインストールされたブラウザーがアプリリストに表示されな"
-"い不具合を修正"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:130
-msgid ""
-"Fixed a regression where Flatpak apps were not showing up in the apps list "
-"on ArchLinux Plasma"
-msgstr "Arch LinuxのPlasmaで、Flatpakアプリがアプリリストに表示されない不具合を修正"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:131
-msgid ""
-"Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-msgstr "Maps（地図）アプリのデスクトップファイルが正しくパースされないバグを修正"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:132
-msgid ""
-"Moved some performance related logs to g_debug to prevent spamming of system "
-"logs"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:134
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:177
-msgid "Translations:"
-msgstr "翻訳:"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:136
-msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
-msgid "New translation to Dutch by Gert"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:138
-msgid "New translation to Polish by _Ghost_"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:139
-msgid "New translation to Italian by beppeilgommista"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:140
-msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:141
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:186
-msgid "Updated Spanish translation"
-msgstr "スペイン語の翻訳がアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:142
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:145
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
-msgid "Updated Finnish translation"
-msgstr "フィンランド語の翻訳をアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:143
-msgid "Updated Russian translation"
-msgstr "ロシア語の翻訳をアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
-msgid "Updated Chinese (Simplified) translation"
-msgstr "中国語（簡体字）の翻訳をアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-msgid "Updated Greek translation"
-msgstr "ギリシャ語の翻訳をアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:189
-msgid "Updated German translation"
-msgstr "ドイツ語の翻訳をアップデート"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
-msgid ""
-"Hotfix release to fix a bug that caused the app to not display any "
-"information for some users"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
-msgid "New app icon by QwertyChouskie"
-msgstr "QwertyChouskie 氏による新しいアプリアイコン"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:165
-msgid "Add ability to stop and force stop apps and processes"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:166
-msgid ""
-"Running apps are now shown more reliably, and should reflect most if not all "
-"running apps"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:167
-msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:168
-msgid ""
-"Added a setting to show resource consumption individually per process or "
-"cumulated with their descendants"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:171
-msgid ""
-"Added a setting to enable persistent sorting in the apps and processes list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-msgid ""
-"Data gathering is now more versatile and will permit new features to be "
-"added quicker and easier"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:175
-msgid "App can now be built from GNOME Builder"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
-msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
-msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:181
-msgid "New translation to Slovak by mthw0"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
-msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:183
-msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:184
-msgid "New translation to French by Link Mauve"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:185
-msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:187
-msgid "Updated Czech translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
-msgid "Updated Portuguese translation"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
-msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
-msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
-msgid ""
-"The memory tab now shows configured memory speed instead of the maximum "
-"supported by the modules"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:203
-msgid "Add German translation by TecCheck"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
-msgid ""
-"When a process uses large amounts of CPU or RAM it is now highlighted in the "
-"Apps and Processes list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
-msgid "Add initial support for building for ARM64"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
-msgid ""
-"Take into account multiple CPU cores and cache sharing when calculating "
-"cache sizes"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
-msgid ""
-"Fix browsers, installed as native packages, not showing up in the Apps list"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
-msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:218
-msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:219
-msgid ""
-"Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:220
-msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:221
-msgid "Add category for application menu by Renner0E"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:222
-msgid ""
-"Fix a parsing error when parsing the output of `dmidecode` that lead to a "
-"panic"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
-msgid ""
-"Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
-"not exist, when getting CPU base speed information"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:226
-msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
-msgid "Added Czech translation by ondra05"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
-msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
-msgid ""
-"Add keywords to desktop file to improve search function of desktop "
-"environments by Hannes Kuchelmeister"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
-msgid "Fixed a bug where the app and process list was empty for some users"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
-msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-msgid "First official release!"
-msgstr ""
-
-#: data/io.missioncenter.MissionCenter.gschema.xml:29
+#: data/io.missioncenter.MissionCenter.gschema.xml:30
 msgid "Which page is shown on application startup"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:35
+#: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:40
+#: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr "親プロセスと子プロセスを個別に表示するかまとめて表示する"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:45
+#: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:50
+#: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:55
+#: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:61
+#: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:66
+#: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
 msgstr "カーネル時間をCPU時間に表示"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:71
+#: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:42 src/apps_page/mod.rs:1049
-#: src/performance_page/mod.rs:264
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "CPU"
 
-#: resources/ui/performance_page/cpu.blp:74
-#: resources/ui/performance_page/cpu.blp:152
-#: resources/ui/performance_page/gpu.blp:227
+#: resources/ui/performance_page/cpu.blp:76
+#: resources/ui/performance_page/cpu_details.blp:26
+#: resources/ui/performance_page/gpu_details.blp:24
 msgid "Utilization"
 msgstr "使用率"
 
-#: resources/ui/performance_page/cpu.blp:84
+#: resources/ui/performance_page/cpu.blp:86
 msgid "100%"
 msgstr "100%"
 
-#: resources/ui/performance_page/cpu.blp:174
-msgid "Speed"
-msgstr "速度"
-
-#: resources/ui/performance_page/cpu.blp:201 src/apps_page/mod.rs:454
-msgid "Processes"
-msgstr "プロセス"
-
-#: resources/ui/performance_page/cpu.blp:223
-msgid "Threads"
-msgstr "スレッド数"
-
-#: resources/ui/performance_page/cpu.blp:245
-msgid "Handles"
-msgstr "ハンドル数"
-
-#: resources/ui/performance_page/cpu.blp:268
-msgid "Up time"
-msgstr "稼働時間"
-
-#: resources/ui/performance_page/cpu.blp:294
-msgid "Base Speed:"
-msgstr "基本速度:"
-
-#: resources/ui/performance_page/cpu.blp:303
-msgid "Sockets:"
-msgstr "ソケット:"
-
-#: resources/ui/performance_page/cpu.blp:312
-msgid "Virtual processors:"
-msgstr "仮想プロセッサ数:"
-
-#: resources/ui/performance_page/cpu.blp:321
-msgid "Virtualization:"
-msgstr "仮想化:"
-
-#: resources/ui/performance_page/cpu.blp:330
-msgid "Virtual machine:"
-msgstr "仮想マシン:"
-
-#: resources/ui/performance_page/cpu.blp:339
-msgid "L1 cache:"
-msgstr "L1キャッシュ:"
-
-#: resources/ui/performance_page/cpu.blp:348
-msgid "L2 cache:"
-msgstr "L2キャッシュ:"
-
-#: resources/ui/performance_page/cpu.blp:357
-msgid "L3 cache:"
-msgstr "L3キャッシュ:"
-
-#: resources/ui/performance_page/cpu.blp:442
+#: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
 msgstr "グラフの変更"
 
-#: resources/ui/performance_page/cpu.blp:445
+#: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
 msgstr "全体的な使用率"
 
-#: resources/ui/performance_page/cpu.blp:450
+#: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
 msgstr "論理プロセッサ"
 
-#: resources/ui/performance_page/cpu.blp:456
+#: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
 msgstr "カーネル時間を表示定"
 
-#: resources/ui/performance_page/cpu.blp:463
-#: resources/ui/performance_page/disk.blp:386
-#: resources/ui/performance_page/gpu.blp:549
-#: resources/ui/performance_page/memory.blp:402
-#: resources/ui/performance_page/network.blp:369
+#: resources/ui/performance_page/cpu.blp:163
+#: resources/ui/performance_page/disk.blp:179
+#: resources/ui/performance_page/gpu.blp:219
+#: resources/ui/performance_page/memory.blp:152
+#: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
 msgstr "グラフの要約ビュー"
 
-#: resources/ui/performance_page/cpu.blp:468
-#: resources/ui/performance_page/disk.blp:391
-#: resources/ui/performance_page/gpu.blp:554
-#: resources/ui/performance_page/memory.blp:407
-#: resources/ui/performance_page/network.blp:374
+#: resources/ui/performance_page/cpu.blp:168
+#: resources/ui/performance_page/disk.blp:184
+#: resources/ui/performance_page/gpu.blp:224
+#: resources/ui/performance_page/memory.blp:157
+#: resources/ui/performance_page/network.blp:126
 msgid "_View"
 msgstr "表示"
 
-#: resources/ui/performance_page/cpu.blp:471
-#: resources/ui/performance_page/disk.blp:394
-#: resources/ui/performance_page/gpu.blp:557
-#: resources/ui/performance_page/memory.blp:410
-#: resources/ui/performance_page/network.blp:377
+#: resources/ui/performance_page/cpu.blp:171
+#: resources/ui/performance_page/disk.blp:187
+#: resources/ui/performance_page/gpu.blp:227
+#: resources/ui/performance_page/memory.blp:160
+#: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
 msgstr "CPU"
 
-#: resources/ui/performance_page/cpu.blp:476
-#: resources/ui/performance_page/disk.blp:399
-#: resources/ui/performance_page/gpu.blp:562
-#: resources/ui/performance_page/memory.blp:415
-#: resources/ui/performance_page/network.blp:382
+#: resources/ui/performance_page/cpu.blp:176
+#: resources/ui/performance_page/disk.blp:192
+#: resources/ui/performance_page/gpu.blp:232
+#: resources/ui/performance_page/memory.blp:165
+#: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
 msgstr "メモリ"
 
-#: resources/ui/performance_page/cpu.blp:481
-#: resources/ui/performance_page/disk.blp:404
-#: resources/ui/performance_page/gpu.blp:567
-#: resources/ui/performance_page/memory.blp:420
-#: resources/ui/performance_page/network.blp:387
+#: resources/ui/performance_page/cpu.blp:181
+#: resources/ui/performance_page/disk.blp:197
+#: resources/ui/performance_page/gpu.blp:237
+#: resources/ui/performance_page/memory.blp:170
+#: resources/ui/performance_page/network.blp:139
 msgid "_Disk"
 msgstr "ディスク"
 
-#: resources/ui/performance_page/cpu.blp:486
-#: resources/ui/performance_page/disk.blp:409
-#: resources/ui/performance_page/gpu.blp:572
-#: resources/ui/performance_page/memory.blp:425
-#: resources/ui/performance_page/network.blp:392
+#: resources/ui/performance_page/cpu.blp:186
+#: resources/ui/performance_page/disk.blp:202
+#: resources/ui/performance_page/gpu.blp:242
+#: resources/ui/performance_page/memory.blp:175
+#: resources/ui/performance_page/network.blp:144
 msgid "_Network"
 msgstr "ネットワーク"
 
-#: resources/ui/performance_page/cpu.blp:491
-#: resources/ui/performance_page/disk.blp:414
-#: resources/ui/performance_page/gpu.blp:577
-#: resources/ui/performance_page/memory.blp:430
-#: resources/ui/performance_page/network.blp:397
+#: resources/ui/performance_page/cpu.blp:191
+#: resources/ui/performance_page/disk.blp:207
+#: resources/ui/performance_page/gpu.blp:247
+#: resources/ui/performance_page/memory.blp:180
+#: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
 msgstr "GPU"
 
-#: resources/ui/performance_page/cpu.blp:499
-#: resources/ui/performance_page/disk.blp:422
-#: resources/ui/performance_page/gpu.blp:585
-#: resources/ui/performance_page/memory.blp:438
-#: resources/ui/performance_page/network.blp:410
+#: resources/ui/performance_page/cpu.blp:199
+#: resources/ui/performance_page/disk.blp:215
+#: resources/ui/performance_page/gpu.blp:255
+#: resources/ui/performance_page/memory.blp:188
+#: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
 msgstr "コピー"
 
+#: resources/ui/performance_page/cpu_details.blp:48
+msgid "Speed"
+msgstr "速度"
+
+#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+msgid "Processes"
+msgstr "プロセス"
+
+#: resources/ui/performance_page/cpu_details.blp:97
+msgid "Threads"
+msgstr "スレッド数"
+
+#: resources/ui/performance_page/cpu_details.blp:119
+msgid "Handles"
+msgstr "ハンドル数"
+
+#: resources/ui/performance_page/cpu_details.blp:142
+msgid "Up time"
+msgstr "稼働時間"
+
+#: resources/ui/performance_page/cpu_details.blp:168
+msgid "Base Speed:"
+msgstr "基本速度:"
+
+#: resources/ui/performance_page/cpu_details.blp:177
+msgid "Sockets:"
+msgstr "ソケット:"
+
+#: resources/ui/performance_page/cpu_details.blp:186
+msgid "Virtual processors:"
+msgstr "仮想プロセッサ数:"
+
+#: resources/ui/performance_page/cpu_details.blp:195
+msgid "Virtualization:"
+msgstr "仮想化:"
+
+#: resources/ui/performance_page/cpu_details.blp:204
+msgid "Virtual machine:"
+msgstr "仮想マシン:"
+
+#: resources/ui/performance_page/cpu_details.blp:213
+msgid "L1 cache:"
+msgstr "L1キャッシュ:"
+
+#: resources/ui/performance_page/cpu_details.blp:222
+msgid "L2 cache:"
+msgstr "L2キャッシュ:"
+
+#: resources/ui/performance_page/cpu_details.blp:231
+msgid "L3 cache:"
+msgstr "L3キャッシュ:"
+
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk.blp:188
+#: resources/ui/performance_page/disk_details.blp:26
 msgid "Active time"
 msgstr "アクティブな時間"
 
-#: resources/ui/performance_page/disk.blp:122
+#: resources/ui/performance_page/disk.blp:123
 msgid "Disk transfer rate"
 msgstr "ディスクの転送速度"
 
-#: resources/ui/performance_page/disk.blp:211
-msgid "Average response time"
+#: resources/ui/performance_page/disk_details.blp:49
+#, fuzzy
+msgid "Avg. response time"
 msgstr "平均応答時間"
 
-#: resources/ui/performance_page/disk.blp:247
+#: resources/ui/performance_page/disk_details.blp:85
 msgid "Read speed"
 msgstr "読み取り速度"
 
-#: resources/ui/performance_page/disk.blp:279
+#: resources/ui/performance_page/disk_details.blp:117
 msgid "Write speed"
 msgstr "書き込み速度"
 
-#: resources/ui/performance_page/disk.blp:307
+#: resources/ui/performance_page/disk_details.blp:145
 msgid "Capacity:"
 msgstr "容量:"
 
-#: resources/ui/performance_page/disk.blp:316
+#: resources/ui/performance_page/disk_details.blp:154
 msgid "Formatted:"
 msgstr "フォーマット済み:"
 
-#: resources/ui/performance_page/disk.blp:325
+#: resources/ui/performance_page/disk_details.blp:163
 msgid "System disk:"
 msgstr "システムディスク:"
 
-#: resources/ui/performance_page/disk.blp:334
-#: resources/ui/performance_page/memory.blp:345
+#: resources/ui/performance_page/disk_details.blp:172
+#: resources/ui/performance_page/memory_details.blp:205
 msgid "Type:"
 msgstr "種類:"
 
@@ -660,102 +369,94 @@ msgstr "種類:"
 msgid "Overall utilization"
 msgstr "全体的な使用率"
 
-#: resources/ui/performance_page/gpu.blp:110
+#: resources/ui/performance_page/gpu.blp:111
 msgid "Video encode"
 msgstr "ビデオエンコード"
 
-#: resources/ui/performance_page/gpu.blp:143
+#: resources/ui/performance_page/gpu.blp:147
 msgid "Video decode"
 msgstr "ビデオデコード"
 
-#: resources/ui/performance_page/gpu.blp:180
-#: resources/ui/performance_page/gpu.blp:350
-#: resources/ui/performance_page/memory.blp:73
+#: resources/ui/performance_page/gpu.blp:186
+#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "メモリ使用率"
 
-#: resources/ui/performance_page/gpu.blp:250
+#: resources/ui/performance_page/gpu_details.blp:47
 msgid "Clock Speed"
 msgstr "クロック速度"
 
-#: resources/ui/performance_page/gpu.blp:295
+#: resources/ui/performance_page/gpu_details.blp:92
 msgid "Power draw"
 msgstr "消費電力"
 
-#: resources/ui/performance_page/gpu.blp:395
+#: resources/ui/performance_page/gpu_details.blp:182
 msgid "Memory speed"
 msgstr "メモリ速度"
 
-#: resources/ui/performance_page/gpu.blp:440
+#: resources/ui/performance_page/gpu_details.blp:227
 msgid "Temperature"
 msgstr "温度"
 
-#: resources/ui/performance_page/gpu.blp:470
+#: resources/ui/performance_page/gpu_details.blp:255
 msgid "OpenGL version:"
 msgstr "OpenGL のバージョン:"
 
-#: resources/ui/performance_page/gpu.blp:479
+#: resources/ui/performance_page/gpu_details.blp:264
 msgid "Vulkan version:"
 msgstr "Vulkan のバージョン:"
 
-#: resources/ui/performance_page/gpu.blp:488
+#: resources/ui/performance_page/gpu_details.blp:273
 msgid "PCI Express speed:"
 msgstr "PCI Express の速度:"
 
-#: resources/ui/performance_page/gpu.blp:497
+#: resources/ui/performance_page/gpu_details.blp:282
 msgid "PCI bus address:"
 msgstr "PCIバスのアドレス:"
 
-#: resources/ui/performance_page/memory.blp:28
-msgid "Some information requires administrative privileges"
-msgstr "一部の情報を取得する為に管理者権限が必要です"
-
-#: resources/ui/performance_page/memory.blp:29
-msgid "_Authenticate"
-msgstr "認証"
-
-#: resources/ui/performance_page/memory.blp:52 src/apps_page/mod.rs:1055
-#: src/performance_page/mod.rs:319
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "メモリ"
 
-#: resources/ui/performance_page/memory.blp:130
+#: resources/ui/performance_page/memory.blp:126
 msgid "Memory composition"
 msgstr "メモリ構成"
 
-#: resources/ui/performance_page/memory.blp:166
+#: resources/ui/performance_page/memory_details.blp:27
 msgid "In use"
 msgstr "使用中"
 
-#: resources/ui/performance_page/memory.blp:189
+#: resources/ui/performance_page/memory_details.blp:50
 msgid "Available"
 msgstr "利用可能"
 
-#: resources/ui/performance_page/memory.blp:217
+#: resources/ui/performance_page/memory_details.blp:78
 msgid "Committed"
 msgstr "コミット済み"
 
-#: resources/ui/performance_page/memory.blp:240
+#: resources/ui/performance_page/memory_details.blp:101
 msgid "Cached"
 msgstr "キャッシュ済み"
 
-#: resources/ui/performance_page/memory.blp:267
+#: resources/ui/performance_page/memory_details.blp:128
 msgid "Swap available"
 msgstr "利用可能(スワップ)"
 
-#: resources/ui/performance_page/memory.blp:290
+#: resources/ui/performance_page/memory_details.blp:151
 msgid "Swap used"
 msgstr "スワップ使用率"
 
-#: resources/ui/performance_page/memory.blp:318
+#: resources/ui/performance_page/memory_details.blp:178
 msgid "Speed:"
 msgstr "速度:"
 
-#: resources/ui/performance_page/memory.blp:327
+#: resources/ui/performance_page/memory_details.blp:187
 msgid "Slots used:"
 msgstr "使用スロット数:"
 
-#: resources/ui/performance_page/memory.blp:336
+#: resources/ui/performance_page/memory_details.blp:196
 msgid "Form factor:"
 msgstr "フォームファクター:"
 
@@ -763,53 +464,53 @@ msgstr "フォームファクター:"
 msgid "Throughput"
 msgstr "スループット"
 
-#: resources/ui/performance_page/network.blp:139
-msgid "Send"
-msgstr "送信"
+#: resources/ui/performance_page/network.blp:155
+msgid "Network Se_ttings"
+msgstr "ネットワーク設定"
 
-#: resources/ui/performance_page/network.blp:170
+#: resources/ui/performance_page/network_details.blp:31
 msgid "Receive"
 msgstr "受信"
 
-#: resources/ui/performance_page/network.blp:197
+#: resources/ui/performance_page/network_details.blp:63
+msgid "Send"
+msgstr "送信"
+
+#: resources/ui/performance_page/network_details.blp:90
 msgid "Interface name:"
 msgstr "アダプター名:"
 
-#: resources/ui/performance_page/network.blp:206
+#: resources/ui/performance_page/network_details.blp:99
 msgid "Connection type:"
 msgstr "接続の種類:"
 
-#: resources/ui/performance_page/network.blp:216
+#: resources/ui/performance_page/network_details.blp:109
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network.blp:226
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Signal strength:"
 msgstr "シグナルの強さ:"
 
-#: resources/ui/performance_page/network.blp:236
+#: resources/ui/performance_page/network_details.blp:129
 msgid "Maximum Bitrate:"
 msgstr "最大ビットレート:"
 
-#: resources/ui/performance_page/network.blp:246
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Frequency:"
 msgstr "周波数:"
 
-#: resources/ui/performance_page/network.blp:255
+#: resources/ui/performance_page/network_details.blp:148
 msgid "Hardware address:"
 msgstr "ハードウェアアドレス:"
 
-#: resources/ui/performance_page/network.blp:264
+#: resources/ui/performance_page/network_details.blp:231
 msgid "IPv4 address:"
 msgstr "IPv4アドレス:"
 
-#: resources/ui/performance_page/network.blp:273
+#: resources/ui/performance_page/network_details.blp:240
 msgid "IPv6 address:"
 msgstr "IPv6アドレス:"
-
-#: resources/ui/performance_page/network.blp:403
-msgid "Network Se_ttings"
-msgstr "ネットワーク設定"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
@@ -872,41 +573,54 @@ msgstr "並び替え状態の記憶"
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後も記憶する"
 
-#: resources/ui/window.blp:48
+#: resources/ui/window.blp:43
+msgid "Resources"
+msgstr ""
+
+#: resources/ui/window.blp:69
+msgid "Toggle Sidebar"
+msgstr ""
+
+#: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
 msgstr "名前やPIDで検索"
 
-#: resources/ui/window.blp:90
+#: resources/ui/window.blp:148
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: resources/ui/window.blp:104
+#: resources/ui/window.blp:162
 msgid "Performance"
 msgstr "パフォーマンス"
 
-#: resources/ui/window.blp:113 src/apps_page/mod.rs:447
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
 msgid "Apps"
 msgstr "アプリ"
 
-#: resources/ui/window.blp:124
+#: resources/ui/window.blp:192
 msgid "_Preferences"
 msgstr "設定"
 
-#: resources/ui/window.blp:129
+#: resources/ui/window.blp:197
 msgid "_About MissionCenter"
 msgstr "Mission Center について"
 
-#: src/apps_page/mod.rs:1037
+#: src/apps_page/mod.rs:1143
 msgid "Name"
 msgstr "名前"
 
-#: src/apps_page/mod.rs:1043
+#: src/apps_page/mod.rs:1149
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1061
+#: src/apps_page/mod.rs:1167
 msgid "Disk"
 msgstr "ディスク"
+
+#: src/apps_page/mod.rs:1174
+#, fuzzy
+msgid "GPU"
+msgstr "GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -926,7 +640,7 @@ msgstr "プロセスを停止"
 msgid "Force Stop Process"
 msgstr "プロセスを強制終了"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:224
+#: src/performance_page/widgets/mem_composition_widget.rs:285
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -936,7 +650,7 @@ msgstr ""
 "\n"
 "OSと実行中のアプリケーションに使用されるメモリ"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:236
+#: src/performance_page/widgets/mem_composition_widget.rs:317
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -947,7 +661,7 @@ msgstr ""
 "\n"
 "別のプロセスで使用する前にディスクに書き込むべき内容を含むメモリ"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:257
+#: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -957,7 +671,7 @@ msgstr ""
 "\n"
 "キャッシュデータや現在使用されていないコードを含むメモリ"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:266
+#: src/performance_page/widgets/mem_composition_widget.rs:350
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -969,99 +683,182 @@ msgstr ""
 "現在使用されておらず、オペレーティング システム、ドライバー、またはアプリケー"
 "ションがより多くのメモリを必要とするときに最初に再利用されるメモリ"
 
-#: src/performance_page/mod.rs:372 src/performance_page/disk.rs:195
+#: src/performance_page/mod.rs:489 src/performance_page/disk.rs:196
 msgid "Disk {} ({})"
 msgstr "ディスク {} ({})"
 
-#: src/performance_page/mod.rs:376
+#: src/performance_page/mod.rs:493
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:377
+#: src/performance_page/mod.rs:494
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:378
+#: src/performance_page/mod.rs:495
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:379
+#: src/performance_page/mod.rs:496
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:380
+#: src/performance_page/mod.rs:497
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:381 src/performance_page/cpu.rs:310
-#: src/performance_page/cpu.rs:323 src/performance_page/cpu.rs:333
-#: src/performance_page/cpu.rs:339 src/performance_page/gpu.rs:255
-#: src/performance_page/memory.rs:338 src/performance_page/network.rs:375
-#: src/performance_page/network.rs:396 src/performance_page/network.rs:405
-#: src/performance_page/network.rs:442 src/performance_page/network.rs:520
+#: src/performance_page/mod.rs:498 src/performance_page/cpu.rs:305
+#: src/performance_page/cpu.rs:321 src/performance_page/cpu.rs:333
+#: src/performance_page/cpu.rs:341 src/performance_page/disk.rs:301
+#: src/performance_page/gpu.rs:300 src/performance_page/gpu.rs:417
+#: src/performance_page/memory.rs:261 src/performance_page/network.rs:392
+#: src/performance_page/network.rs:416 src/performance_page/network.rs:426
+#: src/performance_page/network.rs:465 src/performance_page/network.rs:515
+#: src/performance_page/network.rs:551
 msgid "Unknown"
 msgstr "不明"
 
-#: src/performance_page/mod.rs:451 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:577 src/performance_page/network.rs:331
 msgid "Ethernet"
 msgstr "イーサネット"
 
-#: src/performance_page/mod.rs:452 src/performance_page/network.rs:338
+#: src/performance_page/mod.rs:578 src/performance_page/network.rs:346
 msgid "Wi-Fi"
 msgstr "Wi-FI"
 
-#: src/performance_page/mod.rs:453 src/performance_page/network.rs:340
+#: src/performance_page/mod.rs:579 src/performance_page/network.rs:348
 msgid "Other"
 msgstr "その他"
 
-#: src/performance_page/mod.rs:541
+#: src/performance_page/mod.rs:678
 msgid "GPU {}"
 msgstr "GPU {}"
 
-#: src/performance_page/mod.rs:702 src/performance_page/mod.rs:710
+#: src/performance_page/mod.rs:853 src/performance_page/mod.rs:861
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}bps"
 
-#: src/performance_page/cpu.rs:318
+#: src/performance_page/cpu.rs:316
 msgid "Supported"
 msgstr "有効"
 
-#: src/performance_page/cpu.rs:320 src/performance_page/gpu.rs:266
+#: src/performance_page/cpu.rs:318 src/performance_page/gpu.rs:312
 msgid "Unsupported"
 msgstr "無効"
 
-#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:223
+#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:232
 msgid "Yes"
 msgstr "はい"
 
-#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:225
+#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:234
 msgid "No"
 msgstr "いいえ"
 
-#: src/performance_page/cpu.rs:698
+#: src/performance_page/cpu.rs:869
 msgid "Utilization over {} seconds"
 msgstr "直近{}秒間の使用率"
 
-#: src/performance_page/cpu.rs:702 src/performance_page/disk.rs:380
-#: src/performance_page/memory.rs:401 src/performance_page/network.rs:606
+#: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
+#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
 msgid "{} seconds"
 msgstr "{}秒"
 
-#: src/performance_page/disk.rs:251
+#: src/performance_page/disk.rs:263
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/秒"
 
-#: src/performance_page/network.rs:416 src/performance_page/network.rs:422
-#: src/performance_page/network.rs:430
+#: src/performance_page/gpu.rs:265
+#, fuzzy
+msgid "Video encode/decode"
+msgstr "ビデオエンコード"
+
+#: src/performance_page/memory.rs:477
+#, fuzzy
+msgid "Authentication failed"
+msgstr "認証"
+
+#: src/performance_page/network.rs:438 src/performance_page/network.rs:445
+#: src/performance_page/network.rs:455
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/network.rs:455 src/performance_page/network.rs:471
+#: src/performance_page/network.rs:477 src/performance_page/network.rs:492
 msgid "N/A"
 msgstr "該当なし"
 
-#: src/application.rs:261
+#: src/application.rs:272
 msgid "translator-credits"
 msgstr ""
 "Rinrin.rs <rinrin0413.valley@gmail.com>\n"
 "Gnuey56 <gnuey56@proton.me>"
+
+#~ msgid "Disk utilization percentage might not be accurate"
+#~ msgstr "ディスク使用率が正しくない場合がある"
+
+#~ msgid "No per-process GPU usage"
+#~ msgstr "プロセスごとのGPU使用率を見られない"
+
+#~ msgid ""
+#~ "Add an option, to the context menu, to show kernel times, in the CPU "
+#~ "graphs"
+#~ msgstr "カーネル時間を表示するオプションをメニューに追加"
+
+#~ msgid "Add CPU temperature, where possible"
+#~ msgstr "可能なCPU温度の表示を追加"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use metainfo instead of appdata for application metadata by David "
+#~ "Guglielmi"
+#~ msgstr ""
+#~ "David Guglielmi 氏により、アプリケーションのメタデータとしてappdataの代わ"
+#~ "りにmetainfoを使用"
+
+#~ msgid "Fixes:"
+#~ msgstr "修正:"
+
+#~ msgid ""
+#~ "Fixed a regression where natively installed browsers were not showing up "
+#~ "in the apps list on Fedora"
+#~ msgstr ""
+#~ "Fedoraで、ネイティブにインストールされたブラウザーがアプリリストに表示され"
+#~ "ない不具合を修正"
+
+#~ msgid ""
+#~ "Fixed a regression where Flatpak apps were not showing up in the apps "
+#~ "list on ArchLinux Plasma"
+#~ msgstr ""
+#~ "Arch LinuxのPlasmaで、Flatpakアプリがアプリリストに表示されない不具合を修"
+#~ "正"
+
+#~ msgid ""
+#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
+#~ msgstr ""
+#~ "Maps（地図）アプリのデスクトップファイルが正しくパースされないバグを修正"
+
+#~ msgid "Translations:"
+#~ msgstr "翻訳:"
+
+#~ msgid "Updated Spanish translation"
+#~ msgstr "スペイン語の翻訳がアップデート"
+
+#~ msgid "Updated Finnish translation"
+#~ msgstr "フィンランド語の翻訳をアップデート"
+
+#~ msgid "Updated Russian translation"
+#~ msgstr "ロシア語の翻訳をアップデート"
+
+#~ msgid "Updated Chinese (Simplified) translation"
+#~ msgstr "中国語（簡体字）の翻訳をアップデート"
+
+#~ msgid "Updated Greek translation"
+#~ msgstr "ギリシャ語の翻訳をアップデート"
+
+#~ msgid "Updated German translation"
+#~ msgstr "ドイツ語の翻訳をアップデート"
+
+#~ msgid "New app icon by QwertyChouskie"
+#~ msgstr "QwertyChouskie 氏による新しいアプリアイコン"
+
+#~ msgid "Some information requires administrative privileges"
+#~ msgstr "一部の情報を取得する為に管理者権限が必要です"

@@ -1,0 +1,233 @@
+/* ui/performance_page/disk_details.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+using Gtk 4.0;
+
+Box root {
+  margin-top: 65;
+  margin-bottom: 10;
+  orientation: vertical;
+  spacing: 20;
+
+  Box dynamic_data {
+    orientation: vertical;
+    spacing: 10;
+
+    Box top_row {
+      spacing: 15;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Active time");
+        }
+
+        Label active_time {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 120;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Avg. response time");
+        }
+
+        Label avg_response_time {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box bottom_row {
+      orientation: vertical;
+      spacing: 15;
+
+      Box {
+        spacing: 5;
+
+        Picture legend_read {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label {
+
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Read speed");
+          }
+
+          Label read_speed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+      }
+
+      Box {
+        spacing: 5;
+
+        Picture legend_write {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 120;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Write speed");
+          }
+
+          Label write_speed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+      }
+    }
+  }
+
+  Box system_info {
+    spacing: 10;
+
+    Box labels {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Capacity:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Formatted:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("System disk:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Type:");
+      }
+    }
+
+    Box values {
+      orientation: vertical;
+      spacing: 3;
+
+      Label capacity {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label formatted {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label system_disk {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label disk_type {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+    }
+  }
+}

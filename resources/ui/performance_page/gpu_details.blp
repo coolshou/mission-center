@@ -1,0 +1,343 @@
+/* ui/performance_page/gpu_details.blp
+ *
+ * Copyright 2023 Romeo Calota
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+using Gtk 4.0;
+using Adw 1;
+
+Box root {
+  margin-top: 65;
+  margin-bottom: 10;
+  orientation: vertical;
+  spacing: 20;
+
+  Box dynamic_data {
+    orientation: vertical;
+    spacing: 10;
+
+    Box {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Utilization");
+      }
+
+      Label utilization {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Clock Speed");
+      }
+
+      Box {
+        Label clock_speed_current {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
+        }
+
+        Label clock_speed_max {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+      }
+    }
+
+    Box box_power_draw {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Power draw");
+      }
+
+      Box {
+        Label power_draw_current {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
+        }
+
+        Label power_draw_max {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+      }
+    }
+
+    Box box_mem_usage {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Memory usage");
+      }
+
+      Box {
+        Label memory_usage_current {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
+        }
+
+        Label memory_usage_max {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+      }
+    }
+
+    Box box_mem_speed {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Memory speed");
+      }
+
+      Box {
+        Label memory_speed_current {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
+        }
+
+        Label memory_speed_max {
+          styles [
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+      }
+    }
+
+    Box box_temp {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Temperature");
+      }
+
+      Label temperature {
+        styles [
+          "title-4",
+        ]
+
+        ellipsize: middle;
+
+        halign: start;
+      }
+    }
+  }
+
+  Box system_info {
+    spacing: 10;
+
+    Box labels {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("OpenGL version:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Vulkan version:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("PCI Express speed:");
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("PCI bus address:");
+      }
+    }
+
+    Box values {
+      orientation: vertical;
+      spacing: 3;
+
+      Label opengl_version {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label vulkan_version {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label pcie_speed {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+
+      Label pci_addr {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+      }
+    }
+  }
+}

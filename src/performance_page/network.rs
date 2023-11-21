@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, OnceCell};
 
 use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
@@ -47,32 +47,6 @@ mod imp {
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
-        pub legend_send: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub speed_send: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub legend_recv: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub speed_recv: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub interface_name_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub connection_type_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub ssid: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub signal_strength: TemplateChild<gtk::Image>,
-        #[template_child]
-        pub max_bitrate: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub frequency: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub hw_address: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub ipv4_address: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub ipv6_address: TemplateChild<gtk::Label>,
-        #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get, set)]
@@ -85,6 +59,23 @@ mod imp {
         #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
         pub connection_type: Cell<crate::sys_info_v2::NetDeviceType>,
 
+        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        pub infobar_content: OnceCell<gtk::Box>,
+
+        pub legend_send: OnceCell<gtk::Picture>,
+        pub speed_send: OnceCell<gtk::Label>,
+        pub legend_recv: OnceCell<gtk::Picture>,
+        pub speed_recv: OnceCell<gtk::Label>,
+        pub interface_name_label: OnceCell<gtk::Label>,
+        pub connection_type_label: OnceCell<gtk::Label>,
+        pub ssid: OnceCell<gtk::Label>,
+        pub signal_strength: OnceCell<gtk::Image>,
+        pub max_bitrate: OnceCell<gtk::Label>,
+        pub frequency: OnceCell<gtk::Label>,
+        pub hw_address: OnceCell<gtk::Label>,
+        pub ipv4_address: OnceCell<gtk::Label>,
+        pub ipv6_address: OnceCell<gtk::Label>,
+
         signal_strength_percent: Cell<Option<u8>>,
     }
 
@@ -96,6 +87,16 @@ mod imp {
                 max_y: Default::default(),
                 usage_graph: Default::default(),
                 graph_max_duration: Default::default(),
+                context_menu: Default::default(),
+
+                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
+                summary_mode: Cell::new(false),
+
+                interface_name: Cell::new(String::new()),
+                connection_type: Cell::new(crate::sys_info_v2::NetDeviceType::Other),
+
+                infobar_content: Default::default(),
+
                 legend_send: Default::default(),
                 speed_send: Default::default(),
                 legend_recv: Default::default(),
@@ -109,13 +110,6 @@ mod imp {
                 hw_address: Default::default(),
                 ipv4_address: Default::default(),
                 ipv6_address: Default::default(),
-                context_menu: Default::default(),
-
-                base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
-                summary_mode: Cell::new(false),
-
-                interface_name: Cell::new(String::new()),
-                connection_type: Cell::new(crate::sys_info_v2::NetDeviceType::Other),
 
                 signal_strength_percent: Cell::new(None),
             }
@@ -161,6 +155,10 @@ mod imp {
                     .connection_type
                     .replace(crate::sys_info_v2::NetDeviceType::Other),
             };
+        }
+
+        fn infobar_content(&self) -> Option<gtk::Widget> {
+            self.infobar_content.get().map(|ic| ic.clone().into())
         }
     }
 
@@ -325,27 +323,45 @@ mod imp {
                 graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
             });
 
-            this.interface_name_label.set_text(&interface_name);
+            if let Some(interface_name_label) = this.interface_name_label.get() {
+                interface_name_label.set_text(&interface_name);
+            }
 
             let conn_type = match connection_type {
                 NetDeviceType::Wired => i18n("Ethernet"),
                 NetDeviceType::Wireless => {
-                    this.ssid.set_visible(true);
-                    this.signal_strength.set_visible(true);
-                    this.max_bitrate.set_visible(true);
-                    this.frequency.set_visible(true);
+                    if let Some(ssid) = this.ssid.get() {
+                        ssid.set_visible(true);
+                    }
+                    if let Some(signal_strength) = this.signal_strength.get() {
+                        signal_strength.set_visible(true);
+                    }
+                    if let Some(max_bitrate) = this.max_bitrate.get() {
+                        max_bitrate.set_visible(true);
+                    }
+                    if let Some(frequency) = this.frequency.get() {
+                        frequency.set_visible(true);
+                    }
 
                     i18n("Wi-Fi")
                 }
                 NetDeviceType::Other => i18n("Other"),
             };
-            this.connection_type_label.set_text(&conn_type);
+
+            if let Some(connection_type_label) = this.connection_type_label.get() {
+                connection_type_label.set_text(&conn_type);
+            }
             this.title_connection_type.set_text(&conn_type);
 
-            this.legend_send
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
-            this.legend_recv
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
+            if let Some(legend_send) = this.legend_send.get() {
+                legend_send
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
+            }
+
+            if let Some(legend_recv) = this.legend_recv.get() {
+                legend_recv
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
+            }
 
             this.interface_name.set(interface_name);
 
@@ -361,38 +377,42 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            let sent = network_device.send_bps as f32 * 8.;
-            let received = network_device.recv_bps as f32 * 8.;
+            let sent = network_device.send_bps * 8.;
+            let received = network_device.recv_bps * 8.;
 
             this.usage_graph.add_data_point(0, sent);
             this.usage_graph.add_data_point(1, received);
 
             if let Some(wireless_info) = &network_device.wireless_info {
-                this.ssid.set_text(
-                    &wireless_info
-                        .ssid
-                        .as_ref()
-                        .map_or(i18n("Unknown"), |ssid| ssid.clone()),
-                );
+                if let Some(ssid) = this.ssid.get() {
+                    ssid.set_text(
+                        &wireless_info
+                            .ssid
+                            .as_ref()
+                            .map_or(i18n("Unknown"), |ssid| ssid.clone()),
+                    );
+                }
                 this.signal_strength_percent
                     .set(wireless_info.signal_strength_percent.clone());
-                this.signal_strength.set_icon_name(Some(
-                    if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
-                        if *percentage <= 25_u8 {
-                            "nm-signal-25-symbolic"
-                        } else if *percentage <= 50_u8 {
-                            "nm-signal-50-symbolic"
-                        } else if *percentage <= 75_u8 {
-                            "nm-signal-75-symbolic"
+                if let Some(signal_strength) = this.signal_strength.get() {
+                    signal_strength.set_icon_name(Some(
+                        if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
+                            if *percentage <= 25_u8 {
+                                "nm-signal-25-symbolic"
+                            } else if *percentage <= 50_u8 {
+                                "nm-signal-50-symbolic"
+                            } else if *percentage <= 75_u8 {
+                                "nm-signal-75-symbolic"
+                            } else {
+                                "nm-signal-100-symbolic"
+                            }
                         } else {
-                            "nm-signal-100-symbolic"
-                        }
-                    } else {
-                        "nm-signal-00-symbolic"
-                    },
-                ));
-                this.max_bitrate
-                    .set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
+                            "nm-signal-00-symbolic"
+                        },
+                    ));
+                }
+                if let Some(max_bitrate) = this.max_bitrate.get() {
+                    max_bitrate.set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
                         i18n("Unknown"),
                         |kbps| {
                             let (val, unit, dec_to_display) =
@@ -400,8 +420,9 @@ mod imp {
                             format!("{0:.2$} {1}bps", val, unit, dec_to_display)
                         },
                     ));
-                this.frequency
-                    .set_text(&wireless_info.frequency_mhz.as_ref().map_or(
+                }
+                if let Some(frequency) = this.frequency.get() {
+                    frequency.set_text(&wireless_info.frequency_mhz.as_ref().map_or(
                         i18n("Unknown"),
                         |freq| {
                             let (freq, unit, dec_to_display) =
@@ -409,6 +430,7 @@ mod imp {
                             format!("{0:.2$} {1}Hz", freq, unit, dec_to_display)
                         },
                     ));
+                }
             }
 
             let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
@@ -418,78 +440,81 @@ mod imp {
             ));
 
             let speed_send_info = crate::to_human_readable(sent, 1024.);
-            this.speed_send.set_text(&i18n_f(
-                "{} {}bps",
-                &[
-                    &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
-                    &format!("{}", speed_send_info.1),
-                ],
-            ));
+            if let Some(speed_send) = this.speed_send.get() {
+                speed_send.set_text(&i18n_f(
+                    "{} {}bps",
+                    &[
+                        &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
+                        &format!("{}", speed_send_info.1),
+                    ],
+                ));
+            }
             let speed_recv_info = crate::to_human_readable(received, 1024.);
-            this.speed_recv.set_text(&i18n_f(
-                "{} {}bps",
-                &[
-                    &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
-                    &format!("{}", speed_recv_info.1),
-                ],
-            ));
+            if let Some(speed_recv) = this.speed_recv.get() {
+                speed_recv.set_text(&i18n_f(
+                    "{} {}bps",
+                    &[
+                        &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
+                        &format!("{}", speed_recv_info.1),
+                    ],
+                ));
+            }
 
-            this.hw_address
-                .set_text(
-                    &network_device
-                        .address
-                        .hw_address
-                        .map_or(i18n("Unknown"), |hw| {
-                            format!(
-                                "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
-                                hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
-                            )
-                        }),
-                );
+            if let Some(hw_address) = this.hw_address.get() {
+                hw_address.set_text(&network_device.address.hw_address.map_or(
+                    i18n("Unknown"),
+                    |hw| {
+                        format!(
+                            "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
+                            hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
+                        )
+                    },
+                ));
+            }
 
-            this.ipv4_address
-                .set_text(
-                    &network_device
-                        .address
-                        .ip4_address
-                        .map_or(i18n("N/A"), |ip| {
-                            let ip_array = unsafe {
-                                std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
-                            };
-                            format!(
-                                "{}.{}.{}.{}",
-                                ip_array[0], ip_array[1], ip_array[2], ip_array[3]
-                            )
-                        }),
-                );
+            if let Some(ipv4_address) = this.ipv4_address.get() {
+                ipv4_address.set_text(&network_device.address.ip4_address.map_or(
+                    i18n("N/A"),
+                    |ip| {
+                        let ip_array = unsafe {
+                            std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
+                        };
+                        format!(
+                            "{}.{}.{}.{}",
+                            ip_array[0], ip_array[1], ip_array[2], ip_array[3]
+                        )
+                    },
+                ));
+            }
 
-            this.ipv6_address
-                .set_text(
-                    &network_device
-                        .address
-                        .ip6_address
-                        .map_or(i18n("N/A"), |ip| {
-                            let ip_array = unsafe {
-                                std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
-                            };
-                            let mut ip_address = format!("{:x}:", u16::from_le(ip_array[7]));
-                            ip_address.reserve(8 * 4);
+            if let Some(ipv6_address) = this.ipv6_address.get() {
+                ipv6_address.set_text(&network_device.address.ip6_address.map_or(
+                    i18n("N/A"),
+                    |ip| {
+                        let ip_array = unsafe {
+                            std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
+                        };
+                        let mut ip_address = format!("{:x}:", u16::from_le(ip_array[7]));
+                        ip_address.reserve(8 * 4);
 
-                            for i in (0..7).rev() {
-                                if ip_array[i] != 0 {
-                                    ip_address.push(':');
-                                    ip_address
-                                        .push_str(&format!("{:x}", u16::from_le(ip_array[i])));
-                                }
+                        for i in (0..7).rev() {
+                            if ip_array[i] != 0 {
+                                ip_address.push(':');
+                                ip_address.push_str(&format!("{:x}", u16::from_le(ip_array[i])));
                             }
-                            ip_address
-                        }),
-                );
+                        }
+                        ip_address
+                    },
+                ));
+            }
 
             true
         }
 
         fn data_summary(&self) -> String {
+            let unknown = i18n("Unknown");
+            let unknown = unknown.as_str();
+
             format!(
                 r#"{}
 
@@ -505,8 +530,14 @@ mod imp {
     Receive:         {}"#,
                 self.title_connection_type.label(),
                 self.device_name.label(),
-                self.interface_name_label.label(),
-                self.connection_type_label.label(),
+                self.interface_name_label
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.connection_type_label
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
                 if self.connection_type.get() == crate::sys_info_v2::NetDeviceType::Wireless {
                     format!(
                         r#"
@@ -514,21 +545,42 @@ mod imp {
     Signal strength:  {}
     Max bitrate:      {}
     Frequency:        {}"#,
-                        self.ssid.label(),
+                        self.ssid.get().map(|l| l.label()).unwrap_or(unknown.into()),
                         self.signal_strength_percent
                             .get()
                             .map_or(i18n("Unknown"), |percent| format!("{}%", percent)),
-                        self.max_bitrate.label(),
-                        self.frequency.label(),
+                        self.max_bitrate
+                            .get()
+                            .map(|l| l.label())
+                            .unwrap_or(unknown.into()),
+                        self.frequency
+                            .get()
+                            .map(|l| l.label())
+                            .unwrap_or(unknown.into()),
                     )
                 } else {
                     "".to_owned()
                 },
-                self.hw_address.label(),
-                self.ipv4_address.label(),
-                self.ipv6_address.label(),
-                self.speed_send.label(),
-                self.speed_recv.label(),
+                self.hw_address
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.ipv4_address
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.ipv6_address
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.speed_send
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.speed_recv
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
             )
         }
     }
@@ -549,16 +601,6 @@ mod imp {
     }
 
     impl ObjectImpl for PerformancePageNetwork {
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformancePageNetwork>().clone();
-
-            Self::configure_actions(&this);
-            Self::configure_context_menu(&this);
-        }
-
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -569,6 +611,92 @@ mod imp {
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
+        }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            let obj = self.obj();
+            let this = obj.upcast_ref::<super::PerformancePageNetwork>().clone();
+
+            Self::configure_actions(&this);
+            Self::configure_context_menu(&this);
+
+            let sidebar_content_builder = gtk::Builder::from_resource(
+                "/io/missioncenter/MissionCenter/ui/performance_page/network_details.ui",
+            );
+
+            let _ = self.infobar_content.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("root")
+                    .expect("Could not find `root` object in details pane"),
+            );
+
+            let _ = self.legend_send.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_send")
+                    .expect("Could not find `legend_send` object in details pane"),
+            );
+            let _ = self.speed_send.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("speed_send")
+                    .expect("Could not find `speed_send` object in details pane"),
+            );
+            let _ = self.legend_recv.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_recv")
+                    .expect("Could not find `legend_recv` object in details pane"),
+            );
+            let _ = self.speed_recv.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("speed_recv")
+                    .expect("Could not find `speed_recv` object in details pane"),
+            );
+            let _ = self.interface_name_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("interface_name_label")
+                    .expect("Could not find `interface_name_label` object in details pane"),
+            );
+            let _ = self.connection_type_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("connection_type_label")
+                    .expect("Could not find `connection_type_label` object in details pane"),
+            );
+            let _ = self.ssid.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("ssid")
+                    .expect("Could not find `ssid` object in details pane"),
+            );
+            let _ = self.signal_strength.set(
+                sidebar_content_builder
+                    .object::<gtk::Image>("signal_strength")
+                    .expect("Could not find `signal_strength` object in details pane"),
+            );
+            let _ = self.max_bitrate.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("max_bitrate")
+                    .expect("Could not find `max_bitrate` object in details pane"),
+            );
+            let _ = self.frequency.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("frequency")
+                    .expect("Could not find `frequency` object in details pane"),
+            );
+            let _ = self.hw_address.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("hw_address")
+                    .expect("Could not find `hw_address` object in details pane"),
+            );
+            let _ = self.ipv4_address.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("ipv4_address")
+                    .expect("Could not find `ipv4_address` object in details pane"),
+            );
+            let _ = self.ipv6_address.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("ipv6_address")
+                    .expect("Could not find `ipv6_address` object in details pane"),
+            );
         }
     }
 
@@ -626,5 +754,19 @@ impl PerformancePageNetwork {
 
     pub fn update_readings(&self, network_device: &crate::sys_info_v2::NetworkDevice) -> bool {
         imp::PerformancePageNetwork::update_readings(self, network_device)
+    }
+
+    pub fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    pub fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }

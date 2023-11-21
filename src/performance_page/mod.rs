@@ -20,9 +20,9 @@
 
 use std::{cell::Cell, collections::HashMap};
 
-use adw::subclass::prelude::*;
+use adw::{prelude::*, subclass::prelude::*};
 use glib::{clone, ParamSpec, Properties, Value};
-use gtk::{gio, glib, prelude::*};
+use gtk::{gio, glib};
 
 use widgets::GraphWidget;
 
@@ -60,14 +60,28 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/page.ui")]
     pub struct PerformancePage {
         #[template_child]
-        pub sidebar: TemplateChild<gtk::ListBox>,
+        pub breakpoint: TemplateChild<adw::Breakpoint>,
+        #[template_child]
+        pub page_content: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub page_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub info_bar: TemplateChild<adw::Bin>,
 
+        #[property(get = Self::sidebar, set = Self::set_sidebar)]
+        pub sidebar: Cell<gtk::ListBox>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
+        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible, type = bool)]
+        _infobar_visible: [u8; 0],
+        #[property(name = "info-button-visible", get = Self::info_button_visible, type = bool)]
+        _info_button_visible: [u8; 0],
+
+        breakpoint_applied: Cell<bool>,
 
         pages: Cell<Vec<Pages>>,
+
+        action_group: Cell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
 
@@ -77,12 +91,21 @@ mod imp {
     impl Default for PerformancePage {
         fn default() -> Self {
             Self {
-                sidebar: Default::default(),
+                breakpoint: Default::default(),
+                page_content: Default::default(),
                 page_stack: Default::default(),
+                info_bar: Default::default(),
 
+                sidebar: Cell::new(gtk::ListBox::new()),
                 summary_mode: Cell::new(false),
+                _infobar_visible: [0; 0],
+                _info_button_visible: [0; 0],
+
+                breakpoint_applied: Cell::new(false),
 
                 pages: Cell::new(Vec::new()),
+
+                action_group: Cell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
 
@@ -92,9 +115,82 @@ mod imp {
     }
 
     impl PerformancePage {
+        fn sidebar(&self) -> gtk::ListBox {
+            unsafe { &*self.sidebar.as_ptr() }.clone()
+        }
+
+        fn set_sidebar(&self, lb: &gtk::ListBox) {
+            let this = self.obj().as_ref().clone();
+
+            Self::configure_actions(&this);
+            lb.connect_row_selected(move |_, selected_row| {
+                use glib::{translate::*, *};
+                use std::ffi::CStr;
+
+                if let Some(row) = selected_row {
+                    let child = row.child();
+                    if child.is_none() {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to get child of selected row"
+                        );
+                    }
+                    let child = child.unwrap();
+
+                    let widget_name =
+                        unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
+                    if widget_name.is_null() {
+                        return;
+                    }
+                    let page_name = unsafe { CStr::from_ptr(widget_name) }.to_string_lossy();
+                    let page_name = page_name.as_ref();
+
+                    let imp = this.imp();
+
+                    let actions = imp.context_menu_view_actions.take();
+                    if let Some(new_action) = actions.get(page_name) {
+                        let prev_action = imp.current_view_action.replace(new_action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        new_action.set_state(&glib::Variant::from(true));
+                    }
+
+                    imp.context_menu_view_actions.set(actions);
+                    imp.page_stack.set_visible_child_name(page_name);
+
+                    if let Some(settings) = imp.settings.take() {
+                        settings
+                            .set_string("performance-selected-page", page_name)
+                            .unwrap_or_else(|_| {
+                                g_warning!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to set performance-selected-page setting"
+                                );
+                            });
+                        imp.settings.set(Some(settings));
+                    }
+                }
+            });
+
+            self.sidebar.set(lb.clone())
+        }
+
+        fn infobar_visible(&self) -> bool {
+            self.page_content.shows_sidebar()
+        }
+
+        fn set_infobar_visible(&self, v: bool) {
+            self.page_content
+                .set_show_sidebar(!self.page_content.is_collapsed() || v);
+        }
+
+        fn info_button_visible(&self) -> bool {
+            self.page_content.is_collapsed()
+        }
+    }
+
+    impl PerformancePage {
         fn configure_actions(this: &super::PerformancePage) {
-            let actions = gio::SimpleActionGroup::new();
-            this.insert_action_group("graph", Some(&actions));
+            let actions = unsafe { &*this.imp().action_group.as_ptr() }.clone();
 
             let mut view_actions = HashMap::new();
 
@@ -107,16 +203,19 @@ mod imp {
                 let new_state = !this.summary_mode();
                 action.set_state(&glib::Variant::from(new_state));
                 this.set_summary_mode(new_state);
+                if !this.imp().breakpoint_applied.get() {
+                    this.imp().page_content.set_show_sidebar(!new_state);
+                }
             }));
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new_stateful("cpu", None, &glib::Variant::from(true));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
-                    .sidebar
+                    .sidebar()
                     .row_at_index(0)
                     .expect("Failed to select CPU row");
-                this.imp().sidebar.select_row(Some(&row));
+                this.imp().sidebar().select_row(Some(&row));
 
                 let prev_action = this.imp().current_view_action.replace(action.clone());
                 prev_action.set_state(&glib::Variant::from(false));
@@ -130,10 +229,10 @@ mod imp {
                 gio::SimpleAction::new_stateful("memory", None, &glib::Variant::from(false));
             action.connect_activate(clone!(@weak this => move |action, _| {
                 let row= this.imp()
-                    .sidebar
+                    .sidebar()
                     .row_at_index(1)
                     .expect("Failed to select Memory row");
-                this.imp().sidebar.select_row(Some(&row));
+                this.imp().sidebar().select_row(Some(&row));
 
                 let prev_action = this.imp().current_view_action.replace(action.clone());
                 prev_action.set_state(&glib::Variant::from(false));
@@ -165,7 +264,7 @@ mod imp {
                     }
                     let row = row.unwrap();
 
-                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
                     prev_action.set_state(&glib::Variant::from(false));
@@ -202,7 +301,7 @@ mod imp {
                     }
                     let row = row.unwrap();
 
-                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
                     prev_action.set_state(&glib::Variant::from(false));
@@ -238,7 +337,7 @@ mod imp {
                     }
                     let row = row.unwrap();
 
-                    this.imp().sidebar.select_row(row.downcast_ref::<gtk::ListBoxRow>());
+                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
                     let prev_action = this.imp().current_view_action.replace(action.clone());
                     prev_action.set_state(&glib::Variant::from(false));
@@ -289,13 +388,22 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(readings);
 
+            self.page_content
+                .connect_collapsed_notify(clone!(@weak page => move |pc| {
+                    if pc.is_collapsed() {
+                        page.infobar_collapsed();
+                    } else {
+                        page.infobar_uncollapsed();
+                    }
+                }));
+
             self.obj()
                 .as_ref()
                 .bind_property("summary-mode", &page, "summary-mode")
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
-            self.sidebar.append(&summary);
+            self.sidebar().append(&summary);
             self.page_stack.add_named(&page, Some("cpu"));
 
             pages.push(Pages::Cpu((summary, page)));
@@ -340,13 +448,22 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(readings);
 
+            self.page_content
+                .connect_collapsed_notify(clone!(@weak page => move |pc| {
+                    if pc.is_collapsed() {
+                        page.infobar_collapsed();
+                    } else {
+                        page.infobar_uncollapsed();
+                    }
+                }));
+
             self.obj()
                 .as_ref()
                 .bind_property("summary-mode", &page, "summary-mode")
                 .flags(glib::BindingFlags::SYNC_CREATE)
                 .build();
 
-            self.sidebar.append(&summary);
+            self.sidebar().append(&summary);
             self.page_stack.add_named(&page, Some("memory"));
 
             pages.push(Pages::Memory((summary, page)));
@@ -402,13 +519,22 @@ mod imp {
                 self.settings.set(settings);
                 page.set_static_information(i, disk);
 
+                self.page_content
+                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
+                    }));
+
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
 
-                self.sidebar.append(&summary);
+                self.sidebar().append(&summary);
                 self.page_stack.add_named(&page, Some(&disk.id));
 
                 let mut actions = self.context_menu_view_actions.take();
@@ -492,13 +618,22 @@ mod imp {
                 self.settings.set(settings);
                 page.set_static_information(network_device);
 
+                self.page_content
+                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
+                    }));
+
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
 
-                self.sidebar.append(&summary);
+                self.sidebar().append(&summary);
                 self.page_stack.add_named(&page, Some(if_name));
 
                 let mut actions = self.context_menu_view_actions.take();
@@ -562,13 +697,22 @@ mod imp {
                 ));
                 page.set_static_information(i, static_info);
 
+                self.page_content
+                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
+                    }));
+
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
                     .flags(BindingFlags::SYNC_CREATE)
                     .build();
 
-                self.sidebar.append(&summary);
+                self.sidebar().append(&summary);
                 self.page_stack
                     .add_named(&page, Some(static_info.id.as_ref()));
 
@@ -753,7 +897,7 @@ mod imp {
     impl ObjectSubclass for PerformancePage {
         const NAME: &'static str = "PerformancePage";
         type Type = super::PerformancePage;
-        type ParentType = gtk::Box;
+        type ParentType = adw::BreakpointBin;
 
         fn class_init(klass: &mut Self::Class) {
             SummaryGraph::ensure_type();
@@ -770,66 +914,6 @@ mod imp {
     }
 
     impl ObjectImpl for PerformancePage {
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            let this = self.obj().as_ref().clone();
-
-            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                self.settings.set(app.settings());
-            }
-
-            Self::configure_actions(&this);
-
-            self.sidebar.connect_row_selected(move |_, selected_row| {
-                use glib::{translate::*, *};
-                use std::ffi::CStr;
-
-                if let Some(row) = selected_row {
-                    let child = row.child();
-                    if child.is_none() {
-                        g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to get child of selected row"
-                        );
-                    }
-                    let child = child.unwrap();
-
-                    let widget_name =
-                        unsafe { gtk::ffi::gtk_widget_get_name(child.to_glib_none().0) };
-                    if widget_name.is_null() {
-                        return;
-                    }
-                    let page_name = unsafe { CStr::from_ptr(widget_name) }.to_string_lossy();
-                    let page_name = page_name.as_ref();
-
-                    let imp = this.imp();
-
-                    let actions = imp.context_menu_view_actions.take();
-                    if let Some(new_action) = actions.get(page_name) {
-                        let prev_action = imp.current_view_action.replace(new_action.clone());
-                        prev_action.set_state(&glib::Variant::from(false));
-                        new_action.set_state(&glib::Variant::from(true));
-                    }
-
-                    imp.context_menu_view_actions.set(actions);
-                    imp.page_stack.set_visible_child_name(page_name);
-
-                    if let Some(settings) = imp.settings.take() {
-                        settings
-                            .set_string("performance-selected-page", page_name)
-                            .unwrap_or_else(|_| {
-                                g_warning!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to set performance-selected-page setting"
-                                );
-                            });
-                        imp.settings.set(Some(settings));
-                    }
-                }
-            });
-        }
-
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -841,22 +925,91 @@ mod imp {
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
         }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            let this = self.obj().as_ref().clone();
+
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
+
+            this.insert_action_group("graph", Some(unsafe { &*self.action_group.as_ptr() }));
+
+            self.breakpoint.set_condition(Some(
+                &adw::BreakpointCondition::parse("max-width: 440sp").unwrap(),
+            ));
+            self.breakpoint
+                .connect_apply(clone!(@weak self as this => move |_| {
+                    this.breakpoint_applied.set(true);
+                    this.page_content.set_collapsed(true);
+                    this.page_content.set_show_sidebar(false);
+                }));
+            self.breakpoint
+                .connect_unapply(clone!(@weak self as this => move |_| {
+                    this.breakpoint_applied.set(false);
+                    this.page_content.set_collapsed(false);
+                    if !this.summary_mode.get() {
+                        this.page_content.set_show_sidebar(true);
+                    } else {
+                        this.page_content.set_show_sidebar(false);
+                    }
+                }));
+
+            self.page_content
+                .sidebar()
+                .expect("Infobar is not set")
+                .parent()
+                .and_then(|p| Some(p.remove_css_class("sidebar-pane")));
+            self.page_content.connect_collapsed_notify(
+                glib::clone!(@weak self as this => move |pc| {
+                    if !pc.is_collapsed() {
+                        this.page_content
+                            .sidebar()
+                            .expect("Infobar is not set")
+                            .parent()
+                            .and_then(|p| Some(p.remove_css_class("sidebar-pane")));
+                    }
+                    this.obj().notify_info_button_visible();
+                }),
+            );
+
+            self.page_content.connect_show_sidebar_notify(
+                glib::clone!(@weak self as this => move |_| {
+                    this.obj().notify_infobar_visible();
+                }),
+            );
+
+            if let Some(child) = self.page_stack.visible_child() {
+                let infobar_content = child.property::<Option<gtk::Widget>>("infobar-content");
+                self.info_bar.set_child(infobar_content.as_ref());
+            }
+            self.page_stack.connect_visible_child_notify(
+                glib::clone!(@weak self as this => move |page_stack| {
+                    if let Some(child) = page_stack.visible_child() {
+                        let infobar_content = child.property::<Option<gtk::Widget>>("infobar-content");
+                        this.info_bar.set_child(infobar_content.as_ref());
+                    }
+            }));
+        }
     }
 
     impl WidgetImpl for PerformancePage {}
 
-    impl BoxImpl for PerformancePage {}
+    impl BreakpointBinImpl for PerformancePage {}
 }
 
 glib::wrapper! {
     pub struct PerformancePage(ObjectSubclass<imp::PerformancePage>)
-        @extends gtk::Box, gtk::Widget,
+        @extends adw::BreakpointBin, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
 impl PerformancePage {
-    pub fn set_up_pages(&self, readings: &crate::sys_info_v2::Readings) -> bool {
-        imp::PerformancePage::set_up_pages(self, readings)
+    pub fn set_initial_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+        let ok = imp::PerformancePage::set_up_pages(self, readings);
+        imp::PerformancePage::update_readings(self, readings) && ok
     }
 
     pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {

@@ -3,12 +3,13 @@
     <gresource prefix="/io/missioncenter/MissionCenter/icons/scalable/actions/">
         <file preprocess="xml-stripblanks">application-x-executable.svg</file>
         <file preprocess="xml-stripblanks">check-plain-symbolic.svg</file>
-        <file preprocess="xml-stripblanks">overlapping-windows-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-00-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-25-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-50-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-75-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-100-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">overlapping-windows-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">sidebar-toggle-left-symbolic.svg</file>
         <file preprocess="xml-stripblanks">speedometer-symbolic.svg</file>
     </gresource>
 
@@ -25,10 +26,15 @@
         <file preprocess="xml-stripblanks">ui/apps_page/stat_column.ui</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/cpu_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/disk_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/gpu.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/gpu_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/memory.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/memory_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/network_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/page.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/summary_graph.ui</file>
 

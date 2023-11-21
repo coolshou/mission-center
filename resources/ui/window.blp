@@ -22,99 +22,167 @@ using Gtk 4.0;
 using Adw 1;
 
 template $MissionCenterWindow : Adw.ApplicationWindow {
-  default-width: 600;
-  default-height: 300;
+  width-request: 360;
+  height-request: 292;
+  default-width: 800;
+  default-height: 480;
 
-  content: Box {
-    orientation: vertical;
+  title: "Mission Center";
+  summary-mode: bind performance_page.summary-mode;
+  collapse-threshold: 720;
 
-    Adw.HeaderBar header_bar {
-      title-widget: Stack header_stack {
-        transition-type: crossfade;
+  Adw.Breakpoint breakpoint {}
 
-        StackPage {
-          name: "view-switcher";
-          child: Adw.ViewSwitcher title {
-            halign: center;
-            policy: wide;
-            stack: stack;
-          };
+  content: Adw.OverlaySplitView split_view {
+    show-sidebar: bind toggle_sidebar_button.active bidirectional;
+
+    sidebar: Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        title-widget: Adw.WindowTitle {
+          title: _("Resources");
+        };
+      }
+
+      ScrolledWindow {
+        width-request: 220;
+        hscrollbar-policy: never;
+
+        ListBox sidebar {
+          styles [
+            "navigation-sidebar",
+          ]
+        }
+      }
+    };
+
+    content: Adw.ToolbarView window_content {
+      // top-bar-style: raised;
+
+      [top]
+      Adw.HeaderBar header_bar {
+        visible: false;
+
+        [start]
+        ToggleButton toggle_sidebar_button {
+          icon-name: "sidebar-toggle-left-symbolic";
+          tooltip-text: _("Toggle Sidebar");
+          active: false;
         }
 
-        StackPage {
-          name: "search-entry";
-          child: SearchEntry search_entry {
-            width-request: 400;
-            placeholder-text: _("Type a name or PID to search");
-          };
+        title-widget: Stack header_stack {
+          transition-type: crossfade;
+          hhomogeneous: false;
+
+          StackPage {
+            name: "view-switcher";
+            child: Adw.ViewSwitcher header_tabs {
+              halign: center;
+              policy: wide;
+              stack: stack;
+            };
+          }
+
+          StackPage {
+            name: "search-entry";
+            child: Adw.Clamp {
+              orientation: horizontal;
+              maximum-size: 250;
+              child: SearchEntry header_search_entry {
+                placeholder-text: _("Type a name or PID to search");
+              };
+            };
+          }
+        };
+
+        [end]
+        Box {
+          ToggleButton info_button {
+            styles [
+              "flat"
+            ]
+            icon-name: "info-symbolic";
+            visible: bind performance_page.info-button-visible;
+            active: false;
+          }
+
+          ToggleButton search_button {
+            styles [
+              "flat"
+            ]
+            action-name: "win.toggle-search";
+            icon-name: "system-search-symbolic";
+            visible: bind template.apps_page_active;
+          }
+
+          MenuButton {
+            icon-name: "open-menu-symbolic";
+            menu-model: primary_menu;
+          }
+        }
+      }
+
+      content: Box {
+        orientation: vertical;
+
+        Box loading_box {
+          orientation: vertical;
+
+          spacing: 12;
+
+          valign: center;
+          vexpand: true;
+          halign: center;
+          hexpand: true;
+
+          Spinner loading_spinner {
+            spinning: true;
+            halign: center;
+          }
+
+          Label {
+            styles [
+              "title-4"
+            ]
+
+            label: _("Loading...");
+            halign: center;
+          }
+        }
+
+        Adw.ViewStack stack {
+          visible: false;
+
+          hexpand: true;
+          vexpand: true;
+
+          Adw.ViewStackPage {
+            name: "performance-page";
+            icon-name: "speedometer-symbolic";
+            title: _("Performance");
+            child: $PerformancePage performance_page {
+              infobar-visible: bind info_button.active bidirectional;
+              summary-mode: bind header_bar.visible bidirectional inverted;
+              sidebar: sidebar;
+            };
+          }
+
+          Adw.ViewStackPage {
+            name: "apps-page";
+            icon-name: "overlapping-windows-symbolic";
+            title: _("Apps");
+            child: $AppsPage apps_page {
+            };
+          }
         }
       };
 
-      [end]
-      Box {
-        ToggleButton search_button {
-          styles [
-            "flat"
-          ]
-          action-name: "win.toggle-search";
-          icon-name: "system-search-symbolic";
-        }
-
-        MenuButton {
-          icon-name: "open-menu-symbolic";
-          menu-model: primary_menu;
-        }
+      [bottom]
+      Adw.ViewSwitcherBar bottom_bar {
+        visible: false;
+        stack: stack;
       }
-    }
-
-    Box loading_box {
-      orientation: vertical;
-
-      spacing: 12;
-
-      valign: center;
-      vexpand: true;
-      halign: center;
-      hexpand: true;
-
-      Spinner loading_spinner {
-        spinning: true;
-        halign: center;
-      }
-
-      Label {
-        styles [
-          "title-4"
-        ]
-
-        label: _("Loading...");
-        halign: center;
-      }
-    }
-
-    Adw.ViewStack stack {
-      visible: false;
-
-      hexpand: true;
-      vexpand: true;
-
-      Adw.ViewStackPage {
-        name: "performance-page";
-        icon-name: "speedometer-symbolic";
-        title: _("Performance");
-        child: $PerformancePage performance_page {
-          summary-mode: bind header_bar.visible bidirectional inverted;
-        };
-      }
-
-      Adw.ViewStackPage {
-        name: "apps-page";
-        icon-name: "overlapping-windows-symbolic";
-        title: _("Apps");
-        child: $AppsPage apps_page {
-        };
-      }
-    }
+    };
   };
 }
 

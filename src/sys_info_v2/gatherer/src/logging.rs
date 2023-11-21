@@ -69,21 +69,24 @@ macro_rules! debug {
 pub(crate) use debug;
 
 macro_rules! now {
-    () => {
-        unsafe {
-            let now = libc::time(std::ptr::null_mut());
-            if now == core::mem::transmute(-1_i64) {
-                std::mem::zeroed()
-            } else {
-                let tm = libc::localtime(&now);
-                if tm.is_null() {
-                    std::mem::zeroed()
-                } else {
-                    *tm
-                }
-            }
+    () => {{
+        let now = std::time::SystemTime::now();
+        let now = now
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or(std::time::Duration::new(0, 0));
+
+        let hours = (now.as_secs() / 3600) as u32;
+        let minutes = ((now.as_secs() - (hours as u64 * 3600)) / 60) as u16;
+        let seconds = (now.as_secs() - (hours as u64 * 3600) - (minutes as u64 * 60)) as u16;
+        let milliseconds = now.subsec_millis() as u16;
+
+        Timestamp {
+            hours: hours % 24,
+            minutes,
+            seconds,
+            milliseconds,
         }
-    };
+    }};
 }
 
 lazy_static! {
@@ -97,6 +100,13 @@ lazy_static! {
 
 const F_COL_LIGHT_BLUE: &str = "\x1b[2;34m";
 const F_RESET: &str = "\x1b[0m";
+
+struct Timestamp {
+    hours: u32,
+    minutes: u16,
+    seconds: u16,
+    milliseconds: u16,
+}
 
 #[allow(dead_code)]
 enum LogLevel {
@@ -116,16 +126,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Error);
         let now = now!();
         eprintln!(
-            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.000{}: {}",
+            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.{}{}: {}",
             *PID,
             domain,
             color,
             "ERROR",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );
@@ -135,16 +146,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Critical);
         let now = now!();
         eprintln!(
-            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.000{}: {}",
+            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.{}{}: {}",
             *PID,
             domain,
             color,
             "CRITICAL",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );
@@ -154,16 +166,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Warning);
         let now = now!();
         println!(
-            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.000{}: {}",
+            "\n(missioncenter-gatherer:{}): {}-{}{}{} **: {}{}:{}:{}.{}{}: {}",
             *PID,
             domain,
             color,
             "WARNING",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );
@@ -173,16 +186,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Message);
         let now = now!();
         println!(
-            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.000{}: {}",
+            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.{}{}: {}",
             *PID,
             domain,
             color,
             "MESSAGE",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );
@@ -199,16 +213,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Info);
         let now = now!();
         println!(
-            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.000{}: {}\n",
+            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.{}{}: {}\n",
             *PID,
             domain,
             color,
             "INFO",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );
@@ -225,16 +240,17 @@ impl Logger {
         let color = Self::log_level_to_color(LogLevel::Debug);
         let now = now!();
         println!(
-            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.000{}: {}",
+            "(missioncenter-gatherer:{}): {}-{}{}{}: {}{}:{}:{}.{}{}: {}",
             *PID,
             domain,
             color,
             "INFO",
             F_RESET,
             F_COL_LIGHT_BLUE,
-            now.tm_hour,
-            now.tm_min,
-            now.tm_sec,
+            now.hours,
+            now.minutes,
+            now.seconds,
+            now.milliseconds,
             F_RESET,
             args
         );

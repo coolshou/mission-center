@@ -30,9 +30,9 @@ mod pid_column;
 mod stat_column;
 mod view_model;
 
-pub const CSS_CELL_USAGE_LOW: &str = "cell { background-color: rgba(246, 211, 45, 0.3); }";
-pub const CSS_CELL_USAGE_MEDIUM: &str = "cell { background-color: rgba(230, 97, 0, 0.3); }";
-pub const CSS_CELL_USAGE_HIGH: &str = "cell { background-color: rgba(165, 29, 45, 0.3); }";
+pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
+pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97, 0, 0.3); }";
+pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 45, 0.3); }";
 
 mod imp {
     use super::*;
@@ -601,7 +601,7 @@ mod imp {
                         return true;
                     }
 
-                    if window.search_entry.text().is_empty() {
+                    if window.header_search_entry.text().is_empty() {
                         return true;
                     }
 
@@ -618,7 +618,7 @@ mod imp {
                     }
 
                     let entry_name = view_model.name().to_lowercase();
-                    let search_query = window.search_entry.text().to_lowercase();
+                    let search_query = window.header_search_entry.text().to_lowercase();
 
                     if entry_name.contains(&search_query) {
                         return true;
@@ -639,7 +639,7 @@ mod imp {
                 }
             });
 
-            window.imp().search_entry.connect_search_changed({
+            window.imp().header_search_entry.connect_search_changed({
                 let filter = filter.downgrade();
                 move |_| {
                     if let Some(filter) = filter.upgrade() {

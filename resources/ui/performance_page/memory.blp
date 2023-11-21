@@ -24,17 +24,9 @@ using Adw 1;
 template $PerformancePageMemory: Box {
   orientation: vertical;
 
-  Adw.Banner admin_banner {
-    title: _("Some information requires administrative privileges");
-    button-label: _("_Authenticate");
-
-    visible: bind template.summary-mode inverted;
-  }
-
   WindowHandle {
     child: Box description {
       orientation: vertical;
-      margin-top: 10;
       spacing: 7;
       hexpand: true;
 
@@ -84,310 +76,68 @@ template $PerformancePageMemory: Box {
     };
   }
 
-  $GraphWidget usage_graph {
-    vexpand: true;
-    hexpand: true;
-
-    height-request: 120;
-
-    base-color: bind template.base-color;
-    data-set-count: 1;
-    scroll: true;
-  }
-
-  Box {
-    margin-top: 2;
-    margin-bottom: 10;
-
-    Label graph_max_duration {
-      styles [
-        "caption",
-      ]
-
-      hexpand: true;
-      halign: start;
-      valign: start;
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      valign: start;
-      label: "0";
-    }
-  }
-
-  Label {
-    styles [
-      "caption",
-    ]
-
-    hexpand: true;
-    halign: start;
-    valign: start;
-    label: _("Memory composition");
-  }
-
-  $MemoryCompositionWidget mem_composition {
-    hexpand: true;
-    margin-bottom: 20;
-
-    height-request: 50;
-
-    base-color: bind template.base-color;
-  }
-
   Adw.ToastOverlay toast_overlay {
-    Box details {
-      spacing: 20;
+    child: Box {
+      orientation: vertical;
+      $GraphWidget usage_graph {
+        vexpand: true;
+        hexpand: true;
 
-      visible: bind template.summary-mode inverted;
+        width-request: 100;
+        height-request: 50;
 
-      Box dynamic_data {
+        base-color: bind template.base-color;
+        data-set-count: 1;
+        scroll: true;
+      }
+
+      Box {
+        margin-top: 2;
+        margin-bottom: 10;
+
+        Label graph_max_duration {
+          styles [
+            "caption",
+          ]
+
+          hexpand: true;
+          halign: start;
+          valign: start;
+        }
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          valign: start;
+          label: "0";
+        }
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        hexpand: true;
+        halign: start;
+        valign: start;
+        label: _("Memory composition");
+      }
+
+      Adw.Clamp {
         orientation: vertical;
-        spacing: 10;
+        margin-bottom: 10;
 
-        Box top_row {
-          spacing: 15;
+        width-request: 100;
+        maximum-size: 50;
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("In use");
-            }
-
-            Label in_use {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Available");
-            }
-
-            Label available {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-        }
-
-        Box mid_row {
-          spacing: 15;
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Committed");
-            }
-
-            Label committed {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Cached");
-            }
-
-            Label cached {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-        }
-
-        Box bottom_row {
-          spacing: 15;
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Swap available");
-            }
-
-            Label swap_available {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            width-request: 100;
-
-            Label {
-              styles [
-                "caption",
-              ]
-
-              halign: start;
-              label: _("Swap used");
-            }
-
-            Label swap_used {
-              styles [
-                "title-4",
-              ]
-
-              halign: start;
-            }
-          }
-        }
+        child: $MemoryCompositionWidget mem_composition {
+          base-color: bind template.base-color;
+        };
       }
-
-      Box system_info {
-        spacing: 10;
-        visible: false;
-
-        Box labels {
-          orientation: vertical;
-          spacing: 3;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Speed:");
-          }
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Slots used:");
-          }
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Form factor:");
-          }
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Type:");
-          }
-        }
-
-        Box values {
-          orientation: vertical;
-          spacing: 3;
-
-          Label speed {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: "Unknown";
-          }
-
-          Label slots_used {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: "Unknown";
-          }
-
-          Label form_factor {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: "Unknown";
-          }
-
-          Label ram_type {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: "Unknown";
-          }
-        }
-      }
-    }
+    };
   }
 
   PopoverMenu context_menu {

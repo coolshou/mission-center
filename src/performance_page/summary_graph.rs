@@ -91,6 +91,11 @@ mod imp {
 
         fn set_info1(&self, info1: String) {
             self.label_info1.set_text(&info1);
+            if info1.is_empty() {
+                self.label_info1.set_visible(false);
+            } else {
+                self.label_info1.set_visible(true);
+            }
         }
 
         fn info2(&self) -> String {
@@ -99,6 +104,11 @@ mod imp {
 
         fn set_info2(&self, info2: String) {
             self.label_info2.set_text(&info2);
+            if info2.is_empty() {
+                self.label_info2.set_visible(false);
+            } else {
+                self.label_info2.set_visible(true);
+            }
         }
     }
 
