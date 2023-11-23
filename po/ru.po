@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 20:59+0200\n"
-"PO-Revision-Date: 2023-10-30 21:00+0000\n"
+"PO-Revision-Date: 2023-11-22 13:16+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -347,7 +347,6 @@ msgid "Disk transfer rate"
 msgstr "Скорость обмена данными"
 
 #: resources/ui/performance_page/disk_details.blp:49
-#, fuzzy
 msgid "Avg. response time"
 msgstr "Среднее время ответа"
 
@@ -588,11 +587,11 @@ msgstr ""
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "Ресурсы"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Переключить боковую панель"
 
 #: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
@@ -631,9 +630,8 @@ msgid "Disk"
 msgstr "Диск"
 
 #: src/apps_page/mod.rs:1174
-#, fuzzy
 msgid "GPU"
-msgstr "_ГП"
+msgstr "ГП"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -783,14 +781,12 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}Б/c"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Кодирование видео"
+msgstr "Кодирование/декодирование видео"
 
 #: src/performance_page/memory.rs:477
-#, fuzzy
 msgid "Authentication failed"
-msgstr "_Предоставить"
+msgstr "Аутентификация не удалась"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
