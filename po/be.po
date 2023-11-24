@@ -8,66 +8,78 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 20:59+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-11-25 09:50+0000\n"
+"Last-Translator: Yahor <k1llo2810@protonmail.com>\n"
+"Language-Team: Belarusian <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Дыспетчар "
+"задач;Маніторынг рэсурсаў;Сістэмны манітор;Працэсар;Працэсы;Маніторынг "
+"прадукцыйнасці;Дыск;Памяць;Сетку;Выкарыстанне;ЦП;ГП"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Распрацоўшчыкі Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Сачыце за выкарыстаннем сістэмных рэсурсаў"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
+"Маніторынг выкарыстання працэсара, памяці, дыска, сеткі і графічнага "
+"працэсара"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Features:"
-msgstr ""
+msgstr "Функцыі:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Маніторынг агульнага выкарыстання ЦП і для кожнага патоку"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Прагляд колькасці сістэмных працэсаў, патокаў і дэскрыптараў, час працы, "
+"тактавую частату (базавую і бягучую), памеры кэша"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Маніторынг выкарыстання аператыўнай памяці і падпампоўкі"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Прагляд, як сістэма выкарыстоўвае памяць"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Маніторынг загрузкі дыскаў і хуткасці перадачы даных"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Маніторынг загрузкі сеткі і хуткасці перадачы даных"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid ""
@@ -75,123 +87,135 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Прагляд інфармацыі аб сеткавым інтэрфейсе: імя сеткавай карты, тып "
+"падключэння (Wi-Fi або Ethernet), хуткасць і частата бесправаднога злучэння, "
+"апаратны і IP-адрас"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Маніторынг агульнага выкарыстання графічнага працэсара, выкарыстання "
+"відэакодэраў і дэкодэраў, выкарыстання памяці і энергаспажывання, "
+"выкарыстоўваючы папулярны праект NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Прагляд выкарыстання рэсурсаў для кожнай праграмы і працэсу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Падтрымка мінімізаванага прадстаўлення зводкі для простага маніторынгу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
-msgstr ""
+msgstr "Выкарыстоўвае OpenGL-рэндэрынг для ўсіх графікаў для зніжэння нагрузкі"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Выкарыстоўвае GTK4 і Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Written in Rust"
-msgstr ""
+msgstr "Напісана на Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr ""
+msgstr "Першапачатковая падтрымка Flatpak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Абмежаванні (выпраўленні вядуцца):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Адсутнасць маніторынгу выкарыстання сеткі для кожнага працэсу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"Падтрымка графічнага працэсара эксперыментальная, падтрымліваецца маниторынг "
+"графічных працэсараў ад AMD і Nvidia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Водгукі, прапановы, паведамленні аб памылках і дапамога вітаюцца"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:30
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Якая старонка адлюстроўваецца пры запуску праграмы"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "Як хутка павінны абнаўляцца даныя і абнаўляцца інтэрфейс"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
+#, fuzzy
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Статыстыка бацькоўскіх і даччыных працэсаў адлюстроўваецца індывідуальна або "
+"аб'ядноўваецца ўверх па іерархіі"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Сартаванне слупкоў захоўваецца пасля перазапуску праграмы"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Ідэнтыфікатар слупка, па якім сартуецца прагляд старонкі праграм"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Напрамак сартавання прагляду старонкі праграм"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Які графік паказваецца на старонцы прадукцыйнасці ЦП"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Паказаць час працы ядра на графіках працэсара"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
+"Якая старонка паказваецца пры запуску праграмы, ва ўкладцы прадукцыйнасці"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
 #: src/performance_page/mod.rs:363
 msgid "CPU"
-msgstr ""
+msgstr "ЦП"
 
 #: resources/ui/performance_page/cpu.blp:76
 #: resources/ui/performance_page/cpu_details.blp:26
 #: resources/ui/performance_page/gpu_details.blp:24
 msgid "Utilization"
-msgstr ""
+msgstr "Выкарыстанне"
 
 #: resources/ui/performance_page/cpu.blp:86
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr ""
+msgstr "Змяніць Г_рафік на"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "Агульнае В_ыкарыстанне"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr ""
+msgstr "Лагічныя _працэсары"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Паказваць час працы ядра"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:179
