@@ -216,6 +216,10 @@ flatpak run io.missioncenter.MissionCenter
 
 Report issues to GitLab [issue tracking system](https://gitlab.com/mission-center-devs/mission-center/-/issues).
 
+### Discord
+
+Join [the Discord server](https://discord.gg/RG7QTeB9yk) and let's talk about what you think is missing or can be improved.
+
 ### Translations
 
 If you'd like to help translating Mission Center into your language, please head over
