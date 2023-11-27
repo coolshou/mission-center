@@ -59,6 +59,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Veja processos do sistema, threads e contagem de identificadores, tempo de "
+"atividade, velocidade do clock (base e atual), tamanhos de cache"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
@@ -70,7 +72,7 @@ msgstr "Veja um detalhamento de como a memória está sendo usada pelo sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Monitore a utilização do disco e as taxas de transferência"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor network utilization and transfer speeds"
@@ -175,13 +177,15 @@ msgstr ""
 "Qual página é mostrada na inicialização do aplicativo, na aba de Desempenho"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
-#: src/performance_page/mod.rs:363
+#: src/performance_page/mod.rs:363 src/apps_page/mod.rs:1155
 msgid "CPU"
 msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:76
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:44
+#: resources/ui/performance_page/cpu_details.blp:26
+#: resources/ui/performance_page/gpu_details.blp:24
 msgid "Utilization"
 msgstr "Utilização"
 
@@ -270,59 +274,73 @@ msgid "_Copy"
 msgstr "_Cópia"
 
 #: resources/ui/performance_page/cpu_details.blp:68
+#: resources/ui/performance_page/cpu_details.blp:48
 msgid "Speed"
 msgstr "Velocidade"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:529
+#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
 msgid "Processes"
 msgstr "Processos"
 
 #: resources/ui/performance_page/cpu_details.blp:117
+#: resources/ui/performance_page/cpu_details.blp:97
 msgid "Threads"
 msgstr "Threads"
 
 #: resources/ui/performance_page/cpu_details.blp:139
+#: resources/ui/performance_page/cpu_details.blp:119
 msgid "Handles"
 msgstr "Identificadores"
 
 #: resources/ui/performance_page/cpu_details.blp:162
+#: resources/ui/performance_page/cpu_details.blp:142
 msgid "Up time"
 msgstr "Tempo de atividade"
 
 #: resources/ui/performance_page/cpu_details.blp:188
+#: resources/ui/performance_page/cpu_details.blp:168
 msgid "Base Speed:"
 msgstr "Velocidade base:"
 
 #: resources/ui/performance_page/cpu_details.blp:197
+#: resources/ui/performance_page/cpu_details.blp:177
 msgid "Sockets:"
 msgstr "Sockets:"
 
 #: resources/ui/performance_page/cpu_details.blp:206
+#: resources/ui/performance_page/cpu_details.blp:186
 msgid "Virtual processors:"
 msgstr "Processadores virtuais:"
 
 #: resources/ui/performance_page/cpu_details.blp:215
+#: resources/ui/performance_page/cpu_details.blp:195
 msgid "Virtualization:"
 msgstr "Virtualização:"
 
 #: resources/ui/performance_page/cpu_details.blp:224
+#: resources/ui/performance_page/cpu_details.blp:204
 msgid "Virtual machine:"
 msgstr "Máquina virtual:"
 
 #: resources/ui/performance_page/cpu_details.blp:233
+#: resources/ui/performance_page/cpu_details.blp:213
 msgid "L1 cache:"
 msgstr "Cache L1:"
 
 #: resources/ui/performance_page/cpu_details.blp:242
+#: resources/ui/performance_page/cpu_details.blp:222
 msgid "L2 cache:"
 msgstr "Cache L2:"
 
 #: resources/ui/performance_page/cpu_details.blp:251
+#: resources/ui/performance_page/cpu_details.blp:231
 msgid "L3 cache:"
 msgstr "Cache L3:"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk_details.blp:46
+#: resources/ui/performance_page/disk_details.blp:26
 msgid "Active time"
 msgstr "Tempo de atividade"
 
@@ -331,32 +349,40 @@ msgid "Disk transfer rate"
 msgstr "Taxa de transferência de disco"
 
 #: resources/ui/performance_page/disk_details.blp:69
+#: resources/ui/performance_page/disk_details.blp:49
 #, fuzzy
 msgid "Avg. response time"
 msgstr "Tempo médio de resposta"
 
 #: resources/ui/performance_page/disk_details.blp:105
+#: resources/ui/performance_page/disk_details.blp:85
 msgid "Read speed"
 msgstr "Velocidade de leitura"
 
 #: resources/ui/performance_page/disk_details.blp:137
+#: resources/ui/performance_page/disk_details.blp:117
 msgid "Write speed"
 msgstr "Velocidade de escrita"
 
 #: resources/ui/performance_page/disk_details.blp:165
+#: resources/ui/performance_page/disk_details.blp:145
 msgid "Capacity:"
 msgstr "Capacidade:"
 
 #: resources/ui/performance_page/disk_details.blp:174
+#: resources/ui/performance_page/disk_details.blp:154
 msgid "Formatted:"
 msgstr "Formatado:"
 
 #: resources/ui/performance_page/disk_details.blp:183
+#: resources/ui/performance_page/disk_details.blp:163
 msgid "System disk:"
 msgstr "Disco do sistema:"
 
 #: resources/ui/performance_page/disk_details.blp:192
 #: resources/ui/performance_page/memory_details.blp:225
+#: resources/ui/performance_page/disk_details.blp:172
+#: resources/ui/performance_page/memory_details.blp:205
 msgid "Type:"
 msgstr "Tipo:"
 
@@ -375,43 +401,52 @@ msgstr "Decodificação de vídeo"
 #: resources/ui/performance_page/gpu.blp:186
 #: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
+#: resources/ui/performance_page/gpu_details.blp:137
 msgid "Memory usage"
 msgstr "Uso de memória"
 
 #: resources/ui/performance_page/gpu_details.blp:67
+#: resources/ui/performance_page/gpu_details.blp:47
 msgid "Clock Speed"
 msgstr "Velocidade do clock"
 
 #: resources/ui/performance_page/gpu_details.blp:112
+#: resources/ui/performance_page/gpu_details.blp:92
 msgid "Power draw"
 msgstr "Uso de poder"
 
 #: resources/ui/performance_page/gpu_details.blp:202
+#: resources/ui/performance_page/gpu_details.blp:182
 msgid "Memory speed"
 msgstr "Velocidade de memória"
 
 #: resources/ui/performance_page/gpu_details.blp:247
+#: resources/ui/performance_page/gpu_details.blp:227
 msgid "Temperature"
 msgstr "Temperatura"
 
 #: resources/ui/performance_page/gpu_details.blp:275
+#: resources/ui/performance_page/gpu_details.blp:255
 msgid "OpenGL version:"
 msgstr "Versão do OpenGL:"
 
 #: resources/ui/performance_page/gpu_details.blp:284
+#: resources/ui/performance_page/gpu_details.blp:264
 msgid "Vulkan version:"
 msgstr "Versão do Vulkan:"
 
 #: resources/ui/performance_page/gpu_details.blp:293
+#: resources/ui/performance_page/gpu_details.blp:273
 msgid "PCI Express speed:"
 msgstr "Velocidade de PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:302
+#: resources/ui/performance_page/gpu_details.blp:282
 msgid "PCI bus address:"
 msgstr "Endereço do PCI bus:"
 
 #: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1174
-#: src/performance_page/mod.rs:427
+#: src/performance_page/mod.rs:427 src/apps_page/mod.rs:1161
 msgid "Memory"
 msgstr "Memória"
 
@@ -420,38 +455,47 @@ msgid "Memory composition"
 msgstr "Composição da memória"
 
 #: resources/ui/performance_page/memory_details.blp:47
+#: resources/ui/performance_page/memory_details.blp:27
 msgid "In use"
 msgstr "Em uso"
 
 #: resources/ui/performance_page/memory_details.blp:70
+#: resources/ui/performance_page/memory_details.blp:50
 msgid "Available"
 msgstr "Disponível"
 
 #: resources/ui/performance_page/memory_details.blp:98
+#: resources/ui/performance_page/memory_details.blp:78
 msgid "Committed"
 msgstr "Comprometido"
 
 #: resources/ui/performance_page/memory_details.blp:121
+#: resources/ui/performance_page/memory_details.blp:101
 msgid "Cached"
 msgstr "Em cache"
 
 #: resources/ui/performance_page/memory_details.blp:148
+#: resources/ui/performance_page/memory_details.blp:128
 msgid "Swap available"
 msgstr "Swap disponível"
 
 #: resources/ui/performance_page/memory_details.blp:171
+#: resources/ui/performance_page/memory_details.blp:151
 msgid "Swap used"
 msgstr "Swap em uso"
 
 #: resources/ui/performance_page/memory_details.blp:198
+#: resources/ui/performance_page/memory_details.blp:178
 msgid "Speed:"
 msgstr "Velocidade:"
 
 #: resources/ui/performance_page/memory_details.blp:207
+#: resources/ui/performance_page/memory_details.blp:187
 msgid "Slots used:"
 msgstr "Slots usados:"
 
 #: resources/ui/performance_page/memory_details.blp:216
+#: resources/ui/performance_page/memory_details.blp:196
 msgid "Form factor:"
 msgstr "Formato de memória:"
 
@@ -464,46 +508,57 @@ msgid "Network Se_ttings"
 msgstr "C_onfigurações de rede"
 
 #: resources/ui/performance_page/network_details.blp:51
+#: resources/ui/performance_page/network_details.blp:31
 msgid "Receive"
 msgstr "Recebido"
 
 #: resources/ui/performance_page/network_details.blp:83
+#: resources/ui/performance_page/network_details.blp:63
 msgid "Send"
 msgstr "Enviado"
 
 #: resources/ui/performance_page/network_details.blp:110
+#: resources/ui/performance_page/network_details.blp:90
 msgid "Interface name:"
 msgstr "Nome do adaptador:"
 
 #: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:99
 msgid "Connection type:"
 msgstr "Tipo de conexão:"
 
 #: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:109
 msgid "SSID:"
 msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Signal strength:"
 msgstr "Força do sinal:"
 
 #: resources/ui/performance_page/network_details.blp:149
+#: resources/ui/performance_page/network_details.blp:129
 msgid "Maximum Bitrate:"
 msgstr "Fluxo máximo:"
 
 #: resources/ui/performance_page/network_details.blp:159
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Frequency:"
 msgstr "Frequência:"
 
 #: resources/ui/performance_page/network_details.blp:168
+#: resources/ui/performance_page/network_details.blp:148
 msgid "Hardware address:"
 msgstr "Endereço local:"
 
 #: resources/ui/performance_page/network_details.blp:251
+#: resources/ui/performance_page/network_details.blp:231
 msgid "IPv4 address:"
 msgstr "Endereço IPv4:"
 
 #: resources/ui/performance_page/network_details.blp:260
+#: resources/ui/performance_page/network_details.blp:240
 msgid "IPv6 address:"
 msgstr "Endereço IPv6:"
 
@@ -590,6 +645,7 @@ msgid "Performance"
 msgstr "Desempenho"
 
 #: resources/ui/window.blp:173 src/apps_page/mod.rs:522
+#: src/apps_page/mod.rs:509
 msgid "Apps"
 msgstr "Aplicações"
 
@@ -601,19 +657,19 @@ msgstr "_Preferências"
 msgid "_About MissionCenter"
 msgstr "_Sobre o Mission Center"
 
-#: src/apps_page/mod.rs:1156
+#: src/apps_page/mod.rs:1156 src/apps_page/mod.rs:1143
 msgid "Name"
 msgstr "Nome"
 
-#: src/apps_page/mod.rs:1162
+#: src/apps_page/mod.rs:1162 src/apps_page/mod.rs:1149
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1180
+#: src/apps_page/mod.rs:1180 src/apps_page/mod.rs:1167
 msgid "Disk"
 msgstr "Disco"
 
-#: src/apps_page/mod.rs:1187
+#: src/apps_page/mod.rs:1187 src/apps_page/mod.rs:1174
 #, fuzzy
 msgid "GPU"
 msgstr "_GPU"
@@ -761,6 +817,7 @@ msgstr "% de uso em {} segundos"
 
 #: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
 #: src/performance_page/memory.rs:568 src/performance_page/network.rs:734
+#: src/performance_page/memory.rs:561
 msgid "{} seconds"
 msgstr "{} segundos"
 
