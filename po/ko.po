@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 20:59+0200\n"
+"POT-Creation-Date: 2023-11-27 16:36+0200\n"
 "PO-Revision-Date: 2023-08-23 08:36+0000\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/mission-center/"
@@ -178,14 +178,14 @@ msgstr ""
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "앱 시작시 성능 탭에서 나타낼 페이지"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:26
-#: resources/ui/performance_page/gpu_details.blp:24
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:44
 msgid "Utilization"
 msgstr "이용"
 
@@ -273,60 +273,60 @@ msgstr "GPU(_G)"
 msgid "_Copy"
 msgstr "복사(_C)"
 
-#: resources/ui/performance_page/cpu_details.blp:48
+#: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
 msgstr "속도"
 
-#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:529
 msgid "Processes"
 msgstr "프로세스"
 
-#: resources/ui/performance_page/cpu_details.blp:97
+#: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
 msgstr "스레드"
 
-#: resources/ui/performance_page/cpu_details.blp:119
+#: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
 msgstr "핸들"
 
-#: resources/ui/performance_page/cpu_details.blp:142
+#: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
 msgstr "가동 시간"
 
-#: resources/ui/performance_page/cpu_details.blp:168
+#: resources/ui/performance_page/cpu_details.blp:188
 msgid "Base Speed:"
 msgstr "기본 속도:"
 
-#: resources/ui/performance_page/cpu_details.blp:177
+#: resources/ui/performance_page/cpu_details.blp:197
 msgid "Sockets:"
 msgstr "소켓:"
 
-#: resources/ui/performance_page/cpu_details.blp:186
+#: resources/ui/performance_page/cpu_details.blp:206
 msgid "Virtual processors:"
 msgstr "가상 프로세서:"
 
-#: resources/ui/performance_page/cpu_details.blp:195
+#: resources/ui/performance_page/cpu_details.blp:215
 msgid "Virtualization:"
 msgstr "가상화 수단:"
 
-#: resources/ui/performance_page/cpu_details.blp:204
+#: resources/ui/performance_page/cpu_details.blp:224
 msgid "Virtual machine:"
 msgstr "가상 머신:"
 
-#: resources/ui/performance_page/cpu_details.blp:213
+#: resources/ui/performance_page/cpu_details.blp:233
 msgid "L1 cache:"
 msgstr "L1 캐시:"
 
-#: resources/ui/performance_page/cpu_details.blp:222
+#: resources/ui/performance_page/cpu_details.blp:242
 msgid "L2 cache:"
 msgstr "L2 캐시:"
 
-#: resources/ui/performance_page/cpu_details.blp:231
+#: resources/ui/performance_page/cpu_details.blp:251
 msgid "L3 cache:"
 msgstr "L3 캐시:"
 
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk_details.blp:26
+#: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "활성 시간"
 
@@ -334,33 +334,33 @@ msgstr "활성 시간"
 msgid "Disk transfer rate"
 msgstr "디스크 전송율"
 
-#: resources/ui/performance_page/disk_details.blp:49
+#: resources/ui/performance_page/disk_details.blp:69
 #, fuzzy
 msgid "Avg. response time"
 msgstr "평균 응답시간"
 
-#: resources/ui/performance_page/disk_details.blp:85
+#: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
 msgstr "읽기 속도"
 
-#: resources/ui/performance_page/disk_details.blp:117
+#: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
 msgstr "쓰기 속도"
 
-#: resources/ui/performance_page/disk_details.blp:145
+#: resources/ui/performance_page/disk_details.blp:165
 msgid "Capacity:"
 msgstr "용량:"
 
-#: resources/ui/performance_page/disk_details.blp:154
+#: resources/ui/performance_page/disk_details.blp:174
 msgid "Formatted:"
 msgstr "포맷:"
 
-#: resources/ui/performance_page/disk_details.blp:163
+#: resources/ui/performance_page/disk_details.blp:183
 msgid "System disk:"
 msgstr "시스템 디스크:"
 
-#: resources/ui/performance_page/disk_details.blp:172
-#: resources/ui/performance_page/memory_details.blp:205
+#: resources/ui/performance_page/disk_details.blp:192
+#: resources/ui/performance_page/memory_details.blp:225
 msgid "Type:"
 msgstr "종류:"
 
@@ -377,44 +377,44 @@ msgid "Video decode"
 msgstr "영상 디코딩"
 
 #: resources/ui/performance_page/gpu.blp:186
-#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "메모리 사용량"
 
-#: resources/ui/performance_page/gpu_details.blp:47
+#: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
 msgstr "클록 속도"
 
-#: resources/ui/performance_page/gpu_details.blp:92
+#: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
 msgstr "전력 부하"
 
-#: resources/ui/performance_page/gpu_details.blp:182
+#: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
 msgstr "메모리 속도"
 
-#: resources/ui/performance_page/gpu_details.blp:227
+#: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
 msgstr "온도"
 
-#: resources/ui/performance_page/gpu_details.blp:255
+#: resources/ui/performance_page/gpu_details.blp:275
 msgid "OpenGL version:"
 msgstr "OpenGL 버전:"
 
-#: resources/ui/performance_page/gpu_details.blp:264
+#: resources/ui/performance_page/gpu_details.blp:284
 msgid "Vulkan version:"
 msgstr "벌컨 버전:"
 
-#: resources/ui/performance_page/gpu_details.blp:273
+#: resources/ui/performance_page/gpu_details.blp:293
 msgid "PCI Express speed:"
 msgstr "PCI 익스프레스 속도:"
 
-#: resources/ui/performance_page/gpu_details.blp:282
+#: resources/ui/performance_page/gpu_details.blp:302
 msgid "PCI bus address:"
 msgstr "PCI 버스 주소:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1174
 #: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "메모리"
@@ -423,39 +423,39 @@ msgstr "메모리"
 msgid "Memory composition"
 msgstr "메모리 사용량"
 
-#: resources/ui/performance_page/memory_details.blp:27
+#: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
 msgstr "사용중"
 
-#: resources/ui/performance_page/memory_details.blp:50
+#: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
 msgstr "가용량"
 
-#: resources/ui/performance_page/memory_details.blp:78
+#: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
 msgstr "커밋함"
 
-#: resources/ui/performance_page/memory_details.blp:101
+#: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
 msgstr "캐시함"
 
-#: resources/ui/performance_page/memory_details.blp:128
+#: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
 msgstr "가용 스왑"
 
-#: resources/ui/performance_page/memory_details.blp:151
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "사용 스왑"
 
-#: resources/ui/performance_page/memory_details.blp:178
+#: resources/ui/performance_page/memory_details.blp:198
 msgid "Speed:"
 msgstr "속도:"
 
-#: resources/ui/performance_page/memory_details.blp:187
+#: resources/ui/performance_page/memory_details.blp:207
 msgid "Slots used:"
 msgstr "사용 슬롯:"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:216
 msgid "Form factor:"
 msgstr "폼팩터:"
 
@@ -467,47 +467,47 @@ msgstr "처리량"
 msgid "Network Se_ttings"
 msgstr "네트워크 설정(_T)"
 
-#: resources/ui/performance_page/network_details.blp:31
+#: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
 msgstr "수신"
 
-#: resources/ui/performance_page/network_details.blp:63
+#: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
 msgstr "전송"
 
-#: resources/ui/performance_page/network_details.blp:90
+#: resources/ui/performance_page/network_details.blp:110
 msgid "Interface name:"
 msgstr "인터페이스 이름:"
 
-#: resources/ui/performance_page/network_details.blp:99
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Connection type:"
 msgstr "연결 형식:"
 
-#: resources/ui/performance_page/network_details.blp:109
+#: resources/ui/performance_page/network_details.blp:129
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Signal strength:"
 msgstr "신호 세기:"
 
-#: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:149
 msgid "Maximum Bitrate:"
 msgstr "최대 비트전송율:"
 
-#: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:159
 msgid "Frequency:"
 msgstr "연결 주파수:"
 
-#: resources/ui/performance_page/network_details.blp:148
+#: resources/ui/performance_page/network_details.blp:168
 msgid "Hardware address:"
 msgstr "하드웨어 주소:"
 
-#: resources/ui/performance_page/network_details.blp:231
+#: resources/ui/performance_page/network_details.blp:251
 msgid "IPv4 address:"
 msgstr "IPv4 주소:"
 
-#: resources/ui/performance_page/network_details.blp:240
+#: resources/ui/performance_page/network_details.blp:260
 msgid "IPv6 address:"
 msgstr "IPv6 주소:"
 
@@ -592,7 +592,7 @@ msgstr "불러오는 중..."
 msgid "Performance"
 msgstr "성능"
 
-#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:522
 msgid "Apps"
 msgstr "앱"
 
@@ -604,19 +604,19 @@ msgstr "기본 설정(_P)"
 msgid "_About MissionCenter"
 msgstr "미션 센터 정보(_A)"
 
-#: src/apps_page/mod.rs:1143
+#: src/apps_page/mod.rs:1156
 msgid "Name"
 msgstr "이름"
 
-#: src/apps_page/mod.rs:1149
+#: src/apps_page/mod.rs:1162
 msgid "PID"
 msgstr "프로세스 ID"
 
-#: src/apps_page/mod.rs:1167
+#: src/apps_page/mod.rs:1180
 msgid "Disk"
 msgstr "디스크"
 
-#: src/apps_page/mod.rs:1174
+#: src/apps_page/mod.rs:1187
 #, fuzzy
 msgid "GPU"
 msgstr "GPU(_G)"
@@ -761,7 +761,7 @@ msgid "Utilization over {} seconds"
 msgstr "% 활용 / {} 초"
 
 #: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
-#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
+#: src/performance_page/memory.rs:568 src/performance_page/network.rs:734
 msgid "{} seconds"
 msgstr "{} 초"
 
@@ -778,6 +778,10 @@ msgstr "영상 인코딩"
 #, fuzzy
 msgid "Authentication failed"
 msgstr "인증(_A)"
+
+#: src/performance_page/memory.rs:483
+msgid "More info"
+msgstr ""
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455

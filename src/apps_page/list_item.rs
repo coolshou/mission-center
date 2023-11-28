@@ -23,12 +23,15 @@ use std::cell::Cell;
 use gtk::{
     glib,
     glib::prelude::*,
-    glib::{ParamSpec, Properties, Value},
+    glib::{ParamSpec, Properties, Value, Variant},
     prelude::*,
     subclass::prelude::*,
 };
 
-use crate::{apps_page::view_model::ContentType, i18n::*};
+use crate::{
+    apps_page::view_model::{ContentType, ViewModel},
+    i18n::*,
+};
 
 mod imp {
     use super::*;
@@ -116,14 +119,20 @@ mod imp {
         }
 
         fn set_content_type(&self, v: u8) {
+            let tree_expander = self.obj().parent().and_downcast::<gtk::TreeExpander>();
             let content_type = match v {
                 0 => {
                     self.icon.set_visible(false);
                     self.name.add_css_class("heading");
 
                     let this = self.obj();
+                    this.set_margin_start(6);
                     this.set_margin_top(6);
                     this.set_margin_bottom(6);
+
+                    if let Some(tree_expander) = tree_expander {
+                        tree_expander.set_indent_for_icon(false);
+                    }
 
                     ContentType::SectionHeader
                 }
@@ -134,8 +143,13 @@ mod imp {
                     self.name.remove_css_class("heading");
 
                     let this = self.obj();
+                    this.set_margin_start(0);
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
+
+                    if let Some(tree_expander) = tree_expander {
+                        tree_expander.set_indent_for_icon(true);
+                    }
 
                     ContentType::App
                 }
@@ -146,8 +160,13 @@ mod imp {
                     self.name.remove_css_class("heading");
 
                     let this = self.obj();
+                    this.set_margin_start(0);
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
+
+                    if let Some(tree_expander) = tree_expander {
+                        tree_expander.set_indent_for_icon(true);
+                    }
 
                     ContentType::Process
                 }
@@ -247,7 +266,6 @@ mod imp {
 
     impl WidgetImpl for ListItem {
         fn realize(&self) {
-            use crate::apps_page::view_model::ViewModel;
             use glib::g_critical;
 
             self.parent_realize();
@@ -287,13 +305,13 @@ mod imp {
                 }
 
                 if let Some(column_view_cell) = tree_expander.parent() {
-                    let style_provider = unsafe { &*self.css_provider.as_ptr() };
                     // FIXME: Deprecated in GTK 4.10, removed in GTK 5.0, unclear what the replacement is
                     #[allow(deprecated)]
                     {
+                        let style_provider = crate::glib_clone!(self.css_provider);
                         column_view_cell
                             .style_context()
-                            .add_provider(style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+                            .add_provider(&style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
                     }
 
                     if let Some(list_item_widget) = column_view_cell.parent() {
@@ -302,8 +320,23 @@ mod imp {
 
                         list_item_widget.add_controller(right_click_controller.clone());
 
-                        right_click_controller.connect_released(move |_, _, x, y| {
-                            use gtk::glib::*;
+                        right_click_controller.connect_released(glib::clone!(@weak self as this => move |_, _, x, y| {
+                            let view_model = match this
+                                .obj()
+                                .parent()
+                                .and_downcast_ref::<gtk::TreeExpander>()
+                                .and_then(|te| te.item())
+                                .and_downcast::<ViewModel>()
+                            {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::AppsPage",
+                                        "Failed to get ViewModel, cannot show context menu for App/Process"
+                                    );
+                                    return;
+                                }
+                                Some(m) => m,
+                            };
 
                             let (stop_label, force_stop_label, is_app) = match view_model.content_type() {
                                 0 => {
@@ -344,7 +377,7 @@ mod imp {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::AppsPage",
-                                        "Failed to compute_point, cannot context menu will not be anchored to mouse position"
+                                        "Failed to compute_point, context menu will not be anchored to mouse position"
                                     );
                                     (x as f32, y as f32)
                                 }
@@ -378,7 +411,7 @@ mod imp {
                                 1,
                             )));
                             context_menu.popup();
-                        });
+                        }));
                     }
                 }
             }

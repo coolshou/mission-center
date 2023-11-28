@@ -30,7 +30,6 @@ resources/ui/window.blp
 src/apps_page/mod.rs
 src/apps_page/column_header.rs
 src/apps_page/list_item.rs
-src/apps_page/model_entry.rs
 src/apps_page/pid_column.rs
 src/apps_page/stat_column.rs
 src/apps_page/view_model.rs

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 20:59+0200\n"
+"POT-Creation-Date: 2023-11-27 16:36+0200\n"
 "PO-Revision-Date: 2023-08-20 08:49+0000\n"
 "Last-Translator: Romeo Calota <mail@romeocalota.me>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/mission-center/"
@@ -190,14 +190,14 @@ msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Care pagină este afișată la pornirea aplicației, în fila de performanță"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "Procesor"
 
 #: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:26
-#: resources/ui/performance_page/gpu_details.blp:24
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:44
 msgid "Utilization"
 msgstr "Utilizare"
 
@@ -285,60 +285,60 @@ msgstr "Proce_sor grafic"
 msgid "_Copy"
 msgstr "_Copiați"
 
-#: resources/ui/performance_page/cpu_details.blp:48
+#: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
 msgstr "Viteză"
 
-#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:529
 msgid "Processes"
 msgstr "Procese"
 
-#: resources/ui/performance_page/cpu_details.blp:97
+#: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
 msgstr "Fire de execuție"
 
-#: resources/ui/performance_page/cpu_details.blp:119
+#: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
 msgstr "Handle-uri"
 
-#: resources/ui/performance_page/cpu_details.blp:142
+#: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
 msgstr "Timp de funcționare"
 
-#: resources/ui/performance_page/cpu_details.blp:168
+#: resources/ui/performance_page/cpu_details.blp:188
 msgid "Base Speed:"
 msgstr "Vizează de bază:"
 
-#: resources/ui/performance_page/cpu_details.blp:177
+#: resources/ui/performance_page/cpu_details.blp:197
 msgid "Sockets:"
 msgstr "Socluri:"
 
-#: resources/ui/performance_page/cpu_details.blp:186
+#: resources/ui/performance_page/cpu_details.blp:206
 msgid "Virtual processors:"
 msgstr "Procesoare virtuale:"
 
-#: resources/ui/performance_page/cpu_details.blp:195
+#: resources/ui/performance_page/cpu_details.blp:215
 msgid "Virtualization:"
 msgstr "Virtualizare:"
 
-#: resources/ui/performance_page/cpu_details.blp:204
+#: resources/ui/performance_page/cpu_details.blp:224
 msgid "Virtual machine:"
 msgstr "Mașină virtuală:"
 
-#: resources/ui/performance_page/cpu_details.blp:213
+#: resources/ui/performance_page/cpu_details.blp:233
 msgid "L1 cache:"
 msgstr "Cache L1:"
 
-#: resources/ui/performance_page/cpu_details.blp:222
+#: resources/ui/performance_page/cpu_details.blp:242
 msgid "L2 cache:"
 msgstr "Cache L2:"
 
-#: resources/ui/performance_page/cpu_details.blp:231
+#: resources/ui/performance_page/cpu_details.blp:251
 msgid "L3 cache:"
 msgstr "Cache L3:"
 
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk_details.blp:26
+#: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Timp activ"
 
@@ -346,33 +346,33 @@ msgstr "Timp activ"
 msgid "Disk transfer rate"
 msgstr "Rată de transfer disc"
 
-#: resources/ui/performance_page/disk_details.blp:49
+#: resources/ui/performance_page/disk_details.blp:69
 #, fuzzy
 msgid "Avg. response time"
 msgstr "Timp mediu de răspuns"
 
-#: resources/ui/performance_page/disk_details.blp:85
+#: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
 msgstr "Viteză de citire"
 
-#: resources/ui/performance_page/disk_details.blp:117
+#: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
 msgstr "Viteză de scriere"
 
-#: resources/ui/performance_page/disk_details.blp:145
+#: resources/ui/performance_page/disk_details.blp:165
 msgid "Capacity:"
 msgstr "Capacitate:"
 
-#: resources/ui/performance_page/disk_details.blp:154
+#: resources/ui/performance_page/disk_details.blp:174
 msgid "Formatted:"
 msgstr "Formatat:"
 
-#: resources/ui/performance_page/disk_details.blp:163
+#: resources/ui/performance_page/disk_details.blp:183
 msgid "System disk:"
 msgstr "Disc de sistem:"
 
-#: resources/ui/performance_page/disk_details.blp:172
-#: resources/ui/performance_page/memory_details.blp:205
+#: resources/ui/performance_page/disk_details.blp:192
+#: resources/ui/performance_page/memory_details.blp:225
 msgid "Type:"
 msgstr "Tip:"
 
@@ -389,44 +389,44 @@ msgid "Video decode"
 msgstr "Decodare video"
 
 #: resources/ui/performance_page/gpu.blp:186
-#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "Utilizare memorie"
 
-#: resources/ui/performance_page/gpu_details.blp:47
+#: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
 msgstr "Frecvență ceas"
 
-#: resources/ui/performance_page/gpu_details.blp:92
+#: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
 msgstr "Putere consumată"
 
-#: resources/ui/performance_page/gpu_details.blp:182
+#: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
 msgstr "Frecvență memorie"
 
-#: resources/ui/performance_page/gpu_details.blp:227
+#: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
 msgstr "Temperatură"
 
-#: resources/ui/performance_page/gpu_details.blp:255
+#: resources/ui/performance_page/gpu_details.blp:275
 msgid "OpenGL version:"
 msgstr "Versiune OpenGL:"
 
-#: resources/ui/performance_page/gpu_details.blp:264
+#: resources/ui/performance_page/gpu_details.blp:284
 msgid "Vulkan version:"
 msgstr "Versiune Vulkan:"
 
-#: resources/ui/performance_page/gpu_details.blp:273
+#: resources/ui/performance_page/gpu_details.blp:293
 msgid "PCI Express speed:"
 msgstr "Viteză PCI Express:"
 
-#: resources/ui/performance_page/gpu_details.blp:282
+#: resources/ui/performance_page/gpu_details.blp:302
 msgid "PCI bus address:"
 msgstr "Adresă bus PCI:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1174
 #: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "Memorie"
@@ -435,39 +435,39 @@ msgstr "Memorie"
 msgid "Memory composition"
 msgstr "Compoziție memorie"
 
-#: resources/ui/performance_page/memory_details.blp:27
+#: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
 msgstr "Utilizat"
 
-#: resources/ui/performance_page/memory_details.blp:50
+#: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
 msgstr "Disponibil"
 
-#: resources/ui/performance_page/memory_details.blp:78
+#: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
 msgstr "Înregistrat"
 
-#: resources/ui/performance_page/memory_details.blp:101
+#: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
 msgstr "În cache"
 
-#: resources/ui/performance_page/memory_details.blp:128
+#: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
 msgstr "Swap disponibil"
 
-#: resources/ui/performance_page/memory_details.blp:151
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "Swap utilizat"
 
-#: resources/ui/performance_page/memory_details.blp:178
+#: resources/ui/performance_page/memory_details.blp:198
 msgid "Speed:"
 msgstr "Viteză:"
 
-#: resources/ui/performance_page/memory_details.blp:187
+#: resources/ui/performance_page/memory_details.blp:207
 msgid "Slots used:"
 msgstr "Socluri utilizate:"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:216
 msgid "Form factor:"
 msgstr "Format:"
 
@@ -479,47 +479,47 @@ msgstr "Debit"
 msgid "Network Se_ttings"
 msgstr "Se_tări rețea"
 
-#: resources/ui/performance_page/network_details.blp:31
+#: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
 msgstr "Recepție"
 
-#: resources/ui/performance_page/network_details.blp:63
+#: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
 msgstr "Trimitere"
 
-#: resources/ui/performance_page/network_details.blp:90
+#: resources/ui/performance_page/network_details.blp:110
 msgid "Interface name:"
 msgstr "Nume interfață:"
 
-#: resources/ui/performance_page/network_details.blp:99
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Connection type:"
 msgstr "Tip conexiune:"
 
-#: resources/ui/performance_page/network_details.blp:109
+#: resources/ui/performance_page/network_details.blp:129
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Signal strength:"
 msgstr "Putere semnal:"
 
-#: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:149
 msgid "Maximum Bitrate:"
 msgstr "Bitrate maxim:"
 
-#: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:159
 msgid "Frequency:"
 msgstr "Freqvență:"
 
-#: resources/ui/performance_page/network_details.blp:148
+#: resources/ui/performance_page/network_details.blp:168
 msgid "Hardware address:"
 msgstr "Adresă hardware:"
 
-#: resources/ui/performance_page/network_details.blp:231
+#: resources/ui/performance_page/network_details.blp:251
 msgid "IPv4 address:"
 msgstr "Adresă IPv4:"
 
-#: resources/ui/performance_page/network_details.blp:240
+#: resources/ui/performance_page/network_details.blp:260
 msgid "IPv6 address:"
 msgstr "Adresă IPv6:"
 
@@ -606,7 +606,7 @@ msgstr ""
 msgid "Performance"
 msgstr ""
 
-#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:522
 msgid "Apps"
 msgstr "Aplicații"
 
@@ -618,20 +618,20 @@ msgstr "_Preferințe"
 msgid "_About MissionCenter"
 msgstr "_Despre MissionCenter"
 
-#: src/apps_page/mod.rs:1143
+#: src/apps_page/mod.rs:1156
 msgid "Name"
 msgstr ""
 
-#: src/apps_page/mod.rs:1149
+#: src/apps_page/mod.rs:1162
 msgid "PID"
 msgstr ""
 
-#: src/apps_page/mod.rs:1167
+#: src/apps_page/mod.rs:1180
 #, fuzzy
 msgid "Disk"
 msgstr "_Disc"
 
-#: src/apps_page/mod.rs:1174
+#: src/apps_page/mod.rs:1187
 #, fuzzy
 msgid "GPU"
 msgstr "Proce_sor grafic"
@@ -782,7 +782,7 @@ msgid "Utilization over {} seconds"
 msgstr "% de utilizare în interval de {} de secunde"
 
 #: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
-#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
+#: src/performance_page/memory.rs:568 src/performance_page/network.rs:734
 #, fuzzy
 msgid "{} seconds"
 msgstr "{} de secunde"
@@ -800,6 +800,10 @@ msgstr "Codare video"
 #, fuzzy
 msgid "Authentication failed"
 msgstr "_Autentificare"
+
+#: src/performance_page/memory.rs:483
+msgid "More info"
+msgstr ""
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455

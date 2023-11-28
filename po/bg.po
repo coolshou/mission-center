@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 20:59+0200\n"
+"POT-Creation-Date: 2023-11-27 16:36+0200\n"
 "PO-Revision-Date: 2023-09-20 05:06+0000\n"
 "Last-Translator: GamBar <vlpetrov02@gmail.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/mission-center/"
@@ -183,14 +183,14 @@ msgstr ""
 "Коя страница се показва при стартиране на приложението, в раздела за "
 "производителност"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "Процесор"
 
 #: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:26
-#: resources/ui/performance_page/gpu_details.blp:24
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:44
 msgid "Utilization"
 msgstr "Използване"
 
@@ -280,60 +280,60 @@ msgstr "_GPU"
 msgid "_Copy"
 msgstr "_Копиране"
 
-#: resources/ui/performance_page/cpu_details.blp:48
+#: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
 msgstr "Скорост"
 
-#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:529
 msgid "Processes"
 msgstr "Процеси"
 
-#: resources/ui/performance_page/cpu_details.blp:97
+#: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
 msgstr "Нишки"
 
-#: resources/ui/performance_page/cpu_details.blp:119
+#: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
 msgstr "Дръжки"
 
-#: resources/ui/performance_page/cpu_details.blp:142
+#: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
 msgstr "Време на работа"
 
-#: resources/ui/performance_page/cpu_details.blp:168
+#: resources/ui/performance_page/cpu_details.blp:188
 msgid "Base Speed:"
 msgstr "Базова скорост:"
 
-#: resources/ui/performance_page/cpu_details.blp:177
+#: resources/ui/performance_page/cpu_details.blp:197
 msgid "Sockets:"
 msgstr "Гнезда:"
 
-#: resources/ui/performance_page/cpu_details.blp:186
+#: resources/ui/performance_page/cpu_details.blp:206
 msgid "Virtual processors:"
 msgstr "Виртуални процесори:"
 
-#: resources/ui/performance_page/cpu_details.blp:195
+#: resources/ui/performance_page/cpu_details.blp:215
 msgid "Virtualization:"
 msgstr "Виртуализация:"
 
-#: resources/ui/performance_page/cpu_details.blp:204
+#: resources/ui/performance_page/cpu_details.blp:224
 msgid "Virtual machine:"
 msgstr "Виртуална машина:"
 
-#: resources/ui/performance_page/cpu_details.blp:213
+#: resources/ui/performance_page/cpu_details.blp:233
 msgid "L1 cache:"
 msgstr "L1 кеш:"
 
-#: resources/ui/performance_page/cpu_details.blp:222
+#: resources/ui/performance_page/cpu_details.blp:242
 msgid "L2 cache:"
 msgstr "L2 кеш:"
 
-#: resources/ui/performance_page/cpu_details.blp:231
+#: resources/ui/performance_page/cpu_details.blp:251
 msgid "L3 cache:"
 msgstr "L3 кеш:"
 
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk_details.blp:26
+#: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Активно време"
 
@@ -341,33 +341,33 @@ msgstr "Активно време"
 msgid "Disk transfer rate"
 msgstr "Скорост на трансфер на диска"
 
-#: resources/ui/performance_page/disk_details.blp:49
+#: resources/ui/performance_page/disk_details.blp:69
 #, fuzzy
 msgid "Avg. response time"
 msgstr "Средно време за реакция"
 
-#: resources/ui/performance_page/disk_details.blp:85
+#: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
 msgstr "Скорост на четене"
 
-#: resources/ui/performance_page/disk_details.blp:117
+#: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
 msgstr "Скорост на писане"
 
-#: resources/ui/performance_page/disk_details.blp:145
+#: resources/ui/performance_page/disk_details.blp:165
 msgid "Capacity:"
 msgstr "Капацитет:"
 
-#: resources/ui/performance_page/disk_details.blp:154
+#: resources/ui/performance_page/disk_details.blp:174
 msgid "Formatted:"
 msgstr "Форматиран:"
 
-#: resources/ui/performance_page/disk_details.blp:163
+#: resources/ui/performance_page/disk_details.blp:183
 msgid "System disk:"
 msgstr "Системен диск:"
 
-#: resources/ui/performance_page/disk_details.blp:172
-#: resources/ui/performance_page/memory_details.blp:205
+#: resources/ui/performance_page/disk_details.blp:192
+#: resources/ui/performance_page/memory_details.blp:225
 msgid "Type:"
 msgstr "Тип:"
 
@@ -384,44 +384,44 @@ msgid "Video decode"
 msgstr "Видео декодиране"
 
 #: resources/ui/performance_page/gpu.blp:186
-#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "Употреба на паметта"
 
-#: resources/ui/performance_page/gpu_details.blp:47
+#: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
 msgstr "Тактова честота"
 
-#: resources/ui/performance_page/gpu_details.blp:92
+#: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
 msgstr "Консумация на ток"
 
-#: resources/ui/performance_page/gpu_details.blp:182
+#: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
 msgstr "Скорост на паметта"
 
-#: resources/ui/performance_page/gpu_details.blp:227
+#: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
 msgstr "Температура"
 
-#: resources/ui/performance_page/gpu_details.blp:255
+#: resources/ui/performance_page/gpu_details.blp:275
 msgid "OpenGL version:"
 msgstr "OpenGL версия:"
 
-#: resources/ui/performance_page/gpu_details.blp:264
+#: resources/ui/performance_page/gpu_details.blp:284
 msgid "Vulkan version:"
 msgstr "Vulkan версия:"
 
-#: resources/ui/performance_page/gpu_details.blp:273
+#: resources/ui/performance_page/gpu_details.blp:293
 msgid "PCI Express speed:"
 msgstr "PCI Express скорост:"
 
-#: resources/ui/performance_page/gpu_details.blp:282
+#: resources/ui/performance_page/gpu_details.blp:302
 msgid "PCI bus address:"
 msgstr "Адрес на PCI шина:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1174
 #: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "Памет"
@@ -430,39 +430,39 @@ msgstr "Памет"
 msgid "Memory composition"
 msgstr "Състав на паметта"
 
-#: resources/ui/performance_page/memory_details.blp:27
+#: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
 msgstr "В употреба"
 
-#: resources/ui/performance_page/memory_details.blp:50
+#: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
 msgstr "Налично"
 
-#: resources/ui/performance_page/memory_details.blp:78
+#: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
 msgstr "Ангажиран"
 
-#: resources/ui/performance_page/memory_details.blp:101
+#: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
 msgstr "Кеширан"
 
-#: resources/ui/performance_page/memory_details.blp:128
+#: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
 msgstr "Наличен swap"
 
-#: resources/ui/performance_page/memory_details.blp:151
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "Използван swap"
 
-#: resources/ui/performance_page/memory_details.blp:178
+#: resources/ui/performance_page/memory_details.blp:198
 msgid "Speed:"
 msgstr "Скорост:"
 
-#: resources/ui/performance_page/memory_details.blp:187
+#: resources/ui/performance_page/memory_details.blp:207
 msgid "Slots used:"
 msgstr "Използвани слотове:"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:216
 msgid "Form factor:"
 msgstr "Форма фактор:"
 
@@ -474,47 +474,47 @@ msgstr "Пропускателна способност"
 msgid "Network Se_ttings"
 msgstr "Мрежови на_стройки"
 
-#: resources/ui/performance_page/network_details.blp:31
+#: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
 msgstr "Получи"
 
-#: resources/ui/performance_page/network_details.blp:63
+#: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
 msgstr "Прати"
 
-#: resources/ui/performance_page/network_details.blp:90
+#: resources/ui/performance_page/network_details.blp:110
 msgid "Interface name:"
 msgstr "Име на интерфейса:"
 
-#: resources/ui/performance_page/network_details.blp:99
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Connection type:"
 msgstr "Тип връзка:"
 
-#: resources/ui/performance_page/network_details.blp:109
+#: resources/ui/performance_page/network_details.blp:129
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Signal strength:"
 msgstr "Сила на сигнала:"
 
-#: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:149
 msgid "Maximum Bitrate:"
 msgstr "Максимален Bitrate:"
 
-#: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:159
 msgid "Frequency:"
 msgstr "Честота:"
 
-#: resources/ui/performance_page/network_details.blp:148
+#: resources/ui/performance_page/network_details.blp:168
 msgid "Hardware address:"
 msgstr "Адрес на хардуера:"
 
-#: resources/ui/performance_page/network_details.blp:231
+#: resources/ui/performance_page/network_details.blp:251
 msgid "IPv4 address:"
 msgstr "IPv4 адрес:"
 
-#: resources/ui/performance_page/network_details.blp:240
+#: resources/ui/performance_page/network_details.blp:260
 msgid "IPv6 address:"
 msgstr "IPv6 адрес:"
 
@@ -600,7 +600,7 @@ msgstr "Зареждане..."
 msgid "Performance"
 msgstr "Производителност"
 
-#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:522
 msgid "Apps"
 msgstr "Приложения"
 
@@ -612,19 +612,19 @@ msgstr "_Предпочитания"
 msgid "_About MissionCenter"
 msgstr "_Относно MissionCenter"
 
-#: src/apps_page/mod.rs:1143
+#: src/apps_page/mod.rs:1156
 msgid "Name"
 msgstr "Име"
 
-#: src/apps_page/mod.rs:1149
+#: src/apps_page/mod.rs:1162
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1167
+#: src/apps_page/mod.rs:1180
 msgid "Disk"
 msgstr "Диск"
 
-#: src/apps_page/mod.rs:1174
+#: src/apps_page/mod.rs:1187
 #, fuzzy
 msgid "GPU"
 msgstr "_GPU"
@@ -770,7 +770,7 @@ msgid "Utilization over {} seconds"
 msgstr "% използване за {} секунди"
 
 #: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
-#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
+#: src/performance_page/memory.rs:568 src/performance_page/network.rs:734
 msgid "{} seconds"
 msgstr "{} секунди"
 
@@ -788,6 +788,10 @@ msgstr "Видео кодиране"
 #, fuzzy
 msgid "Authentication failed"
 msgstr "_Удостоверяване"
+
+#: src/performance_page/memory.rs:483
+msgid "More info"
+msgstr ""
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
