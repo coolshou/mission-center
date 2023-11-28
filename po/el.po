@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 20:59+0200\n"
+"POT-Creation-Date: 2023-11-27 16:36+0200\n"
 "PO-Revision-Date: 2023-10-08 17:01+0000\n"
 "Last-Translator: yiannis ioannides <sub@wai.ai>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/mission-center/"
@@ -186,14 +186,14 @@ msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Ποιά σελίδα θα φαίνεται κατά την εκκίνηση της εφαρμογής, στη καρτέλα επίδοσης"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1155
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
 msgid "CPU"
 msgstr "Επεξεργαστής"
 
 #: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:26
-#: resources/ui/performance_page/gpu_details.blp:24
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:44
 msgid "Utilization"
 msgstr "Χρήση"
 
@@ -281,60 +281,60 @@ msgstr "_Κάρτα γραφικών"
 msgid "_Copy"
 msgstr "_Αντιγραφή"
 
-#: resources/ui/performance_page/cpu_details.blp:48
+#: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:529
 msgid "Processes"
 msgstr "Διεργασίες"
 
-#: resources/ui/performance_page/cpu_details.blp:97
+#: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
 msgstr "Threads"
 
-#: resources/ui/performance_page/cpu_details.blp:119
+#: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
 msgstr "Ταυτότητα"
 
-#: resources/ui/performance_page/cpu_details.blp:142
+#: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
 msgstr "Χρόνος λειτουργίας"
 
-#: resources/ui/performance_page/cpu_details.blp:168
+#: resources/ui/performance_page/cpu_details.blp:188
 msgid "Base Speed:"
 msgstr "Ταχύτητα βάσης:"
 
-#: resources/ui/performance_page/cpu_details.blp:177
+#: resources/ui/performance_page/cpu_details.blp:197
 msgid "Sockets:"
 msgstr "Sockets:"
 
-#: resources/ui/performance_page/cpu_details.blp:186
+#: resources/ui/performance_page/cpu_details.blp:206
 msgid "Virtual processors:"
 msgstr "Εικονικές διεργασίες:"
 
-#: resources/ui/performance_page/cpu_details.blp:195
+#: resources/ui/performance_page/cpu_details.blp:215
 msgid "Virtualization:"
 msgstr "Εικονικοποίηση:"
 
-#: resources/ui/performance_page/cpu_details.blp:204
+#: resources/ui/performance_page/cpu_details.blp:224
 msgid "Virtual machine:"
 msgstr "Εικονικός υπολογιστής:"
 
-#: resources/ui/performance_page/cpu_details.blp:213
+#: resources/ui/performance_page/cpu_details.blp:233
 msgid "L1 cache:"
 msgstr "L1 cache:"
 
-#: resources/ui/performance_page/cpu_details.blp:222
+#: resources/ui/performance_page/cpu_details.blp:242
 msgid "L2 cache:"
 msgstr "L2 cache:"
 
-#: resources/ui/performance_page/cpu_details.blp:231
+#: resources/ui/performance_page/cpu_details.blp:251
 msgid "L3 cache:"
 msgstr "L3 cache:"
 
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk_details.blp:26
+#: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Ενεργός χρόνος"
 
@@ -342,33 +342,33 @@ msgstr "Ενεργός χρόνος"
 msgid "Disk transfer rate"
 msgstr "Ταχύτητα ανταλλαγής δεδομένων δίσκου"
 
-#: resources/ui/performance_page/disk_details.blp:49
+#: resources/ui/performance_page/disk_details.blp:69
 #, fuzzy
 msgid "Avg. response time"
 msgstr "Μέσος χρόνος απάντησης"
 
-#: resources/ui/performance_page/disk_details.blp:85
+#: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
 msgstr "Ταχύτητα read"
 
-#: resources/ui/performance_page/disk_details.blp:117
+#: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
 msgstr "Ταχύτητα write"
 
-#: resources/ui/performance_page/disk_details.blp:145
+#: resources/ui/performance_page/disk_details.blp:165
 msgid "Capacity:"
 msgstr "Χωρητικότητα:"
 
-#: resources/ui/performance_page/disk_details.blp:154
+#: resources/ui/performance_page/disk_details.blp:174
 msgid "Formatted:"
 msgstr "Διαμορφώθηκε:"
 
-#: resources/ui/performance_page/disk_details.blp:163
+#: resources/ui/performance_page/disk_details.blp:183
 msgid "System disk:"
 msgstr "Δίσκος συστήματος:"
 
-#: resources/ui/performance_page/disk_details.blp:172
-#: resources/ui/performance_page/memory_details.blp:205
+#: resources/ui/performance_page/disk_details.blp:192
+#: resources/ui/performance_page/memory_details.blp:225
 msgid "Type:"
 msgstr "Τύπος:"
 
@@ -385,44 +385,44 @@ msgid "Video decode"
 msgstr "Αποκωδικοποίηση βίντεο"
 
 #: resources/ui/performance_page/gpu.blp:186
-#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "Χρήση μνήμης"
 
-#: resources/ui/performance_page/gpu_details.blp:47
+#: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
 msgstr "Clock speed"
 
-#: resources/ui/performance_page/gpu_details.blp:92
+#: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
 msgstr "Κατανάλωση ενέργειας"
 
-#: resources/ui/performance_page/gpu_details.blp:182
+#: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
 msgstr "Ταχύτητα μνήμης"
 
-#: resources/ui/performance_page/gpu_details.blp:227
+#: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
 msgstr "Θερμοκρασία"
 
-#: resources/ui/performance_page/gpu_details.blp:255
+#: resources/ui/performance_page/gpu_details.blp:275
 msgid "OpenGL version:"
 msgstr "Έκδοση OpenGL:"
 
-#: resources/ui/performance_page/gpu_details.blp:264
+#: resources/ui/performance_page/gpu_details.blp:284
 msgid "Vulkan version:"
 msgstr "Έκδοση Vulkan:"
 
-#: resources/ui/performance_page/gpu_details.blp:273
+#: resources/ui/performance_page/gpu_details.blp:293
 msgid "PCI Express speed:"
 msgstr "Ταχύτητα PCI Express:"
 
-#: resources/ui/performance_page/gpu_details.blp:282
+#: resources/ui/performance_page/gpu_details.blp:302
 msgid "PCI bus address:"
 msgstr "Διεύθυνση PCI bus:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1174
 #: src/performance_page/mod.rs:427
 msgid "Memory"
 msgstr "Μνήμη"
@@ -431,39 +431,39 @@ msgstr "Μνήμη"
 msgid "Memory composition"
 msgstr "Σύνθεση μνήμης"
 
-#: resources/ui/performance_page/memory_details.blp:27
+#: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
 msgstr "Σε χρήση"
 
-#: resources/ui/performance_page/memory_details.blp:50
+#: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
 msgstr "Διαθέσιμο"
 
-#: resources/ui/performance_page/memory_details.blp:78
+#: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
 msgstr "Μη διαθέσιμο"
 
-#: resources/ui/performance_page/memory_details.blp:101
+#: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
 msgstr "Σε cache"
 
-#: resources/ui/performance_page/memory_details.blp:128
+#: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
 msgstr "Διαθέσιμη swap"
 
-#: resources/ui/performance_page/memory_details.blp:151
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "Swap σε χρήση"
 
-#: resources/ui/performance_page/memory_details.blp:178
+#: resources/ui/performance_page/memory_details.blp:198
 msgid "Speed:"
 msgstr "Ταχύτητα:"
 
-#: resources/ui/performance_page/memory_details.blp:187
+#: resources/ui/performance_page/memory_details.blp:207
 msgid "Slots used:"
 msgstr "Slots σε χρήση:"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:216
 msgid "Form factor:"
 msgstr "Form factor:"
 
@@ -475,47 +475,47 @@ msgstr "Ταχύτητα εισερχόμενων δεδομένων"
 msgid "Network Se_ttings"
 msgstr "Ρ_υθμίσεις Δικτύου"
 
-#: resources/ui/performance_page/network_details.blp:31
+#: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
 msgstr "Λήψη"
 
-#: resources/ui/performance_page/network_details.blp:63
+#: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
 msgstr "Αποστολή"
 
-#: resources/ui/performance_page/network_details.blp:90
+#: resources/ui/performance_page/network_details.blp:110
 msgid "Interface name:"
 msgstr "Όνομα συσκευής:"
 
-#: resources/ui/performance_page/network_details.blp:99
+#: resources/ui/performance_page/network_details.blp:119
 msgid "Connection type:"
 msgstr "Τύπος σύνδεσης:"
 
-#: resources/ui/performance_page/network_details.blp:109
+#: resources/ui/performance_page/network_details.blp:129
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:139
 msgid "Signal strength:"
 msgstr "Δύναμη σήματος:"
 
-#: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:149
 msgid "Maximum Bitrate:"
 msgstr "Μέγιστο bitrate:"
 
-#: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:159
 msgid "Frequency:"
 msgstr "Συχνότητα:"
 
-#: resources/ui/performance_page/network_details.blp:148
+#: resources/ui/performance_page/network_details.blp:168
 msgid "Hardware address:"
 msgstr "Διεύθυνση hardware:"
 
-#: resources/ui/performance_page/network_details.blp:231
+#: resources/ui/performance_page/network_details.blp:251
 msgid "IPv4 address:"
 msgstr "Διεύθυνση IPv4:"
 
-#: resources/ui/performance_page/network_details.blp:240
+#: resources/ui/performance_page/network_details.blp:260
 msgid "IPv6 address:"
 msgstr "Διεύθυνση IPv6:"
 
@@ -602,7 +602,7 @@ msgstr "Φόρτωση..."
 msgid "Performance"
 msgstr "Επίδοση"
 
-#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
+#: resources/ui/window.blp:173 src/apps_page/mod.rs:522
 msgid "Apps"
 msgstr "Εφαρμογές"
 
@@ -614,19 +614,19 @@ msgstr "_Προτιμήσεις"
 msgid "_About MissionCenter"
 msgstr "_Σχετικά με το Κέντρο Ελέγχου"
 
-#: src/apps_page/mod.rs:1143
+#: src/apps_page/mod.rs:1156
 msgid "Name"
 msgstr "Όνομα"
 
-#: src/apps_page/mod.rs:1149
+#: src/apps_page/mod.rs:1162
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1167
+#: src/apps_page/mod.rs:1180
 msgid "Disk"
 msgstr "Δίσκος"
 
-#: src/apps_page/mod.rs:1174
+#: src/apps_page/mod.rs:1187
 #, fuzzy
 msgid "GPU"
 msgstr "_Κάρτα γραφικών"
@@ -769,7 +769,7 @@ msgid "Utilization over {} seconds"
 msgstr "Χρήση σε διάστημα {} δευτερολέπτων"
 
 #: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
-#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
+#: src/performance_page/memory.rs:568 src/performance_page/network.rs:734
 msgid "{} seconds"
 msgstr "{} δευτερόλεπτα"
 
@@ -786,6 +786,10 @@ msgstr "Κωδικοποίηση βίντεο"
 #, fuzzy
 msgid "Authentication failed"
 msgstr "_Επιβεβαίωση"
+
+#: src/performance_page/memory.rs:483
+msgid "More info"
+msgstr ""
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455

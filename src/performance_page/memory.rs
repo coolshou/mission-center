@@ -480,9 +480,13 @@ mod imp {
                 });
             }
 
+            let default_label = format!("<a href=\"mc://mem_dev_info\">{}</a>", i18n("More info"));
+            let default_label = default_label.as_str();
+
             let speed: gtk::Label = sidebar_content_builder
                 .object("speed")
                 .expect("Could not find `speed` object in details pane");
+            speed.set_label(default_label);
             let this = self.obj().downgrade();
             speed.connect_activate_link(move |_, _| {
                 if let Some(this) = this.upgrade() {
@@ -495,6 +499,7 @@ mod imp {
             let slots_used: gtk::Label = sidebar_content_builder
                 .object("slots_used")
                 .expect("Could not find `slots_used` object in details pane");
+            slots_used.set_label(default_label);
             let this = self.obj().downgrade();
             slots_used.connect_activate_link(move |_, _| {
                 if let Some(this) = this.upgrade() {
@@ -507,6 +512,7 @@ mod imp {
             let form_factor: gtk::Label = sidebar_content_builder
                 .object::<gtk::Label>("form_factor")
                 .expect("Could not find `form_factor` object in details pane");
+            form_factor.set_label(default_label);
             let this = self.obj().downgrade();
             form_factor.connect_activate_link(move |_, _| {
                 if let Some(this) = this.upgrade() {
@@ -519,6 +525,7 @@ mod imp {
             let ram_type: gtk::Label = sidebar_content_builder
                 .object("ram_type")
                 .expect("Could not find `ram_type` object in details pane");
+            ram_type.set_label(default_label);
             let this = self.obj().downgrade();
             ram_type.connect_activate_link(move |_, _| {
                 if let Some(this) = this.upgrade() {

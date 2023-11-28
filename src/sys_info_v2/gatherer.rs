@@ -1,11 +1,11 @@
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
-use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 pub use super::dbus_interface::{
     App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
     ProcessUsageStats,
 };
 use super::dbus_interface::{IoMissioncenterMissionCenterGatherer, OrgFreedesktopDBusPeer};
+use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 
 macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
@@ -133,7 +133,6 @@ impl<'a> Gatherer<'a> {
 
             if let Some(mut appdir) = std::env::var_os("APPDIR") {
                 appdir.push("/runtime/default");
-                dbg!(&appdir);
                 cmd.current_dir(appdir);
             }
 
@@ -306,16 +305,15 @@ impl<'a> Gatherer<'a> {
     }
 
     fn ping(&self) -> Result<(), Box<dyn std::error::Error>> {
-        match self.dbus_proxy.borrow().as_ref().and_then(|f| Some(f.ping())) {
-            None => {
-                Err("Not initialized".into())
-            }
-            Some(Ok(reply)) => {
-                Ok(reply)
-            }
-            Some(Err(e)) => {
-                Err(e.into())
-            }
+        match self
+            .dbus_proxy
+            .borrow()
+            .as_ref()
+            .and_then(|f| Some(f.ping()))
+        {
+            None => Err("Not initialized".into()),
+            Some(Ok(reply)) => Ok(reply),
+            Some(Err(e)) => Err(e.into()),
         }
     }
 
@@ -331,8 +329,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-glibc just-testing",
                 flatpak_app_path
             ))
-                .status()
-                .is_ok_and(|exit_status| exit_status.success());
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
             if cmd_glibc_status {
                 let exe_glibc = format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path);
                 g_debug!(
@@ -347,8 +345,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-musl just-testing",
                 flatpak_app_path
             ))
-                .status()
-                .is_ok_and(|exit_status| exit_status.success());
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
             if cmd_musl_status {
                 let exe_musl = format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path);
                 g_debug!(

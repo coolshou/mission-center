@@ -307,8 +307,8 @@ mod imp {
             use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
             let model = glib_clone!(self.apps_model);
-            let apps = glib_clone!(self.apps);
-            let process_tree = glib_clone!(self.process_tree);
+            let apps = self.apps.take();
+            let process_tree = self.process_tree.take();
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -419,15 +419,20 @@ mod imp {
                     );
                 }
             }
+
+            self.process_tree.set(process_tree);
+            self.apps.set(apps);
         }
 
         pub fn update_processes_models(&self) {
             use crate::glib_clone;
 
-            let process_tree = glib_clone!(self.process_tree);
+            let process_tree = self.process_tree.take();
             let processes_root_model = glib_clone!(self.processes_root_model);
 
             Self::update_process_model(self, processes_root_model.clone(), &process_tree);
+
+            self.process_tree.set(process_tree);
         }
 
         pub fn column_compare_entries_by(
@@ -451,55 +456,68 @@ mod imp {
             }
             let rhs = rhs.unwrap();
 
+            let sort_order = self
+                .column_view
+                .sorter()
+                .and_downcast_ref::<gtk::ColumnViewSorter>()
+                .and_then(|sorter| Some(sorter.primary_sort_order()))
+                .unwrap_or(gtk::SortType::Ascending);
+
+            let (ord_less, ord_greater) = if sort_order == gtk::SortType::Ascending {
+                (Ordering::Less, Ordering::Greater)
+            } else {
+                (Ordering::Greater, Ordering::Less)
+            };
+
             if lhs.content_type() == ContentType::SectionHeader as u8 {
                 if lhs.section_type() == SectionType::Apps as u8 {
-                    return Ordering::Greater.into();
+                    return ord_less;
                 }
 
-                if rhs.content_type() == ContentType::App as u8 {
-                    return Ordering::Less.into();
-                }
-
-                if rhs.content_type() == ContentType::Process as u8 {
-                    return Ordering::Greater.into();
+                if lhs.section_type() == SectionType::Processes as u8 {
+                    return if rhs.content_type() == ContentType::Process as u8 {
+                        ord_less
+                    } else {
+                        ord_greater
+                    };
                 }
             }
 
             if rhs.content_type() == ContentType::SectionHeader as u8 {
                 if rhs.section_type() == SectionType::Apps as u8 {
-                    return Ordering::Less.into();
+                    return ord_greater;
                 }
 
-                if lhs.content_type() == ContentType::App as u8 {
-                    return Ordering::Greater.into();
-                }
-
-                if lhs.content_type() == ContentType::Process as u8 {
-                    return Ordering::Less.into();
+                if rhs.section_type() == SectionType::Processes as u8 {
+                    return if lhs.content_type() == ContentType::Process as u8 {
+                        ord_greater
+                    } else {
+                        ord_less
+                    };
                 }
             }
 
             if lhs.content_type() == ContentType::App as u8 {
                 if rhs.content_type() == ContentType::App as u8 {
-                    return (compare_fn)(lhs, rhs).into();
+                    return (compare_fn)(lhs, rhs);
                 }
 
                 if rhs.content_type() == ContentType::Process as u8 {
-                    return Ordering::Greater.into();
+                    return ord_less;
                 }
             }
 
             if lhs.content_type() == ContentType::Process as u8 {
                 if rhs.content_type() == ContentType::Process as u8 {
-                    return (compare_fn)(lhs, rhs).into();
+                    return (compare_fn)(lhs, rhs);
                 }
 
                 if rhs.content_type() == ContentType::App as u8 {
-                    return Ordering::Less.into();
+                    return ord_greater;
                 }
             }
 
-            Ordering::Equal.into()
+            Ordering::Equal
         }
 
         pub fn set_up_root_model(&self) -> gio::ListStore {
@@ -509,14 +527,14 @@ mod imp {
                 .name(&i18n("Apps"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Apps)
-                .show_expander(true)
+                .show_expander(false)
                 .build();
 
             let processes_section_header = ViewModelBuilder::new()
                 .name(&i18n("Processes"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Processes)
-                .show_expander(true)
+                .show_expander(false)
                 .build();
 
             let root_model = gio::ListStore::new::<ViewModel>();
@@ -546,10 +564,9 @@ mod imp {
                 let this = this.unwrap();
                 let this = this.imp();
 
-                let content_type: ContentType =
-                    unsafe { core::mem::transmute(view_model.content_type()) };
+                let content_type = view_model.content_type();
 
-                if content_type == ContentType::SectionHeader {
+                if content_type == ContentType::SectionHeader as u8 {
                     if view_model.section_type() == SectionType::Apps as u8 {
                         let apps_model = glib_clone!(this.apps_model);
                         return Some(apps_model.into());
@@ -563,7 +580,9 @@ mod imp {
                     return None;
                 }
 
-                if content_type == ContentType::Process || content_type == ContentType::App {
+                if content_type == ContentType::Process as u8
+                    || content_type == ContentType::App as u8
+                {
                     return Some(view_model.children().clone().into());
                 }
 
