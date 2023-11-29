@@ -939,44 +939,8 @@ impl LinuxCpuInfo {
             }
         }
 
-        let mut result = [None; 5];
-
-        let numa_node_entries = match read_dir("/sys/devices/system/node/") {
-            Ok(entries) => entries,
-            Err(e) => {
-                warning!(
-                    "Gatherer::CPU",
-                    "Could not read '/sys/devices/system/node': {}",
-                    e
-                );
-                return result;
-            }
-        };
-
-        for nn_entry in numa_node_entries {
-            let nn_entry = match nn_entry {
-                Ok(entry) => entry,
-                Err(e) => {
-                    warning!(
-                        "Gatherer::CPU",
-                        "Could not read entry in '/sys/devices/system/node': {}",
-                        e
-                    );
-                    continue;
-                }
-            };
-            let path = nn_entry.path();
-            if !path.is_dir() {
-                continue;
-            }
-
-            let is_node = path
-                .file_name()
-                .map(|file| &file.as_bytes()[0..4] == b"node")
-                .unwrap_or(false);
-            if !is_node {
-                continue;
-            }
+        fn read_cache_values(path: &std::path::Path) -> [Option<u64>; 5] {
+            let mut result = [None; 5];
 
             let mut l1_visited_data = HashSet::new();
             let mut l1_visited_instr = HashSet::new();
@@ -1010,9 +974,6 @@ impl LinuxCpuInfo {
                     }
                 };
                 let mut path = cpu_entry.path();
-                if !path.is_symlink() {
-                    continue;
-                }
 
                 let cpu_name = match path.file_name() {
                     Some(name) => name,
@@ -1134,6 +1095,51 @@ impl LinuxCpuInfo {
                         }
                     }
                 }
+            }
+
+            result
+        }
+
+        let mut result = [None; 5];
+
+        match read_dir("/sys/devices/system/node/") {
+            Ok(entries) => {
+                for nn_entry in entries {
+                    let nn_entry = match nn_entry {
+                        Ok(entry) => entry,
+                        Err(e) => {
+                            warning!(
+                                "Gatherer::CPU",
+                                "Could not read entry in '/sys/devices/system/node': {}",
+                                e
+                            );
+                            continue;
+                        }
+                    };
+                    let path = nn_entry.path();
+                    if !path.is_dir() {
+                        continue;
+                    }
+
+                    let is_node = path
+                        .file_name()
+                        .map(|file| &file.as_bytes()[0..4] == b"node")
+                        .unwrap_or(false);
+                    if !is_node {
+                        continue;
+                    }
+
+                    result = read_cache_values(&path);
+                }
+            }
+            Err(e) => {
+                warning!(
+                    "Gatherer::CPU",
+                    "Could not read '/sys/devices/system/node': {}. Falling back to '/sys/devices/system/cpu'",
+                    e
+                );
+
+                result = read_cache_values(std::path::Path::new("/sys/devices/system/cpu"));
             }
         }
 
