@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-11-15 06:05+0000\n"
+"PO-Revision-Date: 2023-12-01 08:04+0000\n"
 "Last-Translator: Tiago Lucas Flach <tiagolucas9830@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt_BR/>\n"
@@ -17,10 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
+#, fuzzy
 msgid "Mission Center"
 msgstr "Central de Missões"
 
@@ -845,7 +846,7 @@ msgstr "Falha na autenticação"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Mais informações"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
