@@ -184,11 +184,8 @@ mod imp {
 
         #[inline]
         fn window_width_below_threshold(&self) -> bool {
-            let window_width = adw::LengthUnit::from_px(
-                adw::LengthUnit::Sp,
-                self.obj().default_width() as _,
-                None,
-            );
+            let window_width =
+                adw::LengthUnit::from_px(adw::LengthUnit::Sp, self.obj().width() as _, None);
             let collapse_threshold = self.collapse_threshold.get() as f64;
 
             window_width < collapse_threshold
