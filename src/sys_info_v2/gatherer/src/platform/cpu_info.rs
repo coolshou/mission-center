@@ -53,8 +53,8 @@ pub trait CpuStaticInfoExt: Default + Append + Arg {
     /// The base CPU frequency in kHz
     fn base_frequency_khz(&self) -> Option<u64>;
 
-    /// Tests if the CPU supports hardware assisted virtualization
-    fn is_virtualization_supported(&self) -> Option<bool>;
+    /// The name of the virtualization technology available on this host
+    fn virtualization_technology(&self) -> Option<&str>;
 
     /// Check if the OS is running in a virtual machine
     fn is_virtual_machine(&self) -> Option<bool>;
@@ -87,7 +87,7 @@ impl Append for crate::platform::CpuStaticInfo {
             self.logical_cpu_count(),
             self.socket_count().unwrap_or(0),
             self.base_frequency_khz().unwrap_or(0),
-            OptionalBool::from(self.is_virtualization_supported()) as u8,
+            self.virtualization_technology().unwrap_or(""),
             OptionalBool::from(self.is_virtual_machine()) as u8,
             self.l1_combined_cache().unwrap_or(0),
             self.l2_cache().unwrap_or(0),

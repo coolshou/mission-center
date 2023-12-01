@@ -25,7 +25,7 @@ macro_rules! dbus_call {
                         i,
                     );
                     if i == 3 {
-                        show_error_dialog_and_exit(&format!("DBus proxy is not initialized after 3 retries 😟. The app will now close."));
+                        show_error_dialog_and_exit(&format!("DBus proxy is not initialized after 3 retries 😟.\nThe app will now close."));
                     }
                     start = true;
                     continue;
@@ -68,7 +68,7 @@ macro_rules! dbus_call {
             }
         }
 
-        show_error_dialog_and_exit(&format!("DBus call '{}' failed after 3 retries 😟. The app will now close.", $dbus_method_name));
+        show_error_dialog_and_exit(&format!("DBus call '{}' failed after 3 retries 😟.\nThe app will now close.", $dbus_method_name));
     }};
 }
 
@@ -126,10 +126,8 @@ impl<'a> Gatherer<'a> {
 
             cmd
         } else {
-            let mut cmd = std::process::Command::new("sh");
+            let mut cmd = std::process::Command::new(Self::executable());
             cmd.env_remove("LD_PRELOAD");
-            cmd.arg("-c");
-            cmd.arg(Self::executable());
 
             if let Some(mut appdir) = std::env::var_os("APPDIR") {
                 appdir.push("/runtime/default");

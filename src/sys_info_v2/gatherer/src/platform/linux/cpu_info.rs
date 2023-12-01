@@ -107,7 +107,7 @@ pub struct LinuxCpuStaticInfo {
     logical_cpu_count: u32,
     socket_count: Option<u8>,
     base_frequency_khz: Option<u64>,
-    virtualization_supported: Option<bool>,
+    virtualization_technology: Option<Arc<str>>,
     is_virtual_machine: Option<bool>,
     l1_combined_cache: Option<u64>,
     l2_cache: Option<u64>,
@@ -122,7 +122,7 @@ impl Default for LinuxCpuStaticInfo {
             logical_cpu_count: 0,
             socket_count: None,
             base_frequency_khz: None,
-            virtualization_supported: None,
+            virtualization_technology: None,
             is_virtual_machine: None,
             l1_combined_cache: None,
             l2_cache: None,
@@ -155,8 +155,8 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
         self.base_frequency_khz
     }
 
-    fn is_virtualization_supported(&self) -> Option<bool> {
-        self.virtualization_supported
+    fn virtualization_technology(&self) -> Option<&str> {
+        self.virtualization_technology.as_ref().map(|s| s.as_ref())
     }
 
     fn is_virtual_machine(&self) -> Option<bool> {
@@ -786,66 +786,77 @@ impl LinuxCpuInfo {
         None
     }
 
-    fn virtualization() -> Option<bool> {
-        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
-        fn cpuid_ex<const START: u8, const END: u8>(leaf: u32, result: &mut [u32]) -> Option<()> {
-            use raw_cpuid::*;
+    fn virtualization() -> Option<Arc<str>> {
+        use crate::warning;
+        use std::io::Read;
 
-            let x = cpuid!(leaf);
-            for (result_i, i) in (START..END).enumerate() {
-                match i {
-                    0 => {
-                        result[result_i] = x.eax;
-                    }
-                    1 => {
-                        result[result_i] = x.ebx;
-                    }
-                    2 => {
-                        result[result_i] = x.ecx;
-                    }
-                    3 => {
-                        result[result_i] = x.edx;
-                    }
-                    _ => {
-                        return None;
+        let mut virtualization: Option<Arc<str>> = None;
+
+        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+        match std::fs::read_to_string("/proc/cpuinfo") {
+            Ok(cpuinfo) => {
+                for line in cpuinfo.split('\n').map(|l| l.trim()) {
+                    if line.starts_with("flags") {
+                        for flag in line.split(':').nth(1).unwrap_or("").trim().split(' ') {
+                            if flag == "vmx" {
+                                virtualization = Some("Intel VT-x".into());
+                                break;
+                            }
+
+                            if flag == "svm" {
+                                virtualization = Some("AMD-V".into());
+                            }
+                        }
+
+                        break;
                     }
                 }
             }
-
-            Some(())
+            Err(e) => {
+                warning!(
+                    "Gatherer::CPU",
+                    "Failed to read virtualization capabilities from `/proc/cpuinfo`: {}",
+                    e
+                );
+            }
         }
 
-        #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
-        fn cpuid_ex<const _START: u8, const _END: u8>(_: u32, _: &mut [u32]) -> Option<()> {
-            None
+        if std::path::Path::new("/dev/kvm").exists() {
+            virtualization = if let Some(virt) = virtualization.as_ref() {
+                Some(Arc::from(format!("KVM on {}", virt).as_str()))
+            } else {
+                Some("KVM".into())
+            };
+        } else {
+            warning!("Gatherer::CPU", "Virtualization: `/dev/kvm` does not exist");
         }
 
-        let mut signature_reg = [0u32; 3];
-        let res = cpuid_ex::<1, 4>(0, &mut signature_reg);
-        if res.is_none() {
-            return None;
+        let mut buffer = [0u8; 9];
+        match std::fs::File::open("/proc/xen/capabilities") {
+            Ok(mut file) => {
+                file.read(&mut buffer).unwrap();
+                if &buffer == b"control_d" {
+                    virtualization = if let Some(virt) = virtualization.as_ref() {
+                        if virt.as_ref().starts_with("KVM") {
+                            Some(Arc::from(format!("KVM and Xen on {}", virt).as_str()))
+                        } else {
+                            Some(Arc::from(format!("Xen on {}", virt).as_str()))
+                        }
+                    } else {
+                        Some("Xen".into())
+                    };
+                }
+            }
+            Err(e) => {
+                warning!(
+                    "Gatherer::CPU",
+                    "Virtualization: Failed to open /proc/xen/capabilities: {}",
+                    e
+                );
+            }
         }
 
-        let mut features = [0_u32];
-        cpuid_ex::<2, 3>(1, &mut features);
-
-        //Is intel? Check bit5
-        if signature_reg[0] == 0x756e6547
-            && signature_reg[1] == 0x6c65746e
-            && signature_reg[2] == 0x49656e69
-        {
-            return Some((features[0] & 0x20) > 0);
-        }
-
-        //Is AMD? check bit2
-        if signature_reg[0] == 0x68747541
-            && signature_reg[1] == 0x69746e65
-            && signature_reg[2] == 0x444d4163
-        {
-            return Some((features[0] & 0x04) > 0);
-        }
-
-        None
+        virtualization
     }
 
     fn virtual_machine() -> Option<bool> {
@@ -1341,7 +1352,7 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
             logical_cpu_count: Self::logical_cpu_count(),
             socket_count: Self::socket_count(),
             base_frequency_khz: Self::base_frequency_khz(),
-            virtualization_supported: Self::virtualization(),
+            virtualization_technology: Self::virtualization(),
             is_virtual_machine: Self::virtual_machine(),
             l1_combined_cache: cache_info[1],
             l2_cache: cache_info[2],

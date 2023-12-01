@@ -1,9 +1,9 @@
 [
   {
     "type": "git",
-    "url": "https://github.com/servo/pathfinder",
-    "commit": "21ec6fa933547636bc6c5ee8f0dd4a0ea3fcd062",
-    "dest": "flatpak-cargo/git/pathfinder-21ec6fa"
+    "url": "https://github.com/kicsyromy/pathfinder",
+    "commit": "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e",
+    "dest": "flatpak-cargo/git/pathfinder-ec56924"
   },
   {
     "type": "archive",
@@ -658,14 +658,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/fallible-iterator/fallible-iterator-0.2.0.crate",
-    "sha256": "4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7",
-    "dest": "cargo/vendor/fallible-iterator-0.2.0"
+    "url": "https://static.crates.io/crates/fallible-iterator/fallible-iterator-0.3.0.crate",
+    "sha256": "2acce4a10f12dc2fb14a218589d4f1f62ef011b2d0cc4b3cb1bba8e94da14649",
+    "dest": "cargo/vendor/fallible-iterator-0.3.0"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7\", \"files\": {}}",
-    "dest": "cargo/vendor/fallible-iterator-0.2.0",
+    "contents": "{\"package\": \"2acce4a10f12dc2fb14a218589d4f1f62ef011b2d0cc4b3cb1bba8e94da14649\", \"files\": {}}",
+    "dest": "cargo/vendor/fallible-iterator-0.3.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1386,14 +1386,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/libsqlite3-sys/libsqlite3-sys-0.26.0.crate",
-    "sha256": "afc22eff61b133b115c6e8c74e818c628d6d5e7a502afea6f64dee076dd94326",
-    "dest": "cargo/vendor/libsqlite3-sys-0.26.0"
+    "url": "https://static.crates.io/crates/libsqlite3-sys/libsqlite3-sys-0.27.0.crate",
+    "sha256": "cf4e226dcd58b4be396f7bd3c20da8fdee2911400705297ba7d2d7cc2c30f716",
+    "dest": "cargo/vendor/libsqlite3-sys-0.27.0"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"afc22eff61b133b115c6e8c74e818c628d6d5e7a502afea6f64dee076dd94326\", \"files\": {}}",
-    "dest": "cargo/vendor/libsqlite3-sys-0.26.0",
+    "contents": "{\"package\": \"cf4e226dcd58b4be396f7bd3c20da8fdee2911400705297ba7d2d7cc2c30f716\", \"files\": {}}",
+    "dest": "cargo/vendor/libsqlite3-sys-0.27.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1698,7 +1698,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/canvas\" \"cargo/vendor/pathfinder_canvas\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/canvas\" \"cargo/vendor/pathfinder_canvas\""
     ]
   },
   {
@@ -1716,7 +1716,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/color\" \"cargo/vendor/pathfinder_color\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/color\" \"cargo/vendor/pathfinder_color\""
     ]
   },
   {
@@ -1734,7 +1734,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/content\" \"cargo/vendor/pathfinder_content\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/content\" \"cargo/vendor/pathfinder_content\""
     ]
   },
   {
@@ -1752,7 +1752,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/geometry\" \"cargo/vendor/pathfinder_geometry\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/geometry\" \"cargo/vendor/pathfinder_geometry\""
     ]
   },
   {
@@ -1770,7 +1770,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/gl\" \"cargo/vendor/pathfinder_gl\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/gl\" \"cargo/vendor/pathfinder_gl\""
     ]
   },
   {
@@ -1788,7 +1788,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/gpu\" \"cargo/vendor/pathfinder_gpu\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/gpu\" \"cargo/vendor/pathfinder_gpu\""
     ]
   },
   {
@@ -1806,7 +1806,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/renderer\" \"cargo/vendor/pathfinder_renderer\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/renderer\" \"cargo/vendor/pathfinder_renderer\""
     ]
   },
   {
@@ -1824,7 +1824,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/resources\" \"cargo/vendor/pathfinder_resources\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/resources\" \"cargo/vendor/pathfinder_resources\""
     ]
   },
   {
@@ -1842,12 +1842,12 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/simd\" \"cargo/vendor/pathfinder_simd\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/simd\" \"cargo/vendor/pathfinder_simd\""
     ]
   },
   {
     "type": "inline",
-    "contents": "[package]\nname = \"pathfinder_simd\"\nversion = \"0.5.1\"\nedition = \"2018\"\nauthors = [ \"Patrick Walton <pcwalton@mimiga.net>\",]\nbuild = \"build.rs\"\ndescription = \"A simple SIMD library\"\nlicense = \"MIT/Apache-2.0\"\nrepository = \"https://github.com/servo/pathfinder\"\nhomepage = \"https://github.com/servo/pathfinder\"\n\n[features]\npf-no-simd = []\n\n[dependencies]\n\n[build-dependencies]\nrustc_version = \"0.3\"\n",
+    "contents": "[package]\nname = \"pathfinder_simd\"\nversion = \"0.5.2\"\nedition = \"2018\"\nauthors = [ \"Patrick Walton <pcwalton@mimiga.net>\",]\nbuild = \"build.rs\"\ndescription = \"A simple SIMD library\"\nlicense = \"MIT/Apache-2.0\"\nrepository = \"https://github.com/servo/pathfinder\"\nhomepage = \"https://github.com/servo/pathfinder\"\n\n[features]\npf-no-simd = []\n\n[dependencies]\n\n[build-dependencies]\nrustc_version = \"0.4\"\n",
     "dest": "cargo/vendor/pathfinder_simd",
     "dest-filename": "Cargo.toml"
   },
@@ -1860,7 +1860,7 @@
   {
     "type": "shell",
     "commands": [
-      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-21ec6fa/ui\" \"cargo/vendor/pathfinder_ui\""
+      "cp -r --reflink=auto \"flatpak-cargo/git/pathfinder-ec56924/ui\" \"cargo/vendor/pathfinder_ui\""
     ]
   },
   {
@@ -1873,19 +1873,6 @@
     "type": "inline",
     "contents": "{\"package\": null, \"files\": {}}",
     "dest": "cargo/vendor/pathfinder_ui",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/pest/pest-2.7.5.crate",
-    "sha256": "ae9cee2a55a544be8b89dc6848072af97a20f2422603c10865be2a42b580fff5",
-    "dest": "cargo/vendor/pest-2.7.5"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"ae9cee2a55a544be8b89dc6848072af97a20f2422603c10865be2a42b580fff5\", \"files\": {}}",
-    "dest": "cargo/vendor/pest-2.7.5",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -2164,14 +2151,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/rusqlite/rusqlite-0.29.0.crate",
-    "sha256": "549b9d036d571d42e6e85d1c1425e2ac83491075078ca9a15be021c56b1641f2",
-    "dest": "cargo/vendor/rusqlite-0.29.0"
+    "url": "https://static.crates.io/crates/rusqlite/rusqlite-0.30.0.crate",
+    "sha256": "a78046161564f5e7cd9008aff3b2990b3850dc8e0349119b98e8f251e099f24d",
+    "dest": "cargo/vendor/rusqlite-0.30.0"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"549b9d036d571d42e6e85d1c1425e2ac83491075078ca9a15be021c56b1641f2\", \"files\": {}}",
-    "dest": "cargo/vendor/rusqlite-0.29.0",
+    "contents": "{\"package\": \"a78046161564f5e7cd9008aff3b2990b3850dc8e0349119b98e8f251e099f24d\", \"files\": {}}",
+    "dest": "cargo/vendor/rusqlite-0.30.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -2185,19 +2172,6 @@
     "type": "inline",
     "contents": "{\"package\": \"3e0698206bcb8882bf2a9ecb4c1e7785db57ff052297085a6efd4fe42302068a\", \"files\": {}}",
     "dest": "cargo/vendor/rust-ini-0.20.0",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/rustc_version/rustc_version-0.3.3.crate",
-    "sha256": "f0dfe2087c51c460008730de8b57e6a320782fbfb312e1f4d520e6c6fae155ee",
-    "dest": "cargo/vendor/rustc_version-0.3.3"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"f0dfe2087c51c460008730de8b57e6a320782fbfb312e1f4d520e6c6fae155ee\", \"files\": {}}",
-    "dest": "cargo/vendor/rustc_version-0.3.3",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -2242,19 +2216,6 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/semver/semver-0.11.0.crate",
-    "sha256": "f301af10236f6df4160f7c3f04eec6dbc70ace82d23326abad5edee88801c6b6",
-    "dest": "cargo/vendor/semver-0.11.0"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"f301af10236f6df4160f7c3f04eec6dbc70ace82d23326abad5edee88801c6b6\", \"files\": {}}",
-    "dest": "cargo/vendor/semver-0.11.0",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/semver/semver-1.0.20.crate",
     "sha256": "836fa6a3e1e547f9a2c4040802ec865b5d85f4014efe00555d7090a3dcaa1090",
     "dest": "cargo/vendor/semver-1.0.20"
@@ -2263,19 +2224,6 @@
     "type": "inline",
     "contents": "{\"package\": \"836fa6a3e1e547f9a2c4040802ec865b5d85f4014efe00555d7090a3dcaa1090\", \"files\": {}}",
     "dest": "cargo/vendor/semver-1.0.20",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/semver-parser/semver-parser-0.10.2.crate",
-    "sha256": "00b0bef5b7f9e0df16536d3961cfb6e84331c065b4066afb39768d0e319411f7",
-    "dest": "cargo/vendor/semver-parser-0.10.2"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"00b0bef5b7f9e0df16536d3961cfb6e84331c065b4066afb39768d0e319411f7\", \"files\": {}}",
-    "dest": "cargo/vendor/semver-parser-0.10.2",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -2640,19 +2588,6 @@
     "type": "inline",
     "contents": "{\"package\": \"42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825\", \"files\": {}}",
     "dest": "cargo/vendor/typenum-1.17.0",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/ucd-trie/ucd-trie-0.1.6.crate",
-    "sha256": "ed646292ffc8188ef8ea4d1e0e0150fb15a5c2e12ad9b8fc191ae7a8a7f3c4b9",
-    "dest": "cargo/vendor/ucd-trie-0.1.6"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"ed646292ffc8188ef8ea4d1e0e0150fb15a5c2e12ad9b8fc191ae7a8a7f3c4b9\", \"files\": {}}",
-    "dest": "cargo/vendor/ucd-trie-0.1.6",
     "dest-filename": ".cargo-checksum.json"
   },
   {
