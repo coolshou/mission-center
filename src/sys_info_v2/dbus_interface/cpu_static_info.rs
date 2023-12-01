@@ -28,7 +28,7 @@ pub struct CpuStaticInfo {
     pub logical_cpu_count: u32,
     pub socket_count: Option<u8>,
     pub base_frequency_khz: Option<u64>,
-    pub is_virtualization_supported: Option<bool>,
+    pub virtualization_technology: Option<Arc<str>>,
     pub is_virtual_machine: Option<bool>,
     pub l1_combined_cache: Option<u64>,
     pub l2_cache: Option<u64>,
@@ -43,7 +43,7 @@ impl Default for CpuStaticInfo {
             logical_cpu_count: 0,
             socket_count: None,
             base_frequency_khz: None,
-            is_virtualization_supported: None,
+            virtualization_technology: None,
             is_virtual_machine: None,
             l1_combined_cache: None,
             l2_cache: None,
@@ -186,27 +186,26 @@ impl<'a> Get<'a> for CpuStaticInfo {
             },
         };
 
-        this.is_virtualization_supported = match Iterator::next(static_info) {
+        this.virtualization_technology = match Iterator::next(static_info) {
             None => {
                 g_critical!(
                     "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '4: y', got None",
+                    "Failed to get CpuStaticInfo: Expected '4: s', got None",
                 );
                 return None;
             }
-            Some(arg) => match arg.as_u64() {
+            Some(arg) => match arg.as_str() {
                 None => {
                     g_critical!(
                         "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '4: y', got {:?}",
+                        "Failed to get CpuStaticInfo: Expected '4: s', got {:?}",
                         arg.arg_type(),
                     );
                     return None;
                 }
                 Some(ivs) => match ivs {
-                    0 => Some(false),
-                    1 => Some(true),
-                    _ => None,
+                    "" => None,
+                    _ => Some(Arc::from(ivs)),
                 },
             },
         };

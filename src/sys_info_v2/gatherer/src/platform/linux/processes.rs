@@ -27,6 +27,7 @@ use crate::platform::processes::*;
 lazy_static! {
     static ref PAGE_SIZE: usize = unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize };
     static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
+    static ref CPU_COUNT: usize = num_cpus::get();
 }
 
 const PROC_PID_STAT_TCOMM: usize = 1;

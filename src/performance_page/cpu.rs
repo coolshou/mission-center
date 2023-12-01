@@ -311,14 +311,10 @@ mod imp {
             }
 
             if let Some(virtualization) = this.virtualization.get() {
-                if let Some(vs) = static_cpu_info.is_virtualization_supported {
-                    if vs {
-                        virtualization.set_text(&i18n("Supported"));
-                    } else {
-                        virtualization.set_text(&i18n("Unsupported"));
-                    }
+                if let Some(vt) = static_cpu_info.virtualization_technology.as_ref() {
+                    virtualization.set_text(vt.as_ref());
                 } else {
-                    virtualization.set_text(&i18n("Unknown"));
+                    virtualization.set_text(&i18n("Unsupported"));
                 }
             }
 
@@ -582,7 +578,7 @@ mod imp {
         fn populate_usage_graphs(&self, cpu_count: usize) {
             let base_color = self.obj().base_color();
 
-            let (_, col_count) = Self::compute_row_column_count(cpu_count);
+            let col_count = Self::compute_column_count(cpu_count);
 
             let settings = self.settings.take();
             let mut graph_selection = GRAPH_SELECTION_OVERALL;
@@ -689,33 +685,19 @@ mod imp {
             self.graph_widgets.set(graph_widgets);
         }
 
-        fn compute_row_column_count(item_count: usize) -> (usize, usize) {
-            let item_count = item_count as isize;
-            let mut factors = Vec::new();
-            factors.reserve(item_count as usize);
+        fn compute_column_count(item_count: usize) -> usize {
+            if item_count <= 3 {
+                return item_count;
+            }
 
-            for i in 2..=(item_count as f64).sqrt().floor() as isize {
+            let sqrt_item_count = (item_count as f64).sqrt().round() as usize;
+            for i in sqrt_item_count..item_count.min(sqrt_item_count * 2) {
                 if item_count % i == 0 {
-                    factors.push((i, item_count / i));
-                }
-            }
-            let mut valid_factors = vec![];
-            for (i, j) in factors {
-                if (i - j).abs() <= 2 {
-                    valid_factors.push((i, j));
+                    return i;
                 }
             }
 
-            let result = if let Some((i, j)) = valid_factors.into_iter().max_by_key(|&(i, j)| i * j)
-            {
-                (i, j)
-            } else {
-                let i = item_count.min(((item_count as f64).sqrt() + 1.).floor() as isize);
-                let j = ((item_count as f64) / i as f64).ceil() as isize;
-                (i, j)
-            };
-
-            (result.0 as usize, result.1 as usize)
+            sqrt_item_count
         }
     }
 

@@ -9,13 +9,12 @@ arrayvec = { version = "0.7" }
 ash = { version = "0.37" }
 dbus = { version = "0.9" }
 dbus-crossroads = { version = "0.5" }
-drm = { version = "0.10" }
+drm = { version = "0.11.0" }
 egl = { version = "0.2" }
-gbm = { version = "0.13", default-features = false, features = ["drm-support"] }
+gbm = { version = "0.14.0", default-features = false, features = ["drm-support"] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 num_cpus = { version = "1" }
-raw-cpuid = { version = "11.0", default-features = false }
 rust-ini = { version = "0.20" }
 
 [build-dependencies]
