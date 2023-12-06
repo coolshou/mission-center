@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-02 20:04+0000\n"
+"PO-Revision-Date: 2023-12-07 09:23+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -780,7 +780,7 @@ msgstr "Tunnistautuminen epäonnistui"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Lisätietoja"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
