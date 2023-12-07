@@ -1258,18 +1258,20 @@ mod imp {
                     "0%",
                     gtk::Align::End,
                 );
-
-                let (_, column_header_gpu_memory) = self.configure_column_header(
-                    &column_view_title.unwrap(),
-                    &i18n("GPU Mem"),
-                    "0%",
-                    gtk::Align::End,
-                );
-
                 self.column_header_gpu_usage
                     .set(Some(column_header_gpu_usage));
-                self.column_header_gpu_memory_usage
-                    .set(Some(column_header_gpu_memory));
+
+                if let Some(column_view_title) = column_view_title {
+                    let (_, column_header_gpu_memory) = self.configure_column_header(
+                        &column_view_title,
+                        &i18n("GPU Mem"),
+                        "0%",
+                        gtk::Align::End,
+                    );
+
+                    self.column_header_gpu_memory_usage
+                        .set(Some(column_header_gpu_memory));
+                }
             }
         }
     }
@@ -1297,13 +1299,22 @@ impl AppsPage {
             this.column_view.remove_column(&this.gpu_usage_column);
             this.column_view.remove_column(&this.gpu_memory_column);
         } else {
-            this.max_gpu_memory_usage.set(
-                readings
-                    .gpu_static_info
-                    .iter()
-                    .map(|g| g.total_memory as f32)
-                    .sum(),
-            );
+            // Intel GPUs don't have memory information
+            if readings
+                .gpu_static_info
+                .iter()
+                .all(|g| g.vendor_id == 0x8086)
+            {
+                this.column_view.remove_column(&this.gpu_memory_column);
+            } else {
+                this.max_gpu_memory_usage.set(
+                    readings
+                        .gpu_static_info
+                        .iter()
+                        .map(|g| g.total_memory as f32)
+                        .sum(),
+                );
+            }
         }
 
         this.max_cpu_usage.set(num_cpus::get() as f32 * 100.0);
