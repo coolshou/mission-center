@@ -189,9 +189,16 @@ impl<'a> Gatherer<'a> {
             self.dbus_proxy.replace(Some(dbus_proxy));
         }
 
+        // AppImages tend to be slower to spawn processes, so add a bit of extra time
+        let start_wait_time_ms = if let Some(_) = std::env::var_os("APPIMAGE") {
+            200
+        } else {
+            50
+        };
+
         // Let the child process start up
         for i in 0..8 {
-            std::thread::sleep(std::time::Duration::from_millis(25));
+            std::thread::sleep(std::time::Duration::from_millis(start_wait_time_ms));
             match self.ping() {
                 Ok(()) => return,
                 Err(e) => {

@@ -823,7 +823,7 @@ impl LinuxCpuInfo {
 
         if std::path::Path::new("/dev/kvm").exists() {
             virtualization = if let Some(virt) = virtualization.as_ref() {
-                Some(Arc::from(format!("KVM on {}", virt).as_str()))
+                Some(Arc::from(format!("KVM / {}", virt).as_str()))
             } else {
                 Some("KVM".into())
             };
@@ -838,9 +838,9 @@ impl LinuxCpuInfo {
                 if &buffer == b"control_d" {
                     virtualization = if let Some(virt) = virtualization.as_ref() {
                         if virt.as_ref().starts_with("KVM") {
-                            Some(Arc::from(format!("KVM and Xen on {}", virt).as_str()))
+                            Some(Arc::from(format!("KVM & Xen / {}", virt).as_str()))
                         } else {
-                            Some(Arc::from(format!("Xen on {}", virt).as_str()))
+                            Some(Arc::from(format!("Xen / {}", virt).as_str()))
                         }
                     } else {
                         Some("Xen".into())

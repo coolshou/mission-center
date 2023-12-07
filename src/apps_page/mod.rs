@@ -53,7 +53,9 @@ mod imp {
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        pub gpu_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
 
         #[template_child]
         pub context_menu: TemplateChild<gtk::PopoverMenu>,
@@ -63,7 +65,8 @@ mod imp {
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
-        pub column_header_gpu: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_gpu_usage: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_gpu_memory_usage: Cell<Option<column_header::ColumnHeader>>,
 
         pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
 
@@ -73,6 +76,7 @@ mod imp {
         pub max_cpu_usage: Cell<f32>,
         pub max_memory_usage: Cell<f32>,
         pub max_disk_usage: Cell<f32>,
+        pub max_gpu_memory_usage: Cell<f32>,
 
         pub apps: Cell<std::collections::HashMap<std::sync::Arc<str>, crate::sys_info_v2::App>>,
         pub process_tree: Cell<crate::sys_info_v2::Process>,
@@ -90,7 +94,8 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
-                gpu_column: TemplateChild::default(),
+                gpu_usage_column: TemplateChild::default(),
+                gpu_memory_column: TemplateChild::default(),
 
                 context_menu: TemplateChild::default(),
 
@@ -99,7 +104,8 @@ mod imp {
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
-                column_header_gpu: Cell::new(None),
+                column_header_gpu_usage: Cell::new(None),
+                column_header_gpu_memory_usage: Cell::new(None),
 
                 tree_list_sorter: Cell::new(None),
 
@@ -109,6 +115,7 @@ mod imp {
                 max_cpu_usage: Cell::new(0.0),
                 max_memory_usage: Cell::new(0.0),
                 max_disk_usage: Cell::new(0.0),
+                max_gpu_memory_usage: Cell::new(0.0),
 
                 apps: Cell::new(HashMap::new()),
                 process_tree: Cell::new(Process::default()),
@@ -380,6 +387,7 @@ mod imp {
                         .disk_usage(app.usage_stats.disk_usage)
                         .network_usage(app.usage_stats.network_usage)
                         .gpu_usage(app.usage_stats.gpu_usage)
+                        .gpu_mem_usage(app.usage_stats.gpu_memory_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -402,6 +410,7 @@ mod imp {
                     view_model.set_disk_usage(app.usage_stats.disk_usage);
                     view_model.set_network_usage(app.usage_stats.network_usage);
                     view_model.set_gpu_usage(app.usage_stats.gpu_usage);
+                    view_model.set_gpu_memory_usage(app.usage_stats.gpu_memory_usage);
 
                     view_model
                 };
@@ -793,7 +802,28 @@ mod imp {
                     })
                     .into()
             });
-            self.gpu_column.set_sorter(Some(&sorter));
+            self.gpu_usage_column.set_sorter(Some(&sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = lhs.property::<f32>("gpu-memory-usage");
+                        let rhs = rhs.property::<f32>("gpu-memory-usage");
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.gpu_memory_column.set_sorter(Some(&sorter));
 
             let column_view_sorter = self.column_view.sorter();
             if let Some(column_view_sorter) = column_view_sorter.as_ref() {
@@ -828,7 +858,8 @@ mod imp {
                             let cc = this.imp().cpu_column.as_ptr() as usize;
                             let mc = this.imp().memory_column.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
-                            let gc = this.imp().gpu_column.as_ptr() as usize;
+                            let gc = this.imp().gpu_usage_column.as_ptr() as usize;
+                            let gm = this.imp().gpu_memory_column.as_ptr() as usize;
 
                             if let Err(e) = if sort_column == nc {
                                 settings.set_enum("apps-page-sorting-column", 0)
@@ -842,6 +873,8 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 4)
                             } else if sort_column == gc {
                                 settings.set_enum("apps-page-sorting-column", 5)
+                            } else if sort_column == gm {
+                                settings.set_enum("apps-page-sorting-column", 6)
                             } else {
                                 g_critical!(
                                         "MissionCenter::AppsPage",
@@ -912,7 +945,8 @@ mod imp {
                     2 => &self.cpu_column,
                     3 => &self.memory_column,
                     4 => &self.disk_column,
-                    5 => &self.gpu_column,
+                    5 => &self.gpu_usage_column,
+                    6 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
                         glib::g_critical!(
@@ -1002,7 +1036,7 @@ mod imp {
             }
             self.column_header_disk.set(column_header_disk);
 
-            let column_header_gpu = self.column_header_gpu.take();
+            let column_header_gpu = self.column_header_gpu_usage.take();
             if let Some(column_header_gpu) = &column_header_gpu {
                 let avg = readings
                     .gpu_dynamic_info
@@ -1012,7 +1046,21 @@ mod imp {
                     / readings.gpu_dynamic_info.len() as f32;
                 column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
             }
-            self.column_header_gpu.set(column_header_gpu);
+            self.column_header_gpu_usage.set(column_header_gpu);
+
+            let column_header_gpu_mem = self.column_header_gpu_memory_usage.take();
+            if let Some(column_header_gpu_mem) = &column_header_gpu_mem {
+                let avg = readings
+                    .gpu_dynamic_info
+                    .iter()
+                    .enumerate()
+                    .map(|(i, g)| (g.used_memory * 100) / readings.gpu_static_info[i].total_memory)
+                    .sum::<u64>() as f32
+                    / readings.gpu_dynamic_info.len() as f32;
+                column_header_gpu_mem.set_heading(format!("{:.0}%", avg.round()));
+            }
+            self.column_header_gpu_memory_usage
+                .set(column_header_gpu_mem);
         }
 
         fn update_process_model(
@@ -1089,8 +1137,10 @@ mod imp {
                         .disk_usage(child.usage_stats.disk_usage)
                         .network_usage(child.usage_stats.network_usage)
                         .gpu_usage(child.usage_stats.gpu_usage)
+                        .gpu_mem_usage(child.usage_stats.gpu_memory_usage)
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
+                        .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
 
                     model.append(&view_model);
@@ -1107,6 +1157,7 @@ mod imp {
                     view_model.set_disk_usage(child.usage_stats.disk_usage);
                     view_model.set_network_usage(child.usage_stats.network_usage);
                     view_model.set_gpu_usage(child.usage_stats.gpu_usage);
+                    view_model.set_gpu_memory_usage(child.usage_stats.gpu_memory_usage);
 
                     view_model.children().clone()
                 };
@@ -1187,22 +1238,33 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
-            if let Some(column_view_title) = column_view_title {
-                let (_, column_header_gpu) = self.configure_column_header(
-                    &column_view_title,
-                    &i18n("GPU"),
-                    "0%",
-                    gtk::Align::End,
-                );
-
-                self.column_header_gpu.set(Some(column_header_gpu));
-            }
 
             self.column_header_name.set(Some(column_header_name));
             self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_disk.set(Some(column_header_disk));
+
+            if let Some(column_view_title) = column_view_title {
+                let (column_view_title, column_header_gpu_usage) = self.configure_column_header(
+                    &column_view_title,
+                    &i18n("GPU Usage"),
+                    "0%",
+                    gtk::Align::End,
+                );
+
+                let (_, column_header_gpu_memory) = self.configure_column_header(
+                    &column_view_title.unwrap(),
+                    &i18n("GPU Mem"),
+                    "0%",
+                    gtk::Align::End,
+                );
+
+                self.column_header_gpu_usage
+                    .set(Some(column_header_gpu_usage));
+                self.column_header_gpu_memory_usage
+                    .set(Some(column_header_gpu_memory));
+            }
         }
     }
 
@@ -1226,7 +1288,16 @@ impl AppsPage {
         let this = self.imp();
 
         if readings.gpu_static_info.is_empty() {
-            this.column_view.remove_column(&this.gpu_column);
+            this.column_view.remove_column(&this.gpu_usage_column);
+            this.column_view.remove_column(&this.gpu_memory_column);
+        } else {
+            this.max_gpu_memory_usage.set(
+                readings
+                    .gpu_static_info
+                    .iter()
+                    .map(|g| g.total_memory as f32)
+                    .sum(),
+            );
         }
 
         this.max_cpu_usage.set(num_cpus::get() as f32 * 100.0);

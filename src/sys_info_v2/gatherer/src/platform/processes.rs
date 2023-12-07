@@ -45,6 +45,7 @@ pub struct ProcessUsageStats {
     pub disk_usage: f32,
     pub network_usage: f32,
     pub gpu_usage: f32,
+    pub gpu_memory_usage: f32,
 }
 
 impl ProcessUsageStats {
@@ -54,6 +55,7 @@ impl ProcessUsageStats {
         self.disk_usage += other.disk_usage;
         self.network_usage += other.network_usage;
         self.gpu_usage += other.gpu_usage;
+        self.gpu_memory_usage += other.gpu_memory_usage;
     }
 }
 
@@ -106,7 +108,7 @@ impl Arg for crate::platform::Processes {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Array;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("a(sassyuu(ddddd)t)")
+        dbus::Signature::from("a(sassyuu(dddddd)t)")
     }
 }
 
@@ -129,6 +131,7 @@ impl Append for crate::platform::Processes {
                             p.usage_stats().disk_usage as f64,
                             p.usage_stats().network_usage as f64,
                             p.usage_stats().gpu_usage as f64,
+                            p.usage_stats().gpu_memory_usage as f64,
                         ),
                         p.task_count() as u64,
                     )

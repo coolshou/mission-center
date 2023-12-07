@@ -51,7 +51,7 @@ impl Arg for crate::platform::App {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssssau(ddddd))")
+        dbus::Signature::from("(ssssau(dddddd))")
     }
 }
 
@@ -69,6 +69,7 @@ impl Append for crate::platform::App {
                 self.usage_stats().disk_usage as f64,
                 self.usage_stats().network_usage as f64,
                 self.usage_stats().gpu_usage as f64,
+                self.usage_stats().gpu_memory_usage as f64,
             ),
         ));
     }
