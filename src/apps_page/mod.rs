@@ -1054,7 +1054,13 @@ mod imp {
                     .gpu_dynamic_info
                     .iter()
                     .enumerate()
-                    .map(|(i, g)| (g.used_memory * 100) / readings.gpu_static_info[i].total_memory)
+                    .map(|(i, g)| {
+                        let total_memory = readings.gpu_static_info[i].total_memory;
+                        if total_memory == 0 {
+                            return 0;
+                        }
+                        (g.used_memory * 100) / total_memory
+                    })
                     .sum::<u64>() as f32
                     / readings.gpu_dynamic_info.len() as f32;
                 column_header_gpu_mem.set_heading(format!("{:.0}%", avg.round()));
