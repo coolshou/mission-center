@@ -45,6 +45,7 @@ pub struct ProcessUsageStats {
     pub disk_usage: f32,
     pub network_usage: f32,
     pub gpu_usage: f32,
+    pub gpu_memory_usage: f32,
 }
 
 impl ProcessUsageStats {
@@ -54,6 +55,7 @@ impl ProcessUsageStats {
         self.disk_usage += other.disk_usage;
         self.network_usage += other.network_usage;
         self.gpu_usage += other.gpu_usage;
+        self.gpu_memory_usage += other.gpu_memory_usage;
     }
 }
 
@@ -262,7 +264,7 @@ impl From<&dyn RefArg> for Process {
                     return this;
                 }
                 Some(stats) => {
-                    let mut values = [0_f32; 5];
+                    let mut values = [0_f32; 6];
 
                     for (i, v) in stats.enumerate() {
                         values[i] = v.as_f64().unwrap_or(0.) as f32;
@@ -273,6 +275,7 @@ impl From<&dyn RefArg> for Process {
                     this.usage_stats.disk_usage = values[2];
                     this.usage_stats.network_usage = values[3];
                     this.usage_stats.gpu_usage = values[4];
+                    this.usage_stats.gpu_memory_usage = values[5];
                 }
             },
         };
@@ -320,7 +323,7 @@ impl Arg for ProcessMap {
     const ARG_TYPE: ArgType = ArgType::Array;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(sassyuu(ddddd)t)")
+        Signature::from("a(sassyuu(dddddd)t)")
     }
 }
 

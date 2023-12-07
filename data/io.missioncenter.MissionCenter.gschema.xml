@@ -13,6 +13,7 @@
         <value nick="Memory" value="3"/>
         <value nick="Disk" value="4"/>
         <value nick="Gpu" value="5"/>
+        <value nick="GpuMem" value="6"/>
         <value nick="None" value="255"/>
     </enum>
 

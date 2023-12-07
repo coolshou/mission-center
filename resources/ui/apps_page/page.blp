@@ -57,6 +57,8 @@ template $AppsPage : Box {
 
                 cpu-usage-percent: bind (expander.item as <$ViewModel>).cpu-usage-percent;
                 memory-usage-percent: bind (expander.item as <$ViewModel>).memory-usage-percent;
+                gpu-usage-percent: bind (expander.item as <$ViewModel>).gpu-usage;
+                gpu-memory-usage-percent: bind (expander.item as <$ViewModel>).gpu-memory-usage-percent;
               };
             };
           }
@@ -164,7 +166,7 @@ template $AppsPage : Box {
         };
       }
 
-      ColumnViewColumn gpu_column {
+      ColumnViewColumn gpu_usage_column {
         resizable: true;
         fixed-width: 90;
 
@@ -183,6 +185,32 @@ template $AppsPage : Box {
                 unit: "%";
                 value: bind (expander.item as <$ViewModel>).gpu-usage;
                 usage-percent: bind (expander.item as <$ViewModel>).gpu-usage;
+                content-type: bind (expander.item as <$ViewModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn gpu_memory_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "B";
+                value: bind (expander.item as <$ViewModel>).gpu-memory-usage;
+                usage-percent: bind (expander.item as <$ViewModel>).gpu-memory-usage-percent;
                 content-type: bind (expander.item as <$ViewModel>).content-type;
               };
             };

@@ -106,56 +106,6 @@ lazy_static! {
             Some(app_path) => app_path.to_owned(),
         }
     };
-    static ref CACHE_DIR: String = {
-        let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
-            std::env::var("HOME")
-                .and_then(|v| Ok(v + "/.cache"))
-                .unwrap_or("/tmp".to_string()),
-        );
-        cache_dir.push_str("/io.missioncenter.MissionCenter");
-        std::fs::create_dir_all(cache_dir.as_str()).unwrap_or(());
-        cache_dir
-    };
-    static ref STATE_DIR: String = {
-        let state_dir = if *IS_FLATPAK {
-            let mut cache_dir = std::env::var("XDG_CACHE_HOME").unwrap_or(
-                std::env::var("HOME")
-                    .and_then(|v| Ok(v + "/.var/app/io.missioncenter.MissionCenter/.local"))
-                    .unwrap_or("/tmp/io.missioncenter.MissionCenter/.local".to_string()),
-            );
-            cache_dir.push_str("/../.local/state");
-
-            match std::fs::create_dir_all(cache_dir.as_str()) {
-                Err(e) => {
-                    gtk::glib::g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Unable to create state dir: {}",
-                        e
-                    );
-                    "/tmp/io.missioncenter.MissionCenter/state".to_string()
-                }
-                _ => std::path::Path::new(cache_dir.as_str())
-                    .canonicalize()
-                    .unwrap_or(std::path::PathBuf::from(
-                        "/tmp/io.missioncenter.MissionCenter/state",
-                    ))
-                    .to_string_lossy()
-                    .to_string(),
-            }
-        } else {
-            std::env::var("HOME")
-                .and_then(|mut v| {
-                    Ok({
-                        v.push_str("/.local/state/io.missioncenter.MissionCenter");
-                        v
-                    })
-                })
-                .unwrap_or("/tmp/io.missioncenter.MissionCenter/state".to_string())
-        };
-
-        std::fs::create_dir_all(state_dir.as_str()).unwrap_or(());
-        state_dir
-    };
 }
 
 enum Message {

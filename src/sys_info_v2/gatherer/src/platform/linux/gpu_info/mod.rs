@@ -805,6 +805,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 let process = unsafe { &*dev.processes.add(i) };
                 if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
                     proc.usage_stats.gpu_usage = process.gpu_usage as f32;
+                    proc.usage_stats.gpu_memory_usage = process.gpu_memory_usage as f32;
                 }
             }
         }

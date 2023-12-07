@@ -60,14 +60,19 @@ mod imp {
         pub network_usage: Cell<f32>,
         #[property(get, set)]
         pub gpu_usage: Cell<f32>,
+        #[property(get, set = Self::set_gpu_memory_usage)]
+        pub gpu_memory_usage: Cell<f32>,
 
         #[property(get)]
         pub cpu_usage_percent: Cell<f32>,
         #[property(get)]
         pub memory_usage_percent: Cell<f32>,
+        #[property(get)]
+        pub gpu_memory_usage_percent: Cell<f32>,
 
         pub max_cpu_usage: Cell<f32>,
         pub max_memory_usage: Cell<f32>,
+        pub max_gpu_memory_usage: Cell<f32>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -99,12 +104,15 @@ mod imp {
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
+                gpu_memory_usage: Cell::new(0.),
 
                 cpu_usage_percent: Cell::new(0.),
                 memory_usage_percent: Cell::new(0.),
+                gpu_memory_usage_percent: Cell::new(0.),
 
                 max_cpu_usage: Cell::new(0.),
                 max_memory_usage: Cell::new(0.),
+                max_gpu_memory_usage: Cell::new(0.),
 
                 children: Cell::new(gio::ListStore::new::<super::ViewModel>()),
             }
@@ -169,27 +177,40 @@ mod imp {
         pub fn set_cpu_usage(&self, cpu_usage: f32) {
             self.cpu_usage.set(cpu_usage);
 
-            let usage_precent = if self.max_cpu_usage.get() == 0. {
+            let usage_percent = if self.max_cpu_usage.get() == 0. {
                 0.
             } else {
                 self.cpu_usage.get() * 100.0 / self.max_cpu_usage.get()
             };
 
-            self.cpu_usage_percent.set(usage_precent);
+            self.cpu_usage_percent.set(usage_percent);
             self.obj().notify_cpu_usage_percent();
         }
 
         pub fn set_memory_usage(&self, memory_usage: f32) {
             self.memory_usage.set(memory_usage);
 
-            let usage_precent = if self.max_memory_usage.get() == 0. {
+            let usage_percent = if self.max_memory_usage.get() == 0. {
                 0.
             } else {
                 self.memory_usage.get() * 100.0 / self.max_memory_usage.get()
             };
 
-            self.memory_usage_percent.set(usage_precent);
+            self.memory_usage_percent.set(usage_percent);
             self.obj().notify_memory_usage_percent();
+        }
+
+        pub fn set_gpu_memory_usage(&self, memory_usage: f32) {
+            self.gpu_memory_usage.set(memory_usage);
+
+            let usage_percent = if self.max_gpu_memory_usage.get() == 0. {
+                0.
+            } else {
+                self.gpu_memory_usage.get() * 100.0 / self.max_gpu_memory_usage.get()
+            };
+
+            self.gpu_memory_usage_percent.set(usage_percent);
+            self.obj().notify_gpu_memory_usage_percent();
         }
 
         pub fn content_type(&self) -> u8 {
@@ -256,8 +277,11 @@ pub struct ViewModelBuilder {
     disk_usage: f32,
     network_usage: f32,
     gpu_usage: f32,
+    gpu_mem_usage: f32,
+
     max_cpu_usage: f32,
     max_memory_usage: f32,
+    max_gpu_memory_usage: f32,
 }
 
 impl ViewModelBuilder {
@@ -278,9 +302,11 @@ impl ViewModelBuilder {
             disk_usage: 0.,
             network_usage: 0.,
             gpu_usage: 0.,
+            gpu_mem_usage: 0.,
 
             max_cpu_usage: 0.,
             max_memory_usage: 0.,
+            max_gpu_memory_usage: 0.,
         }
     }
 
@@ -349,6 +375,11 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn gpu_mem_usage(mut self, gpu_mem_usage: f32) -> Self {
+        self.gpu_mem_usage = gpu_mem_usage;
+        self
+    }
+
     pub fn max_cpu_usage(mut self, v: f32) -> Self {
         self.max_cpu_usage = v;
         self
@@ -359,24 +390,35 @@ impl ViewModelBuilder {
         self
     }
 
+    pub fn max_gpu_memory_usage(mut self, v: f32) -> Self {
+        self.max_gpu_memory_usage = v;
+        self
+    }
+
     pub fn build(self) -> ViewModel {
         let this = ViewModel::new(self.content_type, self.show_expander);
 
         {
             let this = this.imp();
+
             this.pid.set(self.pid);
             this.icon.set(self.icon);
             this.name.set(self.name);
             this.id.set(self.id);
+
             this.expanded.set(self.expanded);
             this.section_type.set(self.section_type);
-            this.cpu_usage.set(self.cpu_usage);
-            this.memory_usage.set(self.memory_usage);
+
+            this.set_cpu_usage(self.cpu_usage);
+            this.set_memory_usage(self.memory_usage);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
+            this.set_gpu_memory_usage(self.gpu_mem_usage);
+
             this.max_cpu_usage.set(self.max_cpu_usage);
             this.max_memory_usage.set(self.max_memory_usage);
+            this.max_gpu_memory_usage.set(self.max_gpu_memory_usage);
         }
 
         this

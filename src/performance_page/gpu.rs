@@ -354,7 +354,7 @@ mod imp {
                 .add_data_point(0, gpu.used_memory as f32);
 
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
-            if let Some(memory_usage_current) = this.memory_speed_current.get() {
+            if let Some(memory_usage_current) = this.memory_usage_current.get() {
                 memory_usage_current.set_text(&format!(
                     "{0:.2$} {1}{3}B",
                     used_memory.0,
@@ -381,7 +381,7 @@ mod imp {
             let memory_speed =
                 crate::to_human_readable(gpu.mem_speed_mhz as f32 * 1_000_000., 1000.);
             let ms_max = crate::to_human_readable(gpu.mem_speed_max_mhz as f32 * 1_000_000., 1000.);
-            if let Some(memory_speed_current) = this.memory_usage_current.get() {
+            if let Some(memory_speed_current) = this.memory_speed_current.get() {
                 memory_speed_current.set_text(&format!(
                     "{0:.2$} {1}Hz",
                     memory_speed.0, memory_speed.1, memory_speed.2
