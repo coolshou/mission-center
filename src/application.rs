@@ -278,15 +278,23 @@ impl MissionCenterApplication {
             .release_notes(
                 r#"<p>Features:</p>
 <ul>
-<li>Improve memory composition graph</li>
-<li>Add GPU usage column in the Apps tab</li>
-<li>Reduce memory usage and fix a memory leak in the main app</li>
+<li>Update to GTK 4.12 and libadwaita 1.4</li>
+<li>Redesigned the Performance tab to be adaptive</li>
+<li>Early and very minimal Intel GPU support</li>
+<li>Add GPU memory usage column to the Apps page</li>
+<li>Added an AppImage7</li>
+<li>The Performance tab now shows what kind of virtualization is enabled on the host</li>
+<li>The logical CPU graphs are now arranged in a more pleasing manner</li>
+<li>The Gatherer was rearchitected and now uses D-Bus for communication with the main app</li>
 </ul>
 <p>Fixes:</p>
 <ul>
-<li>Fix a crash at start-up when flatpak data is stored in a path with spaces</li>
-<li>Fix incorrect base frequency in AMD CPUs</li>
-<li>Fix missing video encode/decode information in the GPU tab</li>
+<li>Fix misaligned header in the Apps tab with GTK 4.12</li>
+<li>Fix app and Gatherer not starting due to LD_PRELOAD being set in the host environment</li>
+<li>Fix sometimes Apps not showing the accumulated resource usage from all it's children</li>
+<li>Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled</li>
+<li>Fix Virtualization reported as Unknown under certain circumstances</li>
+<li>Fix a Gatherer crash on older CPUs</li>
 </ul>
 <p>A lot of new translations and fixes to existing ones</p>"#,
             )
