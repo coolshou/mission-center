@@ -30,8 +30,7 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 Please note there is ongoing work to overcome all of these.
 
 * No per-process network usage [#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3)
-* GPU support is experimental and only AMD and nVidia GPUs can be
-  monitored [#5](https://gitlab.com/mission-center-devs/mission-center/-/issues/5)
+* GPU support is experimental
 
 Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes).  If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
 
@@ -104,7 +103,7 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 **Build instructions**
 
 ```bash
-# On Ubuntu 23.04 all dependencies, except for the Rust toolchain, can be installed with:
+# On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
 sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
@@ -143,7 +142,7 @@ missioncenter
 ### Building - AppImage
 
 ```bash
-# On Ubuntu 23.04 all dependencies, except for the Rust toolchain, can be installed with:
+# On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
 sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
@@ -181,12 +180,10 @@ Install the required Flatpak runtimes and SDKs:
 
 ```bash
 flatpak install -y \
-    org.freedesktop.Platform//22.08 \
-    org.freedesktop.Sdk//22.08 \
-    org.gnome.Platform//44 \
-    org.gnome.Sdk//44 \
-    org.freedesktop.Sdk.Extension.llvm16//22.08 \
-    org.freedesktop.Sdk.Extension.rust-stable//22.08
+    org.freedesktop.Platform//23.08 \
+    org.freedesktop.Sdk//23.08 \
+    org.gnome.Platform//45 \
+    org.gnome.Sdk//45
 ```
 
 Finally build a Flatpak package:

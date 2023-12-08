@@ -576,7 +576,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
             let mut pci_bus_id = ArrayString::<16>::new();
-            match write!(pci_bus_id, "{}", pdev) {
+            match write!(pci_bus_id, "{}", pdev.to_ascii_uppercase()) {
                 Ok(_) => {}
                 Err(_) => {
                     warning!(
@@ -702,10 +702,11 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         for (pci_id, static_info) in &mut self.static_info {
             let _ = write!(dri_path, "/dev/dri/by-path/pci-{}-card", pci_id);
             if !std::path::Path::new(dri_path.as_str()).exists() {
+                dri_path.clear();
                 let _ = write!(
                     dri_path,
                     "/dev/dri/by-path/pci-{}-card",
-                    pci_id.to_lowercase()
+                    pci_id.to_ascii_lowercase()
                 );
             }
             static_info.opengl_version =
