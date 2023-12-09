@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-10-27 09:27+0000\n"
+"PO-Revision-Date: 2023-12-09 10:15+0000\n"
 "Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -208,7 +208,7 @@ msgstr "論理プロセッサ"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr "カーネル時間を表示定"
+msgstr "カーネル時間を表示"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:179
@@ -216,7 +216,7 @@ msgstr "カーネル時間を表示定"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "グラフの要約ビュー"
+msgstr "グラフ全表示モード (_S)"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:184
@@ -224,7 +224,7 @@ msgstr "グラフの要約ビュー"
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr "表示"
+msgstr "表示 (_V)"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:187
@@ -232,7 +232,7 @@ msgstr "表示"
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CPU (_U)"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:192
@@ -240,7 +240,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr "メモリ"
+msgstr "メモリ (_M)"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:197
@@ -248,7 +248,7 @@ msgstr "メモリ"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Disk"
-msgstr "ディスク"
+msgstr "ディスク (_D)"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:202
@@ -256,7 +256,7 @@ msgstr "ディスク"
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr "ネットワーク"
+msgstr "ネットワーク (_N)"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:207
@@ -575,7 +575,7 @@ msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "使用率"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
