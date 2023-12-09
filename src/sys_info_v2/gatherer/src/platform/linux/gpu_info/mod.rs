@@ -576,7 +576,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
             let mut pci_bus_id = ArrayString::<16>::new();
-            match write!(pci_bus_id, "{}", pdev.to_ascii_uppercase()) {
+            match write!(pci_bus_id, "{}", pdev) {
                 Ok(_) => {}
                 Err(_) => {
                     warning!(
