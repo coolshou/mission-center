@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-11-25 09:50+0000\n"
+"PO-Revision-Date: 2023-12-10 17:05+0000\n"
 "Last-Translator: Gert-dev <Gert-dev@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2.1-rc\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -301,7 +301,7 @@ msgstr "Handles"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr "Ouderdom"
+msgstr "Tijd in bedrijf"
 
 #: resources/ui/performance_page/cpu_details.blp:188
 msgid "Base Speed:"
@@ -763,7 +763,7 @@ msgstr "Ja"
 
 #: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:234
 msgid "No"
-msgstr "Neen"
+msgstr "Nee"
 
 #: src/performance_page/cpu.rs:869
 msgid "Utilization over {} seconds"
@@ -788,7 +788,7 @@ msgstr "Authenticeren mislukt"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Meer informatie"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
