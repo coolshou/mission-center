@@ -113,6 +113,14 @@
 
     <releases>
 
+        <release version="0.4.1" date="2023-12-09">
+            <description translatable="no">
+                <ul>
+                    <li>Fix a regression in 0.4.0 where GPU data would not be available for some users</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.4.0" date="2023-12-08">
             <description translatable="no">
                 <p>Features:</p>
