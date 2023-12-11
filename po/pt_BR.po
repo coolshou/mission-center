@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-01 08:04+0000\n"
-"Last-Translator: Tiago Lucas Flach <tiagolucas9830@gmail.com>\n"
+"PO-Revision-Date: 2023-12-13 02:06+0000\n"
+"Last-Translator: Halan Germano Bacca <halanbacca@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -21,7 +21,6 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
-#, fuzzy
 msgid "Mission Center"
 msgstr "Central de Missões"
 
@@ -30,8 +29,9 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Gerenciador de tarefas;Monitor de recursos;Monitor de sistema;Processador;"
-"Processos;Monitor de desempenho;CPU;GPU;Disco;Memória;Rede;Utilização"
+"Gerenciador de tarefas;Monitor de recursos;Monitor do "
+"sistema;Processador;Processos;Monitor de "
+"desempenho;CPU;GPU;Disco;Memória;Rede;Utilização"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -204,14 +204,12 @@ msgid "100%"
 msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
-#, fuzzy
 msgid "Change G_raph To"
-msgstr "Mudar G_raph Para"
+msgstr "Mudar gráfico para"
 
 #: resources/ui/performance_page/cpu.blp:145
-#, fuzzy
 msgid "Overall U_tilization"
-msgstr "Utilização Geral"
+msgstr "U_tilização geral"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
@@ -476,9 +474,8 @@ msgstr "Disponível"
 
 #: resources/ui/performance_page/memory_details.blp:98
 #: resources/ui/performance_page/memory_details.blp:78
-#, fuzzy
 msgid "Committed"
-msgstr "Empenhada"
+msgstr "Comprometida"
 
 #: resources/ui/performance_page/memory_details.blp:121
 #: resources/ui/performance_page/memory_details.blp:101
@@ -507,16 +504,14 @@ msgstr "Slots usados:"
 
 #: resources/ui/performance_page/memory_details.blp:216
 #: resources/ui/performance_page/memory_details.blp:196
-#, fuzzy
 msgid "Form factor:"
-msgstr "Fator de forma:"
+msgstr "Formato de memória:"
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
 msgstr "Taxa de transferência"
 
 #: resources/ui/performance_page/network.blp:155
-#, fuzzy
 msgid "Network Se_ttings"
 msgstr "Configurações de Rede"
 
