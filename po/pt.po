@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-11-15 06:05+0000\n"
-"Last-Translator: Tiago Lucas Flach <tiagolucas9830@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/pt/>\n"
+"PO-Revision-Date: 2023-12-13 02:06+0000\n"
+"Last-Translator: Halan Germano Bacca <halanbacca@outlook.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -84,12 +84,18 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Veja informações da interface de rede, como nome da placa de rede, tipo de "
+"conexão (Wi-Fi ou Ethernet), velocidades e frequência da rede sem fio, "
+"endereço de hardware, endereço IP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Monitore o uso geral da GPU, o uso do codificador e decodificador de vídeo, "
+"o uso da memória e o consumo de energia, alimentado pelo popular projeto "
+"NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
@@ -97,13 +103,15 @@ msgstr "Veja um detalhamento do uso de recursos por aplicativo e processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Suporta uma visualização resumida para monitoramento simples"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"Use a renderização OpenGL para todos os gráficos em um esforço para reduzir "
+"o uso geral de CPU e recursos"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
@@ -115,15 +123,15 @@ msgstr "Desenvolvido em Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak primeiro"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Limitações (há trabalho em andamento para superar todas elas):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Sem uso de rede por processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid ""
@@ -150,18 +158,22 @@ msgstr ""
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"As estatísticas dos processos pai e filho são mostradas individualmente ou "
+"mescladas para cima"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
 msgstr ""
+"A classificação de colunas persiste durante as reinicializações do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"O ID da coluna pela qual a visualização da página Aplicativos é classificada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "A direção de classificação da visualização da página Aplicativos"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
@@ -169,7 +181,7 @@ msgstr "Qual gráfico é mostrado na página de desempenho da CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Mostrar tempos de kernel nos gráficos de CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
@@ -207,7 +219,7 @@ msgstr "_Processadores lógicos"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Mostrar tempos de kernel"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:179
@@ -614,23 +626,25 @@ msgstr "Configurações gerais"
 
 #: resources/ui/preferences/page.blp:37
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Mesclar estatísticas do processo"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Lembrar da classificação"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Lembrar da classificação do aplicativo e da lista de processos durante as "
+"reinicializações do aplicativo"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "Recursos"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Alternar barra lateral"
 
 #: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
@@ -670,9 +684,8 @@ msgid "Disk"
 msgstr "Disco"
 
 #: src/apps_page/mod.rs:1187 src/apps_page/mod.rs:1174
-#, fuzzy
 msgid "GPU"
-msgstr "_GPU"
+msgstr "GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -715,28 +728,28 @@ msgstr ""
 "utilizado por outro processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:337
-#, fuzzy
 msgid ""
 "Standby ({}B)\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Em espera ({}iB)\n"
+"Em espera ({}B)\n"
 "\n"
-"Memória que contém dados em cache e código ainda não ativo"
+"Memória que contém dados e códigos armazenados em cache que não estão em uso "
+"ativo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:350
-#, fuzzy
 msgid ""
 "Free ({}B)\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Livre ({}iB)\n"
+"Livre ({}B)\n"
 "\n"
-"Memória que não se encontra em uso, e que vai ser ter prioridade quando o "
-"sistema, os drivers ou aplicativos precisem de mais memória"
+"Memória que não está em uso no momento e que será reaproveitada primeiro "
+"quando o sistema operacional, os drivers ou os aplicativos precisarem de "
+"mais memória"
 
 #: src/performance_page/mod.rs:489 src/performance_page/disk.rs:196
 msgid "Disk {} ({})"
@@ -790,9 +803,8 @@ msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:853 src/performance_page/mod.rs:861
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:316
 msgid "Supported"
@@ -811,7 +823,6 @@ msgid "No"
 msgstr "Não"
 
 #: src/performance_page/cpu.rs:869
-#, fuzzy
 msgid "Utilization over {} seconds"
 msgstr "% de uso em {} segundos"
 
@@ -826,18 +837,16 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Codificação de vídeo"
+msgstr "Codificação/decodificação de vídeo"
 
 #: src/performance_page/memory.rs:477
-#, fuzzy
 msgid "Authentication failed"
-msgstr "_Autenticar"
+msgstr "Falha na autenticação"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Mais informações"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
