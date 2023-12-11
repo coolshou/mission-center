@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-09 10:15+0000\n"
+"PO-Revision-Date: 2023-12-13 02:06+0000\n"
 "Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
@@ -144,7 +144,7 @@ msgstr "コメントや提案、バグレポート、貢献を歓迎していま
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:30
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "アプリケーション起動時に表示されるページ"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
@@ -768,14 +768,12 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/秒"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "ビデオエンコード"
+msgstr "ビデオ エンコード/デコード"
 
 #: src/performance_page/memory.rs:477
-#, fuzzy
 msgid "Authentication failed"
-msgstr "認証"
+msgstr "認証に失敗しました"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
