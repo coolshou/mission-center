@@ -20,9 +20,9 @@
 
 use std::sync::Arc;
 
-use lazy_static::lazy_static;
-
 use crate::platform::cpu_info::*;
+
+use super::{CPU_COUNT, HZ};
 
 const PROC_STAT_USER: usize = 0;
 const PROC_STAT_NICE: usize = 1;
@@ -33,11 +33,6 @@ const PROC_STAT_GUEST: usize = 8;
 const PROC_STAT_GUEST_NICE: usize = 9;
 
 const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
-
-lazy_static! {
-    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
-    static ref CPU_COUNT: usize = num_cpus::get();
-}
 
 #[derive(Debug, Copy, Clone)]
 struct CpuStats {

@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use lazy_static::lazy_static;
+
 pub use apps::*;
 pub use cpu_info::*;
 pub use gpu_info::*;
@@ -29,3 +31,12 @@ mod cpu_info;
 mod gpu_info;
 mod processes;
 mod utilities;
+
+extern "C" {
+    fn get_nprocs_conf() -> libc::c_int;
+}
+
+lazy_static! {
+    static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
+    static ref CPU_COUNT: usize = unsafe { get_nprocs_conf() as usize };
+}
