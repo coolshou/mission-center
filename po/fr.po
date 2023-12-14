@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-11-06 09:35+0000\n"
-"Last-Translator: tachyglossues <tachyglossues@gmail.com>\n"
+"PO-Revision-Date: 2023-12-09 10:15+0000\n"
+"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -247,7 +247,7 @@ msgstr "_Affichage"
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:192
@@ -351,9 +351,8 @@ msgid "Disk transfer rate"
 msgstr "Débit du disque"
 
 #: resources/ui/performance_page/disk_details.blp:69
-#, fuzzy
 msgid "Avg. response time"
-msgstr "Temps de réponse moyen"
+msgstr "Temps de réponse moy."
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
@@ -592,11 +591,11 @@ msgstr ""
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "Ressources"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Basculer la barre latérale"
 
 #: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
@@ -635,9 +634,8 @@ msgid "Disk"
 msgstr "Disque"
 
 #: src/apps_page/mod.rs:1187
-#, fuzzy
 msgid "GPU"
-msgstr "_GPU"
+msgstr "GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -757,7 +755,7 @@ msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:853 src/performance_page/mod.rs:861
 msgid "{}: {} {}bps"
-msgstr "{} {} b/s"
+msgstr "{} : {} {}bps"
 
 #: src/performance_page/cpu.rs:316
 msgid "Supported"
@@ -789,23 +787,21 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{} o/s"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Encodage vidéo"
+msgstr "Encodage / décodage vidéo"
 
 #: src/performance_page/memory.rs:477
-#, fuzzy
 msgid "Authentication failed"
-msgstr "S’_authentifier"
+msgstr "Échec de l’authentification"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Plus d’informations"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
 msgid "{} {}bps"
-msgstr "{} {} b/s"
+msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:477 src/performance_page/network.rs:492
 msgid "N/A"
