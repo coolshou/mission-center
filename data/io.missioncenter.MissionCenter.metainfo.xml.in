@@ -113,6 +113,15 @@
 
     <releases>
 
+        <release version="0.4.2" date="2023-12-14">
+            <description translatable="no">
+                <ul>
+                    <li>Fix a bug where the number of CPUs was incorrectly detected on some systems</li>
+                    <li>Add missing icon for the details panel in the Performance tab</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.4.1" date="2023-12-09">
             <description translatable="no">
                 <ul>

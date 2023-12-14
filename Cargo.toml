@@ -1,6 +1,6 @@
 [package]
 name = "missioncenter"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 build = "build/build.rs"
 
@@ -17,7 +17,6 @@ interprocess = { version = "1.2" }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 libudev-sys = { version = "0.1" }
-num_cpus = { version = "1.16" }
 pathfinder_canvas = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
 pathfinder_color = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
 pathfinder_content = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }

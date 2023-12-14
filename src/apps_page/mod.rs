@@ -1317,7 +1317,8 @@ impl AppsPage {
             }
         }
 
-        this.max_cpu_usage.set(num_cpus::get() as f32 * 100.0);
+        this.max_cpu_usage
+            .set(readings.cpu_static_info.logical_cpu_count as f32 * 100.0);
         this.max_memory_usage
             .set(readings.mem_info.mem_total as f32);
 

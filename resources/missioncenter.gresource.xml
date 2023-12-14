@@ -3,6 +3,7 @@
     <gresource prefix="/io/missioncenter/MissionCenter/icons/scalable/actions/">
         <file preprocess="xml-stripblanks">application-x-executable.svg</file>
         <file preprocess="xml-stripblanks">check-plain-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">info-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-00-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-25-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-50-symbolic.svg</file>

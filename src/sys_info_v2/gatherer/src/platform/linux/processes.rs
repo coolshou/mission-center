@@ -382,18 +382,17 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
 
                     process.usage_stats.cpu_usage =
                         (((delta_utime + delta_stime) / delta_time.as_millis() as f32) * 100.)
-                            .min(100. * num_cpus::get() as f32);
+                            .min((*super::CPU_COUNT as f32) * 100.);
 
                     let prev_read_bytes = process.raw_stats.disk_read_bytes;
                     let prev_write_bytes = process.raw_stats.disk_write_bytes;
 
                     let read_speed =
-                        (io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes)) as f32
+                        io_parsed[PROC_PID_IO_READ_BYTES].saturating_sub(prev_read_bytes) as f32
                             / delta_time.as_secs_f32();
-                    let write_speed = (io_parsed[PROC_PID_IO_WRITE_BYTES]
-                        .saturating_sub(prev_write_bytes))
-                        as f32
-                        / delta_time.as_secs_f32();
+                    let write_speed =
+                        io_parsed[PROC_PID_IO_WRITE_BYTES].saturating_sub(prev_write_bytes) as f32
+                            / delta_time.as_secs_f32();
                     process.usage_stats.disk_usage = (read_speed + write_speed) / 2.;
 
                     process
