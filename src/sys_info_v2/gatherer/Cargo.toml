@@ -1,7 +1,7 @@
 [package]
 build = "build/build.rs"
 name = "gatherer"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 
 [dependencies]
@@ -14,7 +14,6 @@ egl = { version = "0.2" }
 gbm = { version = "0.14.0", default-features = false, features = ["drm-support"] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
-num_cpus = { version = "1" }
 rust-ini = { version = "0.20" }
 
 [build-dependencies]
