@@ -113,6 +113,14 @@
 
     <releases>
 
+        <release version="0.4.3" date="2023-12-15">
+            <description translatable="no">
+                <ul>
+                    <li>Fix a bug where the number of CPUs was incorrectly detected on some systems (again!)</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.4.2" date="2023-12-14">
             <description translatable="no">
                 <ul>
