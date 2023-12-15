@@ -1406,13 +1406,10 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
             result
         }
 
-        let proc_stat = match std::fs::read_to_string("/proc/stat") {
-            Err(e) => {
-                critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
-                "".to_owned()
-            }
-            Ok(s) => s,
-        };
+        let proc_stat = std::fs::read_to_string("/proc/stat").unwrap_or_else(|e| {
+            critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
+            "".to_owned()
+        });
 
         let stats_cache = &mut self.cpu_stats_cache;
 
@@ -1429,6 +1426,10 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
             stats_cache[0] = overall_stats;
 
             for (i, line) in line_iter.enumerate() {
+                if i >= *CPU_COUNT {
+                    break;
+                }
+
                 if !line.starts_with("cpu") {
                     break;
                 }

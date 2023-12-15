@@ -32,11 +32,23 @@ mod gpu_info;
 mod processes;
 mod utilities;
 
-extern "C" {
-    fn get_nprocs_conf() -> libc::c_int;
-}
-
 lazy_static! {
     static ref HZ: usize = unsafe { libc::sysconf(libc::_SC_CLK_TCK) as usize };
-    static ref CPU_COUNT: usize = unsafe { get_nprocs_conf() as usize };
+    static ref CPU_COUNT: usize = {
+        use crate::critical;
+
+        let proc_stat = std::fs::read_to_string("/proc/stat").unwrap_or_else(|e| {
+            critical!("Gatherer::Linux", "Failed to read /proc/stat: {}", e);
+            "".to_owned()
+        });
+
+        proc_stat
+            .lines()
+            .map(|l| l.trim())
+            .skip_while(|l| !l.starts_with("cpu"))
+            .filter(|l| l.starts_with("cpu"))
+            .count()
+            .max(2)
+            - 1
+    };
 }
