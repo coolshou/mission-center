@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-11-29 13:04+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2023-12-16 13:11+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.3\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -174,7 +175,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
 msgstr ""
-"La dirección de la clasificación de la vista de la página de las Aplicaciones"
+"La dirección de la ordenación de la vista de la página de las Aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
@@ -576,7 +577,7 @@ msgstr "Estadísticas del proceso de fusión"
 
 #: resources/ui/preferences/page.blp:42
 msgid "Remember Sorting"
-msgstr "Recordar la clasificación"
+msgstr "Recordar la ordenación"
 
 #: resources/ui/preferences/page.blp:43
 msgid "Remember the sorting of the app and process list across app restarts"
@@ -590,7 +591,7 @@ msgstr "Recursos"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
-msgstr "Alternar la barra lateral"
+msgstr "Conmutar la barra lateral"
 
 #: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
@@ -639,7 +640,7 @@ msgstr "Detener la aplicación"
 
 #: src/apps_page/list_item.rs:315
 msgid "Force Stop Application"
-msgstr "Forzar la detención la aplicación"
+msgstr "Forzar la detención de la aplicación"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:319
