@@ -151,7 +151,6 @@ impl DiskInfo {
             if dir_name.starts_with("loop")
                 || dir_name.starts_with("ram")
                 || dir_name.starts_with("zram")
-                || dir_name.starts_with("sr")
                 || dir_name.starts_with("fd")
                 || dir_name.starts_with("md")
                 || dir_name.starts_with("dm")
