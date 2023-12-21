@@ -244,6 +244,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::iSCSI => "iSCSI",
+                    DiskType::OPTIC => "Optical",
                     DiskType::Unknown => "Unknown",
                 });
             }

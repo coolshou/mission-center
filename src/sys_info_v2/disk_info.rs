@@ -42,6 +42,7 @@ pub enum DiskType {
     NVMe,
     eMMC,
     iSCSI,
+    OPTIC,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -180,9 +181,13 @@ impl DiskInfo {
                         DiskType::SSD
                     }
                 } else {
-                    match v {
-                        1 => DiskType::HDD,
-                        _ => DiskType::Unknown,
+                    if dir_name.starts_with("sr") {
+                        DiskType::OPTIC
+                    } else {
+                        match v {
+                            1 => DiskType::HDD,
+                            _ => DiskType::Unknown,
+                        }
                     }
                 }
             } else {

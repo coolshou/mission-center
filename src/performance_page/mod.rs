@@ -495,6 +495,7 @@ mod imp {
                     DiskType::NVMe => i18n("NVMe"),
                     DiskType::eMMC => i18n("eMMC"),
                     DiskType::iSCSI => i18n("iSCSI"),
+                    DiskType::OPTIC => i18n("Optical"),
                     DiskType::Unknown => i18n("Unknown"),
                 });
                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
