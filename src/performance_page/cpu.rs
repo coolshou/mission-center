@@ -33,6 +33,7 @@ mod imp {
 
     const GRAPH_SELECTION_OVERALL: i32 = 1;
     const GRAPH_SELECTION_ALL: i32 = 2;
+    const GRAPH_SELECTION_STACKED: i32 = 4;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageCpu)]
@@ -163,23 +164,33 @@ mod imp {
                 None,
                 &glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
             );
-            let apa = all_processors_action.clone();
+            let stacked_all_processors_action = gio::SimpleAction::new_stateful(
+                "stacked-all-processors",
+                None,
+                &glib::Variant::from(graph_selection == GRAPH_SELECTION_STACKED),
+            );
+
+            let apa1 = all_processors_action.clone();
+            let sapa1 = stacked_all_processors_action.clone();
+            let ova1 = overall_action.clone();
             overall_action.connect_activate(clone!(@weak this => move |action, _| {
                 use gtk::glib::*;
 
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(true);
+                graph_widgets[1].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(true);
                 this.imp().utilization_label_overall.set_visible(true);
                 this.imp().utilization_label_all.set_visible(false);
 
-                for graph_widget in graph_widgets.iter().skip(1) {
+                for graph_widget in graph_widgets.iter().skip(2) {
                     graph_widget.set_visible(false);
                 }
 
                 action.set_state(&glib::Variant::from(true));
-                apa.set_state(&glib::Variant::from(false));
+                apa1.set_state(&glib::Variant::from(false));
+                sapa1.set_state(&glib::Variant::from(false));
 
                 let settings = this.imp().settings.take();
                 if settings.is_some() {
@@ -194,21 +205,26 @@ mod imp {
             }));
             actions.add_action(&overall_action);
 
-            let ova = overall_action.clone();
+            let apa2 = all_processors_action.clone();
+            let sapa2 = stacked_all_processors_action.clone();
+            let ova2 = overall_action.clone();
+
             all_processors_action.connect_activate(clone!(@weak this => move |action, _| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(false);
+                graph_widgets[1].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(false);
                 this.imp().utilization_label_overall.set_visible(false);
                 this.imp().utilization_label_all.set_visible(true);
 
-                for graph_widget in graph_widgets.iter().skip(1) {
+                for graph_widget in graph_widgets.iter().skip(2) {
                     graph_widget.set_visible(true);
                 }
 
                 action.set_state(&glib::Variant::from(true));
-                ova.set_state(&glib::Variant::from(false));
+                ova2.set_state(&glib::Variant::from(false));
+                sapa2.set_state(&glib::Variant::from(false));
 
                 let settings = this.imp().settings.take();
                 if settings.is_some() {
@@ -223,6 +239,40 @@ mod imp {
             }));
             actions.add_action(&all_processors_action);
 
+            let apa3 = all_processors_action.clone();
+            let sapa3 = stacked_all_processors_action.clone();
+            let ova3 = overall_action.clone();
+
+            stacked_all_processors_action.connect_activate(clone!(@weak this => move |action, _| {
+                let graph_widgets = this.imp().graph_widgets.take();
+
+                graph_widgets[0].set_visible(false);
+                graph_widgets[1].set_visible(true);
+                this.imp().overall_graph_labels.set_visible(true);
+                this.imp().utilization_label_overall.set_visible(true);
+                this.imp().utilization_label_all.set_visible(false);
+
+                for graph_widget in graph_widgets.iter().skip(2) {
+                    graph_widget.set_visible(false);
+                }
+
+                action.set_state(&glib::Variant::from(true));
+                ova3.set_state(&glib::Variant::from(false));
+                apa3.set_state(&glib::Variant::from(false));
+
+                let settings = this.imp().settings.take();
+                if settings.is_some() {
+                    let settings = settings.unwrap();
+                    settings.set_int("performance-page-cpu-graph", GRAPH_SELECTION_STACKED).unwrap_or_else(|_| {
+                        g_critical!("MissionCenter::PerformancePage", "Failed to save selected CPU graph");
+                    });
+                    this.imp().settings.set(Some(settings));
+                }
+
+                this.imp().graph_widgets.set(graph_widgets);
+            }));
+            actions.add_action(&stacked_all_processors_action);
+
             let action = gio::SimpleAction::new_stateful(
                 "kernel_times",
                 None,
@@ -234,7 +284,8 @@ mod imp {
                 let visible = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(false);
 
                 graph_widgets[0].set_data_visible(1, visible);
-                for graph_widget in graph_widgets.iter().skip(1) {
+
+                for graph_widget in graph_widgets.iter().skip(2) {
                     graph_widget.set_data_visible(1, visible);
                 }
 
@@ -412,7 +463,9 @@ mod imp {
 
             // Update per-core graphs
             for i in 0..dynamic_cpu_info.per_logical_cpu_utilization_percent.len() {
-                let graph_widget = &mut graph_widgets[i + 1];
+                graph_widgets[1].add_data_point(i, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
+
+                let graph_widget = &mut graph_widgets[i + 2];
                 graph_widget
                     .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
                 graph_widget.add_data_point(
@@ -634,6 +687,14 @@ mod imp {
             self.utilization_label_all
                 .set_visible(graph_selection == GRAPH_SELECTION_ALL);
 
+            graph_widgets.push(GraphWidget::new());
+            self.usage_graphs.attach(&graph_widgets[1], 0, 0, 1, 1);
+            graph_widgets[1].set_data_points(60);
+            graph_widgets[1].set_scroll(true);
+            graph_widgets[1].set_data_set_count(cpu_count as u32);
+            graph_widgets[1].set_base_color(&base_color);
+            graph_widgets[1].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
+
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
@@ -641,7 +702,7 @@ mod imp {
                 let graph_widget_index = graph_widgets.len();
 
                 graph_widgets.push(GraphWidget::new());
-                if graph_widget_index == 1 {
+                if i == 0 {
                     let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
                     graph_widgets[graph_widget_index].connect_resize(move |_, _, _| {
                         let graph_widgets = this.imp().graph_widgets.take();
