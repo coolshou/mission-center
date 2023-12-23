@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-22 20:08+0000\n"
+"PO-Revision-Date: 2023-12-24 16:07+0000\n"
 "Last-Translator: Xtremo3 <a.lewicki95@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -777,9 +777,8 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Kodowanie wideo"
+msgstr "Dekodowanie i kodowanie wideo"
 
 #: src/performance_page/memory.rs:477
 msgid "Authentication failed"
