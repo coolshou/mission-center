@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-16 13:11+0000\n"
+"PO-Revision-Date: 2023-12-27 07:09+0000\n"
 "Last-Translator: Gnuey56 <gnuey56@proton.me>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -148,7 +148,7 @@ msgstr "アプリケーション起動時に表示されるページ"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "データ／UIが更新される速度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
@@ -160,16 +160,17 @@ msgid "Column sorting is persisted across app restarts"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
+#, fuzzy
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "\"アプリ\"ページの並び替えの項目のID"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "\"アプリ\"ページの並び替えの向き"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "CPUパフォーマンスのページで表示されるグラフ"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
@@ -177,7 +178,7 @@ msgstr "カーネル時間をCPU時間に表示"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "\"パフォーマンス\"のタブで、アプリケーション起動時に表示されるページ"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
