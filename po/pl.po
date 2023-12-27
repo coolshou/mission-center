@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-10-02 17:53+0000\n"
-"Last-Translator: Eryk Michalak <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2023-12-24 16:07+0000\n"
+"Last-Translator: Xtremo3 <a.lewicki95@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
 "Language: pl\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Mission Center"
+msgstr "Zasoby komputera"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -35,7 +35,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Deweloperzy Developers"
+msgstr "Deweloperzy aplikacji"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
-msgstr "Monitoruj użycie pamięci RAM i Swap"
+msgstr "Monitoruj użycie pamięci RAM i wymiany"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "See a breakdown how the memory is being used by the system"
@@ -95,9 +95,9 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Monitoruj ogólne wykorzystanie procesora graficznego, kodera i dekodera "
-"wideo, wykorzystanie pamięci i zużycie energii, obsługiwane przez popularny "
-"projekt NVTOP"
+"Monitoruj ogólne wykorzystanie procesora graficznego, kodowania i "
+"dekodowania wideo, wykorzystanie pamięci i zużycie energii, obsługiwane "
+"przez popularny projekt NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid "See a breakdown of resource usage by app and process"
@@ -105,8 +105,7 @@ msgstr "Zobacz zestawienie wykorzystania zasobów według aplikacji i procesu"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
-"Obsługuje zminimalizowany widok podsumowania w celu prostego monitorowania"
+msgstr "Zminimalizowany widok ogólny w celu prostego monitorowania"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
@@ -126,11 +125,11 @@ msgstr "Napisane w języku Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Flatpak first"
-msgstr "Najpierw flatpaki"
+msgstr "Najpierw Flatpak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Ograniczenia (trwają prace aby się ich wszystkich pozbyć):"
+msgstr "Ograniczenia (trwają prace nad ich pokonaniem):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "No per-process network usage"
@@ -154,12 +153,14 @@ msgstr "Która strona jest pokazywana po uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "Szybkość odświeżania danych i aktualizacji interfejsu użytkownika"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Wyświetlaj statystyki procesów nadrzędnych i podrzędnych indywidualnie lub "
+"łącząc w górę"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
@@ -168,6 +169,7 @@ msgstr "Sortowanie kolumn jest zachowywane po ponownym uruchomieniu aplikacji"
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"Kolumna, według której sortowany jest widok strony z aktywnymi aplikacjami"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
@@ -179,11 +181,11 @@ msgstr "Który wykres jest pokazywany na stronie wydajności procesora"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Czas jądra na wykresie CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:72
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "Domyślna strona po otwarciu zakładki wydajność"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
 #: src/performance_page/mod.rs:363
@@ -210,11 +212,11 @@ msgstr "Ogólne wykorzystanie"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr "Procesory _logiczne"
+msgstr "Procesory logiczne"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Pokaż czasy jądra"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:179
@@ -222,7 +224,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "Wykres _Podsumowanie"
+msgstr "Wykres podsumowania"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:184
@@ -230,7 +232,7 @@ msgstr "Wykres _Podsumowanie"
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr "_widok"
+msgstr "Widok"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:187
@@ -238,7 +240,7 @@ msgstr "_widok"
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr "CP_U"
+msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:192
@@ -246,7 +248,7 @@ msgstr "CP_U"
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr "_Pamięć"
+msgstr "Pamięć"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:197
@@ -254,7 +256,7 @@ msgstr "_Pamięć"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Disk"
-msgstr "_Dysk"
+msgstr "Dysk"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:202
@@ -262,7 +264,7 @@ msgstr "_Dysk"
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr "_Sieć"
+msgstr "Sieć"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:207
@@ -270,7 +272,7 @@ msgstr "_Sieć"
 #: resources/ui/performance_page/memory.blp:180
 #: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
-msgstr "_GPU"
+msgstr "GPU"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/disk.blp:215
@@ -278,7 +280,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
-msgstr "_Kopiuj"
+msgstr "Kopiuj"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -318,7 +320,7 @@ msgstr "Wirtualizacja:"
 
 #: resources/ui/performance_page/cpu_details.blp:224
 msgid "Virtual machine:"
-msgstr "Wirtualna maszyna :"
+msgstr "Wirtualna maszyna:"
 
 #: resources/ui/performance_page/cpu_details.blp:233
 msgid "L1 cache:"
@@ -335,14 +337,13 @@ msgstr "Pamięć podręczna L3:"
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr "Aktywny czas"
+msgstr "Czas aktywności"
 
 #: resources/ui/performance_page/disk.blp:123
 msgid "Disk transfer rate"
 msgstr "Szybkość transferu dysku"
 
 #: resources/ui/performance_page/disk_details.blp:69
-#, fuzzy
 msgid "Avg. response time"
 msgstr "Średni czas reakcji"
 
@@ -360,7 +361,7 @@ msgstr "Pojemność:"
 
 #: resources/ui/performance_page/disk_details.blp:174
 msgid "Formatted:"
-msgstr "Sformatowany:"
+msgstr "Sformatowano:"
 
 #: resources/ui/performance_page/disk_details.blp:183
 msgid "System disk:"
@@ -373,7 +374,7 @@ msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Overall utilization"
-msgstr "Ogólne w_ykorzystanie"
+msgstr "Ogólne wykorzystanie"
 
 #: resources/ui/performance_page/gpu.blp:111
 msgid "Video encode"
@@ -391,7 +392,7 @@ msgstr "Zużycie pamięci"
 
 #: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
-msgstr "Szybkośc zegara"
+msgstr "Szybkość zegara"
 
 #: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
@@ -448,11 +449,11 @@ msgstr "Buforowane"
 
 #: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
-msgstr "Dostępna przestrzeń Swap"
+msgstr "Dostępna przestrzeń wymiany"
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr "Wykorzystanie Swap"
+msgstr "Wykorzystanie przestrzeni wymiany"
 
 #: resources/ui/performance_page/memory_details.blp:198
 msgid "Speed:"
@@ -472,7 +473,7 @@ msgstr "Przepustowość"
 
 #: resources/ui/performance_page/network.blp:155
 msgid "Network Se_ttings"
-msgstr "Ustawienia si_eci"
+msgstr "Ustawienia sieci"
 
 #: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
@@ -524,12 +525,12 @@ msgstr "Ustawienia ogólne"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Speed"
-msgstr "Prędkość Aktualizacji"
+msgstr "Prędkość aktualizacji"
 
 #: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
 #: src/preferences/page.rs:262
 msgid "Fast"
-msgstr "szybko"
+msgstr "Szybko"
 
 #: resources/ui/preferences/page.blp:13
 msgid "Refresh every half second"
@@ -539,20 +540,20 @@ msgstr "Odśwież co pół sekundy"
 #: src/preferences/page.rs:122 src/preferences/page.rs:266
 #: src/preferences/page.rs:282
 msgid "Normal"
-msgstr "Normalne"
+msgstr "Normalnie"
 
 #: resources/ui/preferences/page.blp:18
 msgid "Refresh every second"
-msgstr "Odświeżaj co sekundę"
+msgstr "Odśwież co sekundę"
 
 #: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
 #: src/preferences/page.rs:270
 msgid "Slow"
-msgstr "Powolne"
+msgstr "Wolno"
 
 #: resources/ui/preferences/page.blp:23
 msgid "Refresh every second and a half"
-msgstr "Odświeżaj co półtorej sekundy"
+msgstr "Odśwież co półtorej sekundy"
 
 #: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
 #: src/preferences/page.rs:274
@@ -561,7 +562,7 @@ msgstr "Bardzo wolno"
 
 #: resources/ui/preferences/page.blp:28
 msgid "Refresh every 2 seconds"
-msgstr "Odświeżaj co 2 sekundy"
+msgstr "Odśwież co 2 sekundy"
 
 #: resources/ui/preferences/page.blp:34
 msgid "App Page Settings"
@@ -583,11 +584,11 @@ msgstr ""
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "Zasoby"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Pasek boczny"
 
 #: resources/ui/window.blp:92
 msgid "Type a name or PID to search"
@@ -607,11 +608,11 @@ msgstr "Aplikacje"
 
 #: resources/ui/window.blp:192
 msgid "_Preferences"
-msgstr "_Preferencje"
+msgstr "Preferencje"
 
 #: resources/ui/window.blp:197
 msgid "_About MissionCenter"
-msgstr "_O programie MissionCenter"
+msgstr "O programie"
 
 #: src/apps_page/mod.rs:1156
 msgid "Name"
@@ -626,9 +627,8 @@ msgid "Disk"
 msgstr "Dysk"
 
 #: src/apps_page/mod.rs:1187
-#, fuzzy
 msgid "GPU"
-msgstr "_GPU"
+msgstr "GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:315
@@ -654,6 +654,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"W użyciu ({}B)\n"
+"\n"
+"Pamięć używana przez system i aplikacje"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:317
 msgid ""
@@ -662,6 +665,9 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Zmodyfikowano ({}B)\n"
+"\n"
+"Pamięć wymagająca zapisu na dysku, przed użyciem przez inny proces"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
@@ -669,6 +675,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Czuwanie ({}B)\n"
+"\n"
+"Pamięć zawierająca dane w pamięci podręcznej która nie jest aktywnie używana"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:350
 msgid ""
@@ -677,6 +686,11 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Wolna ({}B)\n"
+"\n"
+"Pamięć, która nie jest obecnie używana i która zostanie ponownie "
+"wykorzystana, gdy system operacyjny, sterowniki lub aplikacje będą "
+"potrzebowały więcej pamięci"
 
 #: src/performance_page/mod.rs:489 src/performance_page/disk.rs:196
 msgid "Disk {} ({})"
@@ -763,18 +777,16 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:265
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Kodowanie wideo"
+msgstr "Dekodowanie i kodowanie wideo"
 
 #: src/performance_page/memory.rs:477
-#, fuzzy
 msgid "Authentication failed"
-msgstr "_Uwierzytelnić"
+msgstr "Błąd autoryzacji"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "Więcej informacji"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455
@@ -783,11 +795,11 @@ msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:477 src/performance_page/network.rs:492
 msgid "N/A"
-msgstr "N/A"
+msgstr "brak"
 
 #: src/application.rs:272
 msgid "translator-credits"
-msgstr "ewm"
+msgstr "ewm & a.lewicki95"
 
 #~ msgid "Disk utilization percentage might not be accurate"
 #~ msgstr "Procent wykorzystania dysku może nie być dokładny"
