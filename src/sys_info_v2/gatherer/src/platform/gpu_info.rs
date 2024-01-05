@@ -19,9 +19,10 @@
  */
 
 use dbus::arg::{Append, Arg};
+use serde::{Deserialize, Serialize};
 
 #[repr(u8)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum OpenGLApi {
     OpenGL,
     OpenGLES,
@@ -34,7 +35,7 @@ impl Default for OpenGLApi {
     }
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct OpenGLApiVersion {
     pub major: u8,
     pub minor: u8,
@@ -55,7 +56,7 @@ impl Append for OpenGLApiVersion {
     }
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct ApiVersion {
     pub major: u16,
     pub minor: u16,

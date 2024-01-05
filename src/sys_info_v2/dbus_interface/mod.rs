@@ -29,7 +29,7 @@ pub use cpu_static_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
 use processes::ProcessMap;
-pub use processes::{Process, ProcessState, ProcessUsageStats};
+pub use processes::{Process, ProcessUsageStats};
 
 mod apps;
 mod arc_str_vec;
