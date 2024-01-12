@@ -190,21 +190,20 @@ impl MemInfo {
     }
 
     pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
-        use super::FLATPAK_APP_PATH;
         use gtk::glib::*;
         use std::process::*;
 
         let is_flatpak = *super::IS_FLATPAK;
         let mut cmd = if !is_flatpak {
-            let mut cmd = Command::new("pkexec");
-            cmd.arg("dmidecode").arg("--type").arg("17");
+            let mut cmd = Command::new("udevadm");
+            cmd.arg("info").arg("-q").arg("property")
+               .arg("-p").arg("/sys/devices/virtual/dmi/id");
             cmd.env_remove("LD_PRELOAD");
             cmd
         } else {
-            let mut cmd = cmd_flatpak_host!(format!(
-                "pkexec {}/bin/dmidecode --type 17",
-                &*FLATPAK_APP_PATH
-            ));
+            let mut cmd = cmd_flatpak_host!(
+                "udevadm info -q property -p /sys/devices/virtual/dmi/id"
+            );
             cmd.env_remove("LD_PRELOAD");
             cmd
         };
@@ -244,37 +243,39 @@ impl MemInfo {
 
         let mut result = vec![];
 
-        let mut index = 0;
-        let mut speed_fallback = 0;
-        let mut output_str = cmd_output.as_str();
+        let mut cmd_output_str = cmd_output.as_str();
+        let mut cmd_output_str_index = 0; // Index for what character we are at in the string
+        let mut module_index = 0; // Index for what RAM module we are working with
+        let mut speed_fallback = 0; // If CONFIGURED_SPEED_MTS is not available, use SPEED_MTS
+
         loop {
-            if index >= output_str.len() {
+            if cmd_output_str_index >= cmd_output_str.len() { // We reached the end of the command output
                 break;
             }
 
-            let to_parse = output_str.trim();
-            let mem_dev_str = "Memory Device";
-            index = match to_parse.find(mem_dev_str) {
+            let to_parse = cmd_output_str.trim();
+            let mem_dev_string = format!("MEMORY_DEVICE_{}_", module_index);
+            let mem_dev_str = mem_dev_string.as_str();
+            cmd_output_str_index = match to_parse.find(mem_dev_str) {
                 None => {
                     break;
                 }
-                Some(index) => index,
+                Some(cmd_output_str_index) => cmd_output_str_index,
             };
-            index += mem_dev_str.len();
-            if index < output_str.len() {
-                output_str = output_str[index..].trim();
+            cmd_output_str_index += mem_dev_str.len();
+            module_index += 1;
+            if cmd_output_str_index < cmd_output_str.len() {
+                cmd_output_str = cmd_output_str[cmd_output_str_index..].trim();
             }
 
             let mut mem_dev = Some(MemoryDevice::default());
 
-            for line in to_parse[index..].trim().lines() {
-                let mut split = line.trim().split(":");
-                let key = split.next().map_or("", |s| s).trim();
+            for line in to_parse[cmd_output_str_index..].trim().lines() {
+                let mut split = line.trim().split("=");
+                let mut key = split.next().map_or("", |s| s).trim();
                 let value = split.next().map_or("", |s| s).trim();
 
-                if key == mem_dev_str && value == "" {
-                    break;
-                }
+                key = key.strip_prefix(mem_dev_str).unwrap_or(key);
 
                 let md = match mem_dev.as_mut() {
                     Some(mem_dev) => mem_dev,
@@ -284,57 +285,33 @@ impl MemInfo {
                 };
 
                 match key {
-                    "Size" => {
-                        if value.to_lowercase() == "no module installed" {
+                    "PRESENT" => {
+                        if value == "0" {
+                            // Module does not actually exist; drop the module so it is not counted
+                            // towards the installed module count and is not used to get values to
+                            // display.
                             #[allow(dropping_references)]
                             drop(md);
-
                             mem_dev = None;
                             break;
                         }
-
-                        let (value, unit) = {
-                            let mut split = value.trim().split_whitespace();
-                            (
-                                split.next().map_or("", |s| s),
-                                split.next().map_or("", |s| s),
-                            )
-                        };
-                        match unit.trim() {
-                            "TB" => {
-                                md.size =
-                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
-                            }
-                            "GB" => {
-                                md.size =
-                                    value.parse::<usize>().map_or(0, |s| s * 1024 * 1024 * 1024)
-                            }
-                            "MB" => md.size = value.parse::<usize>().map_or(0, |s| s * 1024 * 1024),
-                            "KB" => md.size = value.parse::<usize>().map_or(0, |s| s * 1024),
-                            _ => md.size = value.parse::<usize>().map_or(0, |s| s),
-                        }
                     }
-                    "Form Factor" => md.form_factor = value.to_owned(),
-                    "Locator" => md.locator = value.to_owned(),
-                    "Bank Locator" => md.bank_locator = value.to_owned(),
-                    "Type" => md.ram_type = value.to_owned(),
-                    "Speed" => {
-                        let value = value.trim_end_matches("MT/s").trim();
-                        speed_fallback = value.parse::<usize>().map_or(0, |s| s)
-                    }
-                    "Configured Memory Speed" => {
-                        let value = value.trim_end_matches("MT/s").trim();
-                        md.speed = value.parse::<usize>().map_or(0, |s| s)
-                    }
-                    "Rank" => md.rank = value.parse::<u8>().map_or(0, |s| s),
-                    _ => (),
+                    "SIZE" => md.size = value.parse::<usize>().map_or(0, |s| s),
+                    "FORM_FACTOR" => md.form_factor = value.to_owned(),
+                    "LOCATOR" => md.locator = value.to_owned(),
+                    "BANK_LOCATOR" => md.bank_locator = value.to_owned(),
+                    "TYPE" => md.ram_type = value.to_owned(),
+                    "SPEED_MTS" => speed_fallback = value.parse::<usize>().map_or(0, |s| s),
+                    "CONFIGURED_SPEED_MTS" => md.speed = value.parse::<usize>().map_or(0, |s| s),
+                    "RANK" => md.rank = value.parse::<u8>().map_or(0, |s| s),
+                    _ => (), // Ignore unused values and other RAM modules we are not currently parsing
                 }
             }
 
             match mem_dev {
                 Some(mut mem_dev) => {
-                    if mem_dev.speed == 0 {
-                        mem_dev.speed = speed_fallback;
+                    if mem_dev.speed == 0 { // If CONFIGURED_SPEED_MTS is not available,
+                        mem_dev.speed = speed_fallback; // then use SPEED_MTS instead
                     }
                     result.push(mem_dev);
                 }
