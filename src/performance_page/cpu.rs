@@ -33,7 +33,7 @@ mod imp {
 
     const GRAPH_SELECTION_OVERALL: i32 = 1;
     const GRAPH_SELECTION_ALL: i32 = 2;
-    const GRAPH_SELECTION_STACKED: i32 = 4;
+    const GRAPH_SELECTION_STACKED: i32 = 3;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageCpu)]
