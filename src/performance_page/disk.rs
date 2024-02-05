@@ -187,7 +187,7 @@ mod imp {
 
                     t.imp()
                         .disk_transfer_rate_graph
-                        .set_vertical_line_count((width / 40.).round() as u32);
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
                 });
 
             let this = this.imp();
