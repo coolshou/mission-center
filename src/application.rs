@@ -268,7 +268,7 @@ impl MissionCenterApplication {
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
-            .developers(["Romeo Calota"])
+            .developers(["Romeo Calota", "QwertyChouskie"])
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
@@ -277,8 +277,12 @@ impl MissionCenterApplication {
             .website("https://missioncenter.io")
             .release_notes(
                 r#"<ul>
-<li>Fix a bug where the number of CPUs was incorrectly detected on some systems</li>
-<li>Add missing icon for the details panel in the Performance tab</li>
+<li>Display optical device information in the Performance tab</li>
+<li>Fix a bug where the Gatherer process would crash at startup</li>
+<li>Remove the need for admin rights to display extended memory information</li>
+<li>Remove the requirement for `libgcc_s.so.1` on musl-based systems</li>
+<li>Make the saturation and transfer graphs the same height in the disk usage panes</li>
+<li>Translation updates and fixes</li>
 </ul>"#,
             )
             .build();
