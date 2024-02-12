@@ -1135,7 +1135,15 @@ impl LinuxCpuInfo {
                         continue;
                     }
 
-                    result = read_cache_values(&path);
+                    let node_vals = read_cache_values(&path);
+                    for i in 0..result.len() {
+                        if let Some(size) = node_vals[i] {
+                            result[i] = match result[i] {
+                                None => Some(size),
+                                Some(s) => Some(s + size),
+                            };
+                        }
+                    }
                 }
             }
             Err(e) => {
