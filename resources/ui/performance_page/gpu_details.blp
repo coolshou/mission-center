@@ -1,6 +1,6 @@
 /* ui/performance_page/gpu_details.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -259,84 +259,115 @@ Box root {
     }
   }
 
-  Box system_info {
-    spacing: 10;
+  Grid system_info {
+    row-spacing: 5;
+    column-spacing: 10;
 
-    Box labels {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("OpenGL version:");
 
-        halign: start;
-        label: _("OpenGL version:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Vulkan version:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("PCI Express speed:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("PCI bus address:");
+      layout {
+        column: '0';
+        row: '0';
       }
     }
 
-    Box values {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label opengl_version {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Vulkan version:");
 
-        halign: start;
+      layout {
+        column: '0';
+        row: '1';
       }
+    }
 
-      Label vulkan_version {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("PCI Express speed:");
+
+      layout {
+        column: '0';
+        row: '2';
       }
+    }
 
-      Label pcie_speed {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("PCI bus address:");
+
+      layout {
+        column: '0';
+        row: '3';
       }
+    }
 
-      Label pci_addr {
-        styles [
-          "caption",
-        ]
+    Label opengl_version {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Label vulkan_version {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '1';
+      }
+    }
+
+    Label pcie_speed {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '2';
+      }
+    }
+
+    Label pci_addr {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '3';
       }
     }
   }

@@ -1,6 +1,6 @@
 /* ui/performance_page/memory_details.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,88 +182,115 @@ Box root {
     }
   }
 
-  Box system_info {
-    spacing: 10;
+  Grid system_info {
+    row-spacing: 5;
+    column-spacing: 10;
 
-    Box labels {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Speed:");
 
-        halign: start;
-        label: _("Speed:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Slots used:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Form factor:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Type:");
+      layout {
+        column: '0';
+        row: '0';
       }
     }
 
-    Box values {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label speed {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Slots used:");
 
-        halign: start;
-        use-markup: true;
+      layout {
+        column: '0';
+        row: '1';
       }
+    }
 
-      Label slots_used {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        use-markup: true;
+      halign: start;
+      label: _("Form factor:");
+
+      layout {
+        column: '0';
+        row: '2';
       }
+    }
 
-      Label form_factor {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        use-markup: true;
+      halign: start;
+      label: _("Type:");
+
+      layout {
+        column: '0';
+        row: '3';
       }
+    }
 
-      Label ram_type {
-        styles [
-          "caption",
-        ]
+    Label speed {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        use-markup: true;
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Label slots_used {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '1';
+      }
+    }
+
+    Label form_factor {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '2';
+      }
+    }
+
+    Label ram_type {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '3';
       }
     }
   }

@@ -1,6 +1,6 @@
 /* ui/performance_page/cpu_details.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,153 +172,224 @@ Box root {
     }
   }
 
-  Box system_info {
-    spacing: 10;
+  Grid system_info {
+    row-spacing: 5;
+    column-spacing: 10;
 
-    Box labels {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Base Speed:");
 
-        halign: start;
-        label: _("Base Speed:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Sockets:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Virtual processors:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Virtualization:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Virtual machine:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("L1 cache:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("L2 cache:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("L3 cache:");
+      layout {
+        column: '0';
+        row: '0';
       }
     }
 
-    Box values {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label base_speed {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Sockets:");
 
-        halign: start;
+      layout {
+        column: '0';
+        row: '1';
       }
+    }
 
-      Label sockets {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("Virtual processors:");
+
+      layout {
+        column: '0';
+        row: '2';
       }
+    }
 
-      Label virt_proc {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("Virtualization:");
+
+      layout {
+        column: '0';
+        row: '3';
       }
+    }
 
-      Label virtualization {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        label: "Unknown";
+      halign: start;
+      label: _("Virtual machine:");
+
+      layout {
+        column: '0';
+        row: '4';
       }
+    }
 
-      Label virt_machine {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("L1 cache:");
+
+      layout {
+        column: '0';
+        row: '5';
       }
+    }
 
-      Label l1_cache {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("L2 cache:");
+
+      layout {
+        column: '0';
+        row: '6';
       }
+    }
 
-      Label l2_cache {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      label: _("L3 cache:");
+
+      layout {
+        column: '0';
+        row: '7';
       }
+    }
 
-      Label l3_cache {
-        styles [
-          "caption",
-        ]
+    Label base_speed {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Label sockets {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '1';
+      }
+    }
+
+    Label virt_proc {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '2';
+      }
+    }
+
+    Label virtualization {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: "Unknown";
+
+      layout {
+        column: '1';
+        row: '3';
+      }
+    }
+
+    Label virt_machine {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '4';
+      }
+    }
+
+    Label l1_cache {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '5';
+      }
+    }
+
+    Label l2_cache {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '6';
+      }
+    }
+
+    Label l3_cache {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '7';
       }
     }
   }

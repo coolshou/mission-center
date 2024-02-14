@@ -1,6 +1,6 @@
 /* ui/performance_page/network_details.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,192 +94,264 @@ Box root {
     }
   }
 
-  Box interface_info {
-    spacing: 10;
+  Grid interface_info {
+    row-spacing: 5;
+    column-spacing: 10;
 
-    Box labels {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Interface name:");
 
-        halign: start;
-        label: _("Interface name:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Connection type:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        visible: bind ssid.visible;
-        label: _("SSID:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        visible: bind signal_strength.visible;
-        label: _("Signal strength:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        visible: bind max_bitrate.visible;
-        label: _("Maximum Bitrate:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        visible: bind frequency.visible;
-        label: _("Frequency:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Hardware address:");
+      layout {
+        column: '0';
+        row: '0';
       }
     }
 
-    Box values {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label interface_name_label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("Connection type:");
 
-        halign: start;
+      layout {
+        column: '0';
+        row: '1';
       }
+    }
 
-      Label connection_type_label {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+      visible: bind ssid.visible;
+      label: _("SSID:");
+
+      layout {
+        column: '0';
+        row: '2';
       }
+    }
 
-      Label ssid {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        visible: false;
+      halign: start;
+      visible: bind signal_strength.visible;
+      label: _("Signal strength:");
+
+      layout {
+        column: '0';
+        row: '3';
       }
+    }
 
-      Image signal_strength {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        visible: false;
+      halign: start;
+      visible: bind max_bitrate.visible;
+      label: _("Maximum Bitrate:");
+
+      layout {
+        column: '0';
+        row: '4';
       }
+    }
 
-      Label max_bitrate {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        visible: false;
+      halign: start;
+      visible: bind frequency.visible;
+      label: _("Frequency:");
+
+      layout {
+        column: '0';
+        row: '5';
       }
+    }
 
-      Label frequency {
-        styles [
-          "caption",
-        ]
+    Label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        visible: false;
+      halign: start;
+      label: _("Hardware address:");
+
+      layout {
+        column: '0';
+        row: '6';
       }
+    }
 
-      Label hw_address {
-        styles [
-          "caption",
-        ]
+    Label interface_name_label {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Label connection_type_label {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '1';
+      }
+    }
+
+    Label ssid {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      layout {
+        column: '1';
+        row: '2';
+      }
+    }
+
+    Image signal_strength {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      layout {
+        column: '1';
+        row: '3';
+      }
+    }
+
+    Label max_bitrate {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      layout {
+        column: '1';
+        row: '4';
+      }
+    }
+
+    Label frequency {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      layout {
+        column: '1';
+        row: '5';
+      }
+    }
+
+    Label hw_address {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '6';
       }
     }
   }
 
-  Box ip_info {
-    spacing: 10;
+  Grid system_info {
+    row-spacing: 5;
+    column-spacing: 10;
 
-    Box {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("IPv4 address:");
 
-        halign: start;
-        label: _("IPv4 address:");
-      }
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("IPv6 address:");
+      layout {
+        column: '0';
+        row: '0';
       }
     }
 
-    Box {
-      orientation: vertical;
-      spacing: 3;
+    Label {
+      styles [
+        "caption",
+      ]
 
-      Label ipv4_address {
-        styles [
-          "caption",
-        ]
+      halign: start;
+      label: _("IPv6 address:");
 
-        halign: start;
+      layout {
+        column: '0';
+        row: '1';
       }
+    }
 
-      Label ipv6_address {
-        styles [
-          "caption",
-        ]
+    Label ipv4_address {
+      styles [
+        "caption",
+      ]
 
-        halign: start;
-        ellipsize: middle;
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Label ipv6_address {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      ellipsize: middle;
+
+      layout {
+        column: '1';
+        row: '1';
       }
     }
   }
