@@ -64,7 +64,6 @@ mod imp {
         pub cached: OnceCell<gtk::Label>,
         pub swap_available: OnceCell<gtk::Label>,
         pub swap_used: OnceCell<gtk::Label>,
-        pub system_info: OnceCell<gtk::Box>,
         pub speed: OnceCell<gtk::Label>,
         pub slots_used: OnceCell<gtk::Label>,
         pub form_factor: OnceCell<gtk::Label>,
@@ -92,7 +91,6 @@ mod imp {
                 cached: Default::default(),
                 swap_available: Default::default(),
                 swap_used: Default::default(),
-                system_info: Default::default(),
                 speed: Default::default(),
                 slots_used: Default::default(),
                 form_factor: Default::default(),
@@ -424,11 +422,6 @@ mod imp {
                     .object::<gtk::Label>("swap_used")
                     .expect("Could not find `swap_used` object in details pane"),
             );
-            let _ = self.system_info.set(
-                sidebar_content_builder
-                    .object::<gtk::Box>("system_info")
-                    .expect("Could not find `system_info` object in details pane"),
-            );
 
             // Get memory device information using `load_memory_device_info()` from
             // sys_info_v2::MemInfo and update the appropriate labels
@@ -478,7 +471,10 @@ mod imp {
                                     }
                                     if let Some(rt) = this.imp().ram_type.get() {
                                         if memory_device_info[0].ram_type != "" {
-                                            rt.set_text(&format!("{}", memory_device_info[0].ram_type));
+                                            rt.set_text(&format!(
+                                                "{}",
+                                                memory_device_info[0].ram_type
+                                            ));
                                         }
                                     }
                                 }
@@ -486,7 +482,9 @@ mod imp {
                             _ => this // If getting memory device info failed, show error toast
                                 .imp()
                                 .toast_overlay
-                                .add_toast(adw::Toast::new(&i18n("Getting additional memory information failed"))),
+                                .add_toast(adw::Toast::new(&i18n(
+                                    "Getting additional memory information failed",
+                                ))),
                         }
                     });
                 });
