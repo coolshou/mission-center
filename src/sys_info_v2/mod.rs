@@ -1,6 +1,6 @@
 /* sys_info_v2/mod.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,7 +175,6 @@ impl Readings {
 
 pub struct SysInfoV2 {
     refresh_interval: Arc<std::sync::atomic::AtomicU8>,
-    merged_process_stats: Arc<std::sync::atomic::AtomicBool>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: Arc<std::sync::atomic::AtomicBool>,
@@ -205,7 +204,6 @@ impl Default for SysInfoV2 {
 
         Self {
             refresh_interval: Arc::new(0.into()),
-            merged_process_stats: Arc::new(false.into()),
 
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
@@ -220,28 +218,22 @@ impl SysInfoV2 {
         use std::sync::{atomic::*, *};
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
-        let merged_process_stats = Arc::new(AtomicBool::new(false));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
-        let mps = merged_process_stats.clone();
         let run = refresh_thread_running.clone();
 
         let (tx, rx) = mpsc::channel::<Message>();
         Self {
             refresh_interval,
-            merged_process_stats,
             refresh_thread: Some(std::thread::spawn(move || {
                 use gtk::glib::*;
 
                 let gatherer = Gatherer::new();
 
                 let mut readings = Readings::new();
-                readings.process_tree = proc_info::process_hierarchy(
-                    &gatherer.processes(),
-                    mps.load(Ordering::Acquire),
-                )
-                .unwrap_or_default();
+                readings.process_tree =
+                    proc_info::process_hierarchy(&gatherer.processes()).unwrap_or_default();
                 readings.running_apps = gatherer.apps();
 
                 let mut disk_stats = vec![];
@@ -296,9 +288,7 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let merged_stats = mps.load(Ordering::Acquire);
-                    let process_tree =
-                        proc_info::process_hierarchy(&processes, merged_stats).unwrap_or_default();
+                    let process_tree = proc_info::process_hierarchy(&processes).unwrap_or_default();
                     g_debug!(
                         "MissionCenter::Perf",
                         "Process tree load took: {:?}",
@@ -483,11 +473,6 @@ impl SysInfoV2 {
     pub fn set_update_speed(&self, speed: UpdateSpeed) {
         self.refresh_interval
             .store(speed as u8, std::sync::atomic::Ordering::Release);
-    }
-
-    pub fn set_merged_process_stats(&self, merged_stats: bool) {
-        self.merged_process_stats
-            .store(merged_stats, std::sync::atomic::Ordering::Release);
     }
 
     pub fn terminate_process(&self, pid: u32) {

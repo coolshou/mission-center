@@ -1,6 +1,6 @@
 /* sys_info_v2/proc_info.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 use super::{Process, ProcessUsageStats};
 
-pub fn process_hierarchy(
-    processes: &std::collections::HashMap<u32, Process>,
-    merged_stats: bool,
-) -> Option<Process> {
+pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) -> Option<Process> {
     use gtk::glib::*;
     use std::collections::*;
 
@@ -103,7 +100,6 @@ pub fn process_hierarchy(
         process: &mut Process,
         process_tree: &BTreeMap<u32, usize>,
         children: &mut Vec<HashMap<u32, Process>>,
-        merged_stats: bool,
     ) {
         let pid = process.pid;
 
@@ -118,31 +114,23 @@ pub fn process_hierarchy(
 
         std::mem::swap(&mut process.children, &mut children[index]);
 
-        let mut process_stats = ProcessUsageStats::default();
+        let mut merged_stats = ProcessUsageStats::default();
         for (_, child) in &mut process.children {
-            gather_descendants(child, process_tree, children, merged_stats);
-            if merged_stats {
-                process_stats.merge(&child.usage_stats);
-            }
+            gather_descendants(child, process_tree, children);
+            merged_stats.merge(&child.merged_usage_stats);
         }
-        if merged_stats {
-            process.usage_stats.merge(&process_stats);
-        }
+        process.merged_usage_stats.merge(&merged_stats);
     }
 
     let process = &mut root_process;
     std::mem::swap(&mut process.children, &mut children[0]);
 
-    let mut process_stats = ProcessUsageStats::default();
+    let mut merged_stats = ProcessUsageStats::default();
     for (_, child) in &mut process.children {
-        gather_descendants(child, &process_tree, &mut children, merged_stats);
-        if merged_stats {
-            process_stats.merge(&child.usage_stats);
-        }
+        gather_descendants(child, &process_tree, &mut children);
+        merged_stats.merge(&child.merged_usage_stats);
     }
-    if merged_stats {
-        process.usage_stats.merge(&process_stats);
-    }
+    process.merged_usage_stats.merge(&merged_stats);
 
     g_debug!(
         "MissionCenter::ProcInfo",

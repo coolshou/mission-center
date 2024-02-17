@@ -1,6 +1,6 @@
 /* performance_page/widgets/mem_composition_widget.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -405,7 +405,7 @@ mod imp {
     }
 
     impl GLAreaImpl for MemoryCompositionWidget {
-        fn render(&self, _: &gdk::GLContext) -> bool {
+        fn render(&self, _: &gdk::GLContext) -> glib::Propagation {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::MemoryCompositionWidget>();
 
@@ -424,7 +424,7 @@ mod imp {
 
             (self.render_function.get())(self, width, height, scale_factor as f32);
 
-            true
+            glib::Propagation::Proceed
         }
     }
 }

@@ -1,6 +1,6 @@
 /* sys_info_v2/dbus_interface/processes.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ pub struct Process {
     pub pid: u32,
     pub parent: u32,
     pub usage_stats: ProcessUsageStats,
+    pub merged_usage_stats: ProcessUsageStats,
     pub task_count: usize,
     pub children: HashMap<u32, Process>,
 }
@@ -84,6 +85,7 @@ impl Default for Process {
             pid: 0,
             parent: 0,
             usage_stats: Default::default(),
+            merged_usage_stats: Default::default(),
             task_count: 0,
             children: HashMap::new(),
         }
@@ -276,6 +278,8 @@ impl From<&dyn RefArg> for Process {
                     this.usage_stats.network_usage = values[3];
                     this.usage_stats.gpu_usage = values[4];
                     this.usage_stats.gpu_memory_usage = values[5];
+
+                    this.merged_usage_stats = this.usage_stats;
                 }
             },
         };
