@@ -374,6 +374,8 @@ mod imp {
 
                     (primary_process, primary_pid)
                 };
+
+                let pp = primary_process.cloned().unwrap_or_default();
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(app.name.as_ref())
@@ -386,12 +388,12 @@ mod imp {
                         .pid(primary_pid)
                         .content_type(ContentType::App)
                         .expanded(false)
-                        .cpu_usage(app.usage_stats.cpu_usage)
-                        .memory_usage(app.usage_stats.memory_usage)
-                        .disk_usage(app.usage_stats.disk_usage)
-                        .network_usage(app.usage_stats.network_usage)
-                        .gpu_usage(app.usage_stats.gpu_usage)
-                        .gpu_mem_usage(app.usage_stats.gpu_memory_usage)
+                        .cpu_usage(pp.merged_usage_stats.cpu_usage)
+                        .memory_usage(pp.merged_usage_stats.memory_usage)
+                        .disk_usage(pp.merged_usage_stats.disk_usage)
+                        .network_usage(pp.merged_usage_stats.network_usage)
+                        .gpu_usage(pp.merged_usage_stats.gpu_usage)
+                        .gpu_mem_usage(pp.merged_usage_stats.gpu_memory_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -409,12 +411,12 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     view_model.set_pid(primary_pid);
-                    view_model.set_cpu_usage(app.usage_stats.cpu_usage);
-                    view_model.set_memory_usage(app.usage_stats.memory_usage);
-                    view_model.set_disk_usage(app.usage_stats.disk_usage);
-                    view_model.set_network_usage(app.usage_stats.network_usage);
-                    view_model.set_gpu_usage(app.usage_stats.gpu_usage);
-                    view_model.set_gpu_memory_usage(app.usage_stats.gpu_memory_usage);
+                    view_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
+                    view_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
+                    view_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
+                    view_model.set_network_usage(pp.merged_usage_stats.network_usage);
+                    view_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
+                    view_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
 
                     view_model
                 };

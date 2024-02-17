@@ -1,6 +1,6 @@
 /* sys_info_v2/gatherer/src/platform/linux/apps.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,6 @@ lazy_static! {
     };
 }
 
-pub type AppUsageStats = crate::platform::AppUsageStats;
 type LinuxProcess = crate::platform::Process;
 
 #[derive(Debug, Clone)]
@@ -112,7 +111,6 @@ pub struct LinuxApp {
     pub id: Arc<str>,
     pub command: Arc<str>,
     pub pids: BTreeSet<u32>,
-    pub usage_stats: AppUsageStats,
 }
 
 impl Default for LinuxApp {
@@ -124,7 +122,6 @@ impl Default for LinuxApp {
             id: empty_arc.clone(),
             command: empty_arc.clone(),
             pids: BTreeSet::new(),
-            usage_stats: Default::default(),
         }
     }
 }
@@ -150,10 +147,6 @@ impl<'a> AppExt<'a> for LinuxApp {
 
     fn pids(&'a self) -> Self::Iter {
         self.pids.iter()
-    }
-
-    fn usage_stats(&self) -> &AppUsageStats {
-        &self.usage_stats
     }
 }
 
@@ -227,10 +220,8 @@ impl LinuxApps {
 
         if running_apps.contains(&app.id) {
             app.pids.insert(process.pid());
-            app.usage_stats.merge(process.usage_stats());
         } else {
             app.pids.insert(process.pid());
-            app.usage_stats.merge(process.usage_stats());
             running_apps.insert(Arc::clone(&app.id));
         }
     }
@@ -362,7 +353,6 @@ impl LinuxApps {
             id: app_id,
             command,
             pids: BTreeSet::new(),
-            usage_stats: Default::default(),
         })
     }
 
