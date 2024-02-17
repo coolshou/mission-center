@@ -1,6 +1,6 @@
 /* performance_page/widgets/graph_widget.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,7 +263,7 @@ mod imp {
                         x as f32 * spacing_x - scale_factor / 2.,
                         height
                             - ((y.clamp(val_min, val_max) / val_max)
-                            * (height - scale_factor / 2.)),
+                                * (height - scale_factor / 2.)),
                     )
                 });
 
@@ -439,7 +439,7 @@ mod imp {
     }
 
     impl GLAreaImpl for GraphWidget {
-        fn render(&self, _: &gdk::GLContext) -> bool {
+        fn render(&self, _: &gdk::GLContext) -> glib::Propagation {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::GraphWidget>();
 
@@ -458,7 +458,7 @@ mod imp {
 
             (self.render_function.get())(self, width, height, scale_factor as f32);
 
-            true
+            glib::Propagation::Proceed
         }
     }
 }

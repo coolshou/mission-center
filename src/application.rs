@@ -1,6 +1,6 @@
 /* application.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@
 
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 
-use adw::glib::g_critical;
 use adw::subclass::prelude::*;
-use gtk::prelude::*;
-use gtk::{gio, glib};
+use gtk::{
+    gio,
+    glib::{self, g_critical, property::PropertySet},
+    prelude::*,
+};
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 

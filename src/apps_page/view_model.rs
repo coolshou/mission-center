@@ -1,6 +1,6 @@
 /* apps_page/view_model.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,8 @@ mod imp {
         pub max_memory_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<f32>,
 
+        pub merged_stats: Cell<Option<crate::sys_info_v2::ProcessUsageStats>>,
+
         pub children: Cell<gio::ListStore>,
     }
 
@@ -113,6 +115,8 @@ mod imp {
                 max_cpu_usage: Cell::new(0.),
                 max_memory_usage: Cell::new(0.),
                 max_gpu_memory_usage: Cell::new(0.),
+
+                merged_stats: Cell::new(None),
 
                 children: Cell::new(gio::ListStore::new::<super::ViewModel>()),
             }
@@ -451,6 +455,14 @@ impl ViewModel {
         }
 
         this
+    }
+
+    pub fn merged_stats(&self) -> &Option<crate::sys_info_v2::ProcessUsageStats> {
+        unsafe { &*self.imp().merged_stats.as_ptr() }
+    }
+
+    pub fn set_merged_stats(&self, stats: &crate::sys_info_v2::ProcessUsageStats) {
+        self.imp().merged_stats.set(Some(*stats));
     }
 
     pub fn children(&self) -> &gio::ListStore {
