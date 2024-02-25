@@ -31,10 +31,14 @@ Please note there is ongoing work to overcome all of these.
 
 * No per-process network usage ([#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3))
 * GPU support is experimental
-  * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring.
-* When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
+    * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or
+      temperature monitoring.
+* When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream
+  issue: https://github.com/linuxmint/cinnamon/issues/12015)
 
-Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes).  If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
+Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (
+themes). If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to
+use [Gradience](https://gradienceteam.github.io/).
 
 ## Installing
 
@@ -101,12 +105,13 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 * udev development libraires
 * GTK 4
 * libadwaita
+* libDBus development libraries
 
 **Build instructions**
 
 ```bash
 # On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C _build
@@ -145,7 +150,7 @@ missioncenter
 
 ```bash
 # On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C _build
@@ -217,7 +222,8 @@ Report issues to GitLab [issue tracking system](https://gitlab.com/mission-cente
 
 ### Discord
 
-Join [the Discord server](https://discord.gg/RG7QTeB9yk) and let's talk about what you think is missing or can be improved.
+Join [the Discord server](https://discord.gg/RG7QTeB9yk) and let's talk about what you think is missing or can be
+improved.
 
 ### Translations
 

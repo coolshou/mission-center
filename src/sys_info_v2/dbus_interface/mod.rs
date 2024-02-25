@@ -1,6 +1,6 @@
 /* sys_info_v2/dbus-interface/mod.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,25 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*, Error};
+use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
 
 pub use apps::*;
 use arc_str_vec::*;
 pub use cpu_dynamic_info::*;
 pub use cpu_static_info::*;
+pub use disk_dynamic_info::*;
+pub use disk_static_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
-use processes::ProcessMap;
 pub use processes::{Process, ProcessUsageStats};
+use processes::ProcessMap;
 
 mod apps;
 mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
+mod disk_dynamic_info;
+mod disk_static_info;
 mod gpu_dynamic_info;
 mod gpu_static_info;
 mod processes;
@@ -65,6 +69,8 @@ fn dbus_method_call<
 pub trait IoMissioncenterMissionCenterGatherer {
     fn cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
+    fn disks_static_info(&self) -> Result<Vec<DiskStaticInfo>, dbus::Error>;
+    fn disks_dynamic_info(&self) -> Result<Vec<DiskDynamicInfo>, dbus::Error>;
     fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
@@ -100,6 +106,32 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             (),
         )
         .and_then(|r: (CpuDynamicInfo,)| Ok(r.0))
+    }
+
+    fn disks_static_info(&self) -> Result<Vec<DiskStaticInfo>, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetDisksStaticInfo",
+            (),
+        )
+        .and_then(|r: (DiskStaticInfoVec,)| Ok(r.0.into()))
+    }
+
+    fn disks_dynamic_info(&self) -> Result<Vec<DiskDynamicInfo>, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetDisksDynamicInfo",
+            (),
+        )
+        .and_then(|r: (DiskDynamicInfoVec,)| Ok(r.0.into()))
     }
 
     fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error> {
@@ -167,7 +199,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|r: (AppMap,)| Ok(r.0.into()))
     }
 
-    fn terminate_process(&self, process_id: u32) -> Result<(), Error> {
+    fn terminate_process(&self, process_id: u32) -> Result<(), dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -180,7 +212,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|_: ()| Ok(()))
     }
 
-    fn kill_process(&self, process_id: u32) -> Result<(), Error> {
+    fn kill_process(&self, process_id: u32) -> Result<(), dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,

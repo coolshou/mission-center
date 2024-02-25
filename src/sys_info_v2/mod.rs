@@ -23,11 +23,11 @@ use std::sync::Arc;
 
 use lazy_static::lazy_static;
 
-use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
-    ProcessUsageStats,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskDynamicInfo, DiskStaticInfo, DiskType, GpuDynamicInfo,
+    GpuStaticInfo, OpenGLApi, Process, ProcessUsageStats,
 };
+use gatherer::Gatherer;
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -66,7 +66,6 @@ macro_rules! cmd_flatpak_host {
 }
 
 mod dbus_interface;
-mod disk_info;
 mod gatherer;
 mod mem_info;
 mod net_info;
@@ -75,10 +74,6 @@ mod proc_info;
 pub type MemInfo = mem_info::MemInfo;
 #[allow(dead_code)]
 pub type MemoryDevice = mem_info::MemoryDevice;
-
-pub type Disk = disk_info::Disk;
-pub type DiskInfo = disk_info::DiskInfo;
-pub type DiskType = disk_info::DiskType;
 
 pub type NetInfo = net_info::NetInfo;
 pub type NetworkDevice = net_info::NetworkDevice;
@@ -147,7 +142,8 @@ pub struct Readings {
     pub cpu_static_info: CpuStaticInfo,
     pub cpu_dynamic_info: CpuDynamicInfo,
     pub mem_info: MemInfo,
-    pub disks: Vec<Disk>,
+    pub disks_static_info: Vec<DiskStaticInfo>,
+    pub disks_dynamic_info: Vec<DiskDynamicInfo>,
     pub network_devices: Vec<NetworkDevice>,
     pub gpu_static_info: Vec<GpuStaticInfo>,
     pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
@@ -162,7 +158,8 @@ impl Readings {
             cpu_static_info: Default::default(),
             cpu_dynamic_info: Default::default(),
             mem_info: MemInfo::default(),
-            disks: vec![],
+            disks_static_info: vec![],
+            disks_dynamic_info: vec![],
             network_devices: vec![],
             gpu_static_info: vec![],
             gpu_dynamic_info: vec![],
@@ -215,7 +212,7 @@ impl Default for SysInfoV2 {
 
 impl SysInfoV2 {
     pub fn new() -> Self {
-        use std::sync::{atomic::*, *};
+        use std::sync::{*, atomic::*};
 
         let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
@@ -236,8 +233,9 @@ impl SysInfoV2 {
                     proc_info::process_hierarchy(&gatherer.processes()).unwrap_or_default();
                 readings.running_apps = gatherer.apps();
 
-                let mut disk_stats = vec![];
-                readings.disks = DiskInfo::load(&mut disk_stats);
+                readings.disks_static_info = gatherer.disks_static_info();
+                let disks_static_info = readings.disks_static_info.clone();
+                readings.disks_dynamic_info = gatherer.disks_dynamic_info();
 
                 let mut net_info = NetInfo::new();
                 readings.network_devices = if let Some(net_info) = net_info.as_mut() {
@@ -320,10 +318,10 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let disks = DiskInfo::load(&mut disk_stats);
+                    let disks_dynamic_info = gatherer.disks_dynamic_info();
                     g_debug!(
                         "MissionCenter::Perf",
-                        "Disk load took: {:?}",
+                        "Disks dynamic info load took: {:?}",
                         timer.elapsed()
                     );
 
@@ -354,7 +352,8 @@ impl SysInfoV2 {
                         cpu_static_info: cpu_static_info.clone(),
                         cpu_dynamic_info,
                         mem_info,
-                        disks,
+                        disks_static_info: disks_static_info.clone(),
+                        disks_dynamic_info,
                         network_devices,
                         gpu_static_info: gpu_static_info.clone(),
                         gpu_dynamic_info,
