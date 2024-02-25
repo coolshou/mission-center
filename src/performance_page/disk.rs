@@ -164,7 +164,7 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: usize,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskStaticInfo,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
 
@@ -244,7 +244,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::iSCSI => "iSCSI",
-                    DiskType::OPTIC => "Optical",
+                    DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
                 });
             }
@@ -253,7 +253,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageDisk,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskDynamicInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -492,11 +492,15 @@ impl PerformancePageDisk {
         this
     }
 
-    pub fn set_static_information(&self, index: usize, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn set_static_information(
+        &self,
+        index: usize,
+        disk: &crate::sys_info_v2::DiskStaticInfo,
+    ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(&self, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn update_readings(&self, disk: &crate::sys_info_v2::DiskDynamicInfo) -> bool {
         imp::PerformancePageDisk::update_readings(self, disk)
     }
 

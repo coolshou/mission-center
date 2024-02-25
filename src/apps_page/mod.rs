@@ -1070,17 +1070,17 @@ mod imp {
             let column_header_disk = self.column_header_disk.take();
             if let Some(column_header_disk) = &column_header_disk {
                 let total_busy_percent = readings
-                    .disks
+                    .disks_dynamic_info
                     .iter()
                     .map(|disk| disk.busy_percent)
                     .sum::<f32>();
 
-                if readings.disks.len() == 0 {
+                if readings.disks_dynamic_info.len() == 0 {
                     column_header_disk.set_heading("0%");
                 } else {
                     column_header_disk.set_heading(format!(
                         "{}%",
-                        (total_busy_percent / readings.disks.len() as f32).round()
+                        (total_busy_percent / readings.disks_dynamic_info.len() as f32).round()
                     ));
                 }
             }

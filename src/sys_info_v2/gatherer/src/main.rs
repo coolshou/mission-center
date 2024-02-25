@@ -23,7 +23,7 @@ use dbus_crossroads::Crossroads;
 
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
-use platform::{CpuInfoExt, PlatformUtilitiesExt};
+use platform::{CpuInfoExt, DiskInfoExt, PlatformUtilitiesExt};
 
 mod logging;
 mod platform;
@@ -53,6 +53,7 @@ impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
 
 struct System {
     cpu_info: platform::CpuInfo,
+    disk_info: platform::DiskInfo,
     gpu_info: platform::GpuInfo,
     processes: platform::Processes,
     apps: platform::Apps,
@@ -62,6 +63,7 @@ impl System {
     pub fn new() -> Self {
         Self {
             cpu_info: platform::CpuInfo::new(),
+            disk_info: platform::DiskInfo::new(),
             gpu_info: platform::GpuInfo::new(),
             processes: platform::Processes::new(),
             apps: platform::Apps::new(),
@@ -154,6 +156,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 // Make the scaffolding happy, since the reply was already set
                 Ok((platform::CpuDynamicInfo::default(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetDisksStaticInfo`..."
+        );
+        builder.method(
+            "GetDisksStaticInfo",
+            (),
+            ("static_info",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                ctx.reply(Ok((sys_stats.disk_info.static_info().collect::<Vec<_>>(),)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((Vec::<platform::DiskStaticInfo>::new(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetDisksDynamicInfo`..."
+        );
+        builder.method(
+            "GetDisksDynamicInfo",
+            (),
+            ("dynamic_info",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                sys_stats.disk_info.refresh_dynamic_info_cache();
+                ctx.reply(Ok(
+                    (sys_stats.disk_info.dynamic_info().collect::<Vec<_>>(),),
+                ));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((Vec::<platform::DiskDynamicInfo>::new(),))
             },
         );
 
@@ -335,6 +372,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     message!("Gatherer::Main", "Refreshing CPU static info cache...");
     system.cpu_info.refresh_static_info_cache();
+
+    message!("Gatherer::Main", "Refreshing Disks static info cache...");
+    system.disk_info.refresh_static_info_cache();
 
     message!("Gatherer::Main", "Inserting system into Crossroads...");
     cr.insert(
