@@ -20,10 +20,7 @@
 
 pub use apps::*;
 pub use cpu_info::*;
-pub use disk_info::*;
 pub use gpu_info::*;
-#[cfg(target_os = "linux")]
-pub use linux::*;
 pub use processes::*;
 pub use utilities::*;
 
@@ -35,28 +32,25 @@ mod platform_impl;
 #[allow(unused)]
 mod linux {
     use super::*;
-
     pub type Process = platform_impl::LinuxProcess;
     pub type Processes = platform_impl::LinuxProcesses;
     pub type App = platform_impl::LinuxApp;
     pub type Apps = platform_impl::LinuxApps;
     pub type CpuStaticInfo = platform_impl::LinuxCpuStaticInfo;
     pub type CpuDynamicInfo = platform_impl::LinuxCpuDynamicInfo;
-    pub type DiskStaticInfo = platform_impl::LinuxDiskStaticInfo;
-    pub type DiskStaticInfoIter<'a> = platform_impl::LinuxDiskStaticInfoIter<'a>;
-    pub type DiskDynamicInfoIter<'a> = platform_impl::LinuxDiskDynamicInfoIter<'a>;
-    pub type DiskDynamicInfo = platform_impl::LinuxDiskDynamicInfo;
-    pub type DiskInfo = platform_impl::LinuxDiskInfo;
     pub type CpuInfo = platform_impl::LinuxCpuInfo;
+
     pub type GpuStaticInfo = platform_impl::LinuxGpuStaticInfo;
     pub type GpuDynamicInfo = platform_impl::LinuxGpuDynamicInfo;
     pub type GpuInfo = platform_impl::LinuxGpuInfo;
     pub type PlatformUtilities = platform_impl::LinuxPlatformUtilities;
 }
 
+#[cfg(target_os = "linux")]
+pub use linux::*;
+
 mod apps;
 mod cpu_info;
-mod disk_info;
 mod gpu_info;
 mod processes;
 mod utilities;

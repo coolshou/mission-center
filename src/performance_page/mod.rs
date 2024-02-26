@@ -124,7 +124,7 @@ mod imp {
 
             Self::configure_actions(&this);
             lb.connect_row_selected(move |_, selected_row| {
-                use glib::{*, translate::*};
+                use glib::{translate::*, *};
                 use std::ffi::CStr;
 
                 if let Some(row) = selected_row {
@@ -481,36 +481,24 @@ mod imp {
             const BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
 
             let mut disks = HashMap::new();
-            for (i, disk_dynamic_info) in readings.disks_dynamic_info.iter().enumerate() {
-                let disk_static_info = match readings.disks_static_info.get(i) {
-                    Some(v) => v,
-                    None => {
-                        g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to get DiskStaticInfo for disk {}, logic bug?",
-                            i
-                        );
-                        continue;
-                    }
-                };
-
+            for (i, disk) in readings.disks.iter().enumerate() {
                 let summary = SummaryGraph::new();
-                summary.set_widget_name(&disk_static_info.id);
+                summary.set_widget_name(&disk.id);
 
                 summary.set_heading(i18n_f(
                     "Disk {} ({})",
-                    &[&format!("{}", i), &format!("{}", &disk_static_info.id)],
+                    &[&format!("{}", i), &format!("{}", &disk.id)],
                 ));
-                summary.set_info1(match disk_static_info.r#type {
+                summary.set_info1(match disk.r#type {
                     DiskType::HDD => i18n("HDD"),
                     DiskType::SSD => i18n("SSD"),
                     DiskType::NVMe => i18n("NVMe"),
                     DiskType::eMMC => i18n("eMMC"),
                     DiskType::iSCSI => i18n("iSCSI"),
-                    DiskType::Optical => i18n("Optical"),
+                    DiskType::OPTIC => i18n("Optical"),
                     DiskType::Unknown => i18n("Unknown"),
                 });
-                summary.set_info2(format!("{:.0}%", disk_dynamic_info.busy_percent));
+                summary.set_info2(format!("{:.0}%", disk.busy_percent));
                 summary.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -522,7 +510,7 @@ mod imp {
                 if settings.is_none() {
                     panic!("Settings not set");
                 }
-                let page = DiskPage::new(&disk_static_info.id, settings.as_ref().unwrap());
+                let page = DiskPage::new(&disk.id, settings.as_ref().unwrap());
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -530,7 +518,7 @@ mod imp {
                     1.,
                 ));
                 self.settings.set(settings);
-                page.set_static_information(i, disk_static_info);
+                page.set_static_information(i, disk);
 
                 self.page_content
                     .connect_collapsed_notify(clone!(@weak page => move |pc| {
@@ -548,7 +536,7 @@ mod imp {
                     .build();
 
                 self.sidebar().append(&summary);
-                self.page_stack.add_named(&page, Some(&disk_static_info.id));
+                self.page_stack.add_named(&page, Some(&disk.id));
 
                 let mut actions = self.context_menu_view_actions.take();
                 match actions.get("disk") {
@@ -556,16 +544,16 @@ mod imp {
                         g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up disk action for {}, logic bug?",
-                            &disk_static_info.id
+                            &disk.id
                         );
                     }
                     Some(action) => {
-                        actions.insert(disk_static_info.id.to_string(), action.clone());
+                        actions.insert(disk.id.clone(), action.clone());
                     }
                 }
                 self.context_menu_view_actions.set(actions);
 
-                disks.insert(disk_static_info.id.to_string(), (summary, page));
+                disks.insert(disk.id.clone(), (summary, page));
             }
 
             pages.push(Pages::Disk(disks));
@@ -835,8 +823,8 @@ mod imp {
                         result &= page.update_readings(readings);
                     }
                     Pages::Disk(disks_pages) => {
-                        for disk in &readings.disks_dynamic_info {
-                            if let Some((summary, page)) = disks_pages.get(disk.id.as_ref()) {
+                        for disk in &readings.disks {
+                            if let Some((summary, page)) = disks_pages.get(&disk.id) {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
