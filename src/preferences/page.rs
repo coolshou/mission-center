@@ -23,68 +23,54 @@ use std::cell::Cell;
 use adw::{prelude::*, subclass::prelude::*, SwitchRow};
 use gtk::{gio, glib};
 
-use crate::{
-    i18n::*,
-    preferences::checked_row_widget::CheckedRowWidget,
-};
+use crate::preferences::checked_row_widget::CheckedRowWidget;
+
+const MAX_INTERVAL_TICKS: i32 = 200;
+const MIN_INTERVAL_TICKS: i32 = 10;
+
+const MAX_POINTS: i32 = 600;
+const MIN_POINTS: i32 = 10;
 
 mod imp {
+    use adw::SpinRow;
+    use gtk::Scale;
+
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/preferences/page.ui")]
     pub struct PreferencesPage {
         #[template_child]
-        pub update_speed_setting: TemplateChild<adw::ExpanderRow>,
+        pub update_interval: TemplateChild<SpinRow>,
         #[template_child]
-        pub update_very_slow: TemplateChild<CheckedRowWidget>,
-        #[template_child]
-        pub update_slow: TemplateChild<CheckedRowWidget>,
-        #[template_child]
-        pub update_normal: TemplateChild<CheckedRowWidget>,
-        #[template_child]
-        pub update_fast: TemplateChild<CheckedRowWidget>,
+        pub data_points: TemplateChild<Scale>,
 
         #[template_child]
-        pub merged_process_stats: TemplateChild<adw::SwitchRow>,
+        pub merged_process_stats: TemplateChild<SwitchRow>,
         #[template_child]
-        pub remember_sorting: TemplateChild<adw::SwitchRow>,
+        pub remember_sorting: TemplateChild<SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
-
-        pub current_speed_selection: Cell<CheckedRowWidget>,
     }
 
     impl Default for PreferencesPage {
         fn default() -> Self {
             Self {
-                update_speed_setting: Default::default(),
-                update_very_slow: Default::default(),
-                update_slow: Default::default(),
-                update_normal: Default::default(),
-                update_fast: Default::default(),
+                update_interval: Default::default(),
+                data_points: Default::default(),
 
                 merged_process_stats: Default::default(),
                 remember_sorting: Default::default(),
 
                 settings: Cell::new(None),
-
-                current_speed_selection: Cell::new(CheckedRowWidget::new()),
             }
         }
     }
 
     impl PreferencesPage {
-        pub fn configure_update_speed(&self, checked_row: &CheckedRowWidget) {
+        pub fn configure_update_speed(&self) {
             use glib::g_critical;
-
-            let uvs = self.update_very_slow.as_ptr() as usize;
-            let us = self.update_slow.as_ptr() as usize;
-            let un = self.update_normal.as_ptr() as usize;
-            let uf = self.update_fast.as_ptr() as usize;
-
-            let old_selection = self.current_speed_selection.replace(checked_row.clone());
-            old_selection.set_checkmark_visible(false);
+            use crate::application::INTERVAL_STEP;
 
             let settings = self.settings.take();
             if settings.is_none() {
@@ -96,44 +82,35 @@ mod imp {
             }
             let settings = settings.unwrap();
 
-            let new_selection = checked_row.as_ptr() as usize;
-            let set_result = if new_selection == uvs {
-                self.update_speed_setting.set_subtitle(&i18n("Very Slow"));
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 4)
-            } else if new_selection == us {
-                self.update_speed_setting.set_subtitle(&i18n("Slow"));
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 3)
-            } else if new_selection == un {
-                self.update_speed_setting.set_subtitle(&i18n("Normal"));
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 2)
-            } else if new_selection == uf {
-                self.update_speed_setting.set_subtitle(&i18n("Fast"));
-                checked_row.set_checkmark_visible(true);
-                settings.set_int("update-speed", 1)
+            let new_interval = (self.update_interval.value() / INTERVAL_STEP).round() as i32;
+            let new_points = self.data_points.value() as i32;
+
+            if new_interval <= MAX_INTERVAL_TICKS && new_interval >= MIN_INTERVAL_TICKS {
+                if settings.set_int("app-update-interval", new_interval).is_err() {
+                    g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set update interval setting",
+                    );
+                }
             } else {
                 g_critical!(
                     "MissionCenter::Preferences",
-                    "Unknown update speed selection",
+                    "Update interval out of bounds",
                 );
+            }
 
-                self.update_speed_setting.set_subtitle(&i18n("Normal"));
-                settings.set_int("update-speed", 2)
-            };
-            if set_result.is_err() {
+            if new_points <= MAX_POINTS && new_points >= MIN_POINTS {
+                if settings.set_int("perfomance-page-data-points", new_points).is_err() {
+                    g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set update points setting",
+                    );
+                }
+            } else {
                 g_critical!(
                     "MissionCenter::Preferences",
-                    "Failed to set update speed setting",
+                    "Points interval out of bounds",
                 );
-
-                self.update_speed_setting.set_subtitle("");
-
-                self.update_very_slow.set_checkmark_visible(false);
-                self.update_slow.set_checkmark_visible(false);
-                self.update_normal.set_checkmark_visible(false);
-                self.update_fast.set_checkmark_visible(false);
             }
 
             self.settings.set(Some(settings));
@@ -164,23 +141,17 @@ mod imp {
 
             self.parent_constructed();
 
-            let update_speed_row = self.update_very_slow.parent().and_then(|p| p.parent());
-            if update_speed_row.is_none() {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to set up update speed settings"
-                );
-            } else {
-                let update_speed_row = update_speed_row.unwrap();
-                let update_speed_row = update_speed_row.downcast_ref::<gtk::ListBox>().unwrap();
-                update_speed_row.connect_row_activated(
-                    glib::clone!(@weak self as this => move |_, row| {
-                        let row = row.first_child().unwrap();
-                        let checked_row = row.downcast_ref::<CheckedRowWidget>().unwrap();
-                        this.configure_update_speed(checked_row);
-                    }),
-                );
-            }
+            self.data_points.downcast_ref::<Scale>().unwrap().connect_value_changed(
+                glib::clone!(@weak self as this => move |_| {
+                    this.configure_update_speed();
+                }),
+            );
+
+            self.update_interval.downcast_ref::<SpinRow>().unwrap().connect_changed(
+                glib::clone!(@weak self as this => move |_| {
+                    this.configure_update_speed();
+                }),
+            );
 
             self.merged_process_stats.connect_active_notify(
                 glib::clone!(@weak self as this => move |switch_row| {
@@ -244,6 +215,7 @@ impl PreferencesPage {
 
     fn set_initial_update_speed(&self) {
         use gtk::glib::*;
+        use crate::application::INTERVAL_STEP;
 
         let settings = match self.imp().settings.take() {
             None => {
@@ -255,36 +227,12 @@ impl PreferencesPage {
             }
             Some(settings) => settings,
         };
-        let update_speed = settings.int("update-speed");
+        let data_points = settings.int("perfomance-page-data-points");
+        let update_interval_s = (settings.int("app-update-interval") as f64) * INTERVAL_STEP;
         let this = self.imp();
-        let selected_widget = match update_speed {
-            1 => {
-                this.update_speed_setting.set_subtitle(&i18n("Fast"));
-                &this.update_fast
-            }
-            2 => {
-                this.update_speed_setting.set_subtitle(&i18n("Normal"));
-                &this.update_normal
-            }
-            3 => {
-                this.update_speed_setting.set_subtitle(&i18n("Slow"));
-                &this.update_slow
-            }
-            4 => {
-                this.update_speed_setting.set_subtitle(&i18n("Very Slow"));
-                &this.update_very_slow
-            }
-            _ => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Unknown update speed setting, defaulting to normal"
-                );
-                this.update_speed_setting.set_subtitle(&i18n("Normal"));
-                &this.update_normal
-            }
-        };
-        selected_widget.set_checkmark_visible(true);
-        this.current_speed_selection.set(selected_widget.get());
+
+        this.data_points.set_value(data_points as f64);
+        this.update_interval.set_value(update_interval_s);
 
         this.settings.set(Some(settings));
     }

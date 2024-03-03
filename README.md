@@ -106,21 +106,23 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
 ```bash
 # On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson libdbus-1-dev pkg-config
 
-meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
-ninja -C _build
+BUILD_ROOT="$(pwd)/_build"
+
+meson setup "$BUILD_ROOT" -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
+ninja -C "$BUILD_ROOT"
 ```
 
 If you want to run the application from the build directory (for development or debugging) some set up is required:
 
 ```bash
-export PATH="$(pwd)/_build/src/sys_info_v2/gatherer:$PATH"
-export GSETTINGS_SCHEMA_DIR="$(pwd)/_build/data"
-export HW_DB_DIR="$(pwd)/_build/data/hwdb"
-export MC_RESOURCE_DIR="$(pwd)/_build/resources"
+export PATH="$BUILD_ROOT/src/sys_info_v2/gatherer:$PATH"
+export GSETTINGS_SCHEMA_DIR="$BUILD_ROOT/data"
+export HW_DB_DIR="$BUILD_ROOT/data/hwdb"
+export MC_RESOURCE_DIR="$BUILD_ROOT/resources"
 
-glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$(pwd)/_build/data/"
+glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$BUILD_ROOT/data/"
 ```
 
 And then to run the app:

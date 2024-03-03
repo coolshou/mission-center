@@ -103,7 +103,7 @@ pub trait CpuDynamicInfoExt<'a>: Default + Append + Arg {
     ///
     /// It is expected that the iterator yields as many values as exactly the number
     /// of CPU logical cores
-    type Iter: Iterator<Item = &'a f32>;
+    type Iter: Iterator<Item=&'a f32>;
 
     /// The overall utilization of the CPU(s)
     fn overall_utilization_percent(&self) -> f32;

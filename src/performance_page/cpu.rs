@@ -24,7 +24,11 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use crate::i18n::*;
+use crate::{
+    application::BASE_POINTS,
+    application::INTERVAL_STEP,
+    i18n::*
+};
 
 use super::widgets::GraphWidget;
 
@@ -406,6 +410,10 @@ mod imp {
 
             let dynamic_cpu_info = &readings.cpu_dynamic_info;
 
+            if graph_widgets.len() == 0 {
+                return false;
+            }
+
             // Update global CPU graph
             graph_widgets[0].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
             graph_widgets[0].add_data_point(1, dynamic_cpu_info.overall_kernel_utilization_percent);
@@ -583,10 +591,12 @@ mod imp {
             let settings = self.settings.take();
             let mut graph_selection = GRAPH_SELECTION_OVERALL;
             let mut show_kernel_times = false;
+            let mut data_points = BASE_POINTS;
             match settings {
                 Some(settings) => {
                     graph_selection = settings.int("performance-page-cpu-graph");
                     show_kernel_times = settings.boolean("performance-page-kernel-times");
+                    data_points = settings.int("perfomance-page-data-points") as u32;
 
                     self.settings.set(Some(settings));
                 }
@@ -598,7 +608,7 @@ mod imp {
 
             graph_widgets.push(GraphWidget::new());
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
-            graph_widgets[0].set_data_points(60);
+            graph_widgets[0].set_data_points(data_points);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_data_set_count(2);
             graph_widgets[0].set_filled(1, false);
@@ -665,7 +675,7 @@ mod imp {
                         this.imp().graph_widgets.set(graph_widgets);
                     });
                 }
-                graph_widgets[graph_widget_index].set_data_points(60);
+                graph_widgets[graph_widget_index].set_data_points(data_points);
                 graph_widgets[graph_widget_index].set_data_set_count(2);
                 graph_widgets[graph_widget_index].set_filled(1, false);
                 graph_widgets[graph_widget_index].set_dashed(1, true);
@@ -843,21 +853,34 @@ impl PerformancePageCpu {
             this: &PerformancePageCpu,
             settings: &gio::Settings,
         ) {
-            let update_speed_ms = settings.int("update-speed") * 500;
-            let graph_max_duration = (update_speed_ms * 60) / 1000;
-
             let this = this.imp();
-            this.utilization_label_all.set_text(&i18n_f(
-                "Utilization over {} seconds",
-                &[&format!("{}", graph_max_duration)],
-            ));
-            this.graph_max_duration
-                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+
+            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
+
+            let mins = graph_max_duration / 60;
+            let seconds_to_string = &i18n_f("{} second{}", &[&format!("{}", graph_max_duration % 60), if (graph_max_duration % 60) != 1 { "s" } else { "" }]);
+            let mins_to_string = &i18n_f("{} minute{} ", &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }]);
+            this.graph_max_duration.set_text(&*format!("{}{}", if mins > 0 { mins_to_string.clone() } else { "".to_string() }, if graph_max_duration % 60 > 0 { seconds_to_string.clone() } else { "".to_string() }));
+
+            this.utilization_label_all.set_text(&*i18n_f("Utilization Over {}{}", &[if mins > 0 { mins_to_string } else { "" }, if graph_max_duration % 60 > 0 { seconds_to_string } else { "" }]));
+
+            let widgets = this.graph_widgets.take();
+            for graph_widget in &widgets {
+                graph_widget.set_data_points(data_points);
+            }
+            this.graph_widgets.set(widgets);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
         settings.connect_changed(
-            Some("update-speed"),
+            Some("perfomance-page-data-points"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+        settings.connect_changed(
+            Some("app-update-interval"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),
