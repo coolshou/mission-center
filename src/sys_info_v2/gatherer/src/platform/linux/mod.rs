@@ -18,12 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use lazy_static::lazy_static;
-
 pub use apps::*;
 pub use cpu_info::*;
 use fork::run_forked;
 pub use gpu_info::*;
+use lazy_static::lazy_static;
 pub use processes::*;
 pub use utilities::*;
 

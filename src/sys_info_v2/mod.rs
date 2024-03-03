@@ -23,11 +23,13 @@ use std::sync::Arc;
 
 use lazy_static::lazy_static;
 
-use gatherer::Gatherer;
 pub use gatherer::{
     App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
     ProcessUsageStats,
 };
+use gatherer::Gatherer;
+
+use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -113,35 +115,6 @@ enum Message {
     KillProcess(Pid),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum UpdateSpeed {
-    VerySlow = 4,
-    Slow = 3,
-    Normal = 2,
-    Fast = 1,
-}
-
-impl From<i32> for UpdateSpeed {
-    fn from(value: i32) -> Self {
-        use gtk::glib::*;
-
-        match value {
-            1 => Self::Fast,
-            2 => Self::Normal,
-            3 => Self::Slow,
-            4 => Self::VerySlow,
-            _ => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Invalid update speed value: {}, defaulting to Normal",
-                    value
-                );
-                Self::Normal
-            }
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct Readings {
     pub cpu_static_info: CpuStaticInfo,
@@ -174,7 +147,7 @@ impl Readings {
 }
 
 pub struct SysInfoV2 {
-    refresh_interval: Arc<std::sync::atomic::AtomicU8>,
+    refresh_interval: Arc<std::sync::atomic::AtomicU16>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
     refresh_thread_running: Arc<std::sync::atomic::AtomicBool>,
@@ -215,9 +188,9 @@ impl Default for SysInfoV2 {
 
 impl SysInfoV2 {
     pub fn new() -> Self {
-        use std::sync::{atomic::*, *};
+        use std::sync::{*, atomic::*};
 
-        let refresh_interval = Arc::new(AtomicU8::new(UpdateSpeed::Normal as u8));
+        let refresh_interval = Arc::new(AtomicU16::new((BASE_INTERVAL / INTERVAL_STEP).round() as u16));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
@@ -370,9 +343,9 @@ impl SysInfoV2 {
                     );
 
                     let time = std::time::Instant::now();
-                    let refresh_interval = ri.clone().load(Ordering::Acquire) as usize * 500;
+                    let refresh_interval = ri.clone().load(Ordering::Acquire) as f64 * INTERVAL_STEP;
                     let refresh_interval =
-                        std::time::Duration::from_millis(refresh_interval as u64);
+                        std::time::Duration::from_secs_f64(refresh_interval);
                     g_debug!(
                         "MissionCenter::Perf",
                         "Refresh interval ({:?}) read in {:?}",
@@ -470,9 +443,9 @@ impl SysInfoV2 {
         }
     }
 
-    pub fn set_update_speed(&self, speed: UpdateSpeed) {
+    pub fn set_update_speed(&self, speed: i32) {
         self.refresh_interval
-            .store(speed as u8, std::sync::atomic::Ordering::Release);
+            .store(speed as u16, std::sync::atomic::Ordering::Release);
     }
 
     pub fn terminate_process(&self, pid: u32) {

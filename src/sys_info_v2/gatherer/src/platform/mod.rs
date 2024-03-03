@@ -21,6 +21,8 @@
 pub use apps::*;
 pub use cpu_info::*;
 pub use gpu_info::*;
+#[cfg(target_os = "linux")]
+pub use linux::*;
 pub use processes::*;
 pub use utilities::*;
 
@@ -32,6 +34,7 @@ mod platform_impl;
 #[allow(unused)]
 mod linux {
     use super::*;
+
     pub type Process = platform_impl::LinuxProcess;
     pub type Processes = platform_impl::LinuxProcesses;
     pub type App = platform_impl::LinuxApp;
@@ -45,9 +48,6 @@ mod linux {
     pub type GpuInfo = platform_impl::LinuxGpuInfo;
     pub type PlatformUtilities = platform_impl::LinuxPlatformUtilities;
 }
-
-#[cfg(target_os = "linux")]
-pub use linux::*;
 
 mod apps;
 mod cpu_info;

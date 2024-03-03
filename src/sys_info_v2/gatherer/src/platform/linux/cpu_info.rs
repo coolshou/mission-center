@@ -856,7 +856,7 @@ impl LinuxCpuInfo {
 
     fn virtual_machine() -> Option<bool> {
         use crate::critical;
-        use dbus::blocking::{stdintf::org_freedesktop_dbus::Properties, *};
+        use dbus::blocking::{*, stdintf::org_freedesktop_dbus::Properties};
 
         let conn = match Connection::new_system() {
             Ok(c) => c,
@@ -916,7 +916,7 @@ impl LinuxCpuInfo {
             }
         }
 
-        fn read_index_entry_number<R: FromStr<Err = core::num::ParseIntError>>(
+        fn read_index_entry_number<R: FromStr<Err=core::num::ParseIntError>>(
             file_name: &str,
             index_path: &std::path::Path,
             suffix: Option<&str>,
@@ -1263,7 +1263,7 @@ impl LinuxCpuInfo {
     }
 
     fn thread_count(processes: &crate::platform::Processes) -> u64 {
-        use crate::platform::{ProcessExt, ProcessesExt};
+        use crate::platform::{ProcessesExt, ProcessExt};
 
         processes
             .process_list()

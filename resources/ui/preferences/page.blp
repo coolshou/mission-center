@@ -5,27 +5,36 @@ template $PreferencesPage : Adw.PreferencesPage {
   Adw.PreferencesGroup {
     title: _("General Settings");
 
-    Adw.ExpanderRow update_speed_setting {
-      title: _("Update Speed");
+    Adw.ActionRow {
+      title: _("Update Interval");
+      subtitle: "In seconds";
 
-      $CheckedRow update_fast {
-        title: _("Fast");
-        subtitle: _("Refresh every half second");
+      Adw.SpinRow update_interval {
+        adjustment: Gtk.Adjustment {
+          lower: 0.5;
+          upper: 10;
+          step-increment: 0.05;
+          value: 1;
+        };
+        hexpand: false;
+        value: 1;
+        digits: 2;
       }
+    }
 
-      $CheckedRow update_normal {
-        title: _("Normal");
-        subtitle: _("Refresh every second");
-      }
-
-      $CheckedRow update_slow {
-        title: _("Slow");
-        subtitle: _("Refresh every second and a half");
-      }
-
-      $CheckedRow update_very_slow {
-        title: _("Very Slow");
-        subtitle: _("Refresh every 2 seconds");
+    Adw.ActionRow {
+      title: _("Chart Data Points");
+      Gtk.Scale data_points {
+        adjustment: Gtk.Adjustment {
+          lower: 10;
+          upper: 600;
+          step-increment: 1;
+          value: 60;
+        };
+        digits: 0;
+        hexpand: true;
+        draw-value: true;
+        value-pos: left;
       }
     }
   }

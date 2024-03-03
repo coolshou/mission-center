@@ -76,8 +76,8 @@ impl PreferencesWindow {
                 PreferencesWindow::static_type(),
                 &mut [("transient-for", parent.into())],
             )
-            .downcast()
-            .unwrap()
+                .downcast()
+                .unwrap()
         };
         this.add(&page::PreferencesPage::new(settings));
 

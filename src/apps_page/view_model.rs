@@ -22,7 +22,7 @@ use std::cell::Cell;
 
 use gtk::{
     gio, glib,
-    glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
+    glib::{ParamSpec, prelude::*, Properties, subclass::prelude::*, Value},
 };
 
 mod imp {

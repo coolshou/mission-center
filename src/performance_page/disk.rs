@@ -25,6 +25,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 use super::widgets::GraphWidget;
@@ -284,7 +285,7 @@ mod imp {
             let rsp = crate::to_human_readable(disk.read_speed as f32, 1024.);
             let i = if rsp.1.is_empty() { "" } else { "i" };
             if let Some(read_speed) = this.read_speed.get() {
-                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
+                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i, ));
             }
 
             this.disk_transfer_rate_graph
@@ -292,7 +293,7 @@ mod imp {
             let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
             let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
-                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
+                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i, ));
             }
 
             true
@@ -473,17 +474,29 @@ impl PerformancePageDisk {
             this: &PerformancePageDisk,
             settings: &gio::Settings,
         ) {
-            let update_speed_ms = settings.int("update-speed") * 500;
-            let graph_max_duration = (update_speed_ms * 60) / 1000;
+            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
-            this.graph_max_duration
-                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+
+            let mins = graph_max_duration / 60;
+            let seconds_to_string = format!("{} second{}", graph_max_duration % 60, if (graph_max_duration % 60) != 1 { "s" } else { "" });
+            let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
+            this.graph_max_duration.set_text(&*format!("{}{}", if mins > 0 { mins_to_string } else { "".to_string() }, if graph_max_duration % 60 > 0 { seconds_to_string } else { "".to_string() }));
+            this.usage_graph.set_data_points(data_points);
+            this.disk_transfer_rate_graph.set_data_points(data_points);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
         settings.connect_changed(
-            Some("update-speed"),
+            Some("perfomance-page-data-points"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+
+        settings.connect_changed(
+            Some("app-update-interval"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),

@@ -113,7 +113,13 @@ mod imp {
         fn set_data_points(&self, count: u32) {
             let mut data_points = self.data_sets.take();
             for values in data_points.iter_mut() {
+                if count == (values.data_set.len() as u32) {
+                    continue;
+                }
+                // we need to truncate from the correct side
+                values.data_set.reverse();
                 values.data_set.resize(count as _, 0.);
+                values.data_set.reverse();
             }
             self.data_sets.set(data_points);
 
@@ -263,7 +269,7 @@ mod imp {
                         x as f32 * spacing_x - scale_factor / 2.,
                         height
                             - ((y.clamp(val_min, val_max) / val_max)
-                                * (height - scale_factor / 2.)),
+                            * (height - scale_factor / 2.)),
                     )
                 });
 
@@ -456,7 +462,7 @@ mod imp {
                 gl::Clear(gl::COLOR_BUFFER_BIT);
             }
 
-            (self.render_function.get())(self, width, height, scale_factor as f32);
+            self.render_function.get()(self, width, height, scale_factor as f32);
 
             glib::Propagation::Proceed
         }

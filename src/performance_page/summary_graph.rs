@@ -20,7 +20,7 @@
 
 use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
-use gtk::{gdk, glib, prelude::*};
+use gtk::{gdk, glib, Ordering, prelude::*};
 
 use super::widgets::GraphWidget;
 
@@ -168,5 +168,58 @@ impl SummaryGraph {
 
     pub fn graph_widget(&self) -> GraphWidget {
         self.imp().graph_widget.clone()
+    }
+
+    pub fn set_page_indicies(&self, primary: &usize, secondary: &usize) {
+        self.clone().set_page_primary_index(primary);
+        self.clone().set_page_secondary_index(secondary);
+    }
+
+    pub fn set_page_secondary_index(self, index: &usize) {
+        unsafe {
+            self.set_data("secondary_index", *index as u32)
+        }
+    }
+
+    pub fn set_page_primary_index(self, index: &usize) {
+        unsafe {
+            self.set_data("ordinal", *index as u32)
+        }
+    }
+
+    pub fn get_primary_ordinal(&self) -> u32 {
+        let mut out = 0;
+        unsafe {
+            let data = self.data::<u32>("ordinal");
+            if data.is_some() {
+                let null = data.unwrap();
+                out = *null.as_ref();
+            }
+        }
+
+        out
+    }
+
+    pub fn get_secondary_ordinal(&self) -> u32 {
+        let mut out = 0;
+        unsafe {
+            let data = self.data::<u32>("secondary_index");
+            if data.is_some() {
+                let null = data.unwrap();
+                out = *null.as_ref();
+            }
+        }
+
+        out
+    }
+}
+
+pub fn compare_to(graph1: SummaryGraph, graph2: SummaryGraph) -> Ordering {
+    let primary1 = graph1.get_primary_ordinal();
+    let primary2 = graph2.get_primary_ordinal();
+    if primary1 > primary2 { Ordering::Larger } else if primary1 < primary2 { Ordering::Smaller } else {
+        let secondary1 = graph1.get_secondary_ordinal();//widget_name_primary_ordinal(graph1.widget_name());
+        let secondary2 = graph2.get_secondary_ordinal();
+        if secondary1 > secondary2 { Ordering::Larger } else if secondary1 < secondary2 { Ordering::Smaller } else { Ordering::Equal /* should never get here */ }
     }
 }

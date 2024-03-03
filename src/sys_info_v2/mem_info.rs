@@ -197,7 +197,7 @@ impl MemInfo {
         let mut cmd = if !is_flatpak {
             let mut cmd = Command::new("udevadm");
             cmd.arg("info").arg("-q").arg("property")
-               .arg("-p").arg("/sys/devices/virtual/dmi/id");
+                .arg("-p").arg("/sys/devices/virtual/dmi/id");
             cmd.env_remove("LD_PRELOAD");
             cmd
         } else {

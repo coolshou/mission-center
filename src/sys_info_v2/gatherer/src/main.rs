@@ -20,7 +20,6 @@
 
 use dbus::{arg, blocking::Connection};
 use dbus_crossroads::Crossroads;
-
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
 use platform::{CpuInfoExt, PlatformUtilitiesExt};
@@ -129,12 +128,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method(
             "GetCpuStaticInfo",
             (),
-            ("static_info",),
+            ("static_info", ),
             |ctx, sys_stats: &mut System, (): ()| {
-                ctx.reply(Ok((sys_stats.cpu_info.static_info(),)));
+                ctx.reply(Ok((sys_stats.cpu_info.static_info(), )));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::CpuStaticInfo::default(),))
+                Ok((platform::CpuStaticInfo::default(), ))
             },
         );
 
@@ -145,15 +144,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method(
             "GetCpuDynamicInfo",
             (),
-            ("static_info",),
+            ("static_info", ),
             |ctx, sys_stats: &mut System, (): ()| {
                 sys_stats
                     .cpu_info
                     .refresh_dynamic_info_cache(&sys_stats.processes);
-                ctx.reply(Ok((sys_stats.cpu_info.dynamic_info(),)));
+                ctx.reply(Ok((sys_stats.cpu_info.dynamic_info(), )));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::CpuDynamicInfo::default(),))
+                Ok((platform::CpuDynamicInfo::default(), ))
             },
         );
 
@@ -161,15 +160,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method(
             "EnumerateGPUs",
             (),
-            ("gpu_ids",),
+            ("gpu_ids", ),
             |ctx, sys_stats: &mut System, (): ()| {
                 use platform::GpuInfoExt;
 
                 sys_stats.gpu_info.refresh_gpu_list();
-                ctx.reply(Ok((sys_stats.gpu_info.enumerate().collect::<Vec<_>>(),)));
+                ctx.reply(Ok((sys_stats.gpu_info.enumerate().collect::<Vec<_>>(), )));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((Vec::<&str>::new(),))
+                Ok((Vec::<&str>::new(), ))
             },
         );
 
@@ -179,26 +178,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method(
             "GetGPUStaticInfo",
-            ("gpu_id",),
-            ("static_info",),
-            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+            ("gpu_id", ),
+            ("static_info", ),
+            |ctx, sys_stats: &mut System, (gpu_id, ): (String, )| {
                 use platform::GpuInfoExt;
 
                 sys_stats.gpu_info.refresh_static_info_cache();
 
                 match sys_stats.gpu_info.static_info(&gpu_id) {
                     None => {
-                        ctx.reply::<(platform::GpuStaticInfo,)>(Err(dbus::MethodErr::invalid_arg(
+                        ctx.reply::<(platform::GpuStaticInfo, )>(Err(dbus::MethodErr::invalid_arg(
                             &format!("`{}` is not a valid GPU id", gpu_id),
                         )));
                     }
                     Some(static_info) => {
-                        ctx.reply(Ok((static_info,)));
+                        ctx.reply(Ok((static_info, )));
                     }
                 }
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::GpuStaticInfo::default(),))
+                Ok((platform::GpuStaticInfo::default(), ))
             },
         );
 
@@ -208,9 +207,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method(
             "GetGPUDynamicInfo",
-            ("gpu_id",),
-            ("dynamic_info",),
-            |ctx, sys_stats: &mut System, (gpu_id,): (String,)| {
+            ("gpu_id", ),
+            ("dynamic_info", ),
+            |ctx, sys_stats: &mut System, (gpu_id, ): (String, )| {
                 use platform::GpuInfoExt;
 
                 sys_stats
@@ -219,7 +218,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 match sys_stats.gpu_info.dynamic_info(&gpu_id) {
                     None => {
-                        ctx.reply::<(platform::GpuDynamicInfo,)>(Err(
+                        ctx.reply::<(platform::GpuDynamicInfo, )>(Err(
                             dbus::MethodErr::invalid_arg(&format!(
                                 "`{}` is not a valid GPU id",
                                 gpu_id
@@ -227,12 +226,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         ));
                     }
                     Some(dynamic_info) => {
-                        ctx.reply(Ok((dynamic_info,)));
+                        ctx.reply(Ok((dynamic_info, )));
                     }
                 }
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::GpuDynamicInfo::default(),))
+                Ok((platform::GpuDynamicInfo::default(), ))
             },
         );
 
@@ -243,15 +242,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method(
             "GetProcesses",
             (),
-            ("processes",),
+            ("processes", ),
             |ctx, sys_stats: &mut System, (): ()| {
                 use platform::ProcessesExt;
 
                 sys_stats.processes.refresh_cache();
-                ctx.reply(Ok((&sys_stats.processes,)));
+                ctx.reply(Ok((&sys_stats.processes, )));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::Processes::default(),))
+                Ok((platform::Processes::default(), ))
             },
         );
 
@@ -259,7 +258,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method(
             "GetApps",
             (),
-            ("apps",),
+            ("apps", ),
             |ctx, sys_stats: &mut System, (): ()| {
                 use platform::{AppsExt, ProcessesExt};
 
@@ -270,10 +269,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 sys_stats
                     .apps
                     .refresh_cache(sys_stats.processes.process_list());
-                ctx.reply(Ok((&sys_stats.apps,)));
+                ctx.reply(Ok((&sys_stats.apps, )));
 
                 // Make the scaffolding happy, since the reply was already set
-                Ok((platform::Apps::default(),))
+                Ok((platform::Apps::default(), ))
             },
         );
 
@@ -283,9 +282,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method(
             "TerminateProcess",
-            ("process_id",),
+            ("process_id", ),
             (),
-            |_, sys_stats: &mut System, (pid,): (u32,)| {
+            |_, sys_stats: &mut System, (pid, ): (u32, )| {
                 use platform::ProcessesExt;
 
                 sys_stats.processes.terminate_process(pid);
@@ -300,9 +299,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method(
             "KillProcess",
-            ("process_id",),
+            ("process_id", ),
             (),
-            |_, system: &mut System, (pid,): (u32,)| {
+            |_, system: &mut System, (pid, ): (u32, )| {
                 use platform::ProcessesExt;
 
                 system.processes.kill_process(pid);
@@ -321,9 +320,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Gatherer::Main",
             "Registering D-Bus method `GetMachineId`..."
         );
-        builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
+        builder.method("GetMachineId", (), ("machine_uuid", ), |_, _, (): ()| {
             Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
-                .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
+                    .map_or("UNKNOWN".into(), |s| s.trim().to_owned()), ))
         });
 
         message!("Gatherer::Main", "Registering D-Bus method `Ping`...");

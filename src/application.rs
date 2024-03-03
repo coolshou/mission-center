@@ -270,7 +270,7 @@ impl MissionCenterApplication {
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
-            .developers(["Romeo Calota", "QwertyChouskie"])
+            .developers(["Romeo Calota", "QwertyChouskie", "jojo2357"])
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
@@ -307,3 +307,7 @@ impl MissionCenterApplication {
         about.present();
     }
 }
+
+pub const INTERVAL_STEP: f64 = 0.05;
+pub const BASE_INTERVAL: f64 = 1f64;
+pub const BASE_POINTS: u32 = 60;

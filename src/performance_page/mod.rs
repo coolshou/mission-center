@@ -26,7 +26,13 @@ use gtk::{gio, glib};
 
 use widgets::GraphWidget;
 
-use crate::i18n::*;
+use crate::{
+    application::BASE_POINTS,
+    i18n::*,
+    performance_page::disk::PerformancePageDisk,
+    performance_page::summary_graph::compare_to,
+    sys_info_v2::{Disk, DiskType},
+};
 
 mod cpu;
 mod disk;
@@ -44,7 +50,16 @@ type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
 
 mod imp {
+    use crate::performance_page::network::PerformancePageNetwork;
+    use crate::sys_info_v2::{NetDeviceType, NetworkDevice};
     use super::*;
+
+    // GNOME color palette: Blue 2
+    pub const MEMORY_BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
+    // GNOME color palette: Green 5
+    pub const DISK_BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
+    // GNOME color palette: Purple 1
+    pub const NETWORK_BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
 
     enum Pages {
         Cpu((SummaryGraph, CpuPage)),
@@ -124,7 +139,7 @@ mod imp {
 
             Self::configure_actions(&this);
             lb.connect_row_selected(move |_, selected_row| {
-                use glib::{translate::*, *};
+                use glib::{*, translate::*};
                 use std::ffi::CStr;
 
                 if let Some(row) = selected_row {
@@ -358,6 +373,7 @@ mod imp {
             const BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
 
             let summary = SummaryGraph::new();
+            summary.set_page_indicies(&1, &0);
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
@@ -378,7 +394,11 @@ mod imp {
             if settings.is_none() {
                 panic!("Settings not set");
             }
-            let page = CpuPage::new(settings.as_ref().unwrap());
+
+            let unwrapped_settings = settings.as_ref().unwrap();
+            summary.graph_widget().set_data_points(unwrapped_settings.int("perfomance-page-data-points") as u32);
+
+            let page = CpuPage::new(unwrapped_settings);
             page.set_base_color(gtk::gdk::RGBA::new(
                 BASE_COLOR[0] as f32 / 255.,
                 BASE_COLOR[1] as f32 / 255.,
@@ -414,10 +434,8 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            // GNOME color palette: Blue 2
-            const BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
-
             let summary = SummaryGraph::new();
+            summary.set_page_indicies(&2, &0);
             summary.set_widget_name("memory");
 
             summary
@@ -428,9 +446,9 @@ mod imp {
             summary.set_info1("0/0 GiB (100%)");
 
             summary.set_base_color(gtk::gdk::RGBA::new(
-                BASE_COLOR[0] as f32 / 255.,
-                BASE_COLOR[1] as f32 / 255.,
-                BASE_COLOR[2] as f32 / 255.,
+                MEMORY_BASE_COLOR[0] as f32 / 255.,
+                MEMORY_BASE_COLOR[1] as f32 / 255.,
+                MEMORY_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
 
@@ -438,11 +456,14 @@ mod imp {
             if settings.is_none() {
                 panic!("Settings not set");
             }
+
+            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+
             let page = MemoryPage::new(settings.as_ref().unwrap());
             page.set_base_color(gtk::gdk::RGBA::new(
-                BASE_COLOR[0] as f32 / 255.,
-                BASE_COLOR[1] as f32 / 255.,
-                BASE_COLOR[2] as f32 / 255.,
+                MEMORY_BASE_COLOR[0] as f32 / 255.,
+                MEMORY_BASE_COLOR[1] as f32 / 255.,
+                MEMORY_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
             self.settings.set(settings);
@@ -474,54 +495,68 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            use crate::sys_info_v2::DiskType;
+            let mut disks = HashMap::new();
+            for i in 0..readings.disks.len() {
+                let ret = self.create_disk_page(&readings.disks[i], i);
+                disks.insert(ret.clone().0, ret.1);
+            }
+
+            pages.push(Pages::Disk(disks));
+        }
+
+        pub fn update_disk_page_index(&self, disk_graph: &SummaryGraph, disk_id: &String, index: &usize) {
+            disk_graph.clone().set_page_secondary_index(index);
+
+            disk_graph.set_heading(i18n_f(
+                "Disk {} ({})",
+                &[&format!("{}", index), &format!("{}", disk_id)],
+            ));
+        }
+
+        pub fn create_disk_page(&self, disk: &Disk, i: usize) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
             use glib::g_critical;
 
-            // GNOME color palette: Green 5
-            const BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
+            let summary = SummaryGraph::new();
+            summary.set_page_indicies(&3, &i);
+            summary.set_widget_name(&disk.id);
 
-            let mut disks = HashMap::new();
-            for (i, disk) in readings.disks.iter().enumerate() {
-                let summary = SummaryGraph::new();
-                summary.set_widget_name(&disk.id);
+            self.update_disk_page_index(&summary, &disk.id, &i);
+            summary.set_info1(match disk.r#type {
+                DiskType::HDD => i18n("HDD"),
+                DiskType::SSD => i18n("SSD"),
+                DiskType::NVMe => i18n("NVMe"),
+                DiskType::eMMC => i18n("eMMC"),
+                DiskType::iSCSI => i18n("iSCSI"),
+                DiskType::OPTIC => i18n("Optical"),
+                DiskType::Unknown => i18n("Unknown"),
+            });
+            summary.set_info2(format!("{:.0}%", disk.busy_percent));
+            summary.set_base_color(gtk::gdk::RGBA::new(
+                DISK_BASE_COLOR[0] as f32 / 255.,
+                DISK_BASE_COLOR[1] as f32 / 255.,
+                DISK_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
 
-                summary.set_heading(i18n_f(
-                    "Disk {} ({})",
-                    &[&format!("{}", i), &format!("{}", &disk.id)],
-                ));
-                summary.set_info1(match disk.r#type {
-                    DiskType::HDD => i18n("HDD"),
-                    DiskType::SSD => i18n("SSD"),
-                    DiskType::NVMe => i18n("NVMe"),
-                    DiskType::eMMC => i18n("eMMC"),
-                    DiskType::iSCSI => i18n("iSCSI"),
-                    DiskType::OPTIC => i18n("Optical"),
-                    DiskType::Unknown => i18n("Unknown"),
-                });
-                summary.set_info2(format!("{:.0}%", disk.busy_percent));
-                summary.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
 
-                let settings = self.settings.take();
-                if settings.is_none() {
-                    panic!("Settings not set");
-                }
-                let page = DiskPage::new(&disk.id, settings.as_ref().unwrap());
-                page.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
-                self.settings.set(settings);
-                page.set_static_information(i, disk);
+            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
 
-                self.page_content
-                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
+            let page = DiskPage::new(&disk.id, settings.as_ref().unwrap());
+            page.set_base_color(gtk::gdk::RGBA::new(
+                DISK_BASE_COLOR[0] as f32 / 255.,
+                DISK_BASE_COLOR[1] as f32 / 255.,
+                DISK_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.settings.set(settings);
+            page.set_static_information(i, disk);
+
+            self.page_content
+                .connect_collapsed_notify(clone!(@weak page => move |pc| {
                         if pc.is_collapsed() {
                             page.infobar_collapsed();
                         } else {
@@ -529,34 +564,31 @@ mod imp {
                         }
                     }));
 
-                self.obj()
-                    .as_ref()
-                    .bind_property("summary-mode", &page, "summary-mode")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
 
-                self.sidebar().append(&summary);
-                self.page_stack.add_named(&page, Some(&disk.id));
+            self.sidebar().append(&summary);
+            self.page_stack.add_named(&page, Some(&disk.id));
 
-                let mut actions = self.context_menu_view_actions.take();
-                match actions.get("disk") {
-                    None => {
-                        g_critical!(
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("disk") {
+                None => {
+                    g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up disk action for {}, logic bug?",
                             &disk.id
                         );
-                    }
-                    Some(action) => {
-                        actions.insert(disk.id.clone(), action.clone());
-                    }
                 }
-                self.context_menu_view_actions.set(actions);
-
-                disks.insert(disk.id.clone(), (summary, page));
+                Some(action) => {
+                    actions.insert(disk.id.clone(), action.clone());
+                }
             }
+            self.context_menu_view_actions.set(actions);
 
-            pages.push(Pages::Disk(disks));
+            return (disk.id.clone(), (summary, page));
         }
 
         fn set_up_network_pages(
@@ -564,63 +596,74 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            use crate::sys_info_v2::NetDeviceType;
-            use glib::g_critical;
-
             // GNOME color palette: Purple 1
-            const BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
 
             let mut networks = HashMap::new();
-            for network_device in &readings.network_devices {
-                let if_name = network_device.descriptor.if_name.as_str();
+            for (i, network_device) in readings.network_devices.iter().enumerate() {
+                let ret = self.create_network_page(network_device, &i);
 
-                let conn_type = match network_device.descriptor.r#type {
-                    NetDeviceType::Wired => i18n("Ethernet"),
-                    NetDeviceType::Wireless => i18n("Wi-Fi"),
-                    NetDeviceType::Other => i18n("Other"),
-                };
+                networks.insert(ret.clone().0, ret.1);
+            }
 
-                let summary = SummaryGraph::new();
-                summary.set_widget_name(if_name);
+            pages.push(Pages::Network(networks));
+        }
 
-                summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
+        fn create_network_page(&self, network_device: &NetworkDevice, i: &usize) -> (String, (summary_graph::SummaryGraph, PerformancePageNetwork)) {
+            use glib::g_critical;
 
-                {
-                    let graph_widget = summary.graph_widget();
+            let if_name = network_device.descriptor.if_name.as_str();
 
-                    graph_widget.set_data_set_count(2);
-                    graph_widget.set_auto_scale(true);
-                    graph_widget.set_auto_scale_pow2(true);
-                    graph_widget.set_filled(0, false);
-                    graph_widget.set_dashed(0, true);
-                    graph_widget.set_base_color(gtk::gdk::RGBA::new(
-                        BASE_COLOR[0] as f32 / 255.,
-                        BASE_COLOR[1] as f32 / 255.,
-                        BASE_COLOR[2] as f32 / 255.,
-                        1.,
-                    ));
-                }
+            let conn_type = match network_device.descriptor.r#type {
+                NetDeviceType::Wired => i18n("Ethernet"),
+                NetDeviceType::Wireless => i18n("Wi-Fi"),
+                NetDeviceType::Other => i18n("Other"),
+            };
 
-                let settings = self.settings.take();
-                if settings.is_none() {
-                    panic!("Settings not set");
-                }
-                let page = NetworkPage::new(
-                    if_name,
-                    network_device.descriptor.r#type,
-                    settings.as_ref().unwrap(),
-                );
-                page.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
+            let summary = SummaryGraph::new();
+            summary.set_page_indicies(&4, &i);
+            summary.set_widget_name(if_name);
+
+            summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
+
+            {
+                let graph_widget = summary.graph_widget();
+
+                graph_widget.set_data_set_count(2);
+                graph_widget.set_auto_scale(true);
+                graph_widget.set_auto_scale_pow2(true);
+                graph_widget.set_filled(0, false);
+                graph_widget.set_dashed(0, true);
+                graph_widget.set_base_color(gtk::gdk::RGBA::new(
+                    NETWORK_BASE_COLOR[0] as f32 / 255.,
+                    NETWORK_BASE_COLOR[1] as f32 / 255.,
+                    NETWORK_BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                self.settings.set(settings);
-                page.set_static_information(network_device);
+            }
 
-                self.page_content
-                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
+
+            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+
+            let page = NetworkPage::new(
+                if_name,
+                network_device.descriptor.r#type,
+                settings.as_ref().unwrap(),
+            );
+            page.set_base_color(gtk::gdk::RGBA::new(
+                NETWORK_BASE_COLOR[0] as f32 / 255.,
+                NETWORK_BASE_COLOR[1] as f32 / 255.,
+                NETWORK_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.settings.set(settings);
+            page.set_static_information(network_device);
+
+            self.page_content
+                .connect_collapsed_notify(clone!(@weak page => move |pc| {
                         if pc.is_collapsed() {
                             page.infobar_collapsed();
                         } else {
@@ -628,34 +671,30 @@ mod imp {
                         }
                     }));
 
-                self.obj()
-                    .as_ref()
-                    .bind_property("summary-mode", &page, "summary-mode")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
 
-                self.sidebar().append(&summary);
-                self.page_stack.add_named(&page, Some(if_name));
+            self.sidebar().append(&summary);
+            self.page_stack.add_named(&page, Some(if_name));
 
-                let mut actions = self.context_menu_view_actions.take();
-                match actions.get("network") {
-                    None => {
-                        g_critical!(
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("network") {
+                None => {
+                    g_critical!(
                             "MissionCenter::PerformancePage",
                             "Failed to wire up network action for {}, logic bug?",
                             if_name
                         );
-                    }
-                    Some(action) => {
-                        actions.insert(if_name.to_owned(), action.clone());
-                    }
                 }
-                self.context_menu_view_actions.set(actions);
-
-                networks.insert(if_name.to_owned(), (summary, page));
+                Some(action) => {
+                    actions.insert(if_name.to_owned(), action.clone());
+                }
             }
-
-            pages.push(Pages::Network(networks));
+            self.context_menu_view_actions.set(actions);
+            (if_name.to_string(), (summary, page))
         }
 
         fn set_up_gpu_pages(
@@ -674,7 +713,17 @@ mod imp {
                 let dynamic_info = &readings.gpu_dynamic_info[i];
 
                 let summary = SummaryGraph::new();
+                summary.set_page_indicies(&5, &i);
                 summary.set_widget_name(static_info.id.as_ref());
+
+                let settings = self.settings.take();
+                if settings.is_none() {
+                    panic!("Settings not set");
+                }
+
+                summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+
+                self.settings.set(settings);
 
                 summary.set_heading(i18n_f("GPU {}", &[&format!("{}", i)]));
                 summary.set_info1(static_info.device_name.as_ref());
@@ -697,6 +746,7 @@ mod imp {
                     1.,
                 ));
                 page.set_static_information(i, static_info);
+
 
                 self.page_content
                     .connect_collapsed_notify(clone!(@weak page => move |pc| {
@@ -754,6 +804,13 @@ mod imp {
             this.set_up_gpu_pages(&mut pages, &readings);
             this.pages.set(pages);
 
+            this.sidebar().set_sort_func(|g1, g2| unsafe {
+                let g1 = g1.child().unwrap().unsafe_cast::<SummaryGraph>();
+                let g2 = g2.child().unwrap().unsafe_cast::<SummaryGraph>();
+
+                compare_to(g1, g2)
+            });
+
             if let Some(settings) = this.settings.take() {
                 let view_actions = this.context_menu_view_actions.take();
                 let action = if let Some(action) =
@@ -776,14 +833,71 @@ mod imp {
             this: &super::PerformancePage,
             readings: &crate::sys_info_v2::Readings,
         ) -> bool {
-            let pages = this.imp().pages.take();
+            let mut pages = this.imp().pages.take();
+
+            let mut disks_to_destroy = Vec::new();
+
+            for page in &mut pages {
+                match page {
+                    Pages::Cpu(_) => {} // not dynamic
+                    Pages::Memory(_) => {} // not dynamic
+                    Pages::Disk(ref mut disks_pages) => {
+                        for disk_name in disks_pages.keys() {
+                            if !readings.disks.iter().any(|device| &device.id == disk_name) {
+                                disks_to_destroy.push(disk_name.clone());
+                            }
+                        }
+
+                        for disk_name in &disks_to_destroy {
+                            let datum = disks_pages.get(disk_name).unwrap();
+                            let page = &datum.clone().1;
+                            let graf = &datum.0;
+
+                            let parent = &graf.parent().unwrap();
+                            this.sidebar().remove(parent);
+                            this.imp().page_stack.remove(page);
+                            disks_pages.remove(disk_name);
+                        }
+                    }
+                    Pages::Network(net_pages) => {
+                        for network_id in net_pages.keys() {
+                            if !readings.network_devices.iter().any(|device| &device.descriptor.if_name == network_id) {
+                                disks_to_destroy.push(network_id.clone());
+                            }
+                        }
+
+                        for disk_name in &disks_to_destroy {
+                            let datum = net_pages.get(disk_name).unwrap();
+                            let page = &datum.clone().1;
+                            let graf = &datum.0;
+
+                            let parent = &graf.parent().unwrap();
+                            this.sidebar().remove(parent);
+                            this.imp().page_stack.remove(page);
+                            net_pages.remove(disk_name);
+                        }
+                    }
+                    Pages::Gpu(_) => {}
+                }
+            }
 
             let mut result = true;
 
-            for page in &pages {
+            let mut data_points = BASE_POINTS;
+            let settings = this.imp().settings.take();
+            if !settings.is_none() {
+                data_points = settings.clone().unwrap().int("perfomance-page-data-points") as u32;
+            }
+            this.imp().settings.set(settings);
+
+            for page in &mut pages {
                 match page {
                     Pages::Cpu((summary, page)) => {
-                        summary.graph_widget().add_data_point(
+                        let graph_widget = summary.graph_widget();
+                        if graph_widget.data_points() != data_points {
+                            graph_widget.set_data_points(data_points);
+                        }
+                        graph_widget.add_data_point(
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
@@ -807,7 +921,11 @@ mod imp {
                         let total = crate::to_human_readable(total_raw as _, 1024.);
                         let used_raw =
                             readings.mem_info.mem_total - readings.mem_info.mem_available;
-                        summary.graph_widget().add_data_point(0, used_raw as _);
+                        let graph_widget = summary.graph_widget();
+                        if graph_widget.data_points() != data_points {
+                            graph_widget.set_data_points(data_points);
+                        }
+                        graph_widget.add_data_point(0, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
@@ -822,21 +940,32 @@ mod imp {
 
                         result &= page.update_readings(readings);
                     }
-                    Pages::Disk(disks_pages) => {
-                        for disk in &readings.disks {
+                    Pages::Disk(ref mut disks_pages) => {
+                        let mut new_pages = Vec::new();
+                        for (index, disk) in readings.disks.iter().enumerate() {
                             if let Some((summary, page)) = disks_pages.get(&disk.id) {
                                 let graph_widget = summary.graph_widget();
+                                if graph_widget.data_points() != data_points {
+                                    graph_widget.set_data_points(data_points);
+                                }
+                                this.imp().update_disk_page_index(summary, &disk.id, &index);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
                                 result &= page.update_readings(disk);
                             } else {
+                                new_pages.push(this.imp().create_disk_page(disk, index));
                                 // New page? How to detect disk was removed?
                             }
                         }
+
+                        for new_page in new_pages {
+                            disks_pages.insert(new_page.clone().0, new_page.1);
+                        }
                     }
                     Pages::Network(pages) => {
-                        for network_device in &readings.network_devices {
+                        let mut new_pages = Vec::new();
+                        for (index, network_device) in readings.network_devices.iter().enumerate() {
                             if let Some((summary, page)) =
                                 pages.get(&network_device.descriptor.if_name)
                             {
@@ -844,6 +973,9 @@ mod imp {
                                 let received = network_device.recv_bps;
 
                                 let graph_widget = summary.graph_widget();
+                                if graph_widget.data_points() != data_points {
+                                    graph_widget.set_data_points(data_points);
+                                }
                                 graph_widget.add_data_point(0, sent);
                                 graph_widget.add_data_point(1, received);
 
@@ -868,13 +1000,22 @@ mod imp {
                                 ));
 
                                 result &= page.update_readings(network_device);
+                            } else {
+                                new_pages.push(this.imp().create_network_page(network_device, &index));
                             }
+                        }
+
+                        for new_page in new_pages {
+                            pages.insert(new_page.clone().0, new_page.1);
                         }
                     }
                     Pages::Gpu(pages) => {
                         for gpu in &readings.gpu_dynamic_info {
                             if let Some((summary, page)) = pages.get(gpu.id.as_ref()) {
                                 let graph_widget = summary.graph_widget();
+                                if graph_widget.data_points() != data_points {
+                                    graph_widget.set_data_points(data_points);
+                                }
                                 graph_widget.add_data_point(0, gpu.util_percent as f32);
                                 summary.set_info2(format!(
                                     "{}% ({} °C)",
