@@ -722,57 +722,10 @@ impl LinuxCpuInfo {
             }
         }
 
-        fn read_from_proc_cpuinfo() -> Option<u64> {
-            let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
-                Ok(output) => output,
-                Err(e) => {
-                    critical!("Gatherer::CPU", "Could not read /proc/cpuinfo: {}", e);
-                    return None;
-                }
-            };
+        const FNS: &[fn() -> Option<u64>] =
+            &[read_from_sys_base_frequency, read_from_sys_bios_limit];
 
-            let index = match cpuinfo.find("cpu MHz") {
-                Some(index) => index,
-                None => {
-                    critical!("Gatherer::CPU", "Could not find `cpu MHz` in /proc/cpuinfo",);
-                    return None;
-                }
-            };
-
-            let base_frequency = match cpuinfo[index..]
-                .lines()
-                .next()
-                .map(|line| line.split(':').nth(1).unwrap_or("").trim())
-                .map(|mhz| mhz.parse::<f32>())
-            {
-                None => {
-                    critical!(
-                        "Gatherer::CPU",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo",
-                    );
-                    return None;
-                }
-                Some(Ok(bf)) => bf,
-                Some(Err(e)) => {
-                    critical!(
-                        "Gatherer::CPU",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
-                        e
-                    );
-                    return None;
-                }
-            };
-
-            Some((base_frequency * 1000.).round() as u64)
-        }
-
-        const FNS: [fn() -> Option<u64>; 3] = [
-            read_from_sys_base_frequency,
-            read_from_sys_bios_limit,
-            read_from_proc_cpuinfo,
-        ];
-
-        for f in &FNS {
+        for f in FNS {
             if let Some(freq) = f() {
                 return Some(freq);
             }
@@ -916,7 +869,7 @@ impl LinuxCpuInfo {
             }
         }
 
-        fn read_index_entry_number<R: FromStr<Err=core::num::ParseIntError>>(
+        fn read_index_entry_number<R: FromStr<Err = core::num::ParseIntError>>(
             file_name: &str,
             index_path: &std::path::Path,
             suffix: Option<&str>,
