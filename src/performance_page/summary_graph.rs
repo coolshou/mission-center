@@ -1,6 +1,7 @@
 /* performance_page/summary_graph.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
+ * Copyright 2024 jojo2357
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,24 +171,20 @@ impl SummaryGraph {
         self.imp().graph_widget.clone()
     }
 
-    pub fn set_page_indicies(&self, primary: &usize, secondary: &usize) {
+    pub fn set_page_indices(&self, primary: usize, secondary: usize) {
         self.clone().set_page_primary_index(primary);
         self.clone().set_page_secondary_index(secondary);
     }
 
-    pub fn set_page_secondary_index(self, index: &usize) {
-        unsafe {
-            self.set_data("secondary_index", *index as u32)
-        }
+    pub fn set_page_secondary_index(&self, index: usize) {
+        unsafe { self.set_data("secondary_index", index as u32) }
     }
 
-    pub fn set_page_primary_index(self, index: &usize) {
-        unsafe {
-            self.set_data("ordinal", *index as u32)
-        }
+    pub fn set_page_primary_index(&self, index: usize) {
+        unsafe { self.set_data("ordinal", index as u32) }
     }
 
-    pub fn get_primary_ordinal(&self) -> u32 {
+    pub fn get_primary_ordinal(&self) -> usize {
         let mut out = 0;
         unsafe {
             let data = self.data::<u32>("ordinal");
@@ -197,10 +194,10 @@ impl SummaryGraph {
             }
         }
 
-        out
+        out as _
     }
 
-    pub fn get_secondary_ordinal(&self) -> u32 {
+    pub fn get_secondary_ordinal(&self) -> usize {
         let mut out = 0;
         unsafe {
             let data = self.data::<u32>("secondary_index");
@@ -210,16 +207,26 @@ impl SummaryGraph {
             }
         }
 
-        out
+        out as _
     }
-}
 
-pub fn compare_to(graph1: SummaryGraph, graph2: SummaryGraph) -> Ordering {
-    let primary1 = graph1.get_primary_ordinal();
-    let primary2 = graph2.get_primary_ordinal();
-    if primary1 > primary2 { Ordering::Larger } else if primary1 < primary2 { Ordering::Smaller } else {
-        let secondary1 = graph1.get_secondary_ordinal();//widget_name_primary_ordinal(graph1.widget_name());
-        let secondary2 = graph2.get_secondary_ordinal();
-        if secondary1 > secondary2 { Ordering::Larger } else if secondary1 < secondary2 { Ordering::Smaller } else { Ordering::Equal /* should never get here */ }
+    pub fn cmp(&self, other: &Self) -> Ordering {
+        let primary1 = self.get_primary_ordinal();
+        let primary2 = other.get_primary_ordinal();
+        if primary1 > primary2 {
+            Ordering::Larger
+        } else if primary1 < primary2 {
+            Ordering::Smaller
+        } else {
+            let secondary1 = self.get_secondary_ordinal();
+            let secondary2 = other.get_secondary_ordinal();
+            if secondary1 > secondary2 {
+                Ordering::Larger
+            } else if secondary1 < secondary2 {
+                Ordering::Smaller
+            } else {
+                Ordering::Equal
+            }
+        }
     }
 }

@@ -2,8 +2,8 @@ use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 pub use super::dbus_interface::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
-    ProcessUsageStats,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, GpuDynamicInfo, GpuStaticInfo,
+    OpenGLApi, Process, ProcessUsageStats,
 };
 use super::dbus_interface::{IoMissioncenterMissionCenterGatherer, OrgFreedesktopDBusPeer};
 
@@ -260,6 +260,10 @@ impl<'a> Gatherer<'a> {
         dbus_call!(self, cpu_dynamic_info, "GetCPUDynamicInfo");
     }
 
+    pub fn disk_info(&self) -> Vec<DiskInfo> {
+        dbus_call!(self, disks_info, "GetDisksInfo");
+    }
+
     pub fn enumerate_gpus(&self) -> Vec<Arc<str>> {
         dbus_call!(self, enumerate_gpus, "EnumerateGPUs");
     }
@@ -334,8 +338,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-glibc just-testing",
                 flatpak_app_path
             ))
-                .status()
-                .is_ok_and(|exit_status| exit_status.success());
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
             if cmd_glibc_status {
                 let exe_glibc = format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path);
                 g_debug!(
@@ -350,8 +354,8 @@ impl<'a> Gatherer<'a> {
                 "{}/bin/missioncenter-gatherer-musl just-testing",
                 flatpak_app_path
             ))
-                .status()
-                .is_ok_and(|exit_status| exit_status.success());
+            .status()
+            .is_ok_and(|exit_status| exit_status.success());
             if cmd_musl_status {
                 let exe_musl = format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path);
                 g_debug!(
