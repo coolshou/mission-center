@@ -20,6 +20,7 @@
 
 pub use apps::*;
 pub use cpu_info::*;
+pub use disk_info::*;
 use fork::run_forked;
 pub use gpu_info::*;
 use lazy_static::lazy_static;
@@ -28,6 +29,7 @@ pub use utilities::*;
 
 mod apps;
 mod cpu_info;
+mod disk_info;
 mod fork;
 mod gpu_info;
 mod processes;

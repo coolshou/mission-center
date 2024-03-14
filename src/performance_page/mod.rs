@@ -1,6 +1,7 @@
 /* performance_page/view_models
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
+ * Copyright 2024 jojo2357
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +28,8 @@ use gtk::{gio, glib};
 use widgets::GraphWidget;
 
 use crate::{
-    application::BASE_POINTS,
-    i18n::*,
-    performance_page::disk::PerformancePageDisk,
-    performance_page::summary_graph::compare_to,
-    sys_info_v2::{Disk, DiskType},
+    application::BASE_POINTS, i18n::*, performance_page::disk::PerformancePageDisk,
+    sys_info_v2::DiskType,
 };
 
 mod cpu;
@@ -52,14 +50,21 @@ type GpuPage = gpu::PerformancePageGpu;
 mod imp {
     use crate::performance_page::network::PerformancePageNetwork;
     use crate::sys_info_v2::{NetDeviceType, NetworkDevice};
+
     use super::*;
 
     // GNOME color palette: Blue 2
-    pub const MEMORY_BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
+    const MEMORY_BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
     // GNOME color palette: Green 5
-    pub const DISK_BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
+    const DISK_BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
     // GNOME color palette: Purple 1
-    pub const NETWORK_BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
+    const NETWORK_BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
+
+    const SIDEBAR_CPU_PAGE_DEFAULT_IDX: usize = 1;
+    const SIDEBAR_MEM_PAGE_DEFAULT_IDX: usize = 2;
+    const SIDEBAR_DISK_PAGE_DEFAULT_IDX: usize = 3;
+    const SIDEBAR_NET_PAGE_DEFAULT_IDX: usize = 4;
+    const SIDEBAR_GPU_PAGE_DEFAULT_IDX: usize = 5;
 
     enum Pages {
         Cpu((SummaryGraph, CpuPage)),
@@ -373,7 +378,7 @@ mod imp {
             const BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
 
             let summary = SummaryGraph::new();
-            summary.set_page_indicies(&1, &0);
+            summary.set_page_indices(SIDEBAR_CPU_PAGE_DEFAULT_IDX, 0);
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
@@ -396,7 +401,9 @@ mod imp {
             }
 
             let unwrapped_settings = settings.as_ref().unwrap();
-            summary.graph_widget().set_data_points(unwrapped_settings.int("perfomance-page-data-points") as u32);
+            summary
+                .graph_widget()
+                .set_data_points(unwrapped_settings.int("perfomance-page-data-points") as u32);
 
             let page = CpuPage::new(unwrapped_settings);
             page.set_base_color(gtk::gdk::RGBA::new(
@@ -435,7 +442,7 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) {
             let summary = SummaryGraph::new();
-            summary.set_page_indicies(&2, &0);
+            summary.set_page_indices(SIDEBAR_MEM_PAGE_DEFAULT_IDX, 0);
             summary.set_widget_name("memory");
 
             summary
@@ -457,7 +464,12 @@ mod imp {
                 panic!("Settings not set");
             }
 
-            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+            summary.graph_widget().set_data_points(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .int("perfomance-page-data-points") as u32,
+            );
 
             let page = MemoryPage::new(settings.as_ref().unwrap());
             page.set_base_color(gtk::gdk::RGBA::new(
@@ -496,41 +508,51 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) {
             let mut disks = HashMap::new();
-            for i in 0..readings.disks.len() {
-                let ret = self.create_disk_page(&readings.disks[i], i);
-                disks.insert(ret.clone().0, ret.1);
+            for i in 0..readings.disk_info.len() {
+                let mut ret = self.create_disk_page(readings, i);
+                disks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
             pages.push(Pages::Disk(disks));
         }
 
-        pub fn update_disk_page_index(&self, disk_graph: &SummaryGraph, disk_id: &String, index: &usize) {
-            disk_graph.clone().set_page_secondary_index(index);
-
+        pub fn update_disk_page_index(
+            &self,
+            disk_graph: &SummaryGraph,
+            disk_id: &str,
+            index: usize,
+        ) {
+            disk_graph.set_page_secondary_index(index);
             disk_graph.set_heading(i18n_f(
                 "Disk {} ({})",
                 &[&format!("{}", index), &format!("{}", disk_id)],
             ));
         }
 
-        pub fn create_disk_page(&self, disk: &Disk, i: usize) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
+        pub fn create_disk_page(
+            &self,
+            readings: &crate::sys_info_v2::Readings,
+            secondary_index: usize,
+        ) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
             use glib::g_critical;
 
-            let summary = SummaryGraph::new();
-            summary.set_page_indicies(&3, &i);
-            summary.set_widget_name(&disk.id);
+            let disk_static_info = &readings.disk_info[secondary_index];
 
-            self.update_disk_page_index(&summary, &disk.id, &i);
-            summary.set_info1(match disk.r#type {
+            let summary = SummaryGraph::new();
+            summary.set_page_indices(SIDEBAR_DISK_PAGE_DEFAULT_IDX, secondary_index);
+            summary.set_widget_name(disk_static_info.id.as_ref());
+
+            self.update_disk_page_index(&summary, disk_static_info.id.as_ref(), secondary_index);
+            summary.set_info1(match disk_static_info.r#type {
                 DiskType::HDD => i18n("HDD"),
                 DiskType::SSD => i18n("SSD"),
                 DiskType::NVMe => i18n("NVMe"),
                 DiskType::eMMC => i18n("eMMC"),
                 DiskType::iSCSI => i18n("iSCSI"),
-                DiskType::OPTIC => i18n("Optical"),
+                DiskType::Optical => i18n("Optical"),
                 DiskType::Unknown => i18n("Unknown"),
             });
-            summary.set_info2(format!("{:.0}%", disk.busy_percent));
+            summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
             summary.set_base_color(gtk::gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -543,9 +565,14 @@ mod imp {
                 panic!("Settings not set");
             }
 
-            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+            summary.graph_widget().set_data_points(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .int("perfomance-page-data-points") as u32,
+            );
 
-            let page = DiskPage::new(&disk.id, settings.as_ref().unwrap());
+            let page = DiskPage::new(disk_static_info.id.as_ref(), settings.as_ref().unwrap());
             page.set_base_color(gtk::gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -553,16 +580,16 @@ mod imp {
                 1.,
             ));
             self.settings.set(settings);
-            page.set_static_information(i, disk);
+            page.set_static_information(secondary_index, disk_static_info);
 
             self.page_content
                 .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                        if pc.is_collapsed() {
-                            page.infobar_collapsed();
-                        } else {
-                            page.infobar_uncollapsed();
-                        }
-                    }));
+                    if pc.is_collapsed() {
+                        page.infobar_collapsed();
+                    } else {
+                        page.infobar_uncollapsed();
+                    }
+                }));
 
             self.obj()
                 .as_ref()
@@ -571,24 +598,24 @@ mod imp {
                 .build();
 
             self.sidebar().append(&summary);
-            self.page_stack.add_named(&page, Some(&disk.id));
+            self.page_stack.add_named(&page, Some(&disk_static_info.id));
 
             let mut actions = self.context_menu_view_actions.take();
             match actions.get("disk") {
                 None => {
                     g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to wire up disk action for {}, logic bug?",
-                            &disk.id
-                        );
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up disk action for {}, logic bug?",
+                        &disk_static_info.id
+                    );
                 }
                 Some(action) => {
-                    actions.insert(disk.id.clone(), action.clone());
+                    actions.insert(disk_static_info.id.to_string(), action.clone());
                 }
             }
             self.context_menu_view_actions.set(actions);
 
-            return (disk.id.clone(), (summary, page));
+            return (disk_static_info.id.as_ref().to_owned(), (summary, page));
         }
 
         fn set_up_network_pages(
@@ -596,19 +623,23 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            // GNOME color palette: Purple 1
-
             let mut networks = HashMap::new();
             for (i, network_device) in readings.network_devices.iter().enumerate() {
-                let ret = self.create_network_page(network_device, &i);
-
-                networks.insert(ret.clone().0, ret.1);
+                let mut ret = self.create_network_page(network_device, i);
+                networks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
             pages.push(Pages::Network(networks));
         }
 
-        fn create_network_page(&self, network_device: &NetworkDevice, i: &usize) -> (String, (summary_graph::SummaryGraph, PerformancePageNetwork)) {
+        fn create_network_page(
+            &self,
+            network_device: &NetworkDevice,
+            secondary_index: usize,
+        ) -> (
+            String,
+            (summary_graph::SummaryGraph, PerformancePageNetwork),
+        ) {
             use glib::g_critical;
 
             let if_name = network_device.descriptor.if_name.as_str();
@@ -620,7 +651,7 @@ mod imp {
             };
 
             let summary = SummaryGraph::new();
-            summary.set_page_indicies(&4, &i);
+            summary.set_page_indices(SIDEBAR_NET_PAGE_DEFAULT_IDX, secondary_index);
             summary.set_widget_name(if_name);
 
             summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
@@ -646,7 +677,12 @@ mod imp {
                 panic!("Settings not set");
             }
 
-            summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+            summary.graph_widget().set_data_points(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .int("perfomance-page-data-points") as u32,
+            );
 
             let page = NetworkPage::new(
                 if_name,
@@ -664,12 +700,12 @@ mod imp {
 
             self.page_content
                 .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                        if pc.is_collapsed() {
-                            page.infobar_collapsed();
-                        } else {
-                            page.infobar_uncollapsed();
-                        }
-                    }));
+                    if pc.is_collapsed() {
+                        page.infobar_collapsed();
+                    } else {
+                        page.infobar_uncollapsed();
+                    }
+                }));
 
             self.obj()
                 .as_ref()
@@ -684,10 +720,10 @@ mod imp {
             match actions.get("network") {
                 None => {
                     g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to wire up network action for {}, logic bug?",
-                            if_name
-                        );
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up network action for {}, logic bug?",
+                        if_name
+                    );
                 }
                 Some(action) => {
                     actions.insert(if_name.to_owned(), action.clone());
@@ -713,7 +749,7 @@ mod imp {
                 let dynamic_info = &readings.gpu_dynamic_info[i];
 
                 let summary = SummaryGraph::new();
-                summary.set_page_indicies(&5, &i);
+                summary.set_page_indices(SIDEBAR_GPU_PAGE_DEFAULT_IDX, i);
                 summary.set_widget_name(static_info.id.as_ref());
 
                 let settings = self.settings.take();
@@ -721,7 +757,12 @@ mod imp {
                     panic!("Settings not set");
                 }
 
-                summary.graph_widget().set_data_points(settings.as_ref().unwrap().int("perfomance-page-data-points") as u32);
+                summary.graph_widget().set_data_points(
+                    settings
+                        .as_ref()
+                        .unwrap()
+                        .int("perfomance-page-data-points") as u32,
+                );
 
                 self.settings.set(settings);
 
@@ -746,7 +787,6 @@ mod imp {
                     1.,
                 ));
                 page.set_static_information(i, static_info);
-
 
                 self.page_content
                     .connect_collapsed_notify(clone!(@weak page => move |pc| {
@@ -804,11 +844,26 @@ mod imp {
             this.set_up_gpu_pages(&mut pages, &readings);
             this.pages.set(pages);
 
-            this.sidebar().set_sort_func(|g1, g2| unsafe {
-                let g1 = g1.child().unwrap().unsafe_cast::<SummaryGraph>();
-                let g2 = g2.child().unwrap().unsafe_cast::<SummaryGraph>();
+            this.sidebar().set_sort_func(|g1, g2| {
+                use gtk::Ordering;
 
-                compare_to(g1, g2)
+                let g1 = match g1
+                    .child()
+                    .and_then(|g1| g1.downcast_ref::<SummaryGraph>().cloned())
+                {
+                    None => return Ordering::Equal,
+                    Some(g1) => g1,
+                };
+
+                let g2 = match g2
+                    .child()
+                    .and_then(|g2| g2.downcast_ref::<SummaryGraph>().cloned())
+                {
+                    None => return Ordering::Equal,
+                    Some(g2) => g2,
+                };
+
+                g1.cmp(&g2)
             });
 
             if let Some(settings) = this.settings.take() {
@@ -833,49 +888,81 @@ mod imp {
             this: &super::PerformancePage,
             readings: &crate::sys_info_v2::Readings,
         ) -> bool {
+            use glib::g_warning;
+
             let mut pages = this.imp().pages.take();
 
-            let mut disks_to_destroy = Vec::new();
+            let mut pages_to_destroy = Vec::new();
 
             for page in &mut pages {
                 match page {
-                    Pages::Cpu(_) => {} // not dynamic
+                    Pages::Cpu(_) => {}    // not dynamic
                     Pages::Memory(_) => {} // not dynamic
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_name in disks_pages.keys() {
-                            if !readings.disks.iter().any(|device| &device.id == disk_name) {
-                                disks_to_destroy.push(disk_name.clone());
+                            if !readings
+                                .disk_info
+                                .iter()
+                                .any(|device| device.id.as_ref() == disk_name)
+                            {
+                                pages_to_destroy.push(disk_name.clone());
                             }
                         }
 
-                        for disk_name in &disks_to_destroy {
-                            let datum = disks_pages.get(disk_name).unwrap();
-                            let page = &datum.clone().1;
-                            let graf = &datum.0;
-
-                            let parent = &graf.parent().unwrap();
-                            this.sidebar().remove(parent);
-                            this.imp().page_stack.remove(page);
-                            disks_pages.remove(disk_name);
+                        for disk_name in &pages_to_destroy {
+                            if let Some((graph, page)) =
+                                disks_pages.get(disk_name).and_then(|v| Some(v.clone()))
+                            {
+                                let parent = match graph.parent() {
+                                    Some(parent) => parent,
+                                    None => {
+                                        g_warning!(
+                                            "MissionCenter::PerformancePage",
+                                            "Failed to get parent of graph widget"
+                                        );
+                                        continue;
+                                    }
+                                };
+                                this.sidebar().remove(&parent);
+                                this.imp().page_stack.remove(&page);
+                                disks_pages.remove(disk_name);
+                            }
                         }
+
+                        pages_to_destroy.clear();
                     }
                     Pages::Network(net_pages) => {
                         for network_id in net_pages.keys() {
-                            if !readings.network_devices.iter().any(|device| &device.descriptor.if_name == network_id) {
-                                disks_to_destroy.push(network_id.clone());
+                            if !readings
+                                .network_devices
+                                .iter()
+                                .any(|device| &device.descriptor.if_name == network_id)
+                            {
+                                pages_to_destroy.push(network_id.clone());
                             }
                         }
 
-                        for disk_name in &disks_to_destroy {
-                            let datum = net_pages.get(disk_name).unwrap();
-                            let page = &datum.clone().1;
-                            let graf = &datum.0;
-
-                            let parent = &graf.parent().unwrap();
-                            this.sidebar().remove(parent);
-                            this.imp().page_stack.remove(page);
-                            net_pages.remove(disk_name);
+                        for net_device_name in &pages_to_destroy {
+                            if let Some((graph, page)) =
+                                net_pages.get(net_device_name).and_then(|v| Some(v.clone()))
+                            {
+                                let parent = match graph.parent() {
+                                    Some(parent) => parent,
+                                    None => {
+                                        g_warning!(
+                                            "MissionCenter::PerformancePage",
+                                            "Failed to get parent of graph widget"
+                                        );
+                                        continue;
+                                    }
+                                };
+                                this.sidebar().remove(&parent);
+                                this.imp().page_stack.remove(&page);
+                                net_pages.remove(net_device_name);
+                            }
                         }
+
+                        pages_to_destroy.clear();
                     }
                     Pages::Gpu(_) => {}
                 }
@@ -940,35 +1027,40 @@ mod imp {
 
                         result &= page.update_readings(readings);
                     }
-                    Pages::Disk(ref mut disks_pages) => {
-                        let mut new_pages = Vec::new();
-                        for (index, disk) in readings.disks.iter().enumerate() {
-                            if let Some((summary, page)) = disks_pages.get(&disk.id) {
+                    Pages::Disk(pages) => {
+                        let mut new_devices = Vec::new();
+                        for (index, disk) in readings.disk_info.iter().enumerate() {
+                            if let Some((summary, page)) = pages.get(disk.id.as_ref()) {
+                                this.imp()
+                                    .update_disk_page_index(summary, disk.id.as_ref(), index);
+
                                 let graph_widget = summary.graph_widget();
                                 if graph_widget.data_points() != data_points {
                                     graph_widget.set_data_points(data_points);
                                 }
-                                this.imp().update_disk_page_index(summary, &disk.id, &index);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
                                 result &= page.update_readings(disk);
                             } else {
-                                new_pages.push(this.imp().create_disk_page(disk, index));
-                                // New page? How to detect disk was removed?
+                                new_devices.push(index);
                             }
                         }
 
-                        for new_page in new_pages {
-                            disks_pages.insert(new_page.clone().0, new_page.1);
+                        for new_device_index in new_devices {
+                            let (disk_id, page) =
+                                this.imp().create_disk_page(readings, new_device_index);
+                            pages.insert(disk_id, page);
                         }
                     }
                     Pages::Network(pages) => {
-                        let mut new_pages = Vec::new();
+                        let mut new_devices = Vec::new();
                         for (index, network_device) in readings.network_devices.iter().enumerate() {
                             if let Some((summary, page)) =
                                 pages.get(&network_device.descriptor.if_name)
                             {
+                                summary.set_page_secondary_index(index);
+
                                 let sent = network_device.send_bps;
                                 let received = network_device.recv_bps;
 
@@ -1001,12 +1093,16 @@ mod imp {
 
                                 result &= page.update_readings(network_device);
                             } else {
-                                new_pages.push(this.imp().create_network_page(network_device, &index));
+                                new_devices.push(index);
                             }
                         }
 
-                        for new_page in new_pages {
-                            pages.insert(new_page.clone().0, new_page.1);
+                        for new_device_index in new_devices {
+                            let (net_if_id, page) = this.imp().create_network_page(
+                                &readings.network_devices[new_device_index],
+                                new_device_index,
+                            );
+                            pages.insert(net_if_id, page);
                         }
                     }
                     Pages::Gpu(pages) => {

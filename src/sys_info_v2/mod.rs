@@ -24,8 +24,8 @@ use std::sync::Arc;
 use lazy_static::lazy_static;
 
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
-    ProcessUsageStats,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, GpuDynamicInfo, GpuStaticInfo,
+    OpenGLApi, Process, ProcessUsageStats,
 };
 use gatherer::Gatherer;
 
@@ -68,7 +68,6 @@ macro_rules! cmd_flatpak_host {
 }
 
 mod dbus_interface;
-mod disk_info;
 mod gatherer;
 mod mem_info;
 mod net_info;
@@ -77,10 +76,6 @@ mod proc_info;
 pub type MemInfo = mem_info::MemInfo;
 #[allow(dead_code)]
 pub type MemoryDevice = mem_info::MemoryDevice;
-
-pub type Disk = disk_info::Disk;
-pub type DiskInfo = disk_info::DiskInfo;
-pub type DiskType = disk_info::DiskType;
 
 pub type NetInfo = net_info::NetInfo;
 pub type NetworkDevice = net_info::NetworkDevice;
@@ -120,7 +115,7 @@ pub struct Readings {
     pub cpu_static_info: CpuStaticInfo,
     pub cpu_dynamic_info: CpuDynamicInfo,
     pub mem_info: MemInfo,
-    pub disks: Vec<Disk>,
+    pub disk_info: Vec<DiskInfo>,
     pub network_devices: Vec<NetworkDevice>,
     pub gpu_static_info: Vec<GpuStaticInfo>,
     pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
@@ -135,7 +130,7 @@ impl Readings {
             cpu_static_info: Default::default(),
             cpu_dynamic_info: Default::default(),
             mem_info: MemInfo::default(),
-            disks: vec![],
+            disk_info: vec![],
             network_devices: vec![],
             gpu_static_info: vec![],
             gpu_dynamic_info: vec![],
@@ -190,7 +185,9 @@ impl SysInfoV2 {
     pub fn new() -> Self {
         use std::sync::{*, atomic::*};
 
-        let refresh_interval = Arc::new(AtomicU16::new((BASE_INTERVAL / INTERVAL_STEP).round() as u16));
+        let refresh_interval = Arc::new(AtomicU16::new(
+            (BASE_INTERVAL / INTERVAL_STEP).round() as u16
+        ));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
 
         let ri = refresh_interval.clone();
@@ -209,8 +206,8 @@ impl SysInfoV2 {
                     proc_info::process_hierarchy(&gatherer.processes()).unwrap_or_default();
                 readings.running_apps = gatherer.apps();
 
-                let mut disk_stats = vec![];
-                readings.disks = DiskInfo::load(&mut disk_stats);
+                readings.disk_info = gatherer.disk_info();
+                readings.disk_info.sort_unstable();
 
                 let mut net_info = NetInfo::new();
                 readings.network_devices = if let Some(net_info) = net_info.as_mut() {
@@ -218,6 +215,9 @@ impl SysInfoV2 {
                 } else {
                     vec![]
                 };
+                readings
+                    .network_devices
+                    .sort_unstable_by(|n1, n2| n1.descriptor.if_name.cmp(&n2.descriptor.if_name));
 
                 readings.mem_info = MemInfo::load().unwrap_or(MemInfo::default());
 
@@ -293,19 +293,23 @@ impl SysInfoV2 {
                     );
 
                     let timer = std::time::Instant::now();
-                    let disks = DiskInfo::load(&mut disk_stats);
+                    let mut disk_info = gatherer.disk_info();
+                    disk_info.sort_unstable();
                     g_debug!(
                         "MissionCenter::Perf",
-                        "Disk load took: {:?}",
+                        "Disks info load took: {:?}",
                         timer.elapsed()
                     );
 
                     let timer = std::time::Instant::now();
-                    let network_devices = if let Some(net_info) = net_info.as_mut() {
+                    let mut network_devices = if let Some(net_info) = net_info.as_mut() {
                         net_info.load_devices()
                     } else {
                         vec![]
                     };
+                    network_devices.sort_unstable_by(|n1, n2| {
+                        n1.descriptor.if_name.cmp(&n2.descriptor.if_name)
+                    });
                     g_debug!(
                         "MissionCenter::Perf",
                         "Net load took: {:?}",
@@ -327,7 +331,7 @@ impl SysInfoV2 {
                         cpu_static_info: cpu_static_info.clone(),
                         cpu_dynamic_info,
                         mem_info,
-                        disks,
+                        disk_info,
                         network_devices,
                         gpu_static_info: gpu_static_info.clone(),
                         gpu_dynamic_info,
@@ -343,9 +347,9 @@ impl SysInfoV2 {
                     );
 
                     let time = std::time::Instant::now();
-                    let refresh_interval = ri.clone().load(Ordering::Acquire) as f64 * INTERVAL_STEP;
                     let refresh_interval =
-                        std::time::Duration::from_secs_f64(refresh_interval);
+                        ri.clone().load(Ordering::Acquire) as f64 * INTERVAL_STEP;
+                    let refresh_interval = std::time::Duration::from_secs_f64(refresh_interval);
                     g_debug!(
                         "MissionCenter::Perf",
                         "Refresh interval ({:?}) read in {:?}",

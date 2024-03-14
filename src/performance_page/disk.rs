@@ -165,7 +165,7 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: usize,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
 
@@ -245,7 +245,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::iSCSI => "iSCSI",
-                    DiskType::OPTIC => "Optical",
+                    DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
                 });
             }
@@ -254,7 +254,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageDisk,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -285,7 +285,7 @@ mod imp {
             let rsp = crate::to_human_readable(disk.read_speed as f32, 1024.);
             let i = if rsp.1.is_empty() { "" } else { "i" };
             if let Some(read_speed) = this.read_speed.get() {
-                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i, ));
+                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
             }
 
             this.disk_transfer_rate_graph
@@ -293,7 +293,7 @@ mod imp {
             let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
             let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
-                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i, ));
+                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
             }
 
             true
@@ -475,14 +475,37 @@ impl PerformancePageDisk {
             settings: &gio::Settings,
         ) {
             let data_points = settings.int("perfomance-page-data-points") as u32;
-            let graph_max_duration = (((settings.int("app-update-interval") as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+                * INTERVAL_STEP)
+                * (data_points as f64))
+                .round() as u32;
 
             let this = this.imp();
 
             let mins = graph_max_duration / 60;
-            let seconds_to_string = format!("{} second{}", graph_max_duration % 60, if (graph_max_duration % 60) != 1 { "s" } else { "" });
+            let seconds_to_string = format!(
+                "{} second{}",
+                graph_max_duration % 60,
+                if (graph_max_duration % 60) != 1 {
+                    "s"
+                } else {
+                    ""
+                }
+            );
             let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
-            this.graph_max_duration.set_text(&*format!("{}{}", if mins > 0 { mins_to_string } else { "".to_string() }, if graph_max_duration % 60 > 0 { seconds_to_string } else { "".to_string() }));
+            this.graph_max_duration.set_text(&*format!(
+                "{}{}",
+                if mins > 0 {
+                    mins_to_string
+                } else {
+                    "".to_string()
+                },
+                if graph_max_duration % 60 > 0 {
+                    seconds_to_string
+                } else {
+                    "".to_string()
+                }
+            ));
             this.usage_graph.set_data_points(data_points);
             this.disk_transfer_rate_graph.set_data_points(data_points);
         }
@@ -505,11 +528,15 @@ impl PerformancePageDisk {
         this
     }
 
-    pub fn set_static_information(&self, index: usize, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn set_static_information(
+        &self,
+        index: usize,
+        disk: &crate::sys_info_v2::DiskInfo,
+    ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(&self, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn update_readings(&self, disk: &crate::sys_info_v2::DiskInfo) -> bool {
         imp::PerformancePageDisk::update_readings(self, disk)
     }
 

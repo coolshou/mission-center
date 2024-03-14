@@ -1,6 +1,6 @@
 /* sys_info_v2/dbus-interface/mod.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,13 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use dbus::{arg::*, blocking, blocking::BlockingSender, Error, strings::*};
+use dbus::{arg::*, blocking, blocking::BlockingSender, strings::*};
 
 pub use apps::*;
 use arc_str_vec::*;
 pub use cpu_dynamic_info::*;
 pub use cpu_static_info::*;
+pub use disk_info::*;
 pub use gpu_dynamic_info::*;
 pub use gpu_static_info::*;
 pub use processes::{Process, ProcessUsageStats};
@@ -35,6 +36,7 @@ mod apps;
 mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
+mod disk_info;
 mod gpu_dynamic_info;
 mod gpu_static_info;
 mod processes;
@@ -65,6 +67,7 @@ fn dbus_method_call<
 pub trait IoMissioncenterMissionCenterGatherer {
     fn cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
+    fn disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
     fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
@@ -86,7 +89,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetCpuStaticInfo",
             (),
         )
-            .and_then(|r: (CpuStaticInfo, )| Ok(r.0))
+        .and_then(|r: (CpuStaticInfo,)| Ok(r.0))
     }
 
     fn cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error> {
@@ -99,7 +102,20 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetCpuDynamicInfo",
             (),
         )
-            .and_then(|r: (CpuDynamicInfo, )| Ok(r.0))
+        .and_then(|r: (CpuDynamicInfo,)| Ok(r.0))
+    }
+
+    fn disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error> {
+        dbus_method_call(
+            &self.connection,
+            &self.destination,
+            &self.path,
+            self.timeout,
+            "io.missioncenter.MissionCenter.Gatherer",
+            "GetDisksInfo",
+            (),
+        )
+        .and_then(|r: (DiskInfoVec,)| Ok(r.0.into()))
     }
 
     fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error> {
@@ -112,7 +128,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "EnumerateGPUs",
             (),
         )
-            .and_then(|r: (ArcStrVec, )| Ok(r.0.into()))
+        .and_then(|r: (ArcStrVec,)| Ok(r.0.into()))
     }
 
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error> {
@@ -123,9 +139,9 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             self.timeout,
             "io.missioncenter.MissionCenter.Gatherer",
             "GetGPUDynamicInfo",
-            (gpu_id, ),
+            (gpu_id,),
         )
-            .and_then(|r: (GpuDynamicInfo, )| Ok(r.0))
+        .and_then(|r: (GpuDynamicInfo,)| Ok(r.0))
     }
 
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error> {
@@ -136,9 +152,9 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             self.timeout,
             "io.missioncenter.MissionCenter.Gatherer",
             "GetGPUStaticInfo",
-            (gpu_id, ),
+            (gpu_id,),
         )
-            .and_then(|r: (GpuStaticInfo, )| Ok(r.0))
+        .and_then(|r: (GpuStaticInfo,)| Ok(r.0))
     }
 
     fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
@@ -151,7 +167,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetProcesses",
             (),
         )
-            .and_then(|r: (ProcessMap, )| Ok(r.0.into()))
+        .and_then(|r: (ProcessMap,)| Ok(r.0.into()))
     }
 
     fn apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error> {
@@ -164,10 +180,10 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             "GetApps",
             (),
         )
-            .and_then(|r: (AppMap, )| Ok(r.0.into()))
+        .and_then(|r: (AppMap,)| Ok(r.0.into()))
     }
 
-    fn terminate_process(&self, process_id: u32) -> Result<(), Error> {
+    fn terminate_process(&self, process_id: u32) -> Result<(), dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -175,12 +191,12 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             self.timeout,
             "io.missioncenter.MissionCenter.Gatherer",
             "TerminateProcess",
-            (process_id, ),
+            (process_id,),
         )
-            .and_then(|_: ()| Ok(()))
+        .and_then(|_: ()| Ok(()))
     }
 
-    fn kill_process(&self, process_id: u32) -> Result<(), Error> {
+    fn kill_process(&self, process_id: u32) -> Result<(), dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -188,9 +204,9 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             self.timeout,
             "io.missioncenter.MissionCenter.Gatherer",
             "KillProcess",
-            (process_id, ),
+            (process_id,),
         )
-            .and_then(|_: ()| Ok(()))
+        .and_then(|_: ()| Ok(()))
     }
 }
 
@@ -209,7 +225,7 @@ impl<'a> OrgFreedesktopDBusIntrospectable for blocking::Proxy<'a, blocking::Conn
             "Introspect",
             (),
         )
-            .and_then(|r: (String, )| Ok(r.0))
+        .and_then(|r: (String,)| Ok(r.0))
     }
 }
 
@@ -229,7 +245,7 @@ impl<'a> OrgFreedesktopDBusPeer for blocking::Proxy<'a, blocking::Connection> {
             "GetMachineId",
             (),
         )
-            .and_then(|r: (String, )| Ok(r.0))
+        .and_then(|r: (String,)| Ok(r.0))
     }
 
     fn ping(&self) -> Result<(), dbus::Error> {

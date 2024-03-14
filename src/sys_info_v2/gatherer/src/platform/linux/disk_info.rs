@@ -1,6 +1,6 @@
-/* sys_info_v2/disk_info.rs
+/* sys_info_v2/gatherer/src/platform/linux/disk_info.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::sync::Arc;
+
 use serde::Deserialize;
+
+use crate::platform::disk_info::{DiskInfoExt, DisksInfoExt, DiskType};
 
 #[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {
@@ -32,23 +36,10 @@ struct LSBLKOutput {
     blockdevices: Vec<Option<LSBLKBlockDevice>>,
 }
 
-#[allow(non_camel_case_types)]
-#[derive(Debug, Clone, PartialEq, Eq)]
-#[repr(u8)]
-pub enum DiskType {
-    Unknown,
-    HDD,
-    SSD,
-    NVMe,
-    eMMC,
-    iSCSI,
-    OPTIC,
-}
-
 #[derive(Debug, Clone, PartialEq)]
-pub struct Disk {
-    pub id: String,
-    pub model: String,
+pub struct LinuxDiskInfo {
+    pub id: Arc<str>,
+    pub model: Arc<str>,
     pub r#type: DiskType,
     pub capacity: u64,
     pub formatted: u64,
@@ -60,59 +51,143 @@ pub struct Disk {
     pub write_speed: u64,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct DiskStats {
-    pub id: String,
-    pub sectors_read: u64,
-    pub sectors_written: u64,
+impl Default for LinuxDiskInfo {
+    fn default() -> Self {
+        Self {
+            id: Arc::from(""),
+            model: Arc::from(""),
+            r#type: DiskType::default(),
+            capacity: 0,
+            formatted: 0,
+            system_disk: false,
 
-    pub read_ios: u64,
-    pub write_ios: u64,
-    pub discard_ios: u64,
-    pub flush_ios: u64,
-    pub io_total_time_ms: u64,
+            busy_percent: 0.,
+            response_time_ms: 0.,
+            read_speed: 0,
+            write_speed: 0,
+        }
+    }
+}
 
-    pub read_ticks_weighted_ms: u64,
-    pub write_ticks_weighted_ms: u64,
-    pub discard_ticks_weighted_ms: u64,
-    pub flush_ticks_weighted_ms: u64,
+pub struct LinuxDiskInfoIter<'a>(
+    pub  std::iter::Map<
+        std::slice::Iter<'a, (DiskStats, LinuxDiskInfo)>,
+        fn(&'a (DiskStats, LinuxDiskInfo)) -> &'a LinuxDiskInfo,
+    >,
+);
 
-    pub read_time_ms: std::time::Instant,
+impl<'a> LinuxDiskInfoIter<'a> {
+    pub fn new(iter: std::slice::Iter<'a, (DiskStats, LinuxDiskInfo)>) -> Self {
+        Self(iter.map(|(_, di)| di))
+    }
+}
+
+impl<'a> Iterator for LinuxDiskInfoIter<'a> {
+    type Item = &'a LinuxDiskInfo;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next()
+    }
+}
+
+impl DiskInfoExt for LinuxDiskInfo {
+    fn id(&self) -> &str {
+        &self.id
+    }
+
+    fn model(&self) -> &str {
+        &self.model
+    }
+
+    fn r#type(&self) -> DiskType {
+        self.r#type
+    }
+
+    fn capacity(&self) -> u64 {
+        self.capacity
+    }
+
+    fn formatted(&self) -> u64 {
+        self.formatted
+    }
+
+    fn is_system_disk(&self) -> bool {
+        self.system_disk
+    }
+
+    fn busy_percent(&self) -> f32 {
+        self.busy_percent
+    }
+
+    fn response_time_ms(&self) -> f32 {
+        self.response_time_ms
+    }
+
+    fn read_speed(&self) -> u64 {
+        self.read_speed
+    }
+
+    fn write_speed(&self) -> u64 {
+        self.write_speed
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct DiskInfo;
+pub struct DiskStats {
+    sectors_read: u64,
+    sectors_written: u64,
 
-impl DiskInfo {
-    pub fn load(disk_stats: &mut Vec<DiskStats>) -> Vec<Disk> {
-        use gtk::glib::*;
+    read_ios: u64,
+    write_ios: u64,
+    discard_ios: u64,
+    flush_ios: u64,
+    io_total_time_ms: u64,
 
-        let mut result = vec![];
+    read_ticks_weighted_ms: u64,
+    write_ticks_weighted_ms: u64,
+    discard_ticks_weighted_ms: u64,
+    flush_ticks_weighted_ms: u64,
+
+    read_time_ms: std::time::Instant,
+}
+
+pub struct LinuxDisksInfo {
+    static_info: Vec<(DiskStats, LinuxDiskInfo)>,
+}
+
+impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
+    type S = LinuxDiskInfo;
+    type IterStatic = LinuxDiskInfoIter<'a>;
+
+    fn refresh_cache(&mut self) {
+        use crate::{critical, warning};
+
+        let mut prev_disks = std::mem::take(&mut self.static_info);
 
         let entries = match std::fs::read_dir("/sys/block") {
             Ok(e) => e,
             Err(e) => {
-                g_critical!(
-                    "MissionCenter::DiskInfo",
+                critical!(
+                    "Gatherer::DiskInfo",
                     "Failed to refresh disk information, failed to read disk entries: {}",
                     e
                 );
-                return result;
+                return;
             }
         };
         for entry in entries {
             let entry = match entry {
                 Ok(e) => e,
                 Err(e) => {
-                    g_warning!("MissionCenter::SysInfo", "Failed to read disk entry: {}", e);
+                    warning!("Gatherer::DiskInfo", "Failed to read disk entry: {}", e);
                     continue;
                 }
             };
             let file_type = match entry.file_type() {
                 Ok(ft) => ft,
                 Err(e) => {
-                    g_warning!(
-                        "MissionCenter::SysInfo",
+                    warning!(
+                        "Gatherer::DiskInfo",
                         "Failed to read disk entry file type: {}",
                         e
                     );
@@ -123,8 +198,8 @@ impl DiskInfo {
             let dir_name = if file_type.is_symlink() {
                 let path = match entry.path().read_link() {
                     Err(e) => {
-                        g_warning!(
-                            "MissionCenter::SysInfo",
+                        warning!(
+                            "Gatherer::DiskInfo",
                             "Failed to read disk entry symlink: {}",
                             e
                         );
@@ -149,77 +224,20 @@ impl DiskInfo {
                 continue;
             };
 
-            if dir_name.starts_with("loop")
-                || dir_name.starts_with("ram")
-                || dir_name.starts_with("zram")
-                || dir_name.starts_with("fd")
-                || dir_name.starts_with("md")
-                || dir_name.starts_with("dm")
-                || dir_name.starts_with("zd")
-            {
-                continue;
-            }
-
-            let mut disk_index = None;
-            for i in 0..disk_stats.len() {
-                if disk_stats[i].id == dir_name {
-                    disk_index = Some(i);
+            let mut prev_disk_index = None;
+            for i in 0..prev_disks.len() {
+                if prev_disks[i].1.id.as_ref() == dir_name {
+                    prev_disk_index = Some(i);
                     break;
                 }
             }
-
-            let r#type = if let Ok(v) =
-                std::fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
-            {
-                let v = v.trim().parse::<u8>().ok().map_or(u8::MAX, |v| v);
-                if v == 0 {
-                    if dir_name.starts_with("nvme") {
-                        DiskType::NVMe
-                    } else if dir_name.starts_with("mmc") {
-                        DiskType::eMMC
-                    } else {
-                        DiskType::SSD
-                    }
-                } else {
-                    if dir_name.starts_with("sr") {
-                        DiskType::OPTIC
-                    } else {
-                        match v {
-                            1 => DiskType::HDD,
-                            _ => DiskType::Unknown,
-                        }
-                    }
-                }
-            } else {
-                DiskType::Unknown
-            };
-
-            let capacity =
-                if let Ok(v) = std::fs::read_to_string(format!("/sys/block/{}/size", dir_name)) {
-                    v.trim().parse::<u64>().ok().map_or(u64::MAX, |v| v * 512)
-                } else {
-                    u64::MAX
-                };
-
-            let fs_info = Self::filesystem_info(&dir_name);
-            let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
-
-            let vendor = std::fs::read_to_string(format!("/sys/block/{}/device/vendor", dir_name))
-                .ok()
-                .unwrap_or("".to_string());
-
-            let model = std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
-                .ok()
-                .unwrap_or("".to_string());
-
-            let model = vendor.trim().to_string() + " " + model.trim();
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
 
             let stats = match stats.as_ref() {
                 Err(e) => {
-                    g_warning!(
-                        "MissionCenter::SysInfo",
+                    warning!(
+                        "MissionCenter::DiskInfo",
                         "Failed to read disk stat: {:?}",
                         e
                     );
@@ -279,9 +297,7 @@ impl DiskInfo {
                 }
             }
 
-            if let Some(disk_index) = disk_index {
-                let disk_stat = &mut disk_stats[disk_index];
-
+            if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
                     if read_ticks_weighted_ms < disk_stat.read_ticks_weighted_ms {
                         read_ticks_weighted_ms
@@ -407,63 +423,126 @@ impl DiskInfo {
 
                 disk_stat.read_time_ms = std::time::Instant::now();
 
-                result.push(Disk {
-                    id: dir_name,
-                    r#type,
-                    model: model.trim().to_string(),
-                    capacity,
-                    formatted,
-                    system_disk,
+                info.busy_percent = busy_percent;
+                info.response_time_ms = response_time_ms;
+                info.read_speed = read_speed;
+                info.write_speed = write_speed;
 
-                    busy_percent,
-                    response_time_ms,
-                    read_speed,
-                    write_speed,
-                });
+                self.static_info.push((disk_stat, info));
             } else {
-                result.push(Disk {
-                    id: dir_name.clone(),
-                    r#type,
-                    model: model.trim().to_string(),
-                    capacity,
-                    formatted,
-                    system_disk,
+                if dir_name.starts_with("loop")
+                    || dir_name.starts_with("ram")
+                    || dir_name.starts_with("zram")
+                    || dir_name.starts_with("fd")
+                    || dir_name.starts_with("md")
+                    || dir_name.starts_with("dm")
+                    || dir_name.starts_with("zd")
+                {
+                    continue;
+                }
 
-                    busy_percent: 0.,
-                    response_time_ms: 0.,
-                    read_speed: 0,
-                    write_speed: 0,
-                });
+                let r#type = if let Ok(v) =
+                    std::fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
+                {
+                    let v = v.trim().parse::<u8>().ok().map_or(u8::MAX, |v| v);
+                    if v == 0 {
+                        if dir_name.starts_with("nvme") {
+                            DiskType::NVMe
+                        } else if dir_name.starts_with("mmc") {
+                            DiskType::eMMC
+                        } else {
+                            DiskType::SSD
+                        }
+                    } else {
+                        if dir_name.starts_with("sr") {
+                            DiskType::Optical
+                        } else {
+                            match v {
+                                1 => DiskType::HDD,
+                                _ => DiskType::Unknown,
+                            }
+                        }
+                    }
+                } else {
+                    DiskType::Unknown
+                };
 
-                disk_stats.push(DiskStats {
-                    id: dir_name,
-                    read_time_ms: std::time::Instant::now(),
-                    read_ticks_weighted_ms,
-                    write_ticks_weighted_ms,
-                    discard_ticks_weighted_ms,
-                    flush_ticks_weighted_ms,
-                    io_total_time_ms,
-                    read_ios,
-                    write_ios,
-                    discard_ios,
-                    flush_ios,
-                    sectors_read,
-                    sectors_written,
-                })
+                let capacity = if let Ok(v) =
+                    std::fs::read_to_string(format!("/sys/block/{}/size", dir_name))
+                {
+                    v.trim().parse::<u64>().ok().map_or(u64::MAX, |v| v * 512)
+                } else {
+                    u64::MAX
+                };
+
+                let fs_info = Self::filesystem_info(&dir_name);
+                let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
+
+                let vendor =
+                    std::fs::read_to_string(format!("/sys/block/{}/device/vendor", dir_name))
+                        .ok()
+                        .unwrap_or("".to_string());
+
+                let model =
+                    std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
+                        .ok()
+                        .unwrap_or("".to_string());
+
+                let model = Arc::<str>::from(format!("{} {}", vendor.trim(), model.trim()));
+
+                self.static_info.push((
+                    DiskStats {
+                        sectors_read,
+                        sectors_written,
+                        read_ios,
+                        write_ios,
+                        discard_ios,
+                        flush_ios,
+                        io_total_time_ms,
+                        read_ticks_weighted_ms,
+                        write_ticks_weighted_ms,
+                        discard_ticks_weighted_ms,
+                        flush_ticks_weighted_ms,
+                        read_time_ms: std::time::Instant::now(),
+                    },
+                    LinuxDiskInfo {
+                        id: Arc::from(dir_name),
+                        model,
+                        r#type,
+                        capacity,
+                        formatted,
+                        system_disk,
+
+                        busy_percent: 0.,
+                        response_time_ms: 0.,
+                        read_speed: 0,
+                        write_speed: 0,
+                    },
+                ));
             }
         }
+    }
 
-        result
+    fn info(&'a self) -> Self::IterStatic {
+        LinuxDiskInfoIter::new(self.static_info.iter())
+    }
+}
+
+impl LinuxDisksInfo {
+    pub fn new() -> Self {
+        Self {
+            static_info: vec![],
+        }
     }
 
     fn filesystem_info(device_name: &str) -> Option<(bool, u64)> {
-        use gtk::glib::*;
+        use crate::{critical, warning};
 
         let entries = match std::fs::read_dir(format!("/sys/block/{}", device_name)) {
             Ok(e) => e,
             Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
+                critical!(
+                    "Gatherer::DiskInfo",
                     "Failed to read filesystem information for '{}': {}",
                     device_name,
                     e
@@ -482,8 +561,8 @@ impl DiskInfo {
             let entry = match entry {
                 Ok(e) => e,
                 Err(e) => {
-                    g_warning!(
-                        "MissionCenter::SysInfo",
+                    warning!(
+                        "Gatherer::DiskInfo",
                         "Failed to read some filesystem information for '{}': {}",
                         device_name,
                         e
@@ -509,12 +588,15 @@ impl DiskInfo {
     }
 
     fn mount_points(device_name: &str) -> Vec<String> {
-        use gtk::glib::*;
+        use crate::critical;
 
-        let lsblk_out = if let Ok(output) = cmd!("lsblk -o NAME,MOUNTPOINTS --json").output() {
+        let mut cmd = std::process::Command::new("lsblk");
+        cmd.arg("-o").arg("NAME,MOUNTPOINTS").arg("--json");
+
+        let lsblk_out = if let Ok(output) = cmd.output() {
             if output.stderr.len() > 0 {
-                g_critical!(
-                    "MissionCenter::SysInfo",
+                critical!(
+                    "Gatherer::DiskInfo",
                     "Failed to refresh block device information, host command execution failed: {}",
                     std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
                 );
@@ -523,8 +605,8 @@ impl DiskInfo {
 
             output.stdout
         } else {
-            g_critical!(
-                "MissionCenter::SysInfo",
+            critical!(
+                "Gatherer::DiskInfo",
                 "Failed to refresh block device information, host command execution failed"
             );
             return vec![];
@@ -533,8 +615,8 @@ impl DiskInfo {
         let mut lsblk_out = match serde_json::from_slice::<LSBLKOutput>(lsblk_out.as_slice()) {
             Ok(v) => v,
             Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
+                critical!(
+                    "MissionCenter::DiskInfo",
                     "Failed to refresh block device information, host command execution failed: {}",
                     e
                 );
