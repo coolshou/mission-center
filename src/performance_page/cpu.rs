@@ -699,13 +699,15 @@ mod imp {
 
             graph_widgets.push(GraphWidget::new());
             self.usage_graphs.attach(&graph_widgets[1], 0, 0, 1, 1);
-            graph_widgets[1].set_data_points(60);
+            graph_widgets[1].set_data_points(data_points);
             graph_widgets[1].set_scroll(true);
             graph_widgets[1].set_data_set_count(cpu_count as u32);
             graph_widgets[1].set_base_color(&base_color);
             graph_widgets[1].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
 
             for i in 0..cpu_count {
+                graph_widgets[1].set_filled(i, false);
+
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
 
