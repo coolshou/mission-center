@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-10-18 19:00+0000\n"
-"Last-Translator: detiam <dehe_tian@outlook.com>\n"
+"PO-Revision-Date: 2024-01-24 07:01+0000\n"
+"Last-Translator: RangerCD <compact-disk@live.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
 "Language: zh\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -347,7 +347,6 @@ msgstr "磁盘传输速率"
 
 #: resources/ui/performance_page/disk_details.blp:69
 #: resources/ui/performance_page/disk_details.blp:49
-#, fuzzy
 msgid "Avg. response time"
 msgstr "平均响应时间"
 
@@ -622,7 +621,7 @@ msgstr "保存应用程序重新启动后对应用程序和进程列表排序状
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "资源"
 
 #: resources/ui/window.blp:69
 msgid "Toggle Sidebar"
@@ -824,7 +823,7 @@ msgstr "认证失败"
 
 #: src/performance_page/memory.rs:483
 msgid "More info"
-msgstr ""
+msgstr "详细信息"
 
 #: src/performance_page/network.rs:438 src/performance_page/network.rs:445
 #: src/performance_page/network.rs:455

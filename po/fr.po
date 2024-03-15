@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-12-09 10:15+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"PO-Revision-Date: 2024-01-16 22:01+0000\n"
+"Last-Translator: Christophe Jaillet <c.jaillet@meci.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -181,7 +181,7 @@ msgstr "Le sens de tri de la page des Applications"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Quel graph est affiché sur la page de performance du processeur"
+msgstr "Quel graphe est affiché sur la page de performance du processeur"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:67
 msgid "Show kernel times in the CPU graphs"
@@ -211,7 +211,7 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "Changer le _graph pour"
+msgstr "Changer le _graphe pour"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
@@ -223,7 +223,7 @@ msgstr "_Processeurs logiques"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr "Afficher l'heure du noyau"
+msgstr "Afficher le temps du noyau"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:179
@@ -231,7 +231,7 @@ msgstr "Afficher l'heure du noyau"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "Vue _sommaire de graph"
+msgstr "Vue _sommaire de graphe"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:184
@@ -488,7 +488,7 @@ msgstr "Reçu"
 
 #: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
-msgstr "Envoyer"
+msgstr "Envoyé"
 
 #: resources/ui/performance_page/network_details.blp:110
 msgid "Interface name:"

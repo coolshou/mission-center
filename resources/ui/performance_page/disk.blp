@@ -130,19 +130,18 @@ template $PerformancePageDisk: Box {
     }
   }
 
-  Adw.Clamp {
-    orientation: vertical;
+  $GraphWidget disk_transfer_rate_graph {
+    vexpand: true;
+    hexpand: true;
 
     width-request: 100;
-    maximum-size: 50;
+    height-request: 50;
 
-    child: $GraphWidget disk_transfer_rate_graph {
-      base-color: bind template.base-color;
-      data-set-count: 2;
-      scroll: true;
-      auto-scale: true;
-      auto-scale-pow2: true;
-    };
+    base-color: bind template.base-color;
+    data-set-count: 2;
+    scroll: true;
+    auto-scale: true;
+    auto-scale-pow2: true;
   }
 
   Box {

@@ -20,12 +20,12 @@
 
 use std::cell::Cell;
 
-use adw::{prelude::*, subclass::prelude::*};
+use adw::{prelude::*, subclass::prelude::*, SwitchRow};
 use gtk::{gio, glib};
 
 use crate::{
     i18n::*,
-    preferences::{checked_row_widget::CheckedRowWidget, switch_row::SwitchRow},
+    preferences::checked_row_widget::CheckedRowWidget,
 };
 
 mod imp {
@@ -46,9 +46,9 @@ mod imp {
         pub update_fast: TemplateChild<CheckedRowWidget>,
 
         #[template_child]
-        pub merged_process_stats: TemplateChild<SwitchRow>,
+        pub merged_process_stats: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub remember_sorting: TemplateChild<SwitchRow>,
+        pub remember_sorting: TemplateChild<adw::SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
 
@@ -186,7 +186,7 @@ mod imp {
                 glib::clone!(@weak self as this => move |switch_row| {
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("apps-page-merged-process-stats", switch_row.active()) {
+                        if let Err(e) = settings.set_boolean("apps-page-merged-process-stats", switch_row.is_active()) {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set merged process stats setting: {}",
@@ -202,7 +202,7 @@ mod imp {
                 glib::clone!(@weak self as this => move |switch_row| {
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("apps-page-remember-sorting", switch_row.active()) {
+                        if let Err(e) = settings.set_boolean("apps-page-remember-sorting", switch_row.is_active()) {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set merged process stats setting: {}",

@@ -1,6 +1,6 @@
 /* sys_info_v2/dbus-interface/apps.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
 
-pub type AppUsageStats = super::processes::ProcessUsageStats;
-
 #[derive(Debug, Clone)]
 pub struct App {
     pub name: Arc<str>,
@@ -31,7 +29,6 @@ pub struct App {
     pub id: Arc<str>,
     pub command: Arc<str>,
     pub pids: Vec<u32>,
-    pub usage_stats: AppUsageStats,
 }
 
 impl From<&dyn RefArg> for App {
@@ -46,7 +43,6 @@ impl From<&dyn RefArg> for App {
             id: empty_string.clone(),
             command: empty_string,
             pids: vec![],
-            usage_stats: Default::default(),
         };
 
         let mut app = match value.as_iter() {
@@ -177,40 +173,6 @@ impl From<&dyn RefArg> for App {
                 }
             },
         }
-
-        match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '6: STRUCT', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '6: STRUCT', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(stats) => {
-                    let mut values = [0_f32; 6];
-
-                    for (i, v) in stats.enumerate() {
-                        values[i] = v.as_f64().unwrap_or(0.) as f32;
-                    }
-
-                    this.usage_stats.cpu_usage = values[0];
-                    this.usage_stats.memory_usage = values[1];
-                    this.usage_stats.disk_usage = values[2];
-                    this.usage_stats.network_usage = values[3];
-                    this.usage_stats.gpu_usage = values[4];
-                    this.usage_stats.gpu_memory_usage = values[5];
-                }
-            },
-        };
 
         this
     }

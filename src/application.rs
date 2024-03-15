@@ -1,6 +1,6 @@
 /* application.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@
 
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 
-use adw::glib::g_critical;
 use adw::subclass::prelude::*;
-use gtk::prelude::*;
-use gtk::{gio, glib};
+use gtk::{
+    gio,
+    glib::{self, g_critical, property::PropertySet},
+    prelude::*,
+};
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
@@ -268,7 +270,7 @@ impl MissionCenterApplication {
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
-            .developers(["Romeo Calota"])
+            .developers(["Romeo Calota", "QwertyChouskie"])
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
@@ -277,8 +279,12 @@ impl MissionCenterApplication {
             .website("https://missioncenter.io")
             .release_notes(
                 r#"<ul>
-<li>Fix a bug where the number of CPUs was incorrectly detected on some systems</li>
-<li>Add missing icon for the details panel in the Performance tab</li>
+<li>Display optical device information in the Performance tab</li>
+<li>Fix a bug where the Gatherer process would crash at startup</li>
+<li>Remove the need for admin rights to display extended memory information</li>
+<li>Remove the requirement for `libgcc_s.so.1` on musl-based systems</li>
+<li>Make the saturation and transfer graphs the same height in the disk usage panes</li>
+<li>Translation updates and fixes</li>
 </ul>"#,
             )
             .build();
@@ -293,7 +299,6 @@ impl MissionCenterApplication {
                 "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
                 "NVTOP https://github.com/Syllo/nvtop",
                 "musl libc https://musl.libc.org/",
-                "Dmidecode https://www.nongnu.org/dmidecode/",
                 "Workbench https://github.com/sonnyp/Workbench",
                 "And many more... Thank you all!",
             ],

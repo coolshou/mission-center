@@ -1,6 +1,6 @@
 /* sys_info_v2/gatherer/src/platform/processes.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,17 +46,6 @@ pub struct ProcessUsageStats {
     pub network_usage: f32,
     pub gpu_usage: f32,
     pub gpu_memory_usage: f32,
-}
-
-impl ProcessUsageStats {
-    pub fn merge(&mut self, other: &Self) {
-        self.cpu_usage += other.cpu_usage;
-        self.memory_usage += other.memory_usage;
-        self.disk_usage += other.disk_usage;
-        self.network_usage += other.network_usage;
-        self.gpu_usage += other.gpu_usage;
-        self.gpu_memory_usage += other.gpu_memory_usage;
-    }
 }
 
 /// High-level description of a process

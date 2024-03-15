@@ -64,7 +64,6 @@ mod imp {
         pub cached: OnceCell<gtk::Label>,
         pub swap_available: OnceCell<gtk::Label>,
         pub swap_used: OnceCell<gtk::Label>,
-        pub system_info: OnceCell<gtk::Box>,
         pub speed: OnceCell<gtk::Label>,
         pub slots_used: OnceCell<gtk::Label>,
         pub form_factor: OnceCell<gtk::Label>,
@@ -92,7 +91,6 @@ mod imp {
                 cached: Default::default(),
                 swap_available: Default::default(),
                 swap_used: Default::default(),
-                system_info: Default::default(),
                 speed: Default::default(),
                 slots_used: Default::default(),
                 form_factor: Default::default(),
@@ -424,20 +422,19 @@ mod imp {
                     .object::<gtk::Label>("swap_used")
                     .expect("Could not find `swap_used` object in details pane"),
             );
-            let _ = self.system_info.set(
-                sidebar_content_builder
-                    .object::<gtk::Box>("system_info")
-                    .expect("Could not find `system_info` object in details pane"),
-            );
 
+            // Get memory device information using `load_memory_device_info()` from
+            // sys_info_v2::MemInfo and update the appropriate labels
             fn update_memory_hw_info(this: &super::PerformancePageMemory) {
                 unsafe { glib::gobject_ffi::g_object_ref(this.as_ptr() as *mut _) };
                 let ptr = this.as_ptr() as usize;
 
+                // Do this in another thread to avoid stalling the GUI
                 let _ = std::thread::spawn(move || {
+                    // Load memory device info
                     use crate::sys_info_v2::MemInfo;
-
                     let memory_device_info = MemInfo::load_memory_device_info();
+
                     glib::idle_add_once(move || {
                         use glib::translate::from_glib_none;
 
@@ -447,93 +444,80 @@ mod imp {
 
                         let this = this.downcast_ref::<super::PerformancePageMemory>().unwrap();
 
+                        // Update the labels with the retrieved information
                         match memory_device_info {
                             Some(memory_device_info) => {
+                                // Only update info if we have more than 0 modules
                                 let mem_module_count = memory_device_info.len();
                                 if mem_module_count > 0 {
                                     if let Some(sp) = this.imp().speed.get() {
-                                        sp.set_text(&format!(
-                                            "{} MT/s",
-                                            memory_device_info[0].speed
-                                        ));
+                                        if memory_device_info[0].speed != 0 {
+                                            sp.set_text(&format!(
+                                                "{} MT/s",
+                                                memory_device_info[0].speed
+                                            ));
+                                        }
                                     }
                                     if let Some(su) = this.imp().slots_used.get() {
                                         su.set_text(&format!("{}", mem_module_count));
                                     }
                                     if let Some(ff) = this.imp().form_factor.get() {
-                                        ff.set_text(&format!(
-                                            "{}",
-                                            memory_device_info[0].form_factor
-                                        ));
+                                        if memory_device_info[0].form_factor != "" {
+                                            ff.set_text(&format!(
+                                                "{}",
+                                                memory_device_info[0].form_factor
+                                            ));
+                                        }
                                     }
                                     if let Some(rt) = this.imp().ram_type.get() {
-                                        rt.set_text(&format!("{}", memory_device_info[0].ram_type));
+                                        if memory_device_info[0].ram_type != "" {
+                                            rt.set_text(&format!(
+                                                "{}",
+                                                memory_device_info[0].ram_type
+                                            ));
+                                        }
                                     }
                                 }
                             }
-                            _ => this
+                            _ => this // If getting memory device info failed, show error toast
                                 .imp()
                                 .toast_overlay
-                                .add_toast(adw::Toast::new(&i18n("Authentication failed"))),
+                                .add_toast(adw::Toast::new(&i18n(
+                                    "Getting additional memory information failed",
+                                ))),
                         }
                     });
                 });
             }
 
-            let default_label = format!("<a href=\"mc://mem_dev_info\">{}</a>", i18n("More info"));
+            let default_label = format!("{}", i18n("Unknown"));
             let default_label = default_label.as_str();
 
             let speed: gtk::Label = sidebar_content_builder
                 .object("speed")
                 .expect("Could not find `speed` object in details pane");
             speed.set_label(default_label);
-            let this = self.obj().downgrade();
-            speed.connect_activate_link(move |_, _| {
-                if let Some(this) = this.upgrade() {
-                    update_memory_hw_info(&this);
-                }
-                glib::Propagation::Stop
-            });
             let _ = self.speed.set(speed);
 
             let slots_used: gtk::Label = sidebar_content_builder
                 .object("slots_used")
                 .expect("Could not find `slots_used` object in details pane");
             slots_used.set_label(default_label);
-            let this = self.obj().downgrade();
-            slots_used.connect_activate_link(move |_, _| {
-                if let Some(this) = this.upgrade() {
-                    update_memory_hw_info(&this);
-                }
-                glib::Propagation::Stop
-            });
             let _ = self.slots_used.set(slots_used);
 
             let form_factor: gtk::Label = sidebar_content_builder
                 .object::<gtk::Label>("form_factor")
                 .expect("Could not find `form_factor` object in details pane");
             form_factor.set_label(default_label);
-            let this = self.obj().downgrade();
-            form_factor.connect_activate_link(move |_, _| {
-                if let Some(this) = this.upgrade() {
-                    update_memory_hw_info(&this);
-                }
-                glib::Propagation::Stop
-            });
             let _ = self.form_factor.set(form_factor);
 
             let ram_type: gtk::Label = sidebar_content_builder
                 .object("ram_type")
                 .expect("Could not find `ram_type` object in details pane");
             ram_type.set_label(default_label);
-            let this = self.obj().downgrade();
-            ram_type.connect_activate_link(move |_, _| {
-                if let Some(this) = this.upgrade() {
-                    update_memory_hw_info(&this);
-                }
-                glib::Propagation::Stop
-            });
             let _ = self.ram_type.set(ram_type);
+
+            update_memory_hw_info(&this);
         }
     }
 

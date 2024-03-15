@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 16:36+0200\n"
-"PO-Revision-Date: 2023-10-02 17:53+0000\n"
-"Last-Translator: Aly Mokhtari <alymokhtari7@gmail.com>\n"
+"PO-Revision-Date: 2024-01-28 21:01+0000\n"
+"Last-Translator: vistahm <vistahmiyan@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fa/>\n"
 "Language: fa\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -36,7 +36,7 @@ msgstr "توسعه دهندگان مرکز مأموریت"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
 msgid "Monitor system resource usage"
-msgstr "میزان استفادهٔ منابع سیستم را پایش کنید"
+msgstr "نظارت بر استفاده از منابع سیستم"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
@@ -50,13 +50,15 @@ msgstr "ویژگی‌ها:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "نظارت بر استفاده کلی یا هر رشته از پردازشگر"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"مشاهده فرآیند سیستم، رشته، شمارش دسته، زمان اجرا، سرعت ساعت (پایه و جریان)، "
+"اندازه های حافظه پنهان"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor RAM and Swap usage"
@@ -97,13 +99,14 @@ msgstr "تجزیه و تحلیل استفاده از منابع توسط برن�
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "از یک نمای خلاصه کوچک برای نظارت ساده پشتیبانی می کند"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr ""
+"از رندر OpenGL برای تمام نمودارها برای کاهش مصرف CPU و کلی منابع استفاده کنید"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Uses GTK4 and Libadwaita"
@@ -124,41 +127,45 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "No per-process network usage"
-msgstr ""
+msgstr "بدون استفاده از شبکه برای هر فرآیند"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid ""
 "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
 msgstr ""
+"پشتیبانی از کارت گرافیک آزمایشی است و فقط پردازنده های گرافیکی AMD و nVidia "
+"قابل نظارت هستند"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "نظرات، پیشنهادات، گزارش اشکال و مشارکت استقبال می شود"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:30
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "کدام صفحه هنگام راه اندازی برنامه نشان داده می شود"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:36
 msgid "How fast should the data be refreshed and the UI updated"
-msgstr ""
+msgstr "با چه سرعتی داده ها و رابط گرافیکی باید به روز شوند"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:41
 #: resources/ui/preferences/page.blp:38
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"آمار فرآیند والدین و فرزند به صورت جداگانه نشان داده می شوند یا به سمت بالا "
+"ادغام می شوند"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "مرتب‌سازی ستون‌ها در طول راه‌اندازی مجدد برنامه ادامه دارد"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "شناسه ستونی که نمای صفحه برنامه ها بر اساس آن مرتب شده است"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:56
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "جهت مرتب‌سازی نمای صفحه برنامه‌ها"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:62
 msgid "Which graph is shown on the CPU performance page"

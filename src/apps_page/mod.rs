@@ -1,6 +1,6 @@
 /* apps_page/mod.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,8 @@ mod imp {
 
         pub apps: Cell<std::collections::HashMap<std::sync::Arc<str>, crate::sys_info_v2::App>>,
         pub process_tree: Cell<crate::sys_info_v2::Process>,
+
+        pub use_merge_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
@@ -119,6 +121,8 @@ mod imp {
 
                 apps: Cell::new(HashMap::new()),
                 process_tree: Cell::new(Process::default()),
+
+                use_merge_stats: Cell::new(false),
             }
         }
     }
@@ -370,6 +374,8 @@ mod imp {
 
                     (primary_process, primary_pid)
                 };
+
+                let pp = primary_process.cloned().unwrap_or_default();
                 let view_model = if pos.is_none() {
                     let view_model = ViewModelBuilder::new()
                         .name(app.name.as_ref())
@@ -382,12 +388,12 @@ mod imp {
                         .pid(primary_pid)
                         .content_type(ContentType::App)
                         .expanded(false)
-                        .cpu_usage(app.usage_stats.cpu_usage)
-                        .memory_usage(app.usage_stats.memory_usage)
-                        .disk_usage(app.usage_stats.disk_usage)
-                        .network_usage(app.usage_stats.network_usage)
-                        .gpu_usage(app.usage_stats.gpu_usage)
-                        .gpu_mem_usage(app.usage_stats.gpu_memory_usage)
+                        .cpu_usage(pp.merged_usage_stats.cpu_usage)
+                        .memory_usage(pp.merged_usage_stats.memory_usage)
+                        .disk_usage(pp.merged_usage_stats.disk_usage)
+                        .network_usage(pp.merged_usage_stats.network_usage)
+                        .gpu_usage(pp.merged_usage_stats.gpu_usage)
+                        .gpu_mem_usage(pp.merged_usage_stats.gpu_memory_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -405,12 +411,12 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     view_model.set_pid(primary_pid);
-                    view_model.set_cpu_usage(app.usage_stats.cpu_usage);
-                    view_model.set_memory_usage(app.usage_stats.memory_usage);
-                    view_model.set_disk_usage(app.usage_stats.disk_usage);
-                    view_model.set_network_usage(app.usage_stats.network_usage);
-                    view_model.set_gpu_usage(app.usage_stats.gpu_usage);
-                    view_model.set_gpu_memory_usage(app.usage_stats.gpu_memory_usage);
+                    view_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
+                    view_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
+                    view_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
+                    view_model.set_network_usage(pp.merged_usage_stats.network_usage);
+                    view_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
+                    view_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
 
                     view_model
                 };
@@ -508,7 +514,7 @@ mod imp {
 
             if lhs.content_type() == ContentType::App as u8 {
                 if rhs.content_type() == ContentType::App as u8 {
-                    return (compare_fn)(lhs, rhs);
+                    return compare_fn(lhs, rhs);
                 }
 
                 if rhs.content_type() == ContentType::Process as u8 {
@@ -518,7 +524,7 @@ mod imp {
 
             if lhs.content_type() == ContentType::Process as u8 {
                 if rhs.content_type() == ContentType::Process as u8 {
-                    return (compare_fn)(lhs, rhs);
+                    return compare_fn(lhs, rhs);
                 }
 
                 if rhs.content_type() == ContentType::App as u8 {
@@ -711,8 +717,8 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<crate::sys_info_v2::Pid>("pid");
-                        let rhs = rhs.property::<crate::sys_info_v2::Pid>("pid");
+                        let lhs = lhs.pid();
+                        let rhs = rhs.pid();
 
                         lhs.cmp(&rhs)
                     })
@@ -732,8 +738,16 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("cpu-usage");
-                        let rhs = rhs.property::<f32>("cpu-usage");
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.cpu_usage
+                        } else {
+                            lhs.cpu_usage()
+                        };
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.cpu_usage
+                        } else {
+                            rhs.cpu_usage()
+                        };
 
                         lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                     })
@@ -753,8 +767,17 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("memory-usage");
-                        let rhs = rhs.property::<f32>("memory-usage");
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.memory_usage
+                        } else {
+                            lhs.memory_usage()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.memory_usage
+                        } else {
+                            rhs.memory_usage()
+                        };
 
                         lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                     })
@@ -774,8 +797,17 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("disk-usage");
-                        let rhs = rhs.property::<f32>("disk-usage");
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.disk_usage
+                        } else {
+                            lhs.disk_usage()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.disk_usage
+                        } else {
+                            rhs.disk_usage()
+                        };
 
                         lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                     })
@@ -795,8 +827,17 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("gpu-usage");
-                        let rhs = rhs.property::<f32>("gpu-usage");
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.gpu_usage
+                        } else {
+                            lhs.gpu_usage()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.gpu_usage
+                        } else {
+                            rhs.gpu_usage()
+                        };
 
                         lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                     })
@@ -816,8 +857,17 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = lhs.property::<f32>("gpu-memory-usage");
-                        let rhs = rhs.property::<f32>("gpu-memory-usage");
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.gpu_memory_usage
+                        } else {
+                            lhs.gpu_memory_usage()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.gpu_memory_usage
+                        } else {
+                            rhs.gpu_memory_usage()
+                        };
 
                         lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
                     })
@@ -837,9 +887,9 @@ mod imp {
                         {
                             None => {
                                 g_critical!(
-                                "MissionCenter::AppsPage",
-                                "Failed to save column sorting, could not get settings instance from MissionCenterApplication"
-                            );
+                                    "MissionCenter::AppsPage",
+                                    "Failed to save column sorting, could not get settings instance from MissionCenterApplication"
+                                );
                                 return;
                             }
                             Some(s) => s,
@@ -877,9 +927,9 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 6)
                             } else {
                                 g_critical!(
-                                        "MissionCenter::AppsPage",
-                                        "Unknown column sorting encountered"
-                                    );
+                                    "MissionCenter::AppsPage",
+                                    "Unknown column sorting encountered"
+                                );
                                 Ok(())
                             }
                             {
@@ -1134,20 +1184,43 @@ mod imp {
                 };
 
                 let child_model = if pos.is_none() {
+                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
+                        if this.use_merge_stats.get() {
+                            (
+                                child.merged_usage_stats.cpu_usage,
+                                child.merged_usage_stats.memory_usage,
+                                child.merged_usage_stats.network_usage,
+                                child.merged_usage_stats.disk_usage,
+                                child.merged_usage_stats.gpu_usage,
+                                child.merged_usage_stats.gpu_memory_usage,
+                            )
+                        } else {
+                            (
+                                child.usage_stats.cpu_usage,
+                                child.usage_stats.memory_usage,
+                                child.usage_stats.network_usage,
+                                child.usage_stats.disk_usage,
+                                child.usage_stats.gpu_usage,
+                                child.usage_stats.gpu_memory_usage,
+                            )
+                        };
+
                     let view_model = ViewModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
                         .pid(*pid)
-                        .cpu_usage(child.usage_stats.cpu_usage)
-                        .memory_usage(child.usage_stats.memory_usage)
-                        .disk_usage(child.usage_stats.disk_usage)
-                        .network_usage(child.usage_stats.network_usage)
-                        .gpu_usage(child.usage_stats.gpu_usage)
-                        .gpu_mem_usage(child.usage_stats.gpu_memory_usage)
+                        .cpu_usage(cpu_usage)
+                        .memory_usage(mem_usage)
+                        .disk_usage(disk_usage)
+                        .network_usage(net_usage)
+                        .gpu_usage(gpu_usage)
+                        .gpu_mem_usage(gpu_mem_usage)
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
+
+                    view_model.set_merged_stats(&child.merged_usage_stats);
 
                     model.append(&view_model);
                     view_model.children().clone()
@@ -1158,12 +1231,35 @@ mod imp {
                         .downcast::<ViewModel>()
                         .unwrap();
 
-                    view_model.set_cpu_usage(child.usage_stats.cpu_usage);
-                    view_model.set_memory_usage(child.usage_stats.memory_usage);
-                    view_model.set_disk_usage(child.usage_stats.disk_usage);
-                    view_model.set_network_usage(child.usage_stats.network_usage);
-                    view_model.set_gpu_usage(child.usage_stats.gpu_usage);
-                    view_model.set_gpu_memory_usage(child.usage_stats.gpu_memory_usage);
+                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
+                        if this.use_merge_stats.get() {
+                            (
+                                child.merged_usage_stats.cpu_usage,
+                                child.merged_usage_stats.memory_usage,
+                                child.merged_usage_stats.network_usage,
+                                child.merged_usage_stats.disk_usage,
+                                child.merged_usage_stats.gpu_usage,
+                                child.merged_usage_stats.gpu_memory_usage,
+                            )
+                        } else {
+                            (
+                                child.usage_stats.cpu_usage,
+                                child.usage_stats.memory_usage,
+                                child.usage_stats.network_usage,
+                                child.usage_stats.disk_usage,
+                                child.usage_stats.gpu_usage,
+                                child.usage_stats.gpu_memory_usage,
+                            )
+                        };
+
+                    view_model.set_cpu_usage(cpu_usage);
+                    view_model.set_memory_usage(mem_usage);
+                    view_model.set_disk_usage(disk_usage);
+                    view_model.set_network_usage(net_usage);
+                    view_model.set_gpu_usage(gpu_usage);
+                    view_model.set_gpu_memory_usage(gpu_mem_usage);
+
+                    view_model.set_merged_stats(&child.merged_usage_stats);
 
                     view_model.children().clone()
                 };
@@ -1198,9 +1294,30 @@ mod imp {
 
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
+            use crate::MissionCenterApplication;
+            use glib::{clone, g_critical};
+
             self.parent_constructed();
 
             self.configure_actions();
+
+            let app = match MissionCenterApplication::default_instance() {
+                Some(app) => app,
+                None => {
+                    g_critical!(
+                        "MissionCenter::AppsPage",
+                        "Failed to get default instance of MissionCenterApplication"
+                    );
+                    return;
+                }
+            };
+            if let Some(settings) = app.settings() {
+                self.use_merge_stats
+                    .set(settings.boolean("apps-page-merged-process-stats"));
+                settings.connect_changed(Some("apps-page-merged-process-stats"), clone!(@weak self as this => move |settings, _| {
+                    this.use_merge_stats.set(settings.boolean("apps-page-merged-process-stats"));
+                }));
+            }
         }
     }
 

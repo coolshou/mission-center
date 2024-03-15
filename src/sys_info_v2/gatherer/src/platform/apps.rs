@@ -1,6 +1,6 @@
 /* sys_info_v2/gatherer/src/platform/apps.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 
 use dbus::arg::{Append, Arg};
 
-pub type AppUsageStats = crate::platform::ProcessUsageStats;
-
 /// A running application
 pub trait AppExt<'a>: Default + Append + Arg {
     type Iter: Iterator<Item = &'a u32>;
@@ -40,18 +38,15 @@ pub trait AppExt<'a>: Default + Append + Arg {
 
     /// The list of processes that the app uses
     ///
-    /// It is expected that the the iterator yields the elements from smallest to largest
+    /// It is expected that the iterator yields the elements from smallest to largest
     fn pids(&'a self) -> Self::Iter;
-
-    /// The system usage statistics for the app
-    fn usage_stats(&self) -> &AppUsageStats;
 }
 
 impl Arg for crate::platform::App {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssssau(dddddd))")
+        dbus::Signature::from("(ssssau)")
     }
 }
 
@@ -63,14 +58,6 @@ impl Append for crate::platform::App {
             self.id(),
             self.command(),
             self.pids().clone().collect::<Vec<_>>(),
-            (
-                self.usage_stats().cpu_usage as f64,
-                self.usage_stats().memory_usage as f64,
-                self.usage_stats().disk_usage as f64,
-                self.usage_stats().network_usage as f64,
-                self.usage_stats().gpu_usage as f64,
-                self.usage_stats().gpu_memory_usage as f64,
-            ),
         ));
     }
 }

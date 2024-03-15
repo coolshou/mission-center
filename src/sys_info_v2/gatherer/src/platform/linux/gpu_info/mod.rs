@@ -23,8 +23,12 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use crate::platform::{
-    ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, OpenGLApiVersion,
+use crate::{
+    logging::{critical, error, warning},
+    platform::{
+        platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
+        OpenGLApiVersion,
+    },
 };
 
 #[allow(unused)]
@@ -212,8 +216,6 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
 }
 
 pub struct LinuxGpuInfo {
-    vk_info: Option<vulkan_info::VulkanInfo>,
-
     gpu_list: Arc<RwLock<nvtop::ListHead>>,
     static_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuStaticInfo>,
     dynamic_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuDynamicInfo>,
@@ -253,8 +255,6 @@ impl LinuxGpuInfo {
         }
 
         let mut this = Self {
-            vk_info: vulkan_info::VulkanInfo::new(),
-
             gpu_list,
 
             static_info: HashMap::new(),
@@ -270,7 +270,7 @@ impl LinuxGpuInfo {
 
     #[allow(non_snake_case)]
     unsafe fn supported_opengl_version(dri_path: &str) -> Option<OpenGLApiVersion> {
-        use crate::{error, platform::OpenGLApi};
+        use crate::platform::OpenGLApi;
         use gbm::AsRaw;
         use std::os::fd::*;
 
@@ -514,7 +514,6 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
     >;
 
     fn refresh_gpu_list(&mut self) {
-        use crate::{critical, warning};
         use arrayvec::ArrayString;
         use std::{io::Read, ops::DerefMut};
 
@@ -692,11 +691,25 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             return;
         }
 
-        let vulkan_versions = if let Some(vulkan_info) = &self.vk_info {
-            unsafe { vulkan_info.supported_vulkan_versions() }.unwrap_or(HashMap::new())
-        } else {
-            HashMap::new()
+        let vulkan_versions = unsafe {
+            run_forked(|| {
+                if let Some(vulkan_info) = vulkan_info::VulkanInfo::new() {
+                    Ok(vulkan_info
+                        .supported_vulkan_versions()
+                        .unwrap_or(HashMap::new()))
+                } else {
+                    Ok(HashMap::new())
+                }
+            })
         };
+        let vulkan_versions = vulkan_versions.unwrap_or_else(|e| {
+            warning!(
+                "Gatherer::GpuInfo",
+                "Failed to get Vulkan information: {}",
+                e
+            );
+            HashMap::new()
+        });
 
         let mut dri_path = ArrayString::<64>::new_const();
         for (pci_id, static_info) in &mut self.static_info {
@@ -709,8 +722,18 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                     pci_id.to_ascii_lowercase()
                 );
             }
-            static_info.opengl_version =
-                unsafe { Self::supported_opengl_version(dri_path.as_str()) };
+            static_info.opengl_version = unsafe {
+                run_forked(|| Ok(Self::supported_opengl_version(dri_path.as_str()))).unwrap_or_else(
+                    |e| {
+                        warning!(
+                            "Gatherer::GpuInfo",
+                            "Failed to get OpenGL information: {}",
+                            e
+                        );
+                        None
+                    },
+                )
+            };
 
             let device_id = ((static_info.vendor_id as u32) << 16) | static_info.device_id as u32;
             if let Some(vulkan_version) = vulkan_versions.get(&device_id) {
@@ -720,7 +743,6 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
     }
 
     fn refresh_dynamic_info_cache(&mut self, processes: &mut Self::P) {
-        use crate::{error, warning};
         use std::ops::DerefMut;
 
         if !self.gpu_list_refreshed {
