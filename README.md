@@ -31,10 +31,10 @@ Please note there is ongoing work to overcome all of these.
 
 * No per-process network usage ([#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3))
 * GPU support is experimental
-  * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring.
+* Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring.
 * When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
 
-Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes).  If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
+Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes). If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
 
 ## Installing
 
@@ -101,26 +101,29 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 * udev development libraires
 * GTK 4
 * libadwaita
+* libDBus development libraries
 
 **Build instructions**
 
 ```bash
 # On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
 
-meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
-ninja -C _build
+BUILD_ROOT="$(pwd)/_build"
+
+meson setup "$BUILD_ROOT" -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
+ninja -C "$BUILD_ROOT"
 ```
 
 If you want to run the application from the build directory (for development or debugging) some set up is required:
 
 ```bash
-export PATH="$(pwd)/_build/src/sys_info_v2/gatherer:$PATH"
-export GSETTINGS_SCHEMA_DIR="$(pwd)/_build/data"
-export HW_DB_DIR="$(pwd)/_build/data/hwdb"
-export MC_RESOURCE_DIR="$(pwd)/_build/resources"
+export PATH="$BUILD_ROOT/src/sys_info_v2/gatherer:$PATH"
+export GSETTINGS_SCHEMA_DIR="$BUILD_ROOT/data"
+export HW_DB_DIR="$BUILD_ROOT/data/hwdb"
+export MC_RESOURCE_DIR="$BUILD_ROOT/resources"
 
-glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$(pwd)/_build/data/"
+glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$BUILD_ROOT/data/"
 ```
 
 And then to run the app:
@@ -145,7 +148,7 @@ missioncenter
 
 ```bash
 # On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C _build
@@ -232,5 +235,4 @@ Comments, suggestions, bug reports and contributions are welcome.
 
 ## License
 
-This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of
-the license in the file COPYING.
+This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of the license in the file COPYING.

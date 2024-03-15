@@ -18,8 +18,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use dbus::{arg::*, strings::*};
 use std::sync::Arc;
+
+use dbus::{arg::*, strings::*};
 
 #[derive(Debug, Clone)]
 pub struct GpuDynamicInfo {

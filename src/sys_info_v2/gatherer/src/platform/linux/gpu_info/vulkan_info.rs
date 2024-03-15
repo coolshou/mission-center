@@ -34,7 +34,7 @@ impl Drop for VulkanInfo {
 impl VulkanInfo {
     pub fn new() -> Option<Self> {
         use crate::{critical, debug};
-        use ash::{vk, Entry};
+        use ash::{Entry, vk};
 
         let _entry = match unsafe { Entry::load() } {
             Ok(e) => e,

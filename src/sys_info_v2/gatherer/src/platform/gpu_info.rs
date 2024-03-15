@@ -241,7 +241,7 @@ pub trait GpuInfoExt<'a> {
     type P: crate::platform::ProcessesExt<'a>;
 
     /// An iterator that yields the PCI identifiers for each GPU installed in the system
-    type Iter: Iterator<Item = &'a str>;
+    type Iter: Iterator<Item=&'a str>;
 
     /// Refresh the list of available GPUs
     ///

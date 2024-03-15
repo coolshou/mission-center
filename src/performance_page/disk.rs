@@ -25,6 +25,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 use super::widgets::GraphWidget;
@@ -164,7 +165,7 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: usize,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
 
@@ -244,7 +245,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::iSCSI => "iSCSI",
-                    DiskType::OPTIC => "Optical",
+                    DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
                 });
             }
@@ -253,7 +254,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageDisk,
-            disk: &crate::sys_info_v2::Disk,
+            disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -473,17 +474,52 @@ impl PerformancePageDisk {
             this: &PerformancePageDisk,
             settings: &gio::Settings,
         ) {
-            let update_speed_ms = settings.int("update-speed") * 500;
-            let graph_max_duration = (update_speed_ms * 60) / 1000;
+            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+                * INTERVAL_STEP)
+                * (data_points as f64))
+                .round() as u32;
 
             let this = this.imp();
-            this.graph_max_duration
-                .set_text(&i18n_f("{} seconds", &[&format!("{}", graph_max_duration)]))
+
+            let mins = graph_max_duration / 60;
+            let seconds_to_string = format!(
+                "{} second{}",
+                graph_max_duration % 60,
+                if (graph_max_duration % 60) != 1 {
+                    "s"
+                } else {
+                    ""
+                }
+            );
+            let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
+            this.graph_max_duration.set_text(&*format!(
+                "{}{}",
+                if mins > 0 {
+                    mins_to_string
+                } else {
+                    "".to_string()
+                },
+                if graph_max_duration % 60 > 0 {
+                    seconds_to_string
+                } else {
+                    "".to_string()
+                }
+            ));
+            this.usage_graph.set_data_points(data_points);
+            this.disk_transfer_rate_graph.set_data_points(data_points);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
         settings.connect_changed(
-            Some("update-speed"),
+            Some("perfomance-page-data-points"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+
+        settings.connect_changed(
+            Some("app-update-interval"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),
@@ -492,11 +528,15 @@ impl PerformancePageDisk {
         this
     }
 
-    pub fn set_static_information(&self, index: usize, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn set_static_information(
+        &self,
+        index: usize,
+        disk: &crate::sys_info_v2::DiskInfo,
+    ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(&self, disk: &crate::sys_info_v2::Disk) -> bool {
+    pub fn update_readings(&self, disk: &crate::sys_info_v2::DiskInfo) -> bool {
         imp::PerformancePageDisk::update_readings(self, disk)
     }
 

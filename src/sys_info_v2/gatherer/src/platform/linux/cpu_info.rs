@@ -722,57 +722,10 @@ impl LinuxCpuInfo {
             }
         }
 
-        fn read_from_proc_cpuinfo() -> Option<u64> {
-            let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
-                Ok(output) => output,
-                Err(e) => {
-                    critical!("Gatherer::CPU", "Could not read /proc/cpuinfo: {}", e);
-                    return None;
-                }
-            };
+        const FNS: &[fn() -> Option<u64>] =
+            &[read_from_sys_base_frequency, read_from_sys_bios_limit];
 
-            let index = match cpuinfo.find("cpu MHz") {
-                Some(index) => index,
-                None => {
-                    critical!("Gatherer::CPU", "Could not find `cpu MHz` in /proc/cpuinfo",);
-                    return None;
-                }
-            };
-
-            let base_frequency = match cpuinfo[index..]
-                .lines()
-                .next()
-                .map(|line| line.split(':').nth(1).unwrap_or("").trim())
-                .map(|mhz| mhz.parse::<f32>())
-            {
-                None => {
-                    critical!(
-                        "Gatherer::CPU",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo",
-                    );
-                    return None;
-                }
-                Some(Ok(bf)) => bf,
-                Some(Err(e)) => {
-                    critical!(
-                        "Gatherer::CPU",
-                        "Failed to parse `cpu MHz` in /proc/cpuinfo: {}",
-                        e
-                    );
-                    return None;
-                }
-            };
-
-            Some((base_frequency * 1000.).round() as u64)
-        }
-
-        const FNS: [fn() -> Option<u64>; 3] = [
-            read_from_sys_base_frequency,
-            read_from_sys_bios_limit,
-            read_from_proc_cpuinfo,
-        ];
-
-        for f in &FNS {
+        for f in FNS {
             if let Some(freq) = f() {
                 return Some(freq);
             }
@@ -856,7 +809,7 @@ impl LinuxCpuInfo {
 
     fn virtual_machine() -> Option<bool> {
         use crate::critical;
-        use dbus::blocking::{stdintf::org_freedesktop_dbus::Properties, *};
+        use dbus::blocking::{*, stdintf::org_freedesktop_dbus::Properties};
 
         let conn = match Connection::new_system() {
             Ok(c) => c,
@@ -1263,7 +1216,7 @@ impl LinuxCpuInfo {
     }
 
     fn thread_count(processes: &crate::platform::Processes) -> u64 {
-        use crate::platform::{ProcessExt, ProcessesExt};
+        use crate::platform::{ProcessesExt, ProcessExt};
 
         processes
             .process_list()

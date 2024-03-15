@@ -304,7 +304,7 @@ mod imp {
                     "max-width: {}sp",
                     self.collapse_threshold.get()
                 ))
-                .unwrap(),
+                    .unwrap(),
             ));
             self.breakpoint
                 .connect_apply(clone!(@weak self as this => move |_| {
@@ -390,14 +390,14 @@ impl MissionCenterWindow {
             .build();
 
         if let Some(settings) = settings {
-            sys_info.set_update_speed(settings.int("update-speed").into());
+            sys_info.set_update_speed(settings.int("app-update-interval").into());
 
             settings.connect_changed(
-                Some("update-speed"),
+                Some("app-update-interval"),
                 clone!(@weak this => move |settings, _| {
-                    use crate::{MissionCenterApplication, sys_info_v2::UpdateSpeed};
+                    use crate::{MissionCenterApplication};
 
-                    let update_speed: UpdateSpeed = settings.int("update-speed").into();
+                    let update_speed = settings.int("app-update-interval").into();
                     let app = match MissionCenterApplication::default_instance() {
                         Some(app) => app,
                         None => {

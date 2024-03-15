@@ -1,11 +1,11 @@
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
+use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 pub use super::dbus_interface::{
-    App, CpuDynamicInfo, CpuStaticInfo, GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process,
-    ProcessUsageStats,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, GpuDynamicInfo, GpuStaticInfo,
+    OpenGLApi, Process, ProcessUsageStats,
 };
 use super::dbus_interface::{IoMissioncenterMissionCenterGatherer, OrgFreedesktopDBusPeer};
-use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 
 macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
@@ -258,6 +258,10 @@ impl<'a> Gatherer<'a> {
 
     pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
         dbus_call!(self, cpu_dynamic_info, "GetCPUDynamicInfo");
+    }
+
+    pub fn disk_info(&self) -> Vec<DiskInfo> {
+        dbus_call!(self, disks_info, "GetDisksInfo");
     }
 
     pub fn enumerate_gpus(&self) -> Vec<Arc<str>> {

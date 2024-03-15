@@ -23,7 +23,7 @@ use dbus_crossroads::Crossroads;
 
 #[allow(unused_imports)]
 use logging::{critical, debug, error, info, message, warning};
-use platform::{CpuInfoExt, PlatformUtilitiesExt};
+use platform::{CpuInfoExt, DisksInfoExt, PlatformUtilitiesExt};
 
 mod logging;
 mod platform;
@@ -53,6 +53,7 @@ impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
 
 struct System {
     cpu_info: platform::CpuInfo,
+    disk_info: platform::DisksInfo,
     gpu_info: platform::GpuInfo,
     processes: platform::Processes,
     apps: platform::Apps,
@@ -62,6 +63,7 @@ impl System {
     pub fn new() -> Self {
         Self {
             cpu_info: platform::CpuInfo::new(),
+            disk_info: platform::DisksInfo::new(),
             gpu_info: platform::GpuInfo::new(),
             processes: platform::Processes::new(),
             apps: platform::Apps::new(),
@@ -154,6 +156,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 // Make the scaffolding happy, since the reply was already set
                 Ok((platform::CpuDynamicInfo::default(),))
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetDisksInfo`..."
+        );
+        builder.method(
+            "GetDisksInfo",
+            (),
+            ("info",),
+            |ctx, sys_stats: &mut System, (): ()| {
+                sys_stats.disk_info.refresh_cache();
+                ctx.reply(Ok((sys_stats.disk_info.info(),)));
+
+                // Make the scaffolding happy, since the reply was already set
+                Ok((Vec::<platform::DiskInfo>::new(),))
             },
         );
 
@@ -330,7 +349,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         builder.method("Ping", (), (), |_, _, (): ()| Ok(()));
     });
 
-    message!("Gatherer::Main", "Instatiating System...");
+    message!("Gatherer::Main", "Instantiating System...");
     let mut system = System::new();
 
     message!("Gatherer::Main", "Refreshing CPU static info cache...");

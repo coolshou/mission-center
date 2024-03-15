@@ -22,7 +22,7 @@ use dbus::arg::{Append, Arg};
 
 /// A running application
 pub trait AppExt<'a>: Default + Append + Arg {
-    type Iter: Iterator<Item = &'a u32>;
+    type Iter: Iterator<Item=&'a u32>;
 
     /// The name of the app in human readable form
     fn name(&self) -> &str;

@@ -422,7 +422,7 @@ mod imp {
                 gl::Clear(gl::COLOR_BUFFER_BIT);
             }
 
-            (self.render_function.get())(self, width, height, scale_factor as f32);
+            self.render_function.get()(self, width, height, scale_factor as f32);
 
             glib::Propagation::Proceed
         }
