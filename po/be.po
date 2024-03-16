@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 16:36+0200\n"
+"POT-Creation-Date: 2024-03-14 17:24+0200\n"
 "PO-Revision-Date: 2023-12-01 08:04+0000\n"
 "Last-Translator: Yahor <k1llo2810@protonmail.com>\n"
-"Language-Team: Belarusian <https://hosted.weblate.org/projects/"
-"mission-center/mission-center/be/>\n"
+"Language-Team: Belarusian <https://hosted.weblate.org/projects/mission-"
+"center/mission-center/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,25 +39,25 @@ msgstr ""
 msgid "Mission Center Developers"
 msgstr "Распрацоўшчыкі Mission Center"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:14
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor system resource usage"
 msgstr "Сачыце за выкарыстаннем сістэмных рэсурсаў"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
 "Маніторынг выкарыстання працэсара, памяці, дыска, сеткі і графічнага "
 "працэсара"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
 msgid "Features:"
 msgstr "Функцыі:"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "Маніторынг агульнага выкарыстання ЦП і выкарыстання для кожнага патоку"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -65,23 +65,23 @@ msgstr ""
 "Прагляд колькасці сістэмных працэсаў, патокаў і дэскрыптараў, час працы, "
 "тактавую частату (базавую і бягучую), памеры кэша"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor RAM and Swap usage"
 msgstr "Маніторынг выкарыстання аператыўнай памяці і свопа"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "Прагляд, як сістэма выкарыстоўвае памяць"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "Маніторынг загрузкі дыскаў і хуткасці перадачы даных"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "Monitor network utilization and transfer speeds"
 msgstr "Маніторынг загрузкі сеткі і хуткасці перадачы даных"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -91,7 +91,7 @@ msgstr ""
 "падключэння (Wi-Fi або Ethernet), хуткасць і частата бесправаднога злучэння, "
 "апаратны і IP-адрас"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -100,101 +100,109 @@ msgstr ""
 "відэакодэраў і дэкодэраў, выкарыстання памяці і энергаспажывання, "
 "выкарыстоўваючы папулярны праект NVTOP"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Прагляд выкарыстання рэсурсаў для кожнай праграмы і працэсу"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "Падтрымка мінімізаванага прадстаўлення зводкі для простага маніторынгу"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid ""
 "Use OpenGL rendering for all the graphs in an effort to reduce CPU and "
 "overall resource usage"
 msgstr "Выкарыстоўвае OpenGL-рэндэрынг для ўсіх графікаў для зніжэння нагрузкі"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Выкарыстоўвае GTK4 і Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Written in Rust"
 msgstr "Напісана на Rust"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Flatpak first"
 msgstr "Першапачатковая падтрымка Flatpak"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Абмежаванні (выпраўленні вядуцца):"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
 msgstr "Адсутнасць маніторынгу выкарыстання сеткі для кожнага працэсу"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
-msgid ""
-"GPU support is experimental and only AMD and nVidia GPUs can be monitored"
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+msgid "GPU support is experimental"
 msgstr ""
-"Падтрымка графічнага працэсара эксперыментальная, падтрымліваецца маниторынг "
-"графічных працэсараў ад AMD і Nvidia"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Водгукі, прапановы, паведамленні аб памылках і дапамога вітаюцца"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:30
+#: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
 msgstr "Якая старонка адлюстроўваецца пры запуску праграмы"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:36
-msgid "How fast should the data be refreshed and the UI updated"
+#: data/io.missioncenter.MissionCenter.gschema.xml:37
+#, fuzzy
+msgid ""
+"How fast should the data be refreshed and the UI updated (in increments of "
+"50ms)"
 msgstr "Як хутка павінны абнаўляцца даныя і абнаўляцца інтэрфейс"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:41
-#: resources/ui/preferences/page.blp:38
+#: data/io.missioncenter.MissionCenter.gschema.xml:43
+msgid "How many points should be displayed on each chart?"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:48
+#: resources/ui/preferences/page.blp:47
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "Статыстыка бацькоўскіх і даччыных працэсаў адлюстроўваецца індывідуальна або "
 "аб'ядноўваецца ўверх па іерархіі"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:46
+#: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
 msgstr "Сартаванне слупкоў захоўваецца пасля перазапуску праграмы"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:51
+#: data/io.missioncenter.MissionCenter.gschema.xml:58
+#: resources/ui/preferences/page.blp:57
+msgid ""
+"Show CPU usage for Apps and Processes scaled to the number of available cores"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
 msgstr "Ідэнтыфікатар слупка, па якім сартуецца прагляд старонкі праграм"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:56
+#: data/io.missioncenter.MissionCenter.gschema.xml:68
 msgid "The sorting direction of the Apps page view"
 msgstr "Напрамак сартавання прагляду старонкі праграм"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:62
+#: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Які графік паказваецца на старонцы прадукцыйнасці ЦП"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:67
+#: data/io.missioncenter.MissionCenter.gschema.xml:79
 msgid "Show kernel times in the CPU graphs"
 msgstr "Паказаць час працы ядра на графіках працэсара"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:72
+#: data/io.missioncenter.MissionCenter.gschema.xml:84
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Якая старонка паказваецца пры запуску праграмы, ва ўкладцы прадукцыйнасці"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1168
-#: src/performance_page/mod.rs:363 src/apps_page/mod.rs:1155
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1348
+#: src/performance_page/mod.rs:384
 msgid "CPU"
 msgstr "ЦП"
 
 #: resources/ui/performance_page/cpu.blp:76
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:44
-#: resources/ui/performance_page/cpu_details.blp:26
-#: resources/ui/performance_page/gpu_details.blp:24
 msgid "Utilization"
 msgstr "Выкарыстанне"
 
@@ -219,7 +227,7 @@ msgid "Show Kernel Times"
 msgstr "Паказваць час працы ядра"
 
 #: resources/ui/performance_page/cpu.blp:163
-#: resources/ui/performance_page/disk.blp:179
+#: resources/ui/performance_page/disk.blp:178
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
@@ -227,7 +235,7 @@ msgid "Graph _Summary View"
 msgstr "_Зводная дыяграма"
 
 #: resources/ui/performance_page/cpu.blp:168
-#: resources/ui/performance_page/disk.blp:184
+#: resources/ui/performance_page/disk.blp:183
 #: resources/ui/performance_page/gpu.blp:224
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
@@ -235,7 +243,7 @@ msgid "_View"
 msgstr "_Выгляд"
 
 #: resources/ui/performance_page/cpu.blp:171
-#: resources/ui/performance_page/disk.blp:187
+#: resources/ui/performance_page/disk.blp:186
 #: resources/ui/performance_page/gpu.blp:227
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
@@ -243,7 +251,7 @@ msgid "CP_U"
 msgstr "_ЦП"
 
 #: resources/ui/performance_page/cpu.blp:176
-#: resources/ui/performance_page/disk.blp:192
+#: resources/ui/performance_page/disk.blp:191
 #: resources/ui/performance_page/gpu.blp:232
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
@@ -251,7 +259,7 @@ msgid "_Memory"
 msgstr "_Памяць"
 
 #: resources/ui/performance_page/cpu.blp:181
-#: resources/ui/performance_page/disk.blp:197
+#: resources/ui/performance_page/disk.blp:196
 #: resources/ui/performance_page/gpu.blp:237
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
@@ -259,7 +267,7 @@ msgid "_Disk"
 msgstr "_Дыск"
 
 #: resources/ui/performance_page/cpu.blp:186
-#: resources/ui/performance_page/disk.blp:202
+#: resources/ui/performance_page/disk.blp:201
 #: resources/ui/performance_page/gpu.blp:242
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
@@ -267,7 +275,7 @@ msgid "_Network"
 msgstr "_Сетка"
 
 #: resources/ui/performance_page/cpu.blp:191
-#: resources/ui/performance_page/disk.blp:207
+#: resources/ui/performance_page/disk.blp:206
 #: resources/ui/performance_page/gpu.blp:247
 #: resources/ui/performance_page/memory.blp:180
 #: resources/ui/performance_page/network.blp:149
@@ -275,67 +283,67 @@ msgid "_GPU"
 msgstr "_ГП"
 
 #: resources/ui/performance_page/cpu.blp:199
-#: resources/ui/performance_page/disk.blp:215
+#: resources/ui/performance_page/disk.blp:214
 #: resources/ui/performance_page/gpu.blp:255
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
 msgstr "_Капіяваць"
 
-#: resources/ui/performance_page/cpu_details.blp:48
+#: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
 msgstr "Хуткасць"
 
-#: resources/ui/performance_page/cpu_details.blp:75 src/apps_page/mod.rs:516
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:549
 msgid "Processes"
 msgstr "Працэсы"
 
-#: resources/ui/performance_page/cpu_details.blp:97
+#: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
 msgstr "Патокі"
 
-#: resources/ui/performance_page/cpu_details.blp:119
+#: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
 msgstr "Дэскрыптары"
 
-#: resources/ui/performance_page/cpu_details.blp:142
+#: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
 msgstr "Час працы"
 
-#: resources/ui/performance_page/cpu_details.blp:168
+#: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
 msgstr "Базавая хуткасць:"
 
-#: resources/ui/performance_page/cpu_details.blp:177
+#: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
 msgstr "Сокеты:"
 
-#: resources/ui/performance_page/cpu_details.blp:186
+#: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
 msgstr "Віртуальныя працэсары:"
 
-#: resources/ui/performance_page/cpu_details.blp:195
+#: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
 msgstr "Віртуалізацыя:"
 
-#: resources/ui/performance_page/cpu_details.blp:204
+#: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
 msgstr "Віртуальная машына:"
 
-#: resources/ui/performance_page/cpu_details.blp:213
+#: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
 msgstr "L1 кэш:"
 
-#: resources/ui/performance_page/cpu_details.blp:222
+#: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
 msgstr "L2 кэш:"
 
-#: resources/ui/performance_page/cpu_details.blp:231
+#: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
 msgstr "L3 кэш:"
 
 #: resources/ui/performance_page/disk.blp:64
-#: resources/ui/performance_page/disk_details.blp:26
+#: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Актыўны час"
 
@@ -343,32 +351,32 @@ msgstr "Актыўны час"
 msgid "Disk transfer rate"
 msgstr "Хуткасць абмену данымі"
 
-#: resources/ui/performance_page/disk_details.blp:49
+#: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
 msgstr "Сярэдні час адказу"
 
-#: resources/ui/performance_page/disk_details.blp:85
+#: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
 msgstr "Хуткасць чытання"
 
-#: resources/ui/performance_page/disk_details.blp:117
+#: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
 msgstr "Хуткасць запісу"
 
-#: resources/ui/performance_page/disk_details.blp:145
+#: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
 msgstr "Ёмістасць:"
 
-#: resources/ui/performance_page/disk_details.blp:154
+#: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
 msgstr "Фарматаваны:"
 
-#: resources/ui/performance_page/disk_details.blp:163
+#: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
 msgstr "Сістэмны дыск:"
 
-#: resources/ui/performance_page/disk_details.blp:172
-#: resources/ui/performance_page/memory_details.blp:205
+#: resources/ui/performance_page/disk_details.blp:204
+#: resources/ui/performance_page/memory_details.blp:237
 msgid "Type:"
 msgstr "Тып:"
 
@@ -385,45 +393,45 @@ msgid "Video decode"
 msgstr "Раскадзіраванне відэа"
 
 #: resources/ui/performance_page/gpu.blp:186
-#: resources/ui/performance_page/gpu_details.blp:137
+#: resources/ui/performance_page/gpu_details.blp:157
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
 msgstr "Выкарыстанне памяці"
 
-#: resources/ui/performance_page/gpu_details.blp:47
+#: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
 msgstr "Тактавая частата"
 
-#: resources/ui/performance_page/gpu_details.blp:92
+#: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
 msgstr "Энергаспажыванне"
 
-#: resources/ui/performance_page/gpu_details.blp:182
+#: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
 msgstr "Хуткасць памяці"
 
-#: resources/ui/performance_page/gpu_details.blp:227
+#: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
 msgstr "Тэмпература"
 
-#: resources/ui/performance_page/gpu_details.blp:255
+#: resources/ui/performance_page/gpu_details.blp:272
 msgid "OpenGL version:"
 msgstr "Версія OpenGL:"
 
-#: resources/ui/performance_page/gpu_details.blp:264
+#: resources/ui/performance_page/gpu_details.blp:286
 msgid "Vulkan version:"
 msgstr "Версія Vulkan:"
 
-#: resources/ui/performance_page/gpu_details.blp:273
+#: resources/ui/performance_page/gpu_details.blp:300
 msgid "PCI Express speed:"
 msgstr "Хуткасць PCI Express:"
 
-#: resources/ui/performance_page/gpu_details.blp:282
+#: resources/ui/performance_page/gpu_details.blp:314
 msgid "PCI bus address:"
 msgstr "Адрас шыны PCI:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1161
-#: src/performance_page/mod.rs:427
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1354
+#: src/performance_page/mod.rs:452
 msgid "Memory"
 msgstr "Памяць"
 
@@ -431,39 +439,39 @@ msgstr "Памяць"
 msgid "Memory composition"
 msgstr "Склад памяці"
 
-#: resources/ui/performance_page/memory_details.blp:27
+#: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
 msgstr "Выкарыстоўваецца"
 
-#: resources/ui/performance_page/memory_details.blp:50
+#: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
 msgstr "Даступна"
 
-#: resources/ui/performance_page/memory_details.blp:78
+#: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
 msgstr "Выдзелена"
 
-#: resources/ui/performance_page/memory_details.blp:101
+#: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
 msgstr "Кэшавана"
 
-#: resources/ui/performance_page/memory_details.blp:128
+#: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
 msgstr "Даступны своп"
 
-#: resources/ui/performance_page/memory_details.blp:151
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "Свопу выкарыстоўваецца"
 
-#: resources/ui/performance_page/memory_details.blp:178
+#: resources/ui/performance_page/memory_details.blp:195
 msgid "Speed:"
 msgstr "Хуткасць:"
 
-#: resources/ui/performance_page/memory_details.blp:187
+#: resources/ui/performance_page/memory_details.blp:209
 msgid "Slots used:"
 msgstr "Выкарыстана слотаў:"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:223
 msgid "Form factor:"
 msgstr "Форм фактар:"
 
@@ -475,47 +483,47 @@ msgstr "Прапускная здольнасць"
 msgid "Network Se_ttings"
 msgstr "_Налады сеткі"
 
-#: resources/ui/performance_page/network_details.blp:31
+#: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
 msgstr "Атрыманне"
 
-#: resources/ui/performance_page/network_details.blp:63
+#: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
 msgstr "Адпраўка"
 
-#: resources/ui/performance_page/network_details.blp:90
+#: resources/ui/performance_page/network_details.blp:107
 msgid "Interface name:"
 msgstr "Імя інтэрфейса:"
 
-#: resources/ui/performance_page/network_details.blp:99
+#: resources/ui/performance_page/network_details.blp:121
 msgid "Connection type:"
 msgstr "Тып злучэння:"
 
-#: resources/ui/performance_page/network_details.blp:109
+#: resources/ui/performance_page/network_details.blp:136
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:119
+#: resources/ui/performance_page/network_details.blp:151
 msgid "Signal strength:"
 msgstr "Моц сігналу:"
 
-#: resources/ui/performance_page/network_details.blp:129
+#: resources/ui/performance_page/network_details.blp:166
 msgid "Maximum Bitrate:"
 msgstr "Максімальны бітрэйт:"
 
-#: resources/ui/performance_page/network_details.blp:139
+#: resources/ui/performance_page/network_details.blp:181
 msgid "Frequency:"
 msgstr "Частата:"
 
-#: resources/ui/performance_page/network_details.blp:148
+#: resources/ui/performance_page/network_details.blp:195
 msgid "Hardware address:"
 msgstr "Апаратны адрас:"
 
-#: resources/ui/performance_page/network_details.blp:231
+#: resources/ui/performance_page/network_details.blp:309
 msgid "IPv4 address:"
 msgstr "Адрас IPv4:"
 
-#: resources/ui/performance_page/network_details.blp:240
+#: resources/ui/performance_page/network_details.blp:323
 msgid "IPv6 address:"
 msgstr "Адрас IPv6:"
 
@@ -524,126 +532,102 @@ msgid "General Settings"
 msgstr "Агульныя налады"
 
 #: resources/ui/preferences/page.blp:9
-msgid "Update Speed"
-msgstr "Хуткасць абнаўлення"
+msgid "Update Interval"
+msgstr ""
 
-#: resources/ui/preferences/page.blp:12 src/preferences/page.rs:113
-#: src/preferences/page.rs:262
-msgid "Fast"
-msgstr "Хутка"
+#: resources/ui/preferences/page.blp:26
+msgid "Chart Data Points"
+msgstr ""
 
-#: resources/ui/preferences/page.blp:13
-msgid "Refresh every half second"
-msgstr "Абнаўляць кожныя паўсекунды"
-
-#: resources/ui/preferences/page.blp:17 src/preferences/page.rs:109
-#: src/preferences/page.rs:122 src/preferences/page.rs:266
-#: src/preferences/page.rs:282
-msgid "Normal"
-msgstr "Нармальна"
-
-#: resources/ui/preferences/page.blp:18
-msgid "Refresh every second"
-msgstr "Абнаўляць кожную секунду"
-
-#: resources/ui/preferences/page.blp:22 src/preferences/page.rs:105
-#: src/preferences/page.rs:270
-msgid "Slow"
-msgstr "Павольна"
-
-#: resources/ui/preferences/page.blp:23
-msgid "Refresh every second and a half"
-msgstr "Абнаўляць кожныя паўтары секунды"
-
-#: resources/ui/preferences/page.blp:27 src/preferences/page.rs:101
-#: src/preferences/page.rs:274
-msgid "Very Slow"
-msgstr "Вельмі павольна"
-
-#: resources/ui/preferences/page.blp:28
-msgid "Refresh every 2 seconds"
-msgstr "Абнаўляць кожныя 2 секунды"
-
-#: resources/ui/preferences/page.blp:34
+#: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
 msgstr "Налады старонкі \"праграмы\""
 
-#: resources/ui/preferences/page.blp:37
+#: resources/ui/preferences/page.blp:46
 msgid "Merge Process Stats"
 msgstr "Аб'яднаць статыстыку працэсаў"
 
-#: resources/ui/preferences/page.blp:42
+#: resources/ui/preferences/page.blp:51
 msgid "Remember Sorting"
 msgstr "Запомніць сартаванне"
 
-#: resources/ui/preferences/page.blp:43
+#: resources/ui/preferences/page.blp:52
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
 "Запамінанне сартавання спісу праграм і працэсаў пры перазапуску праграмы"
+
+#: resources/ui/preferences/page.blp:56
+msgid "Scale CPU Usage to Core Count"
+msgstr ""
 
 #: resources/ui/window.blp:43
 msgid "Resources"
 msgstr "Рэсурсы"
 
-#: resources/ui/window.blp:69
+#: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
 msgstr "Пераключыць бакавую панэль"
 
-#: resources/ui/window.blp:92
+#: resources/ui/window.blp:90
 msgid "Type a name or PID to search"
 msgstr "Увядзіце назву або PID для пошуку"
 
-#: resources/ui/window.blp:148
+#: resources/ui/window.blp:146
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: resources/ui/window.blp:162
+#: resources/ui/window.blp:160
 msgid "Performance"
 msgstr "Прадукцыйнасць"
 
-#: resources/ui/window.blp:173 src/apps_page/mod.rs:509
+#: resources/ui/window.blp:171 src/apps_page/mod.rs:542
 msgid "Apps"
 msgstr "Праграмы"
 
-#: resources/ui/window.blp:192
+#: resources/ui/window.blp:190
 msgid "_Preferences"
 msgstr "_Параметры"
 
-#: resources/ui/window.blp:197
+#: resources/ui/window.blp:195
 msgid "_About MissionCenter"
 msgstr "_Аб праграме"
 
-#: src/apps_page/mod.rs:1143
+#: src/apps_page/mod.rs:1336
 msgid "Name"
 msgstr "Назва"
 
-#: src/apps_page/mod.rs:1149
+#: src/apps_page/mod.rs:1342
 msgid "PID"
 msgstr "PID"
 
-#: src/apps_page/mod.rs:1167
+#: src/apps_page/mod.rs:1360
 msgid "Disk"
 msgstr "Дыск"
 
-#: src/apps_page/mod.rs:1174
-msgid "GPU"
-msgstr "ГП"
+#: src/apps_page/mod.rs:1374
+msgid "GPU Usage"
+msgstr ""
+
+#: src/apps_page/mod.rs:1384
+#, fuzzy
+msgid "GPU Mem"
+msgstr "ГП {}"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:315
+#: src/apps_page/list_item.rs:366
 msgid "Stop Application"
 msgstr "Спыніць праграму"
 
-#: src/apps_page/list_item.rs:315
+#: src/apps_page/list_item.rs:366
 msgid "Force Stop Application"
 msgstr "Прымусова спыніць праграму"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:319
+#: src/apps_page/list_item.rs:370
 msgid "Stop Process"
 msgstr "Спыніць працэс"
 
-#: src/apps_page/list_item.rs:319
+#: src/apps_page/list_item.rs:370
 msgid "Force Stop Process"
 msgstr "Прымусова спыніць працэс"
 
@@ -692,87 +676,92 @@ msgstr ""
 "першую чаргу, калі аперацыйнай сістэме, драйверам або праграмам спатрэбіцца "
 "больш памяці"
 
-#: src/performance_page/mod.rs:489 src/performance_page/disk.rs:196
+#: src/performance_page/mod.rs:527 src/performance_page/disk.rs:197
 msgid "Disk {} ({})"
 msgstr "Дыск {} ({})"
 
-#: src/performance_page/mod.rs:493
+#: src/performance_page/mod.rs:547
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:494
+#: src/performance_page/mod.rs:548
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:495
+#: src/performance_page/mod.rs:549
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:496
+#: src/performance_page/mod.rs:550
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:497
+#: src/performance_page/mod.rs:551
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:498 src/performance_page/cpu.rs:305
-#: src/performance_page/cpu.rs:321 src/performance_page/cpu.rs:333
-#: src/performance_page/cpu.rs:341 src/performance_page/disk.rs:301
-#: src/performance_page/gpu.rs:300 src/performance_page/gpu.rs:417
-#: src/performance_page/memory.rs:261 src/performance_page/network.rs:392
-#: src/performance_page/network.rs:416 src/performance_page/network.rs:426
-#: src/performance_page/network.rs:465 src/performance_page/network.rs:515
-#: src/performance_page/network.rs:551
+#: src/performance_page/mod.rs:552
+msgid "Optical"
+msgstr ""
+
+#: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
+#: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
+#: src/performance_page/disk.rs:303 src/performance_page/gpu.rs:300
+#: src/performance_page/gpu.rs:417 src/performance_page/memory.rs:260
+#: src/performance_page/memory.rs:494 src/performance_page/network.rs:393
+#: src/performance_page/network.rs:417 src/performance_page/network.rs:427
+#: src/performance_page/network.rs:466 src/performance_page/network.rs:516
+#: src/performance_page/network.rs:552
 msgid "Unknown"
 msgstr "Невядома"
 
-#: src/performance_page/mod.rs:577 src/performance_page/network.rs:331
+#: src/performance_page/mod.rs:648 src/performance_page/network.rs:332
 msgid "Ethernet"
 msgstr "Ethernet"
 
-#: src/performance_page/mod.rs:578 src/performance_page/network.rs:346
+#: src/performance_page/mod.rs:649 src/performance_page/network.rs:347
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/performance_page/mod.rs:579 src/performance_page/network.rs:348
+#: src/performance_page/mod.rs:650 src/performance_page/network.rs:349
 msgid "Other"
 msgstr "Іншы"
 
-#: src/performance_page/mod.rs:678
+#: src/performance_page/mod.rs:769
 msgid "GPU {}"
 msgstr "ГП {}"
 
-#: src/performance_page/mod.rs:853 src/performance_page/mod.rs:861
+#: src/performance_page/mod.rs:1078 src/performance_page/mod.rs:1086
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}біт/с"
 
-#: src/performance_page/cpu.rs:316
-msgid "Supported"
-msgstr "Падтрымліваецца"
-
-#: src/performance_page/cpu.rs:318 src/performance_page/gpu.rs:312
+#: src/performance_page/cpu.rs:321 src/performance_page/gpu.rs:312
 msgid "Unsupported"
 msgstr "Не падтрымліваецца"
 
-#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:232
+#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:233
 msgid "Yes"
 msgstr "Так"
 
-#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:234
+#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:235
 msgid "No"
 msgstr "Не"
 
-#: src/performance_page/cpu.rs:869
-msgid "Utilization over {} seconds"
-msgstr "Выкарыстанне за {} секунд"
-
-#: src/performance_page/cpu.rs:873 src/performance_page/disk.rs:480
-#: src/performance_page/memory.rs:561 src/performance_page/network.rs:734
-msgid "{} seconds"
+#: src/performance_page/cpu.rs:862
+#, fuzzy
+msgid "{} second{}"
 msgstr "{} секунд"
 
-#: src/performance_page/disk.rs:263
+#: src/performance_page/cpu.rs:863
+msgid "{} minute{} "
+msgstr ""
+
+#: src/performance_page/cpu.rs:866
+#, fuzzy
+msgid "Utilization Over {}{}"
+msgstr "Выкарыстанне за {} секунд"
+
+#: src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
 msgstr "{} {}{}Б/с"
 
@@ -780,23 +769,64 @@ msgstr "{} {}{}Б/с"
 msgid "Video encode/decode"
 msgstr "Кадзіраванне/раскадзіраванне відэа"
 
-#: src/performance_page/memory.rs:477
-msgid "Authentication failed"
-msgstr "Аўтэнтыфікацыя не ўдалася"
+#: src/performance_page/memory.rs:487
+msgid "Getting additional memory information failed"
+msgstr ""
 
-#: src/performance_page/memory.rs:483
-msgid "More info"
-msgstr "Падрабязней"
-
-#: src/performance_page/network.rs:438 src/performance_page/network.rs:445
-#: src/performance_page/network.rs:455
+#: src/performance_page/network.rs:439 src/performance_page/network.rs:446
+#: src/performance_page/network.rs:456
 msgid "{} {}bps"
 msgstr "{} {}біт/с"
 
-#: src/performance_page/network.rs:477 src/performance_page/network.rs:492
+#: src/performance_page/network.rs:478 src/performance_page/network.rs:493
 msgid "N/A"
 msgstr "N/A"
 
-#: src/application.rs:272
+#: src/application.rs:316
 msgid "translator-credits"
 msgstr "Yahor Haurylenka <k1llo2810@gmail.com>"
+
+#~ msgid ""
+#~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
+#~ msgstr ""
+#~ "Падтрымка графічнага працэсара эксперыментальная, падтрымліваецца "
+#~ "маниторынг графічных працэсараў ад AMD і Nvidia"
+
+#~ msgid "Update Speed"
+#~ msgstr "Хуткасць абнаўлення"
+
+#~ msgid "Fast"
+#~ msgstr "Хутка"
+
+#~ msgid "Refresh every half second"
+#~ msgstr "Абнаўляць кожныя паўсекунды"
+
+#~ msgid "Normal"
+#~ msgstr "Нармальна"
+
+#~ msgid "Refresh every second"
+#~ msgstr "Абнаўляць кожную секунду"
+
+#~ msgid "Slow"
+#~ msgstr "Павольна"
+
+#~ msgid "Refresh every second and a half"
+#~ msgstr "Абнаўляць кожныя паўтары секунды"
+
+#~ msgid "Very Slow"
+#~ msgstr "Вельмі павольна"
+
+#~ msgid "Refresh every 2 seconds"
+#~ msgstr "Абнаўляць кожныя 2 секунды"
+
+#~ msgid "GPU"
+#~ msgstr "ГП"
+
+#~ msgid "Supported"
+#~ msgstr "Падтрымліваецца"
+
+#~ msgid "Authentication failed"
+#~ msgstr "Аўтэнтыфікацыя не ўдалася"
+
+#~ msgid "More info"
+#~ msgstr "Падрабязней"

@@ -23,8 +23,6 @@ use std::cell::Cell;
 use adw::{prelude::*, subclass::prelude::*, SwitchRow};
 use gtk::{gio, glib};
 
-use crate::preferences::checked_row_widget::CheckedRowWidget;
-
 const MAX_INTERVAL_TICKS: i32 = 200;
 const MIN_INTERVAL_TICKS: i32 = 10;
 
@@ -49,6 +47,8 @@ mod imp {
         pub merged_process_stats: TemplateChild<SwitchRow>,
         #[template_child]
         pub remember_sorting: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub core_count_affects_percentages: TemplateChild<SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
     }
@@ -61,6 +61,7 @@ mod imp {
 
                 merged_process_stats: Default::default(),
                 remember_sorting: Default::default(),
+                core_count_affects_percentages: Default::default(),
 
                 settings: Cell::new(None),
             }
@@ -69,8 +70,8 @@ mod imp {
 
     impl PreferencesPage {
         pub fn configure_update_speed(&self) {
-            use glib::g_critical;
             use crate::application::INTERVAL_STEP;
+            use glib::g_critical;
 
             let settings = self.settings.take();
             if settings.is_none() {
@@ -86,7 +87,10 @@ mod imp {
             let new_points = self.data_points.value() as i32;
 
             if new_interval <= MAX_INTERVAL_TICKS && new_interval >= MIN_INTERVAL_TICKS {
-                if settings.set_int("app-update-interval", new_interval).is_err() {
+                if settings
+                    .set_int("app-update-interval", new_interval)
+                    .is_err()
+                {
                     g_critical!(
                         "MissionCenter::Preferences",
                         "Failed to set update interval setting",
@@ -100,7 +104,10 @@ mod imp {
             }
 
             if new_points <= MAX_POINTS && new_points >= MIN_POINTS {
-                if settings.set_int("perfomance-page-data-points", new_points).is_err() {
+                if settings
+                    .set_int("perfomance-page-data-points", new_points)
+                    .is_err()
+                {
                     g_critical!(
                         "MissionCenter::Preferences",
                         "Failed to set update points setting",
@@ -124,7 +131,6 @@ mod imp {
         type ParentType = adw::PreferencesPage;
 
         fn class_init(klass: &mut Self::Class) {
-            CheckedRowWidget::ensure_type();
             SwitchRow::ensure_type();
 
             klass.bind_template();
@@ -141,17 +147,19 @@ mod imp {
 
             self.parent_constructed();
 
-            self.data_points.downcast_ref::<Scale>().unwrap().connect_value_changed(
-                glib::clone!(@weak self as this => move |_| {
+            self.data_points
+                .downcast_ref::<Scale>()
+                .unwrap()
+                .connect_value_changed(glib::clone!(@weak self as this => move |_| {
                     this.configure_update_speed();
-                }),
-            );
+                }));
 
-            self.update_interval.downcast_ref::<SpinRow>().unwrap().connect_changed(
-                glib::clone!(@weak self as this => move |_| {
+            self.update_interval
+                .downcast_ref::<SpinRow>()
+                .unwrap()
+                .connect_changed(glib::clone!(@weak self as this => move |_| {
                     this.configure_update_speed();
-                }),
-            );
+                }));
 
             self.merged_process_stats.connect_active_notify(
                 glib::clone!(@weak self as this => move |switch_row| {
@@ -184,6 +192,22 @@ mod imp {
                     }
                 }),
             );
+
+            self.core_count_affects_percentages.connect_active_notify(
+                glib::clone!(@weak self as this => move |switch_row| {
+                    let settings = this.settings.take();
+                    if let Some(settings) = settings {
+                        if let Err(e) = settings.set_boolean("apps-page-core-count-affects-percentages", switch_row.is_active()) {
+                            g_critical!(
+                                "MissionCenter::Preferences",
+                                "Failed to set core counts affects percentages setting: {}",
+                                e
+                            );
+                        }
+                        this.settings.set(Some(settings));
+                    }
+                }),
+            );
         }
     }
 
@@ -209,13 +233,14 @@ impl PreferencesPage {
         this.set_initial_update_speed();
         this.set_initial_merge_process_stats();
         this.set_initial_remember_sorting_option();
+        this.set_initial_core_count_affects_percentages();
 
         this
     }
 
     fn set_initial_update_speed(&self) {
-        use gtk::glib::*;
         use crate::application::INTERVAL_STEP;
+        use gtk::glib::*;
 
         let settings = match self.imp().settings.take() {
             None => {
@@ -293,6 +318,27 @@ impl PreferencesPage {
         }
 
         this.remember_sorting.set_active(remember_sorting);
+
+        this.settings.set(Some(settings));
+    }
+
+    fn set_initial_core_count_affects_percentages(&self) {
+        use gtk::glib::*;
+
+        let settings = match self.imp().settings.take() {
+            None => {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure core count affects percentages setting, could not load application settings"
+                );
+                return;
+            }
+            Some(settings) => settings,
+        };
+
+        let this = self.imp();
+        this.core_count_affects_percentages
+            .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
 
         this.settings.set(Some(settings));
     }

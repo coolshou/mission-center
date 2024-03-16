@@ -81,7 +81,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    message!("Gatherer::Main", "Starting...");
+    message!(
+        "Gatherer::Main",
+        "Starting v{}...",
+        env!("CARGO_PKG_VERSION")
+    );
 
     message!("Gatherer::Main", "Initializing platform utilities...");
     let plat_utils = platform::PlatformUtilities::default();
@@ -261,12 +265,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method(
             "GetProcesses",
-            (),
+            ("core_count_affects_percentages",),
             ("processes",),
-            |ctx, sys_stats: &mut System, (): ()| {
-                use platform::ProcessesExt;
+            |ctx, sys_stats: &mut System, (core_count_affects_percentages,): (bool,)| {
+                use platform::{CpuStaticInfoExt, ProcessesExt};
 
                 sys_stats.processes.refresh_cache();
+                if !core_count_affects_percentages {
+                    for (_, p) in sys_stats.processes.process_list_mut() {
+                        p.usage_stats.cpu_usage /=
+                            sys_stats.cpu_info.static_info().logical_cpu_count() as f32;
+                    }
+                }
                 ctx.reply(Ok((&sys_stats.processes,)));
 
                 // Make the scaffolding happy, since the reply was already set
@@ -289,6 +299,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 sys_stats
                     .apps
                     .refresh_cache(sys_stats.processes.process_list());
+
                 ctx.reply(Ok((&sys_stats.apps,)));
 
                 // Make the scaffolding happy, since the reply was already set

@@ -21,7 +21,6 @@ resources/ui/performance_page/network_details.blp
 resources/ui/performance_page/page.blp
 resources/ui/performance_page/summary_graph.blp
 
-resources/ui/preferences/checked_row.blp
 resources/ui/preferences/page.blp
 resources/ui/preferences/window.blp
 
@@ -46,7 +45,6 @@ src/performance_page/network.rs
 src/performance_page/summary_graph.rs
 
 src/preferences/mod.rs
-src/preferences/checked_row_widget.rs
 src/preferences/page.rs
 
 src/application.rs

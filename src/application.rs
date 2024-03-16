@@ -83,8 +83,6 @@ mod imp {
                 let window =
                     crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
 
-                self.sys_info.set(Some(sys_info));
-
                 window.connect_default_height_notify(clone!(@weak self as this => move |window| {
                     let settings = this.settings.take();
                     if settings.is_none() {
@@ -117,6 +115,42 @@ mod imp {
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
+                sys_info.set_core_count_affects_percentages(
+                    settings.boolean("apps-page-core-count-affects-percentages"),
+                );
+
+                settings.connect_changed(
+                    Some("apps-page-core-count-affects-percentages"),
+                    move |settings, _| {
+                        let app = match super::MissionCenterApplication::default_instance() {
+                            Some(app) => app,
+                            None => {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to get default instance of MissionCenterApplication"
+                                );
+                                return;
+                            }
+                        };
+                        match app.sys_info() {
+                            Ok(sys_info) => {
+                                sys_info.set_core_count_affects_percentages(
+                                    settings.boolean("apps-page-core-count-affects-percentages"),
+                                );
+                            }
+                            Err(e) => {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to get sys_info from MissionCenterApplication: {}",
+                                    e
+                                );
+                            }
+                        };
+                    },
+                );
+
+                self.sys_info.set(Some(sys_info));
+
                 let provider = gtk::CssProvider::new();
                 provider.load_from_bytes(&Bytes::from_static(include_bytes!(
                     "../resources/ui/style.css"
@@ -148,10 +182,18 @@ glib::wrapper! {
 
 impl MissionCenterApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
+        use glib::g_message;
+
         let this: Self = glib::Object::builder()
             .property("application-id", application_id)
             .property("flags", flags)
             .build();
+
+        g_message!(
+            "MissionCenter::Application",
+            "Starting Mission Center v{}",
+            env!("CARGO_PKG_VERSION")
+        );
 
         this
     }
