@@ -71,7 +71,10 @@ pub trait IoMissioncenterMissionCenterGatherer {
     fn enumerate_gpus(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn gpu_dynamic_info(&self, gpu_id: &str) -> Result<GpuDynamicInfo, dbus::Error>;
     fn gpu_static_info(&self, gpu_id: &str) -> Result<GpuStaticInfo, dbus::Error>;
-    fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error>;
+    fn processes(
+        &self,
+        core_counts_affect_percentage: bool,
+    ) -> Result<HashMap<u32, Process>, dbus::Error>;
     fn apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error>;
 
     fn terminate_process(&self, process_id: u32) -> Result<(), dbus::Error>;
@@ -157,7 +160,10 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
         .and_then(|r: (GpuStaticInfo,)| Ok(r.0))
     }
 
-    fn processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
+    fn processes(
+        &self,
+        core_counts_affect_percentage: bool,
+    ) -> Result<HashMap<u32, Process>, dbus::Error> {
         dbus_method_call(
             &self.connection,
             &self.destination,
@@ -165,7 +171,7 @@ impl<'a> IoMissioncenterMissionCenterGatherer for blocking::Proxy<'a, blocking::
             self.timeout,
             "io.missioncenter.MissionCenter.Gatherer",
             "GetProcesses",
-            (),
+            (core_counts_affect_percentage,),
         )
         .and_then(|r: (ProcessMap,)| Ok(r.0.into()))
     }

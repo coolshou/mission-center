@@ -18,8 +18,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 use lazy_static::lazy_static;
 
@@ -145,16 +150,16 @@ pub struct SysInfoV2 {
     refresh_interval: Arc<std::sync::atomic::AtomicU16>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
-    refresh_thread_running: Arc<std::sync::atomic::AtomicBool>,
+    refresh_thread_running: Arc<AtomicBool>,
+
+    core_count_affects_percentages: Arc<AtomicBool>,
 
     sender: std::sync::mpsc::Sender<Message>,
 }
 
 impl Drop for SysInfoV2 {
     fn drop(&mut self) {
-        use std::sync::*;
-        self.refresh_thread_running
-            .store(false, atomic::Ordering::Release);
+        self.refresh_thread_running.store(false, Ordering::Release);
 
         if let Some(refresh_thread) = std::mem::take(&mut self.refresh_thread) {
             refresh_thread
@@ -176,6 +181,8 @@ impl Default for SysInfoV2 {
             refresh_thread: None,
             refresh_thread_running: Arc::new(true.into()),
 
+            core_count_affects_percentages: Arc::new(false.into()),
+
             sender: tx,
         }
     }
@@ -189,9 +196,11 @@ impl SysInfoV2 {
             (BASE_INTERVAL / INTERVAL_STEP).round() as u16
         ));
         let refresh_thread_running = Arc::new(AtomicBool::new(true));
+        let core_count_affects_percentages = Arc::new(AtomicBool::new(false));
 
         let ri = refresh_interval.clone();
         let run = refresh_thread_running.clone();
+        let ccap = core_count_affects_percentages.clone();
 
         let (tx, rx) = mpsc::channel::<Message>();
         Self {
@@ -201,9 +210,13 @@ impl SysInfoV2 {
 
                 let gatherer = Gatherer::new();
 
+                let core_count_affects_percentages = ccap.load(Ordering::Acquire);
+
                 let mut readings = Readings::new();
-                readings.process_tree =
-                    proc_info::process_hierarchy(&gatherer.processes()).unwrap_or_default();
+                readings.process_tree = proc_info::process_hierarchy(
+                    &gatherer.processes(core_count_affects_percentages),
+                )
+                .unwrap_or_default();
                 readings.running_apps = gatherer.apps();
 
                 readings.disk_info = gatherer.disk_info();
@@ -253,7 +266,7 @@ impl SysInfoV2 {
                     let loop_start = std::time::Instant::now();
 
                     let timer = std::time::Instant::now();
-                    let processes = gatherer.processes();
+                    let processes = gatherer.processes(ccap.load(Ordering::Acquire));
                     g_debug!(
                         "MissionCenter::Perf",
                         "Process load took: {:?}",
@@ -443,13 +456,18 @@ impl SysInfoV2 {
                 }
             })),
             refresh_thread_running,
+            core_count_affects_percentages,
             sender: tx,
         }
     }
 
     pub fn set_update_speed(&self, speed: i32) {
-        self.refresh_interval
-            .store(speed as u16, std::sync::atomic::Ordering::Release);
+        self.refresh_interval.store(speed as u16, Ordering::Release);
+    }
+
+    pub fn set_core_count_affects_percentages(&self, show: bool) {
+        self.core_count_affects_percentages
+            .store(show, Ordering::Release);
     }
 
     pub fn terminate_process(&self, pid: u32) {

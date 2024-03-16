@@ -53,6 +53,11 @@
             <summary>Column sorting is persisted across app restarts</summary>
         </key>
 
+        <key name="apps-page-core-count-affects-percentages" type="b">
+            <default>false</default>
+            <summary>Show CPU usage for Apps and Processes scaled to the number of available cores</summary>
+        </key>
+
         <key name="apps-page-sorting-column" enum="io.missioncenter.AppsPageViewColumn">
             <default>"None"</default>
             <summary>The column id by which the Apps page view is sorted</summary>

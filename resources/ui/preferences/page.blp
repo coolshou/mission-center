@@ -51,5 +51,10 @@ template $PreferencesPage : Adw.PreferencesPage {
       title: _("Remember Sorting");
       subtitle: _("Remember the sorting of the app and process list across app restarts");
     }
+
+    Adw.SwitchRow core_count_affects_percentages {
+      title: _("Scale CPU Usage to Core Count");
+      subtitle: _("Show CPU usage for Apps and Processes scaled to the number of available cores");
+    }
   }
 }

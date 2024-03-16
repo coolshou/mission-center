@@ -276,8 +276,13 @@ impl<'a> Gatherer<'a> {
         dbus_call!(self, gpu_dynamic_info, "GetGPUDynamicInfo", id);
     }
 
-    pub fn processes(&self) -> HashMap<u32, Process> {
-        dbus_call!(self, processes, "GetProcesses");
+    pub fn processes(&self, core_counts_affect_percentage: bool) -> HashMap<u32, Process> {
+        dbus_call!(
+            self,
+            processes,
+            "GetProcesses",
+            core_counts_affect_percentage
+        );
     }
 
     pub fn apps(&self) -> HashMap<Arc<str>, App> {

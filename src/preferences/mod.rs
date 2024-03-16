@@ -21,7 +21,6 @@
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::{gio, glib};
 
-mod checked_row_widget;
 mod page;
 
 mod imp {
@@ -76,8 +75,8 @@ impl PreferencesWindow {
                 PreferencesWindow::static_type(),
                 &mut [("transient-for", parent.into())],
             )
-                .downcast()
-                .unwrap()
+            .downcast()
+            .unwrap()
         };
         this.add(&page::PreferencesPage::new(settings));
 
