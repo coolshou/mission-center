@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-03-17 13:02+0000\n"
+"PO-Revision-Date: 2024-03-18 14:01+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -149,11 +149,12 @@ msgid "Which page is shown on application startup"
 msgstr "Какая страница отображается при запуске приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Как быстро должны обновляться данные и обновляться интерфейс"
+msgstr ""
+"Как быстро должны обновляться данные и пользовательский интерфейс (с шагом в "
+"50 мс)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
@@ -618,9 +619,8 @@ msgid "GPU Usage"
 msgstr "Использование ГП"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "ГП {}"
+msgstr "Память ГП"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -757,18 +757,16 @@ msgid "No"
 msgstr "Нет"
 
 #: src/performance_page/cpu.rs:862
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} секунд"
+msgstr "{} секунда{}"
 
 #: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} минута{} "
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Использование за {} секунд"
+msgstr "Использование за {}{}"
 
 #: src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
@@ -780,7 +778,7 @@ msgstr "Кодирование/декодирование видео"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Не удалось получить дополнительную информацию о памяти"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456
