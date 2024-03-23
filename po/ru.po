@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2023-11-29 13:04+0000\n"
+"PO-Revision-Date: 2024-03-18 14:01+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -16,9 +16,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -138,7 +138,7 @@ msgstr "Отсутствие использования сети для кажд
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "Поддержка ГП является экспериментальной"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -149,15 +149,16 @@ msgid "Which page is shown on application startup"
 msgstr "Какая страница отображается при запуске приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Как быстро должны обновляться данные и обновляться интерфейс"
+msgstr ""
+"Как быстро должны обновляться данные и пользовательский интерфейс (с шагом в "
+"50 мс)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Сколько точек должно быть отображено на каждом графике?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -175,6 +176,8 @@ msgstr "Сортировка столбцов сохраняется после 
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Показывать использование процессора приложениями и процессами в зависимости "
+"от количества доступных ядер"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -538,11 +541,11 @@ msgstr "Общие настройки"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Интервал обновления"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Точки данных на графике"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -565,6 +568,7 @@ msgstr ""
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
 msgstr ""
+"Масштабировать использование процессора в зависимости от количества ядер"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -612,12 +616,11 @@ msgstr "Диск"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "Использование ГП"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "ГП {}"
+msgstr "Память ГП"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -708,7 +711,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Оптическое"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
 #: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
@@ -754,18 +757,16 @@ msgid "No"
 msgstr "Нет"
 
 #: src/performance_page/cpu.rs:862
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} секунд"
+msgstr "{} секунда{}"
 
 #: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} минута{} "
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Использование за {} секунд"
+msgstr "Использование за {}{}"
 
 #: src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
@@ -777,7 +778,7 @@ msgstr "Кодирование/декодирование видео"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Не удалось получить дополнительную информацию о памяти"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456

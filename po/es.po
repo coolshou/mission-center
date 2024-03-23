@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2023-12-16 13:11+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2024-03-18 14:01+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -136,7 +135,7 @@ msgstr "Sin uso de red por proceso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "La compatibilidad con GPU es experimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -149,15 +148,16 @@ msgid "Which page is shown on application startup"
 msgstr "Qué página se muestra al iniciar la aplicación"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Con qué rapidez deben actualizarse los datos y la interfaz de usuario"
+msgstr ""
+"¿Con qué rapidez deben actualizarse los datos y la interfaz de usuario (en "
+"incrementos de 50 ms)?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "¿Cuántos puntos deben aparecer en cada gráfico?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -175,6 +175,8 @@ msgstr "La ordenación de las columnas se mantiene al reiniciar la aplicación"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Muestra el uso de la CPU para aplicaciones y procesos en función del número "
+"de núcleos disponibles"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -538,11 +540,11 @@ msgstr "Configuración general"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Intervalo de actualización"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Puntos de datos del gráfico"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -564,7 +566,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Escalar el uso de la CPU al número de núcleos"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -612,12 +614,11 @@ msgstr "Disco"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "Consumo de GPU"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "Memoria de la GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -708,7 +709,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Óptico"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
 #: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
@@ -754,18 +755,16 @@ msgid "No"
 msgstr "No"
 
 #: src/performance_page/cpu.rs:862
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} segundos"
+msgstr "{} segundo{}"
 
 #: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minuto{} "
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Uso durante {} segundos"
+msgstr "Utilización superior a {}{}"
 
 #: src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
@@ -777,7 +776,7 @@ msgstr "Codificación/decodificación del vídeo"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Error al obtener información adicional de la memoria"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456

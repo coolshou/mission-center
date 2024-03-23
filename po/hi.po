@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-02-24 11:14+0000\n"
+"PO-Revision-Date: 2024-03-17 13:02+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hi/>\n"
@@ -132,7 +132,7 @@ msgstr "कोई प्रति-प्रक्रिया नेटवर्
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPU समर्थन प्रायोगिक है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -143,15 +143,16 @@ msgid "Which page is shown on application startup"
 msgstr "एप्लिकेशन स्टार्टअप पर कौन सा पेज दिखाया जाता है"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "कितनी तेजी से डेटा रीफ्रेश किया जाना चाहिए और UI अपडेट किया जाना चाहिए"
+msgstr ""
+"डेटा को कितनी तेजी से ताज़ा किया जाना चाहिए और UI को अपडेट किया जाना चाहिए ("
+"50ms की वृद्धि में)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "प्रत्येक चार्ट पर कितने अंक प्रदर्शित होने चाहिए?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -169,6 +170,7 @@ msgstr "ऐप रीस्टार्ट होने पर कॉलम स�
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"उपलब्ध कोर की संख्या के आधार पर ऐप्स और प्रक्रियाओं के लिए CPU उपयोग दिखाएं"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -528,11 +530,11 @@ msgstr "सामान्य सेटिंग्स"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "अपडेट अंतराल"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "चार्ट डेटा बिंदु"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -552,7 +554,7 @@ msgstr "ऐप को पुनः आरंभ करने पर ऐप औ�
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "CPU उपयोग को कोर गणना तक स्केल करें"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -600,12 +602,11 @@ msgstr "डिस्क"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU उपयोग"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU मेम"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -695,7 +696,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "ऑप्टिकल"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
 #: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
@@ -741,18 +742,16 @@ msgid "No"
 msgstr "नहीं"
 
 #: src/performance_page/cpu.rs:862
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} सेकंड"
+msgstr "{} सेकंड{}"
 
 #: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} मिनट{} "
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "{} सेकंड से अधिक उपयोग"
+msgstr "{}{} से अधिक उपयोग"
 
 #: src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
@@ -764,7 +763,7 @@ msgstr "वीडियो एन्कोड/डीकोड"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "अतिरिक्त मेमोरी जानकारी प्राप्त करना विफल रहा"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456

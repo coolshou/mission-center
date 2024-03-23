@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2023-12-10 17:05+0000\n"
-"Last-Translator: Gert-dev <Gert-dev@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2024-03-17 13:02+0000\n"
+"Last-Translator: Mikachu <micah.sh@proton.me>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -136,7 +136,7 @@ msgstr "Geen netwerkgebruik per proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPU-ondersteuning is experimenteel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -148,15 +148,15 @@ msgid "Which page is shown on application startup"
 msgstr "Welke pagina getoond wordt bij het opstarten van de applicatie"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Hoe snel data en de interface bijgewerkt moet worden"
+msgstr ""
+"Hoe snel data en de interface bijgewerkt moet worden (in stappen van 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Hoeveel punten moeten er elke grafiek worden weergegeven?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -175,6 +175,8 @@ msgstr ""
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Toon CPU-gebruik voor apps en processen geschaald naar het aantal "
+"beschikbare cores"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -536,11 +538,11 @@ msgstr "Algemene instellingen"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Bijwerkingsonderbreking"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Grafiekgegevenspunten"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -562,7 +564,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Schaal het CPU-gebruik naar het aantal cores"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -610,12 +612,11 @@ msgstr "Opslag"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU-gebruik"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "Grafische kaart {}"
+msgstr "GPU-geh"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -706,7 +707,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Optisch"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
 #: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
@@ -752,16 +753,14 @@ msgid "No"
 msgstr "Nee"
 
 #: src/performance_page/cpu.rs:862
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} seconden"
+msgstr "{} seconden{}"
 
 #: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minuut{} "
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "Utilization Over {}{}"
 msgstr "Gebruik over {} seconden"
 
@@ -775,7 +774,7 @@ msgstr "Video-encodering/-decodering"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Aanvullende geheugeninformatie ophalen is mislukt"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456
