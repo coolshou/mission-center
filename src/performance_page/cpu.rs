@@ -184,11 +184,12 @@ mod imp {
 
                 graph_widgets[0].set_visible(true);
                 graph_widgets[1].set_visible(false);
+                graph_widgets[2].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(true);
                 this.imp().utilization_label_overall.set_visible(true);
                 this.imp().utilization_label_all.set_visible(false);
 
-                for graph_widget in graph_widgets.iter().skip(2) {
+                for graph_widget in graph_widgets.iter().skip(3) {
                     graph_widget.set_visible(false);
                 }
 
@@ -218,11 +219,12 @@ mod imp {
 
                 graph_widgets[0].set_visible(false);
                 graph_widgets[1].set_visible(false);
+                graph_widgets[2].set_visible(false);
                 this.imp().overall_graph_labels.set_visible(false);
                 this.imp().utilization_label_overall.set_visible(false);
                 this.imp().utilization_label_all.set_visible(true);
 
-                for graph_widget in graph_widgets.iter().skip(2) {
+                for graph_widget in graph_widgets.iter().skip(3) {
                     graph_widget.set_visible(true);
                 }
 
@@ -252,6 +254,7 @@ mod imp {
 
                 graph_widgets[0].set_visible(false);
                 graph_widgets[1].set_visible(true);
+                graph_widgets[2].set_visible(true);
                 this.imp().overall_graph_labels.set_visible(true);
                 this.imp().utilization_label_overall.set_visible(true);
                 this.imp().utilization_label_all.set_visible(false);
@@ -289,7 +292,7 @@ mod imp {
 
                 graph_widgets[0].set_data_visible(1, visible);
 
-                for graph_widget in graph_widgets.iter().skip(2) {
+                for graph_widget in graph_widgets.iter().skip(3) {
                     graph_widget.set_data_visible(1, visible);
                 }
 
@@ -469,11 +472,17 @@ mod imp {
             graph_widgets[0].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
             graph_widgets[0].add_data_point(1, dynamic_cpu_info.overall_kernel_utilization_percent);
 
+            graph_widgets[1].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
+
+            let mut max_val: f32 = 0f32;
+
             // Update per-core graphs
             for i in 0..dynamic_cpu_info.per_logical_cpu_utilization_percent.len() {
-                graph_widgets[1].add_data_point(i, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
+                if max_val < dynamic_cpu_info.per_logical_cpu_utilization_percent[i] {
+                    max_val = dynamic_cpu_info.per_logical_cpu_utilization_percent[i];
+                }
 
-                let graph_widget = &mut graph_widgets[i + 2];
+                let graph_widget = &mut graph_widgets[i + 3];
                 graph_widget
                     .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
                 graph_widget.add_data_point(
@@ -481,6 +490,8 @@ mod imp {
                     dynamic_cpu_info.per_logical_cpu_kernel_utilization_percent[i],
                 );
             }
+
+            graph_widgets[2].add_data_point(0, max_val);
 
             this.imp().graph_widgets.set(graph_widgets);
 
@@ -698,16 +709,21 @@ mod imp {
                 .set_visible(graph_selection == GRAPH_SELECTION_ALL);
 
             graph_widgets.push(GraphWidget::new());
+            graph_widgets.push(GraphWidget::new());
             self.usage_graphs.attach(&graph_widgets[1], 0, 0, 1, 1);
+            self.usage_graphs.attach(&graph_widgets[2], 0, 1, 1, 1);
             graph_widgets[1].set_data_points(data_points);
+            graph_widgets[2].set_data_points(data_points);
             graph_widgets[1].set_scroll(true);
-            graph_widgets[1].set_data_set_count(cpu_count as u32);
+            graph_widgets[2].set_scroll(true);
+            graph_widgets[1].set_data_set_count(1);
+            graph_widgets[2].set_data_set_count(1);
             graph_widgets[1].set_base_color(&base_color);
+            graph_widgets[2].set_base_color(&base_color);
             graph_widgets[1].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
+            graph_widgets[2].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
 
             for i in 0..cpu_count {
-                graph_widgets[1].set_filled(i, false);
-
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
 
