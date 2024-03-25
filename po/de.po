@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2023-12-31 22:09+0000\n"
-"Last-Translator: Daniel Brunner <danielbrunner@hotmail.com>\n"
+"PO-Revision-Date: 2024-03-26 13:01+0000\n"
+"Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -43,7 +43,8 @@ msgstr "Nutzung der Systemressourcen überwachen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "Überwache die Nutzung von CPU, Speicher, Festplatte, Netzwerk und GPU"
+msgstr ""
+"Überwache deine CPU-, Arbeitsspeicher-, Speicher-, Netzwerk- und GPU-nutzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
 msgid "Features:"
@@ -51,7 +52,7 @@ msgstr "Funktionen:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Überwachung der CPU-Auslastung insgesamt oder pro Thread"
+msgstr "Überwache die Auslastung aller Threads zusammen oder einzelner Threads"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid ""
@@ -86,7 +87,7 @@ msgid ""
 msgstr ""
 "Informationen zur Netzwerkschnittstelle, wie Name der Netzwerkkarte, "
 "Verbindungstyp (Wi-Fi oder Ethernet), Wireless-Geschwindigkeiten und -"
-"Frequenz, Hardware-Adresse, IP-Adresse"
+"Frequenz, Hardware-Adresse und IP-Adresse"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:29
 msgid ""
@@ -139,7 +140,7 @@ msgstr "Keine Netzwerkauslastung pro Prozess"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPU-Unterstützung ist experimentell"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -158,7 +159,7 @@ msgstr "Wie oft die daten der Benutzeroberfläche aktualisiert werden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Wie viele Punkte sollen auf jedem Graphen angezeigt werden?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -169,21 +170,24 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
-msgstr "Spaltensortierung wird über Neustarts der Anwendung hinweg beibehalten"
+msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts."
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: resources/ui/preferences/page.blp:57
+#, fuzzy
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Zeige CPU-Auslastung für Apps und Prozesse, skaliert auf die Anzahl der "
+"verfügbaren Kerne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
-msgstr "Die Spaltenkennung, nach der die Seitenansicht der App sortiert wird"
+msgstr "Die Spalten-ID, nach der die Apps-Seitenansicht sortiert wird"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:68
 msgid "The sorting direction of the Apps page view"
-msgstr "Die Sortierrichtung in der Seitenansicht der App"
+msgstr "Die Sortierrichtung der Apps-Seitenansicht"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "Which graph is shown on the CPU performance page"
@@ -535,7 +539,7 @@ msgstr "Allgemeine Einstellungen"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Updategeschwindigkeit"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
@@ -693,7 +697,7 @@ msgstr "SSD"
 
 #: src/performance_page/mod.rs:549
 msgid "NVMe"
-msgstr "NVM3"
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:550
 msgid "eMMC"
