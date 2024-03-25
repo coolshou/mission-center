@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
 "PO-Revision-Date: 2024-03-26 13:01+0000\n"
-"Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
+"Last-Translator: Tobias Schmitz <tobiasschmitz2001@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -39,7 +39,7 @@ msgstr "Mission Center Entwickler"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor system resource usage"
-msgstr "Nutzung der Systemressourcen überwachen"
+msgstr "Resourcennutzung überwachen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
