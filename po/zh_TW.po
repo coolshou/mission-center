@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2023-08-07 03:54+0000\n"
-"Last-Translator: NF <muwuren@gmail.com>\n"
+"PO-Revision-Date: 2024-03-27 15:01+0000\n"
+"Last-Translator: shamo3qk <x976631@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -28,9 +28,8 @@ msgstr "任務中心"
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
-msgstr ""
-"工作管理員;資源監控器;系統監控器;處理器;處理程序;效能監控器;CPU;GPU;磁碟;磁"
-"碟;記憶體;網路;使用率;使用率"
+msgstr "工作管理員;資源監控器;系統監控器;處理器;進程;效能監控器;CPU;GPU;磁碟;磁碟;記"
+"憶體;網路;使用率;使用率"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
@@ -56,9 +55,7 @@ msgstr "監控整體或每個執行緒的 CPU 使用情況"
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
-msgstr ""
-"檢視系統處理程序、執行緒和控制代碼數量、運作時間、時脈（基礎及目前）、快取大"
-"小"
+msgstr "檢視系統進程、執行緒和控制代碼數量、運作時間、時脈（基礎及目前）、快取大小"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor RAM and Swap usage"
@@ -95,11 +92,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "See a breakdown of resource usage by app and process"
-msgstr "檢視應用程式和處理程序的資源使用詳細資訊"
+msgstr "檢視應用程式和進程的資源使用詳細資訊"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "支援縮小的摘要檢視以進行簡單監控"
+msgstr "支援以精簡的摘要視圖進行簡單監控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid ""
@@ -125,11 +122,11 @@ msgstr "限制（目前正在努力克服這些限制）："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
-msgstr "沒有每個處理程序的網路使用情況"
+msgstr "沒有每個進程的網路使用情況"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPU 支援是實驗性的"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -153,11 +150,11 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
 msgid "Parent and child process stats are shown individually or merged upwards"
-msgstr ""
+msgstr "分別顯示還是合併顯示父、子進程的狀態"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "欄位排序狀態將在程式關閉後保持"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: resources/ui/preferences/page.blp:57
@@ -286,7 +283,7 @@ msgstr "速度"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:549
 msgid "Processes"
-msgstr "處理程序"
+msgstr "進程"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
@@ -524,11 +521,11 @@ msgstr "一般設定"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "更新區間"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "圖表數據樣點"
 
 #: resources/ui/preferences/page.blp:43
 #, fuzzy
@@ -537,16 +534,15 @@ msgstr "一般設定"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "合併進程的統計資料"
 
 #: resources/ui/preferences/page.blp:51
 msgid "Remember Sorting"
 msgstr ""
 
 #: resources/ui/preferences/page.blp:52
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "修復了一個錯誤，導致某些使用者的應用程式和處理程序列表為空"
+msgstr "排序狀態和進程列表將在程式關閉後保存"
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
@@ -554,11 +550,11 @@ msgstr ""
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "資源"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "切換側邊欄"
 
 #: resources/ui/window.blp:90
 msgid "Type a name or PID to search"
@@ -566,7 +562,7 @@ msgstr "輸入名稱或 PID 進行搜尋"
 
 #: resources/ui/window.blp:146
 msgid "Loading..."
-msgstr ""
+msgstr "載入中..."
 
 #: resources/ui/window.blp:160
 msgid "Performance"
@@ -598,7 +594,7 @@ msgstr "磁碟"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU 使用率"
 
 #: src/apps_page/mod.rs:1384
 #, fuzzy
@@ -608,21 +604,20 @@ msgstr "GPU {}"
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
 msgid "Stop Application"
-msgstr ""
+msgstr "終止應用程式"
 
 #: src/apps_page/list_item.rs:366
 msgid "Force Stop Application"
-msgstr ""
+msgstr "強制終止應用程式"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:370
-#, fuzzy
 msgid "Stop Process"
-msgstr "處理程序"
+msgstr "終止進程"
 
 #: src/apps_page/list_item.rs:370
 msgid "Force Stop Process"
-msgstr ""
+msgstr "強制終止進程"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:285
 msgid ""
@@ -643,7 +638,7 @@ msgid ""
 msgstr ""
 "已修改（{}B）\n"
 "\n"
-"在其他處理程序可以使用之前，必須先將記憶體內容寫入磁碟"
+"在其他進程可以使用之前，必須先將記憶體內容寫入磁碟"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
@@ -763,7 +758,7 @@ msgstr "視訊編碼"
 
 #: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "無法獲取額外的記憶體資訊"
 
 #: src/performance_page/network.rs:439 src/performance_page/network.rs:446
 #: src/performance_page/network.rs:456
