@@ -137,7 +137,7 @@ msgstr "Sem utilização de rede por processo"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "O suporte para GPU é experimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -632,16 +632,16 @@ msgid "Which page is shown on application startup"
 msgstr "Qual página é mostrada na inicialização do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Com que rapidez os dados e a interface de usuário devem ser atualizados"
+"Com que frequência os dados devem ser atualizados e a interface gráfica (UI) "
+"deve ser renovada (em incrementos de 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Quantos pontos devem ser exibidos em cada gráfico?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -660,6 +660,8 @@ msgstr ""
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Exibir o uso da CPU para Aplicativos e Processos escalado para o número de "
+"núcleos disponíveis"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -1020,11 +1022,11 @@ msgstr "Configurações Gerais"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Intervalo de atualização"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Pontos de Dados do Gráfico"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -1046,7 +1048,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Escalar o uso da CPU conforme o número de núcleos"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -1094,12 +1096,11 @@ msgstr "Disco"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "Uso da GPU"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "Memória da GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -1120,6 +1121,7 @@ msgid "Force Stop Process"
 msgstr "Parar Processo Forçadamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
+#: src/performance_page/widgets/mem_composition_widget.rs:285
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1130,6 +1132,7 @@ msgstr ""
 "Memória usada pelo sistema operacional e aplicativos em execução"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
+#: src/performance_page/widgets/mem_composition_widget.rs:317
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1142,6 +1145,7 @@ msgstr ""
 "outro processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
+#: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1153,6 +1157,7 @@ msgstr ""
 "ativo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
+#: src/performance_page/widgets/mem_composition_widget.rs:350
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1166,6 +1171,7 @@ msgstr ""
 "mais memória"
 
 #: src/performance_page/mod.rs:527 src/performance_page/disk.rs:200
+#: src/performance_page/disk.rs:197
 msgid "Disk {} ({})"
 msgstr "Disco {} ({})"
 
@@ -1191,7 +1197,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Óptico"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1200,19 +1206,29 @@ msgstr ""
 #: src/performance_page/memory.rs:498 src/performance_page/network.rs:398
 #: src/performance_page/network.rs:422 src/performance_page/network.rs:432
 #: src/performance_page/network.rs:471 src/performance_page/network.rs:521
-#: src/performance_page/network.rs:557
+#: src/performance_page/network.rs:557 src/performance_page/cpu.rs:309
+#: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
+#: src/performance_page/disk.rs:303 src/performance_page/gpu.rs:300
+#: src/performance_page/gpu.rs:417 src/performance_page/memory.rs:260
+#: src/performance_page/memory.rs:494 src/performance_page/network.rs:393
+#: src/performance_page/network.rs:417 src/performance_page/network.rs:427
+#: src/performance_page/network.rs:466 src/performance_page/network.rs:516
+#: src/performance_page/network.rs:552
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #: src/performance_page/mod.rs:648 src/performance_page/network.rs:337
+#: src/performance_page/network.rs:332
 msgid "Ethernet"
 msgstr "Cabo"
 
 #: src/performance_page/mod.rs:649 src/performance_page/network.rs:352
+#: src/performance_page/network.rs:347
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:650 src/performance_page/network.rs:354
+#: src/performance_page/network.rs:349
 msgid "Other"
 msgstr "Outro"
 
@@ -1225,49 +1241,53 @@ msgid "{}: {} {}bps"
 msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:317 src/performance_page/gpu.rs:315
+#: src/performance_page/cpu.rs:321 src/performance_page/gpu.rs:312
 msgid "Unsupported"
 msgstr "Sem suporte"
 
 #: src/performance_page/cpu.rs:324 src/performance_page/disk.rs:236
+#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:233
 msgid "Yes"
 msgstr "Sim"
 
 #: src/performance_page/cpu.rs:326 src/performance_page/disk.rs:238
+#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:235
 msgid "No"
 msgstr "Não"
 
-#: src/performance_page/cpu.rs:866
+#: src/performance_page/cpu.rs:866 src/performance_page/cpu.rs:862
 #, fuzzy
 msgid "{} second{}"
 msgstr "{} segundos"
 
-#: src/performance_page/cpu.rs:877
+#: src/performance_page/cpu.rs:863
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minuto{} "
 
-#: src/performance_page/cpu.rs:895
-#, fuzzy
+#: src/performance_page/cpu.rs:866
 msgid "Utilization Over {}{}"
-msgstr "Utilização em {} segundos"
+msgstr "Utilização Acima de {}"
 
-#: src/performance_page/disk.rs:268
+#: src/performance_page/disk.rs:268 src/performance_page/disk.rs:265
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/gpu.rs:268
+#: src/performance_page/gpu.rs:268 src/performance_page/gpu.rs:265
 msgid "Video encode/decode"
 msgstr "Codificação/decodificação de vídeo"
 
-#: src/performance_page/memory.rs:491
+#: src/performance_page/memory.rs:487
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Falha ao obter informações adicionais sobre a memória"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
-#: src/performance_page/network.rs:461
+#: src/performance_page/network.rs:461 src/performance_page/network.rs:439
+#: src/performance_page/network.rs:446 src/performance_page/network.rs:456
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:483 src/performance_page/network.rs:498
+#: src/performance_page/network.rs:478 src/performance_page/network.rs:493
 msgid "N/A"
 msgstr "N/A"
 
