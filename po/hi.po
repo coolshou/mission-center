@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-03-17 13:02+0000\n"
+"PO-Revision-Date: 2024-03-29 13:01+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hi/>\n"
@@ -120,7 +120,7 @@ msgstr "Rust में लिखा"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Flatpak first"
-msgstr "पहले Flatpak"
+msgstr "Flatpak पहले"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Limitations (there is ongoing work to overcome all of these):"
@@ -209,15 +209,15 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "ग्रा_फ़ को इसमें बदलें"
+msgstr "ग्राफ़ को इसमें बदलें (_r)"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
-msgstr "समग्र उ_पयोग"
+msgstr "समग्र उपयोग (_t)"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr "तार्किक _प्रोसेसर"
+msgstr "तार्किक प्रोसेसर (_P)"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
@@ -229,7 +229,7 @@ msgstr "कर्नेल टाइम्स दिखाएँ"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "ग्राफ़ _सारांश दृश्य"
+msgstr "ग्राफ़ सारांश दृश्य (_S)"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:183
@@ -237,7 +237,7 @@ msgstr "ग्राफ़ _सारांश दृश्य"
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr "_देखें"
+msgstr "देखें (_V)"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:186
@@ -253,7 +253,7 @@ msgstr "CP_U"
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr "_मेमोरी"
+msgstr "मेमोरी (_M)"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:196
@@ -261,7 +261,7 @@ msgstr "_मेमोरी"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Disk"
-msgstr "_डिस्क"
+msgstr "डिस्क (_D)"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:201
@@ -269,7 +269,7 @@ msgstr "_डिस्क"
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr "_नेटवर्क"
+msgstr "नेटवर्क (_N)"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:206
@@ -285,7 +285,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
-msgstr "_कॉपी"
+msgstr "कॉपी (_C)"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -478,7 +478,7 @@ msgstr "प्रवाह क्षमता"
 
 #: resources/ui/performance_page/network.blp:155
 msgid "Network Se_ttings"
-msgstr "नेटवर्क से_टिंग्स"
+msgstr "नेटवर्क सेटिंग्स (_t)"
 
 #: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
@@ -570,7 +570,7 @@ msgstr "खोजने के लिए कोई नाम या PID टा�
 
 #: resources/ui/window.blp:146
 msgid "Loading..."
-msgstr "लोडिंग..।"
+msgstr "लोडिंग…"
 
 #: resources/ui/window.blp:160
 msgid "Performance"
@@ -582,11 +582,11 @@ msgstr "ऐप्स"
 
 #: resources/ui/window.blp:190
 msgid "_Preferences"
-msgstr "_प्राथमिकताएँ"
+msgstr "प्राथमिकताएँ (_P)"
 
 #: resources/ui/window.blp:195
 msgid "_About MissionCenter"
-msgstr "_MissionCenter के बारे में"
+msgstr "MissionCenter के बारे में (_A)"
 
 #: src/apps_page/mod.rs:1336
 msgid "Name"
@@ -632,7 +632,7 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"उपयोग में ({}बी)\n"
+"उपयोग में ({}B)\n"
 "\n"
 "ऑपरेटिंग सिस्टम और रनिंग एप्लिकेशन द्वारा उपयोग की जाने वाली मेमोरी"
 
@@ -643,10 +643,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"संशोधित ({}बी)\n"
+"संशोधित ({}B)\n"
 "\n"
-"मेमोरी जिसकी सामग्री को किसी अन्य प्रक्रिया द्वारा उपयोग किए जाने से पहले डिस्क पर "
-"लिखा जाना चाहिए"
+"मेमोरी जिसकी सामग्री को किसी अन्य प्रक्रिया द्वारा उपयोग किए जाने से पहले "
+"डिस्क पर लिखा जाना चाहिए"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:337
 msgid ""
@@ -654,9 +654,10 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"स्टैंडबाय ({}बी)\n"
+"स्टैंडबाय ({}B)\n"
 "\n"
-"मेमोरी जिसमें कैश्ड डेटा और कोड होता है जो सक्रिय रूप से उपयोग में नहीं होता है"
+"मेमोरी जिसमें कैश्ड डेटा और कोड होता है जो सक्रिय रूप से उपयोग में नहीं होता "
+"है"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:350
 msgid ""
@@ -665,10 +666,10 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"मुफ़्त ({}बी)\n"
+"मुफ़्त ({}B)\n"
 "\n"
-"वह मेमोरी जो वर्तमान में उपयोग में नहीं है, और जिसे ऑपरेटिंग सिस्टम, ड्राइवर या एप्लिकेशन "
-"को अधिक मेमोरी की आवश्यकता होने पर पहले पुन: उपयोग किया जाएगा"
+"वह मेमोरी जो वर्तमान में उपयोग में नहीं है, और जिसे ऑपरेटिंग सिस्टम, ड्राइवर "
+"या एप्लिकेशन को अधिक मेमोरी की आवश्यकता होने पर पहले पुन: उपयोग किया जाएगा"
 
 #: src/performance_page/mod.rs:527 src/performance_page/disk.rs:197
 msgid "Disk {} ({})"
