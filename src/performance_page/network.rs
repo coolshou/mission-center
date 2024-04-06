@@ -1,6 +1,6 @@
 /* performance_page/network.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,7 +213,7 @@ mod imp {
 
         unsafe fn gnome_settings_activate_action(variant_str: &str) {
             use gtk::gio::ffi::*;
-            use gtk::glib::{*, ffi::*, gobject_ffi::*, translate::from_glib_full};
+            use gtk::glib::{ffi::*, gobject_ffi::*, translate::from_glib_full, *};
 
             let mut error: *mut GError = std::ptr::null_mut();
 
@@ -310,9 +310,11 @@ mod imp {
                 this.device_name.set_text(adapter_name.as_str());
             }
 
-            this.usage_graph.connect_resize(|graph, width, height| {
-                let width = width as f32;
-                let height = height as f32;
+            let t = this.obj().clone();
+            this.usage_graph.connect_local("resize", true, move |_| {
+                let this = t.imp();
+                let width = this.usage_graph.width() as f32;
+                let height = this.usage_graph.height() as f32;
 
                 let mut a = width;
                 let mut b = height;
@@ -321,7 +323,10 @@ mod imp {
                     b = width;
                 }
 
-                graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+                this.usage_graph
+                    .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                None
             });
 
             if let Some(interface_name_label) = this.interface_name_label.get() {
@@ -728,13 +733,36 @@ impl PerformancePageNetwork {
             settings: &gio::Settings,
         ) {
             let data_points = settings.int("perfomance-page-data-points") as u32;
-            let graph_max_duration = (((settings.int("app-update-interval") as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+                * INTERVAL_STEP)
+                * (data_points as f64))
+                .round() as u32;
 
             let this = this.imp();
             let mins = graph_max_duration / 60;
-            let seconds_to_string = format!("{} second{}", graph_max_duration % 60, if (graph_max_duration % 60) != 1 { "s" } else { "" });
+            let seconds_to_string = format!(
+                "{} second{}",
+                graph_max_duration % 60,
+                if (graph_max_duration % 60) != 1 {
+                    "s"
+                } else {
+                    ""
+                }
+            );
             let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
-            this.graph_max_duration.set_text(&*format!("{}{}", if mins > 0 { mins_to_string } else { "".to_string() }, if graph_max_duration % 60 > 0 { seconds_to_string } else { "".to_string() }));
+            this.graph_max_duration.set_text(&*format!(
+                "{}{}",
+                if mins > 0 {
+                    mins_to_string
+                } else {
+                    "".to_string()
+                },
+                if graph_max_duration % 60 > 0 {
+                    seconds_to_string
+                } else {
+                    "".to_string()
+                }
+            ));
 
             this.usage_graph.set_data_points(data_points);
         }

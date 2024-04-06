@@ -26,8 +26,8 @@ use std::{
 use crate::{
     logging::{critical, error, warning},
     platform::{
-        ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, OpenGLApiVersion,
-        platform_impl::run_forked,
+        platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
+        OpenGLApiVersion,
     },
 };
 

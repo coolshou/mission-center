@@ -1,6 +1,6 @@
 /* performance_page/disk.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,9 +172,11 @@ mod imp {
             let t = this.clone();
             this.imp()
                 .usage_graph
-                .connect_resize(move |graph_widget, width, height| {
-                    let width = width as f32;
-                    let height = height as f32;
+                .connect_local("resize", true, move |_| {
+                    let this = t.imp();
+
+                    let width = this.usage_graph.width() as f32;
+                    let height = this.usage_graph.height() as f32;
 
                     let mut a = width;
                     let mut b = height;
@@ -183,12 +185,13 @@ mod imp {
                         b = width;
                     }
 
-                    graph_widget
+                    this.usage_graph
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
-                    t.imp()
-                        .disk_transfer_rate_graph
+                    this.disk_transfer_rate_graph
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                    None
                 });
 
             let this = this.imp();

@@ -21,7 +21,7 @@
 
 use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
-use gtk::{gdk, glib, Ordering, prelude::*};
+use gtk::{gdk, glib, prelude::*, Ordering};
 
 use super::widgets::GraphWidget;
 
@@ -129,10 +129,6 @@ mod imp {
     }
 
     impl ObjectImpl for SummaryGraph {
-        fn constructed(&self) {
-            self.parent_constructed();
-        }
-
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -143,6 +139,10 @@ mod imp {
 
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
+        }
+
+        fn constructed(&self) {
+            self.parent_constructed();
         }
     }
 

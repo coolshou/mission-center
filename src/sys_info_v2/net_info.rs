@@ -118,7 +118,7 @@ impl Drop for NetInfo {
 impl NetInfo {
     pub fn new() -> Option<Self> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{*, ffi::*, translate::from_glib_full};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use libudev_sys::*;
         use std::{collections::*, path::*};
 
@@ -184,7 +184,7 @@ impl NetInfo {
     }
 
     pub fn load_devices(&mut self) -> Vec<NetworkDevice> {
-        use gtk::glib::{*, gobject_ffi::*};
+        use gtk::glib::{gobject_ffi::*, *};
 
         let mut result = vec![];
 
@@ -793,7 +793,7 @@ impl NetInfo {
         interface: &[u8],
     ) -> *mut gtk::gio::ffi::GDBusProxy {
         use gtk::gio::ffi::*;
-        use gtk::glib::{*, ffi::*, translate::from_glib_full};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();
@@ -834,7 +834,7 @@ impl NetInfo {
         device_if: &std::ffi::CStr,
     ) -> Option<std::ffi::CString> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{*, ffi::*, translate::from_glib_full};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();
@@ -898,7 +898,7 @@ impl NetInfo {
         property: &[u8],
     ) -> Option<gtk::glib::Variant> {
         use gtk::gio::ffi::*;
-        use gtk::glib::{*, ffi::*, translate::from_glib_full};
+        use gtk::glib::{ffi::*, translate::from_glib_full, *};
         use std::ffi::CStr;
 
         let mut error: *mut GError = std::ptr::null_mut();

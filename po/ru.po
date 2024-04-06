@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 17:24+0200\n"
+"POT-Creation-Date: 2024-03-23 09:38+0200\n"
 "PO-Revision-Date: 2024-03-18 14:01+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
@@ -50,6 +50,10 @@ msgstr ""
 "процессора"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:144
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:170
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:188
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:230
 msgid "Features:"
 msgstr "Особенности:"
 
@@ -143,6 +147,490 @@ msgstr "Поддержка ГП является экспериментальн�
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Отзывы, предложения, сообщения об ошибках и помощь приветствуются"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
+msgid "Display optical device information in the Performance tab"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
+#, fuzzy
+msgid "Fix a bug where the Gatherer process would crash at startup"
+msgstr ""
+"Исправлена ошибка, из-за которой список приложений и процессов был пуст для "
+"некоторых пользователей"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
+msgid "Remove the need for admin rights to display extended memory information"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
+msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
+msgid ""
+"Make the saturation and transfer graphs the same height in the disk usage "
+"panes"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
+msgid "Translation updates and fixes"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
+msgid ""
+"Fix a bug where the number of CPUs was incorrectly detected on some systems "
+"(again!)"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
+#, fuzzy
+msgid ""
+"Fix a bug where the number of CPUs was incorrectly detected on some systems"
+msgstr ""
+"Исправлена ошибка, из-за которой список приложений и процессов был пуст для "
+"некоторых пользователей"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
+msgid "Add missing icon for the details panel in the Performance tab"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
+msgid ""
+"Fix a regression in 0.4.0 where GPU data would not be available for some "
+"users"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
+#, fuzzy
+msgid "Update to GTK 4.12 and libadwaita 1.4"
+msgstr "Использует GTK4 и Libadwaita"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
+msgid "Redesigned the Performance tab to be adaptive"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
+msgid "Early and very minimal Intel GPU support"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
+msgid "Add GPU memory usage column to the Apps page"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
+msgid "Added an AppImage"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
+msgid ""
+"The Performance tab now shows what kind of virtualization is enabled on the "
+"host"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
+msgid "The logical CPU graphs are now arranged in a more pleasing manner"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:153
+msgid ""
+"The Gatherer was rearchitected and now uses D-Bus for communication with the "
+"main app"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:195
+msgid "Fixes:"
+msgstr "Исправления:"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
+msgid "Fix misaligned header in the Apps tab with GTK 4.12"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
+msgid ""
+"Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
+"environment"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
+msgid ""
+"Fix sometimes Apps not showing the accumulated resource usage from all it's "
+"children"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
+msgid ""
+"Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
+msgid "Fix Virtualization reported as Unknown under certain circumstances"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
+msgid "Fix a Gatherer crash on older CPUs"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
+msgid "A lot of new translations and fixes to existing ones"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
+#, fuzzy
+msgid "Improve memory composition graph"
+msgstr "Структура памяти"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
+msgid "Add GPU usage column in the Apps tab"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
+msgid "Reduce memory usage and fix a memory leak in the main app"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
+msgid ""
+"Fix a crash at start-up when flatpak data is stored in a path with spaces"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
+msgid "Fix incorrect base frequency in AMD CPUs"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
+msgid "Fix missing video encode/decode information in the GPU tab"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
+msgid ""
+"Add an option, to the context menu, to show kernel times, in the CPU graphs"
+msgstr ""
+"Добавлена опция в контекстное меню для отображения времени работы ядра на "
+"графиках процессора"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
+msgid "Add CPU temperature, where possible"
+msgstr "Добавлена температура процессора, где это возможно"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:192
+msgid ""
+"Implement smarter rounding and display precision of values throughout the "
+"app by QwertyChouskie"
+msgstr ""
+"Реализация более точного округления и отображения точности значений во всем "
+"приложении от QwertyChouskie"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:193
+msgid ""
+"Use metainfo instead of appdata for application metadata by David Guglielmi"
+msgstr ""
+"Использование metainfo вместо appdata для метаданных приложения by David "
+"Guglielmi"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:197
+msgid ""
+"Fixed a regression where natively installed browsers were not showing up in "
+"the apps list on Fedora"
+msgstr ""
+"Исправлена ошибка, из-за которой нативно установленные браузеры не "
+"отображались в списке приложений в Fedora"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:198
+msgid ""
+"Fixed a regression where Flatpak apps were not showing up in the apps list "
+"on ArchLinux Plasma"
+msgstr ""
+"Исправлена ошибка, из-за которой приложения Flatpak не отображались в списке "
+"приложений в ArchLinux Plasma"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
+msgid ""
+"Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
+msgstr ""
+"Исправлена ошибка, при которой некорректно обрабатывался файл рабочего стола "
+"приложения Карты"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
+msgid ""
+"Moved some performance related logs to g_debug to prevent spamming of system "
+"logs"
+msgstr ""
+"Перемещены некоторые журналы, связанные с производительностью, в g_debug для "
+"предотвращения спама в системных журналах"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:202
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:245
+msgid "Translations:"
+msgstr "Переводы:"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
+msgid "New translation to Korean by Seong-ho Cho"
+msgstr "Новый перевод на корейский язык от Seong-ho Cho"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:205
+msgid "New translation to Dutch by Gert"
+msgstr "Новый перевод на голландский язык от Gert"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:206
+msgid "New translation to Polish by _Ghost_"
+msgstr "Новый перевод на польский язык от _Ghost_"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
+msgid "New translation to Italian by beppeilgommista"
+msgstr "Новый перевод на итальянский язык от beppeilgommista"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
+msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
+msgstr ""
+"Новый перевод на португальский язык (Бразилия) от Gérson da Fonseca Henzel"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:254
+msgid "Updated Spanish translation"
+msgstr "Обновлен перевод на испанский язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:213
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:258
+msgid "Updated Finnish translation"
+msgstr "Обновлен перевод на финский язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:211
+msgid "Updated Russian translation"
+msgstr "Обновлен перевод на русский язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:212
+msgid "Updated Chinese (Simplified) translation"
+msgstr "Обновлен перевод на китайский (упрощенный) язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:214
+msgid "Updated Greek translation"
+msgstr "Обновлен перевод на греческий язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:215
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:257
+msgid "Updated German translation"
+msgstr "Обновлен перевод на немецкий язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
+msgid ""
+"Hotfix release to fix a bug that caused the app to not display any "
+"information for some users"
+msgstr ""
+"Выпущено исправление, устраняющее ошибку, из-за которой у некоторых "
+"пользователей приложение не отображало никакой информации"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:232
+msgid "New app icon by QwertyChouskie"
+msgstr "Новый значок приложения от QwertyChouskie"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:233
+msgid "Add ability to stop and force stop apps and processes"
+msgstr ""
+"Добавлена возможность остановки и принудительной остановки приложений и "
+"процессов"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
+msgid ""
+"Running apps are now shown more reliably, and should reflect most if not all "
+"running apps"
+msgstr ""
+"Запущенные приложения теперь отображаются более достоверно и должны "
+"отображаться если не все, то большинство запущенных приложений"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
+msgid "Experimental support for Snap apps in the running apps list"
+msgstr ""
+"Экспериментальная поддержка приложений Snap в списке запущенных приложений"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
+msgid ""
+"Added a setting to show resource consumption individually per process or "
+"cumulated with their descendants"
+msgstr ""
+"Добавлена настройка отображения потребления ресурсов отдельно для каждого "
+"процесса или суммарно с их дочерними процессами"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
+msgid ""
+"Added a setting to enable persistent sorting in the apps and processes list"
+msgstr ""
+"Добавлена настройка для включения постоянной сортировки в списке приложений "
+"и процессов"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:240
+msgid ""
+"Data gathering is now more versatile and will permit new features to be "
+"added quicker and easier"
+msgstr ""
+"Сбор данных стал более универсальным и позволяет быстрее и проще добавлять "
+"новые функции"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:243
+msgid "App can now be built from GNOME Builder"
+msgstr "Теперь приложение может быть собрано из GNOME Builder"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
+msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
+msgstr "Новый перевод на норвежский язык Bokmål от Allan Nordhøy"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:248
+msgid "New translation to Russian by Ivan Maslikhov"
+msgstr "Новый перевод на русский язык от Ивана Маслихова"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:249
+msgid "New translation to Slovak by mthw0"
+msgstr "Новый перевод на словацкий язык от mthw0"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:250
+msgid "New translation to Greek by Yiannis Ioannides"
+msgstr "Новый перевод на греческий язык от Yiannis Ioannides"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:251
+msgid "New translation to Chinese (Simplified) by foxer NS"
+msgstr "Новый перевод на китайский (упрощенный) язык от foxer NS"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:252
+msgid "New translation to French by Link Mauve"
+msgstr "Новый перевод на французский язык от Link Mauve"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:253
+msgid "New translation to Hungarian by Kovács Bálint Hunor"
+msgstr "Новый перевод на венгерский язык от Kovács Bálint Hunor"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
+msgid "Updated Czech translation"
+msgstr "Обновлен перевод на чешский язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:256
+msgid "Updated Portuguese translation"
+msgstr "Обновлен перевод на португальский язык"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:259
+msgid "Fixes for Chinese translations by foxer NS"
+msgstr "Исправления в переводах на китайский язык от foxer NS"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:267
+msgid "Add Spanish translation by Óscar Fernández Díaz"
+msgstr "Добавлен перевод на испанский язык от Óscar Fernández Díaz"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:268
+msgid ""
+"The memory tab now shows configured memory speed instead of the maximum "
+"supported by the modules"
+msgstr ""
+"На вкладке памяти теперь отображается настроенная скорость памяти, а не "
+"максимальная, поддерживаемая модулями"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:271
+msgid "Add German translation by TecCheck"
+msgstr "Добавлен немецкий перевод от TecCheck"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:272
+msgid ""
+"When a process uses large amounts of CPU or RAM it is now highlighted in the "
+"Apps and Processes list"
+msgstr ""
+"Если процесс использует большое количество процессора или оперативной "
+"памяти, он теперь выделяется в списке \"Приложения\" и \"Процессы\""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:275
+msgid "Add initial support for building for ARM64"
+msgstr "Добавлена начальная поддержка сборки для ARM64"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:276
+msgid ""
+"Take into account multiple CPU cores and cache sharing when calculating "
+"cache sizes"
+msgstr ""
+"Учет нескольких ядер процессора и совместного использования кэш-памяти при "
+"расчете объема кэш-памяти"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:277
+msgid ""
+"Fix browsers, installed as native packages, not showing up in the Apps list"
+msgstr ""
+"Исправлена ситуация, когда браузеры, установленные как нативные пакеты, не "
+"отображались в списке \"Приложения\""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:278
+msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
+msgstr "Обновлен перевод на традиционный китайский язык от Peter Dave Hello"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:286
+msgid "Translation fixes for Portuguese by Rafael Fontenelle"
+msgstr "Исправление перевода на португальский язык от Rafael Fontenelle"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:287
+msgid ""
+"Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
+msgstr ""
+"Показывать локальный IPv6-адрес можно только в том случае, если других IPv6-"
+"адресов не существует от Maximilian"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:288
+msgid "Add Traditional Chinese locale by Peter Dave Hello"
+msgstr "Добавлен перевод на традиционный китайский язык от Peter Dave Hello"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:289
+msgid "Add category for application menu by Renner0E"
+msgstr "Добавление категорий для меню приложений от Renner0E"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:290
+msgid ""
+"Fix a parsing error when parsing the output of `dmidecode` that lead to a "
+"panic"
+msgstr ""
+"Исправление ошибки парсинга при разборе вывода `dmidecode`, приводившей к "
+"панике"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:291
+msgid ""
+"Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
+"not exist, when getting CPU base speed information"
+msgstr ""
+"При получении информации о базовой скорости процессора используется запасной "
+"вариант, если `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` не "
+"существует"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:294
+msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
+msgstr ""
+"Обновлён дизайн вкладки графического процессора для адаптивности к меньшим "
+"разрешениям"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:302
+msgid "Added Czech translation by ondra05"
+msgstr "Добавление перевода на чешский язык от ondra05"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:303
+msgid "Added Portuguese translation by Rilson Joás"
+msgstr "Добавление перевода на португальский язык от Rilson Joás"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:304
+msgid ""
+"Add keywords to desktop file to improve search function of desktop "
+"environments by Hannes Kuchelmeister"
+msgstr ""
+"Добавление ключевых слов в файл меню для улучшения функции поиска в DE, от "
+"Hannes Kuchelmeister"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:307
+msgid "Fixed a bug where the app and process list was empty for some users"
+msgstr ""
+"Исправлена ошибка, из-за которой список приложений и процессов был пуст для "
+"некоторых пользователей"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:315
+msgid "Fix a crash that occurs when the system is under heavy load"
+msgstr "Устранение сбоя, возникающего при высокой нагрузке на систему"
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:323
+msgid "First official release!"
+msgstr "Первый официальный релиз!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
@@ -640,7 +1128,7 @@ msgstr "Остановить процесс"
 msgid "Force Stop Process"
 msgstr "Принудительно остановить процесс"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:285
+#: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -650,7 +1138,7 @@ msgstr ""
 "\n"
 "Память, используемая операционной системой и запущенными приложениями"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:317
+#: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -662,7 +1150,7 @@ msgstr ""
 "Память, содержимое которой должно быть записано на диск, прежде чем она "
 "сможет быть использована другим процессом"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:337
+#: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -672,7 +1160,7 @@ msgstr ""
 "\n"
 "Память, содержащая кэшированные данные и код, которые активно не используются"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:350
+#: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -685,7 +1173,7 @@ msgstr ""
 "первую очередь, когда операционной системе, драйверам или приложениям "
 "потребуется больше памяти"
 
-#: src/performance_page/mod.rs:527 src/performance_page/disk.rs:197
+#: src/performance_page/mod.rs:527 src/performance_page/disk.rs:200
 msgid "Disk {} ({})"
 msgstr "Диск {} ({})"
 
@@ -713,26 +1201,26 @@ msgstr "iSCSI"
 msgid "Optical"
 msgstr "Оптическое"
 
-#: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:309
-#: src/performance_page/cpu.rs:333 src/performance_page/cpu.rs:341
-#: src/performance_page/disk.rs:303 src/performance_page/gpu.rs:300
-#: src/performance_page/gpu.rs:417 src/performance_page/memory.rs:260
-#: src/performance_page/memory.rs:494 src/performance_page/network.rs:393
-#: src/performance_page/network.rs:417 src/performance_page/network.rs:427
-#: src/performance_page/network.rs:466 src/performance_page/network.rs:516
-#: src/performance_page/network.rs:552
+#: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
+#: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
+#: src/performance_page/disk.rs:306 src/performance_page/gpu.rs:303
+#: src/performance_page/gpu.rs:420 src/performance_page/memory.rs:264
+#: src/performance_page/memory.rs:498 src/performance_page/network.rs:398
+#: src/performance_page/network.rs:422 src/performance_page/network.rs:432
+#: src/performance_page/network.rs:471 src/performance_page/network.rs:521
+#: src/performance_page/network.rs:557
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: src/performance_page/mod.rs:648 src/performance_page/network.rs:332
+#: src/performance_page/mod.rs:648 src/performance_page/network.rs:337
 msgid "Ethernet"
 msgstr "Ethernet"
 
-#: src/performance_page/mod.rs:649 src/performance_page/network.rs:347
+#: src/performance_page/mod.rs:649 src/performance_page/network.rs:352
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/performance_page/mod.rs:650 src/performance_page/network.rs:349
+#: src/performance_page/mod.rs:650 src/performance_page/network.rs:354
 msgid "Other"
 msgstr "Другой"
 
@@ -744,48 +1232,48 @@ msgstr "ГП {}"
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}бит/с"
 
-#: src/performance_page/cpu.rs:321 src/performance_page/gpu.rs:312
+#: src/performance_page/cpu.rs:317 src/performance_page/gpu.rs:315
 msgid "Unsupported"
 msgstr "Не поддерживается"
 
-#: src/performance_page/cpu.rs:328 src/performance_page/disk.rs:233
+#: src/performance_page/cpu.rs:324 src/performance_page/disk.rs:236
 msgid "Yes"
 msgstr "Да"
 
-#: src/performance_page/cpu.rs:330 src/performance_page/disk.rs:235
+#: src/performance_page/cpu.rs:326 src/performance_page/disk.rs:238
 msgid "No"
 msgstr "Нет"
 
-#: src/performance_page/cpu.rs:862
+#: src/performance_page/cpu.rs:866
 msgid "{} second{}"
 msgstr "{} секунда{}"
 
-#: src/performance_page/cpu.rs:863
+#: src/performance_page/cpu.rs:877
 msgid "{} minute{} "
 msgstr "{} минута{} "
 
-#: src/performance_page/cpu.rs:866
+#: src/performance_page/cpu.rs:895
 msgid "Utilization Over {}{}"
 msgstr "Использование за {}{}"
 
-#: src/performance_page/disk.rs:265
+#: src/performance_page/disk.rs:268
 msgid "{} {}{}B/s"
 msgstr "{} {}{}Б/c"
 
-#: src/performance_page/gpu.rs:265
+#: src/performance_page/gpu.rs:268
 msgid "Video encode/decode"
 msgstr "Кодирование/декодирование видео"
 
-#: src/performance_page/memory.rs:487
+#: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
 msgstr "Не удалось получить дополнительную информацию о памяти"
 
-#: src/performance_page/network.rs:439 src/performance_page/network.rs:446
-#: src/performance_page/network.rs:456
+#: src/performance_page/network.rs:444 src/performance_page/network.rs:451
+#: src/performance_page/network.rs:461
 msgid "{} {}bps"
 msgstr "{} {}бит/с"
 
-#: src/performance_page/network.rs:478 src/performance_page/network.rs:493
+#: src/performance_page/network.rs:483 src/performance_page/network.rs:498
 msgid "N/A"
 msgstr "Недоступно"
 
@@ -846,276 +1334,6 @@ msgstr ""
 #~ msgid "No per-process GPU usage"
 #~ msgstr ""
 #~ "Отсутствие использования графического процессора для каждого процесса"
-
-#~ msgid ""
-#~ "Add an option, to the context menu, to show kernel times, in the CPU "
-#~ "graphs"
-#~ msgstr ""
-#~ "Добавлена опция в контекстное меню для отображения времени работы ядра на "
-#~ "графиках процессора"
-
-#~ msgid "Add CPU temperature, where possible"
-#~ msgstr "Добавлена температура процессора, где это возможно"
-
-#~ msgid ""
-#~ "Implement smarter rounding and display precision of values throughout the "
-#~ "app by QwertyChouskie"
-#~ msgstr ""
-#~ "Реализация более точного округления и отображения точности значений во "
-#~ "всем приложении от QwertyChouskie"
-
-#~ msgid ""
-#~ "Use metainfo instead of appdata for application metadata by David "
-#~ "Guglielmi"
-#~ msgstr ""
-#~ "Использование metainfo вместо appdata для метаданных приложения by David "
-#~ "Guglielmi"
-
-#~ msgid "Fixes:"
-#~ msgstr "Исправления:"
-
-#~ msgid ""
-#~ "Fixed a regression where natively installed browsers were not showing up "
-#~ "in the apps list on Fedora"
-#~ msgstr ""
-#~ "Исправлена ошибка, из-за которой нативно установленные браузеры не "
-#~ "отображались в списке приложений в Fedora"
-
-#~ msgid ""
-#~ "Fixed a regression where Flatpak apps were not showing up in the apps "
-#~ "list on ArchLinux Plasma"
-#~ msgstr ""
-#~ "Исправлена ошибка, из-за которой приложения Flatpak не отображались в "
-#~ "списке приложений в ArchLinux Plasma"
-
-#~ msgid ""
-#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-#~ msgstr ""
-#~ "Исправлена ошибка, при которой некорректно обрабатывался файл рабочего "
-#~ "стола приложения Карты"
-
-#~ msgid ""
-#~ "Moved some performance related logs to g_debug to prevent spamming of "
-#~ "system logs"
-#~ msgstr ""
-#~ "Перемещены некоторые журналы, связанные с производительностью, в g_debug "
-#~ "для предотвращения спама в системных журналах"
-
-#~ msgid "Translations:"
-#~ msgstr "Переводы:"
-
-#~ msgid "New translation to Korean by Seong-ho Cho"
-#~ msgstr "Новый перевод на корейский язык от Seong-ho Cho"
-
-#~ msgid "New translation to Dutch by Gert"
-#~ msgstr "Новый перевод на голландский язык от Gert"
-
-#~ msgid "New translation to Polish by _Ghost_"
-#~ msgstr "Новый перевод на польский язык от _Ghost_"
-
-#~ msgid "New translation to Italian by beppeilgommista"
-#~ msgstr "Новый перевод на итальянский язык от beppeilgommista"
-
-#~ msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-#~ msgstr ""
-#~ "Новый перевод на португальский язык (Бразилия) от Gérson da Fonseca Henzel"
-
-#~ msgid "Updated Spanish translation"
-#~ msgstr "Обновлен перевод на испанский язык"
-
-#~ msgid "Updated Finnish translation"
-#~ msgstr "Обновлен перевод на финский язык"
-
-#~ msgid "Updated Russian translation"
-#~ msgstr "Обновлен перевод на русский язык"
-
-#~ msgid "Updated Chinese (Simplified) translation"
-#~ msgstr "Обновлен перевод на китайский (упрощенный) язык"
-
-#~ msgid "Updated Greek translation"
-#~ msgstr "Обновлен перевод на греческий язык"
-
-#~ msgid "Updated German translation"
-#~ msgstr "Обновлен перевод на немецкий язык"
-
-#~ msgid ""
-#~ "Hotfix release to fix a bug that caused the app to not display any "
-#~ "information for some users"
-#~ msgstr ""
-#~ "Выпущено исправление, устраняющее ошибку, из-за которой у некоторых "
-#~ "пользователей приложение не отображало никакой информации"
-
-#~ msgid "New app icon by QwertyChouskie"
-#~ msgstr "Новый значок приложения от QwertyChouskie"
-
-#~ msgid "Add ability to stop and force stop apps and processes"
-#~ msgstr ""
-#~ "Добавлена возможность остановки и принудительной остановки приложений и "
-#~ "процессов"
-
-#~ msgid ""
-#~ "Running apps are now shown more reliably, and should reflect most if not "
-#~ "all running apps"
-#~ msgstr ""
-#~ "Запущенные приложения теперь отображаются более достоверно и должны "
-#~ "отображаться если не все, то большинство запущенных приложений"
-
-#~ msgid "Experimental support for Snap apps in the running apps list"
-#~ msgstr ""
-#~ "Экспериментальная поддержка приложений Snap в списке запущенных приложений"
-
-#~ msgid ""
-#~ "Added a setting to show resource consumption individually per process or "
-#~ "cumulated with their descendants"
-#~ msgstr ""
-#~ "Добавлена настройка отображения потребления ресурсов отдельно для каждого "
-#~ "процесса или суммарно с их дочерними процессами"
-
-#~ msgid ""
-#~ "Added a setting to enable persistent sorting in the apps and processes "
-#~ "list"
-#~ msgstr ""
-#~ "Добавлена настройка для включения постоянной сортировки в списке "
-#~ "приложений и процессов"
-
-#~ msgid ""
-#~ "Data gathering is now more versatile and will permit new features to be "
-#~ "added quicker and easier"
-#~ msgstr ""
-#~ "Сбор данных стал более универсальным и позволяет быстрее и проще "
-#~ "добавлять новые функции"
-
-#~ msgid "App can now be built from GNOME Builder"
-#~ msgstr "Теперь приложение может быть собрано из GNOME Builder"
-
-#~ msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-#~ msgstr "Новый перевод на норвежский язык Bokmål от Allan Nordhøy"
-
-#~ msgid "New translation to Russian by Ivan Maslikhov"
-#~ msgstr "Новый перевод на русский язык от Ивана Маслихова"
-
-#~ msgid "New translation to Slovak by mthw0"
-#~ msgstr "Новый перевод на словацкий язык от mthw0"
-
-#~ msgid "New translation to Greek by Yiannis Ioannides"
-#~ msgstr "Новый перевод на греческий язык от Yiannis Ioannides"
-
-#~ msgid "New translation to Chinese (Simplified) by foxer NS"
-#~ msgstr "Новый перевод на китайский (упрощенный) язык от foxer NS"
-
-#~ msgid "New translation to French by Link Mauve"
-#~ msgstr "Новый перевод на французский язык от Link Mauve"
-
-#~ msgid "New translation to Hungarian by Kovács Bálint Hunor"
-#~ msgstr "Новый перевод на венгерский язык от Kovács Bálint Hunor"
-
-#~ msgid "Updated Czech translation"
-#~ msgstr "Обновлен перевод на чешский язык"
-
-#~ msgid "Updated Portuguese translation"
-#~ msgstr "Обновлен перевод на португальский язык"
-
-#~ msgid "Fixes for Chinese translations by foxer NS"
-#~ msgstr "Исправления в переводах на китайский язык от foxer NS"
-
-#~ msgid "Add Spanish translation by Óscar Fernández Díaz"
-#~ msgstr "Добавлен перевод на испанский язык от Óscar Fernández Díaz"
-
-#~ msgid ""
-#~ "The memory tab now shows configured memory speed instead of the maximum "
-#~ "supported by the modules"
-#~ msgstr ""
-#~ "На вкладке памяти теперь отображается настроенная скорость памяти, а не "
-#~ "максимальная, поддерживаемая модулями"
-
-#~ msgid "Add German translation by TecCheck"
-#~ msgstr "Добавлен немецкий перевод от TecCheck"
-
-#~ msgid ""
-#~ "When a process uses large amounts of CPU or RAM it is now highlighted in "
-#~ "the Apps and Processes list"
-#~ msgstr ""
-#~ "Если процесс использует большое количество процессора или оперативной "
-#~ "памяти, он теперь выделяется в списке \"Приложения\" и \"Процессы\""
-
-#~ msgid "Add initial support for building for ARM64"
-#~ msgstr "Добавлена начальная поддержка сборки для ARM64"
-
-#~ msgid ""
-#~ "Take into account multiple CPU cores and cache sharing when calculating "
-#~ "cache sizes"
-#~ msgstr ""
-#~ "Учет нескольких ядер процессора и совместного использования кэш-памяти "
-#~ "при расчете объема кэш-памяти"
-
-#~ msgid ""
-#~ "Fix browsers, installed as native packages, not showing up in the Apps "
-#~ "list"
-#~ msgstr ""
-#~ "Исправлена ситуация, когда браузеры, установленные как нативные пакеты, "
-#~ "не отображались в списке \"Приложения\""
-
-#~ msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-#~ msgstr "Обновлен перевод на традиционный китайский язык от Peter Dave Hello"
-
-#~ msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-#~ msgstr "Исправление перевода на португальский язык от Rafael Fontenelle"
-
-#~ msgid ""
-#~ "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
-#~ msgstr ""
-#~ "Показывать локальный IPv6-адрес можно только в том случае, если других "
-#~ "IPv6-адресов не существует от Maximilian"
-
-#~ msgid "Add Traditional Chinese locale by Peter Dave Hello"
-#~ msgstr "Добавлен перевод на традиционный китайский язык от Peter Dave Hello"
-
-#~ msgid "Add category for application menu by Renner0E"
-#~ msgstr "Добавление категорий для меню приложений от Renner0E"
-
-#~ msgid ""
-#~ "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
-#~ "panic"
-#~ msgstr ""
-#~ "Исправление ошибки парсинга при разборе вывода `dmidecode`, приводившей к "
-#~ "панике"
-
-#~ msgid ""
-#~ "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` "
-#~ "does not exist, when getting CPU base speed information"
-#~ msgstr ""
-#~ "При получении информации о базовой скорости процессора используется "
-#~ "запасной вариант, если `/sys/devices/system/cpu/cpu0/cpufreq/"
-#~ "base_frequency` не существует"
-
-#~ msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-#~ msgstr ""
-#~ "Обновлён дизайн вкладки графического процессора для адаптивности к "
-#~ "меньшим разрешениям"
-
-#~ msgid "Added Czech translation by ondra05"
-#~ msgstr "Добавление перевода на чешский язык от ondra05"
-
-#~ msgid "Added Portuguese translation by Rilson Joás"
-#~ msgstr "Добавление перевода на португальский язык от Rilson Joás"
-
-#~ msgid ""
-#~ "Add keywords to desktop file to improve search function of desktop "
-#~ "environments by Hannes Kuchelmeister"
-#~ msgstr ""
-#~ "Добавление ключевых слов в файл меню для улучшения функции поиска в DE, "
-#~ "от Hannes Kuchelmeister"
-
-#~ msgid "Fixed a bug where the app and process list was empty for some users"
-#~ msgstr ""
-#~ "Исправлена ошибка, из-за которой список приложений и процессов был пуст "
-#~ "для некоторых пользователей"
-
-#~ msgid "Fix a crash that occurs when the system is under heavy load"
-#~ msgstr "Устранение сбоя, возникающего при высокой нагрузке на систему"
-
-#~ msgid "First official release!"
-#~ msgstr "Первый официальный релиз!"
 
 #~ msgid "Some information requires administrative privileges"
 #~ msgstr "Для получения некоторой информации необходимы права администратора"

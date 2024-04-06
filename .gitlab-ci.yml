@@ -1,4 +1,4 @@
-image: "ubuntu:23.10"
+image: "ubuntu:24.04"
 
 stages:
   - build
@@ -7,9 +7,10 @@ stages:
 build-job:
   stage: build
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
@@ -20,23 +21,25 @@ build-job:
 
     - pip install meson ninja --break-system-packages
 
-    - meson setup _build -Dbuildtype=release
-    - ninja -C _build
-    - glib-compile-schemas --strict data/
+    # Skip native builds until GTK 4.14 is in the repo
+    # - meson setup _build -Dbuildtype=release
+    # - ninja -C _build
+    # - glib-compile-schemas --strict data/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 flatpak-job:
   stage: package
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08 org.gnome.Platform//45 org.gnome.Sdk//45
+    - flatpak install -y org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08 org.gnome.Platform//46 org.gnome.Sdk//46
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
@@ -49,9 +52,10 @@ flatpak-job:
 appimage-job:
   stage: package
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y podman fuse-overlayfs

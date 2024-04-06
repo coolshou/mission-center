@@ -1,6 +1,6 @@
 /* performance_page/widgets/graph_widget.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 pub use graph_widget::GraphWidget;
 pub use mem_composition_widget::MemoryCompositionWidget;
+
+const GRAPH_RADIUS: f32 = 7.;
 
 mod graph_widget;
 mod mem_composition_widget;

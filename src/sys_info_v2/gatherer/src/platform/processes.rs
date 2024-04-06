@@ -50,7 +50,7 @@ pub struct ProcessUsageStats {
 
 /// High-level description of a process
 pub trait ProcessExt<'a> {
-    type Iter: Iterator<Item=&'a str>;
+    type Iter: Iterator<Item = &'a str>;
 
     fn name(&self) -> &str;
     fn cmd(&'a self) -> Self::Iter;

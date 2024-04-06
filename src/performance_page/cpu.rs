@@ -1,6 +1,6 @@
 /* performance_page/cpu.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use crate::{
-    application::BASE_POINTS,
-    application::INTERVAL_STEP,
-    i18n::*
-};
+use crate::{application::BASE_POINTS, application::INTERVAL_STEP, i18n::*};
 
 use super::widgets::GraphWidget;
 
@@ -618,7 +614,7 @@ mod imp {
             graph_widgets[0].set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
 
             let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
-            graph_widgets[0].connect_resize(move |_, _, _| {
+            graph_widgets[0].connect_local("resize", true, move |_| {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 let width = graph_widgets[0].width() as f32;
@@ -635,6 +631,8 @@ mod imp {
                     .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
                 this.imp().graph_widgets.set(graph_widgets);
+
+                None
             });
 
             self.overall_graph_labels
@@ -653,7 +651,7 @@ mod imp {
                 graph_widgets.push(GraphWidget::new());
                 if graph_widget_index == 1 {
                     let this = self.obj().upcast_ref::<super::PerformancePageCpu>().clone();
-                    graph_widgets[graph_widget_index].connect_resize(move |_, _, _| {
+                    graph_widgets[graph_widget_index].connect_local("resize", true, move |_| {
                         let graph_widgets = this.imp().graph_widgets.take();
 
                         for graph_widget in graph_widgets.iter().skip(1) {
@@ -673,6 +671,8 @@ mod imp {
                         }
 
                         this.imp().graph_widgets.set(graph_widgets);
+
+                        None
                     });
                 }
                 graph_widgets[graph_widget_index].set_data_points(data_points);
@@ -856,14 +856,52 @@ impl PerformancePageCpu {
             let this = this.imp();
 
             let data_points = settings.int("perfomance-page-data-points") as u32;
-            let graph_max_duration = (((settings.int("app-update-interval") as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
+            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+                * INTERVAL_STEP)
+                * (data_points as f64))
+                .round() as u32;
 
             let mins = graph_max_duration / 60;
-            let seconds_to_string = &i18n_f("{} second{}", &[&format!("{}", graph_max_duration % 60), if (graph_max_duration % 60) != 1 { "s" } else { "" }]);
-            let mins_to_string = &i18n_f("{} minute{} ", &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }]);
-            this.graph_max_duration.set_text(&*format!("{}{}", if mins > 0 { mins_to_string.clone() } else { "".to_string() }, if graph_max_duration % 60 > 0 { seconds_to_string.clone() } else { "".to_string() }));
+            let seconds_to_string = &i18n_f(
+                "{} second{}",
+                &[
+                    &format!("{}", graph_max_duration % 60),
+                    if (graph_max_duration % 60) != 1 {
+                        "s"
+                    } else {
+                        ""
+                    },
+                ],
+            );
+            let mins_to_string = &i18n_f(
+                "{} minute{} ",
+                &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }],
+            );
+            this.graph_max_duration.set_text(&*format!(
+                "{}{}",
+                if mins > 0 {
+                    mins_to_string.clone()
+                } else {
+                    "".to_string()
+                },
+                if graph_max_duration % 60 > 0 {
+                    seconds_to_string.clone()
+                } else {
+                    "".to_string()
+                }
+            ));
 
-            this.utilization_label_all.set_text(&*i18n_f("Utilization Over {}{}", &[if mins > 0 { mins_to_string } else { "" }, if graph_max_duration % 60 > 0 { seconds_to_string } else { "" }]));
+            this.utilization_label_all.set_text(&*i18n_f(
+                "Utilization Over {}{}",
+                &[
+                    if mins > 0 { mins_to_string } else { "" },
+                    if graph_max_duration % 60 > 0 {
+                        seconds_to_string
+                    } else {
+                        ""
+                    },
+                ],
+            ));
 
             let widgets = this.graph_widgets.take();
             for graph_widget in &widgets {

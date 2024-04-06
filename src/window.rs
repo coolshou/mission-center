@@ -304,7 +304,7 @@ mod imp {
                     "max-width: {}sp",
                     self.collapse_threshold.get()
                 ))
-                    .unwrap(),
+                .unwrap(),
             ));
             self.breakpoint
                 .connect_apply(clone!(@weak self as this => move |_| {
