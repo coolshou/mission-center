@@ -1,6 +1,13 @@
 project_name = 'gatherer'
 project_path = 'src' / 'sys_info_v2' / project_name
 
+libdrm = dependency('libdrm', required: true)
+libegl = dependency('egl', required: true)
+libgbm = dependency('gbm', required: true)
+libdbus = dependency('dbus-1', required: true)
+
+patch_exe = find_program('patch')
+
 cargo_bin = find_program('cargo')
 cargo_opt  = [ '--manifest-path', meson.project_source_root() / project_path / 'Cargo.toml' ]
 cargo_opt += [ '--target-dir', meson.project_build_root()  / project_path / 'src' ]

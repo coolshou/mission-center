@@ -196,14 +196,16 @@ impl MemInfo {
         let is_flatpak = *super::IS_FLATPAK;
         let mut cmd = if !is_flatpak {
             let mut cmd = Command::new("udevadm");
-            cmd.arg("info").arg("-q").arg("property")
-                .arg("-p").arg("/sys/devices/virtual/dmi/id");
+            cmd.arg("info")
+                .arg("-q")
+                .arg("property")
+                .arg("-p")
+                .arg("/sys/devices/virtual/dmi/id");
             cmd.env_remove("LD_PRELOAD");
             cmd
         } else {
-            let mut cmd = cmd_flatpak_host!(
-                "udevadm info -q property -p /sys/devices/virtual/dmi/id"
-            );
+            let mut cmd =
+                cmd_flatpak_host!("udevadm info -q property -p /sys/devices/virtual/dmi/id");
             cmd.env_remove("LD_PRELOAD");
             cmd
         };
@@ -249,7 +251,8 @@ impl MemInfo {
         let mut speed_fallback = 0; // If CONFIGURED_SPEED_MTS is not available, use SPEED_MTS
 
         loop {
-            if cmd_output_str_index >= cmd_output_str.len() { // We reached the end of the command output
+            if cmd_output_str_index >= cmd_output_str.len() {
+                // We reached the end of the command output
                 break;
             }
 
@@ -310,7 +313,8 @@ impl MemInfo {
 
             match mem_dev {
                 Some(mut mem_dev) => {
-                    if mem_dev.speed == 0 { // If CONFIGURED_SPEED_MTS is not available,
+                    if mem_dev.speed == 0 {
+                        // If CONFIGURED_SPEED_MTS is not available,
                         mem_dev.speed = speed_fallback; // then use SPEED_MTS instead
                     }
                     result.push(mem_dev);

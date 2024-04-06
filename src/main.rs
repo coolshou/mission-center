@@ -116,9 +116,6 @@ fn main() {
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
-    gl_loader::init_gl();
-    gl::load_with(|symbol| gl_loader::get_proc_address(symbol) as *const _);
-
     let app = MissionCenterApplication::new(
         "io.missioncenter.MissionCenter",
         &gio::ApplicationFlags::empty(),

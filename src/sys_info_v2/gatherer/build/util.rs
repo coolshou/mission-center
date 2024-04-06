@@ -65,7 +65,7 @@ pub fn download_file(
             response.status(),
             response.status_text()
         )
-            .into());
+        .into());
     }
 
     let mut content = Vec::new();
@@ -81,7 +81,7 @@ pub fn download_file(
                 "Checksum validation failed! Expected: {} Actual: {}",
                 expected_checksum, actual_checksum,
             )
-                .into());
+            .into());
         }
     }
 

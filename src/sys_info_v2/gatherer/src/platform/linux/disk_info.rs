@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use serde::Deserialize;
 
-use crate::platform::disk_info::{DiskInfoExt, DisksInfoExt, DiskType};
+use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
 
 #[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {

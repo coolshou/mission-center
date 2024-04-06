@@ -18,11 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use dbus::arg::IterAppend;
 use dbus::{
     arg::{Append, Arg, ArgType},
     Signature,
 };
-use dbus::arg::IterAppend;
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]

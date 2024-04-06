@@ -29,7 +29,7 @@ impl PlatformUtilitiesExt for LinuxPlatformUtilities {
     fn on_main_app_exit(&self, mut callback: Box<dyn FnMut() + Send>) {
         use crate::critical;
         use dbus::{blocking::Connection, channel::MatchingReceiver, message::MatchRule};
-        use std::sync::{Arc, atomic::*};
+        use std::sync::{atomic::*, Arc};
 
         std::thread::spawn(move || {
             let c = match Connection::new_session() {

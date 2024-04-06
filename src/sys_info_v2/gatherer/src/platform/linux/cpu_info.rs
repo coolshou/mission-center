@@ -809,7 +809,7 @@ impl LinuxCpuInfo {
 
     fn virtual_machine() -> Option<bool> {
         use crate::critical;
-        use dbus::blocking::{*, stdintf::org_freedesktop_dbus::Properties};
+        use dbus::blocking::{stdintf::org_freedesktop_dbus::Properties, *};
 
         let conn = match Connection::new_system() {
             Ok(c) => c,
@@ -1216,7 +1216,7 @@ impl LinuxCpuInfo {
     }
 
     fn thread_count(processes: &crate::platform::Processes) -> u64 {
-        use crate::platform::{ProcessesExt, ProcessExt};
+        use crate::platform::{ProcessExt, ProcessesExt};
 
         processes
             .process_list()

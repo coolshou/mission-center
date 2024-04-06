@@ -22,8 +22,8 @@ use std::cell::Cell;
 
 use gtk::{
     glib,
-    glib::{ParamSpec, Properties, Value, Variant},
     glib::prelude::*,
+    glib::{ParamSpec, Properties, Value, Variant},
     prelude::*,
     subclass::prelude::*,
 };

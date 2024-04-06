@@ -42,7 +42,7 @@ mod widgets;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
-type DiskPage = disk::PerformancePageDisk;
+type DiskPage = PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
@@ -144,7 +144,7 @@ mod imp {
 
             Self::configure_actions(&this);
             lb.connect_row_selected(move |_, selected_row| {
-                use glib::{*, translate::*};
+                use glib::{translate::*, *};
                 use std::ffi::CStr;
 
                 if let Some(row) = selected_row {

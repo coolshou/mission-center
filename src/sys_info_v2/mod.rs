@@ -21,18 +21,18 @@
 use std::{
     collections::HashMap,
     sync::{
-        Arc,
         atomic::{AtomicBool, Ordering},
+        Arc,
     },
 };
 
 use lazy_static::lazy_static;
 
+use gatherer::Gatherer;
 pub use gatherer::{
     App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, GpuDynamicInfo, GpuStaticInfo,
     OpenGLApi, Process, ProcessUsageStats,
 };
-use gatherer::Gatherer;
 
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
@@ -190,7 +190,7 @@ impl Default for SysInfoV2 {
 
 impl SysInfoV2 {
     pub fn new() -> Self {
-        use std::sync::{*, atomic::*};
+        use std::sync::{atomic::*, *};
 
         let refresh_interval = Arc::new(AtomicU16::new(
             (BASE_INTERVAL / INTERVAL_STEP).round() as u16

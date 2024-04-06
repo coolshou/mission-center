@@ -2,6 +2,8 @@
 
 # shellcheck disable=SC2164
 
+set -e
+
 apt-get update
 
 ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
@@ -20,14 +22,14 @@ cd fribidi-1.0.13
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../.. && rm -rf fribidi-1.0.13*
+cd ../../ && rm -rf fribidi-1.0.13*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/glib2.html
 # --------------------------------------------------------------------
 rm -rf /usr/include/glib-2.0/
-curl -LO https://download.gnome.org/sources/glib/2.78/glib-2.78.1.tar.xz
-tar xvf glib-2.78.1.tar.xz
-cd glib-2.78.1
+curl -LO https://download.gnome.org/sources/glib/2.80/glib-2.80.0.tar.xz
+tar xvf glib-2.80.0.tar.xz
+cd glib-2.80.0
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
@@ -35,7 +37,7 @@ mkdir build && cd build
     --buildtype=release                \
     -Dman=false
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../.. && rm -rf glib-2.78.1*
+cd ../../ && rm -rf glib-2.80.0*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/gobject-introspection.html
 # ------------------------------------------------------------------------------------
@@ -45,7 +47,7 @@ cd gobject-introspection-1.76.1
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../.. && rm -rf gobject-introspection-1.76.1*
+cd ../../ && rm -rf gobject-introspection-1.76.1*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gdk-pixbuf.html
 # -------------------------------------------------------------------
@@ -77,8 +79,7 @@ cd ../.. && rm -rf graphene-1.10.8*
 curl -LO https://download.gnome.org/sources/cairo/1.17/cairo-1.17.6.tar.xz
 tar xvf cairo-1.17.6.tar.xz
 cd cairo-1.17.6
-sed -e "/@prefix@/a exec_prefix=@exec_prefix@" \
--i util/cairo-script/cairo-script-interpreter.pc.in
+sed -e "/@prefix@/a exec_prefix=@exec_prefix@" -i util/cairo-script/cairo-script-interpreter.pc.in
 ./configure --prefix=/usr              \
     --libdir=/usr/lib/x86_64-linux-gnu \
     --disable-static                   \
@@ -128,23 +129,13 @@ cd ../../ && rm -rf wayland-protocols-1.32*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
 # ---------------------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/adwaita-icon-theme/45/adwaita-icon-theme-45.0.tar.xz
-tar xvf adwaita-icon-theme-45.0.tar.xz
-cd adwaita-icon-theme-45.0
+curl -LO https://download.gnome.org/sources/adwaita-icon-theme/46/adwaita-icon-theme-46.0.tar.xz
+tar xvf adwaita-icon-theme-46.0.tar.xz
+cd adwaita-icon-theme-46.0
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../ && rm -rf adwaita-icon-theme-45.0*
-
-# https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
-# ------------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/pango/1.51/pango-1.51.0.tar.xz
-tar xvf pango-1.51.0.tar.xz
-cd pango-1.51.0
-mkdir build && cd build
-/usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
-ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../../ && rm -rf pango-1.50.14*
+cd ../../ && rm -rf adwaita-icon-theme-4*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/harfbuzz.html
 # -----------------------------------------------------------------------
@@ -160,11 +151,21 @@ mkdir build && cd build
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
 cd ../../ && rm -rf harfbuzz-8.1.1*
 
+# https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
+# ------------------------------------------------------------------
+curl -LO https://download.gnome.org/sources/pango/1.51/pango-1.51.0.tar.xz
+tar xvf pango-1.51.0.tar.xz
+cd pango-1.51.0
+mkdir build && cd build
+/usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release ..
+ninja && ninja install && env DESTDIR=/src/appimage ninja install
+cd ../../ && rm -rf pango-1.50.14*
+
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/gtk/4.12/gtk-4.12.3.tar.xz
-tar xvf gtk-4.12.3.tar.xz
-cd gtk-4.12.3
+curl -LO https://download.gnome.org/sources/gtk/4.14/gtk-4.14.1.tar.xz
+tar xvf gtk-4*.tar.xz
+cd gtk-4.14.1
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
@@ -174,10 +175,11 @@ mkdir build && cd build
     -Dintrospection=enabled            \
     -Dbuild-examples=false             \
     -Dbuild-tests=false                \
-    -Dbuild-demos=false                      \
-    -Dbuild-testsuite=false
+    -Dbuild-demos=false                \
+    -Dbuild-testsuite=false            \
+    -Dvulkan=disabled
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../../ && rm -rf gtk-4.12.3*
+cd ../../ && rm -rf gtk-4*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/vala.html
 # -------------------------------------------------------------------
@@ -208,9 +210,9 @@ cd ../../ && rm -rf AppStream-0.16.3*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-curl -LO https://download.gnome.org/sources/libadwaita/1.4/libadwaita-1.4.0.tar.xz
-tar xvf libadwaita-1.4.0.tar.xz
-cd libadwaita-1.4.0
+curl -LO https://download.gnome.org/sources/libadwaita/1.5/libadwaita-1.5.0.tar.xz
+tar xvf libadwaita-1.5.0.tar.xz
+cd libadwaita-1.5.0
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
@@ -219,11 +221,11 @@ mkdir build && cd build
     -Dtests=false                      \
     -Dexamples=false
 ninja && ninja install && env DESTDIR=/src/appimage ninja install
-cd ../../ && rm -rf libadwaita-1.4.0*
+cd ../../ && rm -rf libadwaita-1*
 
 # Blueprint Compiler
 # ------------------
-curl -LO https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/80aaee374d332b0c7e04a132cce9c472d6427a1e/blueprint-compiler-80aaee374d332b0c7e04a132cce9c472d6427a1e.tar.bz2
+curl -LO https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/d47955c5a20b2f7cf85ff25a00b02160883aa0b1/blueprint-compiler-d47955c5a20b2f7cf85ff25a00b02160883aa0b1.tar.bz2
 tar xvf blueprint-compiler-*.tar.bz2 && rm blueprint-compiler-*.tar.bz2
 cd blueprint-compiler-*
 mkdir build && cd build

@@ -207,10 +207,11 @@ mod imp {
         ) -> bool {
             use crate::sys_info_v2::OpenGLApi;
 
+            let t = this.clone();
             this.imp()
                 .usage_graph_overall
-                .connect_resize(clone!(@weak this => move |_, _, _| {
-                    let this = this.imp();
+                .connect_local("resize", true, move |_| {
+                    let this = t.imp();
 
                     let width = this.usage_graph_overall.width() as f32;
                     let height = this.usage_graph_overall.height() as f32;
@@ -241,7 +242,9 @@ mod imp {
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
                     this.usage_graph_decode
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-                }));
+
+                    None
+                });
 
             let this = this.imp();
 
