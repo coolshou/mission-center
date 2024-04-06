@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-03-26 13:01+0000\n"
-"Last-Translator: Tobias Schmitz <tobiasschmitz2001@gmail.com>\n"
+"PO-Revision-Date: 2024-04-07 13:01+0000\n"
+"Last-Translator: AI_cid <leon.mischlich@gmx.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -73,7 +73,7 @@ msgstr "Überwache die Arbeitsspeicher- und Swapauslastung"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "See a breakdown how the memory is being used by the system"
 msgstr ""
-"Sehe eine Aufschlüsselung, wie der Arbeitsspeicher vom System genutzt wird"
+"Siehe eine Zusammenfassung, wie der Arbeitsspeicher vom System genutzt wird"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor Disk utilization and transfer rates"
@@ -153,18 +153,21 @@ msgstr "Kommentare, Vorschläge, Fehlerberichte und Beiträge sind willkommen"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
 msgstr ""
+"Anzeige von optischen Geräteinformationen in der Leistungs-Registerkarte"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid "Fix a bug where the Gatherer process would crash at startup"
-msgstr ""
+msgstr "Fehler behoben, bei dem der Gatherer-Prozess beim Start abstürzen würde"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"Entfernen der Notwendigkeit der Admin-Rechte um erweiterte "
+"Speicherinformationen anzeigen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "Anforderung für `libgcc_s.so.1` auf musl-basierten Systemen entfernt."
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
@@ -174,18 +177,22 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "Übersetzungs updates und Korrekturen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"Einen Fehler behoben bei dem die Anzahl der CPUs auf einigen Systemen falsch "
+"erkannt wurde (wieder!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
+"Einen Fehler behoben bei dem die Anzahl der CPUs auf einigen Systemen falsch "
+"erkannt wurde"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
