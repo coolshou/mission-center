@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-04-07 13:01+0000\n"
+"PO-Revision-Date: 2024-04-08 14:01+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -160,81 +160,94 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"Eliminar la necesidad de permisos de administrador para mostrar la "
+"información de la memoria ampliada"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "Eliminar el requisito de `libgcc_s.so.1` en sistemas basados en musl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"Hacer que los gráficos de actividad y rendimiento tengan la misma altura en "
+"el panel de uso del disco"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "Actualizaciones y correcciones de las traducciones"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"Corrección de un error por el que el número de CPU se detectaba "
+"incorrectamente en algunos sistemas (¡otra vez!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
-"Se ha corregido un error por el que la lista de aplicaciones y procesos "
-"aparecía vacía para algunos usuarios"
+"Corrección de un error por el que se detectaba incorrectamente el número de "
+"CPU en algunos sistemas"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
-msgstr ""
+msgstr "Añadir el icono que falta para el panel de los detalles del rendimiento"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some "
 "users"
 msgstr ""
+"Se ha corregido una regresión en la versión 0.4.0 por la que algunos "
+"usuarios no podían acceder a los datos de la GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "Usa GTK4 y Libadwaita"
+msgstr "Actualización a GTK 4.12 y libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "Rediseño de la pestaña rendimiento para que sea adaptable"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
-msgstr ""
+msgstr "Soporte inicial y mínimo de GPU Intel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
 msgstr ""
+"Agregar la columna de uso de la memoria de GPU a la página de las "
+"aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
-msgstr ""
+msgstr "Se ha añadido una AppImage"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
 msgstr ""
+"La pestaña rendimiento muestra ahora qué tipo de virtualización está "
+"activada en el host"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
 msgstr ""
+"Los gráficos lógicos de la CPU están ahora dispuestos de forma más agradable"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:153
 msgid ""
 "The Gatherer was rearchitected and now uses D-Bus for communication with the "
 "main app"
 msgstr ""
+"El Gatherer se ha rediseñado y ahora utiliza D-Bus para comunicarse con la "
+"aplicación principal"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
@@ -244,63 +257,76 @@ msgstr "Correcciones:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
 msgid "Fix misaligned header in the Apps tab with GTK 4.12"
-msgstr ""
+msgstr "Arreglar cabecera desalineada en la pestaña aplicaciones con GTK 4.12"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
 msgid ""
 "Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
 "environment"
 msgstr ""
+"Corregir la aplicación y Gatherer no se inicia debido a LD_PRELOAD se "
+"establece en el entorno de host"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
 msgid ""
 "Fix sometimes Apps not showing the accumulated resource usage from all it's "
 "children"
 msgstr ""
+"Se corrige que a veces las aplicaciones no muestran el uso de recursos "
+"acumulado de todos sus elementos secundarios"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
 msgid ""
 "Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
 msgstr ""
+"Se corrige la información de caché de CPU L1/2/3 que falta cuando NUMA no "
+"está habilitado"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
 msgid "Fix Virtualization reported as Unknown under certain circumstances"
 msgstr ""
+"Reparar la virtualización reportada como desconocida bajo ciertas "
+"circunstancias"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Fix a Gatherer crash on older CPUs"
-msgstr ""
+msgstr "Solucionar un fallo de Gatherer en CPU más antiguas"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "A lot of new translations and fixes to existing ones"
-msgstr ""
+msgstr "Muchas traducciones nuevas y correcciones de las existentes"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "Composición de memoria"
+msgstr "Mejorar el gráfico de composición de la memoria"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
-msgstr ""
+msgstr "Añadir columna de uso de GPU en la pestaña aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
 msgid "Reduce memory usage and fix a memory leak in the main app"
 msgstr ""
+"Reducción del uso de memoria y corrección de una fuga de memoria en la "
+"aplicación principal"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
 msgid ""
 "Fix a crash at start-up when flatpak data is stored in a path with spaces"
 msgstr ""
+"Arreglar un fallo en el arranque cuando los datos flatpak se almacenan en "
+"una ruta con espacios"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "Fix incorrect base frequency in AMD CPUs"
-msgstr ""
+msgstr "Corrección de la frecuencia base incorrecta en CPUs AMD"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "Fix missing video encode/decode information in the GPU tab"
 msgstr ""
+"Se corrige la falta de información de codificación/decodificación de vídeo "
+"en la pestaña GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid ""
