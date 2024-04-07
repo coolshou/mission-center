@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2023-08-21 05:35+0000\n"
-"Last-Translator: Kovács Bálint Hunor <kovacsbalinthunor53@gmail.com>\n"
+"PO-Revision-Date: 2024-04-07 13:01+0000\n"
+"Last-Translator: Fionn <mehafo3499@adstam.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hu/>\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -142,7 +142,7 @@ msgstr "Nincs folyamatonkénti hálózathasználat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "A videokártya támogatás kísérleti"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -152,7 +152,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
-msgstr ""
+msgstr "Optikai eszközinformációinak megjelenítése a Teljesítmény fülön"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 #, fuzzy
@@ -164,26 +164,32 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"Az adminisztrátori jogosultságok szükségességének eltávolítása a "
+"kiterjesztett memóriainformációk megjelenítéséhez"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "A `libgcc_s.so.1` szükségességének eltávolítása musl alapú rendszereken"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"Az aktivitás és átviteli sebesség grafikonok azonos magasságúvá tétele a "
+"lemezhasználati panelen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "Fordítások frissítése és javítások"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"Hiba javítása, amelynek során néhány rendszeren helytelenül észlelték a CPU-"
+"k számát (újra!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
 #, fuzzy
@@ -195,7 +201,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
-msgstr ""
+msgstr "Hiányzó ikon hozzáadása a részletek panelhez a Teljesítmény fülön"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
@@ -222,13 +228,15 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
-msgstr ""
+msgstr "AppImage hozzáadása"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
 msgstr ""
+"A teljesítmény lap most megmutatja, hogy milyen virtualizációt használ a "
+"gazda rendszer"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
