@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-03-18 14:01+0000\n"
+"PO-Revision-Date: 2024-04-07 13:01+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -149,14 +149,13 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
-msgstr ""
+msgstr "Mostrar información del dispositivo óptico en la pestaña Rendimiento"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
-#, fuzzy
 msgid "Fix a bug where the Gatherer process would crash at startup"
 msgstr ""
-"Se ha corregido un error por el que la lista de aplicaciones y procesos "
-"aparecía vacía para algunos usuarios"
+"Se ha corregido un error por el que el proceso Gatherer se bloqueaba al "
+"iniciarse"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
