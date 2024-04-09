@@ -3,7 +3,9 @@
     <id>io.missioncenter.MissionCenter</id>
     <name>Mission Center</name>
     <developer_name>Mission Center Developers</developer_name>
-
+    <developer id="io.missioncenter">
+        <name>Mission Center Developers</name>
+    </developer>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
 
@@ -102,7 +104,7 @@
     <releases>
 
         <release version="0.4.4" date="2024-02-10">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Display optical device information in the Performance tab</li>
                     <li>Fix a bug where the Gatherer process would crash at startup</li>
@@ -115,7 +117,7 @@
         </release>
 
         <release version="0.4.3" date="2023-12-15">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Fix a bug where the number of CPUs was incorrectly detected on some systems (again!)</li>
                 </ul>
@@ -123,7 +125,7 @@
         </release>
 
         <release version="0.4.2" date="2023-12-14">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Fix a bug where the number of CPUs was incorrectly detected on some systems</li>
                     <li>Add missing icon for the details panel in the Performance tab</li>
@@ -132,7 +134,7 @@
         </release>
 
         <release version="0.4.1" date="2023-12-09">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Fix a regression in 0.4.0 where GPU data would not be available for some users</li>
                 </ul>
@@ -140,7 +142,7 @@
         </release>
 
         <release version="0.4.0" date="2023-12-08">
-            <description translatable="no">
+            <description translate="no">
                 <p>Features:</p>
                 <ul>
                     <li>Update to GTK 4.12 and libadwaita 1.4</li>
@@ -166,7 +168,7 @@
         </release>
 
         <release version="0.3.3" date="2023-10-13">
-            <description translatable="no">
+            <description translate="no">
                 <p>Features:</p>
                 <ul>
                     <li>Improve memory composition graph</li>
@@ -184,7 +186,7 @@
         </release>
 
         <release version="0.3.2" date="2023-09-08">
-            <description translatable="no">
+            <description translate="no">
                 <p>Features:</p>
                 <ul>
                     <li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
@@ -218,7 +220,7 @@
         </release>
 
         <release version="0.3.1" date="2023-08-22">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Hotfix release to fix a bug that caused the app to not display any information for some users</li>
                 </ul>
@@ -226,7 +228,7 @@
         </release>
 
         <release version="0.3.0" date="2023-08-22">
-            <description translatable="no">
+            <description translate="no">
                 <p>Features:</p>
                 <ul>
                     <li>New app icon by QwertyChouskie</li>
@@ -262,7 +264,7 @@
         </release>
 
         <release version="0.2.5" date="2023-07-24">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Add Spanish translation by Óscar Fernández Díaz</li>
                     <li>The memory tab now shows configured memory speed instead of the maximum supported by the
@@ -281,7 +283,7 @@
         </release>
 
         <release version="0.2.4" date="2023-07-16">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Translation fixes for Portuguese by Rafael Fontenelle</li>
                     <li>Only show a link-local IPv6 address if no other IPv6 exists by Maximilian</li>
@@ -297,7 +299,7 @@
         </release>
 
         <release version="0.2.3" date="2023-07-13">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Added Czech translation by ondra05</li>
                     <li>Added Portuguese translation by Rilson Joás</li>
@@ -310,7 +312,7 @@
         </release>
 
         <release version="0.2.2" date="2023-07-12">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>Fix a crash that occurs when the system is under heavy load</li>
                 </ul>
@@ -318,7 +320,7 @@
         </release>
 
         <release version="0.2.0" date="2023-07-10">
-            <description translatable="no">
+            <description translate="no">
                 <ul>
                     <li>First official release!</li>
                 </ul>
