@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-04-11 14:01+0000\n"
-"Last-Translator: Akira Suzuki <akira.suzuki@gmail.com>\n"
+"PO-Revision-Date: 2024-04-15 03:01+0000\n"
+"Last-Translator: João Paulo Bento de Lucena <joaopaulobento14@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt/>\n"
 "Language: pt\n"
@@ -164,7 +164,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "Remover o requisito de `libgcc_s.so.1` em musl-based systems"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
@@ -187,12 +187,11 @@ msgstr ""
 "alguns sistemas (de novo!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
-"Corrigido um bug onde a lista de aplicativos e processos estava vazia para "
-"alguns usuários"
+"Corrigido um bug em que o número de CPUs era detectado incorretamente em "
+"alguns sistemas"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
