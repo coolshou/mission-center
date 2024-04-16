@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-03-17 13:02+0000\n"
+"PO-Revision-Date: 2024-04-16 20:01+0000\n"
 "Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/tr/>\n"
@@ -151,11 +151,8 @@ msgid "Display optical device information in the Performance tab"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
-#, fuzzy
 msgid "Fix a bug where the Gatherer process would crash at startup"
 msgstr ""
-"Bazı kullanıcılar için uygulama ve işlem listesinin boş olmasına neden olan "
-"bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
@@ -182,12 +179,9 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
-"Bazı kullanıcılar için uygulama ve işlem listesinin boş olmasına neden olan "
-"bir hata düzeltildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
@@ -200,9 +194,8 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "GTK4 ve Libadwaita kullanır"
+msgstr "GTK4.12 ve Libadwaita 1.4 sürümüne güncellendi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
@@ -277,9 +270,8 @@ msgid "A lot of new translations and fixes to existing ones"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "Bellek kompozisyonu"
+msgstr "Bellek kompozisyonu grafiği iyileştirildi"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
