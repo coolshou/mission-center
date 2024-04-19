@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-03-29 13:01+0000\n"
+"PO-Revision-Date: 2024-04-08 14:01+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hi/>\n"
@@ -29,14 +29,12 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;कार्य प्रबंधक; "
-"संसाधन मॉनिटर; सिस्टम मॉनिटर; प्रोसेसर; प्रक्रियाएं; प्रदर्शन मॉनिटर; डिस्क; मेमोरी; "
-"नेटवर्क; उपयोग; उपयोगिता"
+"कार्य प्रबंधक;संसाधन निगरानी;सिस्टम निगरानी;प्रोसेसर;प्रक्रियाएं;प्रदर्शन "
+"निगरानी;CPU;GPU;डिस्क;मेमोरी;नेटवर्क;उपयोग;"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Mission Center डेवलपर्स"
+msgstr "Mission Center विकासकर्ता"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor system resource usage"
@@ -63,7 +61,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"सिस्टम प्रोसेस, थ्रेड और हैंडल काउंट, अपटाइम, क्लॉक स्पीड (बेस और करंट), कैश साइज देखें"
+"सिस्टम प्रोसेस, थ्रेड और हैंडल गिनती, अपटाइम, क्लॉक स्पीड (आधार और मौजूदा), "
+"कैशे साइज देखें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor RAM and Swap usage"
@@ -144,435 +143,488 @@ msgstr "टिप्पणियाँ, सुझाव, बग रिपोर�
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
-msgstr ""
+msgstr "प्रदर्शन टैब में ऑप्टिकल डिवाइस जानकारी प्रदर्शित करें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid "Fix a bug where the Gatherer process would crash at startup"
 msgstr ""
+"उस बग को ठीक किया गया जहां गैदरर प्रक्रिया स्टार्टअप पर क्रैश हो जाती थी"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"विस्तारित मेमोरी जानकारी प्रदर्शित करने के लिए व्यवस्थापक अधिकारों की "
+"आवश्यकता को हटा दिया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "मसल-आधारित सिस्टम पर `libgcc_s.so.1` की आवश्यकता हटा दी गई"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"डिस्क उपयोग फलक में संतृप्ति और स्थानांतरण ग्राफ़ को समान ऊंचाई पर बनाया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "अनुवाद अद्यतन और सुधार"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"उस बग को ठीक किया गया जहां कुछ सिस्टमों पर CPU की संख्या गलत तरीके से पता चली"
+" थी (फिर से!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
+"उस बग को ठीक किया गया जहां कुछ सिस्टम पर CPU की संख्या गलत तरीके से पाई गई थी"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
-msgstr ""
+msgstr "प्रदर्शन टैब में विवरण पैनल के लिए एक अनुपलब्ध आइकन जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some "
 "users"
 msgstr ""
+"0.4.0 में एक प्रतिगमन तय किया गया जहां कुछ उपयोगकर्ताओं के लिए GPU डेटा उपलब्"
+"ध नहीं होगा"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "GTK4 और Libadwaita का उपयोग करता है"
+msgstr "GTK 4.12 और libadwaita 1.4 में अद्यतन किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "प्रदर्शन टैब को अनुकूली बनाने के लिए पुन: डिज़ाइन किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
-msgstr ""
+msgstr "प्रारंभिक और बहुत ही न्यूनतम Intel GPU समर्थन"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
-msgstr ""
+msgstr "ऐप्स पेज पर एक GPU मेमोरी उपयोग कॉलम जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
-msgstr ""
+msgstr "एक AppImage जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
-msgstr ""
+msgstr "प्रदर्शन टैब अब दिखाता है कि होस्ट पर किस प्रकार का आभासीकरण सक्षम है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
-msgstr ""
+msgstr "तार्किक CPU ग्राफ़ अब अधिक मनभावन तरीके से व्यवस्थित किए गए हैं"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:153
 msgid ""
 "The Gatherer was rearchitected and now uses D-Bus for communication with the "
 "main app"
 msgstr ""
+"गैदरर को फिर से तैयार किया गया और अब वह मुख्य ऐप के साथ संचार के लिए डी-बस का"
+" उपयोग करता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:195
 msgid "Fixes:"
-msgstr ""
+msgstr "सुधार:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
 msgid "Fix misaligned header in the Apps tab with GTK 4.12"
-msgstr ""
+msgstr "GTK 4.12 के साथ एप्स टैब में गलत संरेखित हेडर को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
 msgid ""
 "Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
 "environment"
 msgstr ""
+"होस्ट वातावरण में LD_PRELOAD सेट होने के कारण ऐप और गैदरर के प्रारंभ न होने "
+"को ठीक करें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
 msgid ""
 "Fix sometimes Apps not showing the accumulated resource usage from all it's "
 "children"
 msgstr ""
+"कभी-कभी अपने सभी संचित उप-संसाधन उपयोग नहीं दिखाने वाले ऐप्स को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
 msgid ""
 "Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
-msgstr ""
+msgstr "NUMA सक्षम नहीं होने पर गायब L1/2/3 CPU कैशे जानकारी को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
 msgid "Fix Virtualization reported as Unknown under certain circumstances"
 msgstr ""
+"कुछ परिस्थितियों में अज्ञात के रूप में रिपोर्ट किए गए आभासीकरण को ठीक किया "
+"गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Fix a Gatherer crash on older CPUs"
-msgstr ""
+msgstr "पुराने CPU पर गैदरर क्रैश को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "A lot of new translations and fixes to existing ones"
-msgstr ""
+msgstr "बहुत सारे नए अनुवाद और मौजूदा अनुवादों में सुधार"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "मेमोरी संघटन"
+msgstr "बेहतर मेमोरी संरचना ग्राफ़"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
-msgstr ""
+msgstr "ऐप्स टैब में GPU उपयोग कॉलम जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
 msgid "Reduce memory usage and fix a memory leak in the main app"
-msgstr ""
+msgstr "मेमोरी उपयोग को कम करें और मुख्य ऐप में मेमोरी लीक को ठीक करें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
 msgid ""
 "Fix a crash at start-up when flatpak data is stored in a path with spaces"
 msgstr ""
+"जब flatpak डेटा को रिक्त स्थान वाले पथ में संग्रहीत किया जाता है तो स्टार्ट-"
+"अप पर क्रैश को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "Fix incorrect base frequency in AMD CPUs"
-msgstr ""
+msgstr "AMD CPU में गलत आधार आवृत्ति को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "Fix missing video encode/decode information in the GPU tab"
-msgstr ""
+msgstr "GPU टैब में अनुपलब्ध वीडियो एनकोड/डीकोड जानकारी को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
-#, fuzzy
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
-msgstr "CPU ग्राफ़ में कर्नेल समय दिखाएं"
+msgstr ""
+"CPU ग्राफ़ में कर्नेल समय दिखाने के लिए संदर्भ मेनू में एक विकल्प जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "जहां संभव हो, CPU तापमान जोड़ें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:192
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"पूरे ऐप में बेहतर राउंडिंग लागू की गई और मूल्यों की सटीकता प्रदर्शित की गई, "
+"QwertyChouskie द्वारा"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:193
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"एप्लिकेशन मेटाडेटा के लिए ऐपडेटा के बजाय मेटाइन्फो का उपयोग करता है, डेविड "
+"गुग्लिल्मी द्वारा"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:197
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
+"उस प्रतिगमन को ठीक किया गया जहां मूल रूप से स्थापित ब्राउज़र Fedora पर ऐप्स "
+"सूची में दिखाई नहीं दे रहे थे"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:198
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
+"उस प्रतिगमन को ठीक किया गया जहां Flatpak ऐप्स ArchLinux Plasma पर ऐप्स सूची "
+"में दिखाई नहीं दे रहे थे"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
+"उस बग को ठीक किया गया जहां Maps ऐप डेस्कटॉप फाइल का सही ढंग से विश्लेषण नहीं "
+"किया जा रहा था"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"सिस्टम लॉग की अवांछनीयता को रोकने के लिए कुछ प्रदर्शन संबंधी लॉग को g_debug "
+"में ले जाया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:202
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:245
-#, fuzzy
 msgid "Translations:"
-msgstr "वर्चुअलाइजेशन:"
+msgstr "अनुवाद:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "सेओंग-हो चो द्वारा कोरियाई में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:205
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Gert द्वारा डच में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:206
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "_Ghost_ द्वारा पोलिश में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "beppeilgommista द्वारा इतालवी में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr ""
+msgstr "गेरसन दा फोंसेका हेन्ज़ेल द्वारा पुर्तगाली (ब्राजील) में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:254
 msgid "Updated Spanish translation"
-msgstr ""
+msgstr "अद्यतित स्पेनिश अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:213
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:258
 msgid "Updated Finnish translation"
-msgstr ""
+msgstr "अद्यतित फिनिश अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:211
 msgid "Updated Russian translation"
-msgstr ""
+msgstr "अद्यतित रूसी अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:212
 msgid "Updated Chinese (Simplified) translation"
-msgstr ""
+msgstr "अद्यतित चीनी (सरलीकृत) अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:214
 msgid "Updated Greek translation"
-msgstr ""
+msgstr "अद्यतित ग्रीक अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:215
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:257
 msgid "Updated German translation"
-msgstr ""
+msgstr "अद्यतित जर्मन अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"उस बग को ठीक करने के लिए हॉटफिक्स जारी किया गया जिसके कारण ऐप कुछ "
+"उपयोगकर्ताओं के लिए कोई जानकारी प्रदर्शित नहीं कर सका"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:232
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "QwertyChouskie द्वारा नया ऐप आइकन"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:233
 msgid "Add ability to stop and force stop apps and processes"
-msgstr ""
+msgstr "ऐप्स और प्रक्रियाओं को रोकने और बलपूर्वक रोकने की क्षमता जोड़ी गई"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"चल रहे ऐप्स अब अधिक विश्वसनीय रूप से दिखाए जाते हैं, और यदि सभी नहीं तो "
+"अधिकांश चल रहे ऐप्स को प्रतिबिंबित करना चाहिए"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 msgid "Experimental support for Snap apps in the running apps list"
-msgstr ""
+msgstr "चल रहे ऐप्स की सूची में Snap ऐप्स के लिए प्रायोगिक समर्थन"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"प्रति प्रक्रिया व्यक्तिगत रूप से संसाधन खपत दिखाने या उनके वंशजों के साथ "
+"संचयी करने के लिए एक सेटिंग जोड़ी गई"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"ऐप्स और प्रक्रियाओं की सूची में निरंतर छँटाई सक्षम करने के लिए एक सेटिंग "
+"जोड़ी गई"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:240
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"डेटा एकत्र करना अब अधिक बहुमुखी है और नई सुविधाओं को जल्दी और आसानी से जोड़ने"
+" की अनुमति देगा"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:243
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "ऐप अब GNOME Builder से बनाया जा सकता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "एलन नॉर्डहोय द्वारा नॉर्वेजियन बोकमाल में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:248
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "इवान मास्लिखोव द्वारा रूसी में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:249
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "mthw0 द्वारा स्लोवाक में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:250
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "यियानिस आयोनाइड्स द्वारा ग्रीक में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:251
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "foxer NS द्वारा चीनी (सरलीकृत) में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:252
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "लिंक मौवे द्वारा फ़्रेंच में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:253
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "कोवाक्स बैलिंट हूनोर द्वारा हंगेरियाई में नया अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
 msgid "Updated Czech translation"
-msgstr ""
+msgstr "अद्यतित चेक अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:256
 msgid "Updated Portuguese translation"
-msgstr ""
+msgstr "अद्यतित पुर्तगाली अनुवाद"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:259
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "foxer NS द्वारा चीनी अनुवाद के लिए सुधार"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:267
 msgid "Add Spanish translation by Óscar Fernández Díaz"
-msgstr ""
+msgstr "ऑस्कर फर्नांडीज डियाज़ द्वारा स्पेनिश अनुवाद जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:268
 msgid ""
 "The memory tab now shows configured memory speed instead of the maximum "
 "supported by the modules"
 msgstr ""
+"मेमोरी टैब अब मॉड्यूल द्वारा समर्थित अधिकतम के बजाय विन्यस्त की गई मेमोरी गति"
+" दिखाता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:271
 msgid "Add German translation by TecCheck"
-msgstr ""
+msgstr "TecCheck द्वारा जर्मन अनुवाद जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:272
 msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
+"जब कोई प्रक्रिया बड़ी मात्रा में CPU या RAM का उपयोग करती है तो इसे अब ऐप्स "
+"और प्रोसेस सूची में चिन्हांकित किया जाता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:275
 msgid "Add initial support for building for ARM64"
-msgstr ""
+msgstr "ARM64 के निर्माण के लिए प्रारंभिक समर्थन जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:276
 msgid ""
 "Take into account multiple CPU cores and cache sharing when calculating "
 "cache sizes"
 msgstr ""
+"कैश आकार की गणना करते समय एकाधिक CPU कोर और कैशे साझाकरण को ध्यान में रखें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:277
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
+"मूल पैकेज के रूप में स्थापित ब्राउज़रों को ऐप्स सूची में दिखाई न देने की "
+"समस्या को ठीक किया गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:278
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr ""
+msgstr "पीटर डेव हेलो द्वारा पारंपरिक चीनी के लिए अनुवाद अद्यतन"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:286
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-msgstr ""
+msgstr "राफेल फॉन्टेनेल द्वारा पुर्तगाली के लिए अनुवाद सुधार"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:287
 msgid ""
 "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
 msgstr ""
+"मैक्सिमिलियन द्वारा, यदि कोई अन्य IPv6 मौजूद नहीं है तो केवल एक लिंक-स्थानीय "
+"IPv6 पता दिखाएं"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:288
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr ""
+msgstr "पीटर डेव हैलो द्वारा पारंपरिक चीनी लोकेल जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:289
 msgid "Add category for application menu by Renner0E"
-msgstr ""
+msgstr "Renner0E द्वारा एप्लिकेशन मेनू के लिए श्रेणी जोड़ी गई"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:290
 msgid ""
 "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
 "panic"
 msgstr ""
+"`dmidecode` के आउटपुट का विश्लेषण करते समय एक विश्लेषण त्रुटि को ठीक किया गया"
+", जिससे घबराहट होती थी"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:291
 msgid ""
 "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` does "
 "not exist, when getting CPU base speed information"
 msgstr ""
+"यदि CPU आधार गति की जानकारी प्राप्त करते समय `/sys/devices/system/cpu/cpu0/"
+"cpufreq/base_frequence` मौजूद नहीं है, तो फ़ॉलबैक का उपयोग करता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:294
 msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-msgstr ""
+msgstr "छोटे रिज़ॉल्यूशन के लिए अधिक अनुकूली होने के लिए अद्यतन GPU टैब UI"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:302
 msgid "Added Czech translation by ondra05"
-msgstr ""
+msgstr "ondra05 द्वारा चेक अनुवाद जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:303
 msgid "Added Portuguese translation by Rilson Joás"
-msgstr ""
+msgstr "रिल्सन जोआस द्वारा पुर्तगाली अनुवाद जोड़ा गया"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:304
 msgid ""
 "Add keywords to desktop file to improve search function of desktop "
 "environments by Hannes Kuchelmeister"
 msgstr ""
+"हेंस कुचेल्मिस्टर द्वारा डेस्कटॉप वातावरण के खोज प्रकार्य को बेहतर बनाने के "
+"लिए डेस्कटॉप फाइल में खोजशब्द जोड़े गए"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:307
-#, fuzzy
 msgid "Fixed a bug where the app and process list was empty for some users"
-msgstr "ऐप को पुनः आरंभ करने पर ऐप और प्रक्रिया सूची को क्रमबद्ध करना याद रखें"
+msgstr ""
+"उस बग को ठीक किया गया जहां कुछ उपयोगकर्ताओं के लिए ऐप और प्रक्रिया सूची खाली "
+"थी"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:315
 msgid "Fix a crash that occurs when the system is under heavy load"
-msgstr ""
+msgstr "उस क्रैश को ठीक किया गया जो तब होता है जब सिस्टम भारी लोड में होता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:323
 msgid "First official release!"
-msgstr ""
+msgstr "पहली आधिकारिक विज्ञप्ति!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
@@ -594,12 +646,12 @@ msgstr "प्रत्येक चार्ट पर कितने अं�
 #: resources/ui/preferences/page.blp:47
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"अभिभावक और बच्चे की प्रक्रिया के आँकड़े अलग-अलग दिखाए जाते हैं या ऊपर की ओर मर्ज किए जाते "
-"हैं"
+"मुख्य और उप प्रक्रिया के आँकड़े अलग-अलग दिखाए जाते हैं या ऊपर की ओर विलय किए "
+"जाते हैं"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
-msgstr "ऐप रीस्टार्ट होने पर कॉलम सॉर्टिंग कायम रहती है"
+msgstr "ऐप पुनरारंभ होने पर कॉलम छंटाई कायम रहती है"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: resources/ui/preferences/page.blp:57
@@ -613,7 +665,7 @@ msgstr "वह कॉलम ID जिसके द्वारा ऐप्स �
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:68
 msgid "The sorting direction of the Apps page view"
-msgstr "ऐप्स पृष्ठ दृश्य की क्रमबद्ध दिशा"
+msgstr "ऐप्स पृष्ठ दृश्य की छंटाई दिशा"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "Which graph is shown on the CPU performance page"
@@ -625,7 +677,7 @@ msgstr "CPU ग्राफ़ में कर्नेल समय दिख�
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:84
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "एप्लिकेशन स्टार्टअप पर प्रदर्शन टैब में कौन सा पृष्ठ दिखाया गया है"
+msgstr "एप्लिकेशन पुनरारंभ पर प्रदर्शन टैब में कौन सा पृष्ठ दिखाया गया है"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1348
 #: src/performance_page/mod.rs:384
@@ -644,7 +696,7 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "ग्राफ़ को इसमें बदलें (_r)"
+msgstr "ग्राफ़ इसमें बदलें (_r)"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
@@ -656,7 +708,7 @@ msgstr "तार्किक प्रोसेसर (_P)"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr "कर्नेल टाइम्स दिखाएँ"
+msgstr "कर्नेल समय दिखाएँ"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:178
@@ -732,7 +784,7 @@ msgstr "प्रक्रियाएं"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr "थ्रेड्स"
+msgstr "थ्रेड"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
@@ -740,7 +792,7 @@ msgstr "हैंडल"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr "अप टाइम"
+msgstr "चालू समय"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
@@ -756,7 +808,7 @@ msgstr "आभासी प्रोसेसर:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr "वर्चुअलाइजेशन:"
+msgstr "आभासीकरण:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
@@ -764,15 +816,15 @@ msgstr "आभासी मशीन:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "L1 कैश:"
+msgstr "L1 कैशे:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "L2 कैश:"
+msgstr "L2 कैशे:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "L3 कैश:"
+msgstr "L3 कैशे:"
 
 #: resources/ui/performance_page/disk.blp:64
 #: resources/ui/performance_page/disk_details.blp:46
@@ -789,7 +841,7 @@ msgstr "औसत प्रतिक्रिया समय"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr "पढ़ने की गति"
+msgstr "पठन गति"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
@@ -836,11 +888,11 @@ msgstr "क्लाक गति"
 
 #: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
-msgstr "पावर ड्रा"
+msgstr "बिजली खपत"
 
 #: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
-msgstr "मेमोरी स्पीड"
+msgstr "मेमोरी गति"
 
 #: resources/ui/performance_page/gpu_details.blp:247
 msgid "Temperature"
@@ -885,7 +937,7 @@ msgstr "प्रतिबद्ध"
 
 #: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
-msgstr "कैश्ड"
+msgstr "कैशे किया गया"
 
 #: resources/ui/performance_page/memory_details.blp:148
 msgid "Swap available"
@@ -901,7 +953,7 @@ msgstr "गति:"
 
 #: resources/ui/performance_page/memory_details.blp:209
 msgid "Slots used:"
-msgstr "प्रयुक्त स्लॉट:"
+msgstr "प्रयुक्त खांचें:"
 
 #: resources/ui/performance_page/memory_details.blp:223
 msgid "Form factor:"
@@ -909,7 +961,7 @@ msgstr "प्रपत्र कारक:"
 
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr "प्रवाह क्षमता"
+msgstr "प्रवाह-क्षमता"
 
 #: resources/ui/performance_page/network.blp:155
 msgid "Network Se_ttings"
@@ -937,7 +989,7 @@ msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:151
 msgid "Signal strength:"
-msgstr "सिग्नल क्षमता:"
+msgstr "संकेत क्षमता:"
 
 #: resources/ui/performance_page/network_details.blp:166
 msgid "Maximum Bitrate:"
@@ -965,7 +1017,7 @@ msgstr "सामान्य सेटिंग्स"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr "अपडेट अंतराल"
+msgstr "अद्यतन अंतराल"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
@@ -977,7 +1029,7 @@ msgstr "ऐप पेज सेटिंग्स"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Merge Process Stats"
-msgstr "मर्ज प्रक्रिया आँकड़े"
+msgstr "विलय प्रक्रिया आँकड़े"
 
 #: resources/ui/preferences/page.blp:51
 msgid "Remember Sorting"
@@ -985,7 +1037,7 @@ msgstr "छँटाई याद रखें"
 
 #: resources/ui/preferences/page.blp:52
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "ऐप को पुनः आरंभ करने पर ऐप और प्रक्रिया सूची को क्रमबद्ध करना याद रखें"
+msgstr "ऐप को पुनः आरंभ करने पर ऐप और प्रक्रिया सूची को छँटाई याद रखें"
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
@@ -997,7 +1049,7 @@ msgstr "संसाधन"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
-msgstr "साइडबार टॉगल करें"
+msgstr "पार्श्वपट्टी टॉगल करें"
 
 #: resources/ui/window.blp:90
 msgid "Type a name or PID to search"
@@ -1005,7 +1057,7 @@ msgstr "खोजने के लिए कोई नाम या PID टा�
 
 #: resources/ui/window.blp:146
 msgid "Loading..."
-msgstr "लोडिंग…"
+msgstr "लोड हो रहा है..।"
 
 #: resources/ui/window.blp:160
 msgid "Performance"
@@ -1069,7 +1121,7 @@ msgid ""
 msgstr ""
 "उपयोग में ({}B)\n"
 "\n"
-"ऑपरेटिंग सिस्टम और रनिंग एप्लिकेशन द्वारा उपयोग की जाने वाली मेमोरी"
+"ऑपरेटिंग सिस्टम और चालू एप्लिकेशन द्वारा उपयोग की जाने वाली मेमोरी"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""

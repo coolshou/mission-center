@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-04-07 13:01+0000\n"
+"PO-Revision-Date: 2024-04-15 03:01+0000\n"
 "Last-Translator: Fionn <mehafo3499@adstam.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hu/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Mission Center"
+msgstr "Küldetésközpont"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -155,11 +155,10 @@ msgid "Display optical device information in the Performance tab"
 msgstr "Optikai eszközinformációinak megjelenítése a Teljesítmény fülön"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
-#, fuzzy
 msgid "Fix a bug where the Gatherer process would crash at startup"
 msgstr ""
 "Kijavítottuk azt a hibát, amely miatt az alkalmazások és folyamatok listája "
-"néhány felhasználó esetében üres volt"
+"néhány felhasználó esetében összeomlott induláskor"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
@@ -192,12 +191,11 @@ msgstr ""
 "k számát (újra!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
 "Kijavítottuk azt a hibát, amely miatt az alkalmazások és folyamatok listája "
-"néhány felhasználó esetében üres volt"
+"néhány rendszeren helytelen CPU számot érzékelt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
@@ -208,23 +206,24 @@ msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some "
 "users"
 msgstr ""
+"0.4.0-ban bekövetkezett változtatás javítása, amelynek következtében néhány "
+"felhasználónál nem volt elérhető videokártya adat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "GTK4 és Libadwaita használata"
+msgstr "Frissítés GTK4.12 és libadwaita 1.4-re"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "A Teljesítmény fül alkalmazkodóvá tétele"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
-msgstr ""
+msgstr "Korai és nagyon minimális Intel GPU-támogatás"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
-msgstr ""
+msgstr "GPU memóriahasználat oszlop hozzáadása az alkalmazások oldalhoz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
@@ -240,279 +239,300 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
-msgstr ""
+msgstr "A logikai CPU grafikonok most kellemesebben vannak elrendezve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:153
 msgid ""
 "The Gatherer was rearchitected and now uses D-Bus for communication with the "
 "main app"
 msgstr ""
+"A Gyűjtő szerkezetét átalakítottuk, most már a fő alkalmazással való "
+"kommunikációhoz a D-Bus-t használja"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:195
 msgid "Fixes:"
-msgstr ""
+msgstr "Javítások:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
 msgid "Fix misaligned header in the Apps tab with GTK 4.12"
 msgstr ""
+"Az alkalmazások fülön lévő fejléc hibás elrendezésének javítása GTK 4.12 "
+"alatt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
 msgid ""
 "Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
 "environment"
 msgstr ""
+"Javítva a hiba ami miatt az alkalmazás és a Gyűjtő nem indul el, mert az "
+"LD_PRELOAD be van állítva a gazdagép környezetében"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
 msgid ""
 "Fix sometimes Apps not showing the accumulated resource usage from all it's "
 "children"
 msgstr ""
+"Javítás: néha az alkalmazások nem mutatják az összes gyermeküktől származó "
+"felhalmozott erőforrás-felhasználást"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
 msgid ""
 "Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
 msgstr ""
+"Javítás: Az L1/2/3 CPU gyorsítótár információ hiányzik, amikor a NUMA nincs "
+"engedélyezve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
 msgid "Fix Virtualization reported as Unknown under certain circumstances"
 msgstr ""
+"Javítás: Virtuálizáció \"Ismeretlen\" -ként jelenik meg bizonyos körülmények "
+"között"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Fix a Gatherer crash on older CPUs"
-msgstr ""
+msgstr "Javítás: A gyűjtő összeomlása régebbi CPU-kon"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "A lot of new translations and fixes to existing ones"
-msgstr ""
+msgstr "Rengeteg új fordítás és javítás a meglévőkhöz"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "Memória összetétele"
+msgstr "Memóriahasználati grafika fejlesztése"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
-msgstr ""
+msgstr "GPU használat oszlop hozzáadása az alkalmazások fülön"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
 msgid "Reduce memory usage and fix a memory leak in the main app"
 msgstr ""
+"Csökkentett memóriahasználat és memóriaszivárgás javítása a fő alkalmazásban"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
 msgid ""
 "Fix a crash at start-up when flatpak data is stored in a path with spaces"
 msgstr ""
+"Javítva: Lefagyás induláskor, ha a flatpak adatok olyan elérési úton vannak "
+"tárolva, amelyben szóközök vannak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "Fix incorrect base frequency in AMD CPUs"
-msgstr ""
+msgstr "Javítás: Helytelen alapfrekvencia az AMD CPU-knál"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "Fix missing video encode/decode information in the GPU tab"
-msgstr ""
+msgstr "Javítás: Hiányzó videókódolási/-dekódolási információk a GPU fülön"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
 msgstr ""
+"Új opció a kontextusmenüben: A kernel-idők megjelenítése a CPU grafikonokon"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Add CPU temperature, where possible"
-msgstr ""
+msgstr "CPU hőmérsékletet mutatása ha lehetséges"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:192
 msgid ""
 "Implement smarter rounding and display precision of values throughout the "
 "app by QwertyChouskie"
 msgstr ""
+"QwertyChouskie által beépített intelligensebb kerekítés és érték "
+"megjelenítési pontosság az alkalmazásban"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:193
 msgid ""
 "Use metainfo instead of appdata for application metadata by David Guglielmi"
 msgstr ""
+"Metainfót használ az alkalmazás az appdata helyett az alkalmazások "
+"metaadataira - David Guglielmi által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:197
-#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
-"A böngészők javítása, amelyek natív csomagokként vannak telepítve, és nem "
-"jelennek meg az Alkalmazások listájában"
+"Böngészők melyek natív csomagként vannak telepítve nem jelentek meg az "
+"alkalmazások listájában Fedora alatt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:198
-#, fuzzy
 msgid ""
 "Fixed a regression where Flatpak apps were not showing up in the apps list "
 "on ArchLinux Plasma"
 msgstr ""
-"A böngészők javítása, amelyek natív csomagokként vannak telepítve, és nem "
-"jelennek meg az Alkalmazások listájában"
+"Flatpak csomagként telepített alkalmazások nem jelentek meg az Alkalmazások "
+"listájában (ArchLinux Plasma)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
-#, fuzzy
 msgid ""
 "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
 msgstr ""
-"Kijavítottuk azt a hibát, amely miatt az alkalmazások és folyamatok listája "
-"néhány felhasználó esetében üres volt"
+"Javítottam egy hibát, ahol a Térképek alkalmazás asztali fájlja nem volt "
+"helyesen elemzve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:200
 msgid ""
 "Moved some performance related logs to g_debug to prevent spamming of system "
 "logs"
 msgstr ""
+"Áthelyeztem néhány teljesítményre vonatkozó naplóbejegyzést a g_debug-hoz, "
+"hogy megakadályozzam a rendszer naplóinak túlzsúfoltságát"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:202
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:245
-#, fuzzy
 msgid "Translations:"
-msgstr "Virtualizáció:"
+msgstr "Fordítások:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid "New translation to Korean by Seong-ho Cho"
-msgstr ""
+msgstr "Új fordítás koreai nyelvre Cho Seong-ho által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:205
 msgid "New translation to Dutch by Gert"
-msgstr ""
+msgstr "Új fordítás holland nyelvre Gert által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:206
 msgid "New translation to Polish by _Ghost_"
-msgstr ""
+msgstr "Új fordítás lengyel nyelvre a _Ghost_ által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:207
 msgid "New translation to Italian by beppeilgommista"
-msgstr ""
+msgstr "Új fordítás olasz nyelvre a beppeilgommista által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
-#, fuzzy
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr "Fordítási javítások portugál nyelven Rafael Fontenelle által"
+msgstr "Fordítási javítások portugál nyelven Gérson da Fonseca Henzel által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:254
-#, fuzzy
 msgid "Updated Spanish translation"
-msgstr "Német fordítás hozzáadása: TecCheck"
+msgstr "Spanyol fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:213
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:258
-#, fuzzy
 msgid "Updated Finnish translation"
-msgstr "Cseh fordítás hozzáadva ondra05 által"
+msgstr "Finn fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:211
-#, fuzzy
 msgid "Updated Russian translation"
-msgstr "Német fordítás hozzáadása: TecCheck"
+msgstr "Orosz fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:212
-#, fuzzy
 msgid "Updated Chinese (Simplified) translation"
-msgstr "Cseh fordítás hozzáadva ondra05 által"
+msgstr "Kínai fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:214
-#, fuzzy
 msgid "Updated Greek translation"
-msgstr "Német fordítás hozzáadása: TecCheck"
+msgstr "Görög fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:215
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:257
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Német fordítás hozzáadása: TecCheck"
+msgstr "Német fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
 "Hotfix release to fix a bug that caused the app to not display any "
 "information for some users"
 msgstr ""
+"Hotfix egy hiba javítására, ami miatt az alkalmazás bizonyos felhasználóknál "
+"nem jelenített meg semmi információt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:232
 msgid "New app icon by QwertyChouskie"
-msgstr ""
+msgstr "Új alkalmazásikon QwertyChouskie által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:233
 msgid "Add ability to stop and force stop apps and processes"
 msgstr ""
+"Új lehetőség az alkalmazások és folyamatok leállítására és "
+"kényszerleállítására"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:234
 msgid ""
 "Running apps are now shown more reliably, and should reflect most if not all "
 "running apps"
 msgstr ""
+"A futó alkalmazások most megbízhatóbban jelennek meg, és legtöbb esetben "
+"minden futó alkalmazást mutat"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:235
 msgid "Experimental support for Snap apps in the running apps list"
 msgstr ""
+"Kísérleti támogatás a Snap alkalmazásokhoz a futó alkalmazások listájában"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:236
 msgid ""
 "Added a setting to show resource consumption individually per process or "
 "cumulated with their descendants"
 msgstr ""
+"Hozzáadtam egy beállítást, hogy az erőforrásfogyasztást egyesével mutassa-e "
+"meg folyamatonként, vagy összegezze-e őket leszármazottaikkal együtt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:239
 msgid ""
 "Added a setting to enable persistent sorting in the apps and processes list"
 msgstr ""
+"Hozzáadtam egy beállítást, hogy engedélyezze az állandó rendezést az "
+"alkalmazások és folyamatok listájában"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:240
 msgid ""
 "Data gathering is now more versatile and will permit new features to be "
 "added quicker and easier"
 msgstr ""
+"Az adatgyűjtés most sokoldalúbb, és lehetővé teszi az új funkciók gyorsabb "
+"és könnyebb hozzáadását"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:243
 msgid "App can now be built from GNOME Builder"
-msgstr ""
+msgstr "Az alkalmazást most már lehet a GNOME Builder-el építeni"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:247
 msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-msgstr ""
+msgstr "Új fordítás norvég bokmål nyelvre Allan Nordhøy által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:248
 msgid "New translation to Russian by Ivan Maslikhov"
-msgstr ""
+msgstr "Új fordítás orosz nyelvre Ivan Maslikhov által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:249
 msgid "New translation to Slovak by mthw0"
-msgstr ""
+msgstr "Új fordítás szlovák nyelvre mthw0 által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:250
 msgid "New translation to Greek by Yiannis Ioannides"
-msgstr ""
+msgstr "Új fordítás görög nyelvre Yiannis Ioannides által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:251
 msgid "New translation to Chinese (Simplified) by foxer NS"
-msgstr ""
+msgstr "Új fordítás egyszerűsített kínai nyelvre foxer NS által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:252
 msgid "New translation to French by Link Mauve"
-msgstr ""
+msgstr "Új fordítás francia nyelvre Link Mauve által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:253
 msgid "New translation to Hungarian by Kovács Bálint Hunor"
-msgstr ""
+msgstr "Új fordítás magyar nyelvre Kovács Bálint Hunor által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-#, fuzzy
 msgid "Updated Czech translation"
-msgstr "Cseh fordítás hozzáadva ondra05 által"
+msgstr "Cseh fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:256
-#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr "Portugál fordítás hozzáadva Rilson Joás által"
+msgstr "Portugál fordítás frissítve"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:259
 msgid "Fixes for Chinese translations by foxer NS"
-msgstr ""
+msgstr "Javítások a kínai fordításokhoz foxer NS által"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:267
 msgid "Add Spanish translation by Óscar Fernández Díaz"
@@ -639,17 +659,16 @@ msgid "Which page is shown on application startup"
 msgstr "Melyik oldal jelenik meg az alkalmazás indításakor"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Milyen gyorsan kell frissíteni az adatokat és frissíteni a felhasználói "
-"felületet"
+"Milyen gyorsan legyen frissítve az adat és a felhasználói felületet (50ms "
+"lépésekben)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Hány pont legyen megjelenítve diagramonként?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -667,6 +686,8 @@ msgstr "Az oszlopok rendezése az alkalmazás újraindításakor is fennmarad"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Az alkalmazások és folyamatok CPU-használatának megjelenítése, a "
+"rendelkezésre álló magok számához igazítva"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -684,7 +705,7 @@ msgstr "Melyik grafikon jelenik meg a CPU-teljesítmény oldalon"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:79
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Kernel idők mutatása a CPU grafikonon"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:84
 msgid "Which page is shown on application startup, in the performance tab"
@@ -720,7 +741,7 @@ msgstr "Logikai _processzorok"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Kernel idő mutatása"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:178
@@ -848,9 +869,8 @@ msgid "Disk transfer rate"
 msgstr "Lemezátviteli sebesség"
 
 #: resources/ui/performance_page/disk_details.blp:69
-#, fuzzy
 msgid "Avg. response time"
-msgstr "Átlagos válaszidő"
+msgstr "Átl. válaszidő"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
@@ -1030,11 +1050,11 @@ msgstr "Általános beállítások"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Frissítési időköz"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Diagram adatpontok"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -1056,15 +1076,15 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "A CPU használat skálázza a magok számához"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
-msgstr ""
+msgstr "Erőforrások"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Oldalsáv ki/be kapcsolása"
 
 #: resources/ui/window.blp:90
 msgid "Type a name or PID to search"
@@ -1088,7 +1108,7 @@ msgstr "_Beállítások"
 
 #: resources/ui/window.blp:195
 msgid "_About MissionCenter"
-msgstr "_A MissionCenterről"
+msgstr "_A Küldetésközpont névjegye"
 
 #: src/apps_page/mod.rs:1336
 msgid "Name"
@@ -1104,12 +1124,11 @@ msgstr "Lemez"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU használat"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU Memória"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -1189,19 +1208,19 @@ msgstr "SSD"
 
 #: src/performance_page/mod.rs:549
 msgid "NVMe"
-msgstr "NVMe"
+msgstr "NVMe (Non-Volatile Memory)"
 
 #: src/performance_page/mod.rs:550
 msgid "eMMC"
-msgstr "eMMC"
+msgstr "eMMC (Embedded MultiMediaCard)"
 
 #: src/performance_page/mod.rs:551
 msgid "iSCSI"
-msgstr "iSCSI"
+msgstr "iSCSI (Internet Small Computer Systems Interface)"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Optikai"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1216,7 +1235,7 @@ msgstr "Ismeretlen"
 
 #: src/performance_page/mod.rs:648 src/performance_page/network.rs:337
 msgid "Ethernet"
-msgstr "Ethernet"
+msgstr "Vezetékes hálózat"
 
 #: src/performance_page/mod.rs:649 src/performance_page/network.rs:352
 msgid "Wi-Fi"
@@ -1231,9 +1250,8 @@ msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:1078 src/performance_page/mod.rs:1086
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}bit per másodperc"
 
 #: src/performance_page/cpu.rs:317 src/performance_page/gpu.rs:315
 msgid "Unsupported"
@@ -1248,36 +1266,33 @@ msgid "No"
 msgstr "Nem"
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} másodperc"
+msgstr "{} másodperc{}"
 
 #: src/performance_page/cpu.rs:877
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} perc{} "
 
 #: src/performance_page/cpu.rs:895
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Használati arány {} másodpercenként"
+msgstr "Kihasználtság {}{}"
 
 #: src/performance_page/disk.rs:268
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:268
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Videókódolás"
+msgstr "Videókódolás/dekódolás"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "A további memóriainformációk lekérése sikertelen volt"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
 msgid "{} {}bps"
-msgstr "{} {}bps"
+msgstr "{} {}bpm"
 
 #: src/performance_page/network.rs:483 src/performance_page/network.rs:498
 msgid "N/A"
@@ -1285,7 +1300,9 @@ msgstr "N/A (nem alkalmazható)"
 
 #: src/application.rs:316
 msgid "translator-credits"
-msgstr "Kovács Bálint-Hunor <kovacsbalinthunor13@gmail.com>"
+msgstr ""
+"Kovács Bálint-Hunor <kovacsbalinthunor13@gmail.com>, Fionn <mehafo3499@adstam"
+".com>"
 
 #~ msgid ""
 #~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
