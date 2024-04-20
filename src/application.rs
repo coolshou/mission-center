@@ -316,16 +316,21 @@ impl MissionCenterApplication {
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
-            .copyright("© 2023 Mission Center Developers")
+            .copyright("© 2024 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
             .release_notes(
                 r#"<ul>
-<li>Display optical device information in the Performance tab</li>
-<li>Fix a bug where the Gatherer process would crash at startup</li>
-<li>Remove the need for admin rights to display extended memory information</li>
-<li>Remove the requirement for `libgcc_s.so.1` on musl-based systems</li>
-<li>Make the saturation and transfer graphs the same height in the disk usage panes</li>
+<li>Hotplugging support for disks and network devices in the Performance tab</li>
+<li>Add ability to customize chart data point count</li>
+<li>Add a more fine grained control over update interval</li>
+<li>The charts are now rendered using GTK APIs instead of a custom renderer</li>
+<li>Fix high VRAM usage on some system configurations</li>
+<li>Fix missing graphs on systems with older display drivers</li>
+<li>Fix missing graphs on some ARM systems</li>
+<li>CPU percentages go up to 100% now, by default, instead of scaling to CPU core count</li>
+<li>Fix a crash when running natively on ArchLinux</li>
+<li>Graph corners are now rounded</li>
 <li>Translation updates and fixes</li>
 </ul>"#,
             )
