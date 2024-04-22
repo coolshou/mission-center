@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-04-16 20:01+0000\n"
-"Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
+"PO-Revision-Date: 2024-04-23 18:07+0000\n"
+"Last-Translator: Kot Leopold <kleopold74@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -151,6 +151,8 @@ msgstr "Отзывы, предложения, сообщения об ошибк
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
 msgstr ""
+"Отображение информации об оптическом устройстве на вкладке "
+"«Производительность»"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 msgid "Fix a bug where the Gatherer process would crash at startup"
@@ -161,26 +163,32 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"Устранена необходимость в правах администратора для отображения информации о "
+"расширенной памяти"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr ""
+msgstr "Удалите требование к `libgcc_s.so.1` в системах на основе musl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"Сделайте графики насыщения и передачи одинаковой высоты на панелях "
+"использования диска"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "Обновления и исправления перевода"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"Исправлена ошибка, из-за которой количество процессоров неправильно "
+"определялось в некоторых системах (опять!)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
 msgid ""
@@ -192,12 +200,16 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
 msgstr ""
+"Добавить отсутствующий значок для панели сведений на вкладке "
+"«Производительность»"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some "
 "users"
 msgstr ""
+"Исправлена регрессия в версии 0.4.0, из-за которой данные графического "
+"процессора были недоступны для некоторых пользователей"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Update to GTK 4.12 and libadwaita 1.4"
@@ -205,35 +217,41 @@ msgstr "Обновлено до GTK 4.12 и libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "Переработана вкладка «Производительность», чтобы она стала адаптивной"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
-msgstr ""
+msgstr "Ранняя и очень минимальная поддержка графических процессоров Intel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
 msgstr ""
+"Добавьте столбец использования памяти графического процессора на страницу "
+"приложений"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
-msgstr ""
+msgstr "Добавлен образ приложения"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:151
 msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
 msgstr ""
+"На вкладке «Производительность» теперь отображается, какой тип виртуализации "
+"включен на хосте"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
-msgstr ""
+msgstr "Графики логических ядер ЦП теперь расположены более приятно"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:153
 msgid ""
 "The Gatherer was rearchitected and now uses D-Bus for communication with the "
 "main app"
 msgstr ""
+"Gatherer был переработан и теперь использует D-Bus для связи с основным "
+"приложением"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
@@ -244,36 +262,45 @@ msgstr "Исправления:"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
 msgid "Fix misaligned header in the Apps tab with GTK 4.12"
 msgstr ""
+"Исправьте некорректный заголовок на вкладке «Приложения» с помощью GTK 4.12"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
 msgid ""
 "Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
 "environment"
 msgstr ""
+"Исправлена ошибка, из-за которой приложение и Gatherer не запускались из-за "
+"того, что в хост-среде установлен LD_PRELOAD"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
 msgid ""
 "Fix sometimes Apps not showing the accumulated resource usage from all it's "
 "children"
 msgstr ""
+"Исправлена ошибка, из-за которой иногда приложения не отображали накопленное "
+"использование ресурсов всеми своими дочерними элементами"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
 msgid ""
 "Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
 msgstr ""
+"Исправлена ошибка, из-за которой отсутствовала информация о кэше ЦП L1/2/3, "
+"когда NUMA не включен"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
 msgid "Fix Virtualization reported as Unknown under certain circumstances"
 msgstr ""
+"Исправлена ошибка, из-за которой виртуализация отображалась как неизвестная "
+"при определенных обстоятельствах"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Fix a Gatherer crash on older CPUs"
-msgstr ""
+msgstr "Исправлен сбой Gatherer на старых процессорах"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "A lot of new translations and fixes to existing ones"
-msgstr ""
+msgstr "Множество новых переводов и исправлений существующих"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
 msgid "Improve memory composition graph"
@@ -282,23 +309,30 @@ msgstr "Улучшение графика структуры памяти"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
 msgstr ""
+"Добавьте столбец использования графического процессора на вкладке "
+"«Приложения»"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
 msgid "Reduce memory usage and fix a memory leak in the main app"
 msgstr ""
+"Уменьшите использование памяти и устраните утечку памяти в основном "
+"приложении"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
 msgid ""
 "Fix a crash at start-up when flatpak data is stored in a path with spaces"
 msgstr ""
+"Исправлен сбой при запуске, когда данные Flatpak хранятся в пути с пробелами"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "Fix incorrect base frequency in AMD CPUs"
-msgstr ""
+msgstr "Исправлена неверная базовая частота в процессорах AMD"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "Fix missing video encode/decode information in the GPU tab"
 msgstr ""
+"Исправьте недостающую информацию о кодировании/декодировании видео на "
+"вкладке графического процессора"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid ""
