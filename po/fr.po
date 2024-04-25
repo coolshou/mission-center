@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-01-16 22:01+0000\n"
-"Last-Translator: Christophe Jaillet <c.jaillet@meci.fr>\n"
+"PO-Revision-Date: 2024-04-25 16:07+0000\n"
+"Last-Translator: Denis MARCQ <denis.marcq@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,24 +17,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Centre de mission"
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Gestionnaire de tâches;moniteur; ressources;moniteur système;processeur;"
-"processus;performances;CPU;GPU;Disque;Mémoire;Réseau;Utilisation"
+"Gestionnaire de tâches;Moniteur de ressources;Moniteur "
+"système;Processeur;Processus;Moniteur de "
+"performances;CPU;GPU;Disque;Disque;Mémoire;Réseau;Utilisation;Utilisation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Développeurs du Centre de mission"
+msgstr "Développeurs de Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor system resource usage"
@@ -144,7 +145,7 @@ msgstr "Pas d’aperçu de l’utilisation du réseau par processus"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "Le support GPU est expérimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -206,13 +207,12 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "Utilise GTK4 et Libadwaita"
+msgstr "Mise à jour vers GTK 4.12 et libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "Refonte de l'onglet Performance pour être adaptatif"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
@@ -220,7 +220,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
-msgstr ""
+msgstr "Ajout d'une colonne sur l'utilisation du GPU dans la page Applications"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
@@ -231,6 +231,8 @@ msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
 msgstr ""
+"L'onglet de Performance indique désormais le type de virtualisation activé "
+"sur l'hôte"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
