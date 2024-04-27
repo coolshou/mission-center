@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-01-16 22:01+0000\n"
-"Last-Translator: Christophe Jaillet <c.jaillet@meci.fr>\n"
+"PO-Revision-Date: 2024-04-26 17:07+0000\n"
+"Last-Translator: Denis MARCQ <denis.marcq@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,24 +17,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5.1\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Centre de mission"
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Gestionnaire de tâches;moniteur; ressources;moniteur système;processeur;"
-"processus;performances;CPU;GPU;Disque;Mémoire;Réseau;Utilisation"
+"Gestionnaire de tâches;Moniteur de ressources;Moniteur "
+"système;Processeur;Processus;Moniteur de "
+"performances;CPU;GPU;Disque;Disque;Mémoire;Réseau;Utilisation;Utilisation"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 msgid "Mission Center Developers"
-msgstr "Développeurs du Centre de mission"
+msgstr "Développeurs de Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:15
 msgid "Monitor system resource usage"
@@ -55,7 +56,7 @@ msgstr "Fonctionnalités :"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Surveiller l'utilisation globale ou par thread du CPU"
+msgstr "Surveiller l'utilisation globale ou par processus du CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid ""
@@ -144,7 +145,7 @@ msgstr "Pas d’aperçu de l’utilisation du réseau par processus"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "Le support GPU est expérimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -155,6 +156,8 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
 msgstr ""
+"Afficher les informations des périphériques optiques dans l'onglet "
+"Performance"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 #, fuzzy
@@ -166,53 +169,61 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:109
 msgid "Remove the need for admin rights to display extended memory information"
 msgstr ""
+"Suppression du besoin d'avoir les droits d'administrateur pour afficher les "
+"informations sur la mémoire étendue"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
 msgstr ""
+"Suppression du besoin de la bibliothèque `libgcc_s.so.1`sur les systèmes "
+"basés sur la bibliothèque standard C musl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"Dans le panneau de l'usage disque, réglage à la même hauteur des graphiques "
+"de saturation et de transfert"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr ""
+msgstr "Corrections et mises à jour des traductions"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems "
 "(again!)"
 msgstr ""
+"Correction (encore une fois) d'un bug où le nombre de CPU est mal détecté "
+"sur certains systèmes"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
 msgstr ""
-"Correction d’un bug où la liste des processus et applications était vide "
-"pour certains utilisateurs"
+"Correction d'un bug où le nombre de CPU est mal détecté sur certains systèmes"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
 msgstr ""
+"Ajout d'icône manquante dans la partie des détails de l'onglet Performance"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some "
 "users"
 msgstr ""
+"Correction d'une régression introduite en version 0.4.0 où les données du "
+"GPU ne sont pas disponibles pour certains utilisateurs"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "Utilise GTK4 et Libadwaita"
+msgstr "Mise à jour vers GTK 4.12 et libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "Refonte de l'onglet Performance pour s'afficher de manière adaptative"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
@@ -220,7 +231,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
-msgstr ""
+msgstr "Ajout d'une colonne sur l'utilisation du GPU dans la page Applications"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:150
 msgid "Added an AppImage"
@@ -231,6 +242,8 @@ msgid ""
 "The Performance tab now shows what kind of virtualization is enabled on the "
 "host"
 msgstr ""
+"L'onglet de Performance indique désormais le type de virtualisation activé "
+"sur l'hôte"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:152
 msgid "The logical CPU graphs are now arranged in a more pleasing manner"
@@ -653,7 +666,7 @@ msgstr "À quelle vitesse doivent se rafraîchir les données et l’interface"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Combien de points doivent être affichés sur chaque diagramme?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -664,7 +677,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
-msgstr "Le tri des colonnes est sauvegardé à la réouverture de l’application"
+msgstr "Le tri par colonne est maintenu entre les redémarrages de l'application"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: resources/ui/preferences/page.blp:57
@@ -1034,7 +1047,7 @@ msgstr "Paramètres génériques"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Intervalle de rafraîchissement"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
@@ -1206,7 +1219,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Optique"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1236,8 +1249,9 @@ msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:1078 src/performance_page/mod.rs:1086
+#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} : {} {}bps"
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:317 src/performance_page/gpu.rs:315
 msgid "Unsupported"
@@ -1257,8 +1271,9 @@ msgid "{} second{}"
 msgstr "{} secondes"
 
 #: src/performance_page/cpu.rs:877
+#, fuzzy
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minute{} "
 
 #: src/performance_page/cpu.rs:895
 #, fuzzy
