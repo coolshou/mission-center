@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-04-11 14:01+0000\n"
+"PO-Revision-Date: 2024-04-22 20:41+0200\n"
 "Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -99,8 +99,8 @@ msgid ""
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
 "Überwache die gesamte GPU-Auslastung, die Nutzung von Video-Encodern und -"
-"Decodern, die Arbeitsspeichernutzung und den Stromverbrauch, ermöglicht "
-"durch das beliebte NVTOP-Projekt"
+"Decodern, die Arbeitsspeichernutzung und den Stromverbrauch, ermöglicht durch "
+"das beliebte NVTOP-Projekt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:32
 msgid "See a breakdown of resource usage by app and process"
@@ -135,8 +135,7 @@ msgstr "Hauptsächlich Flatpak"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
-"Beschränkungen (an der Überwindung all dieser Beschränkungen wird "
-"gearbeitet):"
+"Beschränkungen (an der Überwindung all dieser Beschränkungen wird gearbeitet):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "No per-process network usage"
@@ -167,7 +166,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:110
 msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-msgstr "Anforderung für `libgcc_s.so.1` auf musl-basierten Systemen entfernt."
+msgstr "Anforderung für `libgcc_s.so.1` auf musl-basierten Systemen entfernt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:111
 msgid ""
@@ -177,7 +176,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
-msgstr "Übersetzungs updates und Korrekturen"
+msgstr "Übersetzungs-Updates und Korrekturen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:120
 msgid ""
@@ -200,14 +199,12 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
-"Fix a regression in 0.4.0 where GPU data would not be available for some "
-"users"
+"Fix a regression in 0.4.0 where GPU data would not be available for some users"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "Nutzt GTK4 und Libadwaita"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
@@ -282,9 +279,8 @@ msgid "A lot of new translations and fixes to existing ones"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "Speicherzusammensetzung"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
@@ -308,10 +304,9 @@ msgid "Fix missing video encode/decode information in the GPU tab"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
-#, fuzzy
 msgid ""
 "Add an option, to the context menu, to show kernel times, in the CPU graphs"
-msgstr "Kernelzeiten in den CPU-Diagrammen anzeigen"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:191
 msgid "Add CPU temperature, where possible"
@@ -319,8 +314,8 @@ msgstr "Wo möglich CPU Temperatur hinzufügen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:192
 msgid ""
-"Implement smarter rounding and display precision of values throughout the "
-"app by QwertyChouskie"
+"Implement smarter rounding and display precision of values throughout the app "
+"by QwertyChouskie"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:193
@@ -329,22 +324,16 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:197
-#, fuzzy
 msgid ""
 "Fixed a regression where natively installed browsers were not showing up in "
 "the apps list on Fedora"
 msgstr ""
-"Browser reparieren, die als native Pakete installiert sind und nicht in der "
-"App-Liste angezeigt werden."
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:198
-#, fuzzy
 msgid ""
-"Fixed a regression where Flatpak apps were not showing up in the apps list "
-"on ArchLinux Plasma"
+"Fixed a regression where Flatpak apps were not showing up in the apps list on "
+"ArchLinux Plasma"
 msgstr ""
-"Browser reparieren, die als native Pakete installiert sind und nicht in der "
-"App-Liste angezeigt werden."
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:199
 msgid ""
@@ -398,9 +387,8 @@ msgid "Updated Russian translation"
 msgstr "Aktualisierte russische Übersetzung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:212
-#, fuzzy
 msgid "Updated Chinese (Simplified) translation"
-msgstr "Aktualisierte spanische Übersetzung"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:214
 msgid "Updated Greek translation"
@@ -448,8 +436,8 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:240
 msgid ""
-"Data gathering is now more versatile and will permit new features to be "
-"added quicker and easier"
+"Data gathering is now more versatile and will permit new features to be added "
+"quicker and easier"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:243
@@ -485,14 +473,12 @@ msgid "New translation to Hungarian by Kovács Bálint Hunor"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-#, fuzzy
 msgid "Updated Czech translation"
-msgstr "Aktualisierte griechische Übersetzung"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:256
-#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr "Aktualisierte griechische Übersetzung"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:259
 msgid "Fixes for Chinese translations by foxer NS"
@@ -520,8 +506,8 @@ msgid ""
 "When a process uses large amounts of CPU or RAM it is now highlighted in the "
 "Apps and Processes list"
 msgstr ""
-"Wenn ein Prozess große Mengen an CPU oder RAM verwendet, wird er jetzt in "
-"der Liste \"Apps und Prozesse\" hervorgehoben"
+"Wenn ein Prozess große Mengen an CPU oder RAM verwendet, wird er jetzt in der "
+"Liste \"Apps und Prozesse\" hervorgehoben"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:275
 msgid "Add initial support for building for ARM64"
@@ -529,19 +515,16 @@ msgstr "Anfängliche Unterstützung für die Erstellung von ARM64 hinzufügt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:276
 msgid ""
-"Take into account multiple CPU cores and cache sharing when calculating "
-"cache sizes"
+"Take into account multiple CPU cores and cache sharing when calculating cache "
+"sizes"
 msgstr ""
-"Mehrerer CPU-Kerne und gemeinsamer Cache-Nutzung bei der Berechnung der "
-"Cache-Größen werden nun berücksichtigt"
+"Mehrerer CPU-Kerne und gemeinsamer Cache-Nutzung bei der Berechnung der Cache-"
+"Größen werden nun berücksichtigt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:277
-#, fuzzy
 msgid ""
 "Fix browsers, installed as native packages, not showing up in the Apps list"
 msgstr ""
-"Browser reparieren, die als native Pakete installiert sind und nicht in der "
-"App-Liste angezeigt werden."
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:278
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
@@ -581,9 +564,8 @@ msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:302
-#, fuzzy
 msgid "Added Czech translation by ondra05"
-msgstr "Deutsche Übersetzung von TecCheck hinzufügt"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:303
 msgid "Added Portuguese translation by Rilson Joás"
@@ -596,29 +578,27 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:307
-#, fuzzy
 msgid "Fixed a bug where the app and process list was empty for some users"
 msgstr ""
-"Die Sortierung der App- und Prozessliste über App-Neustarts hinweg merken"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:315
 msgid "Fix a crash that occurs when the system is under heavy load"
 msgstr ""
+"Behebung eines Absturzes, der auftritt, wenn das System unter hoher Last steht"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:323
 msgid "First official release!"
-msgstr ""
+msgstr "Erste offizielle Version!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
 msgstr "Welche Seite beim Start des Programms gezeigt wird"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Wie oft die daten der Benutzeroberfläche aktualisiert werden"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
@@ -633,16 +613,15 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:53
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts."
+msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: resources/ui/preferences/page.blp:57
-#, fuzzy
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Zeige CPU-Auslastung für Apps und Prozesse, skaliert auf die Anzahl der "
-"verfügbaren Kerne"
+"Anzeige der CPU-Auslastung für Anwendungen und Prozesse, skaliert auf die "
+"Anzahl der verfügbaren Kerne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -855,11 +834,11 @@ msgstr "Allgemeine Auslastung"
 
 #: resources/ui/performance_page/gpu.blp:111
 msgid "Video encode"
-msgstr "Video Encodierung"
+msgstr "Video Enkodierung"
 
 #: resources/ui/performance_page/gpu.blp:147
 msgid "Video decode"
-msgstr "Video Decodierung"
+msgstr "Video Dekodierung"
 
 #: resources/ui/performance_page/gpu.blp:186
 #: resources/ui/performance_page/gpu_details.blp:157
@@ -869,11 +848,11 @@ msgstr "Speicherverbrauch"
 
 #: resources/ui/performance_page/gpu_details.blp:67
 msgid "Clock Speed"
-msgstr "Taktgeschwndigkeit"
+msgstr "Taktgeschwindigkeit"
 
 #: resources/ui/performance_page/gpu_details.blp:112
 msgid "Power draw"
-msgstr "Leistungsaufname"
+msgstr "Leistungsaufnahme"
 
 #: resources/ui/performance_page/gpu_details.blp:202
 msgid "Memory speed"
@@ -1006,7 +985,7 @@ msgstr "Updategeschwindigkeit"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Diagramm Datenpunkte"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -1027,7 +1006,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Skalierung der CPU-Auslastung nach Kernanzahl"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -1075,12 +1054,11 @@ msgstr "Datenträger"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU Nutzung"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU Speicher"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -1143,8 +1121,8 @@ msgstr ""
 "Frei ({}B)\n"
 "\n"
 "Speicher, der derzeit nicht verwendet wird und der erst wieder verwendet "
-"wird, wenn das Betriebssystem, die Treiber oder die Anwendungen mehr "
-"Speicher benötigen"
+"wird, wenn das Betriebssystem, die Treiber oder die Anwendungen mehr Speicher "
+"benötigen"
 
 #: src/performance_page/mod.rs:527 src/performance_page/disk.rs:200
 msgid "Disk {} ({})"
@@ -1172,7 +1150,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Optisch"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1218,18 +1196,16 @@ msgid "No"
 msgstr "Nein"
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} Sekunden"
+msgstr "{} Sekunden{}"
 
 #: src/performance_page/cpu.rs:877
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} Minute{} "
 
 #: src/performance_page/cpu.rs:895
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Auslastung über {} Sekunden"
+msgstr "Auslastung über {}{}"
 
 #: src/performance_page/disk.rs:268
 msgid "{} {}{}B/s"
@@ -1241,7 +1217,7 @@ msgstr "Video kodieren/dekodieren"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Abrufen zusätzlicher Speicherinformationen fehlgeschlagen"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
