@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-03-27 15:01+0000\n"
+"PO-Revision-Date: 2024-05-09 10:52+0000\n"
 "Last-Translator: shamo3qk <x976631@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.5.4-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -170,10 +170,9 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:128
-#, fuzzy
 msgid ""
 "Fix a bug where the number of CPUs was incorrectly detected on some systems"
-msgstr "修復了一個錯誤，導致某些使用者的應用程式和處理程序列表為空"
+msgstr "修復了一個錯誤，導致在某些系統上檢測到的 CPU 數量不正確"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
@@ -186,9 +185,8 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
-#, fuzzy
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr "使用 GTK4 和 Libadwaita"
+msgstr "更新至 GTK 4.12 和 libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
