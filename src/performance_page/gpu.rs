@@ -202,7 +202,7 @@ mod imp {
     impl PerformancePageGpu {
         pub fn set_static_information(
             this: &super::PerformancePageGpu,
-            index: usize,
+            index: Option<usize>,
             gpu: &crate::sys_info_v2::GpuStaticInfo,
         ) -> bool {
             use crate::sys_info_v2::OpenGLApi;
@@ -268,7 +268,11 @@ mod imp {
                 this.encode_label.set_text(&i18n("Video encode/decode"));
             }
 
-            this.gpu_id.set_text(&format!("GPU {}", index));
+            if index.is_some() {
+                this.gpu_id.set_text(&format!("GPU {}", index.unwrap()));
+            } else {
+                this.gpu_id.set_text(&format!("GPU"));
+            }
 
             this.device_name.set_text(&gpu.device_name);
 
@@ -666,7 +670,7 @@ impl PerformancePageGpu {
 
     pub fn set_static_information(
         &self,
-        index: usize,
+        index: Option<usize>,
         gpu: &crate::sys_info_v2::GpuStaticInfo,
     ) -> bool {
         imp::PerformancePageGpu::set_static_information(self, index, gpu)

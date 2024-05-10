@@ -164,7 +164,7 @@ mod imp {
     impl PerformancePageDisk {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
-            index: usize,
+            index: Option<usize>,
             disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
@@ -196,8 +196,14 @@ mod imp {
 
             let this = this.imp();
 
-            this.disk_id
-                .set_text(&i18n_f("Disk {} ({})", &[&format!("{}", index), &disk.id]));
+            if index.is_some() {
+                this.disk_id.set_text(&i18n_f(
+                    "Disk {} ({})",
+                    &[&format!("{}", index.unwrap()), &disk.id],
+                ));
+            } else {
+                this.disk_id.set_text(&i18n_f("Disk ({})", &[&disk.id]));
+            }
             this.model.set_text(&disk.model);
 
             this.disk_transfer_rate_graph.set_dashed(1, true);
@@ -257,9 +263,19 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageDisk,
+            index: Option<usize>,
             disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             let this = this.imp();
+
+            if index.is_some() {
+                this.disk_id.set_text(&i18n_f(
+                    "Disk {} ({})",
+                    &[&format!("{}", index.unwrap()), &disk.id],
+                ));
+            } else {
+                this.disk_id.set_text(&i18n_f("Disk ({})", &[&disk.id]));
+            }
 
             let max_y =
                 crate::to_human_readable(this.disk_transfer_rate_graph.value_range_max(), 1024.);
@@ -533,14 +549,26 @@ impl PerformancePageDisk {
 
     pub fn set_static_information(
         &self,
-        index: usize,
+        index: Option<usize>,
         disk: &crate::sys_info_v2::DiskInfo,
     ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(&self, disk: &crate::sys_info_v2::DiskInfo) -> bool {
-        imp::PerformancePageDisk::update_readings(self, disk)
+    pub fn update_page_title(
+        &self,
+        index: Option<usize>,
+        disk: &crate::sys_info_v2::DiskInfo,
+    ) -> bool {
+        imp::PerformancePageDisk::update_page(self, index, disk)
+    }
+
+    pub fn update_readings(
+        &self,
+        index: Option<usize>,
+        disk: &crate::sys_info_v2::DiskInfo,
+    ) -> bool {
+        imp::PerformancePageDisk::update_readings(self, index, disk)
     }
 
     pub fn infobar_collapsed(&self) {
