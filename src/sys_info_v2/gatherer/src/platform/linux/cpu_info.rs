@@ -108,6 +108,9 @@ pub struct LinuxCpuStaticInfo {
     l2_cache: Option<u64>,
     l3_cache: Option<u64>,
     l4_cache: Option<u64>,
+    cpufreq_driver: Option<Arc<str>>,
+    cpufreq_governor: Option<Arc<str>>,
+    energy_performance_preference: Option<Arc<str>>,
 }
 
 impl Default for LinuxCpuStaticInfo {
@@ -123,6 +126,9 @@ impl Default for LinuxCpuStaticInfo {
             l2_cache: None,
             l3_cache: None,
             l4_cache: None,
+            cpufreq_driver: None,
+            cpufreq_governor: None,
+            energy_performance_preference: None,
         }
     }
 }
@@ -172,6 +178,19 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
 
     fn l4_cache(&self) -> Option<u64> {
         self.l4_cache
+    }
+
+    fn cpufreq_driver(&self) -> Option<&str> {
+        self.cpufreq_driver.as_ref().map(|s| s.as_ref())
+    }
+
+    fn cpufreq_governor(&self) -> Option<&str> {
+        self.cpufreq_governor.as_ref().map(|s| s.as_ref())
+    }
+    fn energy_performance_preference(&self) -> Option<&str> {
+        self.energy_performance_preference
+            .as_ref()
+            .map(|s| s.as_ref())
     }
 }
 
@@ -1116,6 +1135,84 @@ impl LinuxCpuInfo {
         result
     }
 
+    fn get_cpufreq_driver_governor() -> [Option<Arc<str>>; 3] {
+        use crate::critical;
+
+        fn get_cpufreq_driver() -> Option<Arc<str>> {
+            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver") {
+                Ok(content) => match std::str::from_utf8(&content) {
+                    Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
+                    Err(e) => {
+                        critical!(
+                                "Gatherer::CPU",
+                                "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
+                                e
+                            );
+                        return None;
+                    }
+                },
+                Err(e) => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
+                        e
+                    );
+
+                    None
+                }
+            }
+        }
+
+        fn get_cpufreq_governor() -> Option<Arc<str>> {
+            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor") {
+                Ok(content) => match std::str::from_utf8(&content) {
+                    Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
+                    Err(e) => {
+                        critical!(
+                                "Gatherer::CPU",
+                                "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
+                                e
+                            );
+                        return None;
+                    }
+                },
+                Err(e) => {
+                    critical!(
+                        "Gatherer::CPU",
+                        "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
+                        e
+                    );
+
+                    None
+                }
+            }
+        }
+        // shouldn't show error as few people have this / the error would be normal
+        fn energy_performance_preference() -> Option<Arc<str>> {
+            match std::fs::read(
+                "/sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference",
+            ) {
+                Ok(content) => match std::str::from_utf8(&content) {
+                    Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
+                    Err(e) => {
+                        critical!(
+                                "Gatherer::CPU",
+                                "Could not read power preference from '/sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference': {}",
+                                e
+                            );
+                        return None;
+                    }
+                },
+                Err(_) => None,
+            }
+        }
+        [
+            get_cpufreq_driver(),
+            get_cpufreq_governor(),
+            energy_performance_preference(),
+        ]
+    }
+
     // Adapted from `sysinfo` crate, linux/cpu.rs:415
     fn cpu_frequency_mhz() -> u64 {
         use crate::critical;
@@ -1302,6 +1399,8 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
 
     fn refresh_static_info_cache(&mut self) {
         let cache_info = Self::cache_info();
+        let [cpufreq_driver, cpufreq_governor, energy_performance_preference] =
+            Self::get_cpufreq_driver_governor();
 
         self.static_info = LinuxCpuStaticInfo {
             name: Self::name(),
@@ -1314,6 +1413,9 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
             l2_cache: cache_info[2],
             l3_cache: cache_info[3],
             l4_cache: cache_info[4],
+            cpufreq_driver,
+            cpufreq_governor,
+            energy_performance_preference,
         }
     }
 

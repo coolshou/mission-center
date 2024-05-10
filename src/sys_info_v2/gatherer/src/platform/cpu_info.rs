@@ -70,6 +70,15 @@ pub trait CpuStaticInfoExt: Default + Append + Arg {
 
     /// The amount of L4 cache
     fn l4_cache(&self) -> Option<u64>;
+
+    /// The cpufreq driver
+    fn cpufreq_driver(&self) -> Option<&str>;
+
+    /// The cpufreq governor
+    fn cpufreq_governor(&self) -> Option<&str>;
+
+    /// The energy performance preference
+    fn energy_performance_preference(&self) -> Option<&str>;
 }
 
 impl Arg for crate::platform::CpuStaticInfo {
@@ -82,18 +91,21 @@ impl Arg for crate::platform::CpuStaticInfo {
 
 impl Append for crate::platform::CpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.name(),
-            self.logical_cpu_count(),
-            self.socket_count().unwrap_or(0),
-            self.base_frequency_khz().unwrap_or(0),
-            self.virtualization_technology().unwrap_or(""),
-            OptionalBool::from(self.is_virtual_machine()) as u8,
-            self.l1_combined_cache().unwrap_or(0),
-            self.l2_cache().unwrap_or(0),
-            self.l3_cache().unwrap_or(0),
-            self.l4_cache().unwrap_or(0),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.name());
+            ia.append(self.logical_cpu_count());
+            ia.append(self.socket_count().unwrap_or(0));
+            ia.append(self.base_frequency_khz().unwrap_or(0));
+            ia.append(self.virtualization_technology().unwrap_or(""));
+            ia.append(OptionalBool::from(self.is_virtual_machine()) as u8);
+            ia.append(self.l1_combined_cache().unwrap_or(0));
+            ia.append(self.l2_cache().unwrap_or(0));
+            ia.append(self.l3_cache().unwrap_or(0));
+            ia.append(self.l4_cache().unwrap_or(0));
+            ia.append(self.cpufreq_driver().unwrap_or(""));
+            ia.append(self.cpufreq_governor().unwrap_or(""));
+            ia.append(self.energy_performance_preference().unwrap_or(""));
+        });
     }
 }
 

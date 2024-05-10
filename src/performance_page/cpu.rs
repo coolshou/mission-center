@@ -79,6 +79,10 @@ mod imp {
         pub l1_cache: OnceCell<gtk::Label>,
         pub l2_cache: OnceCell<gtk::Label>,
         pub l3_cache: OnceCell<gtk::Label>,
+        pub cpufreq_driver: OnceCell<gtk::Label>,
+        pub cpufreq_governor: OnceCell<gtk::Label>,
+        pub energy_performance_preference: OnceCell<gtk::Label>,
+        pub energy_performance_preference_label: OnceCell<gtk::Label>,
     }
 
     impl Default for PerformancePageCpu {
@@ -113,6 +117,10 @@ mod imp {
                 l1_cache: Default::default(),
                 l2_cache: Default::default(),
                 l3_cache: Default::default(),
+                cpufreq_driver: Default::default(),
+                cpufreq_governor: Default::default(),
+                energy_performance_preference: Default::default(),
+                energy_performance_preference_label: Default::default(),
             }
         }
     }
@@ -395,6 +403,40 @@ mod imp {
                 format!("N/A")
             };
 
+            if let Some(cpufreq_driver) = this.cpufreq_driver.get() {
+                if let Some(driver) = static_cpu_info.cpufreq_driver.as_ref() {
+                    cpufreq_driver.set_text(driver.as_ref());
+                } else {
+                    cpufreq_driver.set_text(&i18n("Unsupported"));
+                }
+            }
+
+            if let Some(cpufreq_governor) = this.cpufreq_governor.get() {
+                if let Some(governor) = static_cpu_info.cpufreq_governor.as_ref() {
+                    cpufreq_governor.set_text(governor.as_ref());
+                } else {
+                    cpufreq_governor.set_text(&i18n("Unsupported"));
+                }
+            }
+
+            if let (
+                Some(energy_performance_preference),
+                Some(energy_performance_preference_label),
+            ) = (
+                this.energy_performance_preference.get(),
+                this.energy_performance_preference_label.get(),
+            ) {
+                if let Some(governor) = static_cpu_info.energy_performance_preference.as_ref() {
+                    energy_performance_preference.set_text(governor.as_ref());
+                    energy_performance_preference.set_visible(true);
+                    energy_performance_preference_label.set_visible(true);
+                } else {
+                    energy_performance_preference.set_text(&i18n("Unsupported"));
+                    energy_performance_preference.set_visible(false);
+                    energy_performance_preference_label.set_visible(false);
+                }
+            }
+
             true
         }
 
@@ -510,6 +552,21 @@ mod imp {
                 .get()
                 .and_then(|v| Some(v.label()))
                 .unwrap_or("".into());
+            let cpufreq_driver = self
+                .cpufreq_driver
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let energy_performance_preference = self
+                .energy_performance_preference
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
+            let cpufreq_governor = self
+                .cpufreq_governor
+                .get()
+                .and_then(|v| Some(v.label()))
+                .unwrap_or("".into());
             let utilization = self
                 .utilization
                 .get()
@@ -554,6 +611,9 @@ mod imp {
             L1 cache:           {}
             L2 cache:           {}
             L3 cache:           {}
+            Cpufreq driver:     {}
+            Cpufreq governor:   {}
+            Power preference:   {}
             
             Utilization: {}
             Speed:       {}
@@ -570,6 +630,9 @@ mod imp {
                 l1_cache,
                 l2_cache,
                 l3_cache,
+                cpufreq_driver,
+                cpufreq_governor,
+                energy_performance_preference,
                 utilization,
                 speed,
                 processes,
@@ -830,6 +893,26 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("l3_cache")
                     .expect("Could not find `l3_cache` object in details pane"),
+            );
+            let _ = self.cpufreq_driver.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("cpufreq_driver")
+                    .expect("Could not find `cpufreq_driver` object in details pane"),
+            );
+            let _ = self.cpufreq_governor.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("cpufreq_governor")
+                    .expect("Could not find `cpufreq_governor` object in details pane"),
+            );
+            let _ = self.energy_performance_preference.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("energy_performance_preference")
+                    .expect("Could not find `cpufreq_governor` object in details pane"),
+            );
+            let _ = self.energy_performance_preference_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("energy_performance_preference_label")
+                    .expect("Could not find `cpufreq_governor` object in details pane"),
             );
         }
     }
