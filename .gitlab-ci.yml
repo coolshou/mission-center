@@ -21,10 +21,9 @@ build-job:
 
     - pip install meson ninja --break-system-packages
 
-    # Skip native builds until GTK 4.14 is in the repo
-    # - meson setup _build -Dbuildtype=release
-    # - ninja -C _build
-    # - glib-compile-schemas --strict data/
+    - meson setup _build -Dbuildtype=release
+    - ninja -C _build
+    - glib-compile-schemas --strict data/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 

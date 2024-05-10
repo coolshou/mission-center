@@ -555,14 +555,6 @@ impl PerformancePageDisk {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_page_title(
-        &self,
-        index: Option<usize>,
-        disk: &crate::sys_info_v2::DiskInfo,
-    ) -> bool {
-        imp::PerformancePageDisk::update_page(self, index, disk)
-    }
-
     pub fn update_readings(
         &self,
         index: Option<usize>,
