@@ -508,8 +508,11 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) {
             let mut disks = HashMap::new();
-            for i in 0..readings.disk_info.len() {
-                let mut ret = self.create_disk_page(readings, i);
+            let len = readings.disk_info.len();
+            let hide_index = len == 1;
+            for i in 0..len {
+                let mut ret =
+                    self.create_disk_page(readings, if hide_index { None } else { Some(i) });
                 disks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
@@ -520,26 +523,31 @@ mod imp {
             &self,
             disk_graph: &SummaryGraph,
             disk_id: &str,
-            index: usize,
+            index: Option<usize>,
         ) {
-            disk_graph.set_page_secondary_index(index);
-            disk_graph.set_heading(i18n_f(
-                "Disk {} ({})",
-                &[&format!("{}", index), &format!("{}", disk_id)],
-            ));
+            disk_graph.set_page_secondary_index(index.unwrap_or(0));
+
+            if index.is_some() {
+                disk_graph.set_heading(i18n_f(
+                    "Disk {} ({})",
+                    &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                ));
+            } else {
+                disk_graph.set_heading(i18n_f("Disk", &[]));
+            }
         }
 
         pub fn create_disk_page(
             &self,
             readings: &crate::sys_info_v2::Readings,
-            secondary_index: usize,
+            secondary_index: Option<usize>,
         ) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
             use glib::g_critical;
 
-            let disk_static_info = &readings.disk_info[secondary_index];
+            let disk_static_info = &readings.disk_info[secondary_index.unwrap_or(0)];
 
             let summary = SummaryGraph::new();
-            summary.set_page_indices(SIDEBAR_DISK_PAGE_DEFAULT_IDX, secondary_index);
+            summary.set_page_indices(SIDEBAR_DISK_PAGE_DEFAULT_IDX, secondary_index.unwrap_or(0));
             summary.set_widget_name(disk_static_info.id.as_ref());
 
             self.update_disk_page_index(&summary, disk_static_info.id.as_ref(), secondary_index);
@@ -745,11 +753,12 @@ mod imp {
 
             let mut gpus = HashMap::new();
 
-            for (i, static_info) in readings.gpu_static_info.iter().enumerate() {
-                let dynamic_info = &readings.gpu_dynamic_info[i];
+            let hide_index = readings.gpu_static_info.len() == 1;
+            for (index, static_info) in readings.gpu_static_info.iter().enumerate() {
+                let dynamic_info = &readings.gpu_dynamic_info[index];
 
                 let summary = SummaryGraph::new();
-                summary.set_page_indices(SIDEBAR_GPU_PAGE_DEFAULT_IDX, i);
+                summary.set_page_indices(SIDEBAR_GPU_PAGE_DEFAULT_IDX, index);
                 summary.set_widget_name(static_info.id.as_ref());
 
                 let settings = self.settings.take();
@@ -766,7 +775,11 @@ mod imp {
 
                 self.settings.set(settings);
 
-                summary.set_heading(i18n_f("GPU {}", &[&format!("{}", i)]));
+                if !hide_index {
+                    summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
+                } else {
+                    summary.set_heading(i18n_f("GPU", &[]));
+                }
                 summary.set_info1(static_info.device_name.as_ref());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
@@ -786,7 +799,10 @@ mod imp {
                     BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                page.set_static_information(i, static_info);
+                page.set_static_information(
+                    if !hide_index { Some(index) } else { None },
+                    static_info,
+                );
 
                 self.page_content
                     .connect_collapsed_notify(clone!(@weak page => move |pc| {
@@ -1029,10 +1045,14 @@ mod imp {
                     }
                     Pages::Disk(pages) => {
                         let mut new_devices = Vec::new();
+                        let hide_index = readings.disk_info.len() == 1;
                         for (index, disk) in readings.disk_info.iter().enumerate() {
                             if let Some((summary, page)) = pages.get(disk.id.as_ref()) {
-                                this.imp()
-                                    .update_disk_page_index(summary, disk.id.as_ref(), index);
+                                this.imp().update_disk_page_index(
+                                    summary,
+                                    disk.id.as_ref(),
+                                    if hide_index { None } else { Some(index) },
+                                );
 
                                 let graph_widget = summary.graph_widget();
                                 if graph_widget.data_points() != data_points {
@@ -1041,15 +1061,24 @@ mod imp {
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
-                                result &= page.update_readings(disk);
+                                result &= page.update_readings(
+                                    if hide_index { None } else { Some(index) },
+                                    disk,
+                                );
                             } else {
                                 new_devices.push(index);
                             }
                         }
 
                         for new_device_index in new_devices {
-                            let (disk_id, page) =
-                                this.imp().create_disk_page(readings, new_device_index);
+                            let (disk_id, page) = this.imp().create_disk_page(
+                                readings,
+                                if hide_index {
+                                    None
+                                } else {
+                                    Some(new_device_index)
+                                },
+                            );
                             pages.insert(disk_id, page);
                         }
                     }
