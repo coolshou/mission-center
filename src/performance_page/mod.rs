@@ -539,11 +539,11 @@ mod imp {
 
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "Disk {} ({})",
+                    "Drive {} ({})",
                     &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
                 ));
             } else {
-                disk_graph.set_heading(i18n_f("Disk", &[]));
+                disk_graph.set_heading(i18n_f("Drive", &[]));
             }
         }
 

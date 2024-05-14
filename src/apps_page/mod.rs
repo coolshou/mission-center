@@ -1357,7 +1357,7 @@ mod imp {
             );
             let (column_view_title, column_header_disk) = self.configure_column_header(
                 &column_view_title.unwrap(),
-                &i18n("Disk"),
+                &i18n("Drive"),
                 "0%",
                 gtk::Align::End,
             );

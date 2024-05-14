@@ -312,7 +312,7 @@ impl MissionCenterApplication {
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
-            .developers(["Romeo Calota", "QwertyChouskie", "jojo2357"])
+            .developers(["Romeo Calota", "QwertyChouskie", "jojo2357", "Jan Luca"])
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
