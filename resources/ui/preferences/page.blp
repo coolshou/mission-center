@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $PreferencesPage : Adw.PreferencesPage {
+template $PreferencesPage: Adw.PreferencesPage {
   Adw.PreferencesGroup {
     title: _("General Settings");
 
@@ -16,6 +16,7 @@ template $PreferencesPage : Adw.PreferencesPage {
           step-increment: 0.05;
           value: 1;
         };
+
         hexpand: false;
         value: 1;
         digits: 2;
@@ -24,6 +25,7 @@ template $PreferencesPage : Adw.PreferencesPage {
 
     Adw.ActionRow {
       title: _("Chart Data Points");
+
       Gtk.Scale data_points {
         adjustment: Gtk.Adjustment {
           lower: 10;
@@ -31,6 +33,7 @@ template $PreferencesPage : Adw.PreferencesPage {
           step-increment: 1;
           value: 60;
         };
+
         digits: 0;
         hexpand: true;
         draw-value: true;
@@ -55,6 +58,11 @@ template $PreferencesPage : Adw.PreferencesPage {
     Adw.SwitchRow core_count_affects_percentages {
       title: _("Scale CPU Usage to Core Count");
       subtitle: _("Show CPU usage for Apps and Processes scaled to the number of available cores");
+    }
+
+    Adw.SwitchRow smooth_graphs {
+      title: _("Smooth Graphs");
+      subtitle: _("Draw graphs as smooth line instead of jagged line");
     }
   }
 }

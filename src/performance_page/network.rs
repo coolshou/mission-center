@@ -733,6 +733,7 @@ impl PerformancePageNetwork {
             settings: &gio::Settings,
         ) {
             let data_points = settings.int("perfomance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
             let graph_max_duration = (((settings.int("app-update-interval") as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
@@ -765,6 +766,7 @@ impl PerformancePageNetwork {
             ));
 
             this.usage_graph.set_data_points(data_points);
+            this.usage_graph.set_smooth_graphs(smooth);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -777,6 +779,13 @@ impl PerformancePageNetwork {
 
         settings.connect_changed(
             Some("app-update-interval"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+
+        settings.connect_changed(
+            Some("performance-smooth-graphs"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),

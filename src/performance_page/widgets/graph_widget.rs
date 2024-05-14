@@ -70,6 +70,8 @@ mod imp {
         grid_visible: Cell<bool>,
         #[property(get, set)]
         scroll: Cell<bool>,
+        #[property(get, set = Self::set_smooth_graphs)]
+        smooth_graphs: Cell<bool>,
         #[property(get, set)]
         base_color: Cell<gdk::RGBA>,
         #[property(get, set = Self::set_horizontal_line_count)]
@@ -99,6 +101,7 @@ mod imp {
                 auto_scale_pow2: Cell::new(false),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
+                smooth_graphs: Cell::new(false),
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
                 horizontal_line_count: Cell::new(9),
                 vertical_line_count: Cell::new(6),
@@ -118,18 +121,19 @@ mod imp {
 
     impl GraphWidget {
         fn set_data_points(&self, count: u32) {
-            let mut data_points = self.data_sets.take();
-            for values in data_points.iter_mut() {
-                if count == (values.data_set.len() as u32) {
-                    continue;
+            if self.data_points.take() != count {
+                let mut data_points = self.data_sets.take();
+                for values in data_points.iter_mut() {
+                    if count == (values.data_set.len() as u32) {
+                        continue;
+                    }
+                    // we need to truncate from the correct side
+                    values.data_set.reverse();
+                    values.data_set.resize(count as _, 0.);
+                    values.data_set.reverse();
                 }
-                // we need to truncate from the correct side
-                values.data_set.reverse();
-                values.data_set.resize(count as _, 0.);
-                values.data_set.reverse();
+                self.data_sets.set(data_points);
             }
-            self.data_sets.set(data_points);
-
             self.data_points.set(count);
         }
 
@@ -159,6 +163,13 @@ mod imp {
         fn set_vertical_line_count(&self, count: u32) {
             if self.vertical_line_count.get() != count {
                 self.vertical_line_count.set(count);
+                self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
+            }
+        }
+
+        fn set_smooth_graphs(&self, smooth: bool) {
+            if self.smooth_graphs.get() != smooth {
+                self.smooth_graphs.set(smooth);
                 self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
             }
         }
@@ -247,7 +258,7 @@ mod imp {
             let val_min = self.value_range_min.get() - offset;
 
             let spacing_x = width / (data_points.data_set.len() - 1) as f32;
-            let mut points = (0..)
+            let points: Vec<(f32, f32)> = (0..)
                 .zip(&data_points.data_set)
                 .skip_while(|(_, y)| **y <= scale_factor)
                 .map(|(x, y)| {
@@ -255,22 +266,51 @@ mod imp {
                     let y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
 
                     (x, y)
-                });
+                }).collect();
 
-            if let Some((x, y)) = points.next() {
-                let mut final_x = x;
+            if !points.is_empty() {
+                let startindex;
+                let (mut x, mut y);
+                let pointlen = points.len();
 
+                if pointlen < data_points.data_set.len() {
+                    (x, y) = ((data_points.data_set.len() - pointlen - 1) as f32 * spacing_x, height);
+                    startindex = 0;
+                } else {
+                    (x, y) = points[0];
+                    startindex = 1;
+                }
                 let path_builder = PathBuilder::new();
                 path_builder.move_to(x, y);
 
-                for (x, y) in points {
-                    path_builder.line_to(x, y);
-                    final_x = x;
+                let smooth = self.smooth_graphs.get();
+
+                for i in startindex..pointlen {
+                    (x, y) = points[i];
+                    if smooth {
+                        let (lastx,lasty);
+                        if i > 0 {
+                            (lastx, lasty) = points[i - 1];
+                        }  else {
+                            (lastx, lasty) = (x - spacing_x, height);
+                        }
+
+                        path_builder.cubic_to(
+                            lastx + spacing_x / 2f32,
+                            lasty,
+                            lastx + spacing_x / 2f32,
+                            y,
+                            x,
+                            y
+                        );
+                    } else {
+                        path_builder.line_to(x, y);
+                    }
                 }
 
                 // Make sure to close out the path
-                path_builder.line_to(final_x, height);
-                path_builder.line_to(x, height);
+                path_builder.line_to(points[pointlen - 1].0, height);
+                path_builder.line_to(points[0].0, height);
                 path_builder.close();
 
                 let path = path_builder.to_path();

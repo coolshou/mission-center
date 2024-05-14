@@ -404,6 +404,9 @@ mod imp {
             summary
                 .graph_widget()
                 .set_data_points(unwrapped_settings.int("perfomance-page-data-points") as u32);
+            summary
+                .graph_widget()
+                .set_smooth_graphs(unwrapped_settings.boolean("performance-smooth-graphs"));
 
             let page = CpuPage::new(unwrapped_settings);
             page.set_base_color(gtk::gdk::RGBA::new(
@@ -469,6 +472,13 @@ mod imp {
                     .as_ref()
                     .unwrap()
                     .int("perfomance-page-data-points") as u32,
+            );
+
+            summary.graph_widget().set_smooth_graphs(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs"),
             );
 
             let page = MemoryPage::new(settings.as_ref().unwrap());
@@ -578,6 +588,13 @@ mod imp {
                     .as_ref()
                     .unwrap()
                     .int("perfomance-page-data-points") as u32,
+            );
+
+            summary.graph_widget().set_smooth_graphs(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs"),
             );
 
             let page = DiskPage::new(disk_static_info.id.as_ref(), settings.as_ref().unwrap());
@@ -692,6 +709,13 @@ mod imp {
                     .int("perfomance-page-data-points") as u32,
             );
 
+            summary.graph_widget().set_smooth_graphs(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs"),
+            );
+
             let page = NetworkPage::new(
                 if_name,
                 network_device.descriptor.r#type,
@@ -773,6 +797,15 @@ mod imp {
                         .int("perfomance-page-data-points") as u32,
                 );
 
+                summary.graph_widget().set_smooth_graphs(
+                    settings
+                        .as_ref()
+                        .unwrap()
+                        .boolean("performance-smooth-graphs"),
+                );
+
+                let page = GpuPage::new(&static_info.device_name, settings.as_ref().unwrap());
+
                 self.settings.set(settings);
 
                 if !hide_index {
@@ -792,7 +825,6 @@ mod imp {
                     1.,
                 ));
 
-                let page = GpuPage::new(&static_info.device_name);
                 page.set_base_color(gtk::gdk::RGBA::new(
                     BASE_COLOR[0] as f32 / 255.,
                     BASE_COLOR[1] as f32 / 255.,
@@ -987,9 +1019,11 @@ mod imp {
             let mut result = true;
 
             let mut data_points = BASE_POINTS;
+            let mut smooth = false;
             let settings = this.imp().settings.take();
             if !settings.is_none() {
                 data_points = settings.clone().unwrap().int("perfomance-page-data-points") as u32;
+                smooth = settings.clone().unwrap().boolean("performance-smooth-graphs");
             }
             this.imp().settings.set(settings);
 
@@ -997,9 +1031,9 @@ mod imp {
                 match page {
                     Pages::Cpu((summary, page)) => {
                         let graph_widget = summary.graph_widget();
-                        if graph_widget.data_points() != data_points {
-                            graph_widget.set_data_points(data_points);
-                        }
+                        graph_widget.set_data_points(data_points);
+                        graph_widget.set_smooth_graphs(smooth);
+
                         graph_widget.add_data_point(
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
@@ -1025,9 +1059,8 @@ mod imp {
                         let used_raw =
                             readings.mem_info.mem_total - readings.mem_info.mem_available;
                         let graph_widget = summary.graph_widget();
-                        if graph_widget.data_points() != data_points {
                             graph_widget.set_data_points(data_points);
-                        }
+                            graph_widget.set_smooth_graphs(smooth);
                         graph_widget.add_data_point(0, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
@@ -1055,9 +1088,8 @@ mod imp {
                                 );
 
                                 let graph_widget = summary.graph_widget();
-                                if graph_widget.data_points() != data_points {
                                     graph_widget.set_data_points(data_points);
-                                }
+                                    graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
@@ -1094,9 +1126,8 @@ mod imp {
                                 let received = network_device.recv_bps;
 
                                 let graph_widget = summary.graph_widget();
-                                if graph_widget.data_points() != data_points {
                                     graph_widget.set_data_points(data_points);
-                                }
+                                    graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, sent);
                                 graph_widget.add_data_point(1, received);
 
@@ -1138,9 +1169,8 @@ mod imp {
                         for gpu in &readings.gpu_dynamic_info {
                             if let Some((summary, page)) = pages.get(gpu.id.as_ref()) {
                                 let graph_widget = summary.graph_widget();
-                                if graph_widget.data_points() != data_points {
                                     graph_widget.set_data_points(data_points);
-                                }
+                                    graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, gpu.util_percent as f32);
                                 summary.set_info2(format!(
                                     "{}% ({} °C)",
