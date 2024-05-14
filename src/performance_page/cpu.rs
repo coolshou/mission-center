@@ -651,11 +651,13 @@ mod imp {
             let mut graph_selection = GRAPH_SELECTION_OVERALL;
             let mut show_kernel_times = false;
             let mut data_points = BASE_POINTS;
+            let mut smooth = false;
             match settings {
                 Some(settings) => {
                     graph_selection = settings.int("performance-page-cpu-graph");
                     show_kernel_times = settings.boolean("performance-page-kernel-times");
                     data_points = settings.int("perfomance-page-data-points") as u32;
+                    smooth = settings.boolean("performance-smooth-graphs");
 
                     self.settings.set(Some(settings));
                 }
@@ -668,6 +670,7 @@ mod imp {
             graph_widgets.push(GraphWidget::new());
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_points(data_points);
+            graph_widgets[0].set_smooth_graphs(smooth);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_data_set_count(2);
             graph_widgets[0].set_filled(1, false);
@@ -739,6 +742,7 @@ mod imp {
                     });
                 }
                 graph_widgets[graph_widget_index].set_data_points(data_points);
+                graph_widgets[graph_widget_index].set_smooth_graphs(smooth);
                 graph_widgets[graph_widget_index].set_data_set_count(2);
                 graph_widgets[graph_widget_index].set_filled(1, false);
                 graph_widgets[graph_widget_index].set_dashed(1, true);
@@ -939,6 +943,7 @@ impl PerformancePageCpu {
             let this = this.imp();
 
             let data_points = settings.int("perfomance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
             let graph_max_duration = (((settings.int("app-update-interval") as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
@@ -989,6 +994,7 @@ impl PerformancePageCpu {
             let widgets = this.graph_widgets.take();
             for graph_widget in &widgets {
                 graph_widget.set_data_points(data_points);
+                graph_widget.set_smooth_graphs(smooth);
             }
             this.graph_widgets.set(widgets);
         }
@@ -1002,6 +1008,12 @@ impl PerformancePageCpu {
         );
         settings.connect_changed(
             Some("app-update-interval"),
+            clone!(@weak this => move |settings, _| {
+                update_refresh_rate_sensitive_labels(&this, settings);
+            }),
+        );
+        settings.connect_changed(
+            Some("performance-smooth-graphs"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),

@@ -49,6 +49,8 @@ mod imp {
         pub remember_sorting: TemplateChild<SwitchRow>,
         #[template_child]
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub smooth_graphs: TemplateChild<SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
     }
@@ -62,6 +64,7 @@ mod imp {
                 merged_process_stats: Default::default(),
                 remember_sorting: Default::default(),
                 core_count_affects_percentages: Default::default(),
+                smooth_graphs: Default::default(),
 
                 settings: Cell::new(None),
             }
@@ -208,6 +211,22 @@ mod imp {
                     }
                 }),
             );
+
+            self.smooth_graphs.connect_active_notify(
+                glib::clone!(@weak self as this => move |switch_row| {
+                    let settings = this.settings.take();
+                    if let Some(settings) = settings {
+                        if let Err(e) = settings.set_boolean("performance-smooth-graphs", switch_row.is_active()) {
+                            g_critical!(
+                                "MissionCenter::Preferences",
+                                "Failed to set smooth graphs setting: {}",
+                                e
+                            );
+                        }
+                        this.settings.set(Some(settings));
+                    }
+                }),
+            );
         }
     }
 
@@ -234,6 +253,7 @@ impl PreferencesPage {
         this.set_initial_merge_process_stats();
         this.set_initial_remember_sorting_option();
         this.set_initial_core_count_affects_percentages();
+        this.set_initial_smooth_graphs();
 
         this
     }
@@ -339,6 +359,27 @@ impl PreferencesPage {
         let this = self.imp();
         this.core_count_affects_percentages
             .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
+
+        this.settings.set(Some(settings));
+    }
+
+    fn set_initial_smooth_graphs(&self) {
+        use gtk::glib::*;
+
+        let settings = match self.imp().settings.take() {
+            None => {
+                g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure smooth graphs setting, could not load application settings"
+                );
+                return;
+            }
+            Some(settings) => settings,
+        };
+
+        let this = self.imp();
+        this.smooth_graphs
+            .set_active(settings.boolean("performance-smooth-graphs"));
 
         this.settings.set(Some(settings));
     }

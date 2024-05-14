@@ -83,5 +83,10 @@
             <default>"cpu"</default>
             <summary>Which page is shown on application startup, in the performance tab</summary>
         </key>
+
+        <key name="performance-smooth-graphs" type="b">
+            <default>false</default>
+            <summary>Should performance graphs be smooth or jagged</summary>
+        </key>
     </schema>
 </schemalist>
