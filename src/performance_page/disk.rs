@@ -202,7 +202,7 @@ mod imp {
                     &[&format!("{}", index.unwrap()), &disk.id],
                 ));
             } else {
-                this.disk_id.set_text(&i18n_f("Disk ({})", &[&disk.id]));
+                this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
             this.model.set_text(&disk.model);
 
@@ -270,11 +270,11 @@ mod imp {
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
-                    "Disk {} ({})",
+                    "Drive {} ({})",
                     &[&format!("{}", index.unwrap()), &disk.id],
                 ));
             } else {
-                this.disk_id.set_text(&i18n_f("Disk ({})", &[&disk.id]));
+                this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
 
             let max_y =
