@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 17:24+0200\n"
-"PO-Revision-Date: 2024-04-22 20:41+0200\n"
-"Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
+"PO-Revision-Date: 2024-05-19 11:01+0000\n"
+"Last-Translator: SuitDeer <gero.brinkmann96@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -173,6 +173,8 @@ msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
 msgstr ""
+"Machen den Sättigungs- und Übertragungsgraphen in den "
+"Datenträgerverwendungsbereichen gleich hoch"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
@@ -196,23 +198,27 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:129
 msgid "Add missing icon for the details panel in the Performance tab"
 msgstr ""
+"Fehlendes Symbol für das Detailpanel auf der Registerkarte „Leistung“ "
+"hinzufügen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:137
 msgid ""
 "Fix a regression in 0.4.0 where GPU data would not be available for some users"
 msgstr ""
+"Behebung einer Regression in 0.4.0, bei der GPU-Daten für einige Benutzer "
+"nicht verfügbar waren"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:146
 msgid "Update to GTK 4.12 and libadwaita 1.4"
-msgstr ""
+msgstr "Aktualisierung auf GTK 4.12 und libadwaita 1.4"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:147
 msgid "Redesigned the Performance tab to be adaptive"
-msgstr ""
+msgstr "Die Registerkarte „Leistung“ wurde neu gestaltet und ist nun adaptiv"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:148
 msgid "Early and very minimal Intel GPU support"
-msgstr ""
+msgstr "Frühe und sehr minimale Intel-GPU-Unterstützung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:149
 msgid "Add GPU memory usage column to the Apps page"
