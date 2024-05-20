@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-04-07 13:01+0000\n"
-"Last-Translator: Vojtěch Perník <translations@pervoj.cz>\n"
+"PO-Revision-Date: 2024-05-22 00:01+0000\n"
+"Last-Translator: Filip Marek <filip.marek.95@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
 "Language: cs\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -144,7 +144,7 @@ msgstr "Komentáře, návrhy, hlášení chyb a přispívání vítáno"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:107
 msgid "Display optical device information in the Performance tab"
-msgstr ""
+msgstr "Zobrazit na kartě Výkonu informace o optických zařízeních"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:108
 #, fuzzy
@@ -348,9 +348,8 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:202
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:245
-#, fuzzy
 msgid "Translations:"
-msgstr "Virtualizace:"
+msgstr "Překlady:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:204
 msgid "New translation to Korean by Seong-ho Cho"
@@ -369,43 +368,36 @@ msgid "New translation to Italian by beppeilgommista"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:208
-#, fuzzy
 msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-msgstr "Opravy překladů pro portugalštinu od Rafael Fontenelle"
+msgstr "Nový překlad do brazilské portugalštiny od Gérson da Fonseca Henzel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:209
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:254
-#, fuzzy
 msgid "Updated Spanish translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován španělský překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:210
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:213
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:258
-#, fuzzy
 msgid "Updated Finnish translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován finský překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:211
-#, fuzzy
 msgid "Updated Russian translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován ruský překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:212
-#, fuzzy
 msgid "Updated Chinese (Simplified) translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován překlad do zjednodušené čínštiny"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:214
-#, fuzzy
 msgid "Updated Greek translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován řecký překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:215
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:257
-#, fuzzy
 msgid "Updated German translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován německý překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:223
 msgid ""
@@ -481,14 +473,12 @@ msgid "New translation to Hungarian by Kovács Bálint Hunor"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:255
-#, fuzzy
 msgid "Updated Czech translation"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Aktualizován český překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:256
-#, fuzzy
 msgid "Updated Portuguese translation"
-msgstr "Přidání portugalského překlad od Rilson Joás"
+msgstr "Aktualizován portugalský překlad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:259
 msgid "Fixes for Chinese translations by foxer NS"
@@ -505,9 +495,8 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:271
-#, fuzzy
 msgid "Add German translation by TecCheck"
-msgstr "Přidání českého překladu od ondra05"
+msgstr "Přidán německý překlad od TecCheck"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:272
 msgid ""
@@ -531,9 +520,8 @@ msgid ""
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:278
-#, fuzzy
 msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-msgstr "Přidání čínského překladu od Peter Dave Hello"
+msgstr "Úprava čínského tradičního překladu od Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:286
 msgid "Translation fixes for Portuguese by Rafael Fontenelle"
@@ -547,7 +535,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:288
 msgid "Add Traditional Chinese locale by Peter Dave Hello"
-msgstr "Přidání čínského překladu od Peter Dave Hello"
+msgstr "Přidání čínského tradičního překladu od Peter Dave Hello"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:289
 msgid "Add category for application menu by Renner0E"
@@ -608,15 +596,14 @@ msgid "Which page is shown on application startup"
 msgstr "Která stránka se zobrazí po spuštění aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Jak rychle mají být data a rozhraní aktualizovány"
+msgstr "Jak často mají být data a rozhraní aktualizovány (v krocích po 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Kolik bodů má být zobrazeno v každém grafu?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -634,6 +621,8 @@ msgstr "Řazení sloupců setrvá mezi restarty aplikace"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Zobrazit Využití procesoru u Aplikací a Procesů škálované podle počtu "
+"dostupných jader"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -993,11 +982,11 @@ msgstr "Obecné"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Interval aktualizace"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Počet záznamů v grafu"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -1019,7 +1008,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Škálovat Využití procesoru podle počtu jader"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -1067,12 +1056,11 @@ msgstr "Disk"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "Využití GPU"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "Grafika {}"
+msgstr "GPU paměť"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -1161,7 +1149,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "Optické"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1192,7 +1180,7 @@ msgstr "Grafika {}"
 
 #: src/performance_page/mod.rs:1078 src/performance_page/mod.rs:1086
 msgid "{}: {} {}bps"
-msgstr "{} {}b/s"
+msgstr "{}: {} {}b/s"
 
 #: src/performance_page/cpu.rs:317 src/performance_page/gpu.rs:315
 msgid "Unsupported"
@@ -1207,18 +1195,16 @@ msgid "No"
 msgstr "Ne"
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} sekund"
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:877
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minut{} "
 
 #: src/performance_page/cpu.rs:895
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "Využití za {} sekund"
+msgstr "Využití za {}{}"
 
 #: src/performance_page/disk.rs:268
 msgid "{} {}{}B/s"
@@ -1230,7 +1216,7 @@ msgstr "Kódování / dekódování videa"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Získání dalších informací o paměti se nezdařilo"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
