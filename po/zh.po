@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 09:38+0200\n"
-"PO-Revision-Date: 2024-05-09 10:52+0000\n"
+"PO-Revision-Date: 2024-05-16 11:01+0000\n"
 "Last-Translator: ZhangPeng <scbeta@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.4-rc\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -159,7 +159,7 @@ msgstr "在基于musl的系统上移除对`libgcc_s.so.1`的需求"
 msgid ""
 "Make the saturation and transfer graphs the same height in the disk usage "
 "panes"
-msgstr ""
+msgstr "在磁盘使用情况窗格中使吞吐量和传输图的高度相同"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:112
 msgid "Translation updates and fixes"
@@ -220,7 +220,7 @@ msgstr "逻辑 CPU 图现在以更令人愉悦的方式排列"
 msgid ""
 "The Gatherer was rearchitected and now uses D-Bus for communication with the "
 "main app"
-msgstr ""
+msgstr "收集器经过重新架构设计，现在使用 D-Bus 与主应用程序进行通信"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:155
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:176
@@ -230,63 +230,62 @@ msgstr "修复："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:157
 msgid "Fix misaligned header in the Apps tab with GTK 4.12"
-msgstr ""
+msgstr "修复使用GTK 4.12时应用程序选项卡标题未对齐的BUG"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:158
 msgid ""
 "Fix app and Gatherer not starting due to LD_PRELOAD being set in the host "
 "environment"
-msgstr ""
+msgstr "修复当LD_PRELOAD被设置到主机环境变量时应用程序和收集器不能启动的BUG"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:159
 msgid ""
 "Fix sometimes Apps not showing the accumulated resource usage from all it's "
 "children"
-msgstr ""
+msgstr "修复有时应用程序不显示所有子进程的累积资源使用情况的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:160
 msgid ""
 "Fix missing L1/2/3 CPU cache information missing when NUMA is not enabled"
-msgstr ""
+msgstr "修复当NUMA未启用时丢失L1/2/3 CPU缓存的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:161
 msgid "Fix Virtualization reported as Unknown under certain circumstances"
-msgstr ""
+msgstr "修复在某些情况下虚拟化类型报告为“未知”的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:162
 msgid "Fix a Gatherer crash on older CPUs"
-msgstr ""
+msgstr "修复在老的CPU上收集器崩溃的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:164
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:182
 msgid "A lot of new translations and fixes to existing ones"
-msgstr ""
+msgstr "在现有基础上增加了许多新的翻译和修复"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:172
-#, fuzzy
 msgid "Improve memory composition graph"
-msgstr "内存组成"
+msgstr "优化内存组成显示图形"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:173
 msgid "Add GPU usage column in the Apps tab"
-msgstr ""
+msgstr "在“应用程序”选项卡中添加 GPU 使用情况列"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:174
 msgid "Reduce memory usage and fix a memory leak in the main app"
-msgstr ""
+msgstr "减少内存使用量并修复主应用程序中的内存泄漏"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:178
 msgid ""
 "Fix a crash at start-up when flatpak data is stored in a path with spaces"
-msgstr ""
+msgstr "修复了 flatpak 数据存储在带有空格的路径中时启动时崩溃的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:179
 msgid "Fix incorrect base frequency in AMD CPUs"
-msgstr ""
+msgstr "修复 AMD CPU 中基本频率不正确的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:180
 msgid "Fix missing video encode/decode information in the GPU tab"
-msgstr ""
+msgstr "修复“GPU”选项卡中缺失视频编码/解码信息的问题"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:190
 msgid ""
@@ -578,15 +577,14 @@ msgid "Which page is shown on application startup"
 msgstr "应用程序启动时显示的页面"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "数据刷新和UI更新的频率多快"
+msgstr "刷新数据和 UI 的速度应该多快（以 50 毫秒为增量）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "每个图表上应该显示多少个点？"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:48
 #: resources/ui/preferences/page.blp:47
@@ -601,7 +599,7 @@ msgstr "列排序在应用程序重新启动后保持不变"
 #: resources/ui/preferences/page.blp:57
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
-msgstr ""
+msgstr "显示按可用内核数缩放的应用和进程的 CPU 使用率"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:63
 msgid "The column id by which the Apps page view is sorted"
@@ -961,11 +959,11 @@ msgstr "一般设置"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "更新间隔"
 
 #: resources/ui/preferences/page.blp:26
 msgid "Chart Data Points"
-msgstr ""
+msgstr "图表数据点"
 
 #: resources/ui/preferences/page.blp:43
 msgid "App Page Settings"
@@ -985,7 +983,7 @@ msgstr "保存应用程序重新启动后对应用程序和进程列表排序状
 
 #: resources/ui/preferences/page.blp:56
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "CPU使用率按核心数量缩放"
 
 #: resources/ui/window.blp:43
 msgid "Resources"
@@ -1033,12 +1031,11 @@ msgstr "磁盘"
 
 #: src/apps_page/mod.rs:1374
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU使用率"
 
 #: src/apps_page/mod.rs:1384
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU内存"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -1126,7 +1123,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:552
 msgid "Optical"
-msgstr ""
+msgstr "光学的"
 
 #: src/performance_page/mod.rs:553 src/performance_page/cpu.rs:305
 #: src/performance_page/cpu.rs:329 src/performance_page/cpu.rs:337
@@ -1172,18 +1169,16 @@ msgid "No"
 msgstr "否"
 
 #: src/performance_page/cpu.rs:866
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} 秒"
+msgstr "{} 秒{}"
 
 #: src/performance_page/cpu.rs:877
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} 分钟{} "
 
 #: src/performance_page/cpu.rs:895
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "在 {} 秒内的使用率"
+msgstr "使用率超过 {}{}"
 
 #: src/performance_page/disk.rs:268
 msgid "{} {}{}B/s"
