@@ -20,6 +20,7 @@
 
 use std::sync::Arc;
 
+use crate::debug;
 use crate::platform::cpu_info::*;
 
 use super::{CPU_COUNT, HZ};
@@ -691,7 +692,7 @@ impl LinuxCpuInfo {
                     }
                 }
                 Err(e) => {
-                    critical!(
+                    debug!(
                         "Gatherer::CPU",
                         "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
                         e
@@ -730,7 +731,7 @@ impl LinuxCpuInfo {
                     }
                 }
                 Err(e) => {
-                    critical!(
+                    debug!(
                         "Gatherer::CPU",
                         "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
                         e
@@ -795,7 +796,7 @@ impl LinuxCpuInfo {
                 Some("KVM".into())
             };
         } else {
-            warning!("Gatherer::CPU", "Virtualization: `/dev/kvm` does not exist");
+            debug!("Gatherer::CPU", "Virtualization: `/dev/kvm` does not exist");
         }
 
         let mut buffer = [0u8; 9];
@@ -815,10 +816,9 @@ impl LinuxCpuInfo {
                 }
             }
             Err(e) => {
-                warning!(
+                debug!(
                     "Gatherer::CPU",
-                    "Virtualization: Failed to open /proc/xen/capabilities: {}",
-                    e
+                    "Virtualization: Failed to open /proc/xen/capabilities: {}", e
                 );
             }
         }
