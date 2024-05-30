@@ -222,7 +222,7 @@ impl NetInfo {
 
             let device_path = match unsafe { self.nm_device_obj_path_new(if_name) } {
                 None => {
-                    g_critical!(
+                    g_debug!(
                         "MissionCenter::NetInfo",
                         "Failed to get device path for {}",
                         if_name_str
@@ -853,7 +853,7 @@ impl NetInfo {
         if device_path_variant.is_null() {
             if !error.is_null() {
                 let error: Error = unsafe { from_glib_full(error) };
-                g_critical!(
+                g_debug!(
                     "MissionCenter::NetInfo",
                     "Failed to get device info for {:?}: {}",
                     device_if,
