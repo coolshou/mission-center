@@ -1023,7 +1023,10 @@ mod imp {
             let settings = this.imp().settings.take();
             if !settings.is_none() {
                 data_points = settings.clone().unwrap().int("perfomance-page-data-points") as u32;
-                smooth = settings.clone().unwrap().boolean("performance-smooth-graphs");
+                smooth = settings
+                    .clone()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs");
             }
             this.imp().settings.set(settings);
 
@@ -1059,8 +1062,8 @@ mod imp {
                         let used_raw =
                             readings.mem_info.mem_total - readings.mem_info.mem_available;
                         let graph_widget = summary.graph_widget();
-                            graph_widget.set_data_points(data_points);
-                            graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_data_points(data_points);
+                        graph_widget.set_smooth_graphs(smooth);
                         graph_widget.add_data_point(0, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
@@ -1088,8 +1091,8 @@ mod imp {
                                 );
 
                                 let graph_widget = summary.graph_widget();
-                                    graph_widget.set_data_points(data_points);
-                                    graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_data_points(data_points);
+                                graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
@@ -1126,8 +1129,8 @@ mod imp {
                                 let received = network_device.recv_bps;
 
                                 let graph_widget = summary.graph_widget();
-                                    graph_widget.set_data_points(data_points);
-                                    graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_data_points(data_points);
+                                graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, sent);
                                 graph_widget.add_data_point(1, received);
 
@@ -1169,8 +1172,8 @@ mod imp {
                         for gpu in &readings.gpu_dynamic_info {
                             if let Some((summary, page)) = pages.get(gpu.id.as_ref()) {
                                 let graph_widget = summary.graph_widget();
-                                    graph_widget.set_data_points(data_points);
-                                    graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_data_points(data_points);
+                                graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, gpu.util_percent as f32);
                                 summary.set_info2(format!(
                                     "{}% ({} °C)",
