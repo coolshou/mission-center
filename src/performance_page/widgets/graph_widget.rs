@@ -266,7 +266,8 @@ mod imp {
                     let y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
 
                     (x, y)
-                }).collect();
+                })
+                .collect();
 
             if !points.is_empty() {
                 let startindex;
@@ -274,7 +275,10 @@ mod imp {
                 let pointlen = points.len();
 
                 if pointlen < data_points.data_set.len() {
-                    (x, y) = ((data_points.data_set.len() - pointlen - 1) as f32 * spacing_x, height);
+                    (x, y) = (
+                        (data_points.data_set.len() - pointlen - 1) as f32 * spacing_x,
+                        height,
+                    );
                     startindex = 0;
                 } else {
                     (x, y) = points[0];
@@ -288,10 +292,10 @@ mod imp {
                 for i in startindex..pointlen {
                     (x, y) = points[i];
                     if smooth {
-                        let (lastx,lasty);
+                        let (lastx, lasty);
                         if i > 0 {
                             (lastx, lasty) = points[i - 1];
-                        }  else {
+                        } else {
                             (lastx, lasty) = (x - spacing_x, height);
                         }
 
@@ -301,7 +305,7 @@ mod imp {
                             lastx + spacing_x / 2f32,
                             y,
                             x,
-                            y
+                            y,
                         );
                     } else {
                         path_builder.line_to(x, y);

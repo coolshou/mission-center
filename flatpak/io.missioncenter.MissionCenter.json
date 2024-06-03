@@ -152,11 +152,11 @@
         },
         {
           "type": "file",
-          "path": "clang"
+          "path": "../support/clang"
         },
         {
           "type": "file",
-          "path": "ar"
+          "path": "../support/ar"
         }
       ],
       "cleanup": [

@@ -66,10 +66,15 @@ appimage-job:
     - cat ~/.config/containers/storage.conf
 
     - podman pull ubuntu:20.04
-    - podman run --arch=x86_64 -itd --name appimage -v $PWD:/src:Z ubuntu:20.04
-    - podman exec appimage /src/appimage/build.sh
+    - podman run --cgroups=disabled --arch=x86_64 -itd --name appimage -v $PWD:/src:Z ubuntu:20.04
+
+    - echo "************** Building application and dependencies **************" &> logs.txt
+    - podman exec appimage /usr/bin/env -i /bin/bash -l -c '/usr/bin/env SRC_PATH=/src env OUT_PATH=/src/appimage /src/support/build-with-gtk-libadwaita.sh' &>> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - echo "************** Building AppImage **************" &>> logs.txt
+    - podman exec appimage /usr/bin/env -i /bin/bash -l -c '/usr/bin/env SRC_PATH=/src /usr/bin/env RECEIPE_PATH=/src/appimage /usr/bin/env APPDIR_PATH=/src/appimage /src/appimage/create-appimage.sh' &>> logs.txt || (tail -n 500 logs.txt && exit 1)
   artifacts:
     paths:
+      - 'logs.txt'
       - 'MissionCenter-x86_64.AppImage'
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

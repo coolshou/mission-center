@@ -1,0 +1,125 @@
+name: mission-center
+
+version: '0.5.0'
+grade: devel
+
+base: core22
+architectures: [ amd64, arm64 ]
+confinement: classic
+
+summary: summary
+description: description
+
+plugs:
+  desktop:
+    mount-host-font-cache: false
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+
+slots:
+  mission-center:
+    interface: dbus
+    bus: session
+    name: io.missioncenter.MissionCenter
+
+  mission-center-gatherer:
+    interface: dbus
+    bus: session
+    name: io.missioncenter.MissionCenter.Gatherer
+
+apps:
+  mission-center:
+    environment:
+      PATH: $PATH:$SNAP/bin
+      XDG_DATA_DIRS: $SNAP/share:/var/lib/snapd/desktop:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS
+      GSETTINGS_SCHEMA_DIR: $SNAP/share/glib-2.0/schemas
+      HW_DB_DIR: $SNAP/share/missioncenter/
+      MC_RESOURCE_DIR: $SNAP/share/missioncenter/
+      GTK_USE_PORTAL: '1'
+    plugs:
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - opengl
+    command: bin/missioncenter
+    desktop: share/applications/io.missioncenter.MissionCenter.desktop
+
+parts:
+  mission-center:
+    plugin: nil
+    build-packages:
+      - patchelf
+    source: .
+    override-build: |
+      /usr/bin/env -i /bin/bash -l -c "/usr/bin/env SRC_PATH=$SNAPCRAFT_PART_BUILD /usr/bin/env OUT_PATH=$SNAPCRAFT_PART_BUILD/snap/local $SNAPCRAFT_PART_BUILD/support/build-with-gtk-libadwaita.sh"
+
+      # Remove the gatherer binary, it'll be rebuilt in the `gatherer` part
+      rm -f snap/local/usr/bin/missioncenter-gatherer
+
+      # Copy dependencies
+      cd $SNAPCRAFT_PART_BUILD
+      cp -aL /usr/lib/$(arch)-linux-gnu/{libfontconfig.so.1,libepoxy.so.0,libffi.so.8,libEGL.so.1,libGLdispatch.so.0,libgbm.so.1,libxml2.so.2,libicuuc.so.70,libicudata.so.70,libcurl.so.4,libldap-2.5.so.0,liblber-2.5.so.0,libpsl.so.5,libnghttp2.so.14,librtmp.so.1,libsasl2.so.2,libXi.so.6,libX11.so.6,libtiff.so.5,libjpeg.so.8,librsvg-2.so.2,libxkbcommon.so.0,libXext.so.6,libXcursor.so.1,libXdamage.so.1,libXfixes.so.3,libXrandr.so.2,libXinerama.so.1,libpixman-1.so.0,libXrender.so.1,libxcb.so.1,libwebp.so.7,libjbig.so.0,libXau.so.6,libXdmcp.so.6,libxcb-randr.so.0,libdeflate.so.0} snap/local/usr/lib/$(arch)-linux-gnu/
+
+      # Fix desktop icon
+      cd $SNAPCRAFT_PART_BUILD
+      mkdir -p snap/local/usr/meta/gui
+      sed -i 's|Icon=io.missioncenter.MissionCenter$|Icon=${SNAP}/meta/gui/io.missioncenter.MissionCenter.svg|g' snap/local/usr/share/applications/io.missioncenter.MissionCenter.desktop
+      cp snap/local/usr/share/applications/io.missioncenter.MissionCenter.desktop snap/local/usr/meta/gui/
+      cp snap/local/usr/share/icons/hicolor/scalable/apps/io.missioncenter.MissionCenter.svg snap/local/usr/meta/gui/
+
+      # Patch files for `classic` confinement
+      cd $SNAPCRAFT_PART_BUILD
+      find snap/local/usr/bin -type f -executable -exec patchelf --set-interpreter /snap/core22/current/lib64/ld-linux-x86-64.so.2 {} \;
+      find snap/local/usr/bin -type f -executable -exec patchelf --force-rpath --set-rpath \$ORIGIN/../lib/$(arch)-linux-gnu:/snap/core22/current/lib/$(arch)-linux-gnu {} \;
+      find snap/local/usr/lib -type f -iname "*.so*" -exec patchelf --set-interpreter /snap/core22/current/lib64/ld-linux-x86-64.so.2 {} \;
+      find snap/local/usr/lib -type f -iname "*.so*" -exec patchelf --force-rpath --set-rpath \$ORIGIN:/snap/core22/current/lib/$(arch)-linux-gnu {} \;
+
+      patchelf --force-rpath --set-rpath \$ORIGIN:\$ORIGIN/../../..:/snap/core22/current/lib/$(arch)-linux-gnu snap/local/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-gif.so
+      patchelf --force-rpath --set-rpath \$ORIGIN:\$ORIGIN/../../..:/snap/core22/current/lib/$(arch)-linux-gnu snap/local/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-tiff.so
+      patchelf --force-rpath --set-rpath \$ORIGIN:\$ORIGIN/../../..:/snap/core22/current/lib/$(arch)-linux-gnu snap/local/usr/lib/$(arch)-linux-gnu/gtk-4.0/4.0.0/printbackends/libprintbackend-file.so
+
+    override-prime: |
+      cp -ar $SNAPCRAFT_PART_BUILD/snap/local/usr/* $SNAPCRAFT_PRIME/
+
+  gatherer:
+    plugin: nil
+    after: [ mission-center ]
+    build-packages:
+      - docker.io
+      - git
+      - build-essential
+      - libarchive-dev
+      - libtalloc-dev
+    source: .
+    override-build: |
+      # Create rootfs
+      systemctl start docker
+
+      cd $SNAPCRAFT_PART_BUILD
+      docker pull ubuntu:14.04
+      docker save -o ubuntu.tar ubuntu:14.04
+      mkdir rootfs && cd rootfs && tar xf ../ubuntu.tar && find . -type f -iname "*.tar" > archives
+      for archive in $(cat archives); do sh -c "tar xf $archive || true"; done
+
+      # Download and build proot
+      cd $SNAPCRAFT_PART_BUILD
+      git clone https://github.com/proot-me/proot
+      cd proot && make -C src loader.elf build.h && make -C src proot
+
+      # Run the build in an Ubuntu 14.04 environment
+      cd $SNAPCRAFT_PART_BUILD
+      ./proot/src/proot -0 -b /etc/host.conf -b /etc/hosts -b /etc/resolv.conf -b /dev/ -b /sys/ -b /proc/ -b /tmp/ -b /run/shm -b $SNAPCRAFT_PART_BUILD:/src --kill-on-exit -r rootfs /usr/bin/env -i /bin/bash -l -c '/usr/bin/env SRC_PATH=/src /usr/bin/env OUT_PATH=/src/snap/local /src/snap/local/build-gatherer.sh'
+
+    override-prime: |
+      cp -afr $SNAPCRAFT_PART_BUILD/snap/local/missioncenter-gatherer $SNAPCRAFT_PRIME/bin/
