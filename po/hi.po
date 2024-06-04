@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-04 10:22+0300\n"
-"PO-Revision-Date: 2024-05-07 18:07+0000\n"
+"PO-Revision-Date: 2024-06-04 22:52+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5.4-rc\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -90,8 +90,8 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"लोकप्रिय NVTOP परियोजना द्वारा संचालित समग्र GPU उपयोग, वीडियो एनकोडर और डिकोडर "
-"उपयोग, मेमोरी उपयोग और बिजली की खपत की निगरानी करें"
+"लोकप्रिय NVTOP परियोजना द्वारा संचालित समग्र GPU उपयोग, वीडियो एनकोडर और डिको"
+"डर उपयोग, मेमोरी उपयोग और ऊर्जा खपत की निगरानी करें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -102,13 +102,12 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "सरल निगरानी के लिए लघु सारांश दृश्य का समर्थन करता है"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"CPU और समग्र संसाधन उपयोग को कम करने के प्रयास में सभी ग्राफ़ के लिए OpenGL रेंडरिंग का "
-"उपयोग करें"
+"CPU और समग्र संसाधन उपयोग को कम करने के प्रयास में सभी ग्राफ के लिए HW त्वरि"
+"त रेंडरिंग का उपयोग करें"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -144,7 +143,7 @@ msgstr "अनुप्रयोग स्टार्टअप पर कौन
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "अस्वीकृत! अब उपयोग में नहीं!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
@@ -184,11 +183,11 @@ msgstr "ऐप्स पृष्ठ दृश्य की छंटाई द�
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Which graph is shown on the CPU performance page"
-msgstr "CPU प्रदर्शन पृष्ठ पर कौन सा ग्राफ़ दिखाया गया है"
+msgstr "CPU प्रदर्शन पृष्ठ पर कौन सा ग्राफ दिखाया गया है"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Show kernel times in the CPU graphs"
-msgstr "CPU ग्राफ़ में कर्नेल समय दिखाएं"
+msgstr "CPU ग्राफ में कर्नेल समय दिखाएं"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid "Which page is shown on application startup, in the performance tab"
@@ -196,7 +195,7 @@ msgstr "अनुप्रयोग पुनरारंभ पर प्रद
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "क्या प्रदर्शन ग्राफ सुचारू या टेढ़े-मेढ़े होने चाहिए"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -216,7 +215,7 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "ग्राफ़ इसमें बदलें (_r)"
+msgstr "ग्राफ इसमें बदलें (_r)"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
@@ -236,7 +235,7 @@ msgstr "कर्नेल समय दिखाएं"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "ग्राफ़ सारांश दृश्य (_S)"
+msgstr "ग्राफ सारांश दृश्य (_S)"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:182
@@ -268,7 +267,7 @@ msgstr "मेमोरी (_M)"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "ड्राइव (_D)"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -348,16 +347,15 @@ msgstr "L3 कैशे:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq ड्राइवर:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq गवर्नर:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "प्राथमिकताएं (_P)"
+msgstr "ऊर्जा वरीयता:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -379,7 +377,7 @@ msgstr "पठन गति"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr "लिखने की गति"
+msgstr "लेखन गति"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
@@ -399,14 +397,12 @@ msgid "Type:"
 msgstr "प्रकार:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "वीडियो एन्कोड"
+msgstr "वीडियो एन्कोड उपयोगीकरण"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "वीडियो डिकोड"
+msgstr "वीडियो डिकोड उपयोगीकरण"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -420,7 +416,7 @@ msgstr "क्लाक गति"
 
 #: resources/ui/performance_page/gpu_details.blp:111
 msgid "Power draw"
-msgstr "बिजली खपत"
+msgstr "ऊर्जा खपत"
 
 #: resources/ui/performance_page/gpu_details.blp:192
 msgid "Memory speed"
@@ -573,23 +569,23 @@ msgstr "CPU उपयोग को कोर गणना तक स्केल
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "सुचारू ग्राफ"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "ग्राफ को टेढ़ी-मेढ़ी रेखा के बजाय सुचारू रेखा के रूप में बनाएं"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "सेवा विवरण"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "अवस्था"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "सेवा की वर्तमान अवस्था"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -599,29 +595,27 @@ msgstr "नाम"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "विवरण"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "स्थिति:"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "सक्षम"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "प्रक्रियाएं"
+msgstr "प्रक्रिया"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "प्रक्रिया और उपयोक्ता जानकारी"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "प्रक्रियाएं"
+msgstr "प्रक्रिया ID"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -635,35 +629,35 @@ msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "उपयोक्ता"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "समूह"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "लॉग"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "प्रारंभ"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "रोकें"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "पुनः प्रारंभ करें"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "विवरण"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -671,7 +665,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "उपकरण"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -695,7 +689,7 @@ msgstr "ऐप्स"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "सेवाएं"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -707,7 +701,7 @@ msgstr "MissionCenter के बारे में (_A)"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "ड्राइव"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -724,7 +718,7 @@ msgstr "अनुप्रयोग रोकें"
 
 #: src/apps_page/list_item.rs:366
 msgid "Force Stop Application"
-msgstr "बलपूर्वक एप्लीकेशन रोकें"
+msgstr "बलपूर्वक अनुप्रयोग रोकें"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:370
@@ -780,9 +774,8 @@ msgstr ""
 "को अधिक मेमोरी की आवश्यकता होने पर पहले पुन: उपयोग किया जाएगा"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "डिस्क {} ({})"
+msgstr "ड्राइव {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -851,7 +844,7 @@ msgstr "असमर्थित"
 
 #: src/performance_page/cpu.rs:332 src/performance_page/disk.rs:242
 msgid "Yes"
-msgstr "हाँ"
+msgstr "हां"
 
 #: src/performance_page/cpu.rs:334 src/performance_page/disk.rs:244
 msgid "No"
@@ -874,9 +867,8 @@ msgid "Disk {} ({})"
 msgstr "डिस्क {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "डिस्क {} ({})"
+msgstr "ड्राइव ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -897,26 +889,26 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} चालू सेवाएं"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "कुल {} में से {} सेवाएं विफल रहीं"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "चालू"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "असफल"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "रुका हुआ"
 
 #: src/application.rs:325
 msgid "translator-credits"
@@ -924,7 +916,7 @@ msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "बंद करें (_Q)"
 
 #~ msgid "Display optical device information in the Performance tab"
 #~ msgstr "प्रदर्शन टैब में ऑप्टिकल डिवाइस जानकारी प्रदर्शित करें"
