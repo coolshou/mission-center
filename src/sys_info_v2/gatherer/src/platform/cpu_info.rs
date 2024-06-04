@@ -85,7 +85,7 @@ impl Arg for crate::platform::CpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suytyytttt)")
+        dbus::Signature::from("(suytsytttt)")
     }
 }
 
@@ -200,9 +200,6 @@ pub trait CpuInfoExt<'a> {
     /// It is expected that implementors of this trait cache this information, once obtained
     /// from the underlying OS
     fn refresh_dynamic_info_cache(&mut self, processes: &Self::P);
-
-    /// Implementation specific understanding of whether the cache is too old to be relevant
-    fn is_dynamic_info_cache_stale(&self) -> bool;
 
     /// Returns the static information for the CPU.
     fn static_info(&self) -> &Self::S;

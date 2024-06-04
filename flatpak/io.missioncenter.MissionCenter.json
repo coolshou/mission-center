@@ -187,7 +187,7 @@
         {
           "type": "git",
           "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "commit": "d47955c5a20b2f7cf85ff25a00b02160883aa0b1"
+          "commit": "07e824d8e7b2273166acbe6d58e130b3487d8074"
         }
       ],
       "cleanup": [

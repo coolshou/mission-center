@@ -21,21 +21,24 @@
 use std::{
     collections::HashMap,
     sync::{Arc, RwLock},
+    time::Instant,
 };
 
 use crate::{
     logging::{critical, error, warning},
     platform::{
         platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
-        OpenGLApiVersion,
+        OpenGLApiVersion, ProcessesExt,
     },
 };
+
+use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 #[allow(unused)]
 mod nvtop;
 mod vulkan_info;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LinuxGpuStaticInfo {
     id: Arc<str>,
     device_name: Arc<str>,
@@ -112,7 +115,7 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LinuxGpuDynamicInfo {
     id: Arc<str>,
     temp_celsius: u32,
@@ -221,6 +224,9 @@ pub struct LinuxGpuInfo {
     dynamic_info: HashMap<arrayvec::ArrayString<16>, LinuxGpuDynamicInfo>,
 
     gpu_list_refreshed: bool,
+
+    static_refresh_timestamp: Instant,
+    dynamic_refresh_timestamp: Instant,
 }
 
 impl Drop for LinuxGpuInfo {
@@ -261,6 +267,9 @@ impl LinuxGpuInfo {
             dynamic_info: HashMap::new(),
 
             gpu_list_refreshed: false,
+
+            static_refresh_timestamp: *INITIAL_REFRESH_TS,
+            dynamic_refresh_timestamp: *INITIAL_REFRESH_TS,
         };
 
         this.refresh_gpu_list();
@@ -589,10 +598,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
             let device_name =
                 unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) };
-            let device_name = match device_name.to_str() {
-                Ok(dn) => dn,
-                Err(_) => "Unknown",
-            };
+            let device_name = device_name.to_str().unwrap_or_else(|_| "Unknown");
 
             let mut uevent_path = ArrayString::<64>::new();
             let _ = write!(uevent_path, "/sys/bus/pci/devices/{}/uevent", pdev);
@@ -691,6 +697,12 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             return;
         }
 
+        let now = Instant::now();
+        if self.static_refresh_timestamp.elapsed() < MIN_DELTA_REFRESH {
+            return;
+        }
+        self.static_refresh_timestamp = now;
+
         let vulkan_versions = unsafe {
             run_forked(|| {
                 if let Some(vulkan_info) = vulkan_info::VulkanInfo::new() {
@@ -748,6 +760,12 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         if !self.gpu_list_refreshed {
             return;
         }
+
+        let now = Instant::now();
+        if self.dynamic_refresh_timestamp.elapsed() < MIN_DELTA_REFRESH {
+            return;
+        }
+        self.dynamic_refresh_timestamp = now;
 
         let mut gpu_list = self.gpu_list.write().unwrap();
         let gpu_list = gpu_list.deref_mut();

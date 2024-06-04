@@ -24,7 +24,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
-use crate::sys_info_v2::Readings;
+use crate::{application::MissionCenterApplication, sys_info_v2::Readings};
 
 mod imp {
     use super::*;
@@ -51,6 +51,8 @@ mod imp {
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
         #[template_child]
+        pub services_page: TemplateChild<crate::services_page::ServicesPage>,
+        #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub header_stack: TemplateChild<gtk::Stack>,
@@ -72,7 +74,14 @@ mod imp {
         #[property(get)]
         apps_page_active: Cell<bool>,
         #[property(get)]
+        services_page_active: Cell<bool>,
+        #[property(get)]
         user_hid_sidebar: Cell<bool>,
+
+        #[property(name = "info-button-visible", get = Self::info_button_visible, type = bool)]
+        _info_button_visible: [u8; 0],
+        #[property(name = "search-button-visible", get = Self::search_button_visible, type = bool)]
+        _search_button_visible: [u8; 0],
 
         #[property(get, set)]
         summary_mode: Cell<bool>,
@@ -93,6 +102,7 @@ mod imp {
                 sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
+                services_page: TemplateChild::default(),
                 header_bar: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
                 header_tabs: TemplateChild::default(),
@@ -104,7 +114,11 @@ mod imp {
 
                 performance_page_active: Cell::new(true),
                 apps_page_active: Cell::new(false),
+                services_page_active: Cell::new(false),
                 user_hid_sidebar: Cell::new(false),
+
+                _info_button_visible: [0; 0],
+                _search_button_visible: [0; 0],
 
                 summary_mode: Cell::new(false),
                 collapse_threshold: Cell::new(0),
@@ -115,10 +129,25 @@ mod imp {
     }
 
     impl MissionCenterWindow {
+        fn info_button_visible(&self) -> bool {
+            if self.performance_page.is_bound() {
+                self.performance_page_active.get() && self.performance_page.info_button_visible()
+            } else {
+                false
+            }
+        }
+
+        fn search_button_visible(&self) -> bool {
+            self.apps_page_active.get() || self.services_page_active.get()
+        }
+    }
+
+    impl MissionCenterWindow {
         fn update_active_page(&self) {
             use glib::g_critical;
 
             let visible_child_name = self.stack.visible_child_name().unwrap_or("".into());
+
             if visible_child_name == "performance-page" {
                 if self.performance_page_active.get() {
                     return;
@@ -129,7 +158,11 @@ mod imp {
 
                 self.apps_page_active.set(false);
                 self.obj().notify_apps_page_active();
-            } else if visible_child_name == "apps-page" {
+
+                self.services_page_active.set(false);
+                self.obj().notify_services_page_active();
+            }
+            if visible_child_name == "apps-page" {
                 if self.apps_page_active.get() {
                     return;
                 }
@@ -139,7 +172,26 @@ mod imp {
 
                 self.apps_page_active.set(true);
                 self.obj().notify_apps_page_active();
+
+                self.services_page_active.set(false);
+                self.obj().notify_services_page_active();
+            } else if visible_child_name == "services-page" {
+                if self.services_page_active.get() {
+                    return;
+                }
+
+                self.performance_page_active.set(false);
+                self.obj().notify_performance_page_active();
+
+                self.apps_page_active.set(false);
+                self.obj().notify_apps_page_active();
+
+                self.services_page_active.set(true);
+                self.obj().notify_services_page_active();
             }
+
+            self.obj().notify_info_button_visible();
+            self.obj().notify_search_button_visible();
 
             if let Some(settings) = self.settings.take() {
                 settings
@@ -211,10 +263,13 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
-            use crate::{apps_page::AppsPage, performance_page::PerformancePage};
+            use crate::{
+                apps_page::AppsPage, performance_page::PerformancePage, services_page::ServicesPage,
+            };
 
             PerformancePage::ensure_type();
             AppsPage::ensure_type();
+            ServicesPage::ensure_type();
 
             klass.bind_template();
         }
@@ -265,22 +320,60 @@ mod imp {
                     this.update_active_page();
                 }));
 
-            self.header_search_entry
-                .set_key_capture_widget(Some(self.obj().upcast_ref::<gtk::Widget>()));
-
-            self.header_search_entry
-                .connect_search_started(clone!(@weak self as this => move |_| {
-                    if !this.apps_page_active.get() {
-                        return;
+            let evt_ctrl_key = gtk::EventControllerKey::new();
+            evt_ctrl_key.connect_key_pressed({
+                let this = self.obj().downgrade();
+                move |controller, _, _, _| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        if this.services_page_active.get() && this.services_page.dialog_visible() {
+                            controller.forward(&this.services_page.get());
+                        } else {
+                            controller.forward(&this.header_search_entry.get());
+                        }
                     }
 
-                    let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
-                }));
+                    Propagation::Proceed
+                }
+            });
+            self.obj().add_controller(evt_ctrl_key);
 
             self.header_search_entry
-                .connect_stop_search(clone!(@weak self as this => move |_| {
-                    let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
-                }));
+                .set_key_capture_widget(Some(&self.header_search_entry.get()));
+
+            self.header_search_entry.connect_search_started({
+                let this = self.obj().downgrade();
+                move |_| {
+                    eprintln!("search started");
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+
+                        if this.apps_page_active.get() || this.services_page_active.get() {
+                            let _ = WidgetExt::activate_action(
+                                this.obj().as_ref(),
+                                "win.toggle-search",
+                                None,
+                            );
+                        }
+                    }
+                }
+            });
+
+            self.header_search_entry.connect_stop_search({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        if this.apps_page_active.get() || this.services_page_active.get() {
+                            let _ = WidgetExt::activate_action(
+                                this.obj().as_ref(),
+                                "win.toggle-search",
+                                None,
+                            );
+                        }
+                    }
+                }
+            });
 
             // Triggered when user interacts with the sidebar toggle button
             // via any means (clicking, keyboard shortcut, etc.)
@@ -313,6 +406,8 @@ mod imp {
                         this.header_stack.set_visible(false);
                     }
 
+                    this.services_page.collapse();
+
                     if !this.performance_page_active.get() {
                         return;
                     }
@@ -323,6 +418,8 @@ mod imp {
                 .connect_unapply(clone!(@weak self as this => move |_| {
                     this.header_stack.set_visible(true);
                     this.bottom_bar.set_reveal(false);
+
+                    this.services_page.expand();
 
                     this.split_view.set_collapsed(this.should_hide_sidebar());
                 }));
@@ -349,6 +446,12 @@ mod imp {
                         this.split_view.set_show_sidebar(!this.user_hid_sidebar.get());
                     }
                 }));
+
+            self.performance_page.connect_info_button_visible_notify(
+                clone!(@weak self as this => move |_| {
+                    this.obj().notify_info_button_visible();
+                }),
+            );
         }
     }
 
@@ -390,14 +493,17 @@ impl MissionCenterWindow {
             .build();
 
         if let Some(settings) = settings {
-            sys_info.set_update_speed(settings.int("app-update-interval").into());
+            sys_info.set_update_speed(settings.uint64("app-update-interval-u64"));
+            sys_info.set_core_count_affects_percentages(
+                settings.boolean("apps-page-core-count-affects-percentages"),
+            );
 
             settings.connect_changed(
-                Some("app-update-interval"),
+                Some("app-update-interval-u64"),
                 clone!(@weak this => move |settings, _| {
                     use crate::{MissionCenterApplication};
 
-                    let update_speed = settings.int("app-update-interval").into();
+                    let update_speed = settings.uint64("app-update-interval-u64");
                     let app = match MissionCenterApplication::default_instance() {
                         Some(app) => app,
                         None => {
@@ -439,6 +545,14 @@ impl MissionCenterWindow {
             );
         }
 
+        let ok = self.imp().services_page.set_initial_readings(&mut readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for services page"
+            );
+        }
+
         self.imp().loading_spinner.set_spinning(false);
         self.imp().loading_box.set_visible(false);
         self.imp().header_bar.set_visible(true);
@@ -452,6 +566,22 @@ impl MissionCenterWindow {
         self.imp()
             .split_view
             .set_collapsed(self.imp().should_hide_sidebar());
+
+        if let Some(app) = MissionCenterApplication::default_instance() {
+            if let Ok(sys_info) = app.sys_info() {
+                sys_info.continue_reading();
+            } else {
+                g_critical!(
+                    "MissionCenter",
+                    "Failed to get sys_info from MissionCenterApplication"
+                );
+            }
+        } else {
+            g_critical!(
+                "MissionCenter",
+                "Failed to get default instance of MissionCenterApplication"
+            );
+        }
     }
 
     pub fn update_readings(&self, readings: &mut Readings) -> bool {
@@ -459,6 +589,7 @@ impl MissionCenterWindow {
 
         result &= self.imp().performance_page.update_readings(readings);
         result &= self.imp().apps_page.update_readings(readings);
+        result &= self.imp().services_page.update_readings(readings);
 
         result
     }

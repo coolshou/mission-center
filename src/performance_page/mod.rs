@@ -518,7 +518,7 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) {
             let mut disks = HashMap::new();
-            let len = readings.disk_info.len();
+            let len = readings.disks_info.len();
             let hide_index = len == 1;
             for i in 0..len {
                 let mut ret =
@@ -554,7 +554,7 @@ mod imp {
         ) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
             use glib::g_critical;
 
-            let disk_static_info = &readings.disk_info[secondary_index.unwrap_or(0)];
+            let disk_static_info = &readings.disks_info[secondary_index.unwrap_or(0)];
 
             let summary = SummaryGraph::new();
             summary.set_page_indices(SIDEBAR_DISK_PAGE_DEFAULT_IDX, secondary_index.unwrap_or(0));
@@ -949,7 +949,7 @@ mod imp {
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_name in disks_pages.keys() {
                             if !readings
-                                .disk_info
+                                .disks_info
                                 .iter()
                                 .any(|device| device.id.as_ref() == disk_name)
                             {
@@ -1081,8 +1081,8 @@ mod imp {
                     }
                     Pages::Disk(pages) => {
                         let mut new_devices = Vec::new();
-                        let hide_index = readings.disk_info.len() == 1;
-                        for (index, disk) in readings.disk_info.iter().enumerate() {
+                        let hide_index = readings.disks_info.len() == 1;
+                        for (index, disk) in readings.disks_info.iter().enumerate() {
                             if let Some((summary, page)) = pages.get(disk.id.as_ref()) {
                                 this.imp().update_disk_page_index(
                                     summary,

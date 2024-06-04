@@ -35,6 +35,7 @@ mod imp {
     pub struct MissionCenterApplication {
         pub settings: Cell<Option<gio::Settings>>,
         pub sys_info: RefCell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub window: RefCell<Option<crate::MissionCenterWindow>>,
     }
 
     impl Default for MissionCenterApplication {
@@ -42,6 +43,7 @@ mod imp {
             Self {
                 settings: Cell::new(None),
                 sys_info: RefCell::new(None),
+                window: RefCell::new(None),
             }
         }
     }
@@ -166,6 +168,9 @@ mod imp {
             };
 
             window.present();
+
+            self.window
+                .set(window.downcast_ref::<crate::MissionCenterWindow>().cloned());
         }
     }
 
@@ -278,6 +283,10 @@ impl MissionCenterApplication {
             })),
             Err(e) => Err(e),
         }
+    }
+
+    pub fn window(&self) -> Option<crate::MissionCenterWindow> {
+        unsafe { &*self.imp().window.as_ptr() }.clone()
     }
 
     fn setup_gactions(&self) {

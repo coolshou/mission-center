@@ -24,6 +24,10 @@ resources/ui/performance_page/summary_graph.blp
 resources/ui/preferences/page.blp
 resources/ui/preferences/window.blp
 
+resources/ui/services_page/context_menu_button.blp
+resources/ui/services_page/details_dialog.blp
+resources/ui/services_page/page.blp
+
 resources/ui/window.blp
 
 src/apps_page/mod.rs
@@ -46,6 +50,12 @@ src/performance_page/summary_graph.rs
 
 src/preferences/mod.rs
 src/preferences/page.rs
+
+src/services_page/mod.rs
+src/services_page/context_menu_button.rs
+src/services_page/details_dialog.rs
+src/services_page/list_cell.rs
+src/services_page/services_list_item.rs
 
 src/application.rs
 src/main.rs

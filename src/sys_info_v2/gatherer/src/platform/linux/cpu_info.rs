@@ -18,12 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Instant};
 
 use crate::debug;
 use crate::platform::cpu_info::*;
 
-use super::{CPU_COUNT, HZ};
+use super::{CPU_COUNT, HZ, INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 const PROC_STAT_USER: usize = 0;
 const PROC_STAT_NICE: usize = 1;
@@ -33,8 +33,6 @@ const PROC_STAT_SOFTIRQ: usize = 6;
 const PROC_STAT_GUEST: usize = 8;
 const PROC_STAT_GUEST_NICE: usize = 9;
 
-const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
-
 #[derive(Debug, Copy, Clone)]
 struct CpuStats {
     pub user: u64,
@@ -42,7 +40,7 @@ struct CpuStats {
     pub system: u64,
     pub irq: u64,
     pub softirq: u64,
-    pub timestamp: std::time::Instant,
+    pub timestamp: Instant,
 }
 
 impl Default for CpuStats {
@@ -53,7 +51,7 @@ impl Default for CpuStats {
             system: 0,
             irq: 0,
             softirq: 0,
-            timestamp: std::time::Instant::now(),
+            timestamp: Instant::now(),
         }
     }
 }
@@ -97,7 +95,7 @@ impl CpuStats {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LinuxCpuStaticInfo {
     name: Arc<str>,
     logical_cpu_count: u32,
@@ -195,7 +193,7 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct LinuxCpuDynamicInfo {
     overall_utilization_percent: f32,
     overall_kernel_utilization_percent: f32,
@@ -276,7 +274,9 @@ pub struct LinuxCpuInfo {
     dynamic_info: LinuxCpuDynamicInfo,
 
     cpu_stats_cache: Vec<CpuStats>,
-    refresh_timestamp: std::time::Instant,
+
+    static_refresh_timestamp: Instant,
+    dynamic_refresh_timestamp: Instant,
 }
 
 impl LinuxCpuInfo {
@@ -289,8 +289,9 @@ impl LinuxCpuInfo {
             dynamic_info: LinuxCpuDynamicInfo::new(),
 
             cpu_stats_cache,
-            refresh_timestamp: std::time::Instant::now()
-                - (STALE_DELTA + std::time::Duration::from_millis(1)),
+
+            static_refresh_timestamp: *INITIAL_REFRESH_TS,
+            dynamic_refresh_timestamp: *INITIAL_REFRESH_TS,
         }
     }
 
@@ -1398,29 +1399,43 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
     type P = crate::platform::Processes;
 
     fn refresh_static_info_cache(&mut self) {
-        let cache_info = Self::cache_info();
-        let [cpufreq_driver, cpufreq_governor, energy_performance_preference] =
-            Self::get_cpufreq_driver_governor();
+        let now = Instant::now();
+        if now.duration_since(self.static_refresh_timestamp) < MIN_DELTA_REFRESH {
+            return;
+        }
+        self.static_refresh_timestamp = now;
 
-        self.static_info = LinuxCpuStaticInfo {
-            name: Self::name(),
-            logical_cpu_count: Self::logical_cpu_count(),
-            socket_count: Self::socket_count(),
-            base_frequency_khz: Self::base_frequency_khz(),
-            virtualization_technology: Self::virtualization(),
-            is_virtual_machine: Self::virtual_machine(),
-            l1_combined_cache: cache_info[1],
-            l2_cache: cache_info[2],
-            l3_cache: cache_info[3],
-            l4_cache: cache_info[4],
-            cpufreq_driver,
-            cpufreq_governor,
-            energy_performance_preference,
+        if self.static_info.logical_cpu_count == 0 {
+            let cache_info = Self::cache_info();
+            let [cpufreq_driver, cpufreq_governor, energy_performance_preference] =
+                Self::get_cpufreq_driver_governor();
+
+            self.static_info = LinuxCpuStaticInfo {
+                name: Self::name(),
+                logical_cpu_count: Self::logical_cpu_count(),
+                socket_count: Self::socket_count(),
+                base_frequency_khz: Self::base_frequency_khz(),
+                virtualization_technology: Self::virtualization(),
+                is_virtual_machine: Self::virtual_machine(),
+                l1_combined_cache: cache_info[1],
+                l2_cache: cache_info[2],
+                l3_cache: cache_info[3],
+                l4_cache: cache_info[4],
+                cpufreq_driver,
+                cpufreq_governor,
+                energy_performance_preference,
+            }
         }
     }
 
     fn refresh_dynamic_info_cache(&mut self, processes: &crate::platform::Processes) {
         use crate::critical;
+
+        let now = Instant::now();
+        if now.duration_since(self.dynamic_refresh_timestamp) < MIN_DELTA_REFRESH {
+            return;
+        }
+        self.dynamic_refresh_timestamp = now;
 
         self.dynamic_info
             .per_logical_cpu_utilization_percent
@@ -1516,11 +1531,7 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
         self.dynamic_info.handle_count = Self::handle_count();
         self.dynamic_info.uptime_seconds = Self::uptime().as_secs();
 
-        self.refresh_timestamp = std::time::Instant::now();
-    }
-
-    fn is_dynamic_info_cache_stale(&self) -> bool {
-        std::time::Instant::now().duration_since(self.refresh_timestamp) > STALE_DELTA
+        self.static_refresh_timestamp = std::time::Instant::now();
     }
 
     fn static_info(&self) -> &Self::S {

@@ -23,8 +23,8 @@ use std::cell::Cell;
 use adw::{prelude::*, subclass::prelude::*, SwitchRow};
 use gtk::{gio, glib};
 
-const MAX_INTERVAL_TICKS: i32 = 200;
-const MIN_INTERVAL_TICKS: i32 = 10;
+const MAX_INTERVAL_TICKS: u64 = 200;
+const MIN_INTERVAL_TICKS: u64 = 10;
 
 const MAX_POINTS: i32 = 600;
 const MIN_POINTS: i32 = 10;
@@ -86,12 +86,12 @@ mod imp {
             }
             let settings = settings.unwrap();
 
-            let new_interval = (self.update_interval.value() / INTERVAL_STEP).round() as i32;
+            let new_interval = (self.update_interval.value() / INTERVAL_STEP).round() as u64;
             let new_points = self.data_points.value() as i32;
 
             if new_interval <= MAX_INTERVAL_TICKS && new_interval >= MIN_INTERVAL_TICKS {
                 if settings
-                    .set_int("app-update-interval", new_interval)
+                    .set_uint64("app-update-interval-u64", new_interval)
                     .is_err()
                 {
                     g_critical!(
@@ -273,7 +273,7 @@ impl PreferencesPage {
             Some(settings) => settings,
         };
         let data_points = settings.int("perfomance-page-data-points");
-        let update_interval_s = (settings.int("app-update-interval") as f64) * INTERVAL_STEP;
+        let update_interval_s = (settings.uint64("app-update-interval-u64") as f64) * INTERVAL_STEP;
         let this = self.imp();
 
         this.data_points.set_value(data_points as f64);

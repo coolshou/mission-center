@@ -10,6 +10,11 @@
         <file preprocess="xml-stripblanks">nm-signal-75-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-100-symbolic.svg</file>
         <file preprocess="xml-stripblanks">overlapping-windows-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">service-disabled.svg</file>
+        <file preprocess="xml-stripblanks">service-failed.svg</file>
+        <file preprocess="xml-stripblanks">service-running.svg</file>
+        <file preprocess="xml-stripblanks">service-stopped.svg</file>
+        <file preprocess="xml-stripblanks">details-symbolic.svg</file>
         <file preprocess="xml-stripblanks">sidebar-toggle-left-symbolic.svg</file>
         <file preprocess="xml-stripblanks">speedometer-symbolic.svg</file>
     </gresource>
@@ -41,6 +46,10 @@
 
         <file preprocess="xml-stripblanks">ui/preferences/page.ui</file>
         <file preprocess="xml-stripblanks">ui/preferences/window.ui</file>
+
+        <file preprocess="xml-stripblanks">ui/services_page/page.ui</file>
+        <file preprocess="xml-stripblanks">ui/services_page/context_menu_button.ui</file>
+        <file preprocess="xml-stripblanks">ui/services_page/details_dialog.ui</file>
 
         <file preprocess="xml-stripblanks">ui/window.ui</file>
 

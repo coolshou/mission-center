@@ -21,11 +21,14 @@
 use std::{
     collections::{BTreeSet, HashMap},
     sync::Arc,
+    time::Instant,
 };
 
 use lazy_static::lazy_static;
 
 use crate::platform::apps::*;
+
+use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 const COMMAND_IGNORELIST: &[&str] = &[
     "/usr/bin/sh",
@@ -65,8 +68,6 @@ const COMMAND_IGNORELIST: &[&str] = &[
 ];
 
 const APP_IGNORELIST: &[&str] = &["guake-prefs"];
-const STALE_DELTA: std::time::Duration = std::time::Duration::from_millis(1000);
-
 lazy_static! {
     static ref PATH: Vec<String> = {
         let mut result = vec![];
@@ -152,15 +153,15 @@ impl<'a> AppExt<'a> for LinuxApp {
 
 pub struct LinuxApps {
     app_cache: Vec<LinuxApp>,
-    refresh_timestamp: std::time::Instant,
+
+    refresh_timestamp: Instant,
 }
 
 impl Default for LinuxApps {
     fn default() -> Self {
         Self {
             app_cache: vec![],
-            refresh_timestamp: std::time::Instant::now()
-                - (STALE_DELTA + std::time::Duration::from_millis(1)),
+            refresh_timestamp: *INITIAL_REFRESH_TS,
         }
     }
 }
@@ -411,6 +412,12 @@ impl<'a> AppsExt<'a> for LinuxApps {
         use crate::platform::ProcessExt;
         use std::collections::HashSet;
 
+        let now = Instant::now();
+        if now.duration_since(self.refresh_timestamp) < MIN_DELTA_REFRESH {
+            return;
+        }
+        self.refresh_timestamp = now;
+
         self.app_cache.clear();
 
         let mut installed_apps = HashMap::new();
@@ -458,12 +465,6 @@ impl<'a> AppsExt<'a> for LinuxApps {
                 self.app_cache.push(app)
             }
         }
-
-        self.refresh_timestamp = std::time::Instant::now();
-    }
-
-    fn is_cache_stale(&self) -> bool {
-        std::time::Instant::now().duration_since(self.refresh_timestamp) > STALE_DELTA
     }
 
     fn app_list(&self) -> &[Self::A] {
@@ -488,7 +489,11 @@ mod test {
         apps.refresh_cache(p.process_list());
         assert!(!apps.app_cache.is_empty());
 
-        let sample = apps.app_cache.iter().take(10);
-        dbg!(sample);
+        let sample = apps.app_cache.iter().take(20);
+        for app in sample {
+            eprintln!("{:?}", app);
+        }
+
+        assert!(false)
     }
 }

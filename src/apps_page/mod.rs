@@ -353,9 +353,7 @@ mod imp {
                     None
                 };
 
-                if app.pids.is_empty() {
-                    dbg!(&app);
-                }
+                if app.pids.is_empty() {}
 
                 // Find the first process that has any children. This is most likely the root
                 // of the App's process tree.
@@ -652,13 +650,14 @@ mod imp {
                     }
 
                     let entry_name = view_model.name().to_lowercase();
+                    let pid = view_model.pid().to_string();
                     let search_query = window.header_search_entry.text().to_lowercase();
 
-                    if entry_name.contains(&search_query) {
+                    if entry_name.contains(&search_query) || pid.contains(&search_query) {
                         return true;
                     }
 
-                    if search_query.contains(&entry_name) {
+                    if search_query.contains(&entry_name) || search_query.contains(&pid) {
                         return true;
                     }
 
@@ -675,9 +674,16 @@ mod imp {
 
             window.imp().header_search_entry.connect_search_changed({
                 let filter = filter.downgrade();
+                let window = window.downgrade();
                 move |_| {
-                    if let Some(filter) = filter.upgrade() {
-                        filter.changed(gtk::FilterChange::Different);
+                    if let Some(window) = window.upgrade() {
+                        if !window.apps_page_active() {
+                            return;
+                        }
+
+                        if let Some(filter) = filter.upgrade() {
+                            filter.changed(gtk::FilterChange::Different);
+                        }
                     }
                 }
             });
@@ -1070,17 +1076,17 @@ mod imp {
             let column_header_disk = self.column_header_disk.take();
             if let Some(column_header_disk) = &column_header_disk {
                 let total_busy_percent = readings
-                    .disk_info
+                    .disks_info
                     .iter()
                     .map(|disk| disk.busy_percent)
                     .sum::<f32>();
 
-                if readings.disk_info.len() == 0 {
+                if readings.disks_info.len() == 0 {
                     column_header_disk.set_heading("0%");
                 } else {
                     column_header_disk.set_heading(format!(
                         "{}%",
-                        (total_busy_percent / readings.disk_info.len() as f32).round()
+                        (total_busy_percent / readings.disks_info.len() as f32).round()
                     ));
                 }
             }

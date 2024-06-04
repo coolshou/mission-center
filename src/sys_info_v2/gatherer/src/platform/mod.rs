@@ -25,6 +25,7 @@ pub use gpu_info::*;
 #[cfg(target_os = "linux")]
 pub use linux::*;
 pub use processes::*;
+pub use services::*;
 pub use utilities::*;
 
 #[cfg(target_os = "linux")]
@@ -49,6 +50,10 @@ mod linux {
     pub type GpuStaticInfo = platform_impl::LinuxGpuStaticInfo;
     pub type GpuDynamicInfo = platform_impl::LinuxGpuDynamicInfo;
     pub type GpuInfo = platform_impl::LinuxGpuInfo;
+    pub type Service = platform_impl::LinuxService;
+    pub type Services<'a> = platform_impl::LinuxServices<'a>;
+    pub type ServiceController<'a> = platform_impl::LinuxServiceController<'a>;
+    pub type ServicesError = platform_impl::LinuxServicesError;
     pub type PlatformUtilities = platform_impl::LinuxPlatformUtilities;
 }
 
@@ -57,4 +62,5 @@ mod cpu_info;
 mod disk_info;
 mod gpu_info;
 mod processes;
+mod services;
 mod utilities;

@@ -80,4 +80,5 @@ compile_commands.json
 /flatpak/missioncenter.flatpak
 /subprojects/blueprint-compiler
 /subprojects/packagecache
-/subprojects/nvtop-*/**
+_build
+BUILD

@@ -34,6 +34,12 @@
         <key name="app-update-interval" type="i">
             <range min="10" max="200"/>
             <default>20</default>
+            <summary>DEPRECATED! NO LONGER IN USE!</summary>
+        </key>
+
+        <key name="app-update-interval-u64" type="t">
+            <range min="10" max="200"/>
+            <default>20</default>
             <summary>How fast should the data be refreshed and the UI updated (in increments of 50ms)</summary>
         </key>
 

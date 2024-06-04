@@ -26,6 +26,10 @@ blueprints = custom_target('blueprints',
     'ui/preferences/page.blp',
     'ui/preferences/window.blp',
 
+    'ui/services_page/page.blp',
+    'ui/services_page/context_menu_button.blp',
+    'ui/services_page/details_dialog.blp',
+
     'ui/window.blp',
 
     'ui/gtk/help-overlay.blp',

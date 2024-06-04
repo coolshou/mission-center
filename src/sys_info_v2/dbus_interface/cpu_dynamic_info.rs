@@ -42,6 +42,16 @@ impl Arg for CpuDynamicInfo {
     }
 }
 
+impl ReadAll for CpuDynamicInfo {
+    fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
+        i.get().ok_or(super::TypeMismatchError::new(
+            ArgType::Invalid,
+            ArgType::Invalid,
+            0,
+        ))
+    }
+}
+
 impl<'a> Get<'a> for CpuDynamicInfo {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
