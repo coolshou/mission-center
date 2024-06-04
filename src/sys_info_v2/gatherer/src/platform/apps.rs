@@ -73,9 +73,6 @@ pub trait AppsExt<'a>: Default + Append + Arg {
     /// the underlying OS
     fn refresh_cache(&mut self, processes: &std::collections::HashMap<u32, Self::P>);
 
-    /// Implementation specific understanding of whether the cache is too old to be relevant
-    fn is_cache_stale(&self) -> bool;
-
     /// Return the list of (cached) running apps
     fn app_list(&self) -> &[Self::A];
 }

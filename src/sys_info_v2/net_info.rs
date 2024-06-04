@@ -97,6 +97,7 @@ pub struct NetInfo {
 }
 
 unsafe impl Send for NetInfo {}
+unsafe impl Sync for NetInfo {}
 
 impl Drop for NetInfo {
     fn drop(&mut self) {

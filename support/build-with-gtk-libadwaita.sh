@@ -156,24 +156,24 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/wayland.html
 # ----------------------------------------------------------------------
-curl -LO https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.22.92/downloads/wayland-1.22.92.tar.xz
-tar xvf wayland-1.22.92.tar.xz
-cd wayland-1.22.92
+curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland/1.22.0-2.1build1/wayland_1.22.0.orig.tar.gz
+tar xvf wayland_1.22.0.orig.tar.gz
+cd wayland-1.22.0
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/$(arch)-linux-gnu --buildtype=release -Ddocumentation=false ..
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
-cd ../../ && rm -rf wayland-1.22.92*
+cd ../../ && rm -rf wayland*
 cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/wayland-protocols.html
 # --------------------------------------------------------------------------------
-curl -LO https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.36/downloads/wayland-protocols-1.36.tar.xz
-tar xvf wayland-protocols-1.36.tar.xz
+curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland-protocols/1.36-1/wayland-protocols_1.36.orig.tar.xz
+tar xvf wayland-protocols_1.36.orig.tar.xz
 cd wayland-protocols-1.36
 mkdir build && cd build
 /usr/local/bin/meson setup --prefix=/usr --libdir=/usr/lib/$(arch)-linux-gnu --buildtype=release ..
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
-cd ../../ && rm -rf wayland-protocols-1.36*
+cd ../../ && rm -rf wayland-protocols*
 cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html

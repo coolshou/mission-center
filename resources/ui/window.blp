@@ -100,7 +100,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
               "flat"
             ]
             icon-name: "info-symbolic";
-            visible: bind performance_page.info-button-visible;
+            visible: bind template.info-button-visible;
             active: false;
           }
 
@@ -110,7 +110,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             ]
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
-            visible: bind template.apps_page_active;
+            visible: bind template.search-button-visible;
           }
 
           MenuButton {
@@ -170,6 +170,14 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             icon-name: "overlapping-windows-symbolic";
             title: _("Apps");
             child: $AppsPage apps_page {
+            };
+          }
+
+          Adw.ViewStackPage {
+            name: "services-page";
+            icon-name: "system-run-symbolic";
+            title: _("Services");
+            child: $ServicesPage services_page {
             };
           }
         }

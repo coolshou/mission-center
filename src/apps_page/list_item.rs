@@ -1,4 +1,4 @@
-/* apps_page/list_items/list_item.rs
+/* apps_page/list_item.rs
  *
  * Copyright 2023 Romeo Calota
  *

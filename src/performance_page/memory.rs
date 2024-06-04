@@ -551,7 +551,7 @@ impl PerformancePageMemory {
         ) {
             let data_points = settings.int("perfomance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
                 .round() as u32;
@@ -595,7 +595,7 @@ impl PerformancePageMemory {
         );
 
         settings.connect_changed(
-            Some("app-update-interval"),
+            Some("app-update-interval-u64"),
             clone!(@weak this => move |settings, _| {
                 update_refresh_rate_sensitive_labels(&this, settings);
             }),

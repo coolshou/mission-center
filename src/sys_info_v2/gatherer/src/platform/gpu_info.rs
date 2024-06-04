@@ -78,7 +78,7 @@ impl Append for ApiVersion {
 }
 
 /// Describes the static (unchanging) information about a GPU
-pub trait GpuStaticInfoExt: Default + Append + Arg {
+pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     /// Platform specific unique identifier for a GPU
     ///
     /// Implementations must ensure that two separate GPUs never have the same id, even if they are
@@ -153,7 +153,7 @@ impl Append for crate::platform::GpuStaticInfo {
 }
 
 /// Describes GPU information that changes over time
-pub trait GpuDynamicInfoExt: Default + Append + Arg {
+pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     /// Platform specific unique identifier for a GPU
     ///
     /// Implementations must ensure that two separate GPUs never have the same id, even if they are
@@ -264,9 +264,9 @@ pub trait GpuInfoExt<'a> {
     /// Returns the number of GPUs present in the system
     fn enumerate(&'a self) -> Self::Iter;
 
-    /// Returns the static information for the GPU with the PCI id \ref pci_id.
+    /// Returns the static information for GPU with the PCI id `pci_id`.
     fn static_info(&self, id: &str) -> Option<&Self::S>;
 
-    /// Returns the dynamic information for the GPU with the PCI id \ref pci_id.
+    /// Returns the dynamic information for the GPU with the PCI id `pci_id`.
     fn dynamic_info(&self, id: &str) -> Option<&Self::D>;
 }

@@ -110,6 +110,16 @@ impl Arg for DiskInfoVec {
     }
 }
 
+impl ReadAll for DiskInfoVec {
+    fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
+        i.get().ok_or(super::TypeMismatchError::new(
+            ArgType::Invalid,
+            ArgType::Invalid,
+            0,
+        ))
+    }
+}
+
 impl<'a> Get<'a> for DiskInfoVec {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;

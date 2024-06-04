@@ -101,13 +101,12 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 * udev development libraires
 * GTK 4
 * libadwaita
-* libDBus development libraries
 
 **Build instructions**
 
 ```bash
-# On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
+# On Ubuntu 24.04 all dependencies, except for the Rust toolchain, can be installed with:
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
 
 BUILD_ROOT="$(pwd)/_build"
 
@@ -147,8 +146,8 @@ missioncenter
 ### Building - AppImage
 
 ```bash
-# On Ubuntu 23.10 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev desktop-file-utils meson
+# On Ubuntu 24.04 all dependencies, except for the Rust toolchain, can be installed with:
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C _build
@@ -187,8 +186,8 @@ Install the required Flatpak runtimes and SDKs:
 flatpak install -y \
     org.freedesktop.Platform//23.08 \
     org.freedesktop.Sdk//23.08 \
-    org.gnome.Platform//45 \
-    org.gnome.Sdk//45
+    org.gnome.Platform//46 \
+    org.gnome.Sdk//46
 ```
 
 Finally build a Flatpak package:
