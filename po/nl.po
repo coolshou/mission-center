@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-04 10:22+0300\n"
-"PO-Revision-Date: 2024-03-17 13:02+0000\n"
-"Last-Translator: Mikachu <micah.sh@proton.me>\n"
+"PO-Revision-Date: 2024-06-05 13:17+0000\n"
+"Last-Translator: Fons te Winkel <fonstw@proton.me>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -125,12 +125,11 @@ msgstr ""
 "Ondersteunt een minimale samenvattingsweergave voor eenvoudige opvolging"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"Gebruik OpenGL-rendering voor alle grafieken in een poging om CPU- en "
+"Gebruik hardware-rendering voor alle grafieken in een poging om CPU- en "
 "systeembelasting over het algemeen te verlagen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
@@ -175,7 +174,7 @@ msgstr "Welke pagina getoond wordt bij het opstarten van de applicatie"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "UITGEFASEERD! NIET LANGER IN GEBRUIK!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
@@ -657,7 +656,7 @@ msgstr "Schaal het CPU-gebruik naar het aantal cores"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Geëffende Grafieken"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
@@ -684,11 +683,11 @@ msgstr "Naam"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Beschrijving"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
@@ -720,11 +719,11 @@ msgstr "N.v.t."
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Groep"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
@@ -733,22 +732,22 @@ msgstr ""
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Herstarten"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 #: src/apps_page/mod.rs:1342
@@ -757,7 +756,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Apparaten"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -931,7 +930,7 @@ msgstr "Grafische kaart {}"
 
 #: src/performance_page/mod.rs:814
 msgid "GPU"
-msgstr "Gra_fische kaart"
+msgstr "Grafische kaart"
 
 #: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
 #: src/performance_page/mod.rs:1078 src/performance_page/mod.rs:1086
