@@ -330,16 +330,11 @@ impl MissionCenterApplication {
             .website("https://missioncenter.io")
             .release_notes(
                 r#"<ul>
-<li>Hotplugging support for disks and network devices in the Performance tab</li>
-<li>Add ability to customize chart data point count</li>
-<li>Add a more fine grained control over update interval</li>
-<li>The charts are now rendered using GTK APIs instead of a custom renderer</li>
-<li>Fix high VRAM usage on some system configurations</li>
-<li>Fix missing graphs on systems with older display drivers</li>
-<li>Fix missing graphs on some ARM systems</li>
-<li>CPU percentages go up to 100% now, by default, instead of scaling to CPU core count</li>
-<li>Fix a crash when running natively on ArchLinux</li>
-<li>Graph corners are now rounded</li>
+<li>New Services page: view and control system services using SystemD or OpenRC</li>
+<li>New smooth graphs option</li>
+<li>CPU frequency governor and driver are now displayed where supported</li>
+<li>Indices are no longer shown next to devices if there is only one of its kind</li>
+<li>A bunch of small tweaks that makes the app more consistent</li>
 <li>Translation updates and fixes</li>
 </ul>"#,
             )
@@ -351,7 +346,6 @@ impl MissionCenterApplication {
                 "GTK https://www.gtk.org/",
                 "GNOME https://www.gnome.org/",
                 "Libadwaita https://gitlab.gnome.org/GNOME/libadwaita",
-                "Pathfinder 3 https://github.com/servo/pathfinder",
                 "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
                 "NVTOP https://github.com/Syllo/nvtop",
                 "musl libc https://musl.libc.org/",
