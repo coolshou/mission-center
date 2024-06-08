@@ -33,15 +33,16 @@
             </li>
             <li>See a breakdown of resource usage by app and process</li>
             <li>Supports a minified summary view for simple monitoring</li>
-            <li>Use HW accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
+            <li>Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
             <li>Uses GTK4 and Libadwaita</li>
             <li>Written in Rust</li>
-            <li>Flatpak first</li>
         </ul>
         <p>Limitations (there is ongoing work to overcome all of these):</p>
         <ul>
             <li>No per-process network usage</li>
             <li>GPU support is experimental</li>
+            <li>Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring</li>
+            <li>When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)</li>
         </ul>
         <p>Comments, suggestions, bug reports and contributions welcome</p>
     </description>
@@ -66,6 +67,9 @@
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png</image>
         </screenshot>
         <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0017-gpu-intel.png</image>
+        </screenshot>
+        <screenshot>
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png</image>
         </screenshot>
         <screenshot>
@@ -78,22 +82,28 @@
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png</image>
         </screenshot>
         <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0018-services.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/019-services-filter.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0020-service-details.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png</image>
+        </screenshot>
+        <screenshot>
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png</image>
         </screenshot>
         <screenshot>
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png</image>
-        </screenshot>
-        <screenshot>
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0021-services-dark.png</image>
         </screenshot>
     </screenshots>
 
@@ -102,7 +112,21 @@
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
-    
+
+        <release version="0.5.0" date="2024-06-10">
+            <description translate="no">
+                <ul>
+                    <li>New Services page: view and control system services using SystemD or OpenRC</li>
+                    <li>New smooth graphs option</li>
+                    <li>CPU frequency governor and driver are now displayed where supported</li>
+                    <li>Indices are no longer shown next to devices if there is only one of its kind</li>
+                    <li>A bunch of small tweaks that makes the app more consistent</li>
+                    <li>Translation updates and fixes</li>
+                </ul>
+            </description>
+        </release>
+
+
         <release version="0.4.5" date="2024-04-22">
             <description translate="no">
                 <ul>

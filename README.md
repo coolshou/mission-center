@@ -74,11 +74,17 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png)
 
+*Services page*
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0018-services.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/019-services-filter.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0020-service-details.png)
+
 *Dark mode*  
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0021-services-dark.png)
 
 *Summary view*  
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
