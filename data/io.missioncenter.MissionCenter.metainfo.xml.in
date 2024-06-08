@@ -113,6 +113,15 @@
 
     <releases>
 
+        <release version="0.5.1" date="2024-06-08">
+            <description translate="no">
+                <ul>
+                    <li>Fix application crash when using an unsupported service manager</li>
+                    <li>Hide the Services page when service manager is not supported</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.5.0" date="2024-06-08">
             <description translate="no">
                 <ul>
@@ -125,7 +134,6 @@
                 </ul>
             </description>
         </release>
-
 
         <release version="0.4.5" date="2024-04-22">
             <description translate="no">

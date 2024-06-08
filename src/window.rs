@@ -51,6 +51,8 @@ mod imp {
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
         #[template_child]
+        pub services_stack_page: TemplateChild<adw::ViewStackPage>,
+        #[template_child]
         pub services_page: TemplateChild<crate::services_page::ServicesPage>,
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
@@ -102,6 +104,7 @@ mod imp {
                 sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
+                services_stack_page: TemplateChild::default(),
                 services_page: TemplateChild::default(),
                 header_bar: TemplateChild::default(),
                 header_stack: TemplateChild::default(),
@@ -545,12 +548,17 @@ impl MissionCenterWindow {
             );
         }
 
-        let ok = self.imp().services_page.set_initial_readings(&mut readings);
-        if !ok {
-            g_critical!(
-                "MissionCenter",
-                "Failed to set initial readings for services page"
-            );
+        if readings.services.is_empty() {
+            g_critical!("MissionCenter", "No services found, hiding services page");
+            self.imp().services_stack_page.set_visible(false);
+        } else {
+            let ok = self.imp().services_page.set_initial_readings(&mut readings);
+            if !ok {
+                g_critical!(
+                    "MissionCenter",
+                    "Failed to set initial readings for services page"
+                );
+            }
         }
 
         self.imp().loading_spinner.set_spinning(false);

@@ -510,6 +510,14 @@ impl SysInfoV2 {
             services: gatherer.services(),
         };
 
+        let refresh_services = !readings.services.is_empty();
+        if readings.services.is_empty() {
+            g_warning!(
+                "MissionCenter::SysInfo",
+                "No services were found, not asking for them again to avoid spamming the logs"
+            );
+        }
+
         readings.disks_info.sort_unstable();
         readings
             .network_devices
@@ -629,13 +637,15 @@ impl SysInfoV2 {
                 timer.elapsed(),
             );
 
-            let timer = std::time::Instant::now();
-            readings.services = gatherer.services();
-            g_debug!(
-                "MissionCenter::Perf",
-                "Services load took: {:?}",
-                timer.elapsed()
-            );
+            if refresh_services {
+                let timer = std::time::Instant::now();
+                readings.services = gatherer.services();
+                g_debug!(
+                    "MissionCenter::Perf",
+                    "Services load took: {:?}",
+                    timer.elapsed()
+                );
+            }
 
             readings.disks_info.sort_unstable();
             readings
