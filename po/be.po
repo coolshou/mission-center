@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-04-11 14:01+0000\n"
-"Last-Translator: Yahor <k1llo2810@gmail.com>\n"
-"Language-Team: Belarusian <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/be/>\n"
+"PO-Revision-Date: 2024-06-09 22:09+0000\n"
+"Last-Translator: Yahor <k1llo2810@protonmail.com>\n"
+"Language-Team: Belarusian <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -150,7 +150,7 @@ msgstr "Якая старонка адлюстроўваецца пры запу
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "САСТАРЕЛА! БОЛЬШ НЕ ВЫКАРЫСТОЎВАЕЦЦА!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
@@ -206,7 +206,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Ці павінны быць графікі прадукцыйнасці гладкімі або зубчастымі"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -278,7 +278,7 @@ msgstr "_Памяць"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Дыск"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -358,16 +358,16 @@ msgstr "L3 кэш:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Драйвер Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
+#, fuzzy
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq governor:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Параметры"
+msgstr "Параметр сілкавання"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -584,23 +584,23 @@ msgstr "Маштабаваць выкарыстанне працэсара у з
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Гладкія графікі"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Маляваць графікі ў выглядзе плыўных ліній замест зубчастых"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Дэталі сэрвіса"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Стан"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Бягучы стан сэрвіса"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -610,29 +610,27 @@ msgstr "Назва"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Апісанне"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Уключана"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Працэсы"
+msgstr "Працэс"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Інфармацыя аб працэсе і карыстальніке"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Працэсы"
+msgstr "ID працэса"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -646,35 +644,35 @@ msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Карыстальнік"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Журнал"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Запусціць"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Спыніць"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Перазапусціць"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Падрабязнасці"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -682,7 +680,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Прылады"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -706,7 +704,7 @@ msgstr "Праграмы"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Сэрвісы"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -718,7 +716,7 @@ msgstr "_Аб праграме"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Дыск"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -792,7 +790,6 @@ msgstr ""
 "больш памяці"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Дыск {} ({})"
 
@@ -886,9 +883,8 @@ msgid "Disk {} ({})"
 msgstr "Дыск {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Дыск {} ({})"
+msgstr "Дыск ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -909,26 +905,26 @@ msgstr "{} {}біт/с"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Запушчаных сэрвісаў"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} няўдалых сэрвісаў з агульнай колькасці {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Выконваецца"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Не ўдалося"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Спынены"
 
 #: src/application.rs:325
 msgid "translator-credits"
@@ -936,7 +932,7 @@ msgstr "Yahor Haurylenka <k1llo2810@gmail.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "_Выйсці"
 
 #~ msgid "_Disk"
 #~ msgstr "_Дыск"
