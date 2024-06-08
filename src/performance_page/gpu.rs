@@ -88,6 +88,7 @@ mod imp {
         pub temperature: OnceCell<gtk::Label>,
         pub opengl_version: OnceCell<gtk::Label>,
         pub vulkan_version: OnceCell<gtk::Label>,
+        pub pcie_speed_label: OnceCell<gtk::Label>,
         pub pcie_speed: OnceCell<gtk::Label>,
         pub pci_addr: OnceCell<gtk::Label>,
 
@@ -133,6 +134,7 @@ mod imp {
                 temperature: Default::default(),
                 opengl_version: Default::default(),
                 vulkan_version: Default::default(),
+                pcie_speed_label: Default::default(),
                 pcie_speed: Default::default(),
                 pci_addr: Default::default(),
 
@@ -261,6 +263,15 @@ mod imp {
                     .get()
                     .and_then(|b| Some(b.set_visible(false)));
                 this.box_temp.get().and_then(|b| Some(b.set_visible(false)));
+
+                if gpu.pcie_gen == 0 || gpu.pcie_lanes == 0 {
+                    this.pcie_speed_label
+                        .get()
+                        .and_then(|l| Some(l.set_visible(false)));
+                    this.pcie_speed
+                        .get()
+                        .and_then(|l| Some(l.set_visible(false)));
+                }
 
                 this.memory_graph.set_visible(false);
                 this.decode_graph.set_visible(false);
@@ -611,6 +622,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("vulkan_version")
                     .expect("Could not find `vulkan_version` object in details pane"),
+            );
+            let _ = self.pcie_speed_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("pcie_speed_label")
+                    .expect("Could not find `pcie_speed_label` object in details pane"),
             );
             let _ = self.pcie_speed.set(
                 sidebar_content_builder

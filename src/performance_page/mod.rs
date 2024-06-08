@@ -1175,10 +1175,14 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                summary.set_info2(format!(
-                                    "{}% ({} °C)",
-                                    gpu.util_percent, gpu.temp_celsius
-                                ));
+                                if gpu.temp_celsius > 20 {
+                                    summary.set_info2(format!(
+                                        "{}% ({} °C)",
+                                        gpu.util_percent, gpu.temp_celsius
+                                    ));
+                                } else {
+                                    summary.set_info2(format!("{}%", gpu.util_percent));
+                                }
 
                                 result &= page.update_readings(gpu);
                             }
