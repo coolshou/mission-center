@@ -216,7 +216,7 @@ impl SystemState<'_> {
             .unwrap_or_else(PoisonError::into_inner)
             .refresh_cache()
             .unwrap_or_else(|e| {
-                error!("Gatherer::Main", "Failed to refresh service cache: {}", e);
+                debug!("Gatherer::Main", "Failed to refresh service cache: {}", e);
             });
         debug!(
             "Gatherer::Perf",
@@ -535,11 +535,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         ctx.reply(Ok((s,)));
                     }
                     Err(e) => {
-                        ctx.reply(Result::<(Vec<Service>,), dbus::MethodErr>::Err(
-                            dbus::MethodErr::failed::<String>(&format!(
-                                "Failed to get services: {e}"
-                            )),
-                        ));
+                        error!("Gatherer::Main", "Failed to get services: {}", e);
+                        ctx.reply::<(Vec<Service>,)>(Ok((vec![],)));
                     }
                 }
 
