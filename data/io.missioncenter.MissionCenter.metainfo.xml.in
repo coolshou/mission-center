@@ -113,7 +113,7 @@
 
     <releases>
 
-        <release version="0.5.0" date="2024-06-10">
+        <release version="0.5.0" date="2024-06-08">
             <description translate="no">
                 <ul>
                     <li>New Services page: view and control system services using SystemD or OpenRC</li>
