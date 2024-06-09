@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-03-22 21:01+0000\n"
+"PO-Revision-Date: 2024-06-09 22:09+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -270,7 +270,7 @@ msgstr "_Muisti"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Asema"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -350,16 +350,15 @@ msgstr "L3-välimuisti:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq-ajuri:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq-ohjain:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Asetukset"
+msgstr "Tehoetusija:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -401,14 +400,12 @@ msgid "Type:"
 msgstr "Tyyppi:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Videon enkoodaus"
+msgstr "Videon enkoodauksen käyttö"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Videon dekoodaus"
+msgstr "Videon dekoodauksen käyttö"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -577,23 +574,23 @@ msgstr "Skaalaa suoritinkäyttö ydinmäärän mukaan"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Sulavat kaaviot"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Piirrä kaaviot sulavana viivana rosoisen viivan sijaan"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Palvelun tiedot"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Tila"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Palvelun nykyinen tila"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -603,29 +600,27 @@ msgstr "Nimi"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Tila"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Käytössä"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Prosessit"
+msgstr "Prosessi"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Prosessi- ja käyttäjätiedot"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Prosessit"
+msgstr "Prosessin ID"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -639,35 +634,35 @@ msgstr "-"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Käyttäjä"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Ryhmä"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Lokit"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Käynnistä"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Pysäytä"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Käynnistä uudelleen"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Tiedot"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -675,7 +670,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Laitteet"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -699,7 +694,7 @@ msgstr "Sovellukset"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Palvelut"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -711,7 +706,7 @@ msgstr "_Tietoja - Tehtäväkeskus"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Asema"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -785,9 +780,8 @@ msgstr ""
 "käyttöjärjestelmä, ajurit tai sovellukset tarvitsevat muistia"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Levy {} ({})"
+msgstr "Asema {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -879,9 +873,8 @@ msgid "Disk {} ({})"
 msgstr "Levy {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Levy {} ({})"
+msgstr "Asema ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -902,26 +895,26 @@ msgstr "{} {} bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} palvelua käynnissä"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{}/{} epäonnistunutta palvelua"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Käynnissä"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Epäonnistui"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Pysäytetty"
 
 #: src/application.rs:325
 msgid "translator-credits"
