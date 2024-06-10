@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-04-23 18:07+0000\n"
-"Last-Translator: Kot Leopold <kleopold74@gmail.com>\n"
+"PO-Revision-Date: 2024-06-10 13:43+0000\n"
+"Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -111,12 +111,12 @@ msgstr ""
 "Поддержка минимизированного представления сводки для простого мониторинга"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"Использование OpenGL-рендеринга для всех графиков для снижения нагрузки"
+"Использование ускоренного рендеринга HW для всех графиков в попытке снизить "
+"нагрузку на процессор и общие ресурсы"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -152,7 +152,7 @@ msgstr "Какая страница отображается при запуск
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "ОТМЕНЕНО! БОЛЬШЕ НЕ ИСПОЛЬЗУЕТСЯ!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
@@ -211,7 +211,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Должны ли графики производительности быть плавными или неровными"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -283,7 +283,7 @@ msgstr "_Память"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Накопитель"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -363,16 +363,15 @@ msgstr "L3 кэш:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Драйвер Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Регулятор Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Параметры"
+msgstr "Параметр питания:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -414,14 +413,12 @@ msgid "Type:"
 msgstr "Тип:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Кодирование видео"
+msgstr "Использование кодирования видео"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Декодирование видео"
+msgstr "Использование декодирования видео"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -591,23 +588,23 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Плавные графики"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Рисовать графики в виде плавных линий вместо прерывистых"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Детали служб"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Состояние"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Текущее состояние службы"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -617,29 +614,27 @@ msgstr "Имя"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Включено"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Процессы"
+msgstr "Процесс"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Информация о процессе и пользователе"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Процессы"
+msgstr "ID процесса"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -653,35 +648,35 @@ msgstr "Недоступно"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Пользователь"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Группа"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Журнал"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Запустить"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Остановить"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Перезапустить"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Подробности"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -689,7 +684,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Устройства"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -713,7 +708,7 @@ msgstr "Приложения"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Службы"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -725,7 +720,7 @@ msgstr "_О приложении"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Накопитель"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -799,9 +794,8 @@ msgstr ""
 "потребуется больше памяти"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Диск {} ({})"
+msgstr "Накопитель {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -893,9 +887,8 @@ msgid "Disk {} ({})"
 msgstr "Диск {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Диск {} ({})"
+msgstr "Накопитель ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -916,26 +909,26 @@ msgstr "{} {}бит/с"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "Запущенные службы: {}"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "Сбой в работе служб: {} из {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Запущенная"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Сбой"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Остановленная"
 
 #: src/application.rs:325
 msgid "translator-credits"
