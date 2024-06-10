@@ -22,8 +22,10 @@
     <gresource prefix="/io/missioncenter/MissionCenter">
         <file preprocess="xml-stripblanks">line-dashed-disk.svg</file>
         <file preprocess="xml-stripblanks">line-dashed-net.svg</file>
+        <file preprocess="xml-stripblanks">line-dashed-gpu.svg</file>
         <file preprocess="xml-stripblanks">line-solid-disk.svg</file>
         <file preprocess="xml-stripblanks">line-solid-net.svg</file>
+        <file preprocess="xml-stripblanks">line-solid-gpu.svg</file>
 
         <file preprocess="xml-stripblanks">ui/apps_page/column_header.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/list_item.ui</file>
