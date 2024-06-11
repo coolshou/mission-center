@@ -35,7 +35,7 @@ macro_rules! dbus_call {
         use gtk::glib::g_critical;
         use super::dbus_interface::Gatherer;
 
-        const RETRY_COUNT: i32 = 3;
+        const RETRY_COUNT: i32 = 10;
 
         for i in 1..=RETRY_COUNT {
             match $self.proxy.$method($($args,)*) {
@@ -162,7 +162,6 @@ impl Gatherer {
                 .arg("--watch-bus")
                 .arg("--host")
                 .arg(Self::executable());
-
             cmd
         } else {
             let mut cmd = std::process::Command::new(Self::executable());
@@ -191,18 +190,12 @@ impl Gatherer {
             }
         });
 
-        // AppImages tend to be slower to spawn processes, so add a bit of extra time
-        let start_wait_time_ms = if std::env::var_os("APPIMAGE").is_some() {
-            300
-        } else {
-            200
-        };
-
-        const RETRY_COUNT: i32 = 15;
+        const START_WAIT_TIME_MS: u64 = 300;
+        const RETRY_COUNT: i32 = 50;
 
         // Let the child process start up
         for i in 0..RETRY_COUNT {
-            std::thread::sleep(Duration::from_millis(start_wait_time_ms / 2));
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
             match self.proxy.ping() {
                 Ok(()) => return,
                 Err(e) => {
@@ -214,7 +207,7 @@ impl Gatherer {
                     );
                 }
             }
-            std::thread::sleep(Duration::from_millis(start_wait_time_ms / 2));
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
         }
 
         show_error_dialog_and_exit("Failed to spawn Gatherer process: Did not respond to Ping");
