@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-10 13:43+0000\n"
+"PO-Revision-Date: 2024-06-11 13:07+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -401,7 +401,7 @@ msgstr "Ёмкость:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr "Формат:"
+msgstr "Отформатировано:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
@@ -819,7 +819,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:570
 msgid "Optical"
-msgstr "Оптическое"
+msgstr "Оптический"
 
 #: src/performance_page/mod.rs:571 src/performance_page/cpu.rs:313
 #: src/performance_page/cpu.rs:337 src/performance_page/cpu.rs:345
