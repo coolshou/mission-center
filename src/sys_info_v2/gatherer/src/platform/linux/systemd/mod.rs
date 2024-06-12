@@ -247,11 +247,17 @@ impl<'a> ServiceManager<'a> {
             (),
         )?;
 
-        for service in &mut services.0 {
+        let mut services = services
+            .0
+            .drain(..)
+            .filter(|s| s.load_state != LoadState::NotFound)
+            .collect::<Vec<_>>();
+
+        for service in &mut services {
             service.properties = self.service_properties(&service.unit_path)?;
         }
 
-        Ok(services.into())
+        Ok(services)
     }
 
     pub fn service_logs(
