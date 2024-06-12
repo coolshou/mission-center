@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-04-16 20:01+0000\n"
+"PO-Revision-Date: 2024-06-11 13:07+0000\n"
 "Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -106,13 +106,12 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Basit izleme için küçültülmüş özet görünümünü destekler"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"CPU ve genel kaynak kullanımını azaltmak amacıyla tüm grafikler için OpenGL "
-"işleme kullanın"
+"İşlemci ve genel kaynak kullanımını azaltmak amacıyla tüm grafikler için "
+"donanım hızlandırmalı işleme kullan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -150,7 +149,7 @@ msgstr "Uygulama başlatıldığında hangi sayfa gösterilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "TERK EDİLDİ! ARTIK KULLANILMIYOR!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
@@ -206,7 +205,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Başarım grafiklerinin yumuşak ya da pürüzlü olma durumu"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -278,7 +277,7 @@ msgstr "_Bellek"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Sürücü"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -358,16 +357,15 @@ msgstr "L3 önbellek:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq sürücüsü:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq yöneticisi:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_ Tercihler"
+msgstr "Güç tercihleri:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -409,12 +407,10 @@ msgid "Type:"
 msgstr "Tür:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Video kodla"
+msgstr "Video kodlama"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
 msgstr "Video kod çözme"
 
@@ -585,23 +581,23 @@ msgstr "İşlemci Kullanımını Çekirdek Sayısına Ölçekle"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Yumuşak Grafikler"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Grafikleri tırtıklı çizgi yerine yumuşak çizgi olarak çiz"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Hizmet Ayrıntıları"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Durum"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Hizmetin geçerli durumu"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -611,29 +607,27 @@ msgstr "Ad"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Açıklama"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Durum"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Etkin"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
 msgstr "Süreç"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Süreç ve kullanıcı bilgileri"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Süreç"
+msgstr "Süreç Kimliği"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -647,35 +641,35 @@ msgstr "Yok"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Kullanıcı"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Günlükler"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Başlat"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Durdur"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Yeniden Başlat"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Ayrıntılar"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -683,7 +677,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Aygıtlar"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -707,7 +701,7 @@ msgstr "Uygulamalar"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Hizmetler"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -719,7 +713,7 @@ msgstr "Görev Merkezi _Hakkında"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Sürücü"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -792,9 +786,8 @@ msgstr ""
 "belleğe ihtiyaç duyduğunda ilk olarak yeniden kullanılacak bellek"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Disk {} ({})"
+msgstr "Sürücü {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -886,9 +879,8 @@ msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Disk {} ({})"
+msgstr "Sürücü ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -909,26 +901,26 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Hizmet Çalışıyor"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} / {} hizmet başarısız oldu"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Durdu"
 
 #: src/application.rs:325
 msgid "translator-credits"
@@ -936,7 +928,7 @@ msgstr "Sabri Ünal <yakushabb@gmail.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "Çı_k"
 
 #~ msgid "_Disk"
 #~ msgstr "_Disk"

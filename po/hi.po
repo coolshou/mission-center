@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-04 22:52+0000\n"
+"PO-Revision-Date: 2024-06-11 21:00+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hi/>\n"
@@ -599,7 +599,7 @@ msgstr "विवरण"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr "स्थिति:"
+msgstr "स्थिति"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"

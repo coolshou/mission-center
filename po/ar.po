@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-04-22 09:07+0000\n"
-"Last-Translator: Abdullah Albaroty <albaroty@gmail.com>\n"
+"PO-Revision-Date: 2024-06-11 13:07+0000\n"
+"Last-Translator: Eyad <eyad.dodo123456789@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
 "Language: ar\n"
@@ -18,23 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "مدير المهام"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"مدير المهام؛ مراقب الموارد؛ مراقب النظام؛ المعالج؛ العمليات؛ مراقب الأداء؛ "
+"وحدة المعالجة المركزية؛ وحدة معالجة الرسومات؛ القرص؛ قرص؛ ذاكرة؛ شبكة؛ "
+"استخدام؛ استخدام"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "مطوري مدير المهام"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
@@ -50,7 +53,7 @@ msgstr "الميزات:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "الاستخدام العام"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
@@ -64,15 +67,15 @@ msgstr "راقب استخدام الذاكرة العشوائية والتبدي
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "شاهد تفاصيل كيفية استخدام النظام للذاكرة"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "مراقبة استخدام القرص ومعدلات النقل"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "مراقبة استخدام الشبكة وسرعات النقل"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -80,58 +83,66 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"راجع معلومات واجهة الشبكة مثل اسم بطاقة الشبكة ونوع الاتصال (Wi-Fi أو "
+"Ethernet) والسرعات والترددات اللاسلكية وعنوان الجهاز وعنوان IP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
+#, fuzzy
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"مراقبة الاستخدام العام لوحدة معالجة الرسومات، واستخدام وحدة تشفير الفيديو "
+"ووحدة فك التشفير، واستخدام الذاكرة واستهلاك الطاقة، مدعومًا بمشروع NVTOP "
+"الشهير"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "اطلع على تفاصيل استخدام الموارد حسب التطبيق والعملية"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "دعم عرض ملخص مصغر للمراقبة البسيطة"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
+"استخدم عرض HW المتسارع لجميع الرسوم البيانية في محاولة لتقليل استخدام "
+"المعالج والاستخدام الإجمالي للموارد"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "استخدم GTK4 وLibadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr ""
+msgstr "كتب في Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Flatpak first"
-msgstr ""
+msgstr "Flatpak اولا"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "القيود (هناك عمل مستمر للتغلب على كل هذه القيود):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "No per-process network usage"
-msgstr ""
+msgstr "لا يوجد استخدام للشبكة لكل عملية"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "دعم GPU تجريبي"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "التعليقات والاقتراحات وتقارير الأخطاء والمساهمات موضع ترحيب"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "الصفحة التي تظهر عند بدء تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
@@ -316,11 +327,11 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr ""
+msgstr "المحاكاة:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr ""
+msgstr "ماكينة افتراضية:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
