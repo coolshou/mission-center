@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-05-19 11:01+0000\n"
-"Last-Translator: SuitDeer <gero.brinkmann96@gmail.com>\n"
+"PO-Revision-Date: 2024-06-12 16:39+0000\n"
+"Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -110,13 +110,12 @@ msgstr ""
 "Unterstützt eine verkleinerte Übersichtsansicht für eine einfache Überwachung"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
 "Verwendung von OpenGL-Rendering für alle Diagramme, um die CPU- und "
-"Gesamtressourcennutzung zu reduzieren"
+"Gesamtauslastung zu reduzieren"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -279,7 +278,7 @@ msgstr "_Arbeitsspeicher"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Laufwerk"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -359,7 +358,7 @@ msgstr "L3 Cache:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq-Treiber:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
@@ -592,16 +591,18 @@ msgid "Draw graphs as smooth line instead of jagged line"
 msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
+#, fuzzy
 msgid "Service Details"
-msgstr ""
+msgstr "Details"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:55
+#, fuzzy
 msgid "The current state of the service"
-msgstr ""
+msgstr "Der aktuelle Status des Dienstes"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -610,31 +611,28 @@ msgstr "Name"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
-#, fuzzy
 msgid "Description"
-msgstr "Keine Beschreibung"
+msgstr "Beschreibung"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiviert"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Prozesse"
+msgstr "Prozess"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
 msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Prozesse"
+msgstr "Prozess-ID"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -661,22 +659,22 @@ msgstr ""
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Neustart"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -684,7 +682,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Geräte"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -708,7 +706,7 @@ msgstr "Apps"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Dienste"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
