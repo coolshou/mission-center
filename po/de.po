@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-12 16:39+0000\n"
+"PO-Revision-Date: 2024-06-13 02:26+0000\n"
 "Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
@@ -628,7 +628,7 @@ msgstr "Prozess"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Prozess- und Benutzerinformationen"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
@@ -646,11 +646,11 @@ msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Benutzer"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
