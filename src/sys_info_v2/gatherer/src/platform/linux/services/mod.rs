@@ -175,9 +175,10 @@ impl ServiceExt for LinuxService {
 
 impl LinuxServices<'_> {
     pub fn new() -> Self {
-        if std::path::Path::new("/lib/librc.so.1").exists()
-            && std::path::Path::new("/sbin/rc-service").exists()
-        {
+        let librc_exists = std::path::Path::new("/lib/librc.so.1").exists()
+            || std::path::Path::new("/lib64/librc.so.1").exists();
+
+        if librc_exists && std::path::Path::new("/sbin/rc-service").exists() {
             match openrc::OpenRC::new() {
                 Ok(openrc) => LinuxServices::OpenRC(openrc),
                 Err(e) => {
