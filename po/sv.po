@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-13 02:26+0000\n"
+"PO-Revision-Date: 2024-06-13 02:53+0000\n"
 "Last-Translator: Ramin Samadi <raminsam05+github@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -707,29 +707,29 @@ msgstr "Disk"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU Användning"
 
 #: src/apps_page/mod.rs:1390
 msgid "GPU Mem"
-msgstr ""
+msgstr "GPU Minne"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
 msgid "Stop Application"
-msgstr ""
+msgstr "Avsluta Applikation"
 
 #: src/apps_page/list_item.rs:366
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Tvinga Avsluta Applikation"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:370
 msgid "Stop Process"
-msgstr ""
+msgstr "Stoppa Process"
 
 #: src/apps_page/list_item.rs:370
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Tvinga Avsluta Process"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -737,6 +737,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"Används ({}B)\n"
+"\n"
+"Minne används av operativsystem och aktiva applikationer"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -745,6 +748,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Modifierad ({}B)\n"
+"\n"
+"Minne vars innehåll måste skrivas till disk innan det kan användas av en "
+"annan process"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -752,6 +759,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Viloläge ({}B)\n"
+"\n"
+"Minne som innehåller cachelagrad data och kod som inte aktivt används"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -760,34 +770,38 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Fri ({}B)\n"
+"\n"
+"Minne som inte används, och som kommer åter användas först när "
+"operativsystemet, drivrutiner, eller applikationer behöver mer minne"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
 msgid "Drive {} ({})"
-msgstr ""
+msgstr "Hård Disk {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:566
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:567
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:568
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:569
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:570
 msgid "Optical"
-msgstr ""
+msgstr "Optisk"
 
 #: src/performance_page/mod.rs:571 src/performance_page/cpu.rs:313
 #: src/performance_page/cpu.rs:337 src/performance_page/cpu.rs:345
@@ -798,110 +812,110 @@ msgstr ""
 #: src/performance_page/network.rs:471 src/performance_page/network.rs:521
 #: src/performance_page/network.rs:557
 msgid "Unknown"
-msgstr ""
+msgstr "Okänd"
 
 #: src/performance_page/mod.rs:673 src/performance_page/network.rs:337
 msgid "Ethernet"
-msgstr ""
+msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:674 src/performance_page/network.rs:352
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:675 src/performance_page/network.rs:354
 msgid "Other"
-msgstr ""
+msgstr "Annat"
 
 #: src/performance_page/mod.rs:812
 msgid "GPU {}"
-msgstr ""
+msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:814
 msgid "GPU"
-msgstr ""
+msgstr "GPU"
 
 #: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
 msgid "{}: {} {}bps"
-msgstr ""
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:325 src/performance_page/cpu.rs:410
 #: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
 #: src/performance_page/gpu.rs:319
 msgid "Unsupported"
-msgstr ""
+msgstr "Stöds ej"
 
 #: src/performance_page/cpu.rs:332 src/performance_page/disk.rs:242
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/performance_page/cpu.rs:334 src/performance_page/disk.rs:244
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: src/performance_page/cpu.rs:954
 msgid "{} second{}"
-msgstr ""
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:965
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minut{} "
 
 #: src/performance_page/cpu.rs:983
 msgid "Utilization Over {}{}"
-msgstr ""
+msgstr "Användning Över {}{}"
 
 #: src/performance_page/disk.rs:201
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
 msgid "Drive ({})"
-msgstr ""
+msgstr "Hård Disk ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:268
 msgid "Video encode/decode"
-msgstr ""
+msgstr "Videokodning/avkodning"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Hämtning av ytterligare minnesinformation misslyckades"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
 msgid "{} {}bps"
-msgstr ""
+msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Aktiva Tjänster"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} misslyckade tjänster utav totalt {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Körs"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Misslyckades"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Stoppad"
 
 #: src/application.rs:325
 msgid "translator-credits"
-msgstr ""
+msgstr "översättarkrediter"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "_Avsluta"
