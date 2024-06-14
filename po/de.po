@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
 "PO-Revision-Date: 2024-06-15 14:09+0000\n"
-"Last-Translator: stoefelz <stoefelz@yandex.com>\n"
+"Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -365,9 +365,8 @@ msgid "Cpufreq governor:"
 msgstr "CPUfreq Regler:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Einstellungen"
+msgstr "Energiemodus:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
