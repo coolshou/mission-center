@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-15 14:09+0000\n"
-"Last-Translator: Niklas Reck <weblate@nikrc.mozmail.com>\n"
+"PO-Revision-Date: 2024-06-15 23:50+0000\n"
+"Last-Translator: stoefelz <stoefelz@yandex.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -788,7 +788,6 @@ msgstr ""
 "Speicher benötigen"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Datenträger {} ({})"
 
