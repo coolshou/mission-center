@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-15 14:09+0000\n"
+"PO-Revision-Date: 2024-06-15 23:50+0000\n"
 "Last-Translator: Ogu <trevisiolugo@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
@@ -600,7 +600,6 @@ msgid "Draw graphs as smooth line instead of jagged line"
 msgstr "Former des graphiques lissés plutôt qu'irréguliers"
 
 #: resources/ui/services_page/details_dialog.blp:33
-#, fuzzy
 msgid "Service Details"
 msgstr "Détails du service"
 
@@ -667,7 +666,6 @@ msgstr "Journaux"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
-#, fuzzy
 msgid "Start"
 msgstr "Lancer"
 
@@ -727,7 +725,6 @@ msgid "_About MissionCenter"
 msgstr "_À propos du Centre de mission"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
-#, fuzzy
 msgid "Drive"
 msgstr "Disque"
 
@@ -805,7 +802,6 @@ msgstr ""
 "auront besoin de plus de mémoire"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Disque {} ({})"
 
