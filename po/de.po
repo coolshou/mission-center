@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
 "PO-Revision-Date: 2024-06-15 14:09+0000\n"
-"Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
+"Last-Translator: Niklas Reck <weblate@nikrc.mozmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -408,12 +408,10 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
 msgstr "Video Enkodierung"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
 msgstr "Video Dekodierung"
 
@@ -598,7 +596,6 @@ msgid "State"
 msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:55
-#, fuzzy
 msgid "The current state of the service"
 msgstr "Der aktuelle Status des Dienstes"
 
