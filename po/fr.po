@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-04-26 17:07+0000\n"
-"Last-Translator: Denis MARCQ <denis.marcq@free.fr>\n"
+"PO-Revision-Date: 2024-06-15 23:50+0000\n"
+"Last-Translator: Ogu <trevisiolugo@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5.1\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -113,13 +113,12 @@ msgstr ""
 "Prise en charge d’une vue récapitulative simplifiée pour un suivi simple"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"Utilise le rendu OpenGL pour tous les graphiques afin de réduire "
-"l’utilisation du CPU et de la consommation des ressources"
+"Utiliser le rendu OpenGL pour tous les graphiques afin de réduire l’"
+"utilisation du CPU et de la consommation globale des ressources"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -157,18 +156,19 @@ msgstr "Quelle page est affichée au démarrage de l’application"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "OBSOLÈTE ! N'EST PLUS UTILISÉ !"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "À quelle vitesse doivent se rafraîchir les données et l’interface"
+msgstr ""
+"À quelle vitesse doivent se rafraîchir les données et l’interface (par "
+"incrémentation de 50ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
-msgstr "Combien de points doivent être affichés sur chaque diagramme?"
+msgstr "Combien de points doivent être affichés sur chaque graphique?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:54
 #: resources/ui/preferences/page.blp:50
@@ -187,6 +187,8 @@ msgstr ""
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Afficher l'utilisation du CPU pour les Applications et Processus en fonction "
+"du nombre de cœurs disponibles"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:69
 msgid "The column id by which the Apps page view is sorted"
@@ -214,7 +216,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Les graphiques de performances doivent-ils être lissés ou irréguliers"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -286,7 +288,7 @@ msgstr "_Mémoire"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Disque"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -366,16 +368,15 @@ msgstr "Cache L3 :"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Pilote Cpufreq :"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Governor Cpufreq :"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Préférences"
+msgstr "_Préférences d'alimentation"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -417,14 +418,12 @@ msgid "Type:"
 msgstr "Type :"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Encodage vidéo"
+msgstr "Utilisation de l'encodage vidéo"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Décodage vidéo"
+msgstr "Utilisation du décodage vidéo"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -567,7 +566,7 @@ msgstr "Intervalle de rafraîchissement"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Points de données du graphique"
 
 #: resources/ui/preferences/page.blp:46
 msgid "App Page Settings"
@@ -589,27 +588,28 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Adapter l'utilisation du CPU au nombre de cœurs"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Graphiques Lissés"
 
 #: resources/ui/preferences/page.blp:65
+#, fuzzy
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Former des graphiques lissés plutôt qu'irréguliers"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Détails du service"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "État"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "État actuel du service"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -619,15 +619,15 @@ msgstr "Nom"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Statut"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Activé"
 
 #: resources/ui/services_page/details_dialog.blp:213
 #, fuzzy
@@ -636,12 +636,11 @@ msgstr "Processus"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Processus et information de l'utilisateur"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Processus"
+msgstr "Identifiant du processus"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -655,35 +654,35 @@ msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Groupe"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Journaux"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Lancer"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stopper"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Redémarrer"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Détails"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -691,7 +690,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Périphériques"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -715,7 +714,7 @@ msgstr "Applications"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Services"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -727,16 +726,15 @@ msgstr "_À propos du Centre de mission"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Disque"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
-msgstr ""
+msgstr "Utilisation du GPU"
 
 #: src/apps_page/mod.rs:1390
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "Mémoire GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -804,7 +802,6 @@ msgstr ""
 "auront besoin de plus de mémoire"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Disque {} ({})"
 
@@ -916,7 +913,7 @@ msgstr "Encodage / décodage vidéo"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "L'obtention d'information supplémentaires sur la mémoire a échoué"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
@@ -925,26 +922,29 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Services en cours"
 
 #: src/services_page/mod.rs:638
+#, fuzzy
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} services échoués sur un total de {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
+#, fuzzy
 msgid "Running"
-msgstr ""
+msgstr "En cours d'exécution"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
+#, fuzzy
 msgid "Failed"
-msgstr ""
+msgstr "Échoué"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Stoppé"
 
 #: src/application.rs:325
 msgid "translator-credits"
