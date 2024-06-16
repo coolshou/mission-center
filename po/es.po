@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-13 02:26+0000\n"
+"PO-Revision-Date: 2024-06-17 17:09+0000\n"
 "Last-Translator: pedro guillermo <pedroguillermo1998@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -570,13 +570,13 @@ msgstr "Estadísticas del proceso de fusión"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Remember Sorting"
-msgstr "Recordar la ordenación"
+msgstr "Recordar el orden"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Recordar la ordenación de la lista de aplicaciones y procesos al reiniciar "
-"la aplicación"
+"Recordar el orden de la lista de aplicaciones y procesos al reiniciar la "
+"aplicación"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale CPU Usage to Core Count"
