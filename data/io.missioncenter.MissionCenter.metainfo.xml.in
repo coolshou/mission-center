@@ -113,6 +113,16 @@
 
     <releases>
 
+        <release version="0.5.2" date="2024-06-16">
+            <description translate="no">
+                <ul>
+                    <li>Fix an application crash that occurs when the gatherer starts up slowly</li>
+                    <li>Fix deleted services showing up when using SystemD</li>
+                    <li>Fix OpenRC not being detected on certain distributions</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.5.1" date="2024-06-08">
             <description translate="no">
                 <ul>
