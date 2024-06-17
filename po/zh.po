@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-09 22:09+0000\n"
+"PO-Revision-Date: 2024-06-17 17:09+0000\n"
 "Last-Translator: ZhangPeng <scbeta@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hans/>\n"
@@ -211,15 +211,15 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "更改图表为"
+msgstr "更改图表为(_r)"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
-msgstr "整体使用率"
+msgstr "整体使用率(_t)"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr "逻辑处理器"
+msgstr "逻辑处理器(_P)"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
@@ -231,7 +231,7 @@ msgstr "显示内核时钟"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "图表总览"
+msgstr "图表总览(_S)"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:182
@@ -239,7 +239,7 @@ msgstr "图表总览"
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr "视图"
+msgstr "视图(_V)"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:185
@@ -247,7 +247,7 @@ msgstr "视图"
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CPU(_U)"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:190
@@ -255,7 +255,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr "内存"
+msgstr "内存(_M)"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:195
@@ -271,7 +271,7 @@ msgstr "驱动器(_D)"
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr "网络"
+msgstr "网络(_N)"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:205
@@ -279,7 +279,7 @@ msgstr "网络"
 #: resources/ui/performance_page/memory.blp:180
 #: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
-msgstr "GPU"
+msgstr "GPU(_G)"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/disk.blp:213
@@ -287,7 +287,7 @@ msgstr "GPU"
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
-msgstr "复制"
+msgstr "复制(_C)"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -311,7 +311,7 @@ msgstr "启动时间"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr "基本速度："
+msgstr "基准速度："
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
@@ -381,11 +381,11 @@ msgstr "容量："
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr "已格式化："
+msgstr "格式化容量："
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr "系統磁盘："
+msgstr "系统磁盘："
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:238
@@ -485,7 +485,7 @@ msgstr "尺寸规格："
 
 #: resources/ui/performance_page/network.blp:155
 msgid "Network Se_ttings"
-msgstr "网络设置"
+msgstr "网络设置(_t)"
 
 #: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
@@ -545,7 +545,7 @@ msgstr "图表数据点"
 
 #: resources/ui/preferences/page.blp:46
 msgid "App Page Settings"
-msgstr "一般设置"
+msgstr "“应用”页面设置"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Merge Process Stats"
@@ -599,7 +599,7 @@ msgstr "状态"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr "启用"
+msgstr "已启用"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
@@ -673,7 +673,7 @@ msgstr "输入名称或 PID 进行搜索"
 
 #: resources/ui/window.blp:146
 msgid "Loading..."
-msgstr "加载中.."
+msgstr "加载中..."
 
 #: resources/ui/window.blp:160
 msgid "Performance"
@@ -681,7 +681,7 @@ msgstr "性能"
 
 #: resources/ui/window.blp:171 src/apps_page/mod.rs:540
 msgid "Apps"
-msgstr "应用程序"
+msgstr "应用"
 
 #: resources/ui/window.blp:179
 msgid "Services"
@@ -689,11 +689,11 @@ msgstr "服务"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
-msgstr "偏好设置"
+msgstr "偏好设置(_P)"
 
 #: resources/ui/window.blp:203
 msgid "_About MissionCenter"
-msgstr "关于任务中心"
+msgstr "关于任务中心(_A)"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
@@ -773,11 +773,11 @@ msgstr "驱动器 {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
-msgstr "HDD"
+msgstr "机械硬盘"
 
 #: src/performance_page/mod.rs:566
 msgid "SSD"
-msgstr "SSD"
+msgstr "固态硬盘"
 
 #: src/performance_page/mod.rs:567
 msgid "NVMe"
@@ -828,7 +828,7 @@ msgstr "GPU"
 
 #: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
 msgid "{}: {} {}bps"
-msgstr "{}: {} {} 比特/秒"
+msgstr "{}: {} {}b/秒"
 
 #: src/performance_page/cpu.rs:325 src/performance_page/cpu.rs:410
 #: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
@@ -866,7 +866,7 @@ msgstr "驱动器 ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}B/秒"
 
 #: src/performance_page/gpu.rs:268
 msgid "Video encode/decode"
@@ -879,7 +879,7 @@ msgstr "获取扩展内存信息失败"
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
 msgid "{} {}bps"
-msgstr "{} {}bps"
+msgstr "{} {}b/秒"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
@@ -897,7 +897,7 @@ msgstr "正在运行"
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr "失败"
+msgstr "已失败"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
@@ -906,11 +906,13 @@ msgstr "已停止"
 
 #: src/application.rs:325
 msgid "translator-credits"
-msgstr "NS nsfoxer <muwuren@gmail.com>"
+msgstr ""
+"NS nsfoxer <muwuren@gmail.com>\n"
+"张鹏 <scbeta@qq.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr "退出"
+msgstr "退出(_Q)"
 
 #~ msgid "Display optical device information in the Performance tab"
 #~ msgstr "在性能标签页中显示光器件信息"
