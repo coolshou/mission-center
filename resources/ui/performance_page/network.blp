@@ -22,6 +22,7 @@ using Gtk 4.0;
 
 template $PerformancePageNetwork: Box {
   orientation: vertical;
+  margin-bottom: 10;
 
   WindowHandle {
     child: Box description {
@@ -56,11 +57,18 @@ template $PerformancePageNetwork: Box {
           styles [
             "caption",
           ]
-
-          hexpand: true;
-          halign: start;
-          label: _("Throughput");
+          label: _("Throughput over ");
         }
+
+		Label graph_max_duration {
+		  styles [
+			"caption",
+		  ]
+
+		  hexpand: true;
+		  halign: start;
+		  valign: start;
+		}
 
         Label max_y {
           styles [
@@ -83,30 +91,6 @@ template $PerformancePageNetwork: Box {
     scroll: true;
     auto-scale: true;
     auto-scale-pow2: true;
-  }
-
-  Box {
-    margin-top: 2;
-    margin-bottom: 10;
-
-    Label graph_max_duration {
-      styles [
-        "caption",
-      ]
-
-      hexpand: true;
-      halign: start;
-      valign: start;
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      valign: start;
-      label: "0";
-    }
   }
 
   PopoverMenu context_menu {

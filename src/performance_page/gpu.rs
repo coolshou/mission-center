@@ -25,7 +25,7 @@ use adw::subclass::prelude::*;
 use glib::{clone, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use crate::i18n::*;
+use crate::{application::INTERVAL_STEP, i18n::*};
 
 use super::widgets::GraphWidget;
 
@@ -55,6 +55,8 @@ mod imp {
         pub usage_graph_memory: TemplateChild<GraphWidget>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
+        #[template_child]
+        pub graph_max_duration: TemplateChild<gtk::Label>,
 
         #[property(get = Self::name, set = Self::set_name, type = String)]
         name: Cell<String>,
@@ -107,6 +109,7 @@ mod imp {
                 total_memory: Default::default(),
                 usage_graph_memory: Default::default(),
                 context_menu: Default::default(),
+                graph_max_duration: Default::default(),
 
                 name: Cell::new(String::new()),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
@@ -731,10 +734,45 @@ impl PerformancePageGpu {
             this: &PerformancePageGpu,
             settings: &gio::Settings,
         ) {
+            let this = this.imp();
+
             let data_points = settings.int("perfomance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
-            let this = this.imp();
+            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
+                * INTERVAL_STEP)
+                * (data_points as f64))
+                .round() as u32;
+
+            let mins = graph_max_duration / 60;
+            let seconds_to_string = &i18n_f(
+                "{} second{}",
+                &[
+                    &format!("{}", graph_max_duration % 60),
+                    if (graph_max_duration % 60) != 1 {
+                        "s"
+                    } else {
+                        ""
+                    },
+                ],
+            );
+            let mins_to_string = &i18n_f(
+                "{} minute{} ",
+                &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }],
+            );
+            this.graph_max_duration.set_text(&*format!(
+                "{}{}",
+                if mins > 0 {
+                    mins_to_string.clone()
+                } else {
+                    "".to_string()
+                },
+                if graph_max_duration % 60 > 0 {
+                    seconds_to_string.clone()
+                } else {
+                    "".to_string()
+                }
+            ));
 
             this.usage_graph_overall.set_data_points(data_points);
             this.usage_graph_overall.set_smooth_graphs(smooth);
