@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-11 13:07+0000\n"
+"PO-Revision-Date: 2024-06-19 11:09+0000\n"
 "Last-Translator: Eyad <eyad.dodo123456789@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -60,6 +60,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"راجع عملية النظام، ومؤشر الترابط، وعدد المقابض، ووقت التشغيل، وسرعة الساعة ("
+"الأساسية والتيالية)، وأحجام ذاكرة التخزين المؤقت"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -87,7 +89,6 @@ msgstr ""
 "Ethernet) والسرعات والترددات اللاسلكية وعنوان الجهاز وعنوان IP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
-#, fuzzy
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
@@ -165,7 +166,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:59
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "يستمر فرز الأعمدة عبر عمليات إعادة تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:64
 #: resources/ui/preferences/page.blp:60
@@ -175,23 +176,23 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:69
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "العمود الذي يتم من خلاله ترتيب عرض صفحة التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "اتجاه الترتيب لعرض صفحة التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "أي رسم بياني يتم عرضه في صفحة أداء وحدة المعالجة المركزية (CPU)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "عرض أوقات النواة في الرسوم البيانية لوحدة المعالجة المركزية (CPU)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "أي صفحة تُعرض عند بدء تشغيل التطبيق، في علامة التبويب الأداء"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
@@ -200,34 +201,34 @@ msgstr ""
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
 msgid "CPU"
-msgstr ""
+msgstr "المعالج"
 
 #: resources/ui/performance_page/cpu.blp:76
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu.blp:71
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr ""
+msgstr "الاستخدام"
 
 #: resources/ui/performance_page/cpu.blp:86
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr ""
+msgstr "تغير G_raph الى"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "الاستخدام الشامل"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr ""
+msgstr "المعالجات المنطقية"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "عرض أوقات النواة"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:177
@@ -235,7 +236,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "عرض ملخص الرسم البياني"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:182
@@ -243,7 +244,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr ""
+msgstr "عرض"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:185
@@ -251,7 +252,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr ""
+msgstr "المعال_ج"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:190
@@ -259,7 +260,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr ""
+msgstr "_الذاكرة"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:195
@@ -275,7 +276,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr ""
+msgstr "_الشبكة"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:205
@@ -283,7 +284,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:180
 #: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
-msgstr ""
+msgstr "_كرت الشاشة"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/disk.blp:213
@@ -291,39 +292,41 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
-msgstr ""
+msgstr "_نسخ"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr ""
+msgstr "السرعة"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:547
 msgid "Processes"
-msgstr ""
+msgstr "الأداء"
 
 #: resources/ui/performance_page/cpu_details.blp:117
+#, fuzzy
 msgid "Threads"
-msgstr ""
+msgstr "الخيوط"
 
 #: resources/ui/performance_page/cpu_details.blp:139
+#, fuzzy
 msgid "Handles"
-msgstr ""
+msgstr "مقابض"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr ""
+msgstr "زمن التشغيل"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr ""
+msgstr "السرعة الأساسية:"
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr ""
+msgstr "المقابس:"
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr ""
+msgstr "المعالجات الافتراضية:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
@@ -335,15 +338,15 @@ msgstr "ماكينة افتراضية:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr ""
+msgstr "الذاكرة المؤقتة L1:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr ""
+msgstr "الذاكرة المؤقتة L2:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr ""
+msgstr "الذاكرة المؤقتة L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
@@ -360,7 +363,7 @@ msgstr ""
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr ""
+msgstr "وقت النشاط"
 
 #: resources/ui/performance_page/disk.blp:122
 #: resources/ui/performance_page/network.blp:62
@@ -373,28 +376,28 @@ msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr ""
+msgstr "سرعة القراءة"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr ""
+msgstr "سرعة الكتابة"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr ""
+msgstr "السعة:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr ""
+msgstr "تنسيق:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr ""
+msgstr "قرص النظام:"
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:238
 msgid "Type:"
-msgstr ""
+msgstr "النوع:"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode utilization"
