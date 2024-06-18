@@ -40,15 +40,9 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/cpu.ui")]
     pub struct PerformancePageCpu {
         #[template_child]
-        pub utilization_label_all: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub utilization_label_overall: TemplateChild<gtk::Label>,
-        #[template_child]
         pub cpu_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub usage_graphs: TemplateChild<gtk::Grid>,
-        #[template_child]
-        pub overall_graph_labels: TemplateChild<gtk::Box>,
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
@@ -88,11 +82,8 @@ mod imp {
     impl Default for PerformancePageCpu {
         fn default() -> Self {
             Self {
-                utilization_label_all: Default::default(),
-                utilization_label_overall: Default::default(),
                 cpu_name: Default::default(),
                 usage_graphs: Default::default(),
-                overall_graph_labels: Default::default(),
                 graph_max_duration: Default::default(),
                 context_menu: Default::default(),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
@@ -178,9 +169,6 @@ mod imp {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(true);
-                this.imp().overall_graph_labels.set_visible(true);
-                this.imp().utilization_label_overall.set_visible(true);
-                this.imp().utilization_label_all.set_visible(false);
 
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(false);
@@ -207,9 +195,6 @@ mod imp {
                 let graph_widgets = this.imp().graph_widgets.take();
 
                 graph_widgets[0].set_visible(false);
-                this.imp().overall_graph_labels.set_visible(false);
-                this.imp().utilization_label_overall.set_visible(false);
-                this.imp().utilization_label_all.set_visible(true);
 
                 for graph_widget in graph_widgets.iter().skip(1) {
                     graph_widget.set_visible(true);
@@ -701,13 +686,6 @@ mod imp {
                 None
             });
 
-            self.overall_graph_labels
-                .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
-            self.utilization_label_overall
-                .set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
-            self.utilization_label_all
-                .set_visible(graph_selection == GRAPH_SELECTION_ALL);
-
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
@@ -977,18 +955,6 @@ impl PerformancePageCpu {
                 } else {
                     "".to_string()
                 }
-            ));
-
-            this.utilization_label_all.set_text(&*i18n_f(
-                "Utilization Over {}{}",
-                &[
-                    if mins > 0 { mins_to_string } else { "" },
-                    if graph_max_duration % 60 > 0 {
-                        seconds_to_string
-                    } else {
-                        ""
-                    },
-                ],
             ));
 
             let widgets = this.graph_widgets.take();

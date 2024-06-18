@@ -59,10 +59,16 @@ template $PerformancePageMemory: Box {
           styles [
             "caption",
           ]
+          label: _("Memory usage over ");
+        }
+        Label graph_max_duration {
+          styles [
+            "caption",
+          ]
 
           hexpand: true;
           halign: start;
-          label: _("Memory usage");
+          valign: start;
         }
 
         Label {
@@ -89,30 +95,8 @@ template $PerformancePageMemory: Box {
         base-color: bind template.base-color;
         data-set-count: 1;
         scroll: true;
-      }
 
-      Box {
-        margin-top: 2;
         margin-bottom: 10;
-
-        Label graph_max_duration {
-          styles [
-            "caption",
-          ]
-
-          hexpand: true;
-          halign: start;
-          valign: start;
-        }
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          valign: start;
-          label: "0";
-        }
       }
 
       Label {

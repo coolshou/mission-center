@@ -22,6 +22,7 @@ using Gtk 4.0;
 
 template $PerformancePageDisk: Box {
   orientation: vertical;
+  margin-bottom: 10;
 
   WindowHandle {
     child: Box description {
@@ -58,9 +59,16 @@ template $PerformancePageDisk: Box {
             "caption",
           ]
 
+          halign: start;
+          label: _("Active time over ");
+        }
+        Label graph_max_duration {
+          styles [
+            "caption",
+          ]
+
           hexpand: true;
           halign: start;
-          label: _("Active time");
         }
 
         Label {
@@ -87,39 +95,23 @@ template $PerformancePageDisk: Box {
   }
 
   Box {
-    margin-top: 2;
-
-    Label graph_max_duration {
-      styles [
-        "caption",
-      ]
-
-      hexpand: true;
-      halign: start;
-      valign: start;
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      valign: start;
-      label: "0";
-    }
-  }
-
-  Box {
     margin-top: 10;
 
     Label {
       styles [
         "caption",
       ]
+      label: _("Throughput over ");
+    }
+
+    Label {
+      styles [
+        "caption",
+      ]
 
       hexpand: true;
       halign: start;
-      label: _("Throughput");
+      label: bind graph_max_duration.label;
     }
 
     Label max_y {
@@ -141,28 +133,6 @@ template $PerformancePageDisk: Box {
     scroll: true;
     auto-scale: true;
     auto-scale-pow2: true;
-  }
-
-  Box {
-    margin-bottom: 10;
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      hexpand: true;
-      halign: start;
-      label: bind graph_max_duration.label;
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      label: "0";
-    }
   }
 
   PopoverMenu context_menu {
