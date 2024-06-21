@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-05-09 10:52+0000\n"
-"Last-Translator: shamo3qk <x976631@gmail.com>\n"
+"PO-Revision-Date: 2024-06-22 06:09+0000\n"
+"Last-Translator: Chung-Wei Chung <webb790709@proton.me>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.4-rc\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -102,11 +102,10 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "支援以精簡的摘要視圖進行簡單監控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
-msgstr "使用 OpenGL 渲染所有圖表，以盡可能減少 CPU 和整體資源使用"
+msgstr "使用硬體加速渲染所有圖表，以盡可能減少 CPU 和整體資源使用"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -142,18 +141,17 @@ msgstr "應用程式啟動時顯示的頁面"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "已淘汰！不再使用！"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "資料和使用者介面更新的頻率為何"
+msgstr "資料更新和 UI 更新應該要多快 (一次增加 50 毫秒)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "每張圖表要顯示多少點？"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:54
 #: resources/ui/preferences/page.blp:50
