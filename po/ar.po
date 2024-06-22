@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-19 11:09+0000\n"
+"PO-Revision-Date: 2024-06-23 08:09+0000\n"
 "Last-Translator: Eyad <eyad.dodo123456789@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
@@ -147,13 +147,14 @@ msgstr "الصفحة التي تظهر عند بدء تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "مهمل! لم يعد قيد الاستخدام!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
+"ما هي سرعة تحديث البيانات وتحديث واجهة المستخدم (بزيادات قدرها 50 مللي ثانية)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
@@ -310,7 +311,7 @@ msgstr "الخيوط"
 #: resources/ui/performance_page/cpu_details.blp:139
 #, fuzzy
 msgid "Handles"
-msgstr "مقابض"
+msgstr "Handles"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
@@ -367,8 +368,9 @@ msgstr "وقت النشاط"
 
 #: resources/ui/performance_page/disk.blp:122
 #: resources/ui/performance_page/network.blp:62
+#, fuzzy
 msgid "Throughput"
-msgstr ""
+msgstr "الناتج"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
@@ -411,81 +413,82 @@ msgstr ""
 #: resources/ui/performance_page/gpu_details.blp:147
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
-msgstr ""
+msgstr "استخدام الذاكرة"
 
 #: resources/ui/performance_page/gpu_details.blp:66
 msgid "Clock Speed"
-msgstr ""
+msgstr "سرعة الساعة"
 
 #: resources/ui/performance_page/gpu_details.blp:111
 msgid "Power draw"
-msgstr ""
+msgstr "استهلاك الطاقة"
 
 #: resources/ui/performance_page/gpu_details.blp:192
 msgid "Memory speed"
-msgstr ""
+msgstr "سرعة الذاكرة"
 
 #: resources/ui/performance_page/gpu_details.blp:237
-#, fuzzy
 msgid "Temperature"
-msgstr "الميزات:"
+msgstr "الحرارة"
 
 #: resources/ui/performance_page/gpu_details.blp:262
 msgid "OpenGL version:"
-msgstr ""
+msgstr "إصدار OpenGL:"
 
 #: resources/ui/performance_page/gpu_details.blp:276
 msgid "Vulkan version:"
-msgstr ""
+msgstr "إصدار Vulkan:"
 
 #: resources/ui/performance_page/gpu_details.blp:290
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "سرعة PCI القصوى:"
 
 #: resources/ui/performance_page/gpu_details.blp:304
 msgid "PCI bus address:"
-msgstr ""
+msgstr "عنوان حافلة PCI:"
 
 #: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1360
 #: src/performance_page/mod.rs:455
 msgid "Memory"
-msgstr ""
+msgstr "الذاكرة"
 
 #: resources/ui/performance_page/memory.blp:126
 msgid "Memory composition"
-msgstr ""
+msgstr "تكوين الذاكرة"
 
 #: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
-msgstr ""
+msgstr "قيد الاستخدام"
 
 #: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
-msgstr ""
+msgstr "متوفر"
 
 #: resources/ui/performance_page/memory_details.blp:98
+#, fuzzy
 msgid "Committed"
-msgstr ""
+msgstr "مخصص"
 
 #: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
-msgstr ""
+msgstr "مُخزن"
 
 #: resources/ui/performance_page/memory_details.blp:149
 msgid "Swap used"
-msgstr ""
+msgstr "مساحة Swap المستخدمة"
 
 #: resources/ui/performance_page/memory_details.blp:172
 msgid "Swap available"
-msgstr ""
+msgstr "الذاكرة الاحتياطية المتاحة (Swap)"
 
 #: resources/ui/performance_page/memory_details.blp:196
 msgid "Speed:"
-msgstr ""
+msgstr "السرعة:"
 
 #: resources/ui/performance_page/memory_details.blp:210
+#, fuzzy
 msgid "Slots used:"
-msgstr ""
+msgstr "Slots used:"
 
 #: resources/ui/performance_page/memory_details.blp:224
 msgid "Form factor:"
@@ -497,27 +500,27 @@ msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
-msgstr ""
+msgstr "الاستلام"
 
 #: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
-msgstr ""
+msgstr "إرسال"
 
 #: resources/ui/performance_page/network_details.blp:107
 msgid "Interface name:"
-msgstr ""
+msgstr "اسم الواجهة:"
 
 #: resources/ui/performance_page/network_details.blp:121
 msgid "Connection type:"
-msgstr ""
+msgstr "نوع الربط:"
 
 #: resources/ui/performance_page/network_details.blp:136
 msgid "SSID:"
-msgstr ""
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:151
 msgid "Signal strength:"
-msgstr ""
+msgstr "قوة الإشارة:"
 
 #: resources/ui/performance_page/network_details.blp:166
 msgid "Maximum Bitrate:"
@@ -525,7 +528,7 @@ msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:181
 msgid "Frequency:"
-msgstr ""
+msgstr "التردد:"
 
 #: resources/ui/performance_page/network_details.blp:195
 msgid "Hardware address:"
