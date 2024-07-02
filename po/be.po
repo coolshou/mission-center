@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-11 13:07+0000\n"
-"Last-Translator: Paul Dobrogost <dobrosun02@gmail.com>\n"
+"PO-Revision-Date: 2024-06-17 17:09+0000\n"
+"Last-Translator: Yahor <k1llo2810@protonmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/be/>\n"
 "Language: be\n"
@@ -110,13 +110,12 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Падтрымка мінімізаванага прадстаўлення зводкі для простага маніторынгу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"Выкарыстоўвае OpenGL рэндэрынг для ўсіх графікаў, каб скараціць выкарыстанне "
-"працэсара і агульных рэсурсаў"
+"Выкарыстоўваць апаратнае паскарэнне рэндэрынгу для ўсіх графікаў, каб "
+"паменшыць выкарыстанне ЦП і агульнае выкарыстанне рэсурсаў"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -410,14 +409,12 @@ msgid "Type:"
 msgstr "Тып:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Кадзіраванне відэа"
+msgstr "Выкарыстанне кадзіравання відэа"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Раскадзіраванне відэа"
+msgstr "Выкарыстанне раскадзіравання відэа"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147

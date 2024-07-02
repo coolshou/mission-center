@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-13 02:26+0000\n"
-"Last-Translator: pedro guillermo <pedroguillermo1998@gmail.com>\n"
+"PO-Revision-Date: 2024-06-21 02:44+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -570,13 +570,13 @@ msgstr "Estadísticas del proceso de fusión"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Remember Sorting"
-msgstr "Recordar la ordenación"
+msgstr "Recordar el orden"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Recordar la ordenación de la lista de aplicaciones y procesos al reiniciar "
-"la aplicación"
+"Recordar el orden de la lista de aplicaciones y procesos al reiniciar la "
+"aplicación"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale CPU Usage to Core Count"
@@ -621,9 +621,8 @@ msgid "Enabled"
 msgstr "Habilitado"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Procesos"
+msgstr "Proceso"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
@@ -791,9 +790,8 @@ msgstr ""
 "más memoria"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Disco {} ({})"
+msgstr "Conducir {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -885,9 +883,8 @@ msgid "Disk {} ({})"
 msgstr "Disco {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Disco {} ({})"
+msgstr "Conducir ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
