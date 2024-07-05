@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-05 13:17+0000\n"
-"Last-Translator: Fons te Winkel <fonstw@proton.me>\n"
+"PO-Revision-Date: 2024-07-05 10:35+0000\n"
+"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -207,7 +207,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -279,7 +279,7 @@ msgstr "_Geheugen"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Schĳf"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -359,16 +359,15 @@ msgstr "L3-cache:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq-stuur­programma:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq-governor:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Voorkeuren"
+msgstr "Vermogens­voorkeur:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -410,14 +409,12 @@ msgid "Type:"
 msgstr "Type:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Video-encodering"
+msgstr "Gebruik van video­codering"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Video-decodering"
+msgstr "Gebruik van video­decodering"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -590,19 +587,19 @@ msgstr "Geëffende Grafieken"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Teken grafieken als een vloeiende lĳn in plaats van een gekartelde lĳn"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Dienst­details"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Staat"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "De huidige staat van de dienst"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -620,21 +617,19 @@ msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Ingeschakeld"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Processen"
+msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Proces- en gebruikers­informatie"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Processen"
+msgstr "Proces-id"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -656,7 +651,7 @@ msgstr "Groep"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Log­boeken"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
@@ -708,7 +703,7 @@ msgstr "Applicaties"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Diensten"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -720,7 +715,7 @@ msgstr "_Over MissionCenter"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Schĳf"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
@@ -794,9 +789,8 @@ msgstr ""
 "geheugen nodig hebben"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Opslag {} ({})"
+msgstr "Schĳf {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -888,9 +882,8 @@ msgid "Disk {} ({})"
 msgstr "Opslag {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Opslag {} ({})"
+msgstr "Schĳf ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
@@ -911,26 +904,26 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} draaiende diensten"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} mislukte diensten op een totaal van {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Draaiend"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Mislukt"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Gestopt"
 
 #: src/application.rs:325
 msgid "translator-credits"
@@ -940,7 +933,7 @@ msgstr ""
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "_Afsluiten"
 
 #~ msgid "_Disk"
 #~ msgstr "_Opslag"
