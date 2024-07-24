@@ -486,11 +486,11 @@ msgstr "Im Cache"
 
 #: resources/ui/performance_page/memory_details.blp:149
 msgid "Swap used"
-msgstr "Verwendeter Auslagerungsspeicher"
+msgstr "Verwendeter Swap"
 
 #: resources/ui/performance_page/memory_details.blp:172
 msgid "Swap available"
-msgstr "Verfügbarer Auslagerungsspeicher"
+msgstr "Verfügbarer Swap"
 
 #: resources/ui/performance_page/memory_details.blp:196
 msgid "Speed:"
