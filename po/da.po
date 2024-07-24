@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-07-13 12:09+0000\n"
-"Last-Translator: liu liu <tiandeyiqingliupeng@outlook.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/ja/>\n"
-"Language: ja\n"
+"PO-Revision-Date: 2024-07-17 07:09+0000\n"
+"Last-Translator: Madsen <kajprintz@gmail.com>\n"
+"Language-Team: Danish <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/da/>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.7-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
@@ -29,56 +29,53 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;タスクマネー"
-"ジャー;リソースモニター;システムモニター;プロセッサー;プロセス;パフォーマンス"
-"モニター;ディスク;メモリー;使用率"
+"Jobliste;Ressourceovervågning;Systemovervågning;Processor;Processer;Ydelsesov"
+"ervågning;CPU;GPU;Disk;Disk;Hukommelse;Netværk;Udnyttelse;Udnyttelse"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr "Mission Centerの開発者"
+msgstr "Mission Center Udviklere"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr "システムリソース使用状況を監視"
+msgstr "Overvåg systemressourceforbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
-"CPU、メモリ、ディスク、ネットワーク、GPUなどの使用状況をモニタリングします"
+msgstr "Overvåg dit CPU-, hukommelses-, disk-, netværks- og GPU-forbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "機能:"
+msgstr "Funktioner:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "全体またはスレッドあたりのCPU使用率のモニタリング"
+msgstr "Overvåg samlet eller per-tråd CPU-forbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"システムプロセス、スレッド、ハンドル数、稼働時間、クロック速度（ベース速度と"
-"現在）、キャッシュサイズの確認"
+"Se systemets proces-, tråd- og håndtagsantal, oppetid, clockhastighed (basis "
+"og nuværende) og cache-størrelser"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "RAMとスワップの使用率のモニタリング"
+msgstr "Overvåg RAM- og Swap-forbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "メモリがシステムにどう使われているかの内訳の確認"
+msgstr "Se en opdeling af, hvordan hukommelsen bruges af systemet"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "ディスクの使用量と転送速度のモニタリング"
+msgstr "Overvåg diskudnyttelse og overførselshastigheder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "ネットワークの利用と通信速度のモニタリング"
+msgstr "Overvåg netværksudnyttelse og overførselshastigheder"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -86,119 +83,121 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"ネットワークカードの名前、接続の種類（Wi-Fiまたはイーサネット）、ワイヤレス速"
-"度、周波数、ハードウェアアドレス、IPアドレスとネットワークインターフェイスの"
-"確認"
+"Se netværksinterfaceoplysninger såsom netværkskortnavn, forbindelsestype (Wi-"
+"Fi eller Ethernet), trådløse hastigheder og frekvens, hardwareadresse, IP-"
+"adresse"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"定評のあるNVTOPプロジェクトによる、GPU使用率、ビデオエンコーダーとデコーダー"
-"の使用率、メモリ使用量、消費電力のモニタリング"
+"Overvåg samlet GPU-forbrug, videoencoder- og decoderforbrug, "
+"hukommelsesforbrug og strømforbrug, drevet af det populære NVTOP-projekt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "アプリとプロセスのリソース使用率の確認"
+msgstr "Se en opdeling af ressourceforbrug efter app og proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "簡単なモニタリングのための縮小された概要ビューをサポート"
+msgstr "Understøtter en minimeret oversigtsvisning for enkel overvågning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
-msgstr "OpenGLを利用した CPUとリソース全体の使用量の削減"
+msgstr ""
+"Brug hardwareaccelereret rendering til alle grafer for at reducere CPU- og "
+"samlet ressourceforbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr "GTK4やLibadwaitaを使用"
+msgstr "Bruger GTK4 og Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr "Rust製"
+msgstr "Skrevet i Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Flatpak first"
-msgstr "Flatpakのサポート"
+msgstr "Flatpak først"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "制限事項 (これらの問題を解決するために現在取り組んでいます):"
+msgstr "Begrænsninger (der arbejdes på at løse disse):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "No per-process network usage"
-msgstr "プロセスごとのネットワーク使用率を見られない"
+msgstr "Ingen netværksforbrug pr. proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "GPU support is experimental"
-msgstr "GPUのサポートまだ試験中"
+msgstr "GPU-understøttelse er eksperimentel"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "コメントや提案、バグレポート、貢献を歓迎しています"
+msgstr "Kommentarer, forslag, fejlrapporter og bidrag er velkomne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr "アプリケーション起動時に表示されるページ"
+msgstr "Hvilken side vises ved programstart"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "廃止されました！もう使われていない！"
+msgstr "FORÆLDET! BRUGES IKKE LÆNGERE!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "データ／UIが更新される速度"
+msgstr ""
+"Hvor hurtigt skal data opdateres, og UI'en opdateres (i intervaller af 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Hvor mange punkter skal vises på hver graf?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:54
 #: resources/ui/preferences/page.blp:50
 msgid "Parent and child process stats are shown individually or merged upwards"
-msgstr "親プロセスと子プロセスを個別に表示するかまとめて表示する"
+msgstr "Hoved- og underprocesstatistikker vises individuelt eller flettes opad"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:59
 msgid "Column sorting is persisted across app restarts"
-msgstr "アプリの再起動後も列の並べ替えは保持される"
+msgstr "Kolonnesortering bevares på tværs af genstart af appen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:64
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Vis CPU-forbrug for apps og processer skaleret til antallet af tilgængelige "
+"kerner"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:69
-#, fuzzy
 msgid "The column id by which the Apps page view is sorted"
-msgstr "\"アプリ\"ページの並び替えの項目のID"
+msgstr "Kolonne-ID'en, som Apps-siden er sorteret efter"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "The sorting direction of the Apps page view"
-msgstr "\"アプリ\"ページの並び替えの向き"
+msgstr "Sorteringsretningen for Apps-siden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Which graph is shown on the CPU performance page"
-msgstr "CPUパフォーマンスのページで表示されるグラフ"
+msgstr "Hvilken graf vises på CPU-ydelsessiden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Show kernel times in the CPU graphs"
-msgstr "カーネル時間をCPU時間に表示"
+msgstr "Vis kernetider i CPU-graferne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "\"パフォーマンス\"のタブで、アプリケーション起動時に表示されるページ"
+msgstr "Hvilken side vises ved programstart, i ydeevne fanen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr "性能グラフを表すのは平滑グラフとギザギザグラフどちら"
+msgstr "Skal ydeevnegrafer være udjævnede eller takkede"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -210,7 +209,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/gpu.blp:71
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr "使用率"
+msgstr "Udnyttelse"
 
 #: resources/ui/performance_page/cpu.blp:86
 msgid "100%"
@@ -218,19 +217,19 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:142
 msgid "Change G_raph To"
-msgstr "グラフの変更"
+msgstr "Skift G_raph Til"
 
 #: resources/ui/performance_page/cpu.blp:145
 msgid "Overall U_tilization"
-msgstr "全体的な使用率"
+msgstr "Samlet U_tilization"
 
 #: resources/ui/performance_page/cpu.blp:150
 msgid "Logical _Processors"
-msgstr "論理プロセッサ"
+msgstr "Logiske _Processors"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr "カーネル時間を表示"
+msgstr "Vis kernetider"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:177
@@ -238,7 +237,7 @@ msgstr "カーネル時間を表示"
 #: resources/ui/performance_page/memory.blp:152
 #: resources/ui/performance_page/network.blp:121
 msgid "Graph _Summary View"
-msgstr "グラフ全表示モード"
+msgstr "Graf _Summary View"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:182
@@ -246,7 +245,7 @@ msgstr "グラフ全表示モード"
 #: resources/ui/performance_page/memory.blp:157
 #: resources/ui/performance_page/network.blp:126
 msgid "_View"
-msgstr "表示"
+msgstr "_Oversigt"
 
 #: resources/ui/performance_page/cpu.blp:171
 #: resources/ui/performance_page/disk.blp:185
@@ -254,7 +253,7 @@ msgstr "表示"
 #: resources/ui/performance_page/memory.blp:160
 #: resources/ui/performance_page/network.blp:129
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:176
 #: resources/ui/performance_page/disk.blp:190
@@ -262,7 +261,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/memory.blp:165
 #: resources/ui/performance_page/network.blp:134
 msgid "_Memory"
-msgstr "メモリ"
+msgstr "_Hukommelse"
 
 #: resources/ui/performance_page/cpu.blp:181
 #: resources/ui/performance_page/disk.blp:195
@@ -270,7 +269,7 @@ msgstr "メモリ"
 #: resources/ui/performance_page/memory.blp:170
 #: resources/ui/performance_page/network.blp:139
 msgid "_Drive"
-msgstr ""
+msgstr "_Drev"
 
 #: resources/ui/performance_page/cpu.blp:186
 #: resources/ui/performance_page/disk.blp:200
@@ -278,7 +277,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:175
 #: resources/ui/performance_page/network.blp:144
 msgid "_Network"
-msgstr "ネットワーク"
+msgstr "_Netværk"
 
 #: resources/ui/performance_page/cpu.blp:191
 #: resources/ui/performance_page/disk.blp:205
@@ -286,7 +285,7 @@ msgstr "ネットワーク"
 #: resources/ui/performance_page/memory.blp:180
 #: resources/ui/performance_page/network.blp:149
 msgid "_GPU"
-msgstr "GPU"
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/disk.blp:213
@@ -294,224 +293,221 @@ msgstr "GPU"
 #: resources/ui/performance_page/memory.blp:188
 #: resources/ui/performance_page/network.blp:162
 msgid "_Copy"
-msgstr "コピー"
+msgstr "_Kopier"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr "速度"
+msgstr "Hastighed"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:547
 msgid "Processes"
-msgstr "プロセス"
+msgstr "Processer"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr "スレッド数"
+msgstr "Tråde"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
-msgstr "ハンドル数"
+msgstr "Håndtag"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr "稼働時間"
+msgstr "Oppetid"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr "基本速度:"
+msgstr "Basis Hastighed:"
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr "ソケット:"
+msgstr "Sockets:"
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr "仮想プロセッサ数:"
+msgstr "Virtuelle processorer:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr "仮想化:"
+msgstr "Virtualisering:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr "仮想マシン:"
+msgstr "Virtuel maskine:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "L1キャッシュ:"
+msgstr "L1 cache:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "L2キャッシュ:"
+msgstr "L2 cache:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "L3キャッシュ:"
+msgstr "L3 cache:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq driver:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq governor:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "設定"
+msgstr "Strømstyring:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr "アクティブな時間"
+msgstr "Aktiv tid"
 
 #: resources/ui/performance_page/disk.blp:122
 #: resources/ui/performance_page/network.blp:62
 msgid "Throughput"
-msgstr "スループット"
+msgstr "Overførselshastighed"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr "平均応答時間"
+msgstr "Gns. svartid"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr "読み取り速度"
+msgstr "Læsehastighed"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr "書き込み速度"
+msgstr "Skrivehastighed"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr "容量:"
+msgstr "Kapacitet:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr "フォーマット済み:"
+msgstr "Formatteret:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr "システムディスク:"
+msgstr "Systemdisk:"
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:238
 msgid "Type:"
-msgstr "種類:"
+msgstr "Type:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "ビデオエンコード"
+msgstr "Videoenkodnings-udnyttelse"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "ビデオデコード"
+msgstr "Videodekodnings-udnyttelse"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
 #: resources/ui/performance_page/memory.blp:65
 msgid "Memory usage"
-msgstr "メモリ使用率"
+msgstr "Hukommelsesforbrug"
 
 #: resources/ui/performance_page/gpu_details.blp:66
 msgid "Clock Speed"
-msgstr "クロック速度"
+msgstr "Clockhastighed"
 
 #: resources/ui/performance_page/gpu_details.blp:111
 msgid "Power draw"
-msgstr "消費電力"
+msgstr "Strømforbrug"
 
 #: resources/ui/performance_page/gpu_details.blp:192
 msgid "Memory speed"
-msgstr "メモリ速度"
+msgstr "Hukommelseshastighed"
 
 #: resources/ui/performance_page/gpu_details.blp:237
 msgid "Temperature"
-msgstr "温度"
+msgstr "Temperatur"
 
 #: resources/ui/performance_page/gpu_details.blp:262
 msgid "OpenGL version:"
-msgstr "OpenGL のバージョン:"
+msgstr "OpenGL version:"
 
 #: resources/ui/performance_page/gpu_details.blp:276
 msgid "Vulkan version:"
-msgstr "Vulkan のバージョン:"
+msgstr "Vulkan version:"
 
 #: resources/ui/performance_page/gpu_details.blp:290
 msgid "PCI Express speed:"
-msgstr "PCI Express の速度:"
+msgstr "PCI Express hastighed:"
 
 #: resources/ui/performance_page/gpu_details.blp:304
 msgid "PCI bus address:"
-msgstr "PCIバスのアドレス:"
+msgstr "PCI bus adresse:"
 
 #: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1360
 #: src/performance_page/mod.rs:455
 msgid "Memory"
-msgstr "メモリ"
+msgstr "Hukommelse"
 
 #: resources/ui/performance_page/memory.blp:126
 msgid "Memory composition"
-msgstr "メモリ構成"
+msgstr "Hukommelsessammensætning"
 
 #: resources/ui/performance_page/memory_details.blp:47
 msgid "In use"
-msgstr "使用中"
+msgstr "I brug"
 
 #: resources/ui/performance_page/memory_details.blp:70
 msgid "Available"
-msgstr "利用可能"
+msgstr "Tilgængelig"
 
 #: resources/ui/performance_page/memory_details.blp:98
 msgid "Committed"
-msgstr "コミット済み"
+msgstr "Tildelt"
 
 #: resources/ui/performance_page/memory_details.blp:121
 msgid "Cached"
-msgstr "キャッシュ済み"
+msgstr "Cached"
 
 #: resources/ui/performance_page/memory_details.blp:149
 msgid "Swap used"
-msgstr "スワップ使用率"
+msgstr "Swap brugt"
 
 #: resources/ui/performance_page/memory_details.blp:172
 msgid "Swap available"
-msgstr "利用可能(スワップ)"
+msgstr "Swap tilgængelig"
 
 #: resources/ui/performance_page/memory_details.blp:196
 msgid "Speed:"
-msgstr "速度:"
+msgstr "Hastighed:"
 
 #: resources/ui/performance_page/memory_details.blp:210
 msgid "Slots used:"
-msgstr "使用スロット数:"
+msgstr "Brugte slots:"
 
 #: resources/ui/performance_page/memory_details.blp:224
 msgid "Form factor:"
-msgstr "フォームファクター:"
+msgstr "Formfaktor:"
 
 #: resources/ui/performance_page/network.blp:155
 msgid "Network Se_ttings"
-msgstr "ネットワーク設定"
+msgstr "Netværk Se_ttings"
 
 #: resources/ui/performance_page/network_details.blp:51
 msgid "Receive"
-msgstr "受信"
+msgstr "Modtag"
 
 #: resources/ui/performance_page/network_details.blp:83
 msgid "Send"
-msgstr "送信"
+msgstr "Send"
 
 #: resources/ui/performance_page/network_details.blp:107
 msgid "Interface name:"
-msgstr "アダプター名:"
+msgstr "Interface navn:"
 
 #: resources/ui/performance_page/network_details.blp:121
 msgid "Connection type:"
-msgstr "接続の種類:"
+msgstr "Forbindelsestype:"
 
 #: resources/ui/performance_page/network_details.blp:136
 msgid "SSID:"
@@ -519,111 +515,109 @@ msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:151
 msgid "Signal strength:"
-msgstr "シグナルの強さ:"
+msgstr "Signalstyrke:"
 
 #: resources/ui/performance_page/network_details.blp:166
 msgid "Maximum Bitrate:"
-msgstr "最大ビットレート:"
+msgstr "Maksimum Bitrate:"
 
 #: resources/ui/performance_page/network_details.blp:181
 msgid "Frequency:"
-msgstr "周波数:"
+msgstr "Frekvens:"
 
 #: resources/ui/performance_page/network_details.blp:195
 msgid "Hardware address:"
-msgstr "ハードウェアアドレス:"
+msgstr "Hardwareadresse:"
 
 #: resources/ui/performance_page/network_details.blp:309
 msgid "IPv4 address:"
-msgstr "IPv4アドレス:"
+msgstr "IPv4 adresse:"
 
 #: resources/ui/performance_page/network_details.blp:323
 msgid "IPv6 address:"
-msgstr "IPv6アドレス:"
+msgstr "IPv6 adresse:"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General Settings"
-msgstr "一般"
+msgstr "Generelle indstillinger"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Opdateringsinterval"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Graf datapunkter"
 
 #: resources/ui/preferences/page.blp:46
 msgid "App Page Settings"
-msgstr "アプリページ"
+msgstr "App Side Indstillinger"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Merge Process Stats"
-msgstr "プロセスの統計の集約"
+msgstr "Flet Proces Statistikker"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Remember Sorting"
-msgstr "並び替え状態の記憶"
+msgstr "Husk Sortering"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後も記憶する"
+msgstr "Husk sorteringen af app- og proceslisten på tværs af app genstart"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Skalér CPU-brug til antal kerner"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Udjævn Grafer"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Tegn grafer som udjævnet i stedet for takkede linjer"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Service Detaljer"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Tilstand"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Tjenestens aktuelle status"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
 msgid "Name"
-msgstr "名前"
+msgstr "Navn"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Beskrivelse"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiveret"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "プロセス"
+msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Proces- og brugeroplysninger"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "プロセス"
+msgstr "Proces ID"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -633,39 +627,39 @@ msgstr "プロセス"
 #: src/services_page/details_dialog.rs:247
 #: src/services_page/details_dialog.rs:255
 msgid "N/A"
-msgstr "該当なし"
+msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Bruger"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Logfiler"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Genstart"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -673,70 +667,69 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Enheder"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
-msgstr "サイドバーの切り替え"
+msgstr "Slå Sidepanel til eller fra"
 
 #: resources/ui/window.blp:90
 msgid "Type a name or PID to search"
-msgstr "名前やPIDで検索"
+msgstr "Indtast et navn eller PID for at søge"
 
 #: resources/ui/window.blp:146
 msgid "Loading..."
-msgstr "読み込み中..."
+msgstr "Indlæser..."
 
 #: resources/ui/window.blp:160
 msgid "Performance"
-msgstr "パフォーマンス"
+msgstr "Ydeevne"
 
 #: resources/ui/window.blp:171 src/apps_page/mod.rs:540
 msgid "Apps"
-msgstr "アプリ"
+msgstr "Apps"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Services"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
-msgstr "設定"
+msgstr "_Indstillinger"
 
 #: resources/ui/window.blp:203
 msgid "_About MissionCenter"
-msgstr "Mission Center について"
+msgstr "_Om MissionCenter"
 
 #: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
 msgid "Drive"
-msgstr ""
+msgstr "Drev"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
-msgstr ""
+msgstr "CPU Forbrug"
 
 #: src/apps_page/mod.rs:1390
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU Huk"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
 msgid "Stop Application"
-msgstr "アプリを停止"
+msgstr "Stop Applikationen"
 
 #: src/apps_page/list_item.rs:366
 msgid "Force Stop Application"
-msgstr "アプリを強制終了"
+msgstr "Tving stop af applikationen"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:370
 msgid "Stop Process"
-msgstr "プロセスを停止"
+msgstr "Stop Proces"
 
 #: src/apps_page/list_item.rs:370
 msgid "Force Stop Process"
-msgstr "プロセスを強制終了"
+msgstr "Tving Proces Stop"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -744,9 +737,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"使用中({}B)\n"
+"I Brug ({}B)\n"
 "\n"
-"OSと実行中のアプリケーションに使用されるメモリ"
+"Hukommelse i brug af operativsystemet og kørende applikationer"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -755,9 +748,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"使用中 ({}B)\n"
+"Modificeret ({}B)\n"
 "\n"
-"別のプロセスで使用する前にディスクに書き込むべき内容を含むメモリ"
+"Hukommelse, hvis indhold skal skrives til disk, før det kan bruges af en "
+"anden proces"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -765,9 +759,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"スタンバイ ({}B)\n"
+"Standby ({}B)\n"
 "\n"
-"キャッシュデータや現在使用されていないコードを含むメモリ"
+"Hukommelse, der indeholder cache-data og kode, som ikke aktivt er i brug"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -776,15 +770,15 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"空き ({}B)\n"
+"Fri ({}B)\n"
 "\n"
-"現在使用されておらず、オペレーティング システム、ドライバー、またはアプリケー"
-"ションがより多くのメモリを必要とするときに最初に再利用されるメモリ"
+"Hukommelse, der ikke er i brug i øjeblikket, og som vil blive genanvendt "
+"først, når operativsystemet, drivere eller applikationer har brug for mere "
+"hukommelse"
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "ディスク {} ({})"
+msgstr "Drev {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -808,7 +802,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:570
 msgid "Optical"
-msgstr ""
+msgstr "Optisk"
 
 #: src/performance_page/mod.rs:571 src/performance_page/cpu.rs:313
 #: src/performance_page/cpu.rs:337 src/performance_page/cpu.rs:345
@@ -819,19 +813,19 @@ msgstr ""
 #: src/performance_page/network.rs:471 src/performance_page/network.rs:521
 #: src/performance_page/network.rs:557
 msgid "Unknown"
-msgstr "不明"
+msgstr "Ukendt"
 
 #: src/performance_page/mod.rs:673 src/performance_page/network.rs:337
 msgid "Ethernet"
-msgstr "イーサネット"
+msgstr "Ethernet"
 
 #: src/performance_page/mod.rs:674 src/performance_page/network.rs:352
 msgid "Wi-Fi"
-msgstr "Wi-FI"
+msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:675 src/performance_page/network.rs:354
 msgid "Other"
-msgstr "その他"
+msgstr "Andet"
 
 #: src/performance_page/mod.rs:812
 msgid "GPU {}"
@@ -849,50 +843,47 @@ msgstr "{}: {} {}bps"
 #: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
 #: src/performance_page/gpu.rs:319
 msgid "Unsupported"
-msgstr "無効"
+msgstr "Ikke understøttet"
 
 #: src/performance_page/cpu.rs:332 src/performance_page/disk.rs:242
 msgid "Yes"
-msgstr "はい"
+msgstr "Ja"
 
 #: src/performance_page/cpu.rs:334 src/performance_page/disk.rs:244
 msgid "No"
-msgstr "いいえ"
+msgstr "Nej"
 
 #: src/performance_page/cpu.rs:954
-#, fuzzy
 msgid "{} second{}"
-msgstr "{}秒"
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:965
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minut{} "
 
 #: src/performance_page/cpu.rs:983
-#, fuzzy
 msgid "Utilization Over {}{}"
-msgstr "直近{}秒間の使用率"
+msgstr "Udnyttelse Over {}{}"
 
 #: src/performance_page/disk.rs:201
 msgid "Disk {} ({})"
-msgstr "ディスク {} ({})"
+msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
-#, fuzzy
 msgid "Drive ({})"
-msgstr "ディスク {} ({})"
+msgstr "Drev ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/秒"
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:268
 msgid "Video encode/decode"
-msgstr "ビデオ エンコード/デコード"
+msgstr "Video enkodning/afkodning"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Det mislykkedes at hente yderligere hukommelsesoplysninger"
 
 #: src/performance_page/network.rs:444 src/performance_page/network.rs:451
 #: src/performance_page/network.rs:461
@@ -901,211 +892,31 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Kørende Services"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} mislykkede services ud af i alt {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Kørende"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
 msgid "Failed"
-msgstr ""
+msgstr "Fejlede"
 
 #: src/services_page/details_dialog.rs:228
 #: src/services_page/details_dialog.rs:299
 msgid "Stopped"
-msgstr ""
+msgstr "Stoppet"
 
 #: src/application.rs:325
 msgid "translator-credits"
-msgstr ""
-"Rinrin.rs <rinrin0413.valley@gmail.com>\n"
-"Gnuey56 <gnuey56@proton.me>"
+msgstr "oversætterkreditter"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
-
-#~ msgid "_Disk"
-#~ msgstr "ディスク"
-
-#~ msgid "Disk"
-#~ msgstr "ディスク"
-
-#, fuzzy
-#~ msgid "Fix a bug where the Gatherer process would crash at startup"
-#~ msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後も記憶する"
-
-#, fuzzy
-#~ msgid ""
-#~ "Fix a bug where the number of CPUs was incorrectly detected on some "
-#~ "systems"
-#~ msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後も記憶する"
-
-#, fuzzy
-#~ msgid "Update to GTK 4.12 and libadwaita 1.4"
-#~ msgstr "GTK4やLibadwaitaを使用"
-
-#~ msgid "Fixes:"
-#~ msgstr "修正:"
-
-#, fuzzy
-#~ msgid "Improve memory composition graph"
-#~ msgstr "メモリ構成"
-
-#~ msgid ""
-#~ "Add an option, to the context menu, to show kernel times, in the CPU "
-#~ "graphs"
-#~ msgstr "カーネル時間を表示するオプションをメニューに追加"
-
-#~ msgid "Add CPU temperature, where possible"
-#~ msgstr "可能なCPU温度の表示を追加"
-
-#, fuzzy
-#~ msgid ""
-#~ "Use metainfo instead of appdata for application metadata by David "
-#~ "Guglielmi"
-#~ msgstr ""
-#~ "David Guglielmi 氏により、アプリケーションのメタデータとしてappdataの代わ"
-#~ "りにmetainfoを使用"
-
-#~ msgid ""
-#~ "Fixed a regression where natively installed browsers were not showing up "
-#~ "in the apps list on Fedora"
-#~ msgstr ""
-#~ "Fedoraで、ネイティブにインストールされたブラウザーがアプリリストに表示され"
-#~ "ない不具合を修正"
-
-#~ msgid ""
-#~ "Fixed a regression where Flatpak apps were not showing up in the apps "
-#~ "list on ArchLinux Plasma"
-#~ msgstr ""
-#~ "Arch LinuxのPlasmaで、Flatpakアプリがアプリリストに表示されない不具合を修"
-#~ "正"
-
-#~ msgid ""
-#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-#~ msgstr ""
-#~ "Maps（地図）アプリのデスクトップファイルが正しくパースされないバグを修正"
-
-#~ msgid "Translations:"
-#~ msgstr "翻訳:"
-
-#~ msgid "Updated Spanish translation"
-#~ msgstr "スペイン語の翻訳がアップデート"
-
-#~ msgid "Updated Finnish translation"
-#~ msgstr "フィンランド語の翻訳をアップデート"
-
-#~ msgid "Updated Russian translation"
-#~ msgstr "ロシア語の翻訳をアップデート"
-
-#~ msgid "Updated Chinese (Simplified) translation"
-#~ msgstr "中国語（簡体字）の翻訳をアップデート"
-
-#~ msgid "Updated Greek translation"
-#~ msgstr "ギリシャ語の翻訳をアップデート"
-
-#~ msgid "Updated German translation"
-#~ msgstr "ドイツ語の翻訳をアップデート"
-
-#~ msgid "New app icon by QwertyChouskie"
-#~ msgstr "QwertyChouskie 氏による新しいアプリアイコン"
-
-#, fuzzy
-#~ msgid "Updated Czech translation"
-#~ msgstr "ギリシャ語の翻訳をアップデート"
-
-#, fuzzy
-#~ msgid "Updated Portuguese translation"
-#~ msgstr "ギリシャ語の翻訳をアップデート"
-
-#, fuzzy
-#~ msgid "Add German translation by TecCheck"
-#~ msgstr "ドイツ語の翻訳をアップデート"
-
-#, fuzzy
-#~ msgid ""
-#~ "Fix browsers, installed as native packages, not showing up in the Apps "
-#~ "list"
-#~ msgstr ""
-#~ "Fedoraで、ネイティブにインストールされたブラウザーがアプリリストに表示され"
-#~ "ない不具合を修正"
-
-#, fuzzy
-#~ msgid "Added Czech translation by ondra05"
-#~ msgstr "ギリシャ語の翻訳をアップデート"
-
-#, fuzzy
-#~ msgid "Added Portuguese translation by Rilson Joás"
-#~ msgstr "ギリシャ語の翻訳をアップデート"
-
-#, fuzzy
-#~ msgid "Fixed a bug where the app and process list was empty for some users"
-#~ msgstr "アプリやプロセスの並べ替え状態をアプリの再起動後も記憶する"
-
-#~ msgid "Disk transfer rate"
-#~ msgstr "ディスクの転送速度"
-
-#~ msgid "Overall utilization"
-#~ msgstr "全体的な使用率"
-
-#~ msgid "Resources"
-#~ msgstr "リソース"
-
-#~ msgid ""
-#~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-#~ msgstr ""
-#~ "GPUのモニタリングは実験的であり、AMDおよびNVIDIAのGPUのみがサポートされて"
-#~ "います"
-
-#~ msgid "Update Speed"
-#~ msgstr "更新速度"
-
-#~ msgid "Fast"
-#~ msgstr "速い"
-
-#~ msgid "Refresh every half second"
-#~ msgstr "0.5秒毎に更新"
-
-#~ msgid "Normal"
-#~ msgstr "普通"
-
-#~ msgid "Refresh every second"
-#~ msgstr "毎秒更新"
-
-#~ msgid "Slow"
-#~ msgstr "遅い"
-
-#~ msgid "Refresh every second and a half"
-#~ msgstr "1秒半毎に更新"
-
-#~ msgid "Very Slow"
-#~ msgstr "非常に遅い"
-
-#~ msgid "Refresh every 2 seconds"
-#~ msgstr "2秒毎に更新"
-
-#~ msgid "Supported"
-#~ msgstr "有効"
-
-#~ msgid "Authentication failed"
-#~ msgstr "認証に失敗しました"
-
-#~ msgid "More info"
-#~ msgstr "詳細情報"
-
-#~ msgid "Disk utilization percentage might not be accurate"
-#~ msgstr "ディスク使用率が正しくない場合がある"
-
-#~ msgid "No per-process GPU usage"
-#~ msgstr "プロセスごとのGPU使用率を見られない"
-
-#~ msgid "Some information requires administrative privileges"
-#~ msgstr "一部の情報を取得する為に管理者権限が必要です"
+msgstr "_Afslut"
