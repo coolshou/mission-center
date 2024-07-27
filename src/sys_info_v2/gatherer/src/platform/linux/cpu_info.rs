@@ -1272,7 +1272,7 @@ impl LinuxCpuInfo {
                 Ok(name) => name.trim().to_lowercase(),
                 Err(_) => continue,
             };
-            if name != "k10temp" && name != "coretemp" {
+            if name != "k10temp" && name != "coretemp" && name != "zenpower" {
                 continue;
             }
 
