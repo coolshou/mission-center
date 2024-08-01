@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
 "PO-Revision-Date: 2024-08-02 05:09+0000\n"
-"Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
+"Last-Translator: Ogu <trevisiolugo@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -918,7 +918,6 @@ msgid "{} Running Services"
 msgstr "{} Services en cours"
 
 #: src/services_page/mod.rs:638
-#, fuzzy
 msgid "{} failed services out of a total of {}"
 msgstr "{} services échoués sur un total de {}"
 
