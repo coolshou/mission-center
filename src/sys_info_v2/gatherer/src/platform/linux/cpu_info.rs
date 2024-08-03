@@ -18,80 +18,61 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+const PROC_STAT_IGNORE: [usize; 2] = [0, 5];
+const PROC_STAT_IDLE: [usize; 1] = [4];
+const PROC_STAT_KERNEL: [usize; 2] = [6,7];
+
 use std::{sync::Arc, time::Instant};
 
 use crate::debug;
 use crate::platform::cpu_info::*;
 
-use super::{CPU_COUNT, HZ, INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
-
-const PROC_STAT_USER: usize = 0;
-const PROC_STAT_NICE: usize = 1;
-const PROC_STAT_SYSTEM: usize = 2;
-const PROC_STAT_IRQ: usize = 5;
-const PROC_STAT_SOFTIRQ: usize = 6;
-const PROC_STAT_GUEST: usize = 8;
-const PROC_STAT_GUEST_NICE: usize = 9;
+use super::{CPU_COUNT, INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 #[derive(Debug, Copy, Clone)]
-struct CpuStats {
-    pub user: u64,
-    pub nice: u64,
-    pub system: u64,
-    pub irq: u64,
-    pub softirq: u64,
-    pub timestamp: Instant,
+struct CpuTicks {
+    used: u64,
+    idle: u64,
+    kernel: u64,
 }
 
-impl Default for CpuStats {
+impl Default for CpuTicks {
     fn default() -> Self {
         Self {
-            user: 0,
-            nice: 0,
-            system: 0,
-            irq: 0,
-            softirq: 0,
-            timestamp: Instant::now(),
+            used: 0,
+            idle: 0,
+            kernel: 0,
         }
     }
 }
 
-impl CpuStats {
-    pub fn cpu_usage(&self, prev_measurement: &Self, core_count: usize) -> f32 {
-        let delta_time = self.timestamp - prev_measurement.timestamp;
-        let delta_work_time = ((self
-            .work_time()
-            .saturating_sub(prev_measurement.work_time()) as f32)
-            * 1000.)
-            / *HZ as f32;
+impl CpuTicks {
+    pub fn update(&mut self, line: &str) -> (f32, f32) {
+        let failure = |e| {
+            crate::critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
+            0
+        };
+        let fields = line.split_whitespace();
+        let mut new_ticks = CpuTicks::default();
+        for (pos, field) in fields.enumerate() {
+            match pos {
+                // 0 = cpu(num), 4 = idle, 6 + 7 kernel stuff, rest = busy time
+                x if PROC_STAT_IGNORE.contains(&x) => (),
+                x if PROC_STAT_IDLE.contains(&x) => new_ticks.idle += field.trim().parse::<u64>().unwrap_or_else(failure),
+                x if PROC_STAT_KERNEL.contains(&x) => new_ticks.kernel += field.trim().parse::<u64>().unwrap_or_else(failure),
+                _ => new_ticks.used += field.trim().parse::<u64>().unwrap_or_else(failure),
+            }
+        }
+        let used = new_ticks.used - self.used;
+        let kernel = new_ticks.kernel - self.kernel;
+        let idle = new_ticks.idle - self.idle;
+        let total = (used + kernel + idle) as f32;
 
-        (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32).min(100.)
-    }
+        let util = (used + kernel) as f32 / total;
+        let kernel_util = kernel as f32 / total;
 
-    pub fn cpu_usage_kernel(&self, prev_measurement: &Self, core_count: usize) -> f32 {
-        let delta_time = self.timestamp - prev_measurement.timestamp;
-        let delta_work_time = ((self
-            .kernel_work_time()
-            .saturating_sub(prev_measurement.kernel_work_time())
-            as f32)
-            * 1000.)
-            / *HZ as f32;
-
-        (((delta_work_time / delta_time.as_millis() as f32) * 100.) / core_count as f32).min(100.)
-    }
-
-    fn work_time(&self) -> u64 {
-        self.user
-            .saturating_add(self.nice)
-            .saturating_add(self.system)
-            .saturating_add(self.irq)
-            .saturating_add(self.softirq)
-    }
-
-    fn kernel_work_time(&self) -> u64 {
-        self.system
-            .saturating_add(self.irq)
-            .saturating_add(self.softirq)
+        *self = new_ticks;
+        (util * 100.0, kernel_util * 100.0)
     }
 }
 
@@ -197,8 +178,10 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
 pub struct LinuxCpuDynamicInfo {
     overall_utilization_percent: f32,
     overall_kernel_utilization_percent: f32,
+    cpu_store_old: CpuTicks,
     per_logical_cpu_utilization_percent: Vec<f32>,
     per_logical_cpu_kernel_utilization_percent: Vec<f32>,
+    per_logical_cpu_store_old: Vec<CpuTicks>,
     current_frequency_mhz: u64,
     temperature: Option<f32>,
     process_count: u64,
@@ -212,8 +195,10 @@ impl LinuxCpuDynamicInfo {
         Self {
             overall_utilization_percent: 0.0,
             overall_kernel_utilization_percent: 0.0,
+            cpu_store_old: CpuTicks::default(),
             per_logical_cpu_utilization_percent: vec![],
             per_logical_cpu_kernel_utilization_percent: vec![],
+            per_logical_cpu_store_old: vec![],
             current_frequency_mhz: 0,
             temperature: None,
             process_count: 0,
@@ -273,22 +258,18 @@ pub struct LinuxCpuInfo {
     static_info: LinuxCpuStaticInfo,
     dynamic_info: LinuxCpuDynamicInfo,
 
-    cpu_stats_cache: Vec<CpuStats>,
-
     static_refresh_timestamp: Instant,
     dynamic_refresh_timestamp: Instant,
 }
 
 impl LinuxCpuInfo {
     pub fn new() -> Self {
-        let mut cpu_stats_cache = Vec::with_capacity(*CPU_COUNT + 1);
-        cpu_stats_cache.resize(*CPU_COUNT + 1, CpuStats::default());
+        let mut cpu_store_old = Vec::with_capacity(*CPU_COUNT + 1);
+        cpu_store_old.resize(*CPU_COUNT + 1, CpuTicks::default());
 
         Self {
             static_info: LinuxCpuStaticInfo::new(),
             dynamic_info: LinuxCpuDynamicInfo::new(),
-
-            cpu_stats_cache,
 
             static_refresh_timestamp: *INITIAL_REFRESH_TS,
             dynamic_refresh_timestamp: *INITIAL_REFRESH_TS,
@@ -1443,79 +1424,37 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
         self.dynamic_info
             .per_logical_cpu_kernel_utilization_percent
             .resize(*CPU_COUNT, 0.0);
+        self.dynamic_info
+            .per_logical_cpu_store_old
+            .resize(*CPU_COUNT, CpuTicks::default());
 
         let per_core_usage =
             &mut self.dynamic_info.per_logical_cpu_utilization_percent[..*CPU_COUNT];
         let per_core_kernel_usage =
             &mut self.dynamic_info.per_logical_cpu_kernel_utilization_percent[..*CPU_COUNT];
-
-        fn extract_cpu_stats(line: &str) -> CpuStats {
-            let mut result = CpuStats::default();
-
-            for (i, value) in line.split_whitespace().skip(1).enumerate() {
-                match i {
-                    PROC_STAT_USER => {
-                        result.user = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_NICE => {
-                        result.nice = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_SYSTEM => {
-                        result.system = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_IRQ => {
-                        result.irq = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_SOFTIRQ => {
-                        result.softirq = value.parse::<u64>().unwrap_or(0);
-                    }
-                    PROC_STAT_GUEST => {
-                        let guest = value.parse::<u64>().unwrap_or(0);
-                        result.user = result.user.saturating_sub(guest);
-                    }
-                    PROC_STAT_GUEST_NICE => {
-                        let guest_nice = value.parse::<u64>().unwrap_or(0);
-                        result.nice = result.nice.saturating_sub(guest_nice);
-                    }
-                    _ => {}
-                }
-            }
-
-            result
-        }
+        let per_core_save = &mut self.dynamic_info.per_logical_cpu_store_old[..*CPU_COUNT];
 
         let proc_stat = std::fs::read_to_string("/proc/stat").unwrap_or_else(|e| {
             critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
             "".to_owned()
         });
 
-        let stats_cache = &mut self.cpu_stats_cache;
-
         let mut line_iter = proc_stat
             .lines()
             .map(|l| l.trim())
             .skip_while(|l| !l.starts_with("cpu"));
         if let Some(cpu_overall_line) = line_iter.next() {
-            let overall_stats = extract_cpu_stats(cpu_overall_line);
-            self.dynamic_info.overall_utilization_percent =
-                overall_stats.cpu_usage(&stats_cache[0], *CPU_COUNT);
-            self.dynamic_info.overall_kernel_utilization_percent =
-                overall_stats.cpu_usage_kernel(&stats_cache[0], *CPU_COUNT);
-            stats_cache[0] = overall_stats;
+            (
+                self.dynamic_info.overall_utilization_percent,
+                self.dynamic_info.overall_kernel_utilization_percent,
+            ) = self.dynamic_info.cpu_store_old.update(cpu_overall_line);
 
             for (i, line) in line_iter.enumerate() {
-                if i >= *CPU_COUNT {
+                if i >= *CPU_COUNT || !line.starts_with("cpu") {
                     break;
                 }
 
-                if !line.starts_with("cpu") {
-                    break;
-                }
-
-                let stats = extract_cpu_stats(line);
-                per_core_usage[i] = stats.cpu_usage(&stats_cache[i + 1], 1);
-                per_core_kernel_usage[i] = stats.cpu_usage_kernel(&stats_cache[i + 1], 1);
-                stats_cache[i + 1] = stats;
+                (per_core_usage[i], per_core_kernel_usage[i]) = per_core_save[i].update(line);
             }
         } else {
             self.dynamic_info.overall_utilization_percent = 0.;
