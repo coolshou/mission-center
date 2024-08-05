@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-22 06:09+0000\n"
-"Last-Translator: Chung-Wei Chung <webb790709@proton.me>\n"
+"PO-Revision-Date: 2024-07-30 08:09+0000\n"
+"Last-Translator: lemtea8 <polylemtea@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -182,7 +182,7 @@ msgstr "在 CPU 效能頁面上顯示哪個圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "在CPU圖表中顯示核心時間"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid "Which page is shown on application startup, in the performance tab"
@@ -222,7 +222,7 @@ msgstr "邏輯處理器"
 
 #: resources/ui/performance_page/cpu.blp:156
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "顯示核心時間"
 
 #: resources/ui/performance_page/cpu.blp:163
 #: resources/ui/performance_page/disk.blp:177
@@ -349,9 +349,8 @@ msgid "Cpufreq governor:"
 msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "偏好設定"
+msgstr "電源偏好:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -364,7 +363,6 @@ msgid "Throughput"
 msgstr "吞吐量"
 
 #: resources/ui/performance_page/disk_details.blp:69
-#, fuzzy
 msgid "Avg. response time"
 msgstr "平均回應時間"
 
@@ -547,9 +545,8 @@ msgid "Chart Data Points"
 msgstr "圖表數據樣點"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "App Page Settings"
-msgstr "一般設定"
+msgstr "應用程式頁面設定"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Merge Process Stats"
@@ -557,7 +554,7 @@ msgstr "合併進程的統計資料"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Remember Sorting"
-msgstr ""
+msgstr "記住排序"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Remember the sorting of the app and process list across app restarts"
@@ -565,11 +562,11 @@ msgstr "排序狀態和進程列表將在程式關閉後保存"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "縮放CPU使用率至核心數量"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "平滑圖表"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
@@ -577,11 +574,11 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "服務詳情"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "狀態"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
@@ -603,21 +600,19 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "已啟用"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
 msgstr "進程"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "進程與使用者資訊"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "進程"
+msgstr "進程ID"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -631,11 +626,11 @@ msgstr "無法取得"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "使用者"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "群組"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
@@ -691,7 +686,7 @@ msgstr "應用程式"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "服務"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -710,9 +705,8 @@ msgid "GPU Usage"
 msgstr "GPU 使用率"
 
 #: src/apps_page/mod.rs:1390
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "GPU 記憶體"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -836,9 +830,8 @@ msgid "GPU"
 msgstr "GPU"
 
 #: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
-#, fuzzy
 msgid "{}: {} {}bps"
-msgstr "{} {}bps"
+msgstr "{}: {} {}bps"
 
 #: src/performance_page/cpu.rs:325 src/performance_page/cpu.rs:410
 #: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
@@ -855,7 +848,6 @@ msgid "No"
 msgstr "否"
 
 #: src/performance_page/cpu.rs:954
-#, fuzzy
 msgid "{} second{}"
 msgstr "{} 秒"
 
@@ -882,9 +874,8 @@ msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/gpu.rs:268
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "視訊編碼"
+msgstr "視訊編碼/解碼"
 
 #: src/performance_page/memory.rs:491
 msgid "Getting additional memory information failed"

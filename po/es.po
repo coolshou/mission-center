@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-21 02:44+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-07-26 16:09+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -29,9 +29,11 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;"
 "Administrador de tareas;Monitor de recursos;Monitor del "
 "sistema;Procesador;Procesos;Monitor de "
-"rendimiento;CPU;GPU;Disco;Disco;Memoria;Red;Utilización;Utilización"
+"rendimiento;CPU;GPU;Disco;Disco;Memoria;Red;Utilización;Uso;"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
@@ -64,7 +66,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Monitorizar el uso de RAM y Swap"
+msgstr "Monitorear el uso de RAM y Swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
@@ -72,11 +74,11 @@ msgstr "Ver distribución de cómo la memoria está siendo usada por el sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Supervisar el uso del disco y las tasas de transferencia"
+msgstr "Monitorear el uso del disco y las tasas de transferencia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Supervisar el uso de la red y las velocidades de transferencia"
+msgstr "Monitorear el uso de la red y las velocidades de transferencia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -93,7 +95,7 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Supervisar el uso general de la GPU, el uso del codificador y decodificador "
+"Monitorear el uso general de la GPU, el uso del codificador y decodificador "
 "de vídeo, el uso de la memoria y el consumo de energía, impulsado por el "
 "popular proyecto NVTOP"
 
@@ -135,7 +137,7 @@ msgstr "Sin uso de red por proceso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "GPU support is experimental"
-msgstr "La compatibilidad con GPU es experimental"
+msgstr "El soporte de GPU es experimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -156,8 +158,8 @@ msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"¿Con qué rapidez deben actualizarse los datos y la interfaz de usuario (en "
-"incrementos de 50 ms)?"
+"Con qué rapidez deben actualizarse los datos y la interfaz de usuario (en "
+"incrementos de 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
@@ -172,7 +174,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:59
 msgid "Column sorting is persisted across app restarts"
-msgstr "La ordenación de las columnas se mantiene al reiniciar la aplicación"
+msgstr "El orden de las columnas se mantiene al reiniciar la aplicación"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:64
 #: resources/ui/preferences/page.blp:60
@@ -190,8 +192,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:74
 msgid "The sorting direction of the Apps page view"
-msgstr ""
-"La dirección de la ordenación de la vista de la página de las Aplicaciones"
+msgstr "La dirección del orden de la vista de la página de las Aplicaciones"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Which graph is shown on the CPU performance page"
@@ -360,15 +361,15 @@ msgstr "Caché L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr "Controlador de frec de CPU:"
+msgstr "Controlador de Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr "Gobernador frec de CPU:"
+msgstr "Gobernador de Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr "Preferencias de energía:"
+msgstr "Preferencia de energía:"
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -411,11 +412,11 @@ msgstr "Tipo:"
 
 #: resources/ui/performance_page/gpu.blp:110
 msgid "Video encode utilization"
-msgstr "Codificador de vídeo utilizado"
+msgstr "Uso de la codificación de vídeo"
 
 #: resources/ui/performance_page/gpu.blp:146
 msgid "Video decode utilization"
-msgstr "Decodificador de vídeo utilizado"
+msgstr "Uso de la decodificación de vídeo"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -584,7 +585,7 @@ msgstr "Escalar el uso de la CPU al número de núcleos"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr "Suavizar Gráficos"
+msgstr "Suavizar gráficos"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
@@ -592,7 +593,7 @@ msgstr "Dibujar gráficos como línea lisa en vez de línea dentada"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr "detalles de servicio"
+msgstr "Detalles del servicio"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
@@ -618,7 +619,7 @@ msgstr "Estado"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr "Habilitado"
+msgstr "Activado"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
@@ -630,7 +631,7 @@ msgstr "Proceso e información del usuario"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr "ID de Procesos"
+msgstr "ID del proceso"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -657,7 +658,7 @@ msgstr "Registros"
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr "Comienzo"
+msgstr "Iniciar"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
@@ -720,11 +721,11 @@ msgstr "Disco"
 
 #: src/apps_page/mod.rs:1380
 msgid "GPU Usage"
-msgstr "Consumo de GPU"
+msgstr "Uso de GPU"
 
 #: src/apps_page/mod.rs:1390
 msgid "GPU Mem"
-msgstr "Memoria de la GPU"
+msgstr "Mem GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:366
@@ -791,7 +792,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
 msgid "Drive {} ({})"
-msgstr "Conducir {} ({})"
+msgstr "Disco {} ({})"
 
 #: src/performance_page/mod.rs:565
 msgid "HDD"
@@ -838,7 +839,7 @@ msgstr "Wi-Fi"
 
 #: src/performance_page/mod.rs:675 src/performance_page/network.rs:354
 msgid "Other"
-msgstr "Otros"
+msgstr "Otro"
 
 #: src/performance_page/mod.rs:812
 msgid "GPU {}"
@@ -876,7 +877,7 @@ msgstr "{} minuto{} "
 
 #: src/performance_page/cpu.rs:983
 msgid "Utilization Over {}{}"
-msgstr "Utilización superior a {}{}"
+msgstr "Uso superior a {}{}"
 
 #: src/performance_page/disk.rs:201
 msgid "Disk {} ({})"
@@ -884,7 +885,7 @@ msgstr "Disco {} ({})"
 
 #: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
 msgid "Drive ({})"
-msgstr "Conducir ({})"
+msgstr "Disco ({})"
 
 #: src/performance_page/disk.rs:284
 msgid "{} {}{}B/s"
