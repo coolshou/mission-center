@@ -38,9 +38,13 @@ Please also note that as Mission Center is a libadwaita application, it will not
 
 ## Installing
 
-  <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
-  <a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/7109267599/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
-<br/>
+<a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/7109267599/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
+
+Also available from https://portable-linux-apps.github.io/apps/mission-center.html
+
+Might also be available in your distribution's repository:  
+[![](https://repology.org/badge/vertical-allrepos/mission-center.svg)](https://repology.org/project/mission-center/versions)
 
 Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
 
