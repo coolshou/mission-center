@@ -38,10 +38,8 @@ Please also note that as Mission Center is a libadwaita application, it will not
 
 ## Installing
 
-<br/>
-<p align="center">
   <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
-</p>
+  <a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/7109267599/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
 <br/>
 
 Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
