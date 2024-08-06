@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-05-22 00:01+0000\n"
-"Last-Translator: Filip Marek <filip.marek.95@gmail.com>\n"
+"PO-Revision-Date: 2024-08-07 07:09+0000\n"
+"Last-Translator: Joachim256 <jachymnet@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
 "Language: cs\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -104,12 +104,11 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Podporuje zmenšené souhrnné zobrazení pro jednoduché sledování"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
 "and overall resource usage"
 msgstr ""
-"Využivá OpenGL vykreslování pro všechny grafy pro zmenšení nároků na "
+"Používat OpenGL vykreslování pro všechny grafy pro zmenšení nároků na "
 "procesor a obecné snížení využití zdrojů"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
@@ -146,7 +145,7 @@ msgstr "Která stránka se zobrazí po spuštění aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "ZASTARALÉ! JIŽ SE NEPOUŽÍVÁ!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 msgid ""
@@ -199,7 +198,7 @@ msgstr "Jaká stránka se zobrazí po spuštění aplikace na záložce výkonu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Zdali mají být grafy výkonu hladké, nebo zubaté"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
 #: src/performance_page/mod.rs:384
@@ -358,9 +357,8 @@ msgid "Cpufreq governor:"
 msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Předvolby"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:63
 #: resources/ui/performance_page/disk_details.blp:46
@@ -402,14 +400,12 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode utilization"
-msgstr "Kódování videa"
+msgstr "Využití kódování videa"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Dekódování videa"
+msgstr "Využití dekódování videa"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
@@ -578,23 +574,23 @@ msgstr "Škálovat Využití procesoru podle počtu jader"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Hladké grafy"
 
 #: resources/ui/preferences/page.blp:65
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Kreslí grafy jako hladké čáry místo zubatých"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Detaily služby"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Stav"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Aktuální stav služby"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
@@ -603,31 +599,28 @@ msgstr "Jméno"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
-#, fuzzy
 msgid "Description"
-msgstr "Bez popisu"
+msgstr "Popis"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Zapnuto"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Procesy"
+msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Proces a informace uživatele"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Procesy"
+msgstr "ID procesu"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -641,15 +634,15 @@ msgstr "Není k dispozici"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Uživatel"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Skupina"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Logy"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
@@ -669,7 +662,7 @@ msgstr ""
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291
 msgid "Details"
-msgstr ""
+msgstr "Detaily"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
 msgid "PID"
@@ -677,7 +670,7 @@ msgstr "ID procesu"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Zařízení"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -701,7 +694,7 @@ msgstr "Aplikace"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Služby"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -902,16 +895,16 @@ msgstr "{} {}b/s"
 
 #: src/services_page/mod.rs:633
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Běžící služby"
 
 #: src/services_page/mod.rs:638
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} selhaných služeb z celkových {}"
 
 #: src/services_page/details_dialog.rs:224
 #: src/services_page/details_dialog.rs:295
 msgid "Running"
-msgstr ""
+msgstr "Běžící"
 
 #: src/services_page/details_dialog.rs:226
 #: src/services_page/details_dialog.rs:297
