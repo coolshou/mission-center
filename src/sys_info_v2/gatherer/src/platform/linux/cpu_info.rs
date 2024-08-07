@@ -20,7 +20,7 @@
 
 const PROC_STAT_IGNORE: [usize; 2] = [0, 5];
 const PROC_STAT_IDLE: [usize; 1] = [4];
-const PROC_STAT_KERNEL: [usize; 2] = [6,7];
+const PROC_STAT_KERNEL: [usize; 2] = [6, 7];
 
 use std::{sync::Arc, time::Instant};
 
@@ -58,8 +58,12 @@ impl CpuTicks {
             match pos {
                 // 0 = cpu(num), 4 = idle, 6 + 7 kernel stuff, rest = busy time
                 x if PROC_STAT_IGNORE.contains(&x) => (),
-                x if PROC_STAT_IDLE.contains(&x) => new_ticks.idle += field.trim().parse::<u64>().unwrap_or_else(failure),
-                x if PROC_STAT_KERNEL.contains(&x) => new_ticks.kernel += field.trim().parse::<u64>().unwrap_or_else(failure),
+                x if PROC_STAT_IDLE.contains(&x) => {
+                    new_ticks.idle += field.trim().parse::<u64>().unwrap_or_else(failure)
+                }
+                x if PROC_STAT_KERNEL.contains(&x) => {
+                    new_ticks.kernel += field.trim().parse::<u64>().unwrap_or_else(failure)
+                }
                 _ => new_ticks.used += field.trim().parse::<u64>().unwrap_or_else(failure),
             }
         }

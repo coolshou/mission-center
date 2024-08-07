@@ -62,7 +62,7 @@ struct RawStats {
     pub net_bytes_sent: u64,
     pub net_bytes_recv: u64,
 
-    pub timestamp: std::time::Instant,
+    pub timestamp: Instant,
 }
 
 impl Default for RawStats {
