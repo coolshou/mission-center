@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-06-19 11:09+0000\n"
-"Last-Translator: stoefelz <stoefelz@yandex.com>\n"
+"PO-Revision-Date: 2024-08-16 21:09+0000\n"
+"Last-Translator: Gregor <a8ri2s6b@relay.coly.dev>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"X-Generator: Weblate 5.7\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -417,9 +417,8 @@ msgid "Video encode utilization"
 msgstr "Auslastung der Video Enkodierung"
 
 #: resources/ui/performance_page/gpu.blp:146
-#, fuzzy
 msgid "Video decode utilization"
-msgstr "Video-Dekodierung"
+msgstr "Auslastung der Video-Dekodierung"
 
 #: resources/ui/performance_page/gpu.blp:185
 #: resources/ui/performance_page/gpu_details.blp:147
