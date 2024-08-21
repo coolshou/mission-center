@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-07-17 07:09+0000\n"
+"PO-Revision-Date: 2024-08-07 07:09+0000\n"
 "Last-Translator: Madsen <kajprintz@gmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/da/>\n"
@@ -47,7 +47,7 @@ msgstr "Overvåg dit CPU-, hukommelses-, disk-, netværks- og GPU-forbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "Funktioner:"
+msgstr "Features:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
@@ -97,11 +97,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Se en opdeling af ressourceforbrug efter app og proces"
+msgstr "Se en opdeling af ressourceforbrug for app og proces"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Understøtter en minimeret oversigtsvisning for enkel overvågning"
+msgstr "Understøtter en minimeret oversigtsvisning for simpel overvågning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
@@ -113,7 +113,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Bruger GTK4 og Libadwaita"
+msgstr "Anvender GTK4 og Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
@@ -121,7 +121,7 @@ msgstr "Skrevet i Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Flatpak first"
-msgstr "Flatpak først"
+msgstr "Flatpak first"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "Limitations (there is ongoing work to overcome all of these):"

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-08 11:41+0300\n"
-"PO-Revision-Date: 2024-07-15 12:09+0000\n"
-"Last-Translator: 현월 <kmj10727@gmail.com>\n"
+"PO-Revision-Date: 2024-08-08 20:09+0000\n"
+"Last-Translator: idev2580 <jic4656@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ko/>\n"
 "Language: ko\n"
@@ -133,7 +133,7 @@ msgstr "프로세스별 네트워크 사용량 정보가 없습니다"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPU 지원은 실험적입니다"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
 msgid "Comments, suggestions, bug reports and contributions welcome"
