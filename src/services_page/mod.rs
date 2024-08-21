@@ -155,9 +155,11 @@ mod imp {
 
     impl ServicesPage {
         pub fn collapse(&self) {
-            self.start_label.set_visible(false);
-            self.stop_label.set_visible(false);
-            self.restart_label.set_visible(false);
+            if let None = std::env::var_os("SNAP_CONTEXT") {
+                self.start_label.set_visible(false);
+                self.stop_label.set_visible(false);
+                self.restart_label.set_visible(false);
+            }
             self.details_label.set_visible(false);
 
             self.h2.set_visible(false);
@@ -169,9 +171,11 @@ mod imp {
         }
 
         pub fn expand(&self) {
-            self.start_label.set_visible(true);
-            self.stop_label.set_visible(true);
-            self.restart_label.set_visible(true);
+            if let None = std::env::var_os("SNAP_CONTEXT") {
+                self.start_label.set_visible(true);
+                self.stop_label.set_visible(true);
+                self.restart_label.set_visible(true);
+            }
             self.details_label.set_visible(true);
 
             self.h2.set_visible(true);
@@ -454,7 +458,7 @@ mod imp {
                                 unsafe {
                                     d.set_data("list-item", item);
                                 }
-                                d.present(&this);
+                                d.present(Some(&this));
                             });
                         }
                         None => {
@@ -688,6 +692,18 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            if let Some(_) = std::env::var_os("SNAP_CONTEXT") {
+                self.start.set_visible(false);
+                self.stop.set_visible(false);
+                self.restart.set_visible(false);
+
+                let menu = gio::Menu::new();
+                menu.append(Some(&i18n("Details")), Some("services-page.details"));
+
+                self.context_menu
+                    .set_menu_model(Some(&gio::MenuModel::from(menu)));
+            }
 
             self.configure_actions();
 

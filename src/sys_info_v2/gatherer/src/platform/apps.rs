@@ -24,7 +24,7 @@ use dbus::arg::{Append, Arg};
 pub trait AppExt<'a>: Default + Append + Arg {
     type Iter: Iterator<Item = &'a u32>;
 
-    /// The name of the app in human readable form
+    /// The name of the app in human-readable form
     fn name(&self) -> &str;
 
     /// The icon used by the app

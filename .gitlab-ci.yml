@@ -2,6 +2,7 @@ image: "ubuntu:24.04"
 
 stages:
   - build
+  - portable-build
   - package
 
 build-job:
@@ -25,7 +26,47 @@ build-job:
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+portable-build-job:
+  stage: portable-build
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y ca-certificates busybox-static skopeo
+
+    - skopeo copy docker://ubuntu:20.04 docker-archive:ubuntu.tar:ubuntu:20.04
+    - tar xf ubuntu.tar
+    - rm ubuntu.tar
+
+    - |
+      cat <<EOF > /build.sh
+      rm -rf /bin /boot /etc /lib* /media /mnt /opt /sbin/ /srv /usr /var
+      mkdir /newroot && tar xf *.tar -C /newroot
+      rm /newroot/etc/hosts && rm /newroot/etc/hostname && rm /newroot/etc/resolv.conf
+      cp -ar /newroot/* / && rm -rf /newroot
+
+      set -e
+
+      apt-get update && apt-get dist-upgrade -y
+
+      SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+      cd portable && tar zcf ../portable.tar.gz *
+
+      EOF
+
+    - busybox sh /build.sh
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable.tar.gz'
+  rules:
+    - if: $PORTABLE_BUILD == "true"
 
 flatpak-job:
   stage: package
@@ -46,7 +87,7 @@ flatpak-job:
     paths:
       - flatpak/missioncenter.flatpak
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $BUILD_FLATPAK == "true"
 
 appimage-job:
   stage: package
@@ -57,29 +98,34 @@ appimage-job:
     - echo 'deb http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y podman fuse-overlayfs
+    - apt-get install -y ca-certificates busybox-static skopeo
 
-    - update-alternatives --set iptables /usr/sbin/iptables-legacy
-    - mkdir -p ~/.config/containers
-    - echo '[storage.options.overlay]' > ~/.config/containers/storage.conf
-    - echo 'mount_program = "/usr/bin/fuse-overlayfs"' >> ~/.config/containers/storage.conf
-    - cat ~/.config/containers/storage.conf
+    - skopeo copy docker://ubuntu:20.04 docker-archive:ubuntu.tar:ubuntu:20.04
+    - tar xf ubuntu.tar
+    - rm ubuntu.tar
 
-    - podman pull ubuntu:20.04
-    - podman run --cgroups=disabled --arch=x86_64 -itd --name appimage -v $PWD:/src:Z ubuntu:20.04
+    - |
+      cat <<EOF > /build.sh
+      rm -rf /bin /boot /etc /lib* /media /mnt /opt /sbin/ /srv /usr /var
+      mkdir /newroot && tar xf *.tar -C /newroot
+      rm /newroot/etc/hosts && rm /newroot/etc/hostname && rm /newroot/etc/resolv.conf
+      cp -ar /newroot/* / && rm -rf /newroot
 
-    - echo "************** Building application and dependencies **************" &> logs.txt
-    - podman exec appimage /usr/bin/env -i /bin/bash -l -c '/usr/bin/env SRC_PATH=/src env OUT_PATH=/src/appimage /src/support/build-with-gtk-libadwaita.sh' &>> logs.txt || (tail -n 500 logs.txt && exit 1)
-    - echo "************** Building AppImage **************" &>> logs.txt
-    - podman exec appimage /usr/bin/env -i /bin/bash -l -c '/usr/bin/env SRC_PATH=/src /usr/bin/env RECEIPE_PATH=/src/appimage /usr/bin/env APPDIR_PATH=/src/appimage /src/appimage/create-appimage.sh' &>> logs.txt || (tail -n 500 logs.txt && exit 1)
+      set -e
+
+      apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
+
+      curl -LO $PORTABLE_TARBALL
+      cd appimage && /usr/bin/tar xf ../portable.tar.gz && cd ..
+
+      RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
+
+      EOF
+
+    - busybox sh /build.sh
+
   artifacts:
     paths:
-      - 'logs.txt'
       - 'MissionCenter-x86_64.AppImage'
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "**/Cargo.toml"
-        - "**/meson.build"
-        - "appimage/*"
-        - "resources/ui/**/*"
+    - if: $BUILD_APPIMAGE == "true" && $PORTABLE_TARBALL != null

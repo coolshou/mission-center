@@ -29,7 +29,8 @@
     "--filesystem=xdg-data/flatpak/app:ro",
     "--filesystem=/var/lib/flatpak/app:ro",
     "--filesystem=/snap:ro",
-    "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:~/.local/share/flatpak/exports/share",
+    "--filesystem=/var/lib/snapd:ro",
+    "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:~/.local/share/flatpak/exports/share",
     "--env=LD_PRELOAD="
   ],
   "cleanup": [
@@ -66,18 +67,18 @@
       "sources": [
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.76.0-x86_64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.80.1-x86_64.tar.zst",
           "dest": "rust-toolchain-glibc",
-          "sha256": "68e0a87381b5af9092f81afc79eb1d1e5bd36e5cde058d3ba43f80c0fb7ae03b",
+          "sha256": "3ee1f6bc9c8aab66d1d4e968236e0fe9f3cd9abcb4ace42abb297f6f13913c65",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.76.0-x86_64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.80.1-x86_64.tar.zst",
           "dest": "rust-toolchain-musl",
-          "sha256": "d9e1ebbf2386daec4394ec7dd672d6312ddce906cf359b2a2526b1b6cb98ca59",
+          "sha256": "6bc27cd5178f7bfa5e3863d7b6ed00f74c4978e1f6607aa5df2c1f0c93adf0ae",
           "only-arches": [
             "x86_64"
           ]
@@ -109,18 +110,18 @@
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.76.0-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.80.1-aarch64.tar.zst",
           "dest": "rust-toolchain-glibc",
-          "sha256": "9c80e711ba2740b6f5c66c1d5bf95532f94c7cb7cb6068af942b7e89b24bc467",
+          "sha256": "d241351d0f48d8f218333d5d7763626987aefbd24e0a1e44015a8bacd3a0a41e",
           "only-arches": [
             "aarch64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.76.0-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.80.1-aarch64.tar.zst",
           "dest": "rust-toolchain-musl",
-          "sha256": "62ec468015a3e2b61c89918c1fb6b5640ef84f593b29475cf90fad62238ffd4f",
+          "sha256": "671938dc3892e029345d7b26ac0c7fd5fe61a72dd95a9894f198dedfd4f15339",
           "only-arches": [
             "aarch64"
           ]
@@ -187,7 +188,7 @@
         {
           "type": "git",
           "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "commit": "07e824d8e7b2273166acbe6d58e130b3487d8074"
+          "commit": "b308adc3af939b27bd18941710b4499b1131e090"
         }
       ],
       "cleanup": [

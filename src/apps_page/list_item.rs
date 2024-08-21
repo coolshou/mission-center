@@ -117,10 +117,9 @@ mod imp {
             let icon_theme = gtk::IconTheme::for_display(&display);
 
             if icon_theme.has_icon(icon) {
-                self.icon.set_from_icon_name(Some(icon));
+                self.icon.set_icon_name(Some(icon));
             } else {
-                self.icon
-                    .set_from_icon_name(Some("application-x-executable"));
+                self.icon.set_icon_name(Some("application-x-executable"));
             }
         }
 
