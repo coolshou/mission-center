@@ -38,6 +38,10 @@ mod imp {
         #[template_child]
         group_state: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
+        box_buttons: TemplateChild<gtk::Box>,
+        #[template_child]
+        restart: TemplateChild<gtk::Button>,
+        #[template_child]
         label_name: TemplateChild<gtk::Label>,
         #[template_child]
         label_description: TemplateChild<gtk::Label>,
@@ -76,6 +80,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 group_state: TemplateChild::default(),
+                box_buttons: TemplateChild::default(),
+                restart: TemplateChild::default(),
                 label_name: TemplateChild::default(),
                 label_description: TemplateChild::default(),
                 label_running: TemplateChild::default(),
@@ -143,6 +149,12 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            if let Some(_) = std::env::var_os("SNAP_CONTEXT") {
+                self.switch_enabled.set_sensitive(false);
+                self.box_buttons.set_visible(false);
+                self.restart.set_visible(false);
+            }
 
             self.switch_enabled.connect_active_notify({
                 let this = self.obj().downgrade();

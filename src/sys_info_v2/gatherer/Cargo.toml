@@ -1,11 +1,12 @@
 [package]
 build = "build/build.rs"
 name = "gatherer"
-version = "0.5.2"
+version = "0.6.0"
 edition = "2021"
 
 [dependencies]
 anyhow = { version = "1.0" }
+app-rummage = { version = "*" }
 arrayvec = { version = "0.7" }
 ash = { version = "0.38" }
 bincode = { version = "1.3" }

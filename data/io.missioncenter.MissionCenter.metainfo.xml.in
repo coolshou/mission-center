@@ -112,6 +112,13 @@
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
+        <release version="0.6.0" date="2025-01-01">
+            <description translate="no">
+                <ul>
+                    <li>Improve things</li>
+                </ul>
+            </description>
+        </release>
 
         <release version="0.5.2" date="2024-06-16">
             <description translate="no">
