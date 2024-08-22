@@ -24,15 +24,16 @@ use std::{
     time::Instant,
 };
 
+use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::{
+    gpu_info_valid,
     logging::{critical, error, warning},
+    platform::platform_impl::gpu_info::nvtop::GPUInfoDynamicInfoValid,
     platform::{
         platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
         OpenGLApiVersion, ProcessesExt,
     },
 };
-
-use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 #[allow(unused)]
 mod nvtop;
@@ -559,6 +560,12 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             return;
         }
 
+        let result = unsafe { nvtop::gpuinfo_utilisation_rate(gpu_list) };
+        if result == 0 {
+            critical!("Gatherer::GpuInfo", "Unable to refresh utilization rate");
+            return;
+        }
+
         self.static_info.clear();
         self.dynamic_info.clear();
 
@@ -782,6 +789,12 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             return;
         }
 
+        let result = unsafe { nvtop::gpuinfo_utilisation_rate(gpu_list) };
+        if result == 0 {
+            critical!("Gatherer::GpuInfo", "Unable to refresh utilization rate");
+            return;
+        }
+
         let result = unsafe { nvtop::gpuinfo_fix_dynamic_info_from_process_info(gpu_list) };
         if result == 0 {
             error!(
@@ -839,8 +852,20 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             dynamic_info.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
             dynamic_info.free_memory = dev.dynamic_info.free_memory;
             dynamic_info.used_memory = dev.dynamic_info.used_memory;
-            dynamic_info.encoder_percent = dev.dynamic_info.encoder_rate;
-            dynamic_info.decoder_percent = dev.dynamic_info.decoder_rate;
+            dynamic_info.encoder_percent = {
+                if gpu_info_valid!(dev.dynamic_info, GPUInfoDynamicInfoValid::EncoderRateValid) {
+                    dev.dynamic_info.encoder_rate
+                } else {
+                    0
+                }
+            };
+            dynamic_info.decoder_percent = {
+                if gpu_info_valid!(dev.dynamic_info, GPUInfoDynamicInfoValid::DecoderRateValid) {
+                    dev.dynamic_info.decoder_rate
+                } else {
+                    0
+                }
+            };
 
             for i in 0..dev.processes_count as usize {
                 let process = unsafe { &*dev.processes.add(i) };
