@@ -85,30 +85,60 @@ mod imp {
                 let window =
                     crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
 
-                window.connect_default_height_notify(clone!(@weak self as this => move |window| {
-                    let settings = this.settings.take();
-                    if settings.is_none() {
-                        return;
-                    }
-                    let settings = settings.unwrap();
-                    settings.set_int("window-height", window.default_height()).unwrap_or_else(|err|{
-                        g_critical!("MissionCenter", "Failed to save window height: {}", err);
-                    });
+                window.connect_default_height_notify({
+                    let this = self.obj().downgrade();
+                    move |window| {
+                        let this = match this.upgrade() {
+                            Some(this) => this,
+                            None => return,
+                        };
+                        let this = this.imp();
 
-                    this.settings.set(Some(settings));
-                }));
-                window.connect_default_width_notify(clone!(@weak self as this => move|window| {
-                    let settings = this.settings.take();
-                    if settings.is_none() {
-                        return;
-                    }
-                    let settings = settings.unwrap();
-                    settings.set_int("window-width", window.default_width()).unwrap_or_else(|err|{
-                        g_critical!("MissionCenter", "Failed to save window width: {}", err);
-                    });
+                        let settings = this.settings.take();
+                        if settings.is_none() {
+                            return;
+                        }
+                        let settings = settings.unwrap();
+                        settings
+                            .set_int("window-height", window.default_height())
+                            .unwrap_or_else(|err| {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to save window height: {}",
+                                    err
+                                );
+                            });
 
-                    this.settings.set(Some(settings));
-                }));
+                        this.settings.set(Some(settings));
+                    }
+                });
+                window.connect_default_width_notify({
+                    let this = self.obj().downgrade();
+                    move |window| {
+                        let this = match this.upgrade() {
+                            Some(this) => this,
+                            None => return,
+                        };
+                        let this = this.imp();
+
+                        let settings = this.settings.take();
+                        if settings.is_none() {
+                            return;
+                        }
+                        let settings = settings.unwrap();
+                        settings
+                            .set_int("window-width", window.default_width())
+                            .unwrap_or_else(|err| {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to save window width: {}",
+                                    err
+                                );
+                            });
+
+                        this.settings.set(Some(settings));
+                    }
+                });
 
                 if settings.is_none() {
                     g_critical!("MissionCenter", "Failed to load application settings");

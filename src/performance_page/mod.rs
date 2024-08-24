@@ -22,7 +22,7 @@
 use std::{cell::Cell, collections::HashMap};
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{clone, ParamSpec, Properties, Value};
+use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
 use widgets::GraphWidget;
@@ -219,154 +219,204 @@ mod imp {
                 None,
                 &glib::Variant::from(this.imp().summary_mode.get()),
             );
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let new_state = !this.summary_mode();
-                action.set_state(&glib::Variant::from(new_state));
-                this.set_summary_mode(new_state);
-                if !this.imp().breakpoint_applied.get() {
-                    this.imp().page_content.set_show_sidebar(!new_state);
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
+                    let new_state = !this.summary_mode();
+                    action.set_state(&glib::Variant::from(new_state));
+                    this.set_summary_mode(new_state);
+                    if !this.imp().breakpoint_applied.get() {
+                        this.imp().page_content.set_show_sidebar(!new_state);
+                    }
                 }
-            }));
+            });
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new_stateful("cpu", None, &glib::Variant::from(true));
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let row= this.imp()
-                    .sidebar()
-                    .row_at_index(0)
-                    .expect("Failed to select CPU row");
-                this.imp().sidebar().select_row(Some(&row));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
 
-                let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(&glib::Variant::from(false));
-                action.set_state(&glib::Variant::from(true));
-            }));
+                    let row = this
+                        .sidebar()
+                        .row_at_index(0)
+                        .expect("Failed to select CPU row");
+                    this.sidebar().select_row(Some(&row));
+
+                    let prev_action = this.current_view_action.replace(action.clone());
+                    prev_action.set_state(&glib::Variant::from(false));
+                    action.set_state(&glib::Variant::from(true));
+                }
+            });
             actions.add_action(&action);
             view_actions.insert("cpu".to_string(), action.clone());
             this.imp().current_view_action.set(action);
 
             let action =
                 gio::SimpleAction::new_stateful("memory", None, &glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let row= this.imp()
-                    .sidebar()
-                    .row_at_index(1)
-                    .expect("Failed to select Memory row");
-                this.imp().sidebar().select_row(Some(&row));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
 
-                let prev_action = this.imp().current_view_action.replace(action.clone());
-                prev_action.set_state(&glib::Variant::from(false));
-                action.set_state(&glib::Variant::from(true));
-            }));
+                    let row = this
+                        .sidebar()
+                        .row_at_index(1)
+                        .expect("Failed to select Memory row");
+                    this.sidebar().select_row(Some(&row));
+
+                    let prev_action = this.current_view_action.replace(action.clone());
+                    prev_action.set_state(&glib::Variant::from(false));
+                    action.set_state(&glib::Variant::from(true));
+                }
+            });
             actions.add_action(&action);
             view_actions.insert("memory".to_string(), action);
 
             let action = gio::SimpleAction::new_stateful("disk", None, &glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let pages = this.imp().pages.take();
-                for page in &pages {
-                    let disk_pages = match page {
-                        Pages::Disk(disk_pages) => {
-                            disk_pages
-                        }
-                        _ => continue,
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
                     };
 
-                    let disk_page = disk_pages.values().next();
-                    if disk_page.is_none() {
-                        continue;
+                    let pages = this.imp().pages.take();
+                    for page in &pages {
+                        let disk_pages = match page {
+                            Pages::Disk(disk_pages) => disk_pages,
+                            _ => continue,
+                        };
+
+                        let disk_page = disk_pages.values().next();
+                        if disk_page.is_none() {
+                            continue;
+                        }
+                        let disk_page = disk_page.unwrap();
+
+                        let row = disk_page.0.parent();
+                        if row.is_none() {
+                            continue;
+                        }
+                        let row = row.unwrap();
+
+                        this.imp()
+                            .sidebar()
+                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                        let prev_action = this.imp().current_view_action.replace(action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        action.set_state(&glib::Variant::from(true));
+
+                        break;
                     }
-                    let disk_page = disk_page.unwrap();
-
-                    let row = disk_page.0.parent();
-                    if row.is_none() {
-                        continue;
-                    }
-                    let row = row.unwrap();
-
-                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                    let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(&glib::Variant::from(false));
-                    action.set_state(&glib::Variant::from(true));
-
-                    break;
+                    this.imp().pages.set(pages);
                 }
-                this.imp().pages.set(pages);
-            }));
+            });
             actions.add_action(&action);
             view_actions.insert("disk".to_string(), action);
 
             let action =
                 gio::SimpleAction::new_stateful("network", None, &glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let pages = this.imp().pages.take();
-                for page in &pages {
-                    let network_pages= match page {
-                        Pages::Network(network_pages) => {
-                            network_pages
-                        }
-                        _ => continue,
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
                     };
 
-                    let network_page = network_pages.values().next();
-                    if network_page.is_none() {
-                        continue;
+                    let pages = this.imp().pages.take();
+                    for page in &pages {
+                        let network_pages = match page {
+                            Pages::Network(network_pages) => network_pages,
+                            _ => continue,
+                        };
+
+                        let network_page = network_pages.values().next();
+                        if network_page.is_none() {
+                            continue;
+                        }
+                        let network_page = network_page.unwrap();
+
+                        let row = network_page.0.parent();
+                        if row.is_none() {
+                            continue;
+                        }
+                        let row = row.unwrap();
+
+                        this.imp()
+                            .sidebar()
+                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                        let prev_action = this.imp().current_view_action.replace(action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        action.set_state(&glib::Variant::from(true));
+
+                        break;
                     }
-                    let network_page = network_page.unwrap();
-
-                    let row = network_page.0.parent();
-                    if row.is_none() {
-                        continue;
-                    }
-                    let row = row.unwrap();
-
-                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                    let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(&glib::Variant::from(false));
-                    action.set_state(&glib::Variant::from(true));
-
-                    break;
+                    this.imp().pages.set(pages);
                 }
-                this.imp().pages.set(pages);
-            }));
+            });
             actions.add_action(&action);
             view_actions.insert("network".to_string(), action);
 
             let action = gio::SimpleAction::new_stateful("gpu", None, &glib::Variant::from(false));
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let pages = this.imp().pages.take();
-                for page in &pages {
-                    let gpu_pages= match page {
-                        Pages::Gpu(gpu_pages) => {
-                            gpu_pages
-                        }
-                        _ => continue,
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
                     };
 
-                    let gpu_page = gpu_pages.values().next();
-                    if gpu_page.is_none() {
-                        continue;
+                    let pages = this.imp().pages.take();
+                    for page in &pages {
+                        let gpu_pages = match page {
+                            Pages::Gpu(gpu_pages) => gpu_pages,
+                            _ => continue,
+                        };
+
+                        let gpu_page = gpu_pages.values().next();
+                        if gpu_page.is_none() {
+                            continue;
+                        }
+                        let gpu_page = gpu_page.unwrap();
+
+                        let row = gpu_page.0.parent();
+                        if row.is_none() {
+                            continue;
+                        }
+                        let row = row.unwrap();
+
+                        this.imp()
+                            .sidebar()
+                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                        let prev_action = this.imp().current_view_action.replace(action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        action.set_state(&glib::Variant::from(true));
+
+                        break;
                     }
-                    let gpu_page = gpu_page.unwrap();
-
-                    let row = gpu_page.0.parent();
-                    if row.is_none() {
-                        continue;
-                    }
-                    let row = row.unwrap();
-
-                    this.imp().sidebar().select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                    let prev_action = this.imp().current_view_action.replace(action.clone());
-                    prev_action.set_state(&glib::Variant::from(false));
-                    action.set_state(&glib::Variant::from(true));
-
-                    break;
+                    this.imp().pages.set(pages);
                 }
-                this.imp().pages.set(pages);
-            }));
+            });
             actions.add_action(&action);
             view_actions.insert("gpu".to_string(), action);
 
@@ -418,14 +468,18 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(readings);
 
-            self.page_content
-                .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                    if pc.is_collapsed() {
-                        page.infobar_collapsed();
-                    } else {
-                        page.infobar_uncollapsed();
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
                     }
-                }));
+                }
+            });
 
             self.obj()
                 .as_ref()
@@ -491,14 +545,18 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(readings);
 
-            self.page_content
-                .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                    if pc.is_collapsed() {
-                        page.infobar_collapsed();
-                    } else {
-                        page.infobar_uncollapsed();
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
                     }
-                }));
+                }
+            });
 
             self.obj()
                 .as_ref()
@@ -607,14 +665,18 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(secondary_index, disk_static_info);
 
-            self.page_content
-                .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                    if pc.is_collapsed() {
-                        page.infobar_collapsed();
-                    } else {
-                        page.infobar_uncollapsed();
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
                     }
-                }));
+                }
+            });
 
             self.obj()
                 .as_ref()
@@ -730,14 +792,18 @@ mod imp {
             self.settings.set(settings);
             page.set_static_information(network_device);
 
-            self.page_content
-                .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                    if pc.is_collapsed() {
-                        page.infobar_collapsed();
-                    } else {
-                        page.infobar_uncollapsed();
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
                     }
-                }));
+                }
+            });
 
             self.obj()
                 .as_ref()
@@ -836,14 +902,18 @@ mod imp {
                     static_info,
                 );
 
-                self.page_content
-                    .connect_collapsed_notify(clone!(@weak page => move |pc| {
-                        if pc.is_collapsed() {
-                            page.infobar_collapsed();
-                        } else {
-                            page.infobar_uncollapsed();
+                self.page_content.connect_collapsed_notify({
+                    let page = page.downgrade();
+                    move |pc| {
+                        if let Some(page) = page.upgrade() {
+                            if pc.is_collapsed() {
+                                page.infobar_collapsed();
+                            } else {
+                                page.infobar_uncollapsed();
+                            }
                         }
-                    }));
+                    }
+                });
 
                 self.obj()
                     .as_ref()
@@ -1244,14 +1314,29 @@ mod imp {
             self.breakpoint.set_condition(Some(
                 &adw::BreakpointCondition::parse("max-width: 440sp").unwrap(),
             ));
-            self.breakpoint
-                .connect_apply(clone!(@weak self as this => move |_| {
+            self.breakpoint.connect_apply({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     this.breakpoint_applied.set(true);
                     this.page_content.set_collapsed(true);
                     this.page_content.set_show_sidebar(false);
-                }));
-            self.breakpoint
-                .connect_unapply(clone!(@weak self as this => move |_| {
+                }
+            });
+            self.breakpoint.connect_unapply({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     this.breakpoint_applied.set(false);
                     this.page_content.set_collapsed(false);
                     if !this.summary_mode.get() {
@@ -1259,15 +1344,23 @@ mod imp {
                     } else {
                         this.page_content.set_show_sidebar(false);
                     }
-                }));
+                }
+            });
 
             self.page_content
                 .sidebar()
                 .expect("Infobar is not set")
                 .parent()
                 .and_then(|p| Some(p.remove_css_class("sidebar-pane")));
-            self.page_content.connect_collapsed_notify(
-                glib::clone!(@weak self as this => move |pc| {
+            self.page_content.connect_collapsed_notify({
+                let this = self.obj().downgrade();
+                move |pc| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     if !pc.is_collapsed() {
                         this.page_content
                             .sidebar()
@@ -1276,26 +1369,37 @@ mod imp {
                             .and_then(|p| Some(p.remove_css_class("sidebar-pane")));
                     }
                     this.obj().notify_info_button_visible();
-                }),
-            );
+                }
+            });
 
-            self.page_content.connect_show_sidebar_notify(
-                glib::clone!(@weak self as this => move |_| {
-                    this.obj().notify_infobar_visible();
-                }),
-            );
+            self.page_content.connect_show_sidebar_notify({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        this.notify_infobar_visible();
+                    }
+                }
+            });
 
             if let Some(child) = self.page_stack.visible_child() {
                 let infobar_content = child.property::<Option<gtk::Widget>>("infobar-content");
                 self.info_bar.set_child(infobar_content.as_ref());
             }
-            self.page_stack.connect_visible_child_notify(
-                glib::clone!(@weak self as this => move |page_stack| {
+            self.page_stack.connect_visible_child_notify({
+                let this = self.obj().downgrade();
+                move |page_stack| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
                     if let Some(child) = page_stack.visible_child() {
-                        let infobar_content = child.property::<Option<gtk::Widget>>("infobar-content");
-                        this.info_bar.set_child(infobar_content.as_ref());
+                        let infobar_content =
+                            child.property::<Option<gtk::Widget>>("infobar-content");
+                        this.imp().info_bar.set_child(infobar_content.as_ref());
                     }
-            }));
+                }
+            });
         }
     }
 

@@ -124,15 +124,13 @@ mod imp {
             self.parent_realize();
             self.update_label();
 
-            self.obj()
-                .connect_value_notify(glib::clone!(@weak self as this => move |_| {
-                    this.update_label();
-                }));
+            self.obj().connect_value_notify(|this| {
+                this.imp().update_label();
+            });
 
-            self.obj()
-                .connect_content_type_notify(glib::clone!(@weak self as this => move |_| {
-                    this.update_label();
-                }));
+            self.obj().connect_content_type_notify(|this| {
+                this.imp().update_label();
+            });
         }
     }
 

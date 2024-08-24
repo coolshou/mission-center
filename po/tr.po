@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-08 11:41+0300\n"
+"POT-Creation-Date: 2024-08-24 10:40+0300\n"
 "PO-Revision-Date: 2024-06-11 13:07+0000\n"
 "Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
@@ -106,9 +106,10 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Basit izleme için küçültülmüş özet görünümünü destekler"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#, fuzzy
 msgid ""
-"Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
-"and overall resource usage"
+"Use hardware accelerated rendering for all the graphs in an effort to reduce "
+"CPU and overall resource usage"
 msgstr ""
 "İşlemci ve genel kaynak kullanımını azaltmak amacıyla tüm grafikler için "
 "donanım hızlandırmalı işleme kullan"
@@ -121,25 +122,34 @@ msgstr "GTK4 ve Libadwaita kullanır"
 msgid "Written in Rust"
 msgstr "Rust ile yazıldı"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
-msgid "Flatpak first"
-msgstr "Flatpak öncelikli"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
 "Sınırlamalar (tüm bunların üstesinden gelmek için çalışmalar devam "
 "etmektedir):"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
 msgstr "İşlem başına ağ kullanımı yok"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
 msgstr "Ekran kartı desteği deneyseldir"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+msgid ""
+"Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
+"does not support VRAM, power, or temperature monitoring"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+msgid ""
+"When using Linux Mint/Cinnamon, launched applications may not show up in the "
+"\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
+"cinnamon/issues/12015)"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Yorum, öneri, hata raporu ve katkılarınızı bekliyoruz"
 
@@ -207,101 +217,107 @@ msgstr ""
 msgid "Should performance graphs be smooth or jagged"
 msgstr "Başarım grafiklerinin yumuşak ya da pürüzlü olma durumu"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
-#: src/performance_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1361
+#: src/performance_page/mod.rs:434
 msgid "CPU"
 msgstr "İşlemci"
 
-#: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:46
-#: resources/ui/performance_page/gpu.blp:71
-#: resources/ui/performance_page/gpu_details.blp:43
-msgid "Utilization"
-msgstr "Kullanım"
+#: resources/ui/performance_page/cpu.blp:62
+#: resources/ui/performance_page/gpu.blp:67
+#, fuzzy
+msgid "Utilization over "
+msgstr "{}{} Üzerinde Kullanım"
 
-#: resources/ui/performance_page/cpu.blp:86
+#: resources/ui/performance_page/cpu.blp:77
+#: resources/ui/performance_page/gpu.blp:81
+#: resources/ui/performance_page/gpu.blp:126
 msgid "100%"
 msgstr "%100"
 
-#: resources/ui/performance_page/cpu.blp:142
+#: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
 msgstr "G_rafiği Değiştir"
 
-#: resources/ui/performance_page/cpu.blp:145
+#: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
 msgstr "Genel _Kullanım"
 
-#: resources/ui/performance_page/cpu.blp:150
+#: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
 msgstr "Mantıksal İşl_emciler"
 
-#: resources/ui/performance_page/cpu.blp:156
+#: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
 msgstr "Çekirdek Zamanlarını Göster"
 
-#: resources/ui/performance_page/cpu.blp:163
-#: resources/ui/performance_page/disk.blp:177
-#: resources/ui/performance_page/gpu.blp:218
-#: resources/ui/performance_page/memory.blp:152
-#: resources/ui/performance_page/network.blp:121
+#: resources/ui/performance_page/cpu.blp:126
+#: resources/ui/performance_page/disk.blp:147
+#: resources/ui/performance_page/gpu.blp:195
+#: resources/ui/performance_page/memory.blp:136
+#: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
 msgstr "_Özet Grafiğini Çiz"
 
-#: resources/ui/performance_page/cpu.blp:168
-#: resources/ui/performance_page/disk.blp:182
-#: resources/ui/performance_page/gpu.blp:223
-#: resources/ui/performance_page/memory.blp:157
-#: resources/ui/performance_page/network.blp:126
+#: resources/ui/performance_page/cpu.blp:131
+#: resources/ui/performance_page/disk.blp:152
+#: resources/ui/performance_page/gpu.blp:200
+#: resources/ui/performance_page/memory.blp:141
+#: resources/ui/performance_page/network.blp:110
 msgid "_View"
 msgstr "G_örünüm"
 
-#: resources/ui/performance_page/cpu.blp:171
-#: resources/ui/performance_page/disk.blp:185
-#: resources/ui/performance_page/gpu.blp:226
-#: resources/ui/performance_page/memory.blp:160
-#: resources/ui/performance_page/network.blp:129
+#: resources/ui/performance_page/cpu.blp:134
+#: resources/ui/performance_page/disk.blp:155
+#: resources/ui/performance_page/gpu.blp:203
+#: resources/ui/performance_page/memory.blp:144
+#: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
 msgstr "İşl_emci"
 
-#: resources/ui/performance_page/cpu.blp:176
-#: resources/ui/performance_page/disk.blp:190
-#: resources/ui/performance_page/gpu.blp:231
-#: resources/ui/performance_page/memory.blp:165
-#: resources/ui/performance_page/network.blp:134
+#: resources/ui/performance_page/cpu.blp:139
+#: resources/ui/performance_page/disk.blp:160
+#: resources/ui/performance_page/gpu.blp:208
+#: resources/ui/performance_page/memory.blp:149
+#: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
 msgstr "_Bellek"
 
-#: resources/ui/performance_page/cpu.blp:181
-#: resources/ui/performance_page/disk.blp:195
-#: resources/ui/performance_page/gpu.blp:236
-#: resources/ui/performance_page/memory.blp:170
-#: resources/ui/performance_page/network.blp:139
+#: resources/ui/performance_page/cpu.blp:144
+#: resources/ui/performance_page/disk.blp:165
+#: resources/ui/performance_page/gpu.blp:213
+#: resources/ui/performance_page/memory.blp:154
+#: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
 msgstr "_Sürücü"
 
-#: resources/ui/performance_page/cpu.blp:186
-#: resources/ui/performance_page/disk.blp:200
-#: resources/ui/performance_page/gpu.blp:241
-#: resources/ui/performance_page/memory.blp:175
-#: resources/ui/performance_page/network.blp:144
+#: resources/ui/performance_page/cpu.blp:149
+#: resources/ui/performance_page/disk.blp:170
+#: resources/ui/performance_page/gpu.blp:218
+#: resources/ui/performance_page/memory.blp:159
+#: resources/ui/performance_page/network.blp:128
 msgid "_Network"
 msgstr "_Ağ"
 
-#: resources/ui/performance_page/cpu.blp:191
-#: resources/ui/performance_page/disk.blp:205
-#: resources/ui/performance_page/gpu.blp:246
-#: resources/ui/performance_page/memory.blp:180
-#: resources/ui/performance_page/network.blp:149
+#: resources/ui/performance_page/cpu.blp:154
+#: resources/ui/performance_page/disk.blp:175
+#: resources/ui/performance_page/gpu.blp:223
+#: resources/ui/performance_page/memory.blp:164
+#: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
 msgstr "_Ekran Kartı"
 
-#: resources/ui/performance_page/cpu.blp:199
-#: resources/ui/performance_page/disk.blp:213
-#: resources/ui/performance_page/gpu.blp:254
-#: resources/ui/performance_page/memory.blp:188
-#: resources/ui/performance_page/network.blp:162
+#: resources/ui/performance_page/cpu.blp:162
+#: resources/ui/performance_page/disk.blp:183
+#: resources/ui/performance_page/gpu.blp:231
+#: resources/ui/performance_page/memory.blp:172
+#: resources/ui/performance_page/network.blp:146
 msgid "_Copy"
 msgstr "K_opyala"
+
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:43
+msgid "Utilization"
+msgstr "Kullanım"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -368,14 +384,19 @@ msgid "Power preference:"
 msgstr "Güç tercihleri:"
 
 #: resources/ui/performance_page/disk.blp:63
+#, fuzzy
+msgid "Active time over "
+msgstr "Aktif zaman"
+
+#: resources/ui/performance_page/disk.blp:104
+#: resources/ui/performance_page/network.blp:60
+#, fuzzy
+msgid "Throughput over "
+msgstr "Çıktı"
+
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Aktif zaman"
-
-#: resources/ui/performance_page/disk.blp:122
-#: resources/ui/performance_page/network.blp:62
-msgid "Throughput"
-msgstr "Çıktı"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
@@ -407,17 +428,14 @@ msgid "Type:"
 msgstr "Tür:"
 
 #: resources/ui/performance_page/gpu.blp:110
-msgid "Video encode utilization"
+#, fuzzy
+msgid "Video encode/decode utilization over "
 msgstr "Video kodlama"
 
-#: resources/ui/performance_page/gpu.blp:146
-msgid "Video decode utilization"
-msgstr "Video kod çözme"
-
-#: resources/ui/performance_page/gpu.blp:185
-#: resources/ui/performance_page/gpu_details.blp:147
-#: resources/ui/performance_page/memory.blp:65
-msgid "Memory usage"
+#: resources/ui/performance_page/gpu.blp:154
+#: resources/ui/performance_page/memory.blp:62
+#, fuzzy
+msgid "Memory usage over "
 msgstr "Bellek kullanımı"
 
 #: resources/ui/performance_page/gpu_details.blp:66
@@ -428,36 +446,50 @@ msgstr "Saat Hızı"
 msgid "Power draw"
 msgstr "Güç kullanımı"
 
+#: resources/ui/performance_page/gpu_details.blp:147
+msgid "Memory usage"
+msgstr "Bellek kullanımı"
+
 #: resources/ui/performance_page/gpu_details.blp:192
 msgid "Memory speed"
 msgstr "Bellek hızı"
 
-#: resources/ui/performance_page/gpu_details.blp:237
+#: resources/ui/performance_page/gpu_details.blp:247
+#, fuzzy
+msgid "Video encode"
+msgstr "Video kodla/kodunu çöz"
+
+#: resources/ui/performance_page/gpu_details.blp:279
+#, fuzzy
+msgid "Video decode"
+msgstr "Video kodla/kodunu çöz"
+
+#: resources/ui/performance_page/gpu_details.blp:304
 msgid "Temperature"
 msgstr "Sıcaklık"
 
-#: resources/ui/performance_page/gpu_details.blp:262
+#: resources/ui/performance_page/gpu_details.blp:329
 msgid "OpenGL version:"
 msgstr "OpenGL sürümü:"
 
-#: resources/ui/performance_page/gpu_details.blp:276
+#: resources/ui/performance_page/gpu_details.blp:343
 msgid "Vulkan version:"
 msgstr "Vulkan sürümü:"
 
-#: resources/ui/performance_page/gpu_details.blp:290
+#: resources/ui/performance_page/gpu_details.blp:357
 msgid "PCI Express speed:"
 msgstr "PCI Express hızı:"
 
-#: resources/ui/performance_page/gpu_details.blp:304
+#: resources/ui/performance_page/gpu_details.blp:371
 msgid "PCI bus address:"
 msgstr "PCI veri yolu adresi:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1360
-#: src/performance_page/mod.rs:455
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1367
+#: src/performance_page/mod.rs:509
 msgid "Memory"
 msgstr "Bellek"
 
-#: resources/ui/performance_page/memory.blp:126
+#: resources/ui/performance_page/memory.blp:110
 msgid "Memory composition"
 msgstr "Bellek kompozisyonu"
 
@@ -497,7 +529,7 @@ msgstr "Kullanılan yuvalar:"
 msgid "Form factor:"
 msgstr "Katsayı:"
 
-#: resources/ui/performance_page/network.blp:155
+#: resources/ui/performance_page/network.blp:139
 msgid "Network Se_ttings"
 msgstr "Ağ _Ayarları"
 
@@ -600,7 +632,7 @@ msgid "The current state of the service"
 msgstr "Hizmetin geçerli durumu"
 
 #: resources/ui/services_page/details_dialog.blp:127
-#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
+#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1349
 msgid "Name"
 msgstr "Ad"
 
@@ -632,10 +664,10 @@ msgstr "Süreç Kimliği"
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
 #: resources/ui/services_page/details_dialog.blp:307
-#: src/performance_page/network.rs:483 src/performance_page/network.rs:498
-#: src/services_page/details_dialog.rs:239
-#: src/services_page/details_dialog.rs:247
-#: src/services_page/details_dialog.rs:255
+#: src/performance_page/network.rs:495 src/performance_page/network.rs:510
+#: src/services_page/details_dialog.rs:251
+#: src/services_page/details_dialog.rs:259
+#: src/services_page/details_dialog.rs:267
 msgid "N/A"
 msgstr "Yok"
 
@@ -667,11 +699,11 @@ msgid "Restart"
 msgstr "Yeniden Başlat"
 
 #: resources/ui/services_page/page.blp:144
-#: resources/ui/services_page/page.blp:291
+#: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:702
 msgid "Details"
 msgstr "Ayrıntılar"
 
-#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
+#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1355
 msgid "PID"
 msgstr "PID"
 
@@ -711,33 +743,33 @@ msgstr "_ Tercihler"
 msgid "_About MissionCenter"
 msgstr "Görev Merkezi _Hakkında"
 
-#: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
+#: src/apps_page/mod.rs:1373 src/performance_page/mod.rs:604
 msgid "Drive"
 msgstr "Sürücü"
 
-#: src/apps_page/mod.rs:1380
+#: src/apps_page/mod.rs:1387
 msgid "GPU Usage"
 msgstr "Ekran Kartı Kullanımı"
 
-#: src/apps_page/mod.rs:1390
+#: src/apps_page/mod.rs:1397
 msgid "GPU Mem"
 msgstr "Ekran Kartı Belleği"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:366
+#: src/apps_page/list_item.rs:373
 msgid "Stop Application"
 msgstr "Uygulamayı Durdur"
 
-#: src/apps_page/list_item.rs:366
+#: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
 msgstr "Uygulamayı Durmaya Zorla"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:370
+#: src/apps_page/list_item.rs:377
 msgid "Stop Process"
 msgstr "Süreci Durdur"
 
-#: src/apps_page/list_item.rs:370
+#: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
 msgstr "Süreci Durmaya Zorla"
 
@@ -785,150 +817,155 @@ msgstr ""
 "Kullanımda olmayan ve işletim sistemi, sürücüler veya uygulamalar daha fazla "
 "belleğe ihtiyaç duyduğunda ilk olarak yeniden kullanılacak bellek"
 
-#: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
+#: src/performance_page/mod.rs:600 src/performance_page/disk.rs:280
 msgid "Drive {} ({})"
 msgstr "Sürücü {} ({})"
 
-#: src/performance_page/mod.rs:565
+#: src/performance_page/mod.rs:623
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:566
+#: src/performance_page/mod.rs:624
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:567
+#: src/performance_page/mod.rs:625
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:568
+#: src/performance_page/mod.rs:626
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:569
+#: src/performance_page/mod.rs:627
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:570
+#: src/performance_page/mod.rs:628
 msgid "Optical"
 msgstr "Optik"
 
-#: src/performance_page/mod.rs:571 src/performance_page/cpu.rs:313
-#: src/performance_page/cpu.rs:337 src/performance_page/cpu.rs:345
-#: src/performance_page/disk.rs:322 src/performance_page/gpu.rs:307
-#: src/performance_page/gpu.rs:430 src/performance_page/memory.rs:264
-#: src/performance_page/memory.rs:498 src/performance_page/network.rs:398
-#: src/performance_page/network.rs:422 src/performance_page/network.rs:432
-#: src/performance_page/network.rs:471 src/performance_page/network.rs:521
-#: src/performance_page/network.rs:557
+#: src/performance_page/mod.rs:629 src/performance_page/cpu.rs:350
+#: src/performance_page/cpu.rs:374 src/performance_page/cpu.rs:382
+#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:337
+#: src/performance_page/gpu.rs:458 src/performance_page/memory.rs:274
+#: src/performance_page/memory.rs:508 src/performance_page/network.rs:410
+#: src/performance_page/network.rs:434 src/performance_page/network.rs:444
+#: src/performance_page/network.rs:483 src/performance_page/network.rs:533
+#: src/performance_page/network.rs:569
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#: src/performance_page/mod.rs:673 src/performance_page/network.rs:337
+#: src/performance_page/mod.rs:735 src/performance_page/network.rs:349
 msgid "Ethernet"
 msgstr "Ethernet"
 
-#: src/performance_page/mod.rs:674 src/performance_page/network.rs:352
+#: src/performance_page/mod.rs:736 src/performance_page/network.rs:364
 msgid "Wi-Fi"
 msgstr "Kablosuz"
 
-#: src/performance_page/mod.rs:675 src/performance_page/network.rs:354
+#: src/performance_page/mod.rs:737 src/performance_page/network.rs:366
 msgid "Other"
 msgstr "Diğer"
 
-#: src/performance_page/mod.rs:812
+#: src/performance_page/mod.rs:878
 msgid "GPU {}"
 msgstr "Ekran Kartı {}"
 
-#: src/performance_page/mod.rs:814
+#: src/performance_page/mod.rs:880
 msgid "GPU"
 msgstr "Ekran Kartı"
 
-#: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
+#: src/performance_page/mod.rs:1211 src/performance_page/mod.rs:1219
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}bps"
 
-#: src/performance_page/cpu.rs:325 src/performance_page/cpu.rs:410
-#: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
-#: src/performance_page/gpu.rs:319
+#: src/performance_page/cpu.rs:362 src/performance_page/cpu.rs:447
+#: src/performance_page/cpu.rs:455 src/performance_page/cpu.rs:471
+#: src/performance_page/gpu.rs:349
 msgid "Unsupported"
 msgstr "Desteklenmiyor"
 
-#: src/performance_page/cpu.rs:332 src/performance_page/disk.rs:242
+#: src/performance_page/cpu.rs:369 src/performance_page/disk.rs:249
 msgid "Yes"
 msgstr "Evet"
 
-#: src/performance_page/cpu.rs:334 src/performance_page/disk.rs:244
+#: src/performance_page/cpu.rs:371 src/performance_page/disk.rs:251
 msgid "No"
 msgstr "Hayır"
 
-#: src/performance_page/cpu.rs:954
+#: src/performance_page/cpu.rs:984 src/performance_page/gpu.rs:759
 msgid "{} second{}"
 msgstr "{} saniye{}"
 
-#: src/performance_page/cpu.rs:965
+#: src/performance_page/cpu.rs:995 src/performance_page/gpu.rs:770
 msgid "{} minute{} "
 msgstr "{} dakika{} "
 
-#: src/performance_page/cpu.rs:983
-msgid "Utilization Over {}{}"
-msgstr "{}{} Üzerinde Kullanım"
-
-#: src/performance_page/disk.rs:201
+#: src/performance_page/disk.rs:208
 msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
+#: src/performance_page/disk.rs:212 src/performance_page/disk.rs:284
 msgid "Drive ({})"
 msgstr "Sürücü ({})"
 
-#: src/performance_page/disk.rs:284
+#: src/performance_page/disk.rs:291
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/gpu.rs:268
-msgid "Video encode/decode"
-msgstr "Video kodla/kodunu çöz"
-
-#: src/performance_page/memory.rs:491
+#: src/performance_page/memory.rs:501
 msgid "Getting additional memory information failed"
 msgstr "Ek bellek bilgileri alınamadı"
 
-#: src/performance_page/network.rs:444 src/performance_page/network.rs:451
-#: src/performance_page/network.rs:461
+#: src/performance_page/memory.rs:580
+#, fuzzy
+msgid "{:} minute"
+msgid_plural "{:} minutes"
+msgstr[0] "{} dakika{} "
+msgstr[1] "{} dakika{} "
+
+#: src/performance_page/network.rs:456 src/performance_page/network.rs:463
+#: src/performance_page/network.rs:473
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
-#: src/services_page/mod.rs:633
+#: src/services_page/mod.rs:637
 msgid "{} Running Services"
 msgstr "{} Hizmet Çalışıyor"
 
-#: src/services_page/mod.rs:638
+#: src/services_page/mod.rs:642
 msgid "{} failed services out of a total of {}"
 msgstr "{} / {} hizmet başarısız oldu"
 
-#: src/services_page/details_dialog.rs:224
-#: src/services_page/details_dialog.rs:295
+#: src/services_page/details_dialog.rs:236
+#: src/services_page/details_dialog.rs:307
 msgid "Running"
 msgstr "Çalışıyor"
 
-#: src/services_page/details_dialog.rs:226
-#: src/services_page/details_dialog.rs:297
+#: src/services_page/details_dialog.rs:238
+#: src/services_page/details_dialog.rs:309
 msgid "Failed"
 msgstr "Başarısız"
 
-#: src/services_page/details_dialog.rs:228
-#: src/services_page/details_dialog.rs:299
+#: src/services_page/details_dialog.rs:240
+#: src/services_page/details_dialog.rs:311
 msgid "Stopped"
 msgstr "Durdu"
 
-#: src/application.rs:325
+#: src/application.rs:355
 msgid "translator-credits"
 msgstr "Sabri Ünal <yakushabb@gmail.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
 msgstr "Çı_k"
+
+#~ msgid "Flatpak first"
+#~ msgstr "Flatpak öncelikli"
+
+#~ msgid "Video decode utilization"
+#~ msgstr "Video kod çözme"
 
 #~ msgid "_Disk"
 #~ msgstr "_Disk"

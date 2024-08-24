@@ -21,7 +21,7 @@
 use std::cell::{Cell, OnceCell};
 
 use adw::subclass::prelude::*;
-use glib::{clone, ParamSpec, Properties, Value};
+use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use crate::{application::BASE_POINTS, application::INTERVAL_STEP, i18n::*};
@@ -163,57 +163,83 @@ mod imp {
                 &glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
             );
             let apa = all_processors_action.clone();
-            overall_action.connect_activate(clone!(@weak this => move |action, _| {
-                use gtk::glib::*;
+            overall_action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    use gtk::glib::*;
 
-                let graph_widgets = this.imp().graph_widgets.take();
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
 
-                graph_widgets[0].set_visible(true);
+                    let graph_widgets = this.imp().graph_widgets.take();
 
-                for graph_widget in graph_widgets.iter().skip(1) {
-                    graph_widget.set_visible(false);
+                    graph_widgets[0].set_visible(true);
+
+                    for graph_widget in graph_widgets.iter().skip(1) {
+                        graph_widget.set_visible(false);
+                    }
+
+                    action.set_state(&glib::Variant::from(true));
+                    apa.set_state(&glib::Variant::from(false));
+
+                    let settings = this.imp().settings.take();
+                    if settings.is_some() {
+                        let settings = settings.unwrap();
+                        settings
+                            .set_int("performance-page-cpu-graph", GRAPH_SELECTION_OVERALL)
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save selected CPU graph"
+                                );
+                            });
+                        this.imp().settings.set(Some(settings));
+                    }
+
+                    this.imp().graph_widgets.set(graph_widgets);
                 }
-
-                action.set_state(&glib::Variant::from(true));
-                apa.set_state(&glib::Variant::from(false));
-
-                let settings = this.imp().settings.take();
-                if settings.is_some() {
-                    let settings = settings.unwrap();
-                    settings.set_int("performance-page-cpu-graph", GRAPH_SELECTION_OVERALL).unwrap_or_else(|_| {
-                        g_critical!("MissionCenter::PerformancePage", "Failed to save selected CPU graph");
-                    });
-                    this.imp().settings.set(Some(settings));
-                }
-
-                this.imp().graph_widgets.set(graph_widgets);
-            }));
+            });
             actions.add_action(&overall_action);
 
             let ova = overall_action.clone();
-            all_processors_action.connect_activate(clone!(@weak this => move |action, _| {
-                let graph_widgets = this.imp().graph_widgets.take();
+            all_processors_action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
 
-                graph_widgets[0].set_visible(false);
+                    let graph_widgets = this.imp().graph_widgets.take();
 
-                for graph_widget in graph_widgets.iter().skip(1) {
-                    graph_widget.set_visible(true);
+                    graph_widgets[0].set_visible(false);
+
+                    for graph_widget in graph_widgets.iter().skip(1) {
+                        graph_widget.set_visible(true);
+                    }
+
+                    action.set_state(&glib::Variant::from(true));
+                    ova.set_state(&glib::Variant::from(false));
+
+                    let settings = this.imp().settings.take();
+                    if settings.is_some() {
+                        let settings = settings.unwrap();
+                        settings
+                            .set_int("performance-page-cpu-graph", GRAPH_SELECTION_ALL)
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save selected CPU graph"
+                                );
+                            });
+                        this.imp().settings.set(Some(settings));
+                    }
+
+                    this.imp().graph_widgets.set(graph_widgets);
                 }
-
-                action.set_state(&glib::Variant::from(true));
-                ova.set_state(&glib::Variant::from(false));
-
-                let settings = this.imp().settings.take();
-                if settings.is_some() {
-                    let settings = settings.unwrap();
-                    settings.set_int("performance-page-cpu-graph", GRAPH_SELECTION_ALL).unwrap_or_else(|_| {
-                        g_critical!("MissionCenter::PerformancePage", "Failed to save selected CPU graph");
-                    });
-                    this.imp().settings.set(Some(settings));
-                }
-
-                this.imp().graph_widgets.set(graph_widgets);
-            }));
+            });
             actions.add_action(&all_processors_action);
 
             let action = gio::SimpleAction::new_stateful(
@@ -221,56 +247,82 @@ mod imp {
                 None,
                 &glib::Variant::from(show_kernel_times),
             );
-            action.connect_activate(clone!(@weak this => move |action, _| {
-                let graph_widgets = this.imp().graph_widgets.take();
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
 
-                let visible = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(false);
+                    let graph_widgets = this.imp().graph_widgets.take();
 
-                graph_widgets[0].set_data_visible(1, visible);
-                for graph_widget in graph_widgets.iter().skip(1) {
-                    graph_widget.set_data_visible(1, visible);
+                    let visible = !action
+                        .state()
+                        .and_then(|v| v.get::<bool>())
+                        .unwrap_or(false);
+
+                    graph_widgets[0].set_data_visible(1, visible);
+                    for graph_widget in graph_widgets.iter().skip(1) {
+                        graph_widget.set_data_visible(1, visible);
+                    }
+
+                    action.set_state(&glib::Variant::from(visible));
+
+                    let settings = this.imp().settings.take();
+                    if settings.is_some() {
+                        let settings = settings.unwrap();
+                        settings
+                            .set_boolean("performance-page-kernel-times", visible)
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save kernel times setting"
+                                );
+                            });
+                        this.imp().settings.set(Some(settings));
+                    }
+
+                    this.imp().graph_widgets.set(graph_widgets);
                 }
-
-                action.set_state(&glib::Variant::from(visible));
-
-                let settings = this.imp().settings.take();
-                if settings.is_some() {
-                    let settings = settings.unwrap();
-                    settings.set_boolean("performance-page-kernel-times", visible).unwrap_or_else(|_| {
-                        g_critical!("MissionCenter::PerformancePage", "Failed to save kernel times setting");
-                    });
-                    this.imp().settings.set(Some(settings));
-                }
-
-                this.imp().graph_widgets.set(graph_widgets);
-            }));
+            });
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new("copy", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
-                let clipboard = this.clipboard();
-                clipboard.set_text(this.imp().data_summary().as_str());
-            }));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
+                    let clipboard = this.clipboard();
+                    clipboard.set_text(this.imp().data_summary().as_str());
+                }
+            });
             actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageCpu) {
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
-            right_click_controller.connect_released(
-                clone!(@weak this => move |_click, _n_press, x, y| {
-                    this
-                        .imp()
-                        .context_menu
-                        .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
-                            x.round() as i32,
-                            y.round() as i32,
-                            1,
-                            1,
-                        )));
-                    this.imp().context_menu.popup();
-                }),
-            );
+            right_click_controller.connect_released({
+                let this = this.downgrade();
+                move |_click, _n_press, x, y| {
+                    if let Some(this) = this.upgrade() {
+                        this.imp()
+                            .context_menu
+                            .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                                x.round() as i32,
+                                y.round() as i32,
+                                1,
+                                1,
+                            )));
+                        this.imp().context_menu.popup();
+                    }
+                }
+            });
             this.add_controller(right_click_controller);
         }
     }
@@ -966,24 +1018,30 @@ impl PerformancePageCpu {
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
-        settings.connect_changed(
-            Some("perfomance-page-data-points"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
-        settings.connect_changed(
-            Some("app-update-interval-u64"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
-        settings.connect_changed(
-            Some("performance-smooth-graphs"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("perfomance-page-data-points"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+        settings.connect_changed(Some("app-update-interval-u64"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+        settings.connect_changed(Some("performance-smooth-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
         this
     }
