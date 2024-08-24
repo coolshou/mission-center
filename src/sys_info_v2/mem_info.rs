@@ -45,6 +45,7 @@ pub struct MemInfo {
     pub inactive_file: usize,
     pub unevictable: usize,
     pub m_locked: usize,
+    pub compressed: usize,
     pub swap_total: usize,
     pub swap_free: usize,
     pub zswap: usize,
@@ -113,7 +114,21 @@ impl MemInfo {
             return None;
         };
 
+        let compressed = if let Ok(output) = cmd!("zramctl -n -b -o COMPR | paste -s -d+ - | bc").output() {
+            if output.stderr.len() > 0 {
+                return None;
+            }
+            String::from_utf8_lossy(output.stdout.as_slice()).into_owned()
+        } else {
+            return None;
+        };
+
         let mut this = Self::default();
+
+        let value = compressed.trim().parse::<usize>()
+            .map_or(0, |v| v);
+        this.compressed = value;
+
 
         for line in meminfo.trim().lines() {
             let mut split = line.split_whitespace();

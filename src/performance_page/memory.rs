@@ -65,6 +65,7 @@ mod imp {
         pub cached: OnceCell<gtk::Label>,
         pub swap_available: OnceCell<gtk::Label>,
         pub swap_used: OnceCell<gtk::Label>,
+        pub compressed_used: OnceCell<gtk::Label>,
         pub speed: OnceCell<gtk::Label>,
         pub slots_used: OnceCell<gtk::Label>,
         pub form_factor: OnceCell<gtk::Label>,
@@ -92,6 +93,7 @@ mod imp {
                 cached: Default::default(),
                 swap_available: Default::default(),
                 swap_used: Default::default(),
+                compressed_used: Default::default(),
                 speed: Default::default(),
                 slots_used: Default::default(),
                 form_factor: Default::default(),
@@ -200,7 +202,7 @@ mod imp {
             {
                 let used = mem_info.mem_total - mem_info.mem_available;
                 this.usage_graph.add_data_point(0, used as _);
-
+                this.usage_graph.add_data_point(1, mem_info.compressed as _);
                 this.mem_composition.update_memory_information(mem_info);
 
                 let used = crate::to_human_readable(used as _, 1024.);
@@ -210,6 +212,15 @@ mod imp {
                         used.0,
                         used.1,
                         if used.1.is_empty() { "" } else { "i" }
+                    ));
+                }
+                if let Some(iu) = this.compressed_used.get() {
+                    let compressed = crate::to_human_readable(mem_info.compressed as _, 1024.);
+                    iu.set_text(&format!(
+                        "{:.2} {}{}B",
+                        compressed.0,
+                        compressed.1,
+                        if compressed.1.is_empty() { "" } else { "i" }
                     ));
                 }
 
@@ -436,6 +447,12 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("swap_used")
                     .expect("Could not find `swap_used` object in details pane"),
+            );
+
+            let _ = self.compressed_used.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("compressed_used")
+                    .expect("Could not find `compressed_used` object in details pane"),
             );
 
             // Get memory device information using `load_memory_device_info()` from

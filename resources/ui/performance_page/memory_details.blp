@@ -131,7 +131,7 @@ Box root {
       }
     }
 
-    Box bottom_row {
+    Box swap_init_row {
       spacing: 15;
 
 
@@ -173,6 +173,32 @@ Box root {
         }
 
         Label swap_available {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+    Box swap_end_row {
+      spacing: 15;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Compressed");
+        }
+
+        Label compressed_used {
           styles [
             "title-4",
           ]
