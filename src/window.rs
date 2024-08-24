@@ -214,26 +214,35 @@ mod imp {
         fn configure_actions(&self) {
             let toggle_search =
                 gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
-            toggle_search.connect_activate(glib::clone!(@weak self as this => move |action, _| {
-                let new_state = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(true);
-                action.set_state(&new_state.to_variant());
-                this.search_button.set_active(new_state);
+            toggle_search.connect_activate({
+                let this = self.obj().downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
 
-                if new_state {
-                    this.header_stack.set_visible_child_name("search-entry");
-                    this.header_search_entry.grab_focus();
-                    this.header_search_entry.select_region(-1, -1);
+                    let new_state = !action.state().and_then(|v| v.get::<bool>()).unwrap_or(true);
+                    action.set_state(&new_state.to_variant());
+                    this.search_button.set_active(new_state);
 
-                    this.header_stack.set_visible(true);
-                } else {
-                    if this.window_width_below_threshold() {
-                        this.header_stack.set_visible(false);
+                    if new_state {
+                        this.header_stack.set_visible_child_name("search-entry");
+                        this.header_search_entry.grab_focus();
+                        this.header_search_entry.select_region(-1, -1);
+
+                        this.header_stack.set_visible(true);
+                    } else {
+                        if this.window_width_below_threshold() {
+                            this.header_stack.set_visible(false);
+                        }
+
+                        this.header_search_entry.set_text("");
+                        this.header_stack.set_visible_child_name("view-switcher");
                     }
-
-                    this.header_search_entry.set_text("");
-                    this.header_stack.set_visible_child_name("view-switcher");
                 }
-            }));
+            });
             self.obj().add_action(&toggle_search);
         }
 
@@ -306,22 +315,46 @@ mod imp {
 
             self.configure_actions();
 
-            idle_add_local_once(clone!(@weak self as this => move || {
-                this.update_active_page();
-            }));
+            idle_add_local_once({
+                let this = self.obj().downgrade();
+                move || {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        this.update_active_page();
+                    }
+                }
+            });
 
-            self.sidebar
-                .connect_row_activated(clone!(@weak self as this => move |_, _| {
-                    this.stack.set_visible_child_name("performance-page");
-                }));
+            self.sidebar.connect_row_activated({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        this.stack.set_visible_child_name("apps-page");
+                        this.stack.set_visible_child_name("performance-page");
+                    }
+                }
+            });
 
-            self.stack
-                .connect_visible_child_notify(clone!(@weak self as this => move |_| {
+            self.stack.connect_visible_child_notify({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     if this.search_button.is_active() {
-                        let _ = WidgetExt::activate_action(this.obj().as_ref(), "win.toggle-search", None);
+                        let _ = WidgetExt::activate_action(
+                            this.obj().as_ref(),
+                            "win.toggle-search",
+                            None,
+                        );
                     }
                     this.update_active_page();
-                }));
+                }
+            });
 
             let evt_ctrl_key = gtk::EventControllerKey::new();
             evt_ctrl_key.connect_key_pressed({
@@ -380,8 +413,15 @@ mod imp {
 
             // Triggered when user interacts with the sidebar toggle button
             // via any means (clicking, keyboard shortcut, etc.)
-            self.toggle_sidebar_button.connect_clicked(
-                clone!(@weak self as this => move |button| {
+            self.toggle_sidebar_button.connect_clicked({
+                let this = self.obj().downgrade();
+                move |button| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     let user_hid_sidebar = !button.is_active();
                     if user_hid_sidebar != this.user_hid_sidebar.get() {
                         this.user_hid_sidebar.set(user_hid_sidebar);
@@ -392,8 +432,8 @@ mod imp {
                         }
                         this.obj().notify_user_hid_sidebar();
                     }
-                }),
-            );
+                }
+            });
 
             self.breakpoint.set_condition(Some(
                 &adw::BreakpointCondition::parse(&format!(
@@ -402,8 +442,15 @@ mod imp {
                 ))
                 .unwrap(),
             ));
-            self.breakpoint
-                .connect_apply(clone!(@weak self as this => move |_| {
+            self.breakpoint.connect_apply({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     this.bottom_bar.set_reveal(true);
                     if !this.search_button.is_active() {
                         this.header_stack.set_visible(false);
@@ -416,19 +463,35 @@ mod imp {
                     }
 
                     this.split_view.set_collapsed(this.should_hide_sidebar());
-                }));
-            self.breakpoint
-                .connect_unapply(clone!(@weak self as this => move |_| {
+                }
+            });
+            self.breakpoint.connect_unapply({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     this.header_stack.set_visible(true);
                     this.bottom_bar.set_reveal(false);
 
                     this.services_page.expand();
 
                     this.split_view.set_collapsed(this.should_hide_sidebar());
-                }));
+                }
+            });
 
-            self.obj().connect_performance_page_active_notify(
-                clone!(@weak self as this => move |_| {
+            self.obj().connect_performance_page_active_notify({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     if this.performance_page_active.get() {
                         let should_hide_sidebar = this.should_hide_sidebar();
                         this.split_view.set_show_sidebar(!should_hide_sidebar);
@@ -437,24 +500,36 @@ mod imp {
                         this.split_view.set_show_sidebar(false);
                         this.split_view.set_collapsed(true);
                     }
-                }),
-            );
+                }
+            });
 
-            self.obj()
-                .connect_summary_mode_notify(clone!(@weak self as this => move |_| {
+            self.obj().connect_summary_mode_notify({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     if this.summary_mode.get() {
                         this.split_view.set_show_sidebar(false);
                     } else if !this.window_width_below_threshold() {
                         this.split_view.set_collapsed(false);
-                        this.split_view.set_show_sidebar(!this.user_hid_sidebar.get());
+                        this.split_view
+                            .set_show_sidebar(!this.user_hid_sidebar.get());
                     }
-                }));
+                }
+            });
 
-            self.performance_page.connect_info_button_visible_notify(
-                clone!(@weak self as this => move |_| {
-                    this.obj().notify_info_button_visible();
-                }),
-            );
+            self.performance_page.connect_info_button_visible_notify({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        this.notify_info_button_visible();
+                    }
+                }
+            });
         }
     }
 
@@ -501,29 +576,33 @@ impl MissionCenterWindow {
                 settings.boolean("apps-page-core-count-affects-percentages"),
             );
 
-            settings.connect_changed(
-                Some("app-update-interval-u64"),
-                clone!(@weak this => move |settings, _| {
-                    use crate::{MissionCenterApplication};
+            settings.connect_changed(Some("app-update-interval-u64"), |settings, _| {
+                use crate::MissionCenterApplication;
 
-                    let update_speed = settings.uint64("app-update-interval-u64");
-                    let app = match MissionCenterApplication::default_instance() {
-                        Some(app) => app,
-                        None => {
-                            g_critical!("MissionCenter", "Failed to get default instance of MissionCenterApplication");
-                            return;
-                        }
-                    };
-                    match app.sys_info() {
-                        Ok(sys_info) => {
-                            sys_info.set_update_speed(update_speed);
-                        }
-                        Err(e) => {
-                            g_critical!("MissionCenter", "Failed to get sys_info from MissionCenterApplication: {}", e);
-                        }
-                    };
-                }),
-            );
+                let update_speed = settings.uint64("app-update-interval-u64");
+                let app = match MissionCenterApplication::default_instance() {
+                    Some(app) => app,
+                    None => {
+                        g_critical!(
+                            "MissionCenter",
+                            "Failed to get default instance of MissionCenterApplication"
+                        );
+                        return;
+                    }
+                };
+                match app.sys_info() {
+                    Ok(sys_info) => {
+                        sys_info.set_update_speed(update_speed);
+                    }
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter",
+                            "Failed to get sys_info from MissionCenterApplication: {}",
+                            e
+                        );
+                    }
+                };
+            });
         }
 
         this

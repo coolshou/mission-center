@@ -1301,7 +1301,7 @@ mod imp {
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
             use crate::MissionCenterApplication;
-            use glib::{clone, g_critical};
+            use glib::g_critical;
 
             self.parent_constructed();
 
@@ -1320,9 +1320,16 @@ mod imp {
             if let Some(settings) = app.settings() {
                 self.use_merge_stats
                     .set(settings.boolean("apps-page-merged-process-stats"));
-                settings.connect_changed(Some("apps-page-merged-process-stats"), clone!(@weak self as this => move |settings, _| {
-                    this.use_merge_stats.set(settings.boolean("apps-page-merged-process-stats"));
-                }));
+                settings.connect_changed(Some("apps-page-merged-process-stats"), {
+                    let this = self.obj().downgrade();
+                    move |settings, _| {
+                        if let Some(this) = this.upgrade() {
+                            this.imp()
+                                .use_merge_stats
+                                .set(settings.boolean("apps-page-merged-process-stats"));
+                        }
+                    }
+                });
             }
         }
     }

@@ -435,21 +435,35 @@ glib::wrapper! {
 
 impl ViewModel {
     pub fn new(content_type: ContentType, show_expander: Option<bool>) -> Self {
-        use gtk::glib::clone;
         use gtk::prelude::*;
 
         let this: Self = glib::Object::builder().build();
         this.imp().content_type.set(content_type);
 
         if show_expander.is_none() {
-            glib::idle_add_local_once(clone!(@weak this => move || {
-                this.set_show_expander(this.children().n_items() > 0);
-            }));
+            glib::idle_add_local_once({
+                let this = this.downgrade();
+                move || {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
 
-            this.children()
-                .connect_items_changed(clone!(@weak this => move |_, _, _, _| {
                     this.set_show_expander(this.children().n_items() > 0);
-                }));
+                }
+            });
+
+            this.children().connect_items_changed({
+                let this = this.downgrade();
+                move |_, _, _, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
+                    this.set_show_expander(this.children().n_items() > 0);
+                }
+            });
         } else {
             this.set_show_expander(show_expander.unwrap());
         }

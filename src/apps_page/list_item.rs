@@ -337,7 +337,15 @@ mod imp {
 
                         list_item_widget.add_controller(right_click_controller.clone());
 
-                        right_click_controller.connect_released(glib::clone!(@weak self as this => move |_, _, x, y| {
+                        right_click_controller.connect_released({
+                            let this = self.obj().downgrade();
+                            move |_, _, x, y| {
+                                let this = match this.upgrade() {
+                                    None => return,
+                                    Some(this) => this,
+                                };
+                                let this = this.imp();
+
                             let view_model = match this
                                 .obj()
                                 .parent()
@@ -428,7 +436,7 @@ mod imp {
                                 1,
                             )));
                             context_menu.popup();
-                        }));
+                        }});
                     }
                 }
             }

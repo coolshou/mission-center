@@ -153,22 +153,41 @@ mod imp {
             self.data_points
                 .downcast_ref::<Scale>()
                 .unwrap()
-                .connect_value_changed(glib::clone!(@weak self as this => move |_| {
-                    this.configure_update_speed();
-                }));
+                .connect_value_changed({
+                    let this = self.obj().downgrade();
+                    move |_| {
+                        if let Some(this) = this.upgrade() {
+                            this.imp().configure_update_speed();
+                        }
+                    }
+                });
 
             self.update_interval
                 .downcast_ref::<SpinRow>()
                 .unwrap()
-                .connect_changed(glib::clone!(@weak self as this => move |_| {
-                    this.configure_update_speed();
-                }));
+                .connect_changed({
+                    let this = self.obj().downgrade();
+                    move |_| {
+                        if let Some(this) = this.upgrade() {
+                            this.imp().configure_update_speed();
+                        }
+                    }
+                });
 
-            self.merged_process_stats.connect_active_notify(
-                glib::clone!(@weak self as this => move |switch_row| {
+            self.merged_process_stats.connect_active_notify({
+                let this = self.obj().downgrade();
+                move |switch_row| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("apps-page-merged-process-stats", switch_row.is_active()) {
+                        if let Err(e) = settings
+                            .set_boolean("apps-page-merged-process-stats", switch_row.is_active())
+                        {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set merged process stats setting: {}",
@@ -177,14 +196,23 @@ mod imp {
                         }
                         this.settings.set(Some(settings));
                     }
-                }),
-            );
+                }
+            });
 
-            self.remember_sorting.connect_active_notify(
-                glib::clone!(@weak self as this => move |switch_row| {
+            self.remember_sorting.connect_active_notify({
+                let this = self.obj().downgrade();
+                move |switch_row| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("apps-page-remember-sorting", switch_row.is_active()) {
+                        if let Err(e) = settings
+                            .set_boolean("apps-page-remember-sorting", switch_row.is_active())
+                        {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set merged process stats setting: {}",
@@ -193,14 +221,24 @@ mod imp {
                         }
                         this.settings.set(Some(settings));
                     }
-                }),
-            );
+                }
+            });
 
-            self.core_count_affects_percentages.connect_active_notify(
-                glib::clone!(@weak self as this => move |switch_row| {
+            self.core_count_affects_percentages.connect_active_notify({
+                let this = self.obj().downgrade();
+                move |switch_row| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("apps-page-core-count-affects-percentages", switch_row.is_active()) {
+                        if let Err(e) = settings.set_boolean(
+                            "apps-page-core-count-affects-percentages",
+                            switch_row.is_active(),
+                        ) {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set core counts affects percentages setting: {}",
@@ -209,14 +247,23 @@ mod imp {
                         }
                         this.settings.set(Some(settings));
                     }
-                }),
-            );
+                }
+            });
 
-            self.smooth_graphs.connect_active_notify(
-                glib::clone!(@weak self as this => move |switch_row| {
+            self.smooth_graphs.connect_active_notify({
+                let this = self.obj().downgrade();
+                move |switch_row| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
                     let settings = this.settings.take();
                     if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean("performance-smooth-graphs", switch_row.is_active()) {
+                        if let Err(e) = settings
+                            .set_boolean("performance-smooth-graphs", switch_row.is_active())
+                        {
                             g_critical!(
                                 "MissionCenter::Preferences",
                                 "Failed to set smooth graphs setting: {}",
@@ -225,8 +272,8 @@ mod imp {
                         }
                         this.settings.set(Some(settings));
                     }
-                }),
-            );
+                }
+            });
         }
     }
 

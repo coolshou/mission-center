@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-08 11:41+0300\n"
+"POT-Creation-Date: 2024-08-24 10:40+0300\n"
 "PO-Revision-Date: 2023-09-13 07:51+0000\n"
 "Last-Translator: mthw0 <matejm98mthw@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/mission-center/"
@@ -106,8 +106,8 @@ msgstr "Podporuje minifikované zhrnutie pre jednoduché monitorovanie"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 #, fuzzy
 msgid ""
-"Use HW accelerated rendering for all the graphs in an effort to reduce CPU "
-"and overall resource usage"
+"Use hardware accelerated rendering for all the graphs in an effort to reduce "
+"CPU and overall resource usage"
 msgstr ""
 "Používa OPENGL pre renderovanie všetkých grafov s cieľom znížiť celkové "
 "využitie zdrojov a CPU"
@@ -120,23 +120,32 @@ msgstr "Používa GTK4 a Libadwaita"
 msgid "Written in Rust"
 msgstr "Napísané v Rust"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
-msgid "Flatpak first"
-msgstr "Flatpak na prvom mieste"
-
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Obmedzenia (prebieha práca na ich odstránení):"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
 msgstr "Neumožňuje monitorovať využitie siete procesom"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
 msgstr ""
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:46
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+msgid ""
+"Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
+"does not support VRAM, power, or temperature monitoring"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
+msgid ""
+"When using Linux Mint/Cinnamon, launched applications may not show up in the "
+"\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
+"cinnamon/issues/12015)"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
 "Komentáre, návrhy na zlepšenie, nahlasovanie chýb a prispievanie je vítané"
@@ -201,101 +210,107 @@ msgstr ""
 msgid "Should performance graphs be smooth or jagged"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1354
-#: src/performance_page/mod.rs:384
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1361
+#: src/performance_page/mod.rs:434
 msgid "CPU"
 msgstr "CPU"
 
-#: resources/ui/performance_page/cpu.blp:76
-#: resources/ui/performance_page/cpu_details.blp:46
-#: resources/ui/performance_page/gpu.blp:71
-#: resources/ui/performance_page/gpu_details.blp:43
-msgid "Utilization"
+#: resources/ui/performance_page/cpu.blp:62
+#: resources/ui/performance_page/gpu.blp:67
+#, fuzzy
+msgid "Utilization over "
 msgstr "Využitie"
 
-#: resources/ui/performance_page/cpu.blp:86
+#: resources/ui/performance_page/cpu.blp:77
+#: resources/ui/performance_page/gpu.blp:81
+#: resources/ui/performance_page/gpu.blp:126
 msgid "100%"
 msgstr "100%"
 
-#: resources/ui/performance_page/cpu.blp:142
+#: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
 msgstr "Zmeniť graf na"
 
-#: resources/ui/performance_page/cpu.blp:145
+#: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
 msgstr "Celkové využitie"
 
-#: resources/ui/performance_page/cpu.blp:150
+#: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
 msgstr "Logické procesory"
 
-#: resources/ui/performance_page/cpu.blp:156
+#: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:163
-#: resources/ui/performance_page/disk.blp:177
-#: resources/ui/performance_page/gpu.blp:218
-#: resources/ui/performance_page/memory.blp:152
-#: resources/ui/performance_page/network.blp:121
+#: resources/ui/performance_page/cpu.blp:126
+#: resources/ui/performance_page/disk.blp:147
+#: resources/ui/performance_page/gpu.blp:195
+#: resources/ui/performance_page/memory.blp:136
+#: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:168
-#: resources/ui/performance_page/disk.blp:182
-#: resources/ui/performance_page/gpu.blp:223
-#: resources/ui/performance_page/memory.blp:157
-#: resources/ui/performance_page/network.blp:126
+#: resources/ui/performance_page/cpu.blp:131
+#: resources/ui/performance_page/disk.blp:152
+#: resources/ui/performance_page/gpu.blp:200
+#: resources/ui/performance_page/memory.blp:141
+#: resources/ui/performance_page/network.blp:110
 msgid "_View"
 msgstr "_Zobraziť"
 
-#: resources/ui/performance_page/cpu.blp:171
-#: resources/ui/performance_page/disk.blp:185
-#: resources/ui/performance_page/gpu.blp:226
-#: resources/ui/performance_page/memory.blp:160
-#: resources/ui/performance_page/network.blp:129
+#: resources/ui/performance_page/cpu.blp:134
+#: resources/ui/performance_page/disk.blp:155
+#: resources/ui/performance_page/gpu.blp:203
+#: resources/ui/performance_page/memory.blp:144
+#: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
 msgstr "CP_U"
 
-#: resources/ui/performance_page/cpu.blp:176
-#: resources/ui/performance_page/disk.blp:190
-#: resources/ui/performance_page/gpu.blp:231
-#: resources/ui/performance_page/memory.blp:165
-#: resources/ui/performance_page/network.blp:134
+#: resources/ui/performance_page/cpu.blp:139
+#: resources/ui/performance_page/disk.blp:160
+#: resources/ui/performance_page/gpu.blp:208
+#: resources/ui/performance_page/memory.blp:149
+#: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
 msgstr "_Pamäť"
 
-#: resources/ui/performance_page/cpu.blp:181
-#: resources/ui/performance_page/disk.blp:195
-#: resources/ui/performance_page/gpu.blp:236
-#: resources/ui/performance_page/memory.blp:170
-#: resources/ui/performance_page/network.blp:139
+#: resources/ui/performance_page/cpu.blp:144
+#: resources/ui/performance_page/disk.blp:165
+#: resources/ui/performance_page/gpu.blp:213
+#: resources/ui/performance_page/memory.blp:154
+#: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
 msgstr ""
 
-#: resources/ui/performance_page/cpu.blp:186
-#: resources/ui/performance_page/disk.blp:200
-#: resources/ui/performance_page/gpu.blp:241
-#: resources/ui/performance_page/memory.blp:175
-#: resources/ui/performance_page/network.blp:144
+#: resources/ui/performance_page/cpu.blp:149
+#: resources/ui/performance_page/disk.blp:170
+#: resources/ui/performance_page/gpu.blp:218
+#: resources/ui/performance_page/memory.blp:159
+#: resources/ui/performance_page/network.blp:128
 msgid "_Network"
 msgstr "_Sieť"
 
-#: resources/ui/performance_page/cpu.blp:191
-#: resources/ui/performance_page/disk.blp:205
-#: resources/ui/performance_page/gpu.blp:246
-#: resources/ui/performance_page/memory.blp:180
-#: resources/ui/performance_page/network.blp:149
+#: resources/ui/performance_page/cpu.blp:154
+#: resources/ui/performance_page/disk.blp:175
+#: resources/ui/performance_page/gpu.blp:223
+#: resources/ui/performance_page/memory.blp:164
+#: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
 msgstr "_GPU"
 
-#: resources/ui/performance_page/cpu.blp:199
-#: resources/ui/performance_page/disk.blp:213
-#: resources/ui/performance_page/gpu.blp:254
-#: resources/ui/performance_page/memory.blp:188
-#: resources/ui/performance_page/network.blp:162
+#: resources/ui/performance_page/cpu.blp:162
+#: resources/ui/performance_page/disk.blp:183
+#: resources/ui/performance_page/gpu.blp:231
+#: resources/ui/performance_page/memory.blp:172
+#: resources/ui/performance_page/network.blp:146
 msgid "_Copy"
 msgstr "_Kopírovať"
+
+#: resources/ui/performance_page/cpu_details.blp:46
+#: resources/ui/performance_page/gpu_details.blp:43
+msgid "Utilization"
+msgstr "Využitie"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -363,14 +378,19 @@ msgid "Power preference:"
 msgstr "Nastavenia"
 
 #: resources/ui/performance_page/disk.blp:63
+#, fuzzy
+msgid "Active time over "
+msgstr "Aktívny čas"
+
+#: resources/ui/performance_page/disk.blp:104
+#: resources/ui/performance_page/network.blp:60
+#, fuzzy
+msgid "Throughput over "
+msgstr "Priepustnosť"
+
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
 msgstr "Aktívny čas"
-
-#: resources/ui/performance_page/disk.blp:122
-#: resources/ui/performance_page/network.blp:62
-msgid "Throughput"
-msgstr "Priepustnosť"
 
 #: resources/ui/performance_page/disk_details.blp:69
 #, fuzzy
@@ -404,18 +424,13 @@ msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:110
 #, fuzzy
-msgid "Video encode utilization"
+msgid "Video encode/decode utilization over "
 msgstr "Enkódovanie videa"
 
-#: resources/ui/performance_page/gpu.blp:146
+#: resources/ui/performance_page/gpu.blp:154
+#: resources/ui/performance_page/memory.blp:62
 #, fuzzy
-msgid "Video decode utilization"
-msgstr "Dekódovanie videa"
-
-#: resources/ui/performance_page/gpu.blp:185
-#: resources/ui/performance_page/gpu_details.blp:147
-#: resources/ui/performance_page/memory.blp:65
-msgid "Memory usage"
+msgid "Memory usage over "
 msgstr "Využitie pamäte"
 
 #: resources/ui/performance_page/gpu_details.blp:66
@@ -426,36 +441,50 @@ msgstr "Taktovacia frekvencia"
 msgid "Power draw"
 msgstr "Spotreba energie"
 
+#: resources/ui/performance_page/gpu_details.blp:147
+msgid "Memory usage"
+msgstr "Využitie pamäte"
+
 #: resources/ui/performance_page/gpu_details.blp:192
 msgid "Memory speed"
 msgstr "Rýchlosť pamäte"
 
-#: resources/ui/performance_page/gpu_details.blp:237
+#: resources/ui/performance_page/gpu_details.blp:247
+#, fuzzy
+msgid "Video encode"
+msgstr "Enkódovanie videa"
+
+#: resources/ui/performance_page/gpu_details.blp:279
+#, fuzzy
+msgid "Video decode"
+msgstr "Enkódovanie videa"
+
+#: resources/ui/performance_page/gpu_details.blp:304
 msgid "Temperature"
 msgstr "Teplota"
 
-#: resources/ui/performance_page/gpu_details.blp:262
+#: resources/ui/performance_page/gpu_details.blp:329
 msgid "OpenGL version:"
 msgstr "OpenGL verzia:"
 
-#: resources/ui/performance_page/gpu_details.blp:276
+#: resources/ui/performance_page/gpu_details.blp:343
 msgid "Vulkan version:"
 msgstr "Vulkan verzia:"
 
-#: resources/ui/performance_page/gpu_details.blp:290
+#: resources/ui/performance_page/gpu_details.blp:357
 msgid "PCI Express speed:"
 msgstr "Rýchlosť PCI Express:"
 
-#: resources/ui/performance_page/gpu_details.blp:304
+#: resources/ui/performance_page/gpu_details.blp:371
 msgid "PCI bus address:"
 msgstr "Adresa PCI zbernice:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1360
-#: src/performance_page/mod.rs:455
+#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1367
+#: src/performance_page/mod.rs:509
 msgid "Memory"
 msgstr "Pamäť"
 
-#: resources/ui/performance_page/memory.blp:126
+#: resources/ui/performance_page/memory.blp:110
 msgid "Memory composition"
 msgstr "Zloženie pamäte"
 
@@ -497,7 +526,7 @@ msgstr "Použité sloty:"
 msgid "Form factor:"
 msgstr "Formátované:"
 
-#: resources/ui/performance_page/network.blp:155
+#: resources/ui/performance_page/network.blp:139
 msgid "Network Se_ttings"
 msgstr "Sieťové nastavenia"
 
@@ -600,7 +629,7 @@ msgid "The current state of the service"
 msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:127
-#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1342
+#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1349
 msgid "Name"
 msgstr "Názov"
 
@@ -634,10 +663,10 @@ msgstr "Procesy"
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
 #: resources/ui/services_page/details_dialog.blp:307
-#: src/performance_page/network.rs:483 src/performance_page/network.rs:498
-#: src/services_page/details_dialog.rs:239
-#: src/services_page/details_dialog.rs:247
-#: src/services_page/details_dialog.rs:255
+#: src/performance_page/network.rs:495 src/performance_page/network.rs:510
+#: src/services_page/details_dialog.rs:251
+#: src/services_page/details_dialog.rs:259
+#: src/services_page/details_dialog.rs:267
 msgid "N/A"
 msgstr "N/A"
 
@@ -669,11 +698,11 @@ msgid "Restart"
 msgstr ""
 
 #: resources/ui/services_page/page.blp:144
-#: resources/ui/services_page/page.blp:291
+#: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:702
 msgid "Details"
 msgstr ""
 
-#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1348
+#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1355
 msgid "PID"
 msgstr "PID"
 
@@ -713,34 +742,34 @@ msgstr "Nastavenia"
 msgid "_About MissionCenter"
 msgstr "O aplikácií MissionCenter"
 
-#: src/apps_page/mod.rs:1366 src/performance_page/mod.rs:546
+#: src/apps_page/mod.rs:1373 src/performance_page/mod.rs:604
 msgid "Drive"
 msgstr ""
 
-#: src/apps_page/mod.rs:1380
+#: src/apps_page/mod.rs:1387
 msgid "GPU Usage"
 msgstr ""
 
-#: src/apps_page/mod.rs:1390
+#: src/apps_page/mod.rs:1397
 #, fuzzy
 msgid "GPU Mem"
 msgstr "GPU {}"
 
 #. ContentType::App
-#: src/apps_page/list_item.rs:366
+#: src/apps_page/list_item.rs:373
 msgid "Stop Application"
 msgstr "Zastaviť aplikáciu"
 
-#: src/apps_page/list_item.rs:366
+#: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
 msgstr "Vynútiť zastavenie aplikácie"
 
 #. ContentType::Process
-#: src/apps_page/list_item.rs:370
+#: src/apps_page/list_item.rs:377
 msgid "Stop Process"
 msgstr "Zastaviť proces"
 
-#: src/apps_page/list_item.rs:370
+#: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
 msgstr "Vynútiť zastavenie procesu"
 
@@ -774,156 +803,160 @@ msgid ""
 "the operating system, drivers, or applications need more memory"
 msgstr ""
 
-#: src/performance_page/mod.rs:542 src/performance_page/disk.rs:273
+#: src/performance_page/mod.rs:600 src/performance_page/disk.rs:280
 #, fuzzy
 msgid "Drive {} ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/mod.rs:565
+#: src/performance_page/mod.rs:623
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:566
+#: src/performance_page/mod.rs:624
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:567
+#: src/performance_page/mod.rs:625
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:568
+#: src/performance_page/mod.rs:626
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:569
+#: src/performance_page/mod.rs:627
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:570
+#: src/performance_page/mod.rs:628
 msgid "Optical"
 msgstr ""
 
-#: src/performance_page/mod.rs:571 src/performance_page/cpu.rs:313
-#: src/performance_page/cpu.rs:337 src/performance_page/cpu.rs:345
-#: src/performance_page/disk.rs:322 src/performance_page/gpu.rs:307
-#: src/performance_page/gpu.rs:430 src/performance_page/memory.rs:264
-#: src/performance_page/memory.rs:498 src/performance_page/network.rs:398
-#: src/performance_page/network.rs:422 src/performance_page/network.rs:432
-#: src/performance_page/network.rs:471 src/performance_page/network.rs:521
-#: src/performance_page/network.rs:557
+#: src/performance_page/mod.rs:629 src/performance_page/cpu.rs:350
+#: src/performance_page/cpu.rs:374 src/performance_page/cpu.rs:382
+#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:337
+#: src/performance_page/gpu.rs:458 src/performance_page/memory.rs:274
+#: src/performance_page/memory.rs:508 src/performance_page/network.rs:410
+#: src/performance_page/network.rs:434 src/performance_page/network.rs:444
+#: src/performance_page/network.rs:483 src/performance_page/network.rs:533
+#: src/performance_page/network.rs:569
 msgid "Unknown"
 msgstr "Neznáme"
 
-#: src/performance_page/mod.rs:673 src/performance_page/network.rs:337
+#: src/performance_page/mod.rs:735 src/performance_page/network.rs:349
 msgid "Ethernet"
 msgstr "Ethernet"
 
-#: src/performance_page/mod.rs:674 src/performance_page/network.rs:352
+#: src/performance_page/mod.rs:736 src/performance_page/network.rs:364
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/performance_page/mod.rs:675 src/performance_page/network.rs:354
+#: src/performance_page/mod.rs:737 src/performance_page/network.rs:366
 msgid "Other"
 msgstr "Iné"
 
-#: src/performance_page/mod.rs:812
+#: src/performance_page/mod.rs:878
 msgid "GPU {}"
 msgstr "GPU {}"
 
-#: src/performance_page/mod.rs:814
+#: src/performance_page/mod.rs:880
 #, fuzzy
 msgid "GPU"
 msgstr "_GPU"
 
-#: src/performance_page/mod.rs:1141 src/performance_page/mod.rs:1149
+#: src/performance_page/mod.rs:1211 src/performance_page/mod.rs:1219
 #, fuzzy
 msgid "{}: {} {}bps"
 msgstr "{} {}bps"
 
-#: src/performance_page/cpu.rs:325 src/performance_page/cpu.rs:410
-#: src/performance_page/cpu.rs:418 src/performance_page/cpu.rs:434
-#: src/performance_page/gpu.rs:319
+#: src/performance_page/cpu.rs:362 src/performance_page/cpu.rs:447
+#: src/performance_page/cpu.rs:455 src/performance_page/cpu.rs:471
+#: src/performance_page/gpu.rs:349
 msgid "Unsupported"
 msgstr "Nepodporované"
 
-#: src/performance_page/cpu.rs:332 src/performance_page/disk.rs:242
+#: src/performance_page/cpu.rs:369 src/performance_page/disk.rs:249
 msgid "Yes"
 msgstr "Áno"
 
-#: src/performance_page/cpu.rs:334 src/performance_page/disk.rs:244
+#: src/performance_page/cpu.rs:371 src/performance_page/disk.rs:251
 msgid "No"
 msgstr "Nie"
 
-#: src/performance_page/cpu.rs:954
+#: src/performance_page/cpu.rs:984 src/performance_page/gpu.rs:759
 msgid "{} second{}"
 msgstr ""
 
-#: src/performance_page/cpu.rs:965
+#: src/performance_page/cpu.rs:995 src/performance_page/gpu.rs:770
 msgid "{} minute{} "
 msgstr ""
 
-#: src/performance_page/cpu.rs:983
-#, fuzzy
-msgid "Utilization Over {}{}"
-msgstr "Využitie"
-
-#: src/performance_page/disk.rs:201
+#: src/performance_page/disk.rs:208
 msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/disk.rs:205 src/performance_page/disk.rs:277
+#: src/performance_page/disk.rs:212 src/performance_page/disk.rs:284
 #, fuzzy
 msgid "Drive ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/disk.rs:284
+#: src/performance_page/disk.rs:291
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/gpu.rs:268
-#, fuzzy
-msgid "Video encode/decode"
-msgstr "Enkódovanie videa"
-
-#: src/performance_page/memory.rs:491
+#: src/performance_page/memory.rs:501
 msgid "Getting additional memory information failed"
 msgstr ""
 
-#: src/performance_page/network.rs:444 src/performance_page/network.rs:451
-#: src/performance_page/network.rs:461
+#: src/performance_page/memory.rs:580
+msgid "{:} minute"
+msgid_plural "{:} minutes"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: src/performance_page/network.rs:456 src/performance_page/network.rs:463
+#: src/performance_page/network.rs:473
 msgid "{} {}bps"
 msgstr "{} {}bps"
 
-#: src/services_page/mod.rs:633
+#: src/services_page/mod.rs:637
 msgid "{} Running Services"
 msgstr ""
 
-#: src/services_page/mod.rs:638
+#: src/services_page/mod.rs:642
 msgid "{} failed services out of a total of {}"
 msgstr ""
 
-#: src/services_page/details_dialog.rs:224
-#: src/services_page/details_dialog.rs:295
+#: src/services_page/details_dialog.rs:236
+#: src/services_page/details_dialog.rs:307
 msgid "Running"
 msgstr ""
 
-#: src/services_page/details_dialog.rs:226
-#: src/services_page/details_dialog.rs:297
+#: src/services_page/details_dialog.rs:238
+#: src/services_page/details_dialog.rs:309
 msgid "Failed"
 msgstr ""
 
-#: src/services_page/details_dialog.rs:228
-#: src/services_page/details_dialog.rs:299
+#: src/services_page/details_dialog.rs:240
+#: src/services_page/details_dialog.rs:311
 msgid "Stopped"
 msgstr ""
 
-#: src/application.rs:325
+#: src/application.rs:355
 msgid "translator-credits"
 msgstr ""
 
 #: src/main.rs:121
 msgid "_Quit"
 msgstr ""
+
+#~ msgid "Flatpak first"
+#~ msgstr "Flatpak na prvom mieste"
+
+#, fuzzy
+#~ msgid "Video decode utilization"
+#~ msgstr "Dekódovanie videa"
 
 #~ msgid "_Disk"
 #~ msgstr "_Disk"

@@ -22,7 +22,7 @@ use std::cell::{Cell, OnceCell};
 
 use adw;
 use adw::subclass::prelude::*;
-use glib::{clone, ParamSpec, Properties, Value};
+use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use crate::application::INTERVAL_STEP;
@@ -133,30 +133,37 @@ mod imp {
             this.insert_action_group("graph", Some(&actions));
 
             let action = gio::SimpleAction::new("copy", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
-                let clipboard = this.clipboard();
-                clipboard.set_text(this.imp().data_summary().as_str());
-            }));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |_, _| {
+                    if let Some(this) = this.upgrade() {
+                        let clipboard = this.clipboard();
+                        clipboard.set_text(this.imp().data_summary().as_str());
+                    }
+                }
+            });
             actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageDisk) {
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
-            right_click_controller.connect_released(
-                clone!(@weak this => move |_click, _n_press, x, y| {
-                    this
-                        .imp()
-                        .context_menu
-                        .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
-                            x.round() as i32,
-                            y.round() as i32,
-                            1,
-                            1,
-                        )));
-                    this.imp().context_menu.popup();
-                }),
-            );
+            right_click_controller.connect_released({
+                let this = this.downgrade();
+                move |_click, _n_press, x, y| {
+                    if let Some(this) = this.upgrade() {
+                        this.imp()
+                            .context_menu
+                            .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                                x.round() as i32,
+                                y.round() as i32,
+                                1,
+                                1,
+                            )));
+                        this.imp().context_menu.popup();
+                    }
+                }
+            });
             this.add_controller(right_click_controller);
         }
     }
@@ -533,26 +540,32 @@ impl PerformancePageDisk {
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
-        settings.connect_changed(
-            Some("perfomance-page-data-points"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("perfomance-page-data-points"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
-        settings.connect_changed(
-            Some("app-update-interval-u64"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("app-update-interval-u64"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
-        settings.connect_changed(
-            Some("performance-smooth-graphs"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("performance-smooth-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
         this
     }
