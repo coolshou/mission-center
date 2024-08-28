@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-24 10:40+0300\n"
-"PO-Revision-Date: 2024-06-09 22:09+0000\n"
+"PO-Revision-Date: 2024-08-25 09:09+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -447,14 +447,12 @@ msgid "Memory speed"
 msgstr "Muistin nopeus"
 
 #: resources/ui/performance_page/gpu_details.blp:247
-#, fuzzy
 msgid "Video encode"
-msgstr "Videon pakkaus/purku"
+msgstr "Videon pakkaus"
 
 #: resources/ui/performance_page/gpu_details.blp:279
-#, fuzzy
 msgid "Video decode"
-msgstr "Videon pakkaus/purku"
+msgstr "Videon purku"
 
 #: resources/ui/performance_page/gpu_details.blp:304
 msgid "Temperature"
@@ -912,11 +910,10 @@ msgid "Getting additional memory information failed"
 msgstr "Muistin lisätietojen saaminen epäonnistui"
 
 #: src/performance_page/memory.rs:580
-#, fuzzy
 msgid "{:} minute"
 msgid_plural "{:} minutes"
-msgstr[0] "{} minuutti{} "
-msgstr[1] "{} minuutti{} "
+msgstr[0] "{:} minuutti"
+msgstr[1] "{:} minuuttia"
 
 #: src/performance_page/network.rs:456 src/performance_page/network.rs:463
 #: src/performance_page/network.rs:473
