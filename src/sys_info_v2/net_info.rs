@@ -762,7 +762,7 @@ impl NetInfo {
                         .map_or("Unknown error", |s| s)
                         .to_owned();
 
-                    g_critical!(
+                    g_debug!(
                         "MissionCenter::NetInfo",
                         "Failed to create udev device from {:?}. {}",
                         udi,
