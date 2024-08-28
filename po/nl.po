@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-24 10:40+0300\n"
-"PO-Revision-Date: 2024-07-05 10:35+0000\n"
+"PO-Revision-Date: 2024-08-29 07:09+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -29,8 +29,10 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Taakbeheerder;Broncontrole;Systeemcontrole;Processor;Processen;"
-"Prestatiemonitor;CPU;GPU;Harde schijf;Geheugen;Netwerk;Gebruik"
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Taakbeheerde"
+"r;Bronmonitor;Systeemmonitor;Processen;Prestatiemonitor;Schijf;Opslag;Geheuge"
+"n;Netwerk;Gebruik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
@@ -44,8 +46,8 @@ msgstr "Controleer het gebruik van bronnen op je systeem"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Controleer hoe je processor, geheugen, harde schijf, netwerk en grafische "
-"kaart gebruikt worden"
+"Controleer het gebruik van uw processor, geheugen, opslag, netwerk en "
+"grafische kaart"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
@@ -60,8 +62,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Bekijk processen, threads, het aantal handles, werkingstijd, (basis- en "
-"huidige) kloksnelheid en cache-groottes"
+"Bekĳk processen, threads, het aantal handles, werkingstĳd, (basis- en "
+"huidige) klok­snelheid en cache-groottes"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -108,13 +110,12 @@ msgstr ""
 "Ondersteunt een minimale samenvattingsweergave voor eenvoudige opvolging"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Gebruik hardware-rendering voor alle grafieken in een poging om CPU- en "
-"systeembelasting over het algemeen te verlagen"
+"Gebruik hardware­versnelde rendering voor alle grafieken om het CPU- en "
+"algehele resource­gebruik te verminderen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -141,6 +142,8 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Intel GPU-monitoring wordt alleen ondersteund voor Broadwell en latere GPU's;"
+" en ondersteunt geen VRAM-, stroom- of temperatuur-monitoring"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -148,6 +151,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Bij gebruik van Linux Mint/Cinnamon worden gestarte apps mogelĳk niet "
+"weergegeven in de sectie ‘Apps’ (Upstream-probleem: https://github.com/"
+"linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -226,9 +232,8 @@ msgstr "Processor"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:67
-#, fuzzy
 msgid "Utilization over "
-msgstr "Gebruik over {} seconden"
+msgstr "Gebruik gedurende "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:81
@@ -386,15 +391,13 @@ msgid "Power preference:"
 msgstr "Vermogens­voorkeur:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Tijd actief"
+msgstr "Actieve tĳd gedurende "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Doorvoer"
+msgstr "Doorvoer gedurende "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -430,15 +433,13 @@ msgid "Type:"
 msgstr "Type:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Gebruik van video­codering"
+msgstr "Gebruik van video­codering gedurende "
 
 #: resources/ui/performance_page/gpu.blp:154
 #: resources/ui/performance_page/memory.blp:62
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Geheugengebruik"
+msgstr "Geheugen­gebruik gedurende "
 
 #: resources/ui/performance_page/gpu_details.blp:66
 msgid "Clock Speed"
@@ -920,11 +921,10 @@ msgid "Getting additional memory information failed"
 msgstr "Aanvullende geheugeninformatie ophalen is mislukt"
 
 #: src/performance_page/memory.rs:580
-#, fuzzy
 msgid "{:} minute"
 msgid_plural "{:} minutes"
-msgstr[0] "{} minuut{} "
-msgstr[1] "{} minuut{} "
+msgstr[0] "{:} minuut"
+msgstr[1] "{:} minuten"
 
 #: src/performance_page/network.rs:456 src/performance_page/network.rs:463
 #: src/performance_page/network.rs:473
