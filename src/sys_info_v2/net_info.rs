@@ -920,7 +920,7 @@ impl NetInfo {
         if variant.is_null() {
             if !error.is_null() {
                 let error: Error = from_glib_full(error);
-                g_critical!(
+                g_debug!(
                     "MissionCenter::NetInfo",
                     "Failed to get property {:?}: {}",
                     CStr::from_ptr(property.as_ptr() as _),
