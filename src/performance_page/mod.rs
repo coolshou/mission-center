@@ -542,6 +542,12 @@ mod imp {
                 MEMORY_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
+            page.set_memory_color(gtk::gdk::RGBA::new(
+                DISK_BASE_COLOR[0] as f32 / 255.,
+                DISK_BASE_COLOR[1] as f32 / 255.,
+                DISK_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
             self.settings.set(settings);
             page.set_static_information(readings);
 
@@ -1253,8 +1259,16 @@ mod imp {
                                 } else {
                                     summary.set_info2(format!("{}%", gpu.util_percent));
                                 }
+                                let id = gpu.id.clone();
+                                let mut gpu_static = None;
+                                for gpu_stat in &readings.gpu_static_info {
+                                    if id == gpu_stat.id {
+                                        gpu_static = Some(gpu_stat);
+                                        break;
+                                    }
+                                }
 
-                                result &= page.update_readings(gpu);
+                                result &= page.update_readings(gpu, gpu_static.unwrap());
                             }
                         }
                     }

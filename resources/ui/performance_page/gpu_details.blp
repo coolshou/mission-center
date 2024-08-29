@@ -57,7 +57,6 @@ Box root {
       spacing: 3;
 
       Label {
-
         styles [
           "caption",
         ]
@@ -135,46 +134,107 @@ Box root {
     }
 
     Box box_mem_usage {
-      orientation: vertical;
+      orientation: horizontal;
       spacing: 3;
 
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Memory usage");
+      Picture legend_vram {
+        can-shrink: false;
+        content-fit: scale_down;
       }
 
       Box {
-        Label memory_usage_current {
-          styles [
-            "title-4",
-          ]
-
-          ellipsize: middle;
-
-          halign: start;
-        }
-
+        orientation: vertical;
         Label {
           styles [
-            "title-4",
+            "caption",
           ]
 
           halign: start;
-          label: " / ";
+          label: _("Memory usage");
         }
 
-        Label memory_usage_max {
+        Box {
+          Label memory_usage_current {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
+
+          Label {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: " / ";
+          }
+
+          Label memory_usage_max {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
+        }
+      }
+    }
+
+    Box box_gtt_usage {
+      orientation: horizontal;
+      spacing: 3;
+
+      Picture legend_gtt {
+        can-shrink: false;
+        content-fit: scale_down;
+      }
+
+      Box {
+        orientation: vertical;
+        Label {
           styles [
-            "title-4",
+            "caption",
           ]
 
-          ellipsize: middle;
-
           halign: start;
+          label: _("GTT usage");
+        }
+
+        Box {
+          Label gtt_usage_current {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
+
+          Label gtt_separator {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+            label: " / ";
+          }
+
+          Label gtt_usage_max {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
         }
       }
     }

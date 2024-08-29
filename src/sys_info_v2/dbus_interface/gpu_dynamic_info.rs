@@ -37,6 +37,7 @@ pub struct GpuDynamicInfo {
     pub mem_speed_max_mhz: u32,
     pub free_memory: u64,
     pub used_memory: u64,
+    pub used_gtt: u64,
     pub encoder_percent: u32,
     pub decoder_percent: u32,
 }
@@ -56,6 +57,7 @@ impl Default for GpuDynamicInfo {
             mem_speed_max_mhz: 0,
             free_memory: 0,
             used_memory: 0,
+            used_gtt: 0,
             encoder_percent: 0,
             decoder_percent: 0,
         }
@@ -130,6 +132,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             mem_speed_max_mhz: 0,
                             free_memory: 0,
                             used_memory: 0,
+                            used_gtt: 0,
                             encoder_percent: 0,
                             decoder_percent: 0,
                         };
@@ -398,11 +401,11 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             },
                         };
 
-                        this.encoder_percent = match Iterator::next(dynamic_info) {
+                        this.used_gtt = match Iterator::next(dynamic_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '12: u', got None",
+                                    "Failed to get GpuDynamicInfo: Expected '12: t', got None",
                                 );
                                 return None;
                             }
@@ -410,16 +413,16 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '12: u', got {:?}",
+                                        "Failed to get GpuDynamicInfo: Expected '12: t', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;
                                 }
-                                Some(ep) => ep as _,
+                                Some(fm) => fm as _,
                             },
                         };
 
-                        this.decoder_percent = match Iterator::next(dynamic_info) {
+                        this.encoder_percent = match Iterator::next(dynamic_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -432,6 +435,27 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
                                         "Failed to get GpuDynamicInfo: Expected '13: u', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(ep) => ep as _,
+                            },
+                        };
+
+                        this.decoder_percent = match Iterator::next(dynamic_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '14: u', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '14: u', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;
