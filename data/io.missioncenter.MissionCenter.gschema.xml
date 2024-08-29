@@ -72,7 +72,8 @@
         <key name="apps-page-sorting-order" enum="org.gtk.SortType">
             <default>"None"</default>
             <summary>The sorting direction of the Apps page view</summary>
-        </key>
+       </key>
+
 
         <key name="performance-page-cpu-graph" type="i">
             <range min="1" max="2"/>
@@ -93,6 +94,14 @@
         <key name="performance-smooth-graphs" type="b">
             <default>false</default>
             <summary>Should performance graphs be smooth or jagged</summary>
+        </key>
+        <key name="performance-page-memory-composition-visible" type="b">
+            <default>true</default>
+            <summary>Show the mem composition widget</summary>
+        </key>
+        <key name="performance-page-memory-swap-visible" type="b">
+            <default>true</default>
+            <summary>Show the swap graph</summary>
         </key>
     </schema>
 </schemalist>

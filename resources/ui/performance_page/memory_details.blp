@@ -34,25 +34,32 @@ Box root {
       spacing: 15;
 
       Box {
-        orientation: vertical;
+        orientation: horizontal;
         spacing: 3;
         width-request: 100;
 
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("In use");
+        Picture legend_used {
+          can-shrink: false;
+          content-fit: scale_down;
         }
+        Box {
+          orientation: vertical;
+            Label {
+            styles [
+            "caption",
+            ]
 
-        Label in_use {
+            halign: start;
+            label: _("In use");
+          }
+
+          Label in_use {
           styles [
-            "title-4",
+          "title-4",
           ]
 
           halign: start;
+          }
         }
       }
 
@@ -84,26 +91,33 @@ Box root {
       spacing: 15;
 
       Box {
-        orientation: vertical;
+        orientation: horizontal;
         spacing: 3;
         width-request: 100;
 
-        Label {
-
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Committed");
+        Picture legend_commited {
+          can-shrink: false;
+          content-fit: scale_down;
         }
+        Box {
+          orientation: vertical;
+          Label {
 
-        Label committed {
-          styles [
-            "title-4",
-          ]
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Committed");
+          }
+
+          Label committed {
+            styles [
+              "title-4",
+            ]
 
           halign: start;
+          }
         }
       }
 

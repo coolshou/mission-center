@@ -67,13 +67,13 @@ template $PerformancePageGpu: Box {
         label: _("Utilization over ");
       }
       Label graph_max_duration {
-	    styles [
-		  "caption",
-	    ]
+        styles [
+        "caption",
+        ]
 
-	    hexpand: true;
-	    halign: start;
-	  }
+        hexpand: true;
+        halign: start;
+      }
       Label {
         styles [
           "caption",
@@ -109,15 +109,15 @@ template $PerformancePageGpu: Box {
 
           label: _("Video encode/decode utilization over ");
         }
-		Label {
-		  styles [
-			"caption",
-		  ]
+        Label {
+          styles [
+            "caption",
+          ]
 
-		  hexpand: true;
-		  halign: start;
-		  label: bind graph_max_duration.label;
-		}
+          hexpand: true;
+          halign: start;
+          label: bind graph_max_duration.label;
+        }
 
         Label {
           styles [
@@ -146,22 +146,22 @@ template $PerformancePageGpu: Box {
       margin-top: 10;
 
       Box {
-        Label {
+        Label memory_graph_label {
           styles [
             "caption",
           ]
 
           label: _("Memory usage over ");
         }
-		Label {
-		  styles [
-			"caption",
-		  ]
+        Label {
+          styles [
+          "caption",
+          ]
 
-		  hexpand: true;
-		  halign: start;
-		  label: bind graph_max_duration.label;
-		}
+          hexpand: true;
+          halign: start;
+          label: bind graph_max_duration.label;
+        }
 
         Label total_memory {
           styles [
@@ -178,7 +178,7 @@ template $PerformancePageGpu: Box {
         height-request: 40;
 
         base-color: bind template.base-color;
-        data-set-count: 1;
+        data-set-count: 2;
         scroll: true;
       }
     }

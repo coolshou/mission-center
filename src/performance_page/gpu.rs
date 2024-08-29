@@ -52,6 +52,8 @@ mod imp {
         #[template_child]
         pub total_memory: TemplateChild<gtk::Label>,
         #[template_child]
+        pub memory_graph_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graph_memory: TemplateChild<GraphWidget>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
@@ -71,6 +73,8 @@ mod imp {
         pub utilization: OnceCell<gtk::Label>,
         pub memory_usage_current: OnceCell<gtk::Label>,
         pub memory_usage_max: OnceCell<gtk::Label>,
+        pub gtt_usage_current: OnceCell<gtk::Label>,
+        pub gtt_usage_max: OnceCell<gtk::Label>,
         pub clock_speed_current: OnceCell<gtk::Label>,
         pub clock_speed_max: OnceCell<gtk::Label>,
         pub memory_speed_current: OnceCell<gtk::Label>,
@@ -89,12 +93,15 @@ mod imp {
         pub box_temp: OnceCell<gtk::Box>,
         pub box_mem_speed: OnceCell<gtk::Box>,
         pub box_mem_usage: OnceCell<gtk::Box>,
+        pub box_gtt_usage: OnceCell<gtk::Box>,
         pub box_power_draw: OnceCell<gtk::Box>,
         pub box_decode: OnceCell<gtk::Box>,
         pub encode_label: OnceCell<gtk::Label>,
 
         pub legend_encode: OnceCell<gtk::Picture>,
         pub legend_decode: OnceCell<gtk::Picture>,
+        pub legend_vram: OnceCell<gtk::Picture>,
+        pub legend_gtt: OnceCell<gtk::Picture>,
     }
 
     impl Default for PerformancePageGpu {
@@ -107,6 +114,7 @@ mod imp {
                 usage_graph_encode_decode: Default::default(),
                 memory_graph: Default::default(),
                 total_memory: Default::default(),
+                memory_graph_label: Default::default(),
                 usage_graph_memory: Default::default(),
                 context_menu: Default::default(),
                 graph_max_duration: Default::default(),
@@ -120,6 +128,8 @@ mod imp {
                 utilization: Default::default(),
                 memory_usage_current: Default::default(),
                 memory_usage_max: Default::default(),
+                gtt_usage_current: Default::default(),
+                gtt_usage_max: Default::default(),
                 clock_speed_current: Default::default(),
                 clock_speed_max: Default::default(),
                 memory_speed_current: Default::default(),
@@ -138,12 +148,15 @@ mod imp {
                 box_temp: Default::default(),
                 box_mem_speed: Default::default(),
                 box_mem_usage: Default::default(),
+                box_gtt_usage: Default::default(),
                 box_power_draw: Default::default(),
                 box_decode: Default::default(),
                 encode_label: Default::default(),
 
                 legend_encode: Default::default(),
                 legend_decode: Default::default(),
+                legend_vram: Default::default(),
+                legend_gtt: Default::default(),
             }
         }
     }
@@ -289,6 +302,58 @@ mod imp {
                 this.usage_graph_encode_decode.set_filled(0, false);
             }
 
+            let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
+            let total_memory = format!(
+                "{0:.2$} {1}{3}B",
+                total_memory.0,
+                total_memory.1,
+                total_memory.2,
+                if total_memory.1.is_empty() { "" } else { "i" },
+            );
+            let total_gtt = crate::to_human_readable(gpu.total_gtt as f32, 1024.);
+            let total_gtt = format!(
+                "{0:.2$} {1}{3}B",
+                total_gtt.0,
+                total_gtt.1,
+                total_gtt.2,
+                if total_gtt.1.is_empty() { "" } else { "i" },
+            );
+
+            // show gtt for amd cards
+            if gpu.vendor_id == 0x1002 {
+                this.usage_graph_memory.set_dashed(1, true);
+                this.usage_graph_memory.set_filled(1, false);
+
+                if let Some(legend_gtt) = this.legend_gtt.get() {
+                    legend_gtt
+                        .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
+                }
+                if let Some(legend_vram) = this.legend_vram.get() {
+                    legend_vram
+                        .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
+                }
+
+                this.total_memory
+                    .set_text(&format!("{total_memory} / {total_gtt}"));
+                if let Some(gtt_usage_max) = this.gtt_usage_max.get() {
+                    gtt_usage_max.set_text(&total_gtt);
+                }
+
+                if let Some(memory_usage_max) = this.memory_usage_max.get() {
+                    memory_usage_max.set_text(&total_memory);
+                }
+                this.memory_graph_label.set_text("Memory/GTT usage over ");
+            } else {
+                this.legend_vram
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.box_gtt_usage
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+
+                this.total_memory.set_text(&total_memory);
+            }
+
             if index.is_some() {
                 this.gpu_id.set_text(&format!("GPU {}", index.unwrap()));
             } else {
@@ -308,19 +373,6 @@ mod imp {
 
             this.usage_graph_memory
                 .set_value_range_max(gpu.total_memory as f32);
-
-            let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
-            this.total_memory.set_text(&format!(
-                "{0:.2$} {1}{3}B",
-                total_memory.0,
-                total_memory.1,
-                total_memory.2,
-                if total_memory.1.is_empty() { "" } else { "i" }
-            ));
-
-            if let Some(memory_usage_max) = this.memory_usage_max.get() {
-                memory_usage_max.set_text(&this.total_memory.label());
-            }
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
@@ -366,6 +418,7 @@ mod imp {
         pub(crate) fn update_readings(
             this: &super::PerformancePageGpu,
             gpu: &crate::sys_info_v2::GpuDynamicInfo,
+            gpu_static: &crate::sys_info_v2::GpuStaticInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -380,8 +433,12 @@ mod imp {
             this.usage_graph_encode_decode
                 .add_data_point(1, gpu.decoder_percent as f32);
 
+            let gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
+
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
+            this.usage_graph_memory
+                .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
 
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
             if let Some(memory_usage_current) = this.memory_usage_current.get() {
@@ -391,6 +448,17 @@ mod imp {
                     used_memory.1,
                     used_memory.2,
                     if used_memory.1.is_empty() { "" } else { "i" },
+                ));
+            }
+
+            let used_gtt = crate::to_human_readable(gpu.used_gtt as f32, 1024.);
+            if let Some(gtt_usage_current) = this.gtt_usage_current.get() {
+                gtt_usage_current.set_text(&format!(
+                    "{0:.2$} {1}{3}B",
+                    used_gtt.0,
+                    used_gtt.1,
+                    used_gtt.2,
+                    if used_gtt.1.is_empty() { "" } else { "i" },
                 ));
             }
 
@@ -470,6 +538,7 @@ mod imp {
 
     Utilization:   {}
     Memory usage:  {} / {}
+    GTT usage:     {} / {}
     Clock speed:   {} / {}
     Memory speed:  {} / {}
     Power draw:    {}{}
@@ -502,6 +571,14 @@ mod imp {
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
                 self.memory_usage_max
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.gtt_usage_current
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.gtt_usage_max
                     .get()
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
@@ -607,6 +684,16 @@ mod imp {
                     .object::<gtk::Label>("memory_usage_max")
                     .expect("Could not find `memory_usage_max` object in details pane"),
             );
+            let _ = self.gtt_usage_current.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("gtt_usage_current")
+                    .expect("Could not find `gtt_usage_current` object in details pane"),
+            );
+            let _ = self.gtt_usage_max.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("gtt_usage_max")
+                    .expect("Could not find `gtt_usage_max` object in details pane"),
+            );
             let _ = self.clock_speed_current.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("clock_speed_current")
@@ -703,6 +790,11 @@ mod imp {
                     .object::<gtk::Box>("box_mem_usage")
                     .expect("Could not find `box_mem_usage` object in details pane"),
             );
+            let _ = self.box_gtt_usage.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_gtt_usage")
+                    .expect("Could not find `box_gtt_usage` object in details pane"),
+            );
             let _ = self.box_power_draw.set(
                 sidebar_content_builder
                     .object::<gtk::Box>("box_power_draw")
@@ -717,6 +809,16 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Picture>("legend_decode")
                     .expect("Could not find `legend_decode` object in details pane"),
+            );
+            let _ = self.legend_vram.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_vram")
+                    .expect("Could not find `legend_vram` object in details pane"),
+            );
+            let _ = self.legend_gtt.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_gtt")
+                    .expect("Could not find `legend_gtt` object in details pane"),
             );
         }
     }
@@ -831,8 +933,12 @@ impl PerformancePageGpu {
         imp::PerformancePageGpu::set_static_information(self, index, gpu)
     }
 
-    pub fn update_readings(&self, gpu: &crate::sys_info_v2::GpuDynamicInfo) -> bool {
-        imp::PerformancePageGpu::update_readings(self, gpu)
+    pub fn update_readings(
+        &self,
+        gpu: &crate::sys_info_v2::GpuDynamicInfo,
+        gpu_static: &crate::sys_info_v2::GpuStaticInfo,
+    ) -> bool {
+        imp::PerformancePageGpu::update_readings(self, gpu, gpu_static)
     }
 
     pub fn infobar_collapsed(&self) {

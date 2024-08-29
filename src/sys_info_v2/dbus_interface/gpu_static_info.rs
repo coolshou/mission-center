@@ -52,6 +52,7 @@ pub struct GpuStaticInfo {
     pub vendor_id: u16,
     pub device_id: u16,
     pub total_memory: u64,
+    pub total_gtt: u64,
     pub opengl_version: Option<OpenGLApiVersion>,
     pub vulkan_version: Option<ApiVersion>,
     pub metal_version: Option<ApiVersion>,
@@ -69,6 +70,7 @@ impl Default for GpuStaticInfo {
             vendor_id: 0,
             device_id: 0,
             total_memory: 0,
+            total_gtt: 0,
             opengl_version: None,
             vulkan_version: None,
             metal_version: None,
@@ -142,6 +144,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             vendor_id: 0,
                             device_id: 0,
                             total_memory: 0,
+                            total_gtt: 0,
                             opengl_version: None,
                             vulkan_version: None,
                             metal_version: None,
@@ -267,11 +270,31 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             },
                         };
 
+                        info.total_gtt = match Iterator::next(static_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '5: t', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '5: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(um) => um as _,
+                            },
+                        };
                         info.opengl_version = match Iterator::next(static_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '5: STRUCT', got None",
+                                    "Failed to get GpuStaticInfo: Expected '6: STRUCT', got None",
                                 );
                                 return None;
                             }
@@ -279,7 +302,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '5: STRUCT', got {:?}",
+                                        "Failed to get GpuStaticInfo: Expected '6: STRUCT', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;
@@ -290,7 +313,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     } else {
                                         g_critical!(
                                             "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '5-0: y', got None",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
                                         );
 
                                         0
@@ -301,7 +324,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     } else {
                                         g_critical!(
                                             "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '5-1: y', got None",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
                                         );
 
                                         0
@@ -316,7 +339,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     } else {
                                         g_critical!(
                                             "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '5-2: y', got None",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
                                         );
 
                                         OpenGLApi::Invalid
@@ -342,7 +365,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
                                         "Failed to get GpuStaticInfo: Expected '{}: STRUCT', got None",
-                                        i + 6,
+                                        i + 7,
                                     );
                                     return None;
                                 }
@@ -351,7 +374,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                         g_critical!(
                                             "MissionCenter::GathererDBusProxy",
                                             "Failed to get GpuStaticInfo: Expected '{}: STRUCT', got {:?}",
-                                            i + 6,
+                                            i + 7,
                                             id.arg_type(),
                                         );
                                         return None;
@@ -364,7 +387,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                             g_critical!(
                                                 "MissionCenter::GathererDBusProxy",
                                                 "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-0: y', got None",
-                                                i + 6
+                                                i + 7
                                             );
 
                                             0
@@ -377,7 +400,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                             g_critical!(
                                                 "MissionCenter::GathererDBusProxy",
                                                 "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-1: y', got None",
-                                                i + 6
+                                                i + 7
                                             );
 
                                             0
@@ -390,7 +413,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                             g_critical!(
                                                 "MissionCenter::GathererDBusProxy",
                                                 "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-1: y', got None",
-                                                i + 6
+                                                i + 7
                                             );
 
                                             0
@@ -418,7 +441,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '9: y', got None",
+                                    "Failed to get GpuStaticInfo: Expected '10: y', got None",
                                 );
                                 return None;
                             }
@@ -426,7 +449,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '9: y', got {:?}",
+                                        "Failed to get GpuStaticInfo: Expected '10: y', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;
@@ -439,7 +462,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '10: y', got None",
+                                    "Failed to get GpuStaticInfo: Expected '11: y', got None",
                                 );
                                 return None;
                             }
@@ -447,7 +470,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '10: y', got {:?}",
+                                        "Failed to get GpuStaticInfo: Expected '11: y', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;

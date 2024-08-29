@@ -20,6 +20,7 @@
 
 use std::{
     collections::HashMap,
+    fs,
     sync::{Arc, RwLock},
     time::Instant,
 };
@@ -27,7 +28,7 @@ use std::{
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::{
     gpu_info_valid,
-    logging::{critical, error, warning},
+    logging::{critical, debug, error, warning},
     platform::platform_impl::gpu_info::nvtop::GPUInfoDynamicInfoValid,
     platform::{
         platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
@@ -46,6 +47,7 @@ pub struct LinuxGpuStaticInfo {
     vendor_id: u16,
     device_id: u16,
     total_memory: u64,
+    total_gtt: u64,
     opengl_version: Option<OpenGLApiVersion>,
     vulkan_version: Option<ApiVersion>,
     pcie_gen: u8,
@@ -62,6 +64,7 @@ impl Default for LinuxGpuStaticInfo {
             vendor_id: 0,
             device_id: 0,
             total_memory: 0,
+            total_gtt: 0,
             opengl_version: None,
             vulkan_version: None,
             pcie_gen: 0,
@@ -89,6 +92,10 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
 
     fn total_memory(&self) -> u64 {
         self.total_memory
+    }
+
+    fn total_gtt(&self) -> u64 {
+        self.total_gtt
     }
 
     fn opengl_version(&self) -> Option<&OpenGLApiVersion> {
@@ -130,6 +137,7 @@ pub struct LinuxGpuDynamicInfo {
     mem_speed_max_mhz: u32,
     free_memory: u64,
     used_memory: u64,
+    used_gtt: u64,
     encoder_percent: u32,
     decoder_percent: u32,
 }
@@ -149,6 +157,7 @@ impl Default for LinuxGpuDynamicInfo {
             mem_speed_max_mhz: 0,
             free_memory: 0,
             used_memory: 0,
+            used_gtt: 0,
             encoder_percent: 0,
             decoder_percent: 0,
         }
@@ -208,6 +217,10 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
 
     fn used_memory(&self) -> u64 {
         self.used_memory
+    }
+
+    fn used_gtt(&self) -> u64 {
+        self.used_gtt
     }
 
     fn encoder_percent(&self) -> u32 {
@@ -638,6 +651,22 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
 
+            let total_gtt = match fs::read_to_string(format!(
+                "/sys/bus/pci/devices/{}/mem_info_gtt_total",
+                pdev.to_lowercase()
+            )) {
+                Ok(x) => match x.trim().parse::<u64>() {
+                    Ok(x) => x,
+                    Err(x) => {
+                        debug!("Gatherer::GpuInfo", "Failed to parse total gtt: {}", x);
+                        0
+                    }
+                },
+                Err(x) => {
+                    debug!("Gatherer::GpuInfo", "Failed to read total gtt: {}", x);
+                    0
+                }
+            };
             let ven_dev_id = if let Some(mut f) = uevent_file {
                 buffer.clear();
                 match f.read_to_string(&mut buffer) {
@@ -682,6 +711,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 device_id: ven_dev_id.1,
 
                 total_memory: dev.dynamic_info.total_memory,
+                total_gtt,
 
                 pcie_gen: dev.dynamic_info.pcie_link_gen as _,
                 pcie_lanes: dev.dynamic_info.pcie_link_width as _,
@@ -835,6 +865,23 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
 
+            let used_gtt = match fs::read_to_string(format!(
+                "/sys/bus/pci/devices/{}/mem_info_gtt_used",
+                pdev.to_lowercase()
+            )) {
+                Ok(x) => match x.trim().parse::<u64>() {
+                    Ok(x) => x,
+                    Err(x) => {
+                        debug!("Gatherer::GpuInfo", "Failed to parse used gtt: {}", x);
+                        0
+                    }
+                },
+                Err(x) => {
+                    debug!("Gatherer::GpuInfo", "Failed to read used gtt: {}", x);
+                    0
+                }
+            };
+
             let dynamic_info = self.dynamic_info.get_mut(&pci_id);
             if dynamic_info.is_none() {
                 continue;
@@ -852,6 +899,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             dynamic_info.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
             dynamic_info.free_memory = dev.dynamic_info.free_memory;
             dynamic_info.used_memory = dev.dynamic_info.used_memory;
+            dynamic_info.used_gtt = used_gtt;
             dynamic_info.encoder_percent = {
                 if gpu_info_valid!(dev.dynamic_info, GPUInfoDynamicInfoValid::EncoderRateValid) {
                     dev.dynamic_info.encoder_rate
