@@ -114,9 +114,9 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
 ```bash
 # On Ubuntu 24.04 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson libdbus-1-dev pkg-config
 
-BUILD_ROOT="$(pwd)/_build"
+BUILD_ROOT="$(pwd)/build-meson-debug"
 
 meson setup "$BUILD_ROOT" -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C "$BUILD_ROOT"
@@ -136,7 +136,7 @@ glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled
 And then to run the app:
 
 ```bash
-_build/src/missioncenter
+"$BUILD_ROOT/src/missioncenter"
 ```
 
 If you want to install the app just run:
