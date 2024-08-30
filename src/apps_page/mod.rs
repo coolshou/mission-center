@@ -24,6 +24,11 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::i18n::*;
 
+use crate::sys_info_v2::App;
+use crate::sys_info_v2::Process;
+use std::collections::HashMap;
+use std::sync::Arc;
+
 mod column_header;
 mod list_item;
 mod pid_column;
@@ -78,17 +83,14 @@ mod imp {
         pub max_disk_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<f32>,
 
-        pub apps: Cell<std::collections::HashMap<std::sync::Arc<str>, crate::sys_info_v2::App>>,
-        pub process_tree: Cell<crate::sys_info_v2::Process>,
+        pub apps: Cell<HashMap<Arc<str>, App>>,
+        pub process_tree: Cell<Process>,
 
         pub use_merge_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
-            use crate::sys_info_v2::Process;
-            use std::collections::HashMap;
-
             Self {
                 column_view: TemplateChild::default(),
                 name_column: TemplateChild::default(),
@@ -128,10 +130,7 @@ mod imp {
     }
 
     impl AppsPage {
-        fn find_process(
-            root_process: &crate::sys_info_v2::Process,
-            pid: u32,
-        ) -> Option<&crate::sys_info_v2::Process> {
+        fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
             if root_process.pid == pid {
                 return Some(root_process);
             }
@@ -152,7 +151,6 @@ mod imp {
         }
 
         fn configure_actions(&self) {
-            use crate::sys_info_v2::Process;
             use gtk::glib::*;
 
             fn find_pid(
@@ -311,6 +309,18 @@ mod imp {
             actions.add_action(&action);
         }
 
+        fn convert_apps_map(mapin: &HashMap<Arc<str>, App>) -> HashMap<u32, App> {
+            let mut out: HashMap<u32, App> = HashMap::new();
+
+            for value in mapin.values() {
+                for pid in &value.pids {
+                    out.insert(*pid, value.to_owned());
+                }
+            }
+
+            out
+        }
+
         pub fn update_app_model(&self) {
             use crate::glib_clone;
             use gtk::glib::g_critical;
@@ -320,6 +330,8 @@ mod imp {
             let model = glib_clone!(self.apps_model);
             let apps = self.apps.take();
             let process_tree = self.process_tree.take();
+
+            let hashed_apps = Self::convert_apps_map(&apps);
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -421,7 +433,7 @@ mod imp {
 
                 let children = view_model.children().clone();
                 if let Some(process) = primary_process {
-                    Self::update_process_model(self, children, process);
+                    Self::update_process_model(self, children, process, &hashed_apps);
                 } else {
                     children.remove_all();
 
@@ -443,7 +455,18 @@ mod imp {
             let process_tree = self.process_tree.take();
             let processes_root_model = glib_clone!(self.processes_root_model);
 
-            Self::update_process_model(self, processes_root_model.clone(), &process_tree);
+            let apps = self.apps.take();
+
+            let apps_map = Self::convert_apps_map(&apps);
+
+            Self::update_process_model(
+                self,
+                processes_root_model.clone(),
+                &process_tree,
+                &apps_map,
+            );
+
+            self.apps.set(apps);
 
             self.process_tree.set(process_tree);
         }
@@ -1128,7 +1151,8 @@ mod imp {
         fn update_process_model(
             this: &AppsPage,
             model: gio::ListStore,
-            process: &crate::sys_info_v2::Process,
+            process: &Process,
+            apps: &HashMap<u32, App>,
         ) {
             use crate::apps_page::view_model::{ContentType, ViewModel, ViewModelBuilder};
 
@@ -1211,6 +1235,14 @@ mod imp {
                             )
                         };
 
+                    let icon_string = if let Some(app) = apps.get(pid) {
+                        Option::as_ref(&app.icon)
+                            .map(|i| i.as_ref())
+                            .unwrap_or("application-x-executable-symbolic")
+                    } else {
+                        "application-x-executable-symbolic"
+                    };
+
                     let view_model = ViewModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
@@ -1224,6 +1256,7 @@ mod imp {
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
+                        .icon(icon_string)
                         .build();
 
                     view_model.set_merged_stats(&child.merged_usage_stats);
@@ -1270,7 +1303,7 @@ mod imp {
                     view_model.children().clone()
                 };
 
-                Self::update_process_model(this, child_model, child);
+                Self::update_process_model(this, child_model, child, apps);
             }
         }
     }
@@ -1456,7 +1489,7 @@ impl AppsPage {
         std::mem::swap(&mut apps, &mut readings.running_apps);
         this.apps.set(apps);
 
-        let mut process_tree = crate::sys_info_v2::Process::default();
+        let mut process_tree = Process::default();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
