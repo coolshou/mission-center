@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-24 10:40+0300\n"
-"PO-Revision-Date: 2024-08-26 13:09+0000\n"
+"PO-Revision-Date: 2024-08-31 03:40+0000\n"
 "Last-Translator: Akira Suzuki <akira.suzuki@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt/>\n"
@@ -597,7 +597,7 @@ msgstr "Intervalo de atualização"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Quantidade de dados nos gráficos"
 
 #: resources/ui/preferences/page.blp:46
 #, fuzzy
