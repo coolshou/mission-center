@@ -28,7 +28,7 @@ use std::{
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::{
     gpu_info_valid,
-    logging::{critical, debug, error, warning},
+    logging::{critical, error, warning, debug},
     platform::platform_impl::gpu_info::nvtop::GPUInfoDynamicInfoValid,
     platform::{
         platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
