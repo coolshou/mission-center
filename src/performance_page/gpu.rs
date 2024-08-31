@@ -362,9 +362,9 @@ mod imp {
 
             this.device_name.set_text(&gpu.device_name);
 
-			if let Some(memory_usage_max) = this.memory_usage_max.get() {
-				memory_usage_max.set_text(&total_memory);
-			}
+            if let Some(memory_usage_max) = this.memory_usage_max.get() {
+                memory_usage_max.set_text(&total_memory);
+            }
 
             if let Some(legend_encode) = this.legend_encode.get() {
                 legend_encode

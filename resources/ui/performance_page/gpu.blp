@@ -55,143 +55,144 @@ template $PerformancePageGpu: Box {
     };
   }
 
-	Box {
-		homogeneous: true;
-		orientation: vertical;
-		spacing: 10;
+  Box {
+    homogeneous: true;
+    orientation: vertical;
+    spacing: 10;
 
-		Box graph_top {
-			orientation: vertical;
+    Box graph_top {
+      orientation: vertical;
 
-			Box {
-				Label {
-					styles [
-						"caption",
-					]
-					label: _("Utilization over ");
-				}
-				Label graph_max_duration {
-					styles [
-							"caption",
-					]
+      Box {
+        Label {
+          styles [
+            "caption",
+          ]
+          label: _("Utilization over ");
+        }
+        Label graph_max_duration {
+          styles [
+              "caption",
+          ]
 
-					hexpand: true;
-					halign: start;
-				}
-				Label {
-					styles [
-						"caption",
-					]
-					label: _("100%");
-				}
-			}
+          hexpand: true;
+          halign: start;
+        }
+        Label {
+          styles [
+            "caption",
+          ]
+          label: _("100%");
+        }
+      }
 
-			$GraphWidget usage_graph_overall {
-				vexpand: true;
-				hexpand: true;
+      $GraphWidget usage_graph_overall {
+        vexpand: true;
+        hexpand: true;
 
-				width-request: 100;
-				height-request: 50;
+        width-request: 100;
+        height-request: 50;
 
-				base-color: bind template.base-color;
-				data-set-count: 1;
-				scroll: true;
-			}
-		}
-		Box {
-			orientation: vertical;
-			spacing: 10;
+        base-color: bind template.base-color;
+        data-set-count: 1;
+        scroll: true;
+      }
+    }
+    Box {
+      orientation: vertical;
+      spacing: 10;
 
-			Box encode_decode_graph {
-				orientation: vertical;
+      Box encode_decode_graph {
+        orientation: vertical;
 
-				Box {
-					Label {
-						styles [
-							"caption",
-						]
+        Box {
+          Label {
+            styles [
+              "caption",
+            ]
 
-						label: _("Video encode/decode utilization over ");
-					}
-					Label {
-						styles [
-							"caption",
-						]
+            label: _("Video encode/decode utilization over ");
+          }
+          Label {
+            styles [
+              "caption",
+            ]
 
-						hexpand: true;
-						halign: start;
-						label: bind graph_max_duration.label;
-					}
+            hexpand: true;
+            halign: start;
+            label: bind graph_max_duration.label;
+          }
 
-					Label {
-						styles [
-							"caption",
-						]
-						label: _("100%");
-					}
-				}
+          Label {
+            styles [
+              "caption",
+            ]
+            label: _("100%");
+          }
+        }
 
-				$GraphWidget usage_graph_encode_decode {
-					vexpand: true;
-					hexpand: true;
+        $GraphWidget usage_graph_encode_decode {
+          vexpand: true;
+          hexpand: true;
 
-					width-request: 50;
-					height-request: 30;
+          width-request: 50;
+          height-request: 30;
 
-					base-color: bind template.base-color;
-					data-set-count: 2;
-					scroll: true;
-				}
-			}
+          base-color: bind template.base-color;
+          data-set-count: 2;
+          scroll: true;
+        }
+      }
 
-			Box memory_graph {
-				orientation: vertical;
+      Box memory_graph {
+        orientation: vertical;
 
-				Box {
-					Label memory_graph_label {
-						styles [
-							"caption",
-						]
+        Box {
+          Label memory_graph_label {
+            styles [
+              "caption",
+            ]
 
-						label: _("Memory usage over ");
-					}
-					Label {
-						styles [
-						"caption",
-						]
+            label: _("Memory usage over ");
+          }
+          Label {
+            styles [
+            "caption",
+            ]
 
-						hexpand: true;
-						halign: start;
-						label: bind graph_max_duration.label;
-					}
+            hexpand: true;
+            halign: start;
+            label: bind graph_max_duration.label;
+          }
 
-					Label total_memory {
-						styles [
-							"caption",
-						]
-					}
-				}
+          Label total_memory {
+            styles [
+              "caption",
+            ]
+          }
+        }
 
-				$GraphWidget usage_graph_memory {
-					vexpand: true;
-					hexpand: true;
+        $GraphWidget usage_graph_memory {
+          vexpand: true;
+          hexpand: true;
 
-					width-request: 100;
-					height-request: 40;
+          width-request: 100;
+          height-request: 40;
 
-					base-color: bind template.base-color;
-					data-set-count: 2;
-					scroll: true;
-				}
-			}
-		}
-	}
+          base-color: bind template.base-color;
+          data-set-count: 2;
+          scroll: true;
+        }
+      }
+    }
+  }
 
   PopoverMenu context_menu {
     has-arrow: false;
     menu-model: context_menu_model;
   }
 }
+
 menu context_menu_model {
   section {
     item {

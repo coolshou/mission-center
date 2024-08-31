@@ -174,27 +174,35 @@ mod imp {
                 &glib::Variant::from(show_memory_composition),
             );
             action.connect_activate({
-				let this = this.downgrade();
-				move |action, _| {
-					if let Some(this) = this.upgrade() {
-						let mem_composition = &this.imp().mem_composition_box;
+                let this = this.downgrade();
+                move |action, _| {
+                    if let Some(this) = this.upgrade() {
+                        let mem_composition = &this.imp().mem_composition_box;
 
-						let visible = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(false);
+                        let visible = !action
+                            .state()
+                            .and_then(|v| v.get::<bool>())
+                            .unwrap_or(false);
 
-						mem_composition.set_visible(visible);
+                        mem_composition.set_visible(visible);
 
-						action.set_state(&glib::Variant::from(visible));
+                        action.set_state(&glib::Variant::from(visible));
 
-						let settings = this.imp().settings.take();
-						if settings.is_some() {
-							let settings = settings.unwrap();
-							settings.set_boolean("performance-page-memory-composition-visible", visible).unwrap_or_else(|_| {
-								g_critical!("MissionCenter::PerformancePage", "Failed to save show composition graph");
-							});
-							this.imp().settings.set(Some(settings));
-						}
-					}
-				}
+                        let settings = this.imp().settings.take();
+                        if settings.is_some() {
+                            let settings = settings.unwrap();
+                            settings
+                                .set_boolean("performance-page-memory-composition-visible", visible)
+                                .unwrap_or_else(|_| {
+                                    g_critical!(
+                                        "MissionCenter::PerformancePage",
+                                        "Failed to save show composition graph"
+                                    );
+                                });
+                            this.imp().settings.set(Some(settings));
+                        }
+                    }
+                }
             });
 
             actions.add_action(&action);
@@ -204,31 +212,39 @@ mod imp {
                 None,
                 &glib::Variant::from(show_swap),
             );
-            action.connect_activate( {
-				let this = this.downgrade();
-				move |action, _| {
-					if let Some(this) = this.upgrade() {
-						let visible = !action.state().and_then(|v|v.get::<bool>()).unwrap_or(false);
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    if let Some(this) = this.upgrade() {
+                        let visible = !action
+                            .state()
+                            .and_then(|v| v.get::<bool>())
+                            .unwrap_or(false);
 
-						this.imp().big_box.set_homogeneous(visible);
-						this.imp().big_box.set_spacing(if visible { 10} else {0});
-						this.imp().swap_box.set_visible(visible);
-						this.imp().swap_usage_graph.set_visible(visible);
+                        this.imp().big_box.set_homogeneous(visible);
+                        this.imp().big_box.set_spacing(if visible { 10 } else { 0 });
+                        this.imp().swap_box.set_visible(visible);
+                        this.imp().swap_usage_graph.set_visible(visible);
 
-						action.set_state(&glib::Variant::from(visible));
+                        action.set_state(&glib::Variant::from(visible));
 
-						let settings = this.imp().settings.take();
-						if settings.is_some() {
-							let settings = settings.unwrap();
-							settings.set_boolean("performance-page-memory-swap-visible", visible).unwrap_or_else(|_| {
-								g_critical!("MissionCenter::PerformancePage", "Failed to save show swap graph");
-							});
-							this.imp().settings.set(Some(settings));
-						}
-					}
-				}
-			});
-			actions.add_action(&action);
+                        let settings = this.imp().settings.take();
+                        if settings.is_some() {
+                            let settings = settings.unwrap();
+                            settings
+                                .set_boolean("performance-page-memory-swap-visible", visible)
+                                .unwrap_or_else(|_| {
+                                    g_critical!(
+                                        "MissionCenter::PerformancePage",
+                                        "Failed to save show swap graph"
+                                    );
+                                });
+                            this.imp().settings.set(Some(settings));
+                        }
+                    }
+                }
+            });
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageMemory) {
@@ -846,13 +862,13 @@ impl PerformancePageMemory {
         }
 
         settings.connect_changed(Some("performance-page-memory-swap-visible"), {
-			let this = this.downgrade();
-			move |settings, _| {
-				if let Some(this) = this.upgrade() {
-					set_hidden(&this, settings);
-				}
-			}
-		});
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    set_hidden(&this, settings);
+                }
+            }
+        });
 
         this
     }
