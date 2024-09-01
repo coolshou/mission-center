@@ -74,7 +74,9 @@ mod imp {
         pub l2_cache: OnceCell<gtk::Label>,
         pub l3_cache: OnceCell<gtk::Label>,
         pub cpufreq_driver: OnceCell<gtk::Label>,
+        pub cpufreq_driver_label: OnceCell<gtk::Label>,
         pub cpufreq_governor: OnceCell<gtk::Label>,
+        pub cpufreq_governor_label: OnceCell<gtk::Label>,
         pub energy_performance_preference: OnceCell<gtk::Label>,
         pub energy_performance_preference_label: OnceCell<gtk::Label>,
     }
@@ -109,7 +111,9 @@ mod imp {
                 l2_cache: Default::default(),
                 l3_cache: Default::default(),
                 cpufreq_driver: Default::default(),
+                cpufreq_driver_label: Default::default(),
                 cpufreq_governor: Default::default(),
+                cpufreq_governor_label: Default::default(),
                 energy_performance_preference: Default::default(),
                 energy_performance_preference_label: Default::default(),
             }
@@ -440,19 +444,26 @@ mod imp {
                 format!("N/A")
             };
 
-            if let Some(cpufreq_driver) = this.cpufreq_driver.get() {
-                if let Some(driver) = static_cpu_info.cpufreq_driver.as_ref() {
-                    cpufreq_driver.set_text(driver.as_ref());
+            if let (Some(cpufreq_driver), Some(cpufreq_driver_label)) =
+                (this.cpufreq_driver.get(), this.cpufreq_driver_label.get())
+            {
+                if let Some(governor) = static_cpu_info.cpufreq_driver.as_ref() {
+                    cpufreq_driver.set_text(governor.as_ref());
                 } else {
-                    cpufreq_driver.set_text(&i18n("Unsupported"));
+                    cpufreq_driver.set_visible(false);
+                    cpufreq_driver_label.set_visible(false);
                 }
             }
 
-            if let Some(cpufreq_governor) = this.cpufreq_governor.get() {
+            if let (Some(cpufreq_governor), Some(cpufreq_governor_label)) = (
+                this.cpufreq_governor.get(),
+                this.cpufreq_governor_label.get(),
+            ) {
                 if let Some(governor) = static_cpu_info.cpufreq_governor.as_ref() {
                     cpufreq_governor.set_text(governor.as_ref());
                 } else {
-                    cpufreq_governor.set_text(&i18n("Unsupported"));
+                    cpufreq_governor.set_visible(false);
+                    cpufreq_governor_label.set_visible(false);
                 }
             }
 
@@ -465,10 +476,7 @@ mod imp {
             ) {
                 if let Some(governor) = static_cpu_info.energy_performance_preference.as_ref() {
                     energy_performance_preference.set_text(governor.as_ref());
-                    energy_performance_preference.set_visible(true);
-                    energy_performance_preference_label.set_visible(true);
                 } else {
-                    energy_performance_preference.set_text(&i18n("Unsupported"));
                     energy_performance_preference.set_visible(false);
                     energy_performance_preference_label.set_visible(false);
                 }
@@ -637,9 +645,9 @@ mod imp {
 
             format!(
                 r#"CPU
-            
+
             {}
-            
+
             Base speed:         {}
             Sockets:            {}
             Virtual processors: {}
@@ -651,7 +659,7 @@ mod imp {
             Cpufreq driver:     {}
             Cpufreq governor:   {}
             Power preference:   {}
-            
+
             Utilization: {}
             Speed:       {}
             Processes:   {}
@@ -933,20 +941,32 @@ mod imp {
                     .object::<gtk::Label>("cpufreq_driver")
                     .expect("Could not find `cpufreq_driver` object in details pane"),
             );
+            let _ = self.cpufreq_driver_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("cpufreq_driver_label")
+                    .expect("Could not find `cpufreq_driver_label` object in details pane"),
+            );
             let _ = self.cpufreq_governor.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("cpufreq_governor")
                     .expect("Could not find `cpufreq_governor` object in details pane"),
             );
+            let _ = self.cpufreq_governor_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("cpufreq_governor_label")
+                    .expect("Could not find `cpufreq_governor_label` object in details pane"),
+            );
             let _ = self.energy_performance_preference.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("energy_performance_preference")
-                    .expect("Could not find `cpufreq_governor` object in details pane"),
+                    .expect(
+                        "Could not find `energy_performance_preference` object in details pane",
+                    ),
             );
             let _ = self.energy_performance_preference_label.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("energy_performance_preference_label")
-                    .expect("Could not find `cpufreq_governor` object in details pane"),
+                    .expect("Could not find `energy_performance_preference_label` object in details pane"),
             );
         }
     }
