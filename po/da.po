@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-24 10:40+0300\n"
-"PO-Revision-Date: 2024-08-07 07:09+0000\n"
+"PO-Revision-Date: 2024-09-02 19:09+0000\n"
 "Last-Translator: Madsen <kajprintz@gmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/da/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -47,7 +47,7 @@ msgstr "Overvåg dit CPU-, hukommelses-, disk-, netværks- og GPU-forbrug"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "Features:"
+msgstr "Funktioner:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
@@ -58,7 +58,7 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Se systemets proces-, tråd- og håndtagsantal, oppetid, clockhastighed (basis "
+"Se systemets proces-, tråd- og handle-antal, oppetid, clockhastighed (basis "
 "og nuværende) og cache-størrelser"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
@@ -104,7 +104,6 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Understøtter en minimeret oversigtsvisning for simpel overvågning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
@@ -137,6 +136,8 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Intel GPU-overvågning understøttes kun for Broadwell og nyere GPU'er; og "
+"understøtter ikke overvågning af VRAM, strømforbrug eller temperatur"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -144,6 +145,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Når du bruger Linux Mint/Cinnamon, kan startede applikationer muligvis ikke "
+"vises i 'Applikationer' sektionen (Upstream problem: https://github.com/"
+"linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -216,9 +220,8 @@ msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:67
-#, fuzzy
 msgid "Utilization over "
-msgstr "Udnyttelse Over {}{}"
+msgstr "Udnyttelse over "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:81
@@ -376,15 +379,13 @@ msgid "Power preference:"
 msgstr "Strømstyring:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Aktiv tid"
+msgstr "Aktiv tid over "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Overførselshastighed"
+msgstr "Overførselshastighed over "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -420,15 +421,13 @@ msgid "Type:"
 msgstr "Type:"
 
 #: resources/ui/performance_page/gpu.blp:110
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Videoenkodnings-udnyttelse"
+msgstr "Videoencode/decode-udnyttelse over "
 
 #: resources/ui/performance_page/gpu.blp:154
 #: resources/ui/performance_page/memory.blp:62
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Hukommelsesforbrug"
+msgstr "Hukommelsesforbrug over "
 
 #: resources/ui/performance_page/gpu_details.blp:66
 msgid "Clock Speed"
@@ -447,14 +446,12 @@ msgid "Memory speed"
 msgstr "Hukommelseshastighed"
 
 #: resources/ui/performance_page/gpu_details.blp:247
-#, fuzzy
 msgid "Video encode"
-msgstr "Video enkodning/afkodning"
+msgstr "Video enkodning"
 
 #: resources/ui/performance_page/gpu_details.blp:279
-#, fuzzy
 msgid "Video decode"
-msgstr "Video enkodning/afkodning"
+msgstr "Video afkodning"
 
 #: resources/ui/performance_page/gpu_details.blp:304
 msgid "Temperature"
@@ -587,7 +584,7 @@ msgstr "App Side Indstillinger"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Merge Process Stats"
-msgstr "Flet Proces Statistikker"
+msgstr "Sammensæt processtatistikker"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Remember Sorting"
@@ -910,11 +907,10 @@ msgid "Getting additional memory information failed"
 msgstr "Det mislykkedes at hente yderligere hukommelsesoplysninger"
 
 #: src/performance_page/memory.rs:580
-#, fuzzy
 msgid "{:} minute"
 msgid_plural "{:} minutes"
-msgstr[0] "{} minut{} "
-msgstr[1] "{} minut{} "
+msgstr[0] "{:} minut"
+msgstr[1] "{:} minutter"
 
 #: src/performance_page/network.rs:456 src/performance_page/network.rs:463
 #: src/performance_page/network.rs:473
