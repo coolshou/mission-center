@@ -502,9 +502,14 @@ mod imp {
             summary.set_page_indices(SIDEBAR_MEM_PAGE_DEFAULT_IDX, 0);
             summary.set_widget_name("memory");
 
-            summary
-                .graph_widget()
-                .set_value_range_max(readings.mem_info.mem_total as f32);
+            {
+                let graph_widget = summary.graph_widget();
+
+                graph_widget.set_value_range_max(readings.mem_info.mem_total as f32);
+                graph_widget.set_data_set_count(2);
+                graph_widget.set_filled(0, false);
+                graph_widget.set_dashed(0, true);
+            }
 
             summary.set_heading(i18n("Memory"));
             summary.set_info1("0/0 GiB (100%)");
@@ -1135,12 +1140,13 @@ mod imp {
                     Pages::Memory((summary, page)) => {
                         let total_raw = readings.mem_info.mem_total;
                         let total = crate::to_human_readable(total_raw as _, 1024.);
-                        let used_raw =
-                            readings.mem_info.mem_total - readings.mem_info.mem_available;
+                        let used_raw = readings.mem_info.mem_total
+                            - (readings.mem_info.mem_available + readings.mem_info.dirty);
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
-                        graph_widget.add_data_point(0, used_raw as _);
+                        graph_widget.add_data_point(0, readings.mem_info.committed as _);
+                        graph_widget.add_data_point(1, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(

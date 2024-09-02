@@ -43,6 +43,7 @@
         <file preprocess="xml-stripblanks">ui/performance_page/gpu_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/memory.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/memory_details.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/memory_info_tooltip.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/network_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/page.ui</file>

@@ -58,9 +58,11 @@ template $PerformancePageMemory: Box {
       margin-bottom: 10;
       spacing: 10;
 
-      Box  mem_box {
+      Box mem_box {
         orientation: vertical;
+
         has-tooltip: true;
+
         Box {
           Label {
             styles [
@@ -68,6 +70,7 @@ template $PerformancePageMemory: Box {
             ]
             label: _("Memory usage over ");
           }
+
           Label graph_max_duration {
             styles [
               "caption",
