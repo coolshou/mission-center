@@ -72,6 +72,12 @@ mod imp {
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Box>,
 
+        pub tooltip_widget: OnceCell<gtk::Box>,
+        pub tt_label_in_use: OnceCell<gtk::Label>,
+        pub tt_label_modified: OnceCell<gtk::Label>,
+        pub tt_label_standby: OnceCell<gtk::Label>,
+        pub tt_label_free: OnceCell<gtk::Label>,
+
         pub in_use: OnceCell<gtk::Label>,
         pub available: OnceCell<gtk::Label>,
         pub committed: OnceCell<gtk::Label>,
@@ -110,6 +116,12 @@ mod imp {
                 summary_mode: Cell::new(false),
 
                 infobar_content: Default::default(),
+
+                tooltip_widget: Default::default(),
+                tt_label_in_use: Default::default(),
+                tt_label_modified: Default::default(),
+                tt_label_standby: Default::default(),
+                tt_label_free: Default::default(),
 
                 in_use: Default::default(),
                 available: Default::default(),
@@ -338,10 +350,6 @@ mod imp {
                 this.swap_usage_graph
                     .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
-                this.usage_graph.set_filled(0, false);
-                this.usage_graph.set_filled(2, false);
-                this.usage_graph.set_dashed(2, true);
-
                 None
             });
 
@@ -373,11 +381,10 @@ mod imp {
             {
                 let used = mem_info.mem_total - (mem_info.mem_available + mem_info.dirty);
                 let dirty = mem_info.mem_total - mem_info.mem_available;
-                let cache = mem_info.mem_total - mem_info.mem_free;
                 let standby = mem_info.mem_total - (used + mem_info.mem_free);
-                this.usage_graph.add_data_point(0, used as _);
+                this.usage_graph.add_data_point(0, mem_info.committed as _);
                 this.usage_graph.add_data_point(1, dirty as _);
-                this.usage_graph.add_data_point(2, cache as _);
+                this.usage_graph.add_data_point(2, used as _);
 
                 let swap_used = mem_info.swap_total - mem_info.swap_free;
                 this.swap_usage_graph.add_data_point(0, swap_used as _);
@@ -404,7 +411,7 @@ mod imp {
                     ));
                 }
 
-                let committed = crate::to_human_readable(mem_info.committed_as as _, 1024.);
+                let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
                 if let Some(cm) = this.committed.get() {
                     cm.set_text(&format!(
                         "{:.2} {}{}B",
@@ -450,25 +457,42 @@ mod imp {
                 let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
                 let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
                 let standby = crate::to_human_readable(standby as _, 1024.);
-                let tooltip = format!(
-                    "Free:     \t\t{:.2} {}{}B
-Standby:  \t\t{:.2} {}{}B
-Modified: \t\t{:.2} {}{}B
-In use:   \t\t{:.2} {}{}B",
-                    free.0,
-                    free.1,
-                    if free.1.is_empty() { "" } else { "i" },
-                    standby.0,
-                    standby.1,
-                    if standby.1.is_empty() { "" } else { "i" },
-                    dirty.0,
-                    dirty.1,
-                    if dirty.1.is_empty() { "" } else { "i" },
-                    used.0,
-                    used.1,
-                    if used.1.is_empty() { "" } else { "i" },
-                );
-                this.mem_box.set_tooltip_text(Some(&tooltip));
+
+                if let Some(l) = this.tt_label_in_use.get() {
+                    l.set_text(&format!(
+                        "{:.2} {}{}B",
+                        used.0,
+                        used.1,
+                        if used.1.is_empty() { "" } else { "i" }
+                    ))
+                }
+
+                if let Some(l) = this.tt_label_modified.get() {
+                    l.set_text(&format!(
+                        "{:.2} {}{}B",
+                        dirty.0,
+                        dirty.1,
+                        if dirty.1.is_empty() { "" } else { "i" }
+                    ))
+                }
+
+                if let Some(l) = this.tt_label_standby.get() {
+                    l.set_text(&format!(
+                        "{:.2} {}{}B",
+                        standby.0,
+                        standby.1,
+                        if standby.1.is_empty() { "" } else { "i" }
+                    ))
+                }
+
+                if let Some(l) = this.tt_label_free.get() {
+                    l.set_text(&format!(
+                        "{:.2} {}{}B",
+                        free.0,
+                        free.1,
+                        if free.1.is_empty() { "" } else { "i" }
+                    ))
+                }
             }
 
             true
@@ -595,15 +619,70 @@ In use:   \t\t{:.2} {}{}B",
         fn constructed(&self) {
             self.parent_constructed();
 
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::PerformancePageMemory>().clone();
+            let this = self.obj().clone();
 
             if let Some(app) = crate::MissionCenterApplication::default_instance() {
                 self.settings.set(app.settings());
             }
 
+            self.usage_graph.set_filled(0, false);
+            self.usage_graph.set_dashed(0, true);
+            self.usage_graph.set_filled(1, false);
+
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
+
+            self.mem_box.connect_query_tooltip({
+                let this = self.obj().downgrade();
+                move |_, _, _, _, tooltip| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return false,
+                    };
+                    let this = this.imp();
+
+                    if let Some(tooltip_widget) = this.tooltip_widget.get() {
+                        tooltip.set_custom(Some(tooltip_widget));
+                        return true;
+                    }
+
+                    false
+                }
+            });
+
+            let tooltip_content_builder = gtk::Builder::from_resource(
+                "/io/missioncenter/MissionCenter/ui/performance_page/memory_info_tooltip.ui",
+            );
+
+            let _ = self.tooltip_widget.set(
+                tooltip_content_builder
+                    .object::<gtk::Box>("root")
+                    .expect("Could not find `root` object in tooltip widget"),
+            );
+
+            let _ = self.tt_label_in_use.set(
+                tooltip_content_builder
+                    .object::<gtk::Label>("label_in_use")
+                    .expect("Could not find `label_in_use` object in tooltip widget"),
+            );
+
+            let _ = self.tt_label_modified.set(
+                tooltip_content_builder
+                    .object::<gtk::Label>("label_modified")
+                    .expect("Could not find `label_modified` object in tooltip widget"),
+            );
+
+            let _ = self.tt_label_standby.set(
+                tooltip_content_builder
+                    .object::<gtk::Label>("label_standby")
+                    .expect("Could not find `label_standby` object in tooltip widget"),
+            );
+
+            let _ = self.tt_label_free.set(
+                tooltip_content_builder
+                    .object::<gtk::Label>("label_free")
+                    .expect("Could not find `label_free` object in tooltip widget"),
+            );
 
             let sidebar_content_builder = gtk::Builder::from_resource(
                 "/io/missioncenter/MissionCenter/ui/performance_page/memory_details.ui",
