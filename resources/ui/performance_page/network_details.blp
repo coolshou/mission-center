@@ -39,24 +39,52 @@ Box root {
       }
 
       Box {
-        orientation: vertical;
-        spacing: 3;
+        orientation: horizontal;
 
-        Label {
-          styles [
-            "caption",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
 
-          halign: start;
-          label: _("Receive");
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Receive");
+          }
+
+          Label speed_recv {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
 
-        Label speed_recv {
-          styles [
-            "title-4",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
 
-          halign: start;
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Total Recieved");
+          }
+
+          Label total_recv {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
       }
     }
@@ -70,25 +98,52 @@ Box root {
       }
 
       Box {
-        orientation: vertical;
-        spacing: 3;
-        width-request: 100;
+        orientation: horizontal;
 
-        Label {
-          styles [
-            "caption",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
 
-          halign: start;
-          label: _("Send");
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Send");
+          }
+
+          Label speed_send {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
 
-        Label speed_send {
-          styles [
-            "title-4",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
 
-          halign: start;
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Total Sent");
+          }
+
+          Label total_send {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
         }
       }
     }

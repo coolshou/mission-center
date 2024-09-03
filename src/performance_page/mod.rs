@@ -1207,32 +1207,32 @@ mod imp {
                             {
                                 summary.set_page_secondary_index(index);
 
-                                let sent = network_device.send_bps;
-                                let received = network_device.recv_bps;
+                                let send_speed = network_device.send_bps;
+                                let rec_speed = network_device.recv_bps;
 
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, sent);
-                                graph_widget.add_data_point(1, received);
+                                graph_widget.add_data_point(0, send_speed);
+                                graph_widget.add_data_point(1, rec_speed);
 
-                                let sent = crate::to_human_readable(sent * 8., 1024.);
-                                let received = crate::to_human_readable(received * 8., 1024.);
+                                let sent_speed = crate::to_human_readable(send_speed * 8., 1024.);
+                                let rect_speeed = crate::to_human_readable(rec_speed * 8., 1024.);
 
                                 summary.set_info1(i18n_f(
                                     "{}: {} {}bps",
                                     &[
                                         "S",
-                                        &format!("{0:.1$}", sent.0, sent.2),
-                                        &format!("{}", sent.1),
+                                        &format!("{0:.1$}", sent_speed.0, sent_speed.2),
+                                        &format!("{}", sent_speed.1),
                                     ],
                                 ));
                                 summary.set_info2(i18n_f(
                                     "{}: {} {}bps",
                                     &[
                                         "R",
-                                        &format!("{0:.1$}", received.0, received.2),
-                                        &format!("{}", received.1),
+                                        &format!("{0:.1$}", rect_speeed.0, rect_speeed.2),
+                                        &format!("{}", rect_speeed.1),
                                     ],
                                 ));
 
