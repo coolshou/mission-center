@@ -72,9 +72,9 @@ pub struct NetworkDevice {
     pub wireless_info: Option<WirelessInfo>,
 
     pub send_bps: f32,
-    pub send_bytes: u64,
+    pub sent_bytes: u64,
     pub recv_bps: f32,
-    pub rec_bytes: u64,
+    pub recv_bytes: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -344,9 +344,9 @@ impl NetInfo {
                 wireless_info,
 
                 send_bps,
-                send_bytes,
+                sent_bytes: send_bytes,
                 recv_bps,
-                rec_bytes,
+                recv_bytes: rec_bytes,
             });
         }
 

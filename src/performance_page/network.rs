@@ -65,7 +65,7 @@ mod imp {
 
         pub legend_send: OnceCell<gtk::Picture>,
         pub speed_send: OnceCell<gtk::Label>,
-        pub total_send: OnceCell<gtk::Label>,
+        pub total_sent: OnceCell<gtk::Label>,
         pub legend_recv: OnceCell<gtk::Picture>,
         pub speed_recv: OnceCell<gtk::Label>,
         pub total_recv: OnceCell<gtk::Label>,
@@ -102,7 +102,7 @@ mod imp {
 
                 legend_send: Default::default(),
                 speed_send: Default::default(),
-                total_send: Default::default(),
+                total_sent: Default::default(),
                 legend_recv: Default::default(),
                 speed_recv: Default::default(),
                 total_recv: Default::default(),
@@ -482,20 +482,25 @@ mod imp {
                 ));
             }
 
-            let sent = crate::to_human_readable((network_device.send_bytes) as f32, 1024.);
-            if let Some(total_send) = this.total_send.get() {
-                total_send.set_text(&i18n_f(
-                    "{} {}bps",
-                    &[&format!("{0:.1$}", sent.0, sent.2), &format!("{}", sent.1)],
+            let sent = crate::to_human_readable((network_device.sent_bytes) as f32, 1024.);
+            if let Some(total_sent) = this.total_sent.get() {
+                total_sent.set_text(&i18n_f(
+                    "{} {}{}B",
+                    &[
+                        &format!("{0:.1$}", sent.0, sent.2),
+                        &format!("{}", sent.1),
+                        if sent.1.is_empty() { "" } else { "i" },
+                    ],
                 ));
             }
-            let received = crate::to_human_readable((network_device.rec_bytes) as f32, 1024.);
+            let received = crate::to_human_readable((network_device.recv_bytes) as f32, 1024.);
             if let Some(total_recv) = this.total_recv.get() {
                 total_recv.set_text(&i18n_f(
-                    "{} {}bps",
+                    "{} {}{}B",
                     &[
                         &format!("{0:.1$}", received.0, received.2),
                         &format!("{}", received.1),
+                        if received.1.is_empty() { "" } else { "i" },
                     ],
                 ));
             }
@@ -682,9 +687,9 @@ mod imp {
                     .object::<gtk::Label>("speed_send")
                     .expect("Could not find `speed_send` object in details pane"),
             );
-            let _ = self.total_send.set(
+            let _ = self.total_sent.set(
                 sidebar_content_builder
-                    .object::<gtk::Label>("total_send")
+                    .object::<gtk::Label>("total_sent")
                     .expect("Could not find `total_send` object in details pane"),
             );
             let _ = self.legend_recv.set(

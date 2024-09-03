@@ -1387,6 +1387,10 @@ mod imp {
                             .expect("Infobar is not set")
                             .parent()
                             .and_then(|p| Some(p.remove_css_class("sidebar-pane")));
+
+                        this.info_bar.set_halign(gtk::Align::Fill);
+                    } else {
+                        this.info_bar.set_halign(gtk::Align::Center);
                     }
                     this.obj().notify_info_button_visible();
                 }
