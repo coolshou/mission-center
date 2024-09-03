@@ -72,7 +72,9 @@ pub struct NetworkDevice {
     pub wireless_info: Option<WirelessInfo>,
 
     pub send_bps: f32,
+    pub send_bytes: u64,
     pub recv_bps: f32,
+    pub rec_bytes: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -253,7 +255,7 @@ impl NetInfo {
 
             let (tx_bytes, rx_bytes) = Self::tx_rx_bytes(&if_name);
 
-            let (descriptor, hw_address, send_bps, recv_bps) =
+            let (descriptor, hw_address, send_bps, send_bytes, recv_bps, rec_bytes) =
                 if let Some(cached_device) = self.device_cache.get_mut(&if_name) {
                     let prev_tx_bytes = if cached_device.tx_bytes > tx_bytes {
                         tx_bytes
@@ -279,7 +281,9 @@ impl NetInfo {
                         cached_device.descriptor.clone(),
                         cached_device.hw_address.clone(),
                         send_bps,
+                        tx_bytes,
                         recv_bps,
+                        rx_bytes,
                     )
                 } else {
                     let r#type = Self::device_type(&if_name);
@@ -311,7 +315,9 @@ impl NetInfo {
                         },
                         hw_address,
                         0.,
+                        0,
                         0.,
+                        0,
                     )
                 };
 
@@ -338,7 +344,9 @@ impl NetInfo {
                 wireless_info,
 
                 send_bps,
+                send_bytes,
                 recv_bps,
+                rec_bytes,
             });
         }
 

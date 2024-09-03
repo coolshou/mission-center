@@ -65,8 +65,10 @@ mod imp {
 
         pub legend_send: OnceCell<gtk::Picture>,
         pub speed_send: OnceCell<gtk::Label>,
+        pub total_send: OnceCell<gtk::Label>,
         pub legend_recv: OnceCell<gtk::Picture>,
         pub speed_recv: OnceCell<gtk::Label>,
+        pub total_recv: OnceCell<gtk::Label>,
         pub interface_name_label: OnceCell<gtk::Label>,
         pub connection_type_label: OnceCell<gtk::Label>,
         pub ssid: OnceCell<gtk::Label>,
@@ -100,8 +102,10 @@ mod imp {
 
                 legend_send: Default::default(),
                 speed_send: Default::default(),
+                total_send: Default::default(),
                 legend_recv: Default::default(),
                 speed_recv: Default::default(),
+                total_recv: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
                 ssid: Default::default(),
@@ -395,11 +399,11 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            let sent = network_device.send_bps * 8.;
-            let received = network_device.recv_bps * 8.;
+            let send_speed = network_device.send_bps * 8.;
+            let rec_speed = network_device.recv_bps * 8.;
 
-            this.usage_graph.add_data_point(0, sent);
-            this.usage_graph.add_data_point(1, received);
+            this.usage_graph.add_data_point(0, send_speed);
+            this.usage_graph.add_data_point(1, rec_speed);
 
             if let Some(wireless_info) = &network_device.wireless_info {
                 if let Some(ssid) = this.ssid.get() {
@@ -457,7 +461,7 @@ mod imp {
                 &[&format!("{}", max_y.0), &format!("{}", max_y.1)],
             ));
 
-            let speed_send_info = crate::to_human_readable(sent, 1024.);
+            let speed_send_info = crate::to_human_readable(send_speed, 1024.);
             if let Some(speed_send) = this.speed_send.get() {
                 speed_send.set_text(&i18n_f(
                     "{} {}bps",
@@ -467,13 +471,31 @@ mod imp {
                     ],
                 ));
             }
-            let speed_recv_info = crate::to_human_readable(received, 1024.);
+            let speed_recv_info = crate::to_human_readable(rec_speed, 1024.);
             if let Some(speed_recv) = this.speed_recv.get() {
                 speed_recv.set_text(&i18n_f(
                     "{} {}bps",
                     &[
                         &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
                         &format!("{}", speed_recv_info.1),
+                    ],
+                ));
+            }
+
+            let sent = crate::to_human_readable((network_device.send_bytes) as f32, 1024.);
+            if let Some(total_send) = this.total_send.get() {
+                total_send.set_text(&i18n_f(
+                    "{} {}bps",
+                    &[&format!("{0:.1$}", sent.0, sent.2), &format!("{}", sent.1)],
+                ));
+            }
+            let received = crate::to_human_readable((network_device.rec_bytes) as f32, 1024.);
+            if let Some(total_recv) = this.total_recv.get() {
+                total_recv.set_text(&i18n_f(
+                    "{} {}bps",
+                    &[
+                        &format!("{0:.1$}", received.0, received.2),
+                        &format!("{}", received.1),
                     ],
                 ));
             }
@@ -660,6 +682,11 @@ mod imp {
                     .object::<gtk::Label>("speed_send")
                     .expect("Could not find `speed_send` object in details pane"),
             );
+            let _ = self.total_send.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("total_send")
+                    .expect("Could not find `total_send` object in details pane"),
+            );
             let _ = self.legend_recv.set(
                 sidebar_content_builder
                     .object::<gtk::Picture>("legend_recv")
@@ -669,6 +696,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("speed_recv")
                     .expect("Could not find `speed_recv` object in details pane"),
+            );
+            let _ = self.total_recv.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("total_recv")
+                    .expect("Could not find `total_recv` object in details pane"),
             );
             let _ = self.interface_name_label.set(
                 sidebar_content_builder
