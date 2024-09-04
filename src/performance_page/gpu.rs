@@ -437,10 +437,13 @@ mod imp {
             this.usage_graph_encode_decode
                 .add_data_point(1, gpu.decoder_percent as f32);
 
-            let gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
-
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
+
+            let mut gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
+            if gtt_factor.is_infinite() || gtt_factor.is_nan() || gtt_factor.is_subnormal() {
+                gtt_factor = 0.;
+            }
             this.usage_graph_memory
                 .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
 
