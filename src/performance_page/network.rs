@@ -350,7 +350,6 @@ mod imp {
             }
 
             let conn_type = match connection_type {
-                NetDeviceType::Wired => i18n("Ethernet"),
                 NetDeviceType::Wireless => {
                     if let Some(ssid) = this.ssid.get() {
                         ssid.set_visible(true);
@@ -365,9 +364,9 @@ mod imp {
                         frequency.set_visible(true);
                     }
 
-                    i18n("Wi-Fi")
+                    connection_type.to_string()
                 }
-                NetDeviceType::Other => i18n("Other"),
+                _ => connection_type.to_string(),
             };
 
             if let Some(connection_type_label) = this.connection_type_label.get() {

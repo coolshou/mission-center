@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use crate::i18n::*;
+
 #[allow(non_camel_case_types)]
 mod if_nameindex {
     #[derive(Debug, Copy, Clone)]
@@ -38,14 +40,38 @@ mod if_nameindex {
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum NetDeviceType {
-    Wired = 0,
-    Wireless = 1,
-    Other = 2,
+    Bluetooth,
+    Bridge,
+    Docker,
+    InfiniBand,
+    Virtual,
+    VPN,
+    Wired,
+    Wireless,
+    WWAN,
+    Other = 255,
+}
+
+impl ToString for NetDeviceType {
+    fn to_string(&self) -> String {
+        match self {
+            NetDeviceType::Bluetooth => i18n("Bluetooth"),
+            NetDeviceType::Bridge => i18n("Bridge"),
+            NetDeviceType::Docker => i18n("Docker"),
+            NetDeviceType::InfiniBand => i18n("InfiniBand"),
+            NetDeviceType::Virtual => i18n("Virtual"),
+            NetDeviceType::VPN => i18n("VPN"),
+            NetDeviceType::Wired => i18n("Ethernet"),
+            NetDeviceType::Wireless => i18n("Wi-Fi"),
+            NetDeviceType::WWAN => i18n("WWAN"),
+            NetDeviceType::Other => i18n("Other"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NetworkDeviceDescriptor {
-    pub r#type: NetDeviceType,
+    pub kind: NetDeviceType,
     pub if_name: String,
     pub adapter_name: Option<String>,
 }
@@ -215,11 +241,7 @@ impl NetInfo {
             let if_name = unsafe { std::ffi::CStr::from_ptr(if_entry.if_name) };
 
             let if_name_str = if_name.to_string_lossy();
-            if if_name_str.starts_with("lo")
-                || if_name_str.starts_with("docker")
-                || if_name_str.starts_with("tun")
-                || if_name_str.starts_with("tap")
-            {
+            if if_name_str.starts_with("lo") {
                 continue;
             }
 
@@ -286,7 +308,7 @@ impl NetInfo {
                         rx_bytes,
                     )
                 } else {
-                    let r#type = Self::device_type(&if_name);
+                    let kind = Self::device_kind(&if_name);
                     let adapter_name = unsafe { self.adapter_name(device_proxy) };
                     let hw_address = Self::hw_address(device_proxy);
 
@@ -294,7 +316,7 @@ impl NetInfo {
                         if_name.clone(),
                         NetworkDeviceCacheEntry {
                             descriptor: NetworkDeviceDescriptor {
-                                r#type,
+                                kind,
                                 if_name: if_name.clone(),
                                 adapter_name: adapter_name.clone(),
                             },
@@ -309,7 +331,7 @@ impl NetInfo {
 
                     (
                         NetworkDeviceDescriptor {
-                            r#type,
+                            kind,
                             if_name,
                             adapter_name,
                         },
@@ -330,7 +352,7 @@ impl NetInfo {
                 ip6_address,
             };
 
-            let wireless_info = if descriptor.r#type == NetDeviceType::Wireless {
+            let wireless_info = if descriptor.kind == NetDeviceType::Wireless {
                 unsafe { Self::wireless_info(device_proxy) }
             } else {
                 None
@@ -357,10 +379,22 @@ impl NetInfo {
         result
     }
 
-    fn device_type(device_if: &str) -> NetDeviceType {
-        if device_if.starts_with("en") {
+    fn device_kind(device_if: &str) -> NetDeviceType {
+        if device_if.starts_with("bn") {
+            NetDeviceType::Bluetooth
+        } else if device_if.starts_with("br") || device_if.starts_with("virbr") {
+            NetDeviceType::Bridge
+        } else if device_if.starts_with("docker") {
+            NetDeviceType::Docker
+        } else if device_if.starts_with("eth") || device_if.starts_with("en") {
             NetDeviceType::Wired
-        } else if device_if.starts_with("wl") {
+        } else if device_if.starts_with("ib") {
+            NetDeviceType::InfiniBand
+        } else if device_if.starts_with("veth") {
+            NetDeviceType::Virtual
+        } else if device_if.starts_with("vpn") || device_if.starts_with("wg") {
+            NetDeviceType::VPN
+        } else if device_if.starts_with("wl") || device_if.starts_with("ww") {
             NetDeviceType::Wireless
         } else {
             NetDeviceType::Other

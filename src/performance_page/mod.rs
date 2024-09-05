@@ -27,10 +27,7 @@ use gtk::{gio, glib};
 
 use widgets::GraphWidget;
 
-use crate::{
-    application::BASE_POINTS, i18n::*, performance_page::disk::PerformancePageDisk,
-    sys_info_v2::DiskType,
-};
+use crate::{application::BASE_POINTS, i18n::*, sys_info_v2::DiskType, sys_info_v2::NetworkDevice};
 
 mod cpu;
 mod disk;
@@ -42,15 +39,12 @@ mod widgets;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
-type DiskPage = PerformancePageDisk;
+type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
 
 mod imp {
-    use crate::performance_page::network::PerformancePageNetwork;
-    use crate::sys_info_v2::{NetDeviceType, NetworkDevice};
-
     use super::*;
 
     // GNOME color palette: Blue 2
@@ -620,7 +614,7 @@ mod imp {
             &self,
             readings: &crate::sys_info_v2::Readings,
             secondary_index: Option<usize>,
-        ) -> (String, (summary_graph::SummaryGraph, PerformancePageDisk)) {
+        ) -> (String, (summary_graph::SummaryGraph, DiskPage)) {
             use glib::g_critical;
 
             let disk_static_info = &readings.disks_info[secondary_index.unwrap_or(0)];
@@ -734,19 +728,12 @@ mod imp {
             &self,
             network_device: &NetworkDevice,
             secondary_index: usize,
-        ) -> (
-            String,
-            (summary_graph::SummaryGraph, PerformancePageNetwork),
-        ) {
+        ) -> (String, (summary_graph::SummaryGraph, NetworkPage)) {
             use glib::g_critical;
 
             let if_name = network_device.descriptor.if_name.as_str();
 
-            let conn_type = match network_device.descriptor.r#type {
-                NetDeviceType::Wired => i18n("Ethernet"),
-                NetDeviceType::Wireless => i18n("Wi-Fi"),
-                NetDeviceType::Other => i18n("Other"),
-            };
+            let conn_type = network_device.descriptor.kind.to_string();
 
             let summary = SummaryGraph::new();
             summary.set_page_indices(SIDEBAR_NET_PAGE_DEFAULT_IDX, secondary_index);
@@ -791,7 +778,7 @@ mod imp {
 
             let page = NetworkPage::new(
                 if_name,
-                network_device.descriptor.r#type,
+                network_device.descriptor.kind,
                 settings.as_ref().unwrap(),
             );
             page.set_base_color(gtk::gdk::RGBA::new(
