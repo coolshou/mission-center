@@ -1129,16 +1129,17 @@ impl LinuxCpuInfo {
                 Ok(content) => match std::str::from_utf8(&content) {
                     Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
                     Err(e) => {
-                        critical!(
+                        debug!(
                                 "Gatherer::CPU",
                                 "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
                                 e
                             );
-                        return None;
+
+                        None
                     }
                 },
                 Err(e) => {
-                    critical!(
+                    debug!(
                         "Gatherer::CPU",
                         "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
                         e
@@ -1154,16 +1155,17 @@ impl LinuxCpuInfo {
                 Ok(content) => match std::str::from_utf8(&content) {
                     Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
                     Err(e) => {
-                        critical!(
+                        debug!(
                                 "Gatherer::CPU",
                                 "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
                                 e
                             );
-                        return None;
+
+                        None
                     }
                 },
                 Err(e) => {
-                    critical!(
+                    debug!(
                         "Gatherer::CPU",
                         "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
                         e
@@ -1186,7 +1188,8 @@ impl LinuxCpuInfo {
                                 "Could not read power preference from '/sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference': {}",
                                 e
                             );
-                        return None;
+
+                        None
                     }
                 },
                 Err(_) => None,
