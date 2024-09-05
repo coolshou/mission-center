@@ -103,5 +103,9 @@
             <default>true</default>
             <summary>Show the swap graph</summary>
         </key>
+        <key name="performance-page-gpu-encode-decode-usage-visible" type="b">
+            <default>true</default>
+            <summary>Show the gpu encode-decode graph graph</summary>
+        </key>
     </schema>
 </schemalist>

@@ -102,6 +102,8 @@ mod imp {
         pub legend_decode: OnceCell<gtk::Picture>,
         pub legend_vram: OnceCell<gtk::Picture>,
         pub legend_gtt: OnceCell<gtk::Picture>,
+
+        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PerformancePageGpu {
@@ -157,6 +159,8 @@ mod imp {
                 legend_decode: Default::default(),
                 legend_vram: Default::default(),
                 legend_gtt: Default::default(),
+
+                settings: Cell::new(None),
             }
         }
     }
@@ -184,8 +188,22 @@ mod imp {
 
     impl PerformancePageGpu {
         fn configure_actions(this: &super::PerformancePageGpu) {
+            use gtk::glib::*;
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
+
+            let settings = this.imp().settings.take();
+            let mut show_enc_dec_usage = true;
+
+            match settings {
+                Some(settings) => {
+                    show_enc_dec_usage =
+                        settings.boolean("performance-page-gpu-encode-decode-usage-visible");
+
+                    this.imp().settings.set(Some(settings));
+                }
+                None => {}
+            }
 
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate({
@@ -194,6 +212,52 @@ mod imp {
                     if let Some(this) = this.upgrade() {
                         let clipboard = this.clipboard();
                         clipboard.set_text(this.imp().data_summary().as_str());
+                    }
+                }
+            });
+            actions.add_action(&action);
+
+            let action = gio::SimpleAction::new_stateful(
+                "enc_dec_usage",
+                None,
+                &glib::Variant::from(show_enc_dec_usage),
+            );
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    if let Some(this) = this.upgrade() {
+                        let this = &this.imp();
+
+                        let visible = !action
+                            .state()
+                            .and_then(|v| v.get::<bool>())
+                            .unwrap_or(false);
+
+                        this.encode_decode_graph.set_visible(visible);
+                        if let Some(object) = this.legend_encode.get() {
+                            object.set_visible(visible)
+                        }
+                        if let Some(object) = this.legend_decode.get() {
+                            object.set_visible(visible)
+                        }
+                        action.set_state(&glib::Variant::from(visible));
+
+                        let settings = this.settings.take();
+                        if settings.is_some() {
+                            let settings = settings.unwrap();
+                            settings
+                                .set_boolean(
+                                    "performance-page-gpu-encode-decode-usage-visible",
+                                    visible,
+                                )
+                                .unwrap_or_else(|_| {
+                                    g_critical!(
+                                        "MissionCenter::PerformancePage",
+                                        "Failed to save show encode/decode usage"
+                                    );
+                                });
+                            this.settings.set(Some(settings));
+                        }
                     }
                 }
             });
@@ -263,6 +327,25 @@ mod imp {
                 });
 
             let this = this.imp();
+            let settings = this.settings.take();
+            let mut show_enc_dec_usage = true;
+
+            match settings {
+                Some(settings) => {
+                    show_enc_dec_usage =
+                        settings.boolean("performance-page-gpu-encode-decode-usage-visible");
+
+                    this.settings.set(Some(settings));
+                }
+                None => {}
+            }
+            this.encode_decode_graph.set_visible(show_enc_dec_usage);
+            if let Some(object) = this.legend_encode.get() {
+                object.set_visible(show_enc_dec_usage)
+            }
+            if let Some(object) = this.legend_decode.get() {
+                object.set_visible(show_enc_dec_usage)
+            }
 
             // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
             // Hide the things that are missing and adjust the graphs
@@ -663,6 +746,10 @@ mod imp {
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePageGpu>().clone();
 
+            if let Some(app) = crate::MissionCenterApplication::default_instance() {
+                self.settings.set(app.settings());
+            }
+
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
 
@@ -925,6 +1012,23 @@ impl PerformancePageGpu {
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
                     update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
+        fn set_hidden_vram(this: &PerformancePageGpu, settings: &gio::Settings) {
+            let visible = settings.boolean("performance-page-gpu-encode-decode-usage-visible");
+
+            let this = this.imp();
+
+            this.encode_decode_graph.set_visible(visible);
+        }
+
+        settings.connect_changed(Some("performance-page-gpu-encode-decode-usage-visible"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    set_hidden_vram(&this, settings);
                 }
             }
         });
