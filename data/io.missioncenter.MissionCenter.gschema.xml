@@ -31,6 +31,7 @@
             <summary>Which page is shown on application startup</summary>
         </key>
 
+
         <key name="app-update-interval" type="i">
             <range min="10" max="200"/>
             <default>20</default>
@@ -48,6 +49,7 @@
             <default>60</default>
             <summary>How many points should be displayed on each chart?</summary>
         </key>
+
 
         <key name="apps-page-merged-process-stats" type="b">
             <default>false</default>
@@ -72,7 +74,7 @@
         <key name="apps-page-sorting-order" enum="org.gtk.SortType">
             <default>"None"</default>
             <summary>The sorting direction of the Apps page view</summary>
-       </key>
+        </key>
 
 
         <key name="performance-page-cpu-graph" type="i">
@@ -91,18 +93,53 @@
             <summary>Which page is shown on application startup, in the performance tab</summary>
         </key>
 
+
         <key name="performance-smooth-graphs" type="b">
             <default>false</default>
             <summary>Should performance graphs be smooth or jagged</summary>
         </key>
+
+        <key name="performance-show-cpu" type="b">
+            <default>true</default>
+            <summary>Show CPU information by default</summary>
+        </key>
+
+        <key name="performance-show-memory" type="b">
+            <default>true</default>
+            <summary>Show memory information by default</summary>
+        </key>
+
+        <key name="performance-show-disks" type="b">
+            <default>true</default>
+            <summary>Show disk information by default</summary>
+        </key>
+
+        <key name="performance-show-network" type="b">
+            <default>true</default>
+            <summary>Show network information by default</summary>
+        </key>
+
+        <key name="performance-show-gpus" type="b">
+            <default>true</default>
+            <summary>Show GPU information by default</summary>
+        </key>
+
+        <key name="performance-show-fans" type="b">
+            <default>true</default>
+            <summary>Show fan information by default</summary>
+        </key>
+
+
         <key name="performance-page-memory-composition-visible" type="b">
             <default>true</default>
             <summary>Show the mem composition widget</summary>
         </key>
+
         <key name="performance-page-memory-swap-visible" type="b">
             <default>true</default>
             <summary>Show the swap graph</summary>
         </key>
+
         <key name="performance-page-gpu-encode-decode-usage-visible" type="b">
             <default>true</default>
             <summary>Show the gpu encode-decode graph graph</summary>

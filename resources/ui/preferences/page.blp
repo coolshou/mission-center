@@ -3,7 +3,7 @@ using Adw 1;
 
 template $PreferencesPage: Adw.PreferencesPage {
   Adw.PreferencesGroup {
-    title: _("General Settings");
+    title: _("General");
 
     Adw.ActionRow {
       title: _("Update Interval");
@@ -43,16 +43,46 @@ template $PreferencesPage: Adw.PreferencesPage {
   }
 
   Adw.PreferencesGroup {
-    title: _("Performance Page Settings");
+    title: _("Performance Page");
 
     Adw.SwitchRow smooth_graphs {
       title: _("Smooth Graphs");
       subtitle: _("Draw graphs as smooth line instead of jagged line");
     }
+
+    Adw.SwitchRow show_cpu {
+      title: _("Show CPU Information");
+      subtitle: _("Show CPU information by default");
+    }
+
+    Adw.SwitchRow show_memory {
+      title: _("Show Memory Information");
+      subtitle: _("Show memory information by default");
+    }
+
+    Adw.SwitchRow show_disks {
+      title: _("Show Disk Information");
+      subtitle: _("Show disk information by default");
+    }
+
+    Adw.SwitchRow show_network {
+      title: _("Show Network Information");
+      subtitle: _("Show network information by default");
+    }
+
+    Adw.SwitchRow show_gpus {
+      title: _("Show GPU Information");
+      subtitle: _("Show GPU information by default");
+    }
+
+    Adw.SwitchRow show_fans {
+      title: _("Show Fan Information");
+      subtitle: _("Show fan information by default");
+    }
   }
 
   Adw.PreferencesGroup {
-    title: _("App Page Settings");
+    title: _("App Page");
 
     Adw.SwitchRow merged_process_stats {
       title: _("Merge Process Stats");

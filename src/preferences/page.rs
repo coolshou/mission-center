@@ -29,6 +29,52 @@ const MIN_INTERVAL_TICKS: u64 = 10;
 const MAX_POINTS: i32 = 600;
 const MIN_POINTS: i32 = 10;
 
+macro_rules! connect_switch_to_setting {
+    ($this: expr, $switch_row: expr, $setting: literal) => {
+        $switch_row.connect_active_notify({
+            let this = $this.obj().downgrade();
+            move |switch_row| {
+                let this = match this.upgrade() {
+                    Some(this) => this,
+                    None => return,
+                };
+                let this = this.imp();
+
+                let settings = this.settings.take();
+                if let Some(settings) = settings {
+                    if let Err(e) = settings.set_boolean($setting, switch_row.is_active()) {
+                        gtk::glib::g_critical!(
+                            "MissionCenter::Preferences",
+                            "Failed to set {} setting: {}",
+                            $setting,
+                            e
+                        );
+                    }
+                    this.settings.set(Some(settings));
+                }
+            }
+        });
+    };
+}
+
+macro_rules! update_switch_from_setting {
+    ($settings: expr , $switch_row: expr, $setting: literal) => {
+        match $settings.take() {
+            None => {
+                gtk::glib::g_critical!(
+                    "MissionCenter::Preferences",
+                    "Failed to configure {}, could not load application settings",
+                    $setting
+                );
+            }
+            Some(settings) => {
+                $switch_row.set_active(settings.boolean($setting));
+                $settings.set(Some(settings));
+            }
+        }
+    };
+}
+
 mod imp {
     use adw::SpinRow;
     use gtk::Scale;
@@ -44,13 +90,26 @@ mod imp {
         pub data_points: TemplateChild<Scale>,
 
         #[template_child]
+        pub smooth_graphs: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_cpu: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_memory: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_disks: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_network: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_gpus: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_fans: TemplateChild<SwitchRow>,
+
+        #[template_child]
         pub merged_process_stats: TemplateChild<SwitchRow>,
         #[template_child]
         pub remember_sorting: TemplateChild<SwitchRow>,
         #[template_child]
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
-        #[template_child]
-        pub smooth_graphs: TemplateChild<SwitchRow>,
 
         pub settings: Cell<Option<gio::Settings>>,
     }
@@ -61,10 +120,17 @@ mod imp {
                 update_interval: Default::default(),
                 data_points: Default::default(),
 
+                smooth_graphs: Default::default(),
+                show_cpu: Default::default(),
+                show_memory: Default::default(),
+                show_disks: Default::default(),
+                show_network: Default::default(),
+                show_gpus: Default::default(),
+                show_fans: Default::default(),
+
                 merged_process_stats: Default::default(),
                 remember_sorting: Default::default(),
                 core_count_affects_percentages: Default::default(),
-                smooth_graphs: Default::default(),
 
                 settings: Cell::new(None),
             }
@@ -146,8 +212,6 @@ mod imp {
 
     impl ObjectImpl for PreferencesPage {
         fn constructed(&self) {
-            use gtk::glib::*;
-
             self.parent_constructed();
 
             self.data_points
@@ -174,106 +238,25 @@ mod imp {
                     }
                 });
 
-            self.merged_process_stats.connect_active_notify({
-                let this = self.obj().downgrade();
-                move |switch_row| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
+            connect_switch_to_setting!(self, self.smooth_graphs, "performance-smooth-graphs");
+            connect_switch_to_setting!(self, self.show_cpu, "performance-show-cpu");
+            connect_switch_to_setting!(self, self.show_memory, "performance-show-memory");
+            connect_switch_to_setting!(self, self.show_disks, "performance-show-disks");
+            connect_switch_to_setting!(self, self.show_network, "performance-show-network");
+            connect_switch_to_setting!(self, self.show_gpus, "performance-show-gpus");
+            connect_switch_to_setting!(self, self.show_fans, "performance-show-fans");
 
-                    let settings = this.settings.take();
-                    if let Some(settings) = settings {
-                        if let Err(e) = settings
-                            .set_boolean("apps-page-merged-process-stats", switch_row.is_active())
-                        {
-                            g_critical!(
-                                "MissionCenter::Preferences",
-                                "Failed to set merged process stats setting: {}",
-                                e
-                            );
-                        }
-                        this.settings.set(Some(settings));
-                    }
-                }
-            });
-
-            self.remember_sorting.connect_active_notify({
-                let this = self.obj().downgrade();
-                move |switch_row| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let settings = this.settings.take();
-                    if let Some(settings) = settings {
-                        if let Err(e) = settings
-                            .set_boolean("apps-page-remember-sorting", switch_row.is_active())
-                        {
-                            g_critical!(
-                                "MissionCenter::Preferences",
-                                "Failed to set merged process stats setting: {}",
-                                e
-                            );
-                        }
-                        this.settings.set(Some(settings));
-                    }
-                }
-            });
-
-            self.core_count_affects_percentages.connect_active_notify({
-                let this = self.obj().downgrade();
-                move |switch_row| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let settings = this.settings.take();
-                    if let Some(settings) = settings {
-                        if let Err(e) = settings.set_boolean(
-                            "apps-page-core-count-affects-percentages",
-                            switch_row.is_active(),
-                        ) {
-                            g_critical!(
-                                "MissionCenter::Preferences",
-                                "Failed to set core counts affects percentages setting: {}",
-                                e
-                            );
-                        }
-                        this.settings.set(Some(settings));
-                    }
-                }
-            });
-
-            self.smooth_graphs.connect_active_notify({
-                let this = self.obj().downgrade();
-                move |switch_row| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let settings = this.settings.take();
-                    if let Some(settings) = settings {
-                        if let Err(e) = settings
-                            .set_boolean("performance-smooth-graphs", switch_row.is_active())
-                        {
-                            g_critical!(
-                                "MissionCenter::Preferences",
-                                "Failed to set smooth graphs setting: {}",
-                                e
-                            );
-                        }
-                        this.settings.set(Some(settings));
-                    }
-                }
-            });
+            connect_switch_to_setting!(
+                self,
+                self.merged_process_stats,
+                "apps-page-merged-process-stats"
+            );
+            connect_switch_to_setting!(self, self.remember_sorting, "apps-page-remember-sorting");
+            connect_switch_to_setting!(
+                self,
+                self.core_count_affects_percentages,
+                "apps-page-core-count-affects-percentages"
+            );
         }
     }
 
@@ -290,17 +273,63 @@ glib::wrapper! {
 
 impl PreferencesPage {
     pub fn new(settings: Option<&gio::Settings>) -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(PreferencesPage::static_type(), &mut [])
-                .downcast()
-                .unwrap()
-        };
+        let this: Self = glib::Object::builder().build();
+
         this.imp().settings.set(settings.cloned());
+
         this.set_initial_update_speed();
-        this.set_initial_merge_process_stats();
-        this.set_initial_remember_sorting_option();
-        this.set_initial_core_count_affects_percentages();
-        this.set_initial_smooth_graphs();
+
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().smooth_graphs,
+            "performance-smooth-graphs"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_cpu,
+            "performance-show-cpu"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_memory,
+            "performance-show-memory"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_disks,
+            "performance-show-disks"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_network,
+            "performance-show-network"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_gpus,
+            "performance-show-gpus"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().show_fans,
+            "performance-show-fans"
+        );
+
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().merged_process_stats,
+            "apps-page-merged-process-stats"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().remember_sorting,
+            "apps-page-remember-sorting"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().core_count_affects_percentages,
+            "apps-page-core-count-affects-percentages"
+        );
 
         this
     }
@@ -325,108 +354,6 @@ impl PreferencesPage {
 
         this.data_points.set_value(data_points as f64);
         this.update_interval.set_value(update_interval_s);
-
-        this.settings.set(Some(settings));
-    }
-
-    fn set_initial_merge_process_stats(&self) {
-        use gtk::glib::*;
-
-        let settings = match self.imp().settings.take() {
-            None => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure merge process stats setting, could not load application settings"
-                );
-                return;
-            }
-            Some(settings) => settings,
-        };
-
-        let this = self.imp();
-        this.merged_process_stats
-            .set_active(settings.boolean("apps-page-merged-process-stats"));
-
-        this.settings.set(Some(settings));
-    }
-
-    fn set_initial_remember_sorting_option(&self) {
-        use gtk::glib::*;
-
-        let settings = match self.imp().settings.take() {
-            None => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure remember sorting setting, could not load application settings"
-                );
-                return;
-            }
-            Some(settings) => settings,
-        };
-
-        let this = self.imp();
-
-        let remember_sorting = settings.boolean("apps-page-remember-sorting");
-        if !remember_sorting {
-            if let Err(e) = settings.set_enum("apps-page-sorting-column", 255) {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to reset apps-page-sorting-column setting: {}",
-                    e
-                );
-            }
-            if let Err(e) = settings.set_enum("apps-page-sorting-order", 255) {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to reset apps-page-sorting-order setting: {}",
-                    e
-                );
-            }
-        }
-
-        this.remember_sorting.set_active(remember_sorting);
-
-        this.settings.set(Some(settings));
-    }
-
-    fn set_initial_core_count_affects_percentages(&self) {
-        use gtk::glib::*;
-
-        let settings = match self.imp().settings.take() {
-            None => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure core count affects percentages setting, could not load application settings"
-                );
-                return;
-            }
-            Some(settings) => settings,
-        };
-
-        let this = self.imp();
-        this.core_count_affects_percentages
-            .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
-
-        this.settings.set(Some(settings));
-    }
-
-    fn set_initial_smooth_graphs(&self) {
-        use gtk::glib::*;
-
-        let settings = match self.imp().settings.take() {
-            None => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure smooth graphs setting, could not load application settings"
-                );
-                return;
-            }
-            Some(settings) => settings,
-        };
-
-        let this = self.imp();
-        this.smooth_graphs
-            .set_active(settings.boolean("performance-smooth-graphs"));
 
         this.settings.set(Some(settings));
     }
