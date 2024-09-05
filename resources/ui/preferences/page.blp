@@ -43,6 +43,15 @@ template $PreferencesPage: Adw.PreferencesPage {
   }
 
   Adw.PreferencesGroup {
+    title: _("Performance Page Settings");
+
+    Adw.SwitchRow smooth_graphs {
+      title: _("Smooth Graphs");
+      subtitle: _("Draw graphs as smooth line instead of jagged line");
+    }
+  }
+
+  Adw.PreferencesGroup {
     title: _("App Page Settings");
 
     Adw.SwitchRow merged_process_stats {
@@ -58,11 +67,6 @@ template $PreferencesPage: Adw.PreferencesPage {
     Adw.SwitchRow core_count_affects_percentages {
       title: _("Scale CPU Usage to Core Count");
       subtitle: _("Show CPU usage for Apps and Processes scaled to the number of available cores");
-    }
-
-    Adw.SwitchRow smooth_graphs {
-      title: _("Smooth Graphs");
-      subtitle: _("Draw graphs as smooth line instead of jagged line");
     }
   }
 }
