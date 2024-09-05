@@ -196,6 +196,13 @@ template $PerformancePageGpu: Box {
 menu context_menu_model {
   section {
     item {
+      label: _("Show Encode/Decode Usage");
+      action: "graph.enc_dec_usage";
+    }
+  }
+
+  section {
+    item {
       label: _("Graph _Summary View");
       action: "graph.summary";
     }
