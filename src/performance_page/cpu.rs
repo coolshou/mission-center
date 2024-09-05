@@ -444,44 +444,6 @@ mod imp {
                 format!("N/A")
             };
 
-            if let (Some(cpufreq_driver), Some(cpufreq_driver_label)) =
-                (this.cpufreq_driver.get(), this.cpufreq_driver_label.get())
-            {
-                if let Some(governor) = static_cpu_info.cpufreq_driver.as_ref() {
-                    cpufreq_driver.set_text(governor.as_ref());
-                } else {
-                    cpufreq_driver.set_visible(false);
-                    cpufreq_driver_label.set_visible(false);
-                }
-            }
-
-            if let (Some(cpufreq_governor), Some(cpufreq_governor_label)) = (
-                this.cpufreq_governor.get(),
-                this.cpufreq_governor_label.get(),
-            ) {
-                if let Some(governor) = static_cpu_info.cpufreq_governor.as_ref() {
-                    cpufreq_governor.set_text(governor.as_ref());
-                } else {
-                    cpufreq_governor.set_visible(false);
-                    cpufreq_governor_label.set_visible(false);
-                }
-            }
-
-            if let (
-                Some(energy_performance_preference),
-                Some(energy_performance_preference_label),
-            ) = (
-                this.energy_performance_preference.get(),
-                this.energy_performance_preference_label.get(),
-            ) {
-                if let Some(governor) = static_cpu_info.energy_performance_preference.as_ref() {
-                    energy_performance_preference.set_text(governor.as_ref());
-                } else {
-                    energy_performance_preference.set_visible(false);
-                    energy_performance_preference_label.set_visible(false);
-                }
-            }
-
             true
         }
 
@@ -490,6 +452,7 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) -> bool {
             let mut graph_widgets = this.imp().graph_widgets.take();
+            let this = this.imp();
 
             let dynamic_cpu_info = &readings.cpu_dynamic_info;
 
@@ -512,31 +475,31 @@ mod imp {
                 );
             }
 
-            this.imp().graph_widgets.set(graph_widgets);
+            this.graph_widgets.set(graph_widgets);
 
-            if let Some(utilization) = this.imp().utilization.get() {
+            if let Some(utilization) = this.utilization.get() {
                 utilization.set_text(&format!(
                     "{}%",
                     dynamic_cpu_info.overall_utilization_percent.round()
                 ));
             }
 
-            if let Some(speed) = this.imp().speed.get() {
+            if let Some(speed) = this.speed.get() {
                 speed.set_text(&format!(
                     "{:.2} GHz",
                     readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                 ));
             }
 
-            if let Some(processes) = this.imp().processes.get() {
+            if let Some(processes) = this.processes.get() {
                 processes.set_text(&format!("{}", dynamic_cpu_info.process_count));
             }
 
-            if let Some(threads) = this.imp().threads.get() {
+            if let Some(threads) = this.threads.get() {
                 threads.set_text(&format!("{}", dynamic_cpu_info.thread_count));
             }
 
-            if let Some(handles) = this.imp().handles.get() {
+            if let Some(handles) = this.handles.get() {
                 handles.set_text(&format!("{}", dynamic_cpu_info.handle_count));
             }
 
@@ -546,13 +509,50 @@ mod imp {
             let minutes = (uptime % 3600) / 60;
             let seconds = uptime % 60;
 
-            if let Some(uptime) = this.imp().uptime.get() {
+            if let Some(uptime) = this.uptime.get() {
                 uptime.set_text(&format!(
                     "{:02}:{:02}:{:02}:{:02}",
                     days, hours, minutes, seconds
                 ));
             }
 
+            if let (Some(cpufreq_driver), Some(cpufreq_driver_label)) =
+                (this.cpufreq_driver.get(), this.cpufreq_driver_label.get())
+            {
+                if let Some(governor) = dynamic_cpu_info.cpufreq_driver.as_ref() {
+                    cpufreq_driver.set_text(governor.as_ref());
+                } else {
+                    cpufreq_driver.set_visible(false);
+                    cpufreq_driver_label.set_visible(false);
+                }
+            }
+
+            if let (Some(cpufreq_governor), Some(cpufreq_governor_label)) = (
+                this.cpufreq_governor.get(),
+                this.cpufreq_governor_label.get(),
+            ) {
+                if let Some(governor) = dynamic_cpu_info.cpufreq_governor.as_ref() {
+                    cpufreq_governor.set_text(governor.as_ref());
+                } else {
+                    cpufreq_governor.set_visible(false);
+                    cpufreq_governor_label.set_visible(false);
+                }
+            }
+
+            if let (
+                Some(energy_performance_preference),
+                Some(energy_performance_preference_label),
+            ) = (
+                this.energy_performance_preference.get(),
+                this.energy_performance_preference_label.get(),
+            ) {
+                if let Some(governor) = dynamic_cpu_info.energy_performance_preference.as_ref() {
+                    energy_performance_preference.set_text(governor.as_ref());
+                } else {
+                    energy_performance_preference.set_visible(false);
+                    energy_performance_preference_label.set_visible(false);
+                }
+            }
             true
         }
 

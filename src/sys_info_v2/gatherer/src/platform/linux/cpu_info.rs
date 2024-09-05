@@ -92,9 +92,6 @@ pub struct LinuxCpuStaticInfo {
     l2_cache: Option<u64>,
     l3_cache: Option<u64>,
     l4_cache: Option<u64>,
-    cpufreq_driver: Option<Arc<str>>,
-    cpufreq_governor: Option<Arc<str>>,
-    energy_performance_preference: Option<Arc<str>>,
 }
 
 impl Default for LinuxCpuStaticInfo {
@@ -110,9 +107,6 @@ impl Default for LinuxCpuStaticInfo {
             l2_cache: None,
             l3_cache: None,
             l4_cache: None,
-            cpufreq_driver: None,
-            cpufreq_governor: None,
-            energy_performance_preference: None,
         }
     }
 }
@@ -163,19 +157,6 @@ impl CpuStaticInfoExt for LinuxCpuStaticInfo {
     fn l4_cache(&self) -> Option<u64> {
         self.l4_cache
     }
-
-    fn cpufreq_driver(&self) -> Option<&str> {
-        self.cpufreq_driver.as_ref().map(|s| s.as_ref())
-    }
-
-    fn cpufreq_governor(&self) -> Option<&str> {
-        self.cpufreq_governor.as_ref().map(|s| s.as_ref())
-    }
-    fn energy_performance_preference(&self) -> Option<&str> {
-        self.energy_performance_preference
-            .as_ref()
-            .map(|s| s.as_ref())
-    }
 }
 
 #[derive(Clone, Default, Debug)]
@@ -192,6 +173,9 @@ pub struct LinuxCpuDynamicInfo {
     thread_count: u64,
     handle_count: u64,
     uptime_seconds: u64,
+    cpufreq_driver: Option<Arc<str>>,
+    cpufreq_governor: Option<Arc<str>>,
+    energy_performance_preference: Option<Arc<str>>,
 }
 
 impl LinuxCpuDynamicInfo {
@@ -209,6 +193,9 @@ impl LinuxCpuDynamicInfo {
             thread_count: 0,
             handle_count: 0,
             uptime_seconds: 0,
+            cpufreq_driver: None,
+            cpufreq_governor: None,
+            energy_performance_preference: None,
         }
     }
 }
@@ -254,6 +241,19 @@ impl<'a> CpuDynamicInfoExt<'a> for LinuxCpuDynamicInfo {
 
     fn uptime_seconds(&self) -> u64 {
         self.uptime_seconds
+    }
+
+    fn cpufreq_driver(&self) -> Option<&str> {
+        self.cpufreq_driver.as_ref().map(|s| s.as_ref())
+    }
+
+    fn cpufreq_governor(&self) -> Option<&str> {
+        self.cpufreq_governor.as_ref().map(|s| s.as_ref())
+    }
+    fn energy_performance_preference(&self) -> Option<&str> {
+        self.energy_performance_preference
+            .as_ref()
+            .map(|s| s.as_ref())
     }
 }
 
@@ -1121,7 +1121,7 @@ impl LinuxCpuInfo {
         result
     }
 
-    fn get_cpufreq_driver_governor() -> [Option<Arc<str>>; 3] {
+    fn get_cpufreq_driver_governor() -> (Option<Arc<str>>, Option<Arc<str>>, Option<Arc<str>>) {
         use crate::critical;
 
         fn get_cpufreq_driver() -> Option<Arc<str>> {
@@ -1192,11 +1192,11 @@ impl LinuxCpuInfo {
                 Err(_) => None,
             }
         }
-        [
+        (
             get_cpufreq_driver(),
             get_cpufreq_governor(),
             energy_performance_preference(),
-        ]
+        )
     }
 
     // Adapted from `sysinfo` crate, linux/cpu.rs:415
@@ -1392,8 +1392,6 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
 
         if self.static_info.logical_cpu_count == 0 {
             let cache_info = Self::cache_info();
-            let [cpufreq_driver, cpufreq_governor, energy_performance_preference] =
-                Self::get_cpufreq_driver_governor();
 
             self.static_info = LinuxCpuStaticInfo {
                 name: Self::name(),
@@ -1406,9 +1404,6 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
                 l2_cache: cache_info[2],
                 l3_cache: cache_info[3],
                 l4_cache: cache_info[4],
-                cpufreq_driver,
-                cpufreq_governor,
-                energy_performance_preference,
             }
         }
     }
@@ -1466,6 +1461,11 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
             per_core_usage.fill(0.);
             per_core_kernel_usage.fill(0.);
         }
+        (
+            self.dynamic_info.cpufreq_driver,
+            self.dynamic_info.cpufreq_governor,
+            self.dynamic_info.energy_performance_preference,
+        ) = Self::get_cpufreq_driver_governor();
 
         self.dynamic_info.current_frequency_mhz = Self::cpu_frequency_mhz();
         self.dynamic_info.temperature = Self::temperature();
