@@ -20,11 +20,10 @@
 
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 
-use adw::subclass::prelude::*;
+use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
     glib::{self, g_critical, property::PropertySet},
-    prelude::*,
 };
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
@@ -338,16 +337,15 @@ impl MissionCenterApplication {
         let window = self.active_window().unwrap();
         let settings = self.imp().settings.take();
 
-        let preferences = crate::preferences::PreferencesWindow::new(&window, settings.as_ref());
-        preferences.present();
+        let preferences = crate::preferences::PreferencesDialog::new(settings.as_ref());
+        preferences.present(Some(&window));
 
         self.imp().settings.set(settings);
     }
 
     fn show_about(&self) {
         let window = self.active_window().unwrap();
-        let about = adw::AboutWindow::builder()
-            .transient_for(&window)
+        let about = adw::AboutDialog::builder()
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
@@ -376,15 +374,14 @@ impl MissionCenterApplication {
                 "GTK https://www.gtk.org/",
                 "GNOME https://www.gnome.org/",
                 "Libadwaita https://gitlab.gnome.org/GNOME/libadwaita",
-                "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
+                "Blueprint Compiler https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/",
                 "NVTOP https://github.com/Syllo/nvtop",
-                "musl libc https://musl.libc.org/",
                 "Workbench https://github.com/sonnyp/Workbench",
                 "And many more... Thank you all!",
             ],
         );
 
-        about.present();
+        about.present(Some(&window));
     }
 }
 
