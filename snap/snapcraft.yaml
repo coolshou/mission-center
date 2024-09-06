@@ -28,7 +28,7 @@ plugs:
       - /var/lib/snapd/hostfs/usr/share/icons
       - /var/lib/snapd/hostfs/var/lib/flatpak
       - /var/lib/snapd/hostfs/var/lib/snapd/desktop
-      - /var/lib/snapd/hostfs/snap
+      - /sys/fs/cgroup/user.slice
 
   user-desktop-files:
     interface: personal-files
@@ -58,7 +58,6 @@ apps:
       - desktop
       - desktop-legacy
       - hardware-observe
-      - kubernetes-support
       - network-manager
       - network-observe
       - process-control

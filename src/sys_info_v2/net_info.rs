@@ -44,6 +44,7 @@ pub enum NetDeviceType {
     Bridge,
     Docker,
     InfiniBand,
+    Multipass,
     Virtual,
     VPN,
     Wired,
@@ -59,6 +60,7 @@ impl ToString for NetDeviceType {
             NetDeviceType::Bridge => i18n("Bridge"),
             NetDeviceType::Docker => i18n("Docker"),
             NetDeviceType::InfiniBand => i18n("InfiniBand"),
+            NetDeviceType::Multipass => i18n("Multipass"),
             NetDeviceType::Virtual => i18n("Virtual"),
             NetDeviceType::VPN => i18n("VPN"),
             NetDeviceType::Wired => i18n("Ethernet"),
@@ -390,6 +392,8 @@ impl NetInfo {
             NetDeviceType::Wired
         } else if device_if.starts_with("ib") {
             NetDeviceType::InfiniBand
+        } else if device_if.starts_with("mp") {
+            NetDeviceType::Multipass
         } else if device_if.starts_with("veth") {
             NetDeviceType::Virtual
         } else if device_if.starts_with("vpn") || device_if.starts_with("wg") {
