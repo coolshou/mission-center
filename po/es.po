@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-24 10:40+0300\n"
+"POT-Creation-Date: 2024-09-08 09:45+0300\n"
 "PO-Revision-Date: 2024-08-25 09:09+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
@@ -140,8 +140,8 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"El monitoreo de GPU Intel solo es compatible con GPU Broadwell y posteriores;"
-" y no es compatible con monitoreo de VRAM, energía o temperatura"
+"El monitoreo de GPU Intel solo es compatible con GPU Broadwell y "
+"posteriores; y no es compatible con monitoreo de VRAM, energía o temperatura"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -150,8 +150,8 @@ msgid ""
 "cinnamon/issues/12015)"
 msgstr ""
 "Al utilizar Linux Mint/Cinnamon, es posible que las aplicaciones iniciadas "
-"no aparezcan en la sección \"Aplicaciones\" (problema anterior: "
-"https://github.com/linuxmint/cinnamon/issues/12015)"
+"no aparezcan en la sección \"Aplicaciones\" (problema anterior: https://"
+"github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -163,11 +163,11 @@ msgstr ""
 msgid "Which page is shown on application startup"
 msgstr "Qué página se muestra al iniciar la aplicación"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:37
+#: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
 msgstr "¡OBSOLETO! ¡YA NO ESTA EN USO!"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:43
+#: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
@@ -175,69 +175,113 @@ msgstr ""
 "Con qué rapidez deben actualizarse los datos y la interfaz de usuario (en "
 "incrementos de 50 ms)"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:49
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
 msgstr "¿Cuántos puntos deben aparecer en cada gráfico?"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:54
-#: resources/ui/preferences/page.blp:50
+#: data/io.missioncenter.MissionCenter.gschema.xml:56
+#: resources/ui/preferences/page.blp:89
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "Las estadísticas de los procesos padre e hijo se muestran individualmente o "
 "combinadas hacia arriba"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:59
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Column sorting is persisted across app restarts"
 msgstr "El orden de las columnas se mantiene al reiniciar la aplicación"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:64
-#: resources/ui/preferences/page.blp:60
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
+#: resources/ui/preferences/page.blp:99
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
 "Muestra el uso de la CPU para aplicaciones y procesos en función del número "
 "de núcleos disponibles"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:69
+#: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
 "El identificador de la columna por el que se ordena la vista de página de "
 "Aplicaciones"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:74
+#: data/io.missioncenter.MissionCenter.gschema.xml:76
 msgid "The sorting direction of the Apps page view"
 msgstr "La dirección del orden de la vista de la página de las Aplicaciones"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:80
+#: data/io.missioncenter.MissionCenter.gschema.xml:83
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Qué gráfico se muestra en la página de rendimiento de la CPU"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:85
+#: data/io.missioncenter.MissionCenter.gschema.xml:88
 msgid "Show kernel times in the CPU graphs"
 msgstr "Mostrar los tiempos del kernel en los gráficos de la CPU"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:90
+#: data/io.missioncenter.MissionCenter.gschema.xml:93
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Qué página se muestra al iniciar la aplicación, en la pestaña de rendimiento"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:95
+#: data/io.missioncenter.MissionCenter.gschema.xml:99
 msgid "Should performance graphs be smooth or jagged"
 msgstr "Gráficos de rendimiento lisos o irregulares"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1361
-#: src/performance_page/mod.rs:434
+#: data/io.missioncenter.MissionCenter.gschema.xml:104
+#: resources/ui/preferences/page.blp:55
+msgid "Show CPU information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:109
+#: resources/ui/preferences/page.blp:60
+#, fuzzy
+msgid "Show memory information by default"
+msgstr "Error al obtener información adicional de la memoria"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:114
+#: resources/ui/preferences/page.blp:65
+msgid "Show disk information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:119
+#: resources/ui/preferences/page.blp:70
+msgid "Show network information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:124
+#: resources/ui/preferences/page.blp:75
+msgid "Show GPU information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:129
+#: resources/ui/preferences/page.blp:80
+msgid "Show fan information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:135
+#, fuzzy
+msgid "Show the mem composition widget"
+msgstr "Mejorar el gráfico de composición de la memoria"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:140
+msgid "Show the swap graph"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:145
+msgid "Show the gpu encode-decode graph graph"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1394
+#: src/performance_page/mod.rs:428
 msgid "CPU"
 msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
-#: resources/ui/performance_page/gpu.blp:67
+#: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
 msgstr "Uso superior a "
 
 #: resources/ui/performance_page/cpu.blp:77
-#: resources/ui/performance_page/gpu.blp:81
-#: resources/ui/performance_page/gpu.blp:126
+#: resources/ui/performance_page/gpu.blp:85
+#: resources/ui/performance_page/gpu.blp:130
 msgid "100%"
 msgstr "100%"
 
@@ -259,64 +303,64 @@ msgstr "Mostrar tiempos del kernel"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
-#: resources/ui/performance_page/gpu.blp:195
-#: resources/ui/performance_page/memory.blp:136
+#: resources/ui/performance_page/gpu.blp:206
+#: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
 msgstr "Vista resu_mida de la gráfica"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
-#: resources/ui/performance_page/gpu.blp:200
-#: resources/ui/performance_page/memory.blp:141
+#: resources/ui/performance_page/gpu.blp:211
+#: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
 msgstr "_Vista"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
-#: resources/ui/performance_page/gpu.blp:203
-#: resources/ui/performance_page/memory.blp:144
+#: resources/ui/performance_page/gpu.blp:214
+#: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
 msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
-#: resources/ui/performance_page/gpu.blp:208
-#: resources/ui/performance_page/memory.blp:149
+#: resources/ui/performance_page/gpu.blp:219
+#: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
 msgstr "_Memoria"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
-#: resources/ui/performance_page/gpu.blp:213
-#: resources/ui/performance_page/memory.blp:154
+#: resources/ui/performance_page/gpu.blp:224
+#: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
 msgstr "_Disco"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
-#: resources/ui/performance_page/gpu.blp:218
-#: resources/ui/performance_page/memory.blp:159
+#: resources/ui/performance_page/gpu.blp:229
+#: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
 msgstr "_Red"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
-#: resources/ui/performance_page/gpu.blp:223
-#: resources/ui/performance_page/memory.blp:164
+#: resources/ui/performance_page/gpu.blp:234
+#: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
 msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:162
 #: resources/ui/performance_page/disk.blp:183
-#: resources/ui/performance_page/gpu.blp:231
-#: resources/ui/performance_page/memory.blp:172
+#: resources/ui/performance_page/gpu.blp:242
+#: resources/ui/performance_page/memory.blp:232
 #: resources/ui/performance_page/network.blp:146
 msgid "_Copy"
 msgstr "_Copiar"
@@ -330,7 +374,7 @@ msgstr "Uso"
 msgid "Speed"
 msgstr "Velocidad"
 
-#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:547
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:570
 msgid "Processes"
 msgstr "Procesos"
 
@@ -428,105 +472,128 @@ msgid "System disk:"
 msgstr "Disco del sistema:"
 
 #: resources/ui/performance_page/disk_details.blp:204
-#: resources/ui/performance_page/memory_details.blp:238
+#: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
 msgstr "Tipo:"
 
-#: resources/ui/performance_page/gpu.blp:110
+#: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
 msgstr "Utilización de codificación/decodificación de video "
 
-#: resources/ui/performance_page/gpu.blp:154
-#: resources/ui/performance_page/memory.blp:62
+#: resources/ui/performance_page/gpu.blp:156
+#: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
 msgstr "Consumo de memoria superior a "
 
-#: resources/ui/performance_page/gpu_details.blp:66
+#: resources/ui/performance_page/gpu.blp:199
+msgid "Show Encode/Decode Usage"
+msgstr ""
+
+#: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
 msgstr "Velocidad del reloj"
 
-#: resources/ui/performance_page/gpu_details.blp:111
+#: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
 msgstr "Consumo de energía"
 
-#: resources/ui/performance_page/gpu_details.blp:147
+#: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
 msgstr "Uso de memoria"
 
-#: resources/ui/performance_page/gpu_details.blp:192
+#: resources/ui/performance_page/gpu_details.blp:208
+#, fuzzy
+msgid "GTT usage"
+msgstr "Uso de GPU"
+
+#: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "Velocidad de memoria"
 
-#: resources/ui/performance_page/gpu_details.blp:247
+#: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
 msgstr "Codificación del vídeo"
 
-#: resources/ui/performance_page/gpu_details.blp:279
+#: resources/ui/performance_page/gpu_details.blp:343
 msgid "Video decode"
 msgstr "Decodificación del vídeo"
 
-#: resources/ui/performance_page/gpu_details.blp:304
+#: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
 msgstr "Temperatura"
 
-#: resources/ui/performance_page/gpu_details.blp:329
+#: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
 msgstr "Versión de OpenGL:"
 
-#: resources/ui/performance_page/gpu_details.blp:343
+#: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
 msgstr "Versión de Vulkan:"
 
-#: resources/ui/performance_page/gpu_details.blp:357
+#: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
 msgstr "Velocidad de PCI Express:"
 
-#: resources/ui/performance_page/gpu_details.blp:371
+#: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
 msgstr "Dirección del bus PCI:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1367
-#: src/performance_page/mod.rs:509
+#: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1400
+#: src/performance_page/mod.rs:508
 msgid "Memory"
 msgstr "Memoria"
 
-#: resources/ui/performance_page/memory.blp:110
+#: resources/ui/performance_page/memory.blp:115
+#, fuzzy
+msgid "Swap usage over "
+msgstr "Consumo de memoria superior a "
+
+#: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Composición de memoria"
 
-#: resources/ui/performance_page/memory_details.blp:47
+#: resources/ui/performance_page/memory.blp:185
+#, fuzzy
+msgid "Show Memory Composition"
+msgstr "Composición de memoria"
+
+#: resources/ui/performance_page/memory.blp:189
+msgid "Show Swap Usage"
+msgstr ""
+
+#: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
 msgstr "En uso"
 
-#: resources/ui/performance_page/memory_details.blp:70
+#: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
 msgstr "Disponible"
 
-#: resources/ui/performance_page/memory_details.blp:98
+#: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
 msgstr "Confirmada"
 
-#: resources/ui/performance_page/memory_details.blp:121
+#: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
 msgstr "En caché"
 
-#: resources/ui/performance_page/memory_details.blp:149
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "Intercambio usado"
 
-#: resources/ui/performance_page/memory_details.blp:172
+#: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
 msgstr "Intercambio disponible"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
 msgstr "Velocidad:"
 
-#: resources/ui/performance_page/memory_details.blp:210
+#: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
 msgstr "Ranuras usadas:"
 
-#: resources/ui/performance_page/memory_details.blp:224
+#: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
 msgstr "Factor de forma:"
 
@@ -534,52 +601,61 @@ msgstr "Factor de forma:"
 msgid "Network Se_ttings"
 msgstr "Con_figuración de red"
 
-#: resources/ui/performance_page/network_details.blp:51
+#: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
 msgstr "Recepción"
 
-#: resources/ui/performance_page/network_details.blp:83
+#: resources/ui/performance_page/network_details.blp:78
+msgid "Total Recieved"
+msgstr ""
+
+#: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
 msgstr "Envío"
 
-#: resources/ui/performance_page/network_details.blp:107
+#: resources/ui/performance_page/network_details.blp:137
+msgid "Total Sent"
+msgstr ""
+
+#: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
 msgstr "Nombre de la interfaz:"
 
-#: resources/ui/performance_page/network_details.blp:121
+#: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
 msgstr "Tipo de conexión:"
 
-#: resources/ui/performance_page/network_details.blp:136
+#: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:151
+#: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
 msgstr "Intensidad de la señal:"
 
-#: resources/ui/performance_page/network_details.blp:166
+#: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
 msgstr "Tasa de bits máxima:"
 
-#: resources/ui/performance_page/network_details.blp:181
+#: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
 msgstr "Frecuencia:"
 
-#: resources/ui/performance_page/network_details.blp:195
+#: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
 msgstr "Dirección hardware:"
 
-#: resources/ui/performance_page/network_details.blp:309
+#: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
 msgstr "Dirección IPv4:"
 
-#: resources/ui/performance_page/network_details.blp:323
+#: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
 msgstr "Dirección IPv6:"
 
 #: resources/ui/preferences/page.blp:6
-msgid "General Settings"
+#, fuzzy
+msgid "General"
 msgstr "Configuración general"
 
 #: resources/ui/preferences/page.blp:9
@@ -591,34 +667,66 @@ msgid "Chart Data Points"
 msgstr "Puntos de datos del gráfico"
 
 #: resources/ui/preferences/page.blp:46
-msgid "App Page Settings"
-msgstr "Configuración de la página de la aplicación"
+#, fuzzy
+msgid "Performance Page"
+msgstr "Rendimiento"
 
 #: resources/ui/preferences/page.blp:49
+msgid "Smooth Graphs"
+msgstr "Suavizar gráficos"
+
+#: resources/ui/preferences/page.blp:50
+msgid "Draw graphs as smooth line instead of jagged line"
+msgstr "Dibujar gráficos como línea lisa en vez de línea dentada"
+
+#: resources/ui/preferences/page.blp:54
+msgid "Show CPU Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:59
+#, fuzzy
+msgid "Show Memory Information"
+msgstr "Composición de memoria"
+
+#: resources/ui/preferences/page.blp:64
+msgid "Show Disk Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:69
+msgid "Show Network Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:74
+msgid "Show GPU Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:79
+#, fuzzy
+msgid "Show Fan Information"
+msgstr "Proceso e información del usuario"
+
+#: resources/ui/preferences/page.blp:85
+#, fuzzy
+msgid "App Page"
+msgstr "Configuración de la página de la aplicación"
+
+#: resources/ui/preferences/page.blp:88
 msgid "Merge Process Stats"
 msgstr "Estadísticas del proceso de fusión"
 
-#: resources/ui/preferences/page.blp:54
+#: resources/ui/preferences/page.blp:93
 msgid "Remember Sorting"
 msgstr "Recordar el orden"
 
-#: resources/ui/preferences/page.blp:55
+#: resources/ui/preferences/page.blp:94
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
 "Recordar el orden de la lista de aplicaciones y procesos al reiniciar la "
 "aplicación"
 
-#: resources/ui/preferences/page.blp:59
+#: resources/ui/preferences/page.blp:98
 msgid "Scale CPU Usage to Core Count"
 msgstr "Escalar el uso de la CPU al número de núcleos"
-
-#: resources/ui/preferences/page.blp:64
-msgid "Smooth Graphs"
-msgstr "Suavizar gráficos"
-
-#: resources/ui/preferences/page.blp:65
-msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Dibujar gráficos como línea lisa en vez de línea dentada"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
@@ -633,7 +741,7 @@ msgid "The current state of the service"
 msgstr "El estado actual del servicio"
 
 #: resources/ui/services_page/details_dialog.blp:127
-#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1349
+#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1382
 msgid "Name"
 msgstr "Nombre"
 
@@ -665,7 +773,7 @@ msgstr "ID del proceso"
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
 #: resources/ui/services_page/details_dialog.blp:307
-#: src/performance_page/network.rs:495 src/performance_page/network.rs:510
+#: src/performance_page/network.rs:521 src/performance_page/network.rs:536
 #: src/services_page/details_dialog.rs:251
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
@@ -704,7 +812,7 @@ msgstr "Reiniciar"
 msgid "Details"
 msgstr "Detalles"
 
-#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1355
+#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1388
 msgid "PID"
 msgstr "PID"
 
@@ -728,7 +836,7 @@ msgstr "Cargando..."
 msgid "Performance"
 msgstr "Rendimiento"
 
-#: resources/ui/window.blp:171 src/apps_page/mod.rs:540
+#: resources/ui/window.blp:171 src/apps_page/mod.rs:563
 msgid "Apps"
 msgstr "Aplicaciones"
 
@@ -744,15 +852,15 @@ msgstr "_Preferencias"
 msgid "_About MissionCenter"
 msgstr "_Acerca de Mission Center"
 
-#: src/apps_page/mod.rs:1373 src/performance_page/mod.rs:604
+#: src/apps_page/mod.rs:1406 src/performance_page/mod.rs:609
 msgid "Drive"
 msgstr "Disco"
 
-#: src/apps_page/mod.rs:1387
+#: src/apps_page/mod.rs:1420
 msgid "GPU Usage"
 msgstr "Uso de GPU"
 
-#: src/apps_page/mod.rs:1397
+#: src/apps_page/mod.rs:1430
 msgid "GPU Mem"
 msgstr "Mem GPU"
 
@@ -819,88 +927,76 @@ msgstr ""
 "cuando el sistema operativo, los controladores o las aplicaciones necesiten "
 "más memoria"
 
-#: src/performance_page/mod.rs:600 src/performance_page/disk.rs:280
+#: src/performance_page/mod.rs:605 src/performance_page/disk.rs:280
 msgid "Drive {} ({})"
 msgstr "Drive {} ({})"
 
-#: src/performance_page/mod.rs:623
+#: src/performance_page/mod.rs:628
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:624
+#: src/performance_page/mod.rs:629
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:625
+#: src/performance_page/mod.rs:630
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:626
+#: src/performance_page/mod.rs:631
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:627
+#: src/performance_page/mod.rs:632
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:628
+#: src/performance_page/mod.rs:633
 msgid "Optical"
 msgstr "Óptico"
 
-#: src/performance_page/mod.rs:629 src/performance_page/cpu.rs:350
-#: src/performance_page/cpu.rs:374 src/performance_page/cpu.rs:382
-#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:337
-#: src/performance_page/gpu.rs:458 src/performance_page/memory.rs:274
-#: src/performance_page/memory.rs:508 src/performance_page/network.rs:410
-#: src/performance_page/network.rs:434 src/performance_page/network.rs:444
-#: src/performance_page/network.rs:483 src/performance_page/network.rs:533
-#: src/performance_page/network.rs:569
+#: src/performance_page/mod.rs:634 src/performance_page/cpu.rs:354
+#: src/performance_page/cpu.rs:378 src/performance_page/cpu.rs:386
+#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:476
+#: src/performance_page/gpu.rs:616 src/performance_page/memory.rs:502
+#: src/performance_page/memory.rs:804 src/performance_page/network.rs:413
+#: src/performance_page/network.rs:437 src/performance_page/network.rs:447
+#: src/performance_page/network.rs:509 src/performance_page/network.rs:559
+#: src/performance_page/network.rs:595
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: src/performance_page/mod.rs:735 src/performance_page/network.rs:349
-msgid "Ethernet"
-msgstr "Ethernet"
-
-#: src/performance_page/mod.rs:736 src/performance_page/network.rs:364
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: src/performance_page/mod.rs:737 src/performance_page/network.rs:366
-msgid "Other"
-msgstr "Otro"
-
-#: src/performance_page/mod.rs:878
+#: src/performance_page/mod.rs:876
 msgid "GPU {}"
 msgstr "GPU {}"
 
-#: src/performance_page/mod.rs:880
+#: src/performance_page/mod.rs:878
 msgid "GPU"
 msgstr "GPU"
 
-#: src/performance_page/mod.rs:1211 src/performance_page/mod.rs:1219
+#: src/performance_page/mod.rs:1210 src/performance_page/mod.rs:1218
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}bps"
 
-#: src/performance_page/cpu.rs:362 src/performance_page/cpu.rs:447
-#: src/performance_page/cpu.rs:455 src/performance_page/cpu.rs:471
-#: src/performance_page/gpu.rs:349
+#: src/performance_page/cpu.rs:366 src/performance_page/gpu.rs:488
 msgid "Unsupported"
 msgstr "No soportado"
 
-#: src/performance_page/cpu.rs:369 src/performance_page/disk.rs:249
+#: src/performance_page/cpu.rs:373 src/performance_page/disk.rs:249
 msgid "Yes"
 msgstr "Sí"
 
-#: src/performance_page/cpu.rs:371 src/performance_page/disk.rs:251
+#: src/performance_page/cpu.rs:375 src/performance_page/disk.rs:251
 msgid "No"
 msgstr "No"
 
-#: src/performance_page/cpu.rs:984 src/performance_page/gpu.rs:759
+#: src/performance_page/cpu.rs:1004 src/performance_page/gpu.rs:955
+#: src/performance_page/memory.rs:869
 msgid "{} second{}"
 msgstr "{} segundo{}"
 
-#: src/performance_page/cpu.rs:995 src/performance_page/gpu.rs:770
+#: src/performance_page/cpu.rs:1015 src/performance_page/gpu.rs:966
+#: src/performance_page/memory.rs:880
 msgid "{} minute{} "
 msgstr "{} minuto{} "
 
@@ -916,20 +1012,19 @@ msgstr "Drive ({})"
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/memory.rs:501
+#: src/performance_page/memory.rs:797
 msgid "Getting additional memory information failed"
 msgstr "Error al obtener información adicional de la memoria"
 
-#: src/performance_page/memory.rs:580
-msgid "{:} minute"
-msgid_plural "{:} minutes"
-msgstr[0] "{:} minuto"
-msgstr[1] "{:} minutos"
-
-#: src/performance_page/network.rs:456 src/performance_page/network.rs:463
-#: src/performance_page/network.rs:473
+#: src/performance_page/network.rs:459 src/performance_page/network.rs:466
+#: src/performance_page/network.rs:476
 msgid "{} {}bps"
 msgstr "{} {}bps"
+
+#: src/performance_page/network.rs:487 src/performance_page/network.rs:498
+#, fuzzy
+msgid "{} {}{}B"
+msgstr "{} {}{}B/s"
 
 #: src/services_page/mod.rs:637
 msgid "{} Running Services"
@@ -954,13 +1049,27 @@ msgstr "Fallido"
 msgid "Stopped"
 msgstr "Detenido"
 
-#: src/application.rs:355
+#: src/application.rs:353
 msgid "translator-credits"
 msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 
 #: src/main.rs:121
 msgid "_Quit"
 msgstr "_Salir"
+
+#~ msgid "Ethernet"
+#~ msgstr "Ethernet"
+
+#~ msgid "Wi-Fi"
+#~ msgstr "Wi-Fi"
+
+#~ msgid "Other"
+#~ msgstr "Otro"
+
+#~ msgid "{:} minute"
+#~ msgid_plural "{:} minutes"
+#~ msgstr[0] "{:} minuto"
+#~ msgstr[1] "{:} minutos"
 
 #~ msgid "Flatpak first"
 #~ msgstr "Primero en Flatpak"
@@ -1101,9 +1210,6 @@ msgstr "_Salir"
 
 #~ msgid "A lot of new translations and fixes to existing ones"
 #~ msgstr "Muchas traducciones nuevas y correcciones de las existentes"
-
-#~ msgid "Improve memory composition graph"
-#~ msgstr "Mejorar el gráfico de composición de la memoria"
 
 #~ msgid "Add GPU usage column in the Apps tab"
 #~ msgstr "Añadir columna de uso de GPU en la pestaña aplicaciones"

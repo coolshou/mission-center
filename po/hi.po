@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-24 10:40+0300\n"
+"POT-Creation-Date: 2024-09-08 09:45+0300\n"
 "PO-Revision-Date: 2024-06-11 21:00+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
@@ -151,11 +151,11 @@ msgstr "टिप्पणियां, सुझाव, बग रिपोर�
 msgid "Which page is shown on application startup"
 msgstr "अनुप्रयोग स्टार्टअप पर कौन सा पृष्ठ दिखाया जाता है"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:37
+#: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
 msgstr "अस्वीकृत! अब उपयोग में नहीं!"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:43
+#: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
@@ -163,64 +163,108 @@ msgstr ""
 "डेटा को कितनी तेजी से ताज़ा किया जाना चाहिए और UI को अपडेट किया जाना चाहिए (50ms "
 "की वृद्धि में)"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:49
+#: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
 msgstr "प्रत्येक चार्ट पर कितने अंक प्रदर्शित होने चाहिए?"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:54
-#: resources/ui/preferences/page.blp:50
+#: data/io.missioncenter.MissionCenter.gschema.xml:56
+#: resources/ui/preferences/page.blp:89
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "मुख्य और उप प्रक्रिया के आँकड़े अलग-अलग दिखाए जाते हैं या ऊपर की ओर विलय किए जाते हैं"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:59
+#: data/io.missioncenter.MissionCenter.gschema.xml:61
 msgid "Column sorting is persisted across app restarts"
 msgstr "ऐप पुनरारंभ होने पर कॉलम छंटाई कायम रहती है"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:64
-#: resources/ui/preferences/page.blp:60
+#: data/io.missioncenter.MissionCenter.gschema.xml:66
+#: resources/ui/preferences/page.blp:99
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr "उपलब्ध कोर की संख्या के आधार पर ऐप्स और प्रक्रियाओं के लिए CPU उपयोग दिखाएं"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:69
+#: data/io.missioncenter.MissionCenter.gschema.xml:71
 msgid "The column id by which the Apps page view is sorted"
 msgstr "वह कॉलम ID जिसके द्वारा ऐप्स पृष्ठ दृश्य को क्रमबद्ध किया जाता है"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:74
+#: data/io.missioncenter.MissionCenter.gschema.xml:76
 msgid "The sorting direction of the Apps page view"
 msgstr "ऐप्स पृष्ठ दृश्य की छंटाई दिशा"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:80
+#: data/io.missioncenter.MissionCenter.gschema.xml:83
 msgid "Which graph is shown on the CPU performance page"
 msgstr "CPU प्रदर्शन पृष्ठ पर कौन सा ग्राफ दिखाया गया है"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:85
+#: data/io.missioncenter.MissionCenter.gschema.xml:88
 msgid "Show kernel times in the CPU graphs"
 msgstr "CPU ग्राफ में कर्नेल समय दिखाएं"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:90
+#: data/io.missioncenter.MissionCenter.gschema.xml:93
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr "अनुप्रयोग पुनरारंभ पर प्रदर्शन टैब में कौन सा पृष्ठ दिखाया गया है"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:95
+#: data/io.missioncenter.MissionCenter.gschema.xml:99
 msgid "Should performance graphs be smooth or jagged"
 msgstr "क्या प्रदर्शन ग्राफ सुचारू या टेढ़े-मेढ़े होने चाहिए"
 
-#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1361
-#: src/performance_page/mod.rs:434
+#: data/io.missioncenter.MissionCenter.gschema.xml:104
+#: resources/ui/preferences/page.blp:55
+msgid "Show CPU information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:109
+#: resources/ui/preferences/page.blp:60
+#, fuzzy
+msgid "Show memory information by default"
+msgstr "अतिरिक्त मेमोरी जानकारी प्राप्त करना विफल रहा"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:114
+#: resources/ui/preferences/page.blp:65
+msgid "Show disk information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:119
+#: resources/ui/preferences/page.blp:70
+msgid "Show network information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:124
+#: resources/ui/preferences/page.blp:75
+msgid "Show GPU information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:129
+#: resources/ui/preferences/page.blp:80
+msgid "Show fan information by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:135
+#, fuzzy
+msgid "Show the mem composition widget"
+msgstr "बेहतर मेमोरी संरचना ग्राफ़"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:140
+msgid "Show the swap graph"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:145
+msgid "Show the gpu encode-decode graph graph"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1394
+#: src/performance_page/mod.rs:428
 msgid "CPU"
 msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
-#: resources/ui/performance_page/gpu.blp:67
+#: resources/ui/performance_page/gpu.blp:71
 #, fuzzy
 msgid "Utilization over "
 msgstr "{}{} से अधिक उपयोग"
 
 #: resources/ui/performance_page/cpu.blp:77
-#: resources/ui/performance_page/gpu.blp:81
-#: resources/ui/performance_page/gpu.blp:126
+#: resources/ui/performance_page/gpu.blp:85
+#: resources/ui/performance_page/gpu.blp:130
 msgid "100%"
 msgstr "100%"
 
@@ -242,64 +286,64 @@ msgstr "कर्नेल समय दिखाएं"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
-#: resources/ui/performance_page/gpu.blp:195
-#: resources/ui/performance_page/memory.blp:136
+#: resources/ui/performance_page/gpu.blp:206
+#: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
 msgstr "ग्राफ सारांश दृश्य (_S)"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
-#: resources/ui/performance_page/gpu.blp:200
-#: resources/ui/performance_page/memory.blp:141
+#: resources/ui/performance_page/gpu.blp:211
+#: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
 msgstr "देखें (_V)"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
-#: resources/ui/performance_page/gpu.blp:203
-#: resources/ui/performance_page/memory.blp:144
+#: resources/ui/performance_page/gpu.blp:214
+#: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
 msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
-#: resources/ui/performance_page/gpu.blp:208
-#: resources/ui/performance_page/memory.blp:149
+#: resources/ui/performance_page/gpu.blp:219
+#: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
 msgstr "मेमोरी (_M)"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
-#: resources/ui/performance_page/gpu.blp:213
-#: resources/ui/performance_page/memory.blp:154
+#: resources/ui/performance_page/gpu.blp:224
+#: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
 msgstr "ड्राइव (_D)"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
-#: resources/ui/performance_page/gpu.blp:218
-#: resources/ui/performance_page/memory.blp:159
+#: resources/ui/performance_page/gpu.blp:229
+#: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
 msgstr "नेटवर्क (_N)"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
-#: resources/ui/performance_page/gpu.blp:223
-#: resources/ui/performance_page/memory.blp:164
+#: resources/ui/performance_page/gpu.blp:234
+#: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
 msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:162
 #: resources/ui/performance_page/disk.blp:183
-#: resources/ui/performance_page/gpu.blp:231
-#: resources/ui/performance_page/memory.blp:172
+#: resources/ui/performance_page/gpu.blp:242
+#: resources/ui/performance_page/memory.blp:232
 #: resources/ui/performance_page/network.blp:146
 msgid "_Copy"
 msgstr "कॉपी (_C)"
@@ -313,7 +357,7 @@ msgstr "उपयोग"
 msgid "Speed"
 msgstr "गति"
 
-#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:547
+#: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:570
 msgid "Processes"
 msgstr "प्रक्रियाएं"
 
@@ -413,109 +457,132 @@ msgid "System disk:"
 msgstr "सिस्टम डिस्क:"
 
 #: resources/ui/performance_page/disk_details.blp:204
-#: resources/ui/performance_page/memory_details.blp:238
+#: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
 msgstr "प्रकार:"
 
-#: resources/ui/performance_page/gpu.blp:110
+#: resources/ui/performance_page/gpu.blp:114
 #, fuzzy
 msgid "Video encode/decode utilization over "
 msgstr "वीडियो एन्कोड उपयोगीकरण"
 
-#: resources/ui/performance_page/gpu.blp:154
-#: resources/ui/performance_page/memory.blp:62
+#: resources/ui/performance_page/gpu.blp:156
+#: resources/ui/performance_page/memory.blp:71
 #, fuzzy
 msgid "Memory usage over "
 msgstr "मेमोरी उपयोग"
 
-#: resources/ui/performance_page/gpu_details.blp:66
+#: resources/ui/performance_page/gpu.blp:199
+msgid "Show Encode/Decode Usage"
+msgstr ""
+
+#: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
 msgstr "क्लाक गति"
 
-#: resources/ui/performance_page/gpu_details.blp:111
+#: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
 msgstr "ऊर्जा खपत"
 
-#: resources/ui/performance_page/gpu_details.blp:147
+#: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
 msgstr "मेमोरी उपयोग"
 
-#: resources/ui/performance_page/gpu_details.blp:192
+#: resources/ui/performance_page/gpu_details.blp:208
+#, fuzzy
+msgid "GTT usage"
+msgstr "GPU उपयोग"
+
+#: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "मेमोरी गति"
 
-#: resources/ui/performance_page/gpu_details.blp:247
+#: resources/ui/performance_page/gpu_details.blp:310
 #, fuzzy
 msgid "Video encode"
 msgstr "वीडियो एन्कोड/डीकोड"
 
-#: resources/ui/performance_page/gpu_details.blp:279
+#: resources/ui/performance_page/gpu_details.blp:343
 #, fuzzy
 msgid "Video decode"
 msgstr "वीडियो एन्कोड/डीकोड"
 
-#: resources/ui/performance_page/gpu_details.blp:304
+#: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
 msgstr "तापमान"
 
-#: resources/ui/performance_page/gpu_details.blp:329
+#: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
 msgstr "OpenGL संस्करण:"
 
-#: resources/ui/performance_page/gpu_details.blp:343
+#: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
 msgstr "Vulkan संस्करण:"
 
-#: resources/ui/performance_page/gpu_details.blp:357
+#: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
 msgstr "PCI एक्सप्रेस गति:"
 
-#: resources/ui/performance_page/gpu_details.blp:371
+#: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
 msgstr "PCI बस का पता:"
 
-#: resources/ui/performance_page/memory.blp:44 src/apps_page/mod.rs:1367
-#: src/performance_page/mod.rs:509
+#: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1400
+#: src/performance_page/mod.rs:508
 msgid "Memory"
 msgstr "मेमोरी"
 
-#: resources/ui/performance_page/memory.blp:110
+#: resources/ui/performance_page/memory.blp:115
+#, fuzzy
+msgid "Swap usage over "
+msgstr "मेमोरी उपयोग"
+
+#: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "मेमोरी संघटन"
 
-#: resources/ui/performance_page/memory_details.blp:47
+#: resources/ui/performance_page/memory.blp:185
+#, fuzzy
+msgid "Show Memory Composition"
+msgstr "मेमोरी संघटन"
+
+#: resources/ui/performance_page/memory.blp:189
+msgid "Show Swap Usage"
+msgstr ""
+
+#: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
 msgstr "उपयोग में"
 
-#: resources/ui/performance_page/memory_details.blp:70
+#: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
 msgstr "उपलब्ध"
 
-#: resources/ui/performance_page/memory_details.blp:98
+#: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
 msgstr "प्रतिबद्ध"
 
-#: resources/ui/performance_page/memory_details.blp:121
+#: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
 msgstr "कैशे किया गया"
 
-#: resources/ui/performance_page/memory_details.blp:149
+#: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
 msgstr "स्वैप उपयोग किया गया"
 
-#: resources/ui/performance_page/memory_details.blp:172
+#: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
 msgstr "स्वैप उपलब्ध"
 
-#: resources/ui/performance_page/memory_details.blp:196
+#: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
 msgstr "गति:"
 
-#: resources/ui/performance_page/memory_details.blp:210
+#: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
 msgstr "प्रयुक्त खांचें:"
 
-#: resources/ui/performance_page/memory_details.blp:224
+#: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
 msgstr "प्रपत्र कारक:"
 
@@ -523,52 +590,61 @@ msgstr "प्रपत्र कारक:"
 msgid "Network Se_ttings"
 msgstr "नेटवर्क सेटिंग्स (_t)"
 
-#: resources/ui/performance_page/network_details.blp:51
+#: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
 msgstr "प्राप्त करें"
 
-#: resources/ui/performance_page/network_details.blp:83
+#: resources/ui/performance_page/network_details.blp:78
+msgid "Total Recieved"
+msgstr ""
+
+#: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
 msgstr "भेजें"
 
-#: resources/ui/performance_page/network_details.blp:107
+#: resources/ui/performance_page/network_details.blp:137
+msgid "Total Sent"
+msgstr ""
+
+#: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
 msgstr "इंटरफ़ेस नाम:"
 
-#: resources/ui/performance_page/network_details.blp:121
+#: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
 msgstr "कनेक्शन प्रकार:"
 
-#: resources/ui/performance_page/network_details.blp:136
+#: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:151
+#: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
 msgstr "संकेत क्षमता:"
 
-#: resources/ui/performance_page/network_details.blp:166
+#: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
 msgstr "अधिकतम बिटरेट:"
 
-#: resources/ui/performance_page/network_details.blp:181
+#: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
 msgstr "आवृत्ति:"
 
-#: resources/ui/performance_page/network_details.blp:195
+#: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
 msgstr "हार्डवेयर पता:"
 
-#: resources/ui/performance_page/network_details.blp:309
+#: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
 msgstr "IPv4 पता:"
 
-#: resources/ui/performance_page/network_details.blp:323
+#: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
 msgstr "IPv6 पता:"
 
 #: resources/ui/preferences/page.blp:6
-msgid "General Settings"
+#, fuzzy
+msgid "General"
 msgstr "सामान्य सेटिंग्स"
 
 #: resources/ui/preferences/page.blp:9
@@ -580,32 +656,64 @@ msgid "Chart Data Points"
 msgstr "चार्ट डेटा बिंदु"
 
 #: resources/ui/preferences/page.blp:46
-msgid "App Page Settings"
-msgstr "ऐप पृष्ठ सेटिंग्स"
+#, fuzzy
+msgid "Performance Page"
+msgstr "प्रदर्शन"
 
 #: resources/ui/preferences/page.blp:49
-msgid "Merge Process Stats"
-msgstr "विलय प्रक्रिया आंकड़े"
-
-#: resources/ui/preferences/page.blp:54
-msgid "Remember Sorting"
-msgstr "छँटाई याद रखें"
-
-#: resources/ui/preferences/page.blp:55
-msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "ऐप को पुनः आरंभ करने पर ऐप और प्रक्रिया सूची को छँटाई याद रखें"
-
-#: resources/ui/preferences/page.blp:59
-msgid "Scale CPU Usage to Core Count"
-msgstr "CPU उपयोग को कोर गणना तक स्केल करें"
-
-#: resources/ui/preferences/page.blp:64
 msgid "Smooth Graphs"
 msgstr "सुचारू ग्राफ"
 
-#: resources/ui/preferences/page.blp:65
+#: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
 msgstr "ग्राफ को टेढ़ी-मेढ़ी रेखा के बजाय सुचारू रेखा के रूप में बनाएं"
+
+#: resources/ui/preferences/page.blp:54
+msgid "Show CPU Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:59
+#, fuzzy
+msgid "Show Memory Information"
+msgstr "मेमोरी संघटन"
+
+#: resources/ui/preferences/page.blp:64
+msgid "Show Disk Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:69
+msgid "Show Network Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:74
+msgid "Show GPU Information"
+msgstr ""
+
+#: resources/ui/preferences/page.blp:79
+#, fuzzy
+msgid "Show Fan Information"
+msgstr "प्रक्रिया और उपयोक्ता जानकारी"
+
+#: resources/ui/preferences/page.blp:85
+#, fuzzy
+msgid "App Page"
+msgstr "ऐप पृष्ठ सेटिंग्स"
+
+#: resources/ui/preferences/page.blp:88
+msgid "Merge Process Stats"
+msgstr "विलय प्रक्रिया आंकड़े"
+
+#: resources/ui/preferences/page.blp:93
+msgid "Remember Sorting"
+msgstr "छँटाई याद रखें"
+
+#: resources/ui/preferences/page.blp:94
+msgid "Remember the sorting of the app and process list across app restarts"
+msgstr "ऐप को पुनः आरंभ करने पर ऐप और प्रक्रिया सूची को छँटाई याद रखें"
+
+#: resources/ui/preferences/page.blp:98
+msgid "Scale CPU Usage to Core Count"
+msgstr "CPU उपयोग को कोर गणना तक स्केल करें"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
@@ -620,7 +728,7 @@ msgid "The current state of the service"
 msgstr "सेवा की वर्तमान अवस्था"
 
 #: resources/ui/services_page/details_dialog.blp:127
-#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1349
+#: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1382
 msgid "Name"
 msgstr "नाम"
 
@@ -652,7 +760,7 @@ msgstr "प्रक्रिया ID"
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
 #: resources/ui/services_page/details_dialog.blp:307
-#: src/performance_page/network.rs:495 src/performance_page/network.rs:510
+#: src/performance_page/network.rs:521 src/performance_page/network.rs:536
 #: src/services_page/details_dialog.rs:251
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
@@ -691,7 +799,7 @@ msgstr "पुनः प्रारंभ करें"
 msgid "Details"
 msgstr "विवरण"
 
-#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1355
+#: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1388
 msgid "PID"
 msgstr "PID"
 
@@ -715,7 +823,7 @@ msgstr "लोड हो रहा है…"
 msgid "Performance"
 msgstr "प्रदर्शन"
 
-#: resources/ui/window.blp:171 src/apps_page/mod.rs:540
+#: resources/ui/window.blp:171 src/apps_page/mod.rs:563
 msgid "Apps"
 msgstr "ऐप्स"
 
@@ -731,15 +839,15 @@ msgstr "प्राथमिकताएं (_P)"
 msgid "_About MissionCenter"
 msgstr "MissionCenter के बारे में (_A)"
 
-#: src/apps_page/mod.rs:1373 src/performance_page/mod.rs:604
+#: src/apps_page/mod.rs:1406 src/performance_page/mod.rs:609
 msgid "Drive"
 msgstr "ड्राइव"
 
-#: src/apps_page/mod.rs:1387
+#: src/apps_page/mod.rs:1420
 msgid "GPU Usage"
 msgstr "GPU उपयोग"
 
-#: src/apps_page/mod.rs:1397
+#: src/apps_page/mod.rs:1430
 msgid "GPU Mem"
 msgstr "GPU मेम"
 
@@ -805,88 +913,76 @@ msgstr ""
 "वह मेमोरी जो वर्तमान में उपयोग में नहीं है, और जिसे ऑपरेटिंग सिस्टम, ड्राइवर या अनुप्रयोग "
 "को अधिक मेमोरी की आवश्यकता होने पर पहले पुन: उपयोग किया जाएगा"
 
-#: src/performance_page/mod.rs:600 src/performance_page/disk.rs:280
+#: src/performance_page/mod.rs:605 src/performance_page/disk.rs:280
 msgid "Drive {} ({})"
 msgstr "ड्राइव {} ({})"
 
-#: src/performance_page/mod.rs:623
+#: src/performance_page/mod.rs:628
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/mod.rs:624
+#: src/performance_page/mod.rs:629
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/mod.rs:625
+#: src/performance_page/mod.rs:630
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/mod.rs:626
+#: src/performance_page/mod.rs:631
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/mod.rs:627
+#: src/performance_page/mod.rs:632
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/mod.rs:628
+#: src/performance_page/mod.rs:633
 msgid "Optical"
 msgstr "ऑप्टिकल"
 
-#: src/performance_page/mod.rs:629 src/performance_page/cpu.rs:350
-#: src/performance_page/cpu.rs:374 src/performance_page/cpu.rs:382
-#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:337
-#: src/performance_page/gpu.rs:458 src/performance_page/memory.rs:274
-#: src/performance_page/memory.rs:508 src/performance_page/network.rs:410
-#: src/performance_page/network.rs:434 src/performance_page/network.rs:444
-#: src/performance_page/network.rs:483 src/performance_page/network.rs:533
-#: src/performance_page/network.rs:569
+#: src/performance_page/mod.rs:634 src/performance_page/cpu.rs:354
+#: src/performance_page/cpu.rs:378 src/performance_page/cpu.rs:386
+#: src/performance_page/disk.rs:329 src/performance_page/gpu.rs:476
+#: src/performance_page/gpu.rs:616 src/performance_page/memory.rs:502
+#: src/performance_page/memory.rs:804 src/performance_page/network.rs:413
+#: src/performance_page/network.rs:437 src/performance_page/network.rs:447
+#: src/performance_page/network.rs:509 src/performance_page/network.rs:559
+#: src/performance_page/network.rs:595
 msgid "Unknown"
 msgstr "अज्ञात"
 
-#: src/performance_page/mod.rs:735 src/performance_page/network.rs:349
-msgid "Ethernet"
-msgstr "Ethernet"
-
-#: src/performance_page/mod.rs:736 src/performance_page/network.rs:364
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: src/performance_page/mod.rs:737 src/performance_page/network.rs:366
-msgid "Other"
-msgstr "अन्य"
-
-#: src/performance_page/mod.rs:878
+#: src/performance_page/mod.rs:876
 msgid "GPU {}"
 msgstr "GPU {}"
 
-#: src/performance_page/mod.rs:880
+#: src/performance_page/mod.rs:878
 msgid "GPU"
 msgstr "GPU"
 
-#: src/performance_page/mod.rs:1211 src/performance_page/mod.rs:1219
+#: src/performance_page/mod.rs:1210 src/performance_page/mod.rs:1218
 msgid "{}: {} {}bps"
 msgstr "{}: {} {}bps"
 
-#: src/performance_page/cpu.rs:362 src/performance_page/cpu.rs:447
-#: src/performance_page/cpu.rs:455 src/performance_page/cpu.rs:471
-#: src/performance_page/gpu.rs:349
+#: src/performance_page/cpu.rs:366 src/performance_page/gpu.rs:488
 msgid "Unsupported"
 msgstr "असमर्थित"
 
-#: src/performance_page/cpu.rs:369 src/performance_page/disk.rs:249
+#: src/performance_page/cpu.rs:373 src/performance_page/disk.rs:249
 msgid "Yes"
 msgstr "हां"
 
-#: src/performance_page/cpu.rs:371 src/performance_page/disk.rs:251
+#: src/performance_page/cpu.rs:375 src/performance_page/disk.rs:251
 msgid "No"
 msgstr "नहीं"
 
-#: src/performance_page/cpu.rs:984 src/performance_page/gpu.rs:759
+#: src/performance_page/cpu.rs:1004 src/performance_page/gpu.rs:955
+#: src/performance_page/memory.rs:869
 msgid "{} second{}"
 msgstr "{} सेकंड{}"
 
-#: src/performance_page/cpu.rs:995 src/performance_page/gpu.rs:770
+#: src/performance_page/cpu.rs:1015 src/performance_page/gpu.rs:966
+#: src/performance_page/memory.rs:880
 msgid "{} minute{} "
 msgstr "{} मिनट{} "
 
@@ -902,21 +998,19 @@ msgstr "ड्राइव ({})"
 msgid "{} {}{}B/s"
 msgstr "{} {}{}B/s"
 
-#: src/performance_page/memory.rs:501
+#: src/performance_page/memory.rs:797
 msgid "Getting additional memory information failed"
 msgstr "अतिरिक्त मेमोरी जानकारी प्राप्त करना विफल रहा"
 
-#: src/performance_page/memory.rs:580
-#, fuzzy
-msgid "{:} minute"
-msgid_plural "{:} minutes"
-msgstr[0] "{} मिनट{} "
-msgstr[1] "{} मिनट{} "
-
-#: src/performance_page/network.rs:456 src/performance_page/network.rs:463
-#: src/performance_page/network.rs:473
+#: src/performance_page/network.rs:459 src/performance_page/network.rs:466
+#: src/performance_page/network.rs:476
 msgid "{} {}bps"
 msgstr "{} {}bps"
+
+#: src/performance_page/network.rs:487 src/performance_page/network.rs:498
+#, fuzzy
+msgid "{} {}{}B"
+msgstr "{} {}{}B/s"
 
 #: src/services_page/mod.rs:637
 msgid "{} Running Services"
@@ -941,13 +1035,28 @@ msgstr "असफल"
 msgid "Stopped"
 msgstr "रुका हुआ"
 
-#: src/application.rs:355
+#: src/application.rs:353
 msgid "translator-credits"
 msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
 
 #: src/main.rs:121
 msgid "_Quit"
 msgstr "बंद करें (_Q)"
+
+#~ msgid "Ethernet"
+#~ msgstr "Ethernet"
+
+#~ msgid "Wi-Fi"
+#~ msgstr "Wi-Fi"
+
+#~ msgid "Other"
+#~ msgstr "अन्य"
+
+#, fuzzy
+#~ msgid "{:} minute"
+#~ msgid_plural "{:} minutes"
+#~ msgstr[0] "{} मिनट{} "
+#~ msgstr[1] "{} मिनट{} "
 
 #~ msgid "Flatpak first"
 #~ msgstr "Flatpak पहले"
@@ -1062,9 +1171,6 @@ msgstr "बंद करें (_Q)"
 
 #~ msgid "A lot of new translations and fixes to existing ones"
 #~ msgstr "बहुत सारे नए अनुवाद और मौजूदा अनुवादों में सुधार"
-
-#~ msgid "Improve memory composition graph"
-#~ msgstr "बेहतर मेमोरी संरचना ग्राफ़"
 
 #~ msgid "Add GPU usage column in the Apps tab"
 #~ msgstr "ऐप्स टैब में GPU उपयोग कॉलम जोड़ा गया"
