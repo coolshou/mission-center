@@ -278,6 +278,27 @@ ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
 cd ../../ && rm -rf pango-$PANGO_VER*
 cd $OUT_PATH
 
+# GLSLC
+# -------------------------------------------------------------
+GLSLC_VER=2024.1
+# -------------------------------------------------------------
+curl -LO https://github.com/google/shaderc/archive/refs/tags/v$GLSLC_VER.tar.gz
+tar xvf v$GLSLC_VER.tar.gz
+cd shaderc-$GLSLC_VER
+./utils/git-sync-deps
+mkdir build && cd build
+cmake -GNinja -S ..                    \
+    -DCMAKE_INSTALL_PREFIX=/usr        \
+    -DCMAKE_BUILD_TYPE=Release         \
+    -DSHADERC_SKIP_INSTALL=OFF         \
+    -DSHADERC_SKIP_TESTS=ON            \
+    -DSHADERC_SKIP_EXAMPLES=ON         \
+    -DSHADERC_SKIP_COPYRIGHT_CHECK=ON  \
+    -DSHADERC_ENABLE_WERROR_COMPILE=OFF
+ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
+cd ../../ && rm -rf v$GLSLC_VER shaderc-$GLSLC_VER*
+cd $OUT_PATH
+
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
 GTK_VER=4.16.0
@@ -286,12 +307,18 @@ GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
 tar xvf gtk-$GTK_VER.tar.xz
 cd gtk-$GTK_VER
+# Patch for GLAD Vulkan support
+for f in $SRC_PATH/support/patches/gtk4/*.patch; do
+  patch -p1 < $f
+done
+# Copy glad project into GTK source directory
+cp -rv $SRC_PATH/support/patches/gtk4/glad .
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
     --libdir=/usr/lib/$(arch)-linux-gnu \
     --buildtype=release                \
-    -Dbroadway-backend=true            \
+    -Dvulkan=enabled                   \
     -Dintrospection=enabled            \
     -Dbuild-examples=false             \
     -Dbuild-tests=false                \
@@ -299,8 +326,7 @@ mkdir build && cd build
     -Dbuild-testsuite=false            \
     -Dbroadway-backend=false           \
     -Dmedia-gstreamer=disabled         \
-    -Dprint-cups=disabled              \
-    -Dvulkan=disabled
+    -Dprint-cups=disabled
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
 cd ../../ && rm -rf gtk-$GTK_VER*
 cd $OUT_PATH
