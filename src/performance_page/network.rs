@@ -138,28 +138,15 @@ mod imp {
         }
 
         fn connection_type(&self) -> u8 {
-            self.connection_type.get() as u8
+            self.connection_type.get().into()
         }
 
         fn set_connection_type(&self, connection_type: u8) {
-            {
-                let if_type = self.connection_type.get();
-                if if_type as u8 == connection_type {
-                    return;
-                }
+            if connection_type == self.connection_type.get().into() {
+                return;
             }
 
-            match connection_type {
-                0_u8 => self
-                    .connection_type
-                    .replace(crate::sys_info_v2::NetDeviceType::Wired),
-                1_u8 => self
-                    .connection_type
-                    .replace(crate::sys_info_v2::NetDeviceType::Wireless),
-                _ => self
-                    .connection_type
-                    .replace(crate::sys_info_v2::NetDeviceType::Other),
-            };
+            self.connection_type.replace(connection_type.into());
         }
 
         fn infobar_content(&self) -> Option<gtk::Widget> {

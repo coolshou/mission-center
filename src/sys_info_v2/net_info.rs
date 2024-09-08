@@ -71,6 +71,42 @@ impl ToString for NetDeviceType {
     }
 }
 
+impl From<u8> for NetDeviceType {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => NetDeviceType::Bluetooth,
+            1 => NetDeviceType::Bridge,
+            2 => NetDeviceType::Docker,
+            3 => NetDeviceType::InfiniBand,
+            4 => NetDeviceType::Multipass,
+            5 => NetDeviceType::Virtual,
+            6 => NetDeviceType::VPN,
+            7 => NetDeviceType::Wired,
+            8 => NetDeviceType::Wireless,
+            9 => NetDeviceType::WWAN,
+            _ => NetDeviceType::Other,
+        }
+    }
+}
+
+impl From<NetDeviceType> for u8 {
+    fn from(v: NetDeviceType) -> Self {
+        match v {
+            NetDeviceType::Bluetooth => 0,
+            NetDeviceType::Bridge => 1,
+            NetDeviceType::Docker => 2,
+            NetDeviceType::InfiniBand => 3,
+            NetDeviceType::Multipass => 4,
+            NetDeviceType::Virtual => 5,
+            NetDeviceType::VPN => 6,
+            NetDeviceType::Wired => 7,
+            NetDeviceType::Wireless => 8,
+            NetDeviceType::WWAN => 9,
+            NetDeviceType::Other => 255,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NetworkDeviceDescriptor {
     pub kind: NetDeviceType,
