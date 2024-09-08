@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-24 10:40+0300\n"
-"PO-Revision-Date: 2024-05-02 11:07+0000\n"
-"Last-Translator: WRZOOZ <felxwrzooz@gmail.com>\n"
+"PO-Revision-Date: 2024-09-07 20:09+0000\n"
+"Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
 "Language: pl\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5.3-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -142,6 +142,9 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Monitorowanie kart firmy Intel jest obsługiwane tylko dla kart architektury "
+"Broadwell lub późniejszych. Nie ma opcji monitorowania VRAM, zużycia mocy "
+"oraz temperatury"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -149,6 +152,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Uruchomione aplikacje pod Linux Mint lub Cinnamone mogę się nie pokazywać w "
+"sekcji \"Aplikacje\" (więcej informacji: https://github.com/linuxmint/"
+"cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -161,7 +167,7 @@ msgstr "Która strona jest pokazywana po uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:37
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "NIEAKTUALNE! NIEUŻYWANE!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:43
 #, fuzzy
@@ -172,7 +178,7 @@ msgstr "Szybkość odświeżania danych i aktualizacji interfejsu użytkownika"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:49
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Ile punktów pokazywać na każdym wykresie?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:54
 #: resources/ui/preferences/page.blp:50
@@ -255,7 +261,7 @@ msgstr "Pokaż czasy jądra"
 #: resources/ui/performance_page/memory.blp:136
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr "Wykres podsumowania"
+msgstr "Wykres _podsumowania"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -263,7 +269,7 @@ msgstr "Wykres podsumowania"
 #: resources/ui/performance_page/memory.blp:141
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr "Widok"
+msgstr "_Widok"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -271,7 +277,7 @@ msgstr "Widok"
 #: resources/ui/performance_page/memory.blp:144
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr "CPU"
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -279,7 +285,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/memory.blp:149
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr "Pamięć"
+msgstr "Pa_mięć"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -287,7 +293,7 @@ msgstr "Pamięć"
 #: resources/ui/performance_page/memory.blp:154
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Dysk"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -295,7 +301,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:159
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr "Sieć"
+msgstr "_Sieć"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -303,7 +309,7 @@ msgstr "Sieć"
 #: resources/ui/performance_page/memory.blp:164
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr "GPU"
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:162
 #: resources/ui/performance_page/disk.blp:183
@@ -311,7 +317,7 @@ msgstr "GPU"
 #: resources/ui/performance_page/memory.blp:172
 #: resources/ui/performance_page/network.blp:146
 msgid "_Copy"
-msgstr "Kopiuj"
+msgstr "_Kopiuj"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
@@ -384,15 +390,13 @@ msgid "Power preference:"
 msgstr "Preferencje"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Czas aktywności"
+msgstr "Czas aktywności "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Przepustowość"
+msgstr "Przepustowość "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -583,11 +587,11 @@ msgstr "Ustawienia ogólne"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Częstotliwość aktualizacji"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Liczba punktów na wykresie"
 
 #: resources/ui/preferences/page.blp:46
 msgid "App Page Settings"
@@ -621,15 +625,15 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Szczegóły serwisu"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Stan"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Aktualny stan serwisu"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1349
@@ -639,29 +643,27 @@ msgstr "Nazwa"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Włączony"
 
 #: resources/ui/services_page/details_dialog.blp:213
-#, fuzzy
 msgid "Process"
-msgstr "Procesy"
+msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Proces i użytkownik"
 
 #: resources/ui/services_page/details_dialog.blp:230
-#, fuzzy
 msgid "Process ID"
-msgstr "Procesy"
+msgstr "ID procesu"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -675,35 +677,35 @@ msgstr "brak"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Użytkownik"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Grupa"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Logi"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Uruchom"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Zatrzymaj"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Restartuj"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:702
 msgid "Details"
-msgstr ""
+msgstr "Szczegóły"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1355
 msgid "PID"
@@ -711,7 +713,7 @@ msgstr "PID"
 
 #: resources/ui/window.blp:43
 msgid "Devices"
-msgstr ""
+msgstr "Urządzenia"
 
 #: resources/ui/window.blp:67
 msgid "Toggle Sidebar"
@@ -735,7 +737,7 @@ msgstr "Aplikacje"
 
 #: resources/ui/window.blp:179
 msgid "Services"
-msgstr ""
+msgstr "Serwisy"
 
 #: resources/ui/window.blp:198
 msgid "_Preferences"
@@ -747,16 +749,15 @@ msgstr "O programie"
 
 #: src/apps_page/mod.rs:1373 src/performance_page/mod.rs:604
 msgid "Drive"
-msgstr ""
+msgstr "Dysk"
 
 #: src/apps_page/mod.rs:1387
 msgid "GPU Usage"
-msgstr ""
+msgstr "Użycie GPU"
 
 #: src/apps_page/mod.rs:1397
-#, fuzzy
 msgid "GPU Mem"
-msgstr "GPU {}"
+msgstr "Pamięć GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
@@ -847,7 +848,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:628
 msgid "Optical"
-msgstr ""
+msgstr "Dysk optyczny"
 
 #: src/performance_page/mod.rs:629 src/performance_page/cpu.rs:350
 #: src/performance_page/cpu.rs:374 src/performance_page/cpu.rs:382
@@ -899,13 +900,12 @@ msgid "No"
 msgstr "Nie"
 
 #: src/performance_page/cpu.rs:984 src/performance_page/gpu.rs:759
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} sekund"
+msgstr "{} s."
 
 #: src/performance_page/cpu.rs:995 src/performance_page/gpu.rs:770
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} min. "
 
 #: src/performance_page/disk.rs:208
 msgid "Disk {} ({})"
@@ -922,14 +922,14 @@ msgstr "{} {}{}B/s"
 
 #: src/performance_page/memory.rs:501
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Pobieranie dodatkowych informacji nie powiodło się"
 
 #: src/performance_page/memory.rs:580
 msgid "{:} minute"
 msgid_plural "{:} minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "{:} minuta"
+msgstr[1] "{:} minuty"
+msgstr[2] "{:} minut"
 
 #: src/performance_page/network.rs:456 src/performance_page/network.rs:463
 #: src/performance_page/network.rs:473
@@ -938,7 +938,7 @@ msgstr "{} {}bps"
 
 #: src/services_page/mod.rs:637
 msgid "{} Running Services"
-msgstr ""
+msgstr "Uruchomione serwisy: {}"
 
 #: src/services_page/mod.rs:642
 msgid "{} failed services out of a total of {}"
@@ -947,7 +947,7 @@ msgstr ""
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "Uruchomione"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
@@ -957,7 +957,7 @@ msgstr ""
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Zatrzymane"
 
 #: src/application.rs:355
 msgid "translator-credits"
@@ -965,7 +965,7 @@ msgstr "ewm & a.lewicki95"
 
 #: src/main.rs:121
 msgid "_Quit"
-msgstr ""
+msgstr "_Zamknij"
 
 #~ msgid "Flatpak first"
 #~ msgstr "Najpierw Flatpak"
