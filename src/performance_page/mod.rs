@@ -1194,32 +1194,37 @@ mod imp {
                             {
                                 summary.set_page_secondary_index(index);
 
-                                let send_speed = network_device.send_bps;
-                                let rec_speed = network_device.recv_bps;
+                                let data_per_time = page.unit_per_second_label();
+                                let byte_coeff = page.byte_conversion_factor();
+
+                                let send_speed = network_device.send_bps * byte_coeff;
+                                let rec_speed = network_device.recv_bps * byte_coeff;
 
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, send_speed);
-                                graph_widget.add_data_point(1, rec_speed);
+                                graph_widget.add_data_point(0, network_device.send_bps);
+                                graph_widget.add_data_point(1, network_device.recv_bps);
 
-                                let sent_speed = crate::to_human_readable(send_speed * 8., 1024.);
-                                let rect_speeed = crate::to_human_readable(rec_speed * 8., 1024.);
+                                let sent_speed = crate::to_human_readable(send_speed, 1024.);
+                                let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
                                 summary.set_info1(i18n_f(
-                                    "{}: {} {}bps",
+                                    "{}: {} {}{}",
                                     &[
                                         "S",
                                         &format!("{0:.1$}", sent_speed.0, sent_speed.2),
                                         &format!("{}", sent_speed.1),
+                                        &*data_per_time,
                                     ],
                                 ));
                                 summary.set_info2(i18n_f(
-                                    "{}: {} {}bps",
+                                    "{}: {} {}{}",
                                     &[
                                         "R",
                                         &format!("{0:.1$}", rect_speeed.0, rect_speeed.2),
                                         &format!("{}", rect_speeed.1),
+                                        &*data_per_time,
                                     ],
                                 ));
 

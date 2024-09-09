@@ -92,6 +92,8 @@ mod imp {
         #[template_child]
         pub smooth_graphs: TemplateChild<SwitchRow>,
         #[template_child]
+        pub network_bytes: TemplateChild<SwitchRow>,
+        #[template_child]
         pub show_cpu: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_memory: TemplateChild<SwitchRow>,
@@ -121,6 +123,7 @@ mod imp {
                 data_points: Default::default(),
 
                 smooth_graphs: Default::default(),
+                network_bytes: Default::default(),
                 show_cpu: Default::default(),
                 show_memory: Default::default(),
                 show_disks: Default::default(),
@@ -239,6 +242,11 @@ mod imp {
                 });
 
             connect_switch_to_setting!(self, self.smooth_graphs, "performance-smooth-graphs");
+            connect_switch_to_setting!(
+                self,
+                self.network_bytes,
+                "perfomance-page-network-use-bytes"
+            );
             connect_switch_to_setting!(self, self.show_cpu, "performance-show-cpu");
             connect_switch_to_setting!(self, self.show_memory, "performance-show-memory");
             connect_switch_to_setting!(self, self.show_disks, "performance-show-disks");
@@ -283,6 +291,11 @@ impl PreferencesPage {
             this.imp().settings,
             this.imp().smooth_graphs,
             "performance-smooth-graphs"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().network_bytes,
+            "perfomance-page-network-use-bytes"
         );
         update_switch_from_setting!(
             this.imp().settings,
