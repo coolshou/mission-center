@@ -80,6 +80,7 @@ mod imp {
         pub ipv6_address: OnceCell<gtk::Label>,
 
         signal_strength_percent: Cell<Option<u8>>,
+        pub use_bytes: Cell<bool>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -117,6 +118,7 @@ mod imp {
                 ipv6_address: Default::default(),
 
                 signal_strength_percent: Cell::new(None),
+                use_bytes: Cell::new(false),
             }
         }
     }
@@ -385,8 +387,12 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            let send_speed = network_device.send_bps * 8.;
-            let rec_speed = network_device.recv_bps * 8.;
+            let use_bytes = this.use_bytes.get();
+            let data_per_time = if use_bytes { i18n("B/s") } else { i18n("bps") };
+            let byte_coeff = if use_bytes { 1f32 } else { 8f32 };
+
+            let send_speed = network_device.send_bps * byte_coeff;
+            let rec_speed = network_device.recv_bps * byte_coeff;
 
             this.usage_graph.add_data_point(0, send_speed);
             this.usage_graph.add_data_point(1, rec_speed);
@@ -424,8 +430,12 @@ mod imp {
                         i18n("Unknown"),
                         |kbps| {
                             let (val, unit, dec_to_display) =
-                                crate::to_human_readable(*kbps as f32 * 1000., 1024.);
-                            format!("{0:.2$} {1}bps", val, unit, dec_to_display)
+                                crate::to_human_readable(*kbps as f32 * 1000. * byte_coeff, 1024.);
+                            format!(
+                                "{}{}",
+                                format!("{0:.2$} {1}", val, unit, dec_to_display),
+                                data_per_time
+                            )
                         },
                     ));
                 }
@@ -442,29 +452,29 @@ mod imp {
             }
 
             let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
-            this.max_y.set_text(&i18n_f(
-                "{} {}bps",
-                &[&format!("{}", max_y.0), &format!("{}", max_y.1)],
+            this.max_y.set_text(&format!(
+                "{} {}{}",
+                &format!("{}", max_y.0),
+                &format!("{}", max_y.1),
+                &data_per_time,
             ));
 
             let speed_send_info = crate::to_human_readable(send_speed, 1024.);
             if let Some(speed_send) = this.speed_send.get() {
-                speed_send.set_text(&i18n_f(
-                    "{} {}bps",
-                    &[
-                        &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
-                        &format!("{}", speed_send_info.1),
-                    ],
+                speed_send.set_text(&format!(
+                    "{} {}{}",
+                    &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
+                    &format!("{}", speed_send_info.1),
+                    &data_per_time,
                 ));
             }
             let speed_recv_info = crate::to_human_readable(rec_speed, 1024.);
             if let Some(speed_recv) = this.speed_recv.get() {
-                speed_recv.set_text(&i18n_f(
-                    "{} {}bps",
-                    &[
-                        &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
-                        &format!("{}", speed_recv_info.1),
-                    ],
+                speed_recv.set_text(&format!(
+                    "{} {}{}",
+                    &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
+                    &format!("{}", speed_recv_info.1),
+                    &data_per_time,
                 ));
             }
 
@@ -805,6 +815,44 @@ impl PerformancePageNetwork {
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
+        this.imp()
+            .use_bytes
+            .set(settings.boolean("perfomance-page-network-use-bytes"));
+
+        settings.connect_changed(Some("perfomance-page-network-use-bytes"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    let new_units = settings.boolean("perfomance-page-network-use-bytes");
+                    let old_units = this.imp().use_bytes.get();
+                    if old_units != new_units {
+                        let conversion_factor = if new_units { 1. / 8. } else { 8. };
+                        this.imp().usage_graph.set_data(
+                            0,
+                            this.imp()
+                                .usage_graph
+                                .data(0)
+                                .unwrap_or(vec![])
+                                .into_iter()
+                                .map(|it| it * conversion_factor)
+                                .collect(),
+                        );
+                        this.imp().usage_graph.set_data(
+                            1,
+                            this.imp()
+                                .usage_graph
+                                .data(1)
+                                .unwrap_or(vec![])
+                                .into_iter()
+                                .map(|it| it * conversion_factor)
+                                .collect(),
+                        );
+                    }
+                    this.imp().use_bytes.set(new_units);
+                }
+            }
+        });
+
         settings.connect_changed(Some("perfomance-page-data-points"), {
             let this = this.downgrade();
             move |settings, _| {
@@ -858,5 +906,33 @@ impl PerformancePageNetwork {
             .infobar_content
             .get()
             .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
+
+    pub fn use_bytes(&self) -> bool {
+        self.imp().use_bytes.get()
+    }
+
+    pub fn unit_per_second_label(&self) -> String {
+        if self.use_bytes() {
+            i18n("B/s")
+        } else {
+            i18n("bps")
+        }
+    }
+
+    pub fn bit_conversion_factor(&self) -> f32 {
+        if self.use_bytes() {
+            1. / 8.
+        } else {
+            1.
+        }
+    }
+
+    pub fn byte_conversion_factor(&self) -> f32 {
+        if self.use_bytes() {
+            1.
+        } else {
+            8.
+        }
     }
 }

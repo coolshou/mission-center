@@ -50,6 +50,10 @@
             <summary>How many points should be displayed on each chart?</summary>
         </key>
 
+        <key name="perfomance-page-network-use-bytes" type="b">
+            <default>false</default>
+            <summary>Whether or not to use bits (default) or Bytes for network speed</summary>
+        </key>
 
         <key name="apps-page-merged-process-stats" type="b">
             <default>false</default>
