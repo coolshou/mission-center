@@ -28,7 +28,7 @@ dpkg-reconfigure --frontend noninteractive tzdata
 apt-get install -y curl
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.80.1 -y
 
-apt-get install -y build-essential flex bison git gettext python3-pip python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev libxslt-dev libpcre2-dev libfuse3-dev libgcrypt-dev libjpeg-turbo8-dev libpng-dev libisocodes-dev libepoxy-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libgstreamer-plugins-bad1.0-dev libpixman-1-dev libfontconfig1-dev libxkbcommon-dev libcurl4-openssl-dev libyaml-dev libzstd-dev libgraphviz-dev librsvg2-2 libtiff5 shared-mime-info desktop-file-utils pkg-config gperf itstool xsltproc valac docbook-xsl libxml2-utils python3-packaging
+apt-get install -y build-essential flex bison git gettext python3-pip python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev libxslt-dev libpcre2-dev libfuse3-dev libgcrypt-dev libjpeg-turbo8-dev libpng-dev libisocodes-dev libepoxy-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libgstreamer-plugins-bad1.0-dev libpixman-1-dev libfontconfig1-dev libxkbcommon-dev libcurl4-openssl-dev libyaml-dev libzstd-dev libgraphviz-dev librsvg2-2 libtiff5 libbrotli-dev shared-mime-info desktop-file-utils pkg-config gperf itstool xsltproc valac docbook-xsl libxml2-utils python3-packaging
 ln -sf python3 /usr/bin/python
 pip3 install cmake meson ninja
 
@@ -102,6 +102,25 @@ ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
 cd ../../ && rm -rf glib-$GLIB_VER*
 cd $OUT_PATH
 
+# https://www.linuxfromscratch.org/blfs/view/stable/general/freetype2.html
+# -------------------------------------------------------------------
+FREETYPE_VER=2.13.3
+# -------------------------------------------------------------------
+curl -LO https://downloads.sourceforge.net/freetype/freetype-$FREETYPE_VER.tar.xz
+tar xvf freetype-$FREETYPE_VER.tar.xz
+cd freetype-$FREETYPE_VER
+sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg
+sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" -i include/freetype/config/ftoption.h
+CFLAGS=-O2 ./configure                    \
+    --prefix=/usr                         \
+    --libdir=/usr/lib/$(arch)-linux-gnu   \
+    --enable-freetype-config              \
+    --without-harfbuzz                    \
+    --disable-static
+make -j4
+make install && make DESTDIR=$OUT_PATH install
+rm -rf freetype-$FREETYPE_VER*
+
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gdk-pixbuf.html
 # -------------------------------------------------------------------
 GDK_PIXBUF_VER=2.42.12
@@ -123,7 +142,7 @@ cd $OUT_PATH
 
 # Pixman
 # -------------------------------------------------------------------
-PIXMAN_VER=b753a6f49b9b0ec5df84aff10e174601545bdf79
+PIXMAN_VER=e7ef051a6d9edd2d8bd84fe2fda3ca54ba83d1c8
 # -------------------------------------------------------------------
 curl -LO https://gitlab.freedesktop.org/pixman/pixman/-/archive/$PIXMAN_VER/pixman-$PIXMAN_VER.tar.bz2
 tar xvf pixman-$PIXMAN_VER.tar.bz2
@@ -156,7 +175,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/cairo.html
 # --------------------------------------------------------------
-CAIRO_VER=1.18.0
+CAIRO_VER=1.18.2
 # --------------------------------------------------------------
 curl -LO https://gitlab.freedesktop.org/cairo/cairo/-/archive/$CAIRO_VER/cairo-$CAIRO_VER.tar.bz2
 tar xvf cairo-$CAIRO_VER.tar.bz2
@@ -263,6 +282,20 @@ mkdir build && cd build
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
 cd ../../ && rm -rf harfbuzz-$HARFBUZZ_VER*
 cd $OUT_PATH
+# FreeType and Harfbuzz depend on each other, so we need to compile FreeType again
+curl -LO https://downloads.sourceforge.net/freetype/freetype-$FREETYPE_VER.tar.xz
+tar xvf freetype-$FREETYPE_VER.tar.xz
+cd freetype-$FREETYPE_VER
+sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg
+sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" -i include/freetype/config/ftoption.h
+CFLAGS=-O2 ./configure                    \
+    --prefix=/usr                         \
+    --libdir=/usr/lib/$(arch)-linux-gnu   \
+    --enable-freetype-config              \
+    --disable-static
+make -j4
+make install && make DESTDIR=$OUT_PATH install
+rm -rf freetype-$FREETYPE_VER*
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
 # ------------------------------------------------------------------
@@ -295,7 +328,7 @@ cmake -GNinja -S ..                    \
     -DSHADERC_SKIP_EXAMPLES=ON         \
     -DSHADERC_SKIP_COPYRIGHT_CHECK=ON  \
     -DSHADERC_ENABLE_WERROR_COMPILE=OFF
-ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
+ninja && ninja install
 cd ../../ && rm -rf v$GLSLC_VER shaderc-$GLSLC_VER*
 cd $OUT_PATH
 
@@ -340,7 +373,7 @@ curl -LO https://download.gnome.org/sources/vala/$VALA_VER_MM/vala-$VALA_VER.tar
 tar xvf vala-$VALA_VER.tar.xz
 cd vala-$VALA_VER
 CFLAGS=-O2 ./configure --prefix=/usr --libdir=/usr/lib/$(arch)-linux-gnu
-make && make install && make DESTDIR=$OUT_PATH install
+make -j4 && make install && make DESTDIR=$OUT_PATH install
 cd ../ && rm -rf vala-$VALA_VER*
 cd $OUT_PATH
 
@@ -421,7 +454,7 @@ glib-compile-schemas $OUT_PATH/usr/share/glib-2.0/schemas/
 
 cd $OUT_PATH
 rm -rfv usr/include/ usr/lib/{python3,$(arch)-linux-gnu/{*.la,cairo/*.la,cmake,girepository-1.0,glib-2.0,gobject-introspection,graphene-1.0,pkgconfig,libvala*,vala-*,valadoc-*,libgirepository*,libsass.so,libharfbuzz-{cairo*,gobject*,icu*},libwayland-cursor*,libwayland-server*}} usr/libexec/ usr/share/{aclocal,appstream,bash-completion,devhelp,gdb,gettext,glib-2.0/{codegen,dtds,gdb,gettext,valgrind},gobject-introspection-1.0,gtk-4.0/valgrind,gtk-doc,installed-tests,man,pkgconfig,thumbnailers,vala,vala-*,valadoc-*,wayland,wayland-protocols}
-cp -Lv /usr/lib/$(arch)-linux-gnu/{libffi.so.7,libjpeg.so.8,libtiff.so.5,libpng16.so.16,libX11.so.6,libXcursor.so.1,libXdamage.so.1,libXext.so.6,libXfixes.so.3,libXi.so.6,libXinerama.so.1,libXrandr.so.2,libXrender.so.1,libxkbcommon.so.0,libepoxy.so.0,libfontconfig.so.1,libcurl.so.4,libnghttp2.so.14,libidn2.so.0,librtmp.so.1,libssh.so.4,libpsl.so.5,libssl.so.1.1,libcrypto.so.1.1,libgssapi_krb5.so.2,libldap_r-2.4.so.2,liblber-2.4.so.2,libbrotlidec.so.1,libunistring.so.2,libgnutls.so.30,libhogweed.so.5,libnettle.so.7,libgmp.so.10,libkrb5.so.3,libk5crypto.so.3,libkrb5support.so.0,libsasl2.so.2,libgssapi.so.3,libbrotlicommon.so.1,libp11-kit.so.0,libtasn1.so.6,libheimntlm.so.0,libkrb5.so.26,libasn1.so.8,libhcrypto.so.4,libroken.so.18,libwind.so.0,libheimbase.so.1,libhx509.so.5,libsqlite3.so.0,libxml2.so.2,libxmlb.so.2,libpcre2-8.so.0,liblz4.so.1,libgcrypt.so.20,libzstd.so.1,libyaml-0.so.2,libfreetype.so.6,libxcb.so.1,libwebp.so.6,libjbig.so.0,libicuuc.so.66,libXau.so.6,libXdmcp.so.6,libicudata.so.66,libstdc++.so.6,libbsd.so.0} $OUT_PATH/usr/lib/$(arch)-linux-gnu/
+cp -Lv /usr/lib/$(arch)-linux-gnu/{libffi.so.7,libjpeg.so.8,libtiff.so.5,libpng16.so.16,libX11.so.6,libXcursor.so.1,libXdamage.so.1,libXext.so.6,libXfixes.so.3,libXi.so.6,libXinerama.so.1,libXrandr.so.2,libXrender.so.1,libxkbcommon.so.0,libepoxy.so.0,libfontconfig.so.1,libcurl.so.4,libnghttp2.so.14,libidn2.so.0,librtmp.so.1,libssh.so.4,libpsl.so.5,libssl.so.1.1,libcrypto.so.1.1,libgssapi_krb5.so.2,libldap_r-2.4.so.2,liblber-2.4.so.2,libbrotlidec.so.1,libunistring.so.2,libgnutls.so.30,libhogweed.so.5,libnettle.so.7,libgmp.so.10,libkrb5.so.3,libk5crypto.so.3,libkrb5support.so.0,libsasl2.so.2,libgssapi.so.3,libbrotlicommon.so.1,libp11-kit.so.0,libtasn1.so.6,libheimntlm.so.0,libkrb5.so.26,libasn1.so.8,libhcrypto.so.4,libroken.so.18,libwind.so.0,libheimbase.so.1,libhx509.so.5,libsqlite3.so.0,libxml2.so.2,libxmlb.so.2,libpcre2-8.so.0,liblz4.so.1,libgcrypt.so.20,libzstd.so.1,libyaml-0.so.2,libxcb.so.1,libwebp.so.6,libjbig.so.0,libicuuc.so.66,libXau.so.6,libXdmcp.so.6,libicudata.so.66,libstdc++.so.6,libbsd.so.0,libz.so.1} $OUT_PATH/usr/lib/$(arch)-linux-gnu/
 cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-*.so $OUT_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/
 cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache $OUT_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/
 cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders $OUT_PATH/usr/bin/
