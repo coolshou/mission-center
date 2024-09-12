@@ -757,37 +757,53 @@ mod imp {
                 ));
             }
 
-            let settings = self.settings.take();
-            if settings.is_none() {
+            let settings_raw = self.settings.take();
+            if settings_raw.is_none() {
                 panic!("Settings not set");
             }
 
-            summary.graph_widget().set_data_points(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .int("perfomance-page-data-points") as u32,
-            );
+            let settings = settings_raw.as_ref().unwrap();
 
-            summary.graph_widget().set_smooth_graphs(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .boolean("performance-smooth-graphs"),
-            );
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("perfomance-page-data-points") as u32);
 
-            let page = NetworkPage::new(
-                if_name,
-                network_device.descriptor.kind,
-                settings.as_ref().unwrap(),
-            );
+            summary
+                .graph_widget()
+                .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+
+            if network_device.max_speed > 0 {
+                if !settings.boolean("perfomance-page-network-dynamic-scaling") {
+                    summary.graph_widget().set_auto_scale(false);
+                    summary.graph_widget().set_auto_scale_pow2(false);
+
+                    summary
+                        .graph_widget()
+                        .set_value_range_max((network_device.max_speed * 1000 * 1000) as f32);
+                }
+                let max_speed = network_device.max_speed * 1000 * 1000;
+                let graph = summary.graph_widget();
+
+                settings.connect_changed(Some("perfomance-page-network-dynamic-scaling"), {
+                    move |settings, _| {
+                        let dynamic_scaling =
+                            settings.boolean("perfomance-page-network-dynamic-scaling");
+                        graph.set_auto_scale(dynamic_scaling);
+                        graph.set_auto_scale_pow2(dynamic_scaling);
+
+                        graph.set_value_range_max(max_speed as f32);
+                    }
+                });
+            }
+
+            let page = NetworkPage::new(if_name, network_device.descriptor.kind, settings);
             page.set_base_color(gtk::gdk::RGBA::new(
                 NETWORK_BASE_COLOR[0] as f32 / 255.,
                 NETWORK_BASE_COLOR[1] as f32 / 255.,
                 NETWORK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.settings.set(settings);
+            self.settings.set(settings_raw);
             page.set_static_information(network_device);
 
             self.page_content.connect_collapsed_notify({
@@ -1203,8 +1219,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, network_device.send_bps);
-                                graph_widget.add_data_point(1, network_device.recv_bps);
+                                graph_widget.add_data_point(0, network_device.send_bps * 8.);
+                                graph_widget.add_data_point(1, network_device.recv_bps * 8.);
 
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);

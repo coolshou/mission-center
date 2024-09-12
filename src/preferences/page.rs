@@ -94,6 +94,8 @@ mod imp {
         #[template_child]
         pub network_bytes: TemplateChild<SwitchRow>,
         #[template_child]
+        pub network_dynamic_scaling: TemplateChild<SwitchRow>,
+        #[template_child]
         pub show_cpu: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_memory: TemplateChild<SwitchRow>,
@@ -124,6 +126,7 @@ mod imp {
 
                 smooth_graphs: Default::default(),
                 network_bytes: Default::default(),
+                network_dynamic_scaling: Default::default(),
                 show_cpu: Default::default(),
                 show_memory: Default::default(),
                 show_disks: Default::default(),
@@ -247,6 +250,11 @@ mod imp {
                 self.network_bytes,
                 "perfomance-page-network-use-bytes"
             );
+            connect_switch_to_setting!(
+                self,
+                self.network_dynamic_scaling,
+                "perfomance-page-network-dynamic-scaling"
+            );
             connect_switch_to_setting!(self, self.show_cpu, "performance-show-cpu");
             connect_switch_to_setting!(self, self.show_memory, "performance-show-memory");
             connect_switch_to_setting!(self, self.show_disks, "performance-show-disks");
@@ -296,6 +304,11 @@ impl PreferencesPage {
             this.imp().settings,
             this.imp().network_bytes,
             "perfomance-page-network-use-bytes"
+        );
+        update_switch_from_setting!(
+            this.imp().settings,
+            this.imp().network_dynamic_scaling,
+            "perfomance-page-network-dynamic-scaling"
         );
         update_switch_from_setting!(
             this.imp().settings,

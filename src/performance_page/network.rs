@@ -81,6 +81,8 @@ mod imp {
 
         signal_strength_percent: Cell<Option<u8>>,
         pub use_bytes: Cell<bool>,
+        // in bps
+        pub max_speed: Cell<Option<u64>>,
     }
 
     impl Default for PerformancePageNetwork {
@@ -119,6 +121,7 @@ mod imp {
 
                 signal_strength_percent: Cell::new(None),
                 use_bytes: Cell::new(false),
+                max_speed: Cell::new(None),
             }
         }
     }
@@ -378,6 +381,19 @@ mod imp {
             this.usage_graph.set_filled(0, false);
             this.usage_graph.set_dashed(0, true);
 
+            let max_speed = network_device.max_speed * 1000 * 1000;
+
+            this.max_speed.set(Option::from(max_speed));
+
+            if max_speed > 0 {
+                this.usage_graph.set_value_range_max(
+                    (max_speed / if this.use_bytes.get() { 8 } else { 1 }) as f32,
+                );
+            } else {
+                this.usage_graph.set_auto_scale(true);
+                this.usage_graph.set_auto_scale_pow2(true);
+            }
+
             true
         }
 
@@ -454,7 +470,7 @@ mod imp {
             let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
             this.max_y.set_text(&format!(
                 "{} {}{}",
-                &format!("{}", max_y.0),
+                &format!("{0:.1$}", max_y.0, max_y.2),
                 &format!("{}", max_y.1),
                 &data_per_time,
             ));
@@ -819,6 +835,33 @@ impl PerformancePageNetwork {
             .use_bytes
             .set(settings.boolean("perfomance-page-network-use-bytes"));
 
+        if this.imp().max_speed.get().unwrap_or(0) > 0 {
+            let dynamic_scaling = settings.boolean("perfomance-page-network-dynamic-scaling");
+            this.imp().usage_graph.set_auto_scale(dynamic_scaling);
+            this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
+        }
+
+        settings.connect_changed(Some("perfomance-page-network-dynamic-scaling"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    if let Some(speed) = this.imp().max_speed.get() {
+                        if speed > 0 {
+                            let dynamic_scaling =
+                                settings.boolean("perfomance-page-network-dynamic-scaling");
+                            this.imp().usage_graph.set_auto_scale(dynamic_scaling);
+                            this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
+
+                            let newmax =
+                                (speed / if this.imp().use_bytes.get() { 8 } else { 1 }) as f32;
+
+                            this.imp().usage_graph.set_value_range_max(newmax);
+                        }
+                    }
+                }
+            }
+        });
+
         settings.connect_changed(Some("perfomance-page-network-use-bytes"), {
             let this = this.downgrade();
             move |settings, _| {
@@ -847,6 +890,14 @@ impl PerformancePageNetwork {
                                 .map(|it| it * conversion_factor)
                                 .collect(),
                         );
+
+                        if let Some(speed) = this.imp().max_speed.get() {
+                            if speed > 0 {
+                                this.imp().usage_graph.set_value_range_max(
+                                    (speed / if new_units { 8 } else { 1 }) as f32,
+                                );
+                            }
+                        }
                     }
                     this.imp().use_bytes.set(new_units);
                 }
