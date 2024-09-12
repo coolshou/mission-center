@@ -139,6 +139,8 @@ pub struct NetworkDevice {
     pub sent_bytes: u64,
     pub recv_bps: f32,
     pub recv_bytes: u64,
+
+    pub max_speed: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -313,6 +315,8 @@ impl NetInfo {
 
             let if_name = if_name_str.to_string();
 
+            let max_speed = Self::get_max_speed(&if_name);
+
             let (tx_bytes, rx_bytes) = Self::tx_rx_bytes(&if_name);
 
             let (descriptor, hw_address, send_bps, send_bytes, recv_bps, rec_bytes) =
@@ -407,6 +411,8 @@ impl NetInfo {
                 sent_bytes: send_bytes,
                 recv_bps,
                 recv_bytes: rec_bytes,
+
+                max_speed,
             });
         }
 
@@ -646,6 +652,16 @@ impl NetInfo {
         g_object_unref(wireless_info_proxy as _);
 
         result
+    }
+
+    fn get_max_speed(if_name: &str) -> u64 {
+        let speed = std::fs::read_to_string(format!("/sys/class/net/{}/speed", if_name));
+
+        if let Ok(str) = speed {
+            str.trim().parse::<u64>().unwrap_or(0)
+        } else {
+            0
+        }
     }
 
     fn tx_rx_bytes(if_name: &str) -> (u64, u64) {

@@ -55,6 +55,11 @@
             <summary>Whether or not to use bits (default) or Bytes for network speed</summary>
         </key>
 
+        <key name="perfomance-page-network-dynamic-scaling" type="b">
+            <default>true</default>
+            <summary>Whether to set graph max to interface max (false) or the max observed (true)</summary>
+        </key>
+
         <key name="apps-page-merged-process-stats" type="b">
             <default>false</default>
             <summary>Parent and child process stats are shown individually or merged upwards</summary>
