@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-09-07 20:09+0000\n"
+"PO-Revision-Date: 2024-09-13 10:41+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -225,7 +225,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:104
 #: resources/ui/preferences/page.blp:55
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Domyślnie pokazuj informacje o procesorze"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:109
 #: resources/ui/preferences/page.blp:60
@@ -236,22 +236,22 @@ msgstr "Pobieranie dodatkowych informacji nie powiodło się"
 #: data/io.missioncenter.MissionCenter.gschema.xml:114
 #: resources/ui/preferences/page.blp:65
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Domyślnie pokazuj informacje o dyskach"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:119
 #: resources/ui/preferences/page.blp:70
 msgid "Show network information by default"
-msgstr ""
+msgstr "Domyślnie pokazuj informacje o sieci"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:124
 #: resources/ui/preferences/page.blp:75
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Domyślnie pokazuj informacje o karcie graficznej"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:129
 #: resources/ui/preferences/page.blp:80
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Domyślnie pokazuj informacje o wiatrakach"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 #, fuzzy
@@ -260,11 +260,11 @@ msgstr "Popraw wykres składu pamięci"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Pokaż wykres stronnicowania"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Pokaż wykres procesu kodowania i dekodowania karty graficznej"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1394
 #: src/performance_page/mod.rs:428
@@ -273,9 +273,8 @@ msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "Użycie w ciągu {} sekund"
+msgstr "Użycie przez "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -429,9 +428,8 @@ msgid "Cpufreq governor:"
 msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "Preferencje"
+msgstr "Preferencje mocy:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
@@ -476,19 +474,17 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Kodowanie wideo"
+msgstr "Kodowanie wideo przez "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Zużycie pamięci"
+msgstr "Zużycie pamięci przez "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Pokaż użycie kodera/dekodera"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -547,9 +543,8 @@ msgid "Memory"
 msgstr "Pamięć"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Zużycie pamięci"
+msgstr "Użycie stronnicowania przez "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -562,7 +557,7 @@ msgstr "Skład pamięci"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Pokaż użycie stronnicowania"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -610,7 +605,7 @@ msgstr "Odebrane"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Odebrane całościowo"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -618,7 +613,7 @@ msgstr "Wysłane"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Wysłane całościowo"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
