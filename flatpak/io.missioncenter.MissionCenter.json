@@ -85,7 +85,7 @@
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/builds/zig-linux-x86_64-0.12.1.tar.xz",
+          "url": "https://ziglang.org/download/0.12.1/zig-linux-x86_64-0.12.1.tar.xz",
           "dest": "zig",
           "sha256": "8860fc9725c2d9297a63008f853e9b11e3c5a2441217f99c1e3104cc6fa4a443",
           "only-arches": [
@@ -128,7 +128,7 @@
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/builds/zig-linux-aarch64-0.12.1.tar.xz",
+          "url": "https://ziglang.org/download/0.12.1/zig-linux-aarch64-0.12.1.tar.xz",
           "dest": "zig",
           "sha256": "27d4fef393e8d8b5f3b1d19f4dd43bfdb469b4ed17bbc4c2283c1b1fe650ef7f",
           "only-arches": [

@@ -23,7 +23,10 @@ use std::{cell::Cell, collections::HashMap};
 
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
-use gtk::{gio, glib};
+use gtk::{
+    gio,
+    glib::{self, g_critical},
+};
 
 use widgets::GraphWidget;
 
@@ -49,6 +52,8 @@ type GpuPage = gpu::PerformancePageGpu;
 mod imp {
     use super::*;
 
+    // GNOME color palette: Blue 4
+    const CPU_BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
     // GNOME color palette: Blue 2
     const MEMORY_BASE_COLOR: [u8; 3] = [0x62, 0xa0, 0xea];
     // GNOME color palette: Green 5
@@ -57,6 +62,8 @@ mod imp {
     const NETWORK_BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
     // GNOME color palette: Purple 4
     const FAN_BASE_COLOR: [u8; 3] = [0x81, 0x3d, 0x9c];
+    // GNOME color palette: Red 1
+    const GPU_BASE_COLOR: [u8; 3] = [0xf6, 0x61, 0x51];
 
     const SIDEBAR_CPU_PAGE_DEFAULT_IDX: usize = 1;
     const SIDEBAR_MEM_PAGE_DEFAULT_IDX: usize = 2;
@@ -332,50 +339,6 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("disk".to_string(), action);
 
-            let action = gio::SimpleAction::new_stateful("fan", None, &glib::Variant::from(false));
-            action.connect_activate({
-                let this = this.downgrade();
-                move |action, _| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let pages = this.pages.take();
-                    for page in &pages {
-                        let fan_pages = match page {
-                            Pages::Fan(fan_pages) => fan_pages,
-                            _ => continue,
-                        };
-
-                        let fan_page = fan_pages.values().next();
-                        if fan_page.is_none() {
-                            continue;
-                        }
-                        let fan_page = fan_page.unwrap();
-
-                        let row = fan_page.0.parent();
-                        if row.is_none() {
-                            continue;
-                        }
-                        let row = row.unwrap();
-
-                        this.sidebar()
-                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
-
-                        let prev_action = this.current_view_action.replace(action.clone());
-                        prev_action.set_state(&glib::Variant::from(false));
-                        action.set_state(&glib::Variant::from(true));
-
-                        break;
-                    }
-                    this.pages.set(pages);
-                }
-            });
-            actions.add_action(&action);
-            view_actions.insert("fan".to_string(), action);
-
             let action =
                 gio::SimpleAction::new_stateful("network", None, &glib::Variant::from(false));
             action.connect_activate({
@@ -464,14 +427,54 @@ mod imp {
             });
             actions.add_action(&action);
             view_actions.insert("gpu".to_string(), action);
+            let action = gio::SimpleAction::new_stateful("fan", None, &glib::Variant::from(false));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
+                    let pages = this.pages.take();
+                    for page in &pages {
+                        let fan_pages = match page {
+                            Pages::Fan(fan_pages) => fan_pages,
+                            _ => continue,
+                        };
+
+                        let fan_page = fan_pages.values().next();
+                        if fan_page.is_none() {
+                            continue;
+                        }
+                        let fan_page = fan_page.unwrap();
+
+                        let row = fan_page.0.parent();
+                        if row.is_none() {
+                            continue;
+                        }
+                        let row = row.unwrap();
+
+                        this.sidebar()
+                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                        let prev_action = this.current_view_action.replace(action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        action.set_state(&glib::Variant::from(true));
+
+                        break;
+                    }
+                    this.pages.set(pages);
+                }
+            });
+            actions.add_action(&action);
+            view_actions.insert("fan".to_string(), action);
 
             this.imp().context_menu_view_actions.set(view_actions);
         }
 
         fn set_up_cpu_page(&self, pages: &mut Vec<Pages>, readings: &crate::sys_info_v2::Readings) {
-            // GNOME color palette: Blue 4
-            const BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
-
             let summary = SummaryGraph::new();
             summary.set_page_indices(SIDEBAR_CPU_PAGE_DEFAULT_IDX, 0);
             summary.set_widget_name("cpu");
@@ -484,9 +487,9 @@ mod imp {
             }
 
             summary.set_base_color(gtk::gdk::RGBA::new(
-                BASE_COLOR[0] as f32 / 255.,
-                BASE_COLOR[1] as f32 / 255.,
-                BASE_COLOR[2] as f32 / 255.,
+                CPU_BASE_COLOR[0] as f32 / 255.,
+                CPU_BASE_COLOR[1] as f32 / 255.,
+                CPU_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
 
@@ -505,9 +508,9 @@ mod imp {
 
             let page = CpuPage::new(unwrapped_settings);
             page.set_base_color(gtk::gdk::RGBA::new(
-                BASE_COLOR[0] as f32 / 255.,
-                BASE_COLOR[1] as f32 / 255.,
-                BASE_COLOR[2] as f32 / 255.,
+                CPU_BASE_COLOR[0] as f32 / 255.,
+                CPU_BASE_COLOR[1] as f32 / 255.,
+                CPU_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
             self.settings.set(settings);
@@ -666,8 +669,6 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
             secondary_index: Option<usize>,
         ) -> (String, (summary_graph::SummaryGraph, DiskPage)) {
-            use glib::g_critical;
-
             let disk_static_info = &readings.disks_info[secondary_index.unwrap_or(0)];
 
             let summary = SummaryGraph::new();
@@ -761,119 +762,6 @@ mod imp {
             return (disk_static_info.id.as_ref().to_owned(), (summary, page));
         }
 
-        pub fn create_fan_page(
-            &self,
-            readings: &crate::sys_info_v2::Readings,
-            secondary_index: Option<usize>,
-            hide_index: bool,
-        ) -> (
-            String,
-            (summary_graph::SummaryGraph, fan::PerformancePageFan),
-        ) {
-            use glib::g_critical;
-
-            let fan_static_info = &readings.fans_info[secondary_index.unwrap_or(0)];
-
-            let summary = SummaryGraph::new();
-            summary.set_page_indices(SIDEBAR_FAN_PAGE_DEFAULT_IDX, secondary_index.unwrap_or(0));
-            summary.set_widget_name(fan_static_info.fan_label.as_ref());
-
-            summary.set_heading(format!(
-                "{}{}",
-                i18n("Fan "),
-                if hide_index {
-                    String::new()
-                } else {
-                    secondary_index.unwrap_or(fan_static_info.hwmon_index as usize).to_string()
-                }
-            ));
-
-            summary.set_base_color(gtk::gdk::RGBA::new(
-                FAN_BASE_COLOR[0] as f32 / 255.,
-                FAN_BASE_COLOR[1] as f32 / 255.,
-                FAN_BASE_COLOR[2] as f32 / 255.,
-                1.,
-            ));
-
-            summary.graph_widget().set_auto_scale(true);
-
-            let settings = self.settings.take();
-            if settings.is_none() {
-                panic!("Settings not set");
-            }
-
-            let data_points = settings
-                .as_ref()
-                .unwrap()
-                .int("perfomance-page-data-points") as u32;
-
-            summary.graph_widget().set_data_points(data_points);
-
-            summary.graph_widget().set_smooth_graphs(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .boolean("performance-smooth-graphs"),
-            );
-
-            let page = FanPage::new(
-                fan_static_info.fan_label.as_ref(),
-                settings.as_ref().unwrap(),
-            );
-            page.set_base_color(gtk::gdk::RGBA::new(
-                FAN_BASE_COLOR[0] as f32 / 255.,
-                FAN_BASE_COLOR[1] as f32 / 255.,
-                FAN_BASE_COLOR[2] as f32 / 255.,
-                1.,
-            ));
-            self.settings.set(settings);
-            page.set_static_information(secondary_index, fan_static_info);
-            page.fill_empty_info(data_points as usize);
-
-            self.page_content.connect_collapsed_notify({
-                let page = page.downgrade();
-                move |pc| {
-                    if let Some(page) = page.upgrade() {
-                        if pc.is_collapsed() {
-                            page.infobar_collapsed();
-                        } else {
-                            page.infobar_uncollapsed();
-                        }
-                    }
-                }
-            });
-
-            self.obj()
-                .as_ref()
-                .bind_property("summary-mode", &page, "summary-mode")
-                .flags(glib::BindingFlags::SYNC_CREATE)
-                .build();
-
-            self.sidebar().append(&summary);
-            self.page_stack
-                .add_named(&page, Some(&fan_static_info.fan_label));
-
-            let mut actions = self.context_menu_view_actions.take();
-            match actions.get("fan") {
-                None => {
-                    g_critical!(
-                        "MissionCenter::PerformancePage",
-                        "Failed to wire up fan action for {}, logic bug?",
-                        &fan_static_info.fan_label
-                    );
-                }
-                Some(action) => {
-                    actions.insert(fan_static_info.fan_label.to_string(), action.clone());
-                }
-            }
-            self.context_menu_view_actions.set(actions);
-
-            return (
-                fan_static_info.fan_label.as_ref().to_owned(),
-                (summary, page),
-            );
-        }
-
         fn set_up_network_pages(
             &self,
             pages: &mut Vec<Pages>,
@@ -893,8 +781,6 @@ mod imp {
             network_device: &NetworkDevice,
             secondary_index: usize,
         ) -> (String, (summary_graph::SummaryGraph, NetworkPage)) {
-            use glib::g_critical;
-
             let if_name = network_device.descriptor.if_name.as_str();
 
             let conn_type = network_device.descriptor.kind.to_string();
@@ -1014,11 +900,6 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::sys_info_v2::Readings,
         ) {
-            use gtk::glib::*;
-
-            // GNOME color palette: Red 1
-            const BASE_COLOR: [u8; 3] = [0xf6, 0x61, 0x51];
-
             let mut gpus = HashMap::new();
 
             let hide_index = readings.gpu_static_info.len() == 1;
@@ -1063,16 +944,16 @@ mod imp {
                     dynamic_info.util_percent, dynamic_info.temp_celsius
                 ));
                 summary.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
+                    GPU_BASE_COLOR[0] as f32 / 255.,
+                    GPU_BASE_COLOR[1] as f32 / 255.,
+                    GPU_BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
 
                 page.set_base_color(gtk::gdk::RGBA::new(
-                    BASE_COLOR[0] as f32 / 255.,
-                    BASE_COLOR[1] as f32 / 255.,
-                    BASE_COLOR[2] as f32 / 255.,
+                    GPU_BASE_COLOR[0] as f32 / 255.,
+                    GPU_BASE_COLOR[1] as f32 / 255.,
+                    GPU_BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
                 page.set_static_information(
@@ -1096,7 +977,7 @@ mod imp {
                 self.obj()
                     .as_ref()
                     .bind_property("summary-mode", &page, "summary-mode")
-                    .flags(BindingFlags::SYNC_CREATE)
+                    .flags(glib::BindingFlags::SYNC_CREATE)
                     .build();
 
                 self.sidebar().append(&summary);
@@ -1137,6 +1018,119 @@ mod imp {
             }
 
             pages.push(Pages::Fan(fans));
+        }
+
+        pub fn create_fan_page(
+            &self,
+            readings: &crate::sys_info_v2::Readings,
+            secondary_index: Option<usize>,
+            hide_index: bool,
+        ) -> (
+            String,
+            (summary_graph::SummaryGraph, fan::PerformancePageFan),
+        ) {
+            let fan_static_info = &readings.fans_info[secondary_index.unwrap_or(0)];
+
+            let summary = SummaryGraph::new();
+            summary.set_page_indices(SIDEBAR_FAN_PAGE_DEFAULT_IDX, secondary_index.unwrap_or(0));
+            summary.set_widget_name(fan_static_info.fan_label.as_ref());
+
+            summary.set_heading(format!(
+                "{}{}",
+                i18n("Fan "),
+                if hide_index {
+                    String::new()
+                } else {
+                    secondary_index
+                        .unwrap_or(fan_static_info.hwmon_index as usize)
+                        .to_string()
+                }
+            ));
+
+            summary.set_base_color(gtk::gdk::RGBA::new(
+                FAN_BASE_COLOR[0] as f32 / 255.,
+                FAN_BASE_COLOR[1] as f32 / 255.,
+                FAN_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            summary.graph_widget().set_auto_scale(true);
+
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
+
+            let data_points = settings
+                .as_ref()
+                .unwrap()
+                .int("perfomance-page-data-points") as u32;
+
+            summary.graph_widget().set_data_points(data_points);
+
+            summary.graph_widget().set_smooth_graphs(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs"),
+            );
+
+            let page = FanPage::new(
+                fan_static_info.fan_label.as_ref(),
+                settings.as_ref().unwrap(),
+            );
+            page.set_base_color(gtk::gdk::RGBA::new(
+                FAN_BASE_COLOR[0] as f32 / 255.,
+                FAN_BASE_COLOR[1] as f32 / 255.,
+                FAN_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.settings.set(settings);
+            page.set_static_information(secondary_index, fan_static_info);
+            page.fill_empty_info(data_points as usize);
+
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
+                    }
+                }
+            });
+
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
+            self.sidebar().append(&summary);
+            self.page_stack
+                .add_named(&page, Some(&fan_static_info.fan_label));
+
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("fan") {
+                None => {
+                    g_critical!(
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up fan action for {}, logic bug?",
+                        &fan_static_info.fan_label
+                    );
+                }
+                Some(action) => {
+                    actions.insert(fan_static_info.fan_label.to_string(), action.clone());
+                }
+            }
+            self.context_menu_view_actions.set(actions);
+
+            return (
+                fan_static_info.fan_label.as_ref().to_owned(),
+                (summary, page),
+            );
         }
     }
 
@@ -1476,11 +1470,12 @@ mod imp {
                                 graph_widget.add_data_point(0, fan.rpm as f32);
                                 summary.set_info1(format!("{} RPM", fan.rpm));
                                 if fan.temp_amount != i64::MIN {
-                                    summary
-                                        .set_info2(format!("{:.0} C", fan.temp_amount as f32 / 1000.0));
+                                    summary.set_info2(format!(
+                                        "{:.0} C",
+                                        fan.temp_amount as f32 / 1000.0
+                                    ));
                                 } else {
-                                    summary
-                                        .set_info2("");
+                                    summary.set_info2("");
                                 }
                                 result &= page.update_readings(Some(index), fan);
                             }

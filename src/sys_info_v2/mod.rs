@@ -606,14 +606,6 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            readings.fans_info = gatherer.fans_info();
-            g_debug!(
-                "MissionCenter::Perf",
-                "Disks info load took: {:?}",
-                timer.elapsed()
-            );
-
-            let timer = std::time::Instant::now();
             readings.network_devices = if let Some(net_info) = net_info.as_mut() {
                 net_info.load_devices()
             } else {
@@ -630,6 +622,14 @@ impl SysInfoV2 {
             g_debug!(
                 "MissionCenter::Perf",
                 "GPU dynamic info load took: {:?}",
+                timer.elapsed()
+            );
+
+            let timer = std::time::Instant::now();
+            readings.fans_info = gatherer.fans_info();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Fans info load took: {:?}",
                 timer.elapsed()
             );
 

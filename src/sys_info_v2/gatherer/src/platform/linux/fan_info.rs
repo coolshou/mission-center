@@ -17,12 +17,14 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-use crate::platform::fan_info::{FanInfoExt, FansInfoExt};
-use glob::glob;
 use std::sync::Arc;
 use std::time::Instant;
+
 use convert_case::{Case, Casing};
+use glob::glob;
+
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
+use crate::platform::fan_info::{FanInfoExt, FansInfoExt};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxFanInfo {
@@ -144,9 +146,13 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                                 };
 
                             // read the second glob result for fan index
-                            let findex = if let Some(hwmon_instance_dir) = path.file_name().unwrap().to_str()
+                            let findex = if let Some(hwmon_instance_dir) =
+                                path.file_name().unwrap().to_str()
                             {
-                                hwmon_instance_dir[3..4].parse::<u64>().ok().unwrap_or(u64::MAX)
+                                hwmon_instance_dir[3..4]
+                                    .parse::<u64>()
+                                    .ok()
+                                    .unwrap_or(u64::MAX)
                             } else {
                                 continue;
                             };

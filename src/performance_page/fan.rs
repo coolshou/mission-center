@@ -376,7 +376,7 @@ mod imp {
                                     if it >= 0. {
                                         100f32
                                             * (it / 100f32 * (max_temp - low_temp) as f32
-                                            + (low_temp - (fan_temp_c - 1)) as f32)
+                                                + (low_temp - (fan_temp_c - 1)) as f32)
                                             / (max_temp - (fan_temp_c - 1)) as f32
                                     } else {
                                         it

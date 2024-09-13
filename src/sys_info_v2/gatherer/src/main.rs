@@ -116,8 +116,8 @@ impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
 struct SystemState<'a> {
     cpu_info: Arc<RwLock<CpuInfo>>,
     disk_info: Arc<RwLock<DisksInfo>>,
-    fan_info: Arc<RwLock<FansInfo>>,
     gpu_info: Arc<RwLock<GpuInfo>>,
+    fan_info: Arc<RwLock<FansInfo>>,
     services: Arc<RwLock<Services<'a>>>,
     service_controller: Arc<RwLock<Option<ServiceController<'a>>>>,
     processes: Arc<RwLock<Processes>>,
@@ -170,6 +170,17 @@ impl SystemState<'_> {
         );
 
         let timer = std::time::Instant::now();
+        self.disk_info
+            .write()
+            .unwrap_or_else(PoisonError::into_inner)
+            .refresh_cache();
+        debug!(
+            "Gatherer::Perf",
+            "Refreshed disk info cache in {:?}",
+            timer.elapsed()
+        );
+
+        let timer = std::time::Instant::now();
         self.gpu_info
             .write()
             .unwrap_or_else(PoisonError::into_inner)
@@ -182,17 +193,6 @@ impl SystemState<'_> {
         debug!(
             "Gatherer::Perf",
             "Refreshed GPU dynamic info cache in {:?}",
-            timer.elapsed()
-        );
-
-        let timer = std::time::Instant::now();
-        self.disk_info
-            .write()
-            .unwrap_or_else(PoisonError::into_inner)
-            .refresh_cache();
-        debug!(
-            "Gatherer::Perf",
-            "Refreshed disk info cache in {:?}",
             timer.elapsed()
         );
 
@@ -244,8 +244,8 @@ impl<'a> SystemState<'a> {
         Self {
             cpu_info: Arc::new(RwLock::new(CpuInfo::new())),
             disk_info: Arc::new(RwLock::new(DisksInfo::new())),
-            fan_info: Arc::new(RwLock::new(FansInfo::new())),
             gpu_info: Arc::new(RwLock::new(GpuInfo::new())),
+            fan_info: Arc::new(RwLock::new(FansInfo::new())),
             services: Arc::new(RwLock::new(Services::new())),
             service_controller: Arc::new(RwLock::new(None)),
             processes: Arc::new(RwLock::new(Processes::new())),
@@ -439,26 +439,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        message!(
-            "Gatherer::Main",
-            "Registering D-Bus method `GetFansInfo`..."
-        );
-        builder.method_with_cr_custom::<(), (Vec<FanInfo>,), &str, _>(
-            "GetFansInfo",
-            (),
-            ("info",),
-            move |mut ctx, _, (): ()| {
-                ctx.reply(Ok((SYSTEM_STATE
-                    .fan_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .info()
-                    .collect::<Vec<_>>(),)));
-
-                Some(ctx)
-            },
-        );
-
         message!("Gatherer::Main", "Registering D-Bus method `GetGPUList`...");
         builder.method_with_cr_custom::<(), (Vec<String>,), &str, _>(
             "GetGPUList",
@@ -515,6 +495,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 ctx.reply(Ok((gpu_info
                     .enumerate()
                     .map(|id| gpu_info.dynamic_info(id).cloned().unwrap())
+                    .collect::<Vec<_>>(),)));
+
+                Some(ctx)
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetFansInfo`..."
+        );
+        builder.method_with_cr_custom::<(), (Vec<FanInfo>,), &str, _>(
+            "GetFansInfo",
+            (),
+            ("info",),
+            move |mut ctx, _, (): ()| {
+                ctx.reply(Ok((SYSTEM_STATE
+                    .fan_info
+                    .read()
+                    .unwrap_or_else(PoisonError::into_inner)
+                    .info()
                     .collect::<Vec<_>>(),)));
 
                 Some(ctx)
