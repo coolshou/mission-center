@@ -26,7 +26,7 @@ use gtk::{
     glib::{self, g_critical, property::PropertySet},
 };
 
-use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
+use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings, ARGS};
 
 mod imp {
     use super::*;
@@ -228,6 +228,25 @@ impl MissionCenterApplication {
             "Starting Mission Center v{}",
             env!("CARGO_PKG_VERSION")
         );
+
+        let settings = this.settings().unwrap();
+
+        println!("twas {} {}", settings.string("window-selected-page"), settings.string("performance-selected-page"));
+
+        if let Some(tab_id) = &ARGS.open_tab_id.clone() {
+            match tab_id.as_str() {
+                "apps-page" => {
+                    settings.set_string("window-selected-page", tab_id).expect("TODO: panic message");
+                },
+                "services-page" => {
+                    settings.set_string("window-selected-page", tab_id).expect("TODO: panic message");
+                },
+                _ => {
+                    settings.set_string("window-selected-page", "performance-page").expect("TODO: panic message");
+                    settings.set_string("performance-selected-page", tab_id).expect("TODO: panic message");
+                }
+            }
+        }
 
         this
     }

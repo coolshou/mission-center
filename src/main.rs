@@ -18,8 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::Arc;
-
+use std::sync::{Arc, LazyLock};
+use clap::Parser;
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::{gio, prelude::*};
 use lazy_static::lazy_static;
@@ -37,6 +37,22 @@ mod preferences;
 mod services_page;
 mod sys_info_v2;
 mod window;
+
+pub static ARGS: LazyLock<Args> = LazyLock::new(Args::parse);
+
+#[derive(Parser, Debug)]
+#[command(version, about)]
+pub struct Args {
+    /// Disable battery monitoring
+    #[arg(short = 'z', long, default_value_t = false)]
+    pub needs_help: bool,
+
+    /// Open tab specified by ID.
+    /// Valid IDs are: "applications", "processes", "cpu", "memory", "gpu-$PCI_SLOT$",
+    /// "drive-$MODEL_NAME_OR_DEVICE_NAME$", "network-$INTERFACE_NAME$"
+    #[arg(short = 't', long)]
+    pub open_tab_id: Option<String>,
+}
 
 #[macro_export]
 macro_rules! glib_clone {
@@ -131,6 +147,8 @@ pub fn show_error_dialog_and_exit(message: &str) -> ! {
 }
 
 fn main() {
+    std::hint::black_box(ARGS.needs_help);
+
     let home = std::env::var_os("HOME")
         .map(|str| str.to_string_lossy().to_string())
         .unwrap_or("/home".to_owned());
@@ -161,6 +179,6 @@ fn main() {
     );
     gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
-    let exit_code = app.run();
+    let exit_code = app.run_with_args::<&str>(&[]);
     std::process::exit(exit_code.into());
 }

@@ -186,6 +186,7 @@ mod imp {
                     imp.page_stack.set_visible_child_name(page_name);
 
                     if let Some(settings) = imp.settings.take() {
+                        println!("Set page {}", page_name);
                         settings
                             .set_string("performance-selected-page", page_name)
                             .unwrap_or_else(|_| {
