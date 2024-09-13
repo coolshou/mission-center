@@ -35,7 +35,7 @@ use lazy_static::lazy_static;
 
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, GpuDynamicInfo, GpuStaticInfo,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
     OpenGLApi, Process, ProcessUsageStats, Service,
 };
 
@@ -143,6 +143,7 @@ pub struct Readings {
     pub network_devices: Vec<NetworkDevice>,
     pub gpu_static_info: Vec<GpuStaticInfo>,
     pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
+    pub fans_info: Vec<FanInfo>,
 
     pub running_apps: HashMap<Arc<str>, App>,
     pub process_tree: Process,
@@ -160,6 +161,7 @@ impl Readings {
             network_devices: vec![],
             gpu_static_info: vec![],
             gpu_dynamic_info: vec![],
+            fans_info: vec![],
 
             running_apps: HashMap::new(),
             process_tree: Process::default(),
@@ -498,6 +500,7 @@ impl SysInfoV2 {
             cpu_dynamic_info: gatherer.cpu_dynamic_info(),
             mem_info: MemInfo::load().unwrap_or_default(),
             disks_info: gatherer.disks_info(),
+            fans_info: gatherer.fans_info(),
             network_devices: if let Some(net_info) = net_info.as_mut() {
                 net_info.load_devices()
             } else {
@@ -529,6 +532,7 @@ impl SysInfoV2 {
                 cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
                 mem_info: readings.mem_info.clone(),
                 disks_info: std::mem::take(&mut readings.disks_info),
+                fans_info: std::mem::take(&mut readings.fans_info),
                 network_devices: std::mem::take(&mut readings.network_devices),
                 gpu_static_info: readings.gpu_static_info.clone(),
                 gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),
@@ -602,6 +606,14 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
+            readings.fans_info = gatherer.fans_info();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Disks info load took: {:?}",
+                timer.elapsed()
+            );
+
+            let timer = std::time::Instant::now();
             readings.network_devices = if let Some(net_info) = net_info.as_mut() {
                 net_info.load_devices()
             } else {
@@ -662,6 +674,7 @@ impl SysInfoV2 {
                     cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
                     mem_info: readings.mem_info.clone(),
                     disks_info: std::mem::take(&mut readings.disks_info),
+                    fans_info: std::mem::take(&mut readings.fans_info),
                     network_devices: std::mem::take(&mut readings.network_devices),
                     gpu_static_info: readings.gpu_static_info.clone(),
                     gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),

@@ -37,6 +37,7 @@ pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
 pub use cpu_static_info::CpuStaticInfo;
 pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
+pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
 pub use processes::{Process, ProcessMap, ProcessUsageStats};
@@ -47,6 +48,7 @@ mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
 mod disk_info;
+mod fan_info;
 mod gpu_dynamic_info;
 mod gpu_static_info;
 mod processes;
@@ -82,6 +84,7 @@ pub trait Gatherer {
     fn get_cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
+    fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
     fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
     fn get_gpu_dynamic_info(&self) -> Result<Vec<GpuDynamicInfo>, dbus::Error>;
@@ -114,6 +117,12 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error> {
         let res: Result<DiskInfoVec, _> =
             self.method_call(MC_GATHERER_INTERFACE_NAME, "GetDisksInfo", ());
+        res.map(|v| v.into())
+    }
+
+    fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error> {
+        let res: Result<FanInfoVec, _> =
+            self.method_call(MC_GATHERER_INTERFACE_NAME, "GetFansInfo", ());
         res.map(|v| v.into())
     }
 

@@ -28,6 +28,7 @@ use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver};
 use dbus_crossroads::Crossroads;
 use lazy_static::lazy_static;
 
+use crate::platform::{FanInfo, FansInfo, FansInfoExt};
 use logging::{critical, debug, error, message, warning};
 use platform::{
     Apps, AppsExt, CpuDynamicInfo, CpuInfo, CpuInfoExt, CpuStaticInfo, CpuStaticInfoExt, DiskInfo,
@@ -115,6 +116,7 @@ impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
 struct SystemState<'a> {
     cpu_info: Arc<RwLock<CpuInfo>>,
     disk_info: Arc<RwLock<DisksInfo>>,
+    fan_info: Arc<RwLock<FansInfo>>,
     gpu_info: Arc<RwLock<GpuInfo>>,
     services: Arc<RwLock<Services<'a>>>,
     service_controller: Arc<RwLock<Option<ServiceController<'a>>>>,
@@ -195,6 +197,17 @@ impl SystemState<'_> {
         );
 
         let timer = std::time::Instant::now();
+        self.fan_info
+            .write()
+            .unwrap_or_else(PoisonError::into_inner)
+            .refresh_cache();
+        debug!(
+            "Gatherer::Perf",
+            "Refreshed fan info cache in {:?}",
+            timer.elapsed()
+        );
+
+        let timer = std::time::Instant::now();
         self.apps
             .write()
             .unwrap_or_else(PoisonError::into_inner)
@@ -231,6 +244,7 @@ impl<'a> SystemState<'a> {
         Self {
             cpu_info: Arc::new(RwLock::new(CpuInfo::new())),
             disk_info: Arc::new(RwLock::new(DisksInfo::new())),
+            fan_info: Arc::new(RwLock::new(FansInfo::new())),
             gpu_info: Arc::new(RwLock::new(GpuInfo::new())),
             services: Arc::new(RwLock::new(Services::new())),
             service_controller: Arc::new(RwLock::new(None)),
@@ -416,6 +430,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
                     .disk_info
+                    .read()
+                    .unwrap_or_else(PoisonError::into_inner)
+                    .info()
+                    .collect::<Vec<_>>(),)));
+
+                Some(ctx)
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `GetFansInfo`..."
+        );
+        builder.method_with_cr_custom::<(), (Vec<FanInfo>,), &str, _>(
+            "GetFansInfo",
+            (),
+            ("info",),
+            move |mut ctx, _, (): ()| {
+                ctx.reply(Ok((SYSTEM_STATE
+                    .fan_info
                     .read()
                     .unwrap_or_else(PoisonError::into_inner)
                     .info()

@@ -92,7 +92,8 @@ mod imp {
         #[template_child]
         context_menu: TemplateChild<gtk::PopoverMenu>,
 
-        #[property(name = "details-dialog", get = Self::details_dialog, set = Self::set_details_dialog, type = Option<DetailsDialog>)]
+        #[property(name = "details-dialog", get = Self::details_dialog, set = Self::set_details_dialog, type = Option<DetailsDialog>
+        )]
         details_dialog: Cell<Option<DetailsDialog>>,
         pub details_dialog_visible: Cell<bool>,
 
@@ -211,26 +212,26 @@ mod imp {
 
                     let (name, anchor) = match service.and_then(|s| s.get::<(String, u64, f64, f64)>()) {
                         Some((name, ptr, x, y)) => {
-                                // We just get a pointer to a weak reference to the object
-                                // Do the necessary checks and downcast the object to a Widget
-                                let anchor_widget = unsafe {
-                                    let ptr = gobject_ffi::g_weak_ref_get(ptr as usize as *mut _);
-                                    if ptr.is_null() {
-                                        return;
-                                    } else {
-                                        let obj: Object = from_glib_full(ptr);
-                                        match obj.downcast::<gtk::Widget>() {
-                                            Ok(w) => w,
-                                            Err(_) => {
-                                                g_critical!(
+                            // We just get a pointer to a weak reference to the object
+                            // Do the necessary checks and downcast the object to a Widget
+                            let anchor_widget = unsafe {
+                                let ptr = gobject_ffi::g_weak_ref_get(ptr as usize as *mut _);
+                                if ptr.is_null() {
+                                    return;
+                                } else {
+                                    let obj: Object = from_glib_full(ptr);
+                                    match obj.downcast::<gtk::Widget>() {
+                                        Ok(w) => w,
+                                        Err(_) => {
+                                            g_critical!(
                                                     "MissionCenter::ServicesPage",
                                                     "Failed to downcast object to GtkWidget"
                                                 );
-                                                return;
-                                            }
+                                            return;
                                         }
                                     }
-                                };
+                                }
+                            };
 
                             let anchor = if x > 0. && y > 0. {
                                 this.context_menu.set_has_arrow(false);
@@ -307,8 +308,8 @@ mod imp {
                         for i in 0..model.n_items() {
                             if let Some(item) =
                                 model
-                                .item(i)
-                                .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
+                                    .item(i)
+                                    .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
                             {
                                 if item.name() == name {
                                     pos = Some(i);

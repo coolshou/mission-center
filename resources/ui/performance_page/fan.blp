@@ -1,6 +1,6 @@
-/* ui/performance_page/cpu.blp
+/* ui/performance_page/fan.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,9 @@
 
 using Gtk 4.0;
 
-template $PerformancePageCpu : Box {
-  margin-bottom: 10;
-
+template $PerformancePageFan: Box {
   orientation: vertical;
+  margin-bottom: 10;
 
   WindowHandle {
     child: Box description {
@@ -34,17 +33,16 @@ template $PerformancePageCpu : Box {
       Box {
         spacing: 20;
 
-        Label {
+        Label title_fan_name {
           styles [
             "title-1",
           ]
 
           hexpand: true;
           halign: start;
-          label: _("CPU");
         }
 
-        Label cpu_name {
+        Label title_temp_name {
           styles [
             "title-3",
           ]
@@ -53,44 +51,93 @@ template $PerformancePageCpu : Box {
           ellipsize: middle;
         }
       }
+    };
+  }
+
+  Box {
+    orientation: vertical;
+    spacing: 10;
+    Box speed_box {
+      orientation: vertical;
       Box {
         Label {
           styles [
             "caption",
           ]
-
-          label: _("Utilization over ");
+          label: _("Fan speed over ");
         }
-        Label graph_max_duration {
+
+        Label speed_graph_max_duration {
           styles [
             "caption",
           ]
 
           hexpand: true;
           halign: start;
+          valign: start;
         }
+
+        Label speed_max_y {
+          styles [
+            "caption",
+          ]
+        }
+      }
+
+      $GraphWidget speed_graph {
+        vexpand: true;
+        hexpand: true;
+
+        width-request: 100;
+        height-request: 50;
+
+        base-color: bind template.base-color;
+        data-set-count: 2;
+        scroll: true;
+        auto-scale: true;
+      }
+    }
+
+    Box temp_box {
+      orientation: vertical;
+      Box {
         Label {
           styles [
             "caption",
           ]
+          label: _("Temperature over ");
+        }
 
-          label: _("100%");
+        Label temp_graph_max_duration {
+          styles [
+            "caption",
+          ]
+
+          hexpand: true;
+          halign: start;
+          valign: start;
+        }
+
+        Label temp_max_y {
+          styles [
+            "caption",
+          ]
         }
       }
-    };
-  }
 
-  Grid usage_graphs {
-    row-spacing: 7;
-    column-spacing: 7;
-    vexpand: true;
-    hexpand: true;
+      $GraphWidget temp_graph {
+        vexpand: true;
+        hexpand: true;
 
-    height-request: 100;
-    width-request: 100;
+        width-request: 100;
+        height-request: 50;
 
-    row-homogeneous: true;
-    column-homogeneous: true;
+        base-color: bind template.base-color;
+        data-set-count: 1;
+        scroll: true;
+        auto-scale: true;
+      }
+    }
   }
 
   PopoverMenu context_menu {
@@ -100,27 +147,6 @@ template $PerformancePageCpu : Box {
 }
 
 menu context_menu_model {
-  section {
-    submenu {
-      label: _("Change G_raph To");
-
-      item {
-        label: _("Overall U_tilization");
-        action: "graph.overall";
-      }
-
-      item {
-        label: _("Logical _Processors");
-        action: "graph.all-processors";
-      }
-    }
-
-    item {
-      label: _("Show Kernel Times");
-      action: "graph.kernel_times";
-    }
-  }
-
   section {
     item {
       label: _("Graph _Summary View");
@@ -159,13 +185,6 @@ menu context_menu_model {
         label: _("_Fan");
         action: "graph.fan";
       }
-    }
-  }
-
-  section {
-    item {
-      label: _("_Copy");
-      action: "graph.copy";
     }
   }
 }

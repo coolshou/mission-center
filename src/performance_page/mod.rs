@@ -31,6 +31,7 @@ use crate::{application::BASE_POINTS, i18n::*, sys_info_v2::DiskType, sys_info_v
 
 mod cpu;
 mod disk;
+mod fan;
 mod gpu;
 mod memory;
 mod network;
@@ -40,6 +41,7 @@ mod widgets;
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
 type DiskPage = disk::PerformancePageDisk;
+type FanPage = fan::PerformancePageFan;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
@@ -53,12 +55,15 @@ mod imp {
     const DISK_BASE_COLOR: [u8; 3] = [0x26, 0xa2, 0x69];
     // GNOME color palette: Purple 1
     const NETWORK_BASE_COLOR: [u8; 3] = [0xdc, 0x8a, 0xdd];
+    // GNOME color palette: Purple 4
+    const FAN_BASE_COLOR: [u8; 3] = [0x81, 0x3d, 0x9c];
 
     const SIDEBAR_CPU_PAGE_DEFAULT_IDX: usize = 1;
     const SIDEBAR_MEM_PAGE_DEFAULT_IDX: usize = 2;
     const SIDEBAR_DISK_PAGE_DEFAULT_IDX: usize = 3;
     const SIDEBAR_NET_PAGE_DEFAULT_IDX: usize = 4;
     const SIDEBAR_GPU_PAGE_DEFAULT_IDX: usize = 5;
+    const SIDEBAR_FAN_PAGE_DEFAULT_IDX: usize = 6;
 
     enum Pages {
         Cpu((SummaryGraph, CpuPage)),
@@ -66,6 +71,7 @@ mod imp {
         Disk(HashMap<String, (SummaryGraph, DiskPage)>),
         Network(HashMap<String, (SummaryGraph, NetworkPage)>),
         Gpu(HashMap<String, (SummaryGraph, GpuPage)>),
+        Fan(HashMap<String, (SummaryGraph, FanPage)>),
     }
 
     #[derive(Properties)]
@@ -86,7 +92,8 @@ mod imp {
         pub sidebar: Cell<gtk::ListBox>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
-        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible, type = bool)]
+        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible, type = bool
+        )]
         _infobar_visible: [u8; 0],
         #[property(name = "info-button-visible", get = Self::info_button_visible, type = bool)]
         _info_button_visible: [u8; 0],
@@ -325,6 +332,50 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("disk".to_string(), action);
 
+            let action = gio::SimpleAction::new_stateful("fan", None, &glib::Variant::from(false));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+
+                    let pages = this.pages.take();
+                    for page in &pages {
+                        let fan_pages = match page {
+                            Pages::Fan(fan_pages) => fan_pages,
+                            _ => continue,
+                        };
+
+                        let fan_page = fan_pages.values().next();
+                        if fan_page.is_none() {
+                            continue;
+                        }
+                        let fan_page = fan_page.unwrap();
+
+                        let row = fan_page.0.parent();
+                        if row.is_none() {
+                            continue;
+                        }
+                        let row = row.unwrap();
+
+                        this.sidebar()
+                            .select_row(row.downcast_ref::<gtk::ListBoxRow>());
+
+                        let prev_action = this.current_view_action.replace(action.clone());
+                        prev_action.set_state(&glib::Variant::from(false));
+                        action.set_state(&glib::Variant::from(true));
+
+                        break;
+                    }
+                    this.pages.set(pages);
+                }
+            });
+            actions.add_action(&action);
+            view_actions.insert("fan".to_string(), action);
+
             let action =
                 gio::SimpleAction::new_stateful("network", None, &glib::Variant::from(false));
             action.connect_activate({
@@ -334,8 +385,9 @@ mod imp {
                         Some(this) => this,
                         None => return,
                     };
+                    let this = this.imp();
 
-                    let pages = this.imp().pages.take();
+                    let pages = this.pages.take();
                     for page in &pages {
                         let network_pages = match page {
                             Pages::Network(network_pages) => network_pages,
@@ -354,17 +406,16 @@ mod imp {
                         }
                         let row = row.unwrap();
 
-                        this.imp()
-                            .sidebar()
+                        this.sidebar()
                             .select_row(row.downcast_ref::<gtk::ListBoxRow>());
 
-                        let prev_action = this.imp().current_view_action.replace(action.clone());
+                        let prev_action = this.current_view_action.replace(action.clone());
                         prev_action.set_state(&glib::Variant::from(false));
                         action.set_state(&glib::Variant::from(true));
 
                         break;
                     }
-                    this.imp().pages.set(pages);
+                    this.pages.set(pages);
                 }
             });
             actions.add_action(&action);
@@ -710,6 +761,119 @@ mod imp {
             return (disk_static_info.id.as_ref().to_owned(), (summary, page));
         }
 
+        pub fn create_fan_page(
+            &self,
+            readings: &crate::sys_info_v2::Readings,
+            secondary_index: Option<usize>,
+            hide_index: bool,
+        ) -> (
+            String,
+            (summary_graph::SummaryGraph, fan::PerformancePageFan),
+        ) {
+            use glib::g_critical;
+
+            let fan_static_info = &readings.fans_info[secondary_index.unwrap_or(0)];
+
+            let summary = SummaryGraph::new();
+            summary.set_page_indices(SIDEBAR_FAN_PAGE_DEFAULT_IDX, secondary_index.unwrap_or(0));
+            summary.set_widget_name(fan_static_info.fan_label.as_ref());
+
+            summary.set_heading(format!(
+                "{}{}",
+                i18n("Fan "),
+                if hide_index {
+                    String::new()
+                } else {
+                    secondary_index.unwrap_or(fan_static_info.hwmon_index as usize).to_string()
+                }
+            ));
+
+            summary.set_base_color(gtk::gdk::RGBA::new(
+                FAN_BASE_COLOR[0] as f32 / 255.,
+                FAN_BASE_COLOR[1] as f32 / 255.,
+                FAN_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            summary.graph_widget().set_auto_scale(true);
+
+            let settings = self.settings.take();
+            if settings.is_none() {
+                panic!("Settings not set");
+            }
+
+            let data_points = settings
+                .as_ref()
+                .unwrap()
+                .int("perfomance-page-data-points") as u32;
+
+            summary.graph_widget().set_data_points(data_points);
+
+            summary.graph_widget().set_smooth_graphs(
+                settings
+                    .as_ref()
+                    .unwrap()
+                    .boolean("performance-smooth-graphs"),
+            );
+
+            let page = FanPage::new(
+                fan_static_info.fan_label.as_ref(),
+                settings.as_ref().unwrap(),
+            );
+            page.set_base_color(gtk::gdk::RGBA::new(
+                FAN_BASE_COLOR[0] as f32 / 255.,
+                FAN_BASE_COLOR[1] as f32 / 255.,
+                FAN_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            self.settings.set(settings);
+            page.set_static_information(secondary_index, fan_static_info);
+            page.fill_empty_info(data_points as usize);
+
+            self.page_content.connect_collapsed_notify({
+                let page = page.downgrade();
+                move |pc| {
+                    if let Some(page) = page.upgrade() {
+                        if pc.is_collapsed() {
+                            page.infobar_collapsed();
+                        } else {
+                            page.infobar_uncollapsed();
+                        }
+                    }
+                }
+            });
+
+            self.obj()
+                .as_ref()
+                .bind_property("summary-mode", &page, "summary-mode")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
+            self.sidebar().append(&summary);
+            self.page_stack
+                .add_named(&page, Some(&fan_static_info.fan_label));
+
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("fan") {
+                None => {
+                    g_critical!(
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up fan action for {}, logic bug?",
+                        &fan_static_info.fan_label
+                    );
+                }
+                Some(action) => {
+                    actions.insert(fan_static_info.fan_label.to_string(), action.clone());
+                }
+            }
+            self.context_menu_view_actions.set(actions);
+
+            return (
+                fan_static_info.fan_label.as_ref().to_owned(),
+                (summary, page),
+            );
+        }
+
         fn set_up_network_pages(
             &self,
             pages: &mut Vec<Pages>,
@@ -943,6 +1107,21 @@ mod imp {
 
             pages.push(Pages::Gpu(gpus));
         }
+
+        fn set_up_fan_pages(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::sys_info_v2::Readings,
+        ) {
+            let mut fans = HashMap::new();
+            let len = readings.fans_info.len();
+            for i in 0..len {
+                let mut ret = self.create_fan_page(readings, Some(i), len == 1);
+                fans.insert(std::mem::take(&mut ret.0), ret.1);
+            }
+
+            pages.push(Pages::Fan(fans));
+        }
     }
 
     impl PerformancePage {
@@ -958,6 +1137,7 @@ mod imp {
             this.set_up_disk_pages(&mut pages, &readings);
             this.set_up_network_pages(&mut pages, &readings);
             this.set_up_gpu_pages(&mut pages, &readings);
+            this.set_up_fan_pages(&mut pages, &readings);
             this.pages.set(pages);
 
             this.sidebar().set_sort_func(|g1, g2| {
@@ -1081,6 +1261,7 @@ mod imp {
                         pages_to_destroy.clear();
                     }
                     Pages::Gpu(_) => {}
+                    Pages::Fan(_) => {}
                 }
             }
 
@@ -1267,6 +1448,25 @@ mod imp {
                                 }
 
                                 result &= page.update_readings(gpu, gpu_static.unwrap());
+                            }
+                        }
+                    }
+                    Pages::Fan(pages) => {
+                        for (index, fan) in readings.fans_info.iter().enumerate() {
+                            if let Some((summary, page)) = pages.get(fan.fan_label.as_ref()) {
+                                let graph_widget = summary.graph_widget();
+                                graph_widget.set_data_points(data_points);
+                                graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, fan.rpm as f32);
+                                summary.set_info1(format!("{} RPM", fan.rpm));
+                                if fan.temp_amount != i64::MIN {
+                                    summary
+                                        .set_info2(format!("{:.0} C", fan.temp_amount as f32 / 1000.0));
+                                } else {
+                                    summary
+                                        .set_info2("");
+                                }
+                                result &= page.update_readings(Some(index), fan);
                             }
                         }
                     }

@@ -346,97 +346,98 @@ mod imp {
                                 };
                                 let this = this.imp();
 
-                            let view_model = match this
-                                .obj()
-                                .parent()
-                                .and_downcast_ref::<gtk::TreeExpander>()
-                                .and_then(|te| te.item())
-                                .and_downcast::<ViewModel>()
-                            {
-                                None => {
-                                    g_critical!(
+                                let view_model = match this
+                                    .obj()
+                                    .parent()
+                                    .and_downcast_ref::<gtk::TreeExpander>()
+                                    .and_then(|te| te.item())
+                                    .and_downcast::<ViewModel>()
+                                {
+                                    None => {
+                                        g_critical!(
                                         "MissionCenter::AppsPage",
                                         "Failed to get ViewModel, cannot show context menu for App/Process"
                                     );
-                                    return;
-                                }
-                                Some(m) => m,
-                            };
+                                        return;
+                                    }
+                                    Some(m) => m,
+                                };
 
-                            let (stop_label, force_stop_label, is_app) = match view_model.content_type() {
-                                0 => {
-                                    // ContentType::SectionHeader
-                                    return;
-                                }
-                                1 => {
-                                    // ContentType::App
-                                    (i18n("Stop Application"), i18n("Force Stop Application"), true)
-                                }
-                                2 => {
-                                    // ContentType::Process
-                                    (i18n("Stop Process"), i18n("Force Stop Process"), false)
-                                }
-                                _ => unreachable!(),
-                            };
+                                let (stop_label, force_stop_label, is_app) = match view_model.content_type() {
+                                    0 => {
+                                        // ContentType::SectionHeader
+                                        return;
+                                    }
+                                    1 => {
+                                        // ContentType::App
+                                        (i18n("Stop Application"), i18n("Force Stop Application"), true)
+                                    }
+                                    2 => {
+                                        // ContentType::Process
+                                        (i18n("Stop Process"), i18n("Force Stop Process"), false)
+                                    }
+                                    _ => unreachable!(),
+                                };
 
-                            let apps_page = match list_item_widget.
-                                parent()
-                                .and_then(|p| p.parent())
-                                .and_then(|p| p.parent())
-                                .and_then(|p| p.parent())
-                                .and_then(|p| p.downcast::<crate::apps_page::AppsPage>().ok()) {
-                                Some(ap) => ap,
-                                None => {
-                                    g_critical!(
+                                let apps_page = match list_item_widget.
+                                    parent()
+                                    .and_then(|p| p.parent())
+                                    .and_then(|p| p.parent())
+                                    .and_then(|p| p.parent())
+                                    .and_then(|p| p.downcast::<crate::apps_page::AppsPage>().ok()) {
+                                    Some(ap) => ap,
+                                    None => {
+                                        g_critical!(
                                         "MissionCenter::AppsPage",
                                         "Failed to get AppsPage, cannot show context menu for App/Process"
                                     );
-                                    return;
-                                }
-                            };
+                                        return;
+                                    }
+                                };
 
-                            let mouse_pos = match list_item_widget.compute_point(
-                                &apps_page,
-                                &gtk::graphene::Point::new(x as _, y as _),
-                            ) {
-                                None => {
-                                    g_critical!(
+                                let mouse_pos = match list_item_widget.compute_point(
+                                    &apps_page,
+                                    &gtk::graphene::Point::new(x as _, y as _),
+                                ) {
+                                    None => {
+                                        g_critical!(
                                         "MissionCenter::AppsPage",
                                         "Failed to compute_point, context menu will not be anchored to mouse position"
                                     );
-                                    (x as f32, y as f32)
-                                }
-                                Some(p) => {
-                                    (p.x(), p.y())
-                                }
-                            };
+                                        (x as f32, y as f32)
+                                    }
+                                    Some(p) => {
+                                        (p.x(), p.y())
+                                    }
+                                };
 
-                            let context_menu = apps_page.context_menu();
+                                let context_menu = apps_page.context_menu();
 
-                            let _ = list_item_widget.activate_action(
-                                "listitem.select",
-                                Some(&Variant::from((true, true))),
-                            );
+                                let _ = list_item_widget.activate_action(
+                                    "listitem.select",
+                                    Some(&Variant::from((true, true))),
+                                );
 
-                            let menu = gtk::gio::Menu::new();
+                                let menu = gtk::gio::Menu::new();
 
-                            let mi_stop = gtk::gio::MenuItem::new(Some(&stop_label), None);
-                            mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from((view_model.pid(), is_app))));
-                            let mi_force_stop = gtk::gio::MenuItem::new(Some(&force_stop_label), None);
-                            mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from((view_model.pid(), is_app))));
+                                let mi_stop = gtk::gio::MenuItem::new(Some(&stop_label), None);
+                                mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from((view_model.pid(), is_app))));
+                                let mi_force_stop = gtk::gio::MenuItem::new(Some(&force_stop_label), None);
+                                mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from((view_model.pid(), is_app))));
 
-                            menu.append_item(&mi_stop);
-                            menu.append_item(&mi_force_stop);
+                                menu.append_item(&mi_stop);
+                                menu.append_item(&mi_force_stop);
 
-                            context_menu.set_menu_model(Some(&menu));
-                            context_menu.set_pointing_to(Some(&gtk::gdk::Rectangle::new(
-                                mouse_pos.0.round() as i32,
-                                mouse_pos.1.round() as i32,
-                                1,
-                                1,
-                            )));
-                            context_menu.popup();
-                        }});
+                                context_menu.set_menu_model(Some(&menu));
+                                context_menu.set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                                    mouse_pos.0.round() as i32,
+                                    mouse_pos.1.round() as i32,
+                                    1,
+                                    1,
+                                )));
+                                context_menu.popup();
+                            }
+                        });
                     }
                 }
             }
