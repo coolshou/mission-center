@@ -358,6 +358,10 @@ impl Gatherer {
         dbus_call!(self, get_disks_info, "GetDisksInfo");
     }
 
+    pub fn fans_info(&self) -> Vec<FanInfo> {
+        dbus_call!(self, get_fans_info, "GetFansInfo");
+    }
+
     #[allow(unused)]
     pub fn gpu_list(&self) -> Vec<Arc<str>> {
         dbus_call!(self, get_gpu_list, "GetGPUList");
