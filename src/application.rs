@@ -298,8 +298,7 @@ impl MissionCenterApplication {
     }
 
     pub fn settings(&self) -> Option<gio::Settings> {
-        let settings = unsafe { &*self.imp().settings.as_ptr() };
-        settings.clone()
+        unsafe { &*self.imp().settings.as_ptr() }.clone()
     }
 
     pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {

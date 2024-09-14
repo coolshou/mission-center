@@ -42,6 +42,7 @@ src/apps_page/view_model.rs
 src/performance_page/widgets/mod.rs
 src/performance_page/widgets/graph_widget.rs
 src/performance_page/widgets/mem_composition_widget.rs
+src/performance_page/widgets/sidebar_drop_hint.rs
 src/performance_page/mod.rs
 src/performance_page/cpu.rs
 src/performance_page/disk.rs

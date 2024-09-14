@@ -25,10 +25,10 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use super::widgets::GraphWidget;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-
-use super::widgets::GraphWidget;
+use crate::performance_page::PageExt;
 
 mod imp {
     use super::*;
@@ -186,17 +186,8 @@ mod imp {
     }
 
     impl PerformancePageFan {
-        pub fn fill_empty_info(this: &super::PerformancePageFan, points: usize) {
-            let this = this.imp();
-
-            this.speed_graph.set_data(0, vec![-1.; points]);
-            this.speed_graph.set_data(1, vec![0.; points]);
-            this.temp_graph.set_data(0, vec![-1.; points]);
-        }
-
         pub fn set_static_information(
             this: &super::PerformancePageFan,
-            index: Option<usize>,
             fan: &crate::sys_info_v2::FanInfo,
         ) -> bool {
             let t = this.clone();
@@ -294,7 +285,6 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageFan,
-            index: Option<usize>,
             fan: &crate::sys_info_v2::FanInfo,
         ) -> bool {
             let this = this.imp();
@@ -455,6 +445,10 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
 
+            self.speed_graph.set_data(0, vec![-1.; 60]);
+            self.speed_graph.set_data(1, vec![0.; 60]);
+            self.temp_graph.set_data(0, vec![-1.; 60]);
+
             let sidebar_content_builder = gtk::Builder::from_resource(
                 "/io/missioncenter/MissionCenter/ui/performance_page/fan_details.ui",
             );
@@ -515,6 +509,22 @@ glib::wrapper! {
     pub struct PerformancePageFan(ObjectSubclass<imp::PerformancePageFan>)
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
+}
+
+impl PageExt for PerformancePageFan {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
 }
 
 impl PerformancePageFan {
@@ -599,33 +609,11 @@ impl PerformancePageFan {
         this
     }
 
-    pub fn set_static_information(
-        &self,
-        index: Option<usize>,
-        fan: &crate::sys_info_v2::FanInfo,
-    ) -> bool {
-        imp::PerformancePageFan::set_static_information(self, index, fan)
+    pub fn set_static_information(&self, fan_info: &crate::sys_info_v2::FanInfo) -> bool {
+        imp::PerformancePageFan::set_static_information(self, fan_info)
     }
 
-    pub fn fill_empty_info(&self, points: usize) {
-        imp::PerformancePageFan::fill_empty_info(self, points)
-    }
-
-    pub fn update_readings(&self, index: Option<usize>, fan: &crate::sys_info_v2::FanInfo) -> bool {
-        imp::PerformancePageFan::update_readings(self, index, fan)
-    }
-
-    pub fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
-    }
-
-    pub fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
+    pub fn update_readings(&self, fan_info: &crate::sys_info_v2::FanInfo) -> bool {
+        imp::PerformancePageFan::update_readings(self, fan_info)
     }
 }

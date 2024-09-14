@@ -20,14 +20,15 @@
 
 use std::cell::{Cell, OnceCell};
 
-use crate::application::INTERVAL_STEP;
-use crate::i18n::*;
-use adw;
-use adw::subclass::prelude::*;
+use adw::{self, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use super::widgets::{GraphWidget, MemoryCompositionWidget};
+use super::{
+    widgets::{GraphWidget, MemoryCompositionWidget},
+    PageExt,
+};
+use crate::{application::INTERVAL_STEP, i18n::*};
 
 mod imp {
     use super::*;
@@ -188,35 +189,38 @@ mod imp {
             action.connect_activate({
                 let this = this.downgrade();
                 move |action, _| {
-                    if let Some(this) = this.upgrade() {
-                        let mem_composition = &this.imp().mem_composition_box;
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
 
-                        let visible = !action
-                            .state()
-                            .and_then(|v| v.get::<bool>())
-                            .unwrap_or(false);
+                    let mem_composition = &this.mem_composition_box;
 
-                        mem_composition.set_visible(visible);
+                    let visible = !action
+                        .state()
+                        .and_then(|v| v.get::<bool>())
+                        .unwrap_or(false);
 
-                        action.set_state(&glib::Variant::from(visible));
+                    mem_composition.set_visible(visible);
 
-                        let settings = this.imp().settings.take();
-                        if settings.is_some() {
-                            let settings = settings.unwrap();
-                            settings
-                                .set_boolean("performance-page-memory-composition-visible", visible)
-                                .unwrap_or_else(|_| {
-                                    g_critical!(
-                                        "MissionCenter::PerformancePage",
-                                        "Failed to save show composition graph"
-                                    );
-                                });
-                            this.imp().settings.set(Some(settings));
-                        }
+                    action.set_state(&glib::Variant::from(visible));
+
+                    let settings = this.settings.take();
+                    if settings.is_some() {
+                        let settings = settings.unwrap();
+                        settings
+                            .set_boolean("performance-page-memory-composition-visible", visible)
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save show composition graph"
+                                );
+                            });
+                        this.settings.set(Some(settings));
                     }
                 }
             });
-
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new_stateful(
@@ -227,32 +231,36 @@ mod imp {
             action.connect_activate({
                 let this = this.downgrade();
                 move |action, _| {
-                    if let Some(this) = this.upgrade() {
-                        let visible = !action
-                            .state()
-                            .and_then(|v| v.get::<bool>())
-                            .unwrap_or(false);
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
 
-                        this.imp().big_box.set_homogeneous(visible);
-                        this.imp().big_box.set_spacing(if visible { 10 } else { 0 });
-                        this.imp().swap_box.set_visible(visible);
-                        this.imp().swap_usage_graph.set_visible(visible);
+                    let visible = !action
+                        .state()
+                        .and_then(|v| v.get::<bool>())
+                        .unwrap_or(false);
 
-                        action.set_state(&glib::Variant::from(visible));
+                    this.big_box.set_homogeneous(visible);
+                    this.big_box.set_spacing(if visible { 10 } else { 0 });
+                    this.swap_box.set_visible(visible);
+                    this.swap_usage_graph.set_visible(visible);
 
-                        let settings = this.imp().settings.take();
-                        if settings.is_some() {
-                            let settings = settings.unwrap();
-                            settings
-                                .set_boolean("performance-page-memory-swap-visible", visible)
-                                .unwrap_or_else(|_| {
-                                    g_critical!(
-                                        "MissionCenter::PerformancePage",
-                                        "Failed to save show swap graph"
-                                    );
-                                });
-                            this.imp().settings.set(Some(settings));
-                        }
+                    action.set_state(&glib::Variant::from(visible));
+
+                    let settings = this.settings.take();
+                    if settings.is_some() {
+                        let settings = settings.unwrap();
+                        settings
+                            .set_boolean("performance-page-memory-swap-visible", visible)
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save show swap graph"
+                                );
+                            });
+                        this.settings.set(Some(settings));
                     }
                 }
             });
@@ -847,6 +855,22 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
+impl PageExt for PerformancePageMemory {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
+}
+
 impl PerformancePageMemory {
     pub fn new(settings: &gio::Settings) -> Self {
         let this: Self = glib::Object::builder().build();
@@ -958,19 +982,5 @@ impl PerformancePageMemory {
 
     pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
         imp::PerformancePageMemory::update_readings(self, readings)
-    }
-
-    pub fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
-    }
-
-    pub fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }

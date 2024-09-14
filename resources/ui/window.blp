@@ -29,7 +29,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
   title: "Mission Center";
   summary-mode: bind performance_page.summary-mode;
-  collapse-threshold: 860;
+  collapse-threshold: 1000;
 
   Adw.Breakpoint breakpoint {}
 
@@ -39,13 +39,40 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
     sidebar: Adw.ToolbarView {
       [top]
       Adw.HeaderBar {
+
+        [start]
+        Box {
+            visible: bind toggle_sidebar_edit_mode_button.active;
+
+            Button sidebar_edit_mode_enable_all {
+                icon-name: "list-enable-all-symbolic";
+                tooltip-text: _("Enable All");
+            }
+
+            Button sidebar_edit_mode_disable_all {
+                icon-name: "list-disable-all-symbolic";
+                tooltip-text: _("Disable All");
+            }
+
+            Button sidebar_edit_mode_reset {
+                icon-name: "arrow-circular-top-right-symbolic";
+                tooltip-text: _("Reset to Default");
+            }
+        }
+
         title-widget: Adw.WindowTitle {
           title: _("Devices");
         };
+
+        [end]
+        ToggleButton toggle_sidebar_edit_mode_button {
+          icon-name: "edit-symbolic";
+          tooltip-text: _("Edit Sidebar");
+          active: false;
+        }
       }
 
       ScrolledWindow {
-        width-request: 220;
         hscrollbar-policy: never;
 
         ListBox sidebar {
@@ -162,6 +189,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
               infobar-visible: bind info_button.active bidirectional;
               summary-mode: bind header_bar.visible bidirectional inverted;
               sidebar: sidebar;
+              sidebar-edit-mode: bind toggle_sidebar_edit_mode_button.active bidirectional;
             };
           }
 

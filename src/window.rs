@@ -43,6 +43,12 @@ mod imp {
         #[template_child]
         pub bottom_bar: TemplateChild<adw::ViewSwitcherBar>,
         #[template_child]
+        pub sidebar_edit_mode_enable_all: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub sidebar_edit_mode_disable_all: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub sidebar_edit_mode_reset: TemplateChild<gtk::Button>,
+        #[template_child]
         pub toggle_sidebar_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
@@ -100,6 +106,9 @@ mod imp {
                 split_view: TemplateChild::default(),
                 window_content: TemplateChild::default(),
                 bottom_bar: TemplateChild::default(),
+                sidebar_edit_mode_enable_all: TemplateChild::default(),
+                sidebar_edit_mode_disable_all: TemplateChild::default(),
+                sidebar_edit_mode_reset: TemplateChild::default(),
                 toggle_sidebar_button: TemplateChild::default(),
                 sidebar: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
@@ -332,6 +341,36 @@ mod imp {
                         let this = this.imp();
                         this.stack.set_visible_child_name("apps-page");
                         this.stack.set_visible_child_name("performance-page");
+                    }
+                }
+            });
+
+            self.sidebar_edit_mode_enable_all.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        this.performance_page.sidebar_enable_all();
+                    }
+                }
+            });
+
+            self.sidebar_edit_mode_disable_all.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        this.performance_page.sidebar_disable_all();
+                    }
+                }
+            });
+
+            self.sidebar_edit_mode_reset.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        this.performance_page.sidebar_reset_to_default();
                     }
                 }
             });
