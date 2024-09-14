@@ -138,7 +138,6 @@
             <summary>Show fan information by default</summary>
         </key>
 
-
         <key name="performance-page-memory-composition-visible" type="b">
             <default>true</default>
             <summary>Show the mem composition widget</summary>
@@ -152,6 +151,16 @@
         <key name="performance-page-gpu-encode-decode-usage-visible" type="b">
             <default>true</default>
             <summary>Show the gpu encode-decode graph graph</summary>
+        </key>
+
+        <key name="performance-sidebar-order" type="s">
+            <default>""</default>
+            <summary>The ordering of entries in the application sidebar</summary>
+        </key>
+
+        <key name="performance-sidebar-hidden-graphs" type="s">
+            <default>""</default>
+            <summary>Graphs that should be hidden in the application sidebar</summary>
         </key>
     </schema>
 </schemalist>

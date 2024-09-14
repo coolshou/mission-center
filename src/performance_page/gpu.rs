@@ -20,14 +20,12 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw;
-use adw::subclass::prelude::*;
+use adw::{self, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use super::{widgets::GraphWidget, PageExt};
 use crate::{application::INTERVAL_STEP, i18n::*};
-
-use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;
@@ -928,6 +926,22 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
+impl PageExt for PerformancePageGpu {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
+}
+
 impl PerformancePageGpu {
     pub fn new(name: &str, settings: &gio::Settings) -> Self {
         let this: Self = unsafe {
@@ -1050,19 +1064,5 @@ impl PerformancePageGpu {
         gpu_static: &crate::sys_info_v2::GpuStaticInfo,
     ) -> bool {
         imp::PerformancePageGpu::update_readings(self, gpu, gpu_static)
-    }
-
-    pub fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
-    }
-
-    pub fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }

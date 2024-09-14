@@ -24,9 +24,8 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use super::{widgets::GraphWidget, PageExt};
 use crate::{application::BASE_POINTS, application::INTERVAL_STEP, i18n::*};
-
-use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;
@@ -982,6 +981,22 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
+impl PageExt for PerformancePageCpu {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
+}
+
 impl PerformancePageCpu {
     pub fn new(settings: &gio::Settings) -> Self {
         let this: Self = glib::Object::builder().build();
@@ -1072,19 +1087,5 @@ impl PerformancePageCpu {
 
     pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
         imp::PerformancePageCpu::update_readings(self, readings)
-    }
-
-    pub fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
-    }
-
-    pub fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
     }
 }

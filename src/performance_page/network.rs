@@ -24,10 +24,8 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use crate::application::INTERVAL_STEP;
-use crate::i18n::*;
-
-use super::widgets::GraphWidget;
+use super::{widgets::GraphWidget, PageExt};
+use crate::{application::INTERVAL_STEP, i18n::*};
 
 mod imp {
     use super::*;
@@ -776,6 +774,22 @@ glib::wrapper! {
     pub struct PerformancePageNetwork(ObjectSubclass<imp::PerformancePageNetwork>)
         @extends gtk::Box, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
+}
+
+impl PageExt for PerformancePageNetwork {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
 }
 
 impl PerformancePageNetwork {
