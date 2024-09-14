@@ -25,7 +25,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::{widgets::GraphWidget, PageExt};
-use crate::{application::BASE_POINTS, application::INTERVAL_STEP, i18n::*};
+use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
     use super::*;
@@ -52,8 +52,6 @@ mod imp {
         summary_mode: Cell<bool>,
 
         pub graph_widgets: Cell<Vec<GraphWidget>>,
-
-        pub settings: Cell<Option<gio::Settings>>,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Box>,
@@ -91,8 +89,6 @@ mod imp {
                 summary_mode: Cell::new(false),
 
                 graph_widgets: Cell::new(Vec::new()),
-
-                settings: Cell::new(None),
 
                 infobar_content: Default::default(),
                 utilization: Default::default(),
@@ -139,18 +135,9 @@ mod imp {
         fn configure_actions(this: &super::PerformancePageCpu) {
             use gtk::glib::*;
 
-            let settings = this.imp().settings.take();
-            let mut graph_selection = GRAPH_SELECTION_OVERALL;
-            let mut show_kernel_times = false;
-            match settings {
-                Some(settings) => {
-                    graph_selection = settings.int("performance-page-cpu-graph");
-                    show_kernel_times = settings.boolean("performance-page-kernel-times");
-
-                    this.imp().settings.set(Some(settings));
-                }
-                None => {}
-            }
+            let settings = settings!();
+            let graph_selection = settings.int("performance-page-cpu-graph");
+            let show_kernel_times = settings.boolean("performance-page-kernel-times");
 
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
@@ -187,19 +174,14 @@ mod imp {
                     action.set_state(&glib::Variant::from(true));
                     apa.set_state(&glib::Variant::from(false));
 
-                    let settings = this.imp().settings.take();
-                    if settings.is_some() {
-                        let settings = settings.unwrap();
-                        settings
-                            .set_int("performance-page-cpu-graph", GRAPH_SELECTION_OVERALL)
-                            .unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to save selected CPU graph"
-                                );
-                            });
-                        this.imp().settings.set(Some(settings));
-                    }
+                    settings!()
+                        .set_int("performance-page-cpu-graph", GRAPH_SELECTION_OVERALL)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter::PerformancePage",
+                                "Failed to save selected CPU graph"
+                            );
+                        });
 
                     this.imp().graph_widgets.set(graph_widgets);
                 }
@@ -226,19 +208,14 @@ mod imp {
                     action.set_state(&glib::Variant::from(true));
                     ova.set_state(&glib::Variant::from(false));
 
-                    let settings = this.imp().settings.take();
-                    if settings.is_some() {
-                        let settings = settings.unwrap();
-                        settings
-                            .set_int("performance-page-cpu-graph", GRAPH_SELECTION_ALL)
-                            .unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to save selected CPU graph"
-                                );
-                            });
-                        this.imp().settings.set(Some(settings));
-                    }
+                    settings!()
+                        .set_int("performance-page-cpu-graph", GRAPH_SELECTION_ALL)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter::PerformancePage",
+                                "Failed to save selected CPU graph"
+                            );
+                        });
 
                     this.imp().graph_widgets.set(graph_widgets);
                 }
@@ -272,19 +249,14 @@ mod imp {
 
                     action.set_state(&glib::Variant::from(visible));
 
-                    let settings = this.imp().settings.take();
-                    if settings.is_some() {
-                        let settings = settings.unwrap();
-                        settings
-                            .set_boolean("performance-page-kernel-times", visible)
-                            .unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to save kernel times setting"
-                                );
-                            });
-                        this.imp().settings.set(Some(settings));
-                    }
+                    settings!()
+                        .set_boolean("performance-page-kernel-times", visible)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter::PerformancePage",
+                                "Failed to save kernel times setting"
+                            );
+                        });
 
                     this.imp().graph_widgets.set(graph_widgets);
                 }
@@ -395,7 +367,7 @@ mod imp {
                     if size.1.is_empty() { "" } else { "i" }
                 )
             } else {
-                format!("N/A")
+                "N/A".to_string()
             };
             if let Some(l1_cache) = this.l1_cache.get() {
                 l1_cache.set_text(&l1_cache_size);
@@ -410,7 +382,7 @@ mod imp {
                     if size.1.is_empty() { "" } else { "i" }
                 )
             } else {
-                format!("N/A")
+                i18n("N/A")
             };
             if let Some(l2_cache) = this.l2_cache.get() {
                 l2_cache.set_text(&l2_cache_size);
@@ -425,7 +397,7 @@ mod imp {
                     if size.1.is_empty() { "" } else { "i" }
                 )
             } else {
-                format!("N/A")
+                i18n("N/A")
             };
             if let Some(l3_cache) = this.l3_cache.get() {
                 l3_cache.set_text(&l3_cache_size);
@@ -440,7 +412,7 @@ mod imp {
                     if size.1.is_empty() { "" } else { "i" }
                 )
             } else {
-                format!("N/A")
+                i18n("N/A")
             };
 
             true
@@ -691,22 +663,11 @@ mod imp {
 
             let col_count = Self::compute_column_count(cpu_count);
 
-            let settings = self.settings.take();
-            let mut graph_selection = GRAPH_SELECTION_OVERALL;
-            let mut show_kernel_times = false;
-            let mut data_points = BASE_POINTS;
-            let mut smooth = false;
-            match settings {
-                Some(settings) => {
-                    graph_selection = settings.int("performance-page-cpu-graph");
-                    show_kernel_times = settings.boolean("performance-page-kernel-times");
-                    data_points = settings.int("perfomance-page-data-points") as u32;
-                    smooth = settings.boolean("performance-smooth-graphs");
-
-                    self.settings.set(Some(settings));
-                }
-                None => {}
-            }
+            let settings = settings!();
+            let graph_selection = settings.int("performance-page-cpu-graph");
+            let show_kernel_times = settings.boolean("performance-page-kernel-times");
+            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
 
             // Add one for overall CPU utilization
             let mut graph_widgets = vec![];
@@ -848,10 +809,6 @@ mod imp {
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePageCpu>().clone();
-
-            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                self.settings.set(app.settings());
-            }
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);

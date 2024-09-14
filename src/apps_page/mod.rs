@@ -41,6 +41,7 @@ pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 
 
 mod imp {
     use super::*;
+    use crate::settings;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
@@ -911,18 +912,7 @@ mod imp {
                     move |sorter, _| {
                         use glib::g_critical;
 
-                        let settings = match crate::MissionCenterApplication::default_instance()
-                            .and_then(|app| app.settings())
-                        {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::AppsPage",
-                                    "Failed to save column sorting, could not get settings instance from MissionCenterApplication"
-                                );
-                                return;
-                            }
-                            Some(s) => s,
-                        };
+                        let settings = settings!();
 
                         let this = match this.upgrade() {
                             None => return,
@@ -930,7 +920,11 @@ mod imp {
                         };
 
                         if let Some(sorter) = sorter.downcast_ref::<gtk::ColumnViewSorter>() {
-                            let sort_column = sorter.primary_sort_column().as_ref().and_then(|c| Some(c.as_ptr() as usize)).unwrap_or_default();
+                            let sort_column = sorter
+                                .primary_sort_column()
+                                .as_ref()
+                                .and_then(|c| Some(c.as_ptr() as usize))
+                                .unwrap_or_default();
 
                             let nc = this.imp().name_column.as_ptr() as usize;
                             let pc = this.imp().pid_column.as_ptr() as usize;
@@ -960,24 +954,28 @@ mod imp {
                                     "Unknown column sorting encountered"
                                 );
                                 Ok(())
-                            }
-                            {
+                            } {
                                 g_critical!(
                                     "MissionCenter::AppsPage",
-                                    "Failed to save column sorting: {}", e
+                                    "Failed to save column sorting: {}",
+                                    e
                                 );
                                 return;
                             }
 
                             let sort_order = sorter.primary_sort_order();
-                            if let Err(e) = settings.set_enum("apps-page-sorting-order", match sort_order {
-                                gtk::SortType::Ascending => 0,
-                                gtk::SortType::Descending => 1,
-                                _ => 0
-                            }) {
+                            if let Err(e) = settings.set_enum(
+                                "apps-page-sorting-order",
+                                match sort_order {
+                                    gtk::SortType::Ascending => 0,
+                                    gtk::SortType::Descending => 1,
+                                    _ => 0,
+                                },
+                            ) {
                                 g_critical!(
                                     "MissionCenter::AppsPage",
-                                    "Failed to save column sorting: {}", e
+                                    "Failed to save column sorting: {}",
+                                    e
                                 );
                                 return;
                             }
@@ -1000,18 +998,7 @@ mod imp {
             self.column_view
                 .set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
 
-            let settings = match crate::MissionCenterApplication::default_instance()
-                .and_then(|app| app.settings())
-            {
-                None => {
-                    glib::g_critical!(
-                        "MissionCenter::AppsPage",
-                        "Failed to get column sorting, could not get settings instance from MissionCenterApplication"
-                    );
-                    return;
-                }
-                Some(s) => s,
-            };
+            let settings = settings!();
 
             let remember_sorting = settings.boolean("apps-page-remember-sorting");
             if remember_sorting {
@@ -1333,37 +1320,25 @@ mod imp {
 
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
-            use crate::MissionCenterApplication;
-            use glib::g_critical;
-
             self.parent_constructed();
 
             self.configure_actions();
 
-            let app = match MissionCenterApplication::default_instance() {
-                Some(app) => app,
-                None => {
-                    g_critical!(
-                        "MissionCenter::AppsPage",
-                        "Failed to get default instance of MissionCenterApplication"
-                    );
-                    return;
-                }
-            };
-            if let Some(settings) = app.settings() {
-                self.use_merge_stats
-                    .set(settings.boolean("apps-page-merged-process-stats"));
-                settings.connect_changed(Some("apps-page-merged-process-stats"), {
-                    let this = self.obj().downgrade();
-                    move |settings, _| {
-                        if let Some(this) = this.upgrade() {
-                            this.imp()
-                                .use_merge_stats
-                                .set(settings.boolean("apps-page-merged-process-stats"));
-                        }
+            let settings = settings!();
+
+            self.use_merge_stats
+                .set(settings.boolean("apps-page-merged-process-stats"));
+
+            settings.connect_changed(Some("apps-page-merged-process-stats"), {
+                let this = self.obj().downgrade();
+                move |settings, _| {
+                    if let Some(this) = this.upgrade() {
+                        this.imp()
+                            .use_merge_stats
+                            .set(settings.boolean("apps-page-merged-process-stats"));
                     }
-                });
-            }
+                }
+            });
         }
     }
 
