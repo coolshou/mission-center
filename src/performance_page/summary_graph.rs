@@ -26,7 +26,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk, glib, prelude::*};
 
 use super::widgets::{GraphWidget, SidebarDropHint};
-use crate::application::MissionCenterApplication;
+use crate::settings;
 
 mod imp {
     use super::*;
@@ -177,12 +177,7 @@ mod imp {
                         None => return,
                     };
 
-                    let settings = match MissionCenterApplication::default_instance()
-                        .and_then(|app| app.settings())
-                    {
-                        Some(settings) => settings,
-                        None => return,
-                    };
+                    let settings = settings!();
 
                     let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
                     let mut hidden_graphs = hidden_graphs.split(";").collect::<HashSet<_>>();
