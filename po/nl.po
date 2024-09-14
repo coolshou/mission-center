@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-08-29 07:09+0000\n"
-"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
+"PO-Revision-Date: 2024-09-11 00:09+0000\n"
+"Last-Translator: lindely <git@bokse.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -46,7 +46,7 @@ msgstr "Controleer het gebruik van bronnen op je systeem"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Controleer het gebruik van uw processor, geheugen, opslag, netwerk en "
+"Controleer het gebruik van je processor, geheugen, opslag, netwerk en "
 "grafische kaart"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
@@ -228,46 +228,44 @@ msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
 #: data/io.missioncenter.MissionCenter.gschema.xml:104
 #: resources/ui/preferences/page.blp:55
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Processorinformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:109
 #: resources/ui/preferences/page.blp:60
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Aanvullende geheugeninformatie ophalen is mislukt"
+msgstr "Geheugeninformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:114
 #: resources/ui/preferences/page.blp:65
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Schijfinformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:119
 #: resources/ui/preferences/page.blp:70
 msgid "Show network information by default"
-msgstr ""
+msgstr "Netwerkinformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:124
 #: resources/ui/preferences/page.blp:75
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Grafischekaartinformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:129
 #: resources/ui/preferences/page.blp:80
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Ventilatorinformatie standaard weergeven"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Samenstelling geheugen"
+msgstr "Toon de geheugensamenstellingwidget"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Toon de swap-grafiek"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Toon de encodeer-decodeergrafiek van de GPU"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1394
 #: src/performance_page/mod.rs:428
@@ -486,9 +484,8 @@ msgid "Memory usage over "
 msgstr "Geheugen­gebruik gedurende "
 
 #: resources/ui/performance_page/gpu.blp:199
-#, fuzzy
 msgid "Show Encode/Decode Usage"
-msgstr "Video-encodering/-decodering"
+msgstr "Toon encodeer-decodeergebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -503,9 +500,8 @@ msgid "Memory usage"
 msgstr "Geheugengebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "GPU-gebruik"
+msgstr "GTT-gebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
@@ -545,22 +541,20 @@ msgid "Memory"
 msgstr "Geheugen"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Geheugen­gebruik gedurende "
+msgstr "Swapgebruik gedurende "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Samenstelling geheugen"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Samenstelling geheugen"
+msgstr "Geheugensamenstelling weergeven"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Swapgebruik weergeven"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -608,7 +602,7 @@ msgstr "Ontvangen"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Totaal ontvangen"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -616,7 +610,7 @@ msgstr "Verzenden"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Totaal verzonden"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -655,9 +649,8 @@ msgid "IPv6 address:"
 msgstr "IPv6-adres:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Algemene instellingen"
+msgstr "Algemeen"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -668,9 +661,8 @@ msgid "Chart Data Points"
 msgstr "Grafiekgegevenspunten"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Prestaties"
+msgstr "Prestatiepagina"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -682,34 +674,31 @@ msgstr "Teken grafieken als een vloeiende lĳn in plaats van een gekartelde lĳn
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Processorinformatie weergeven"
 
 #: resources/ui/preferences/page.blp:59
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Samenstelling geheugen"
+msgstr "Geheugeninformatie weergeven"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Schijfinformatie weergeven"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Network Information"
-msgstr ""
+msgstr "Netwerkinformatie weergeven"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Grafischekaartinformatie weergeven"
 
 #: resources/ui/preferences/page.blp:79
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "Proces- en gebruikers­informatie"
+msgstr "Ventilatorinformatie weergeven"
 
 #: resources/ui/preferences/page.blp:85
-#, fuzzy
 msgid "App Page"
-msgstr "Instellingen applicatielijst"
+msgstr "Applicatiepagina"
 
 #: resources/ui/preferences/page.blp:88
 msgid "Merge Process Stats"
@@ -1023,9 +1012,8 @@ msgid "{} {}bps"
 msgstr "{} {}bps"
 
 #: src/performance_page/network.rs:487 src/performance_page/network.rs:498
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{} B/s"
+msgstr "{} {}{} B"
 
 #: src/services_page/mod.rs:637
 msgid "{} Running Services"
