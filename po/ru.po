@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-09-14 10:42+0000\n"
+"PO-Revision-Date: 2024-09-14 14:30+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -231,46 +231,44 @@ msgstr "Должны ли графики производительности б
 #: data/io.missioncenter.MissionCenter.gschema.xml:104
 #: resources/ui/preferences/page.blp:55
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Показывать информацию о процессоре по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:109
 #: resources/ui/preferences/page.blp:60
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Не удалось получить дополнительную информацию о памяти"
+msgstr "Показывать информацию о памяти по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:114
 #: resources/ui/preferences/page.blp:65
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Показывать информацию о диске по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:119
 #: resources/ui/preferences/page.blp:70
 msgid "Show network information by default"
-msgstr ""
+msgstr "Показывать информацию о сети по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:124
 #: resources/ui/preferences/page.blp:75
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Показывать информацию о ГП по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:129
 #: resources/ui/preferences/page.blp:80
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Показывать информацию о вентиляторе по умолчанию"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Улучшение графика структуры памяти"
+msgstr "Показывать виджет структуры памяти"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Показывать график подкачки"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Показывать график кодирования-декодирования ГП"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1394
 #: src/performance_page/mod.rs:428
@@ -280,7 +278,7 @@ msgstr "ЦП"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr "Использование в течение "
+msgstr "Использование "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -438,15 +436,13 @@ msgid "Power preference:"
 msgstr "Параметр питания:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Активное время"
+msgstr "Время активного использования "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Пропускная способность"
+msgstr "Пропускная способность "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -482,19 +478,17 @@ msgid "Type:"
 msgstr "Тип:"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Использование кодирования видео"
+msgstr "Использование кодирования/декодирования видео "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Использование памяти"
+msgstr "Использование памяти "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Показывать использование кодирования/декодирования"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -509,23 +503,20 @@ msgid "Memory usage"
 msgstr "Использование памяти"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Использование ГП"
+msgstr "Использование GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "Скорость памяти"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "Кодирование/декодирование видео"
+msgstr "Кодирование видео"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "Кодирование/декодирование видео"
+msgstr "Декодирование видео"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -553,22 +544,20 @@ msgid "Memory"
 msgstr "Память"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Использование памяти"
+msgstr "Использование подкачки "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Структура памяти"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Структура памяти"
+msgstr "Показывать структуру памяти"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Показывать использование подкачки"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -616,7 +605,7 @@ msgstr "Получение"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Всего получено"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -624,7 +613,7 @@ msgstr "Отправка"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Всего отправлено"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -663,9 +652,8 @@ msgid "IPv6 address:"
 msgstr "IPv6 адрес:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Общие настройки"
+msgstr "Общие"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -676,9 +664,8 @@ msgid "Chart Data Points"
 msgstr "Точки данных на графике"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Производительность"
+msgstr "Страница \"Производительность\""
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -690,34 +677,31 @@ msgstr "Рисовать графики в виде плавных линий в
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Показывать информацию о процессоре"
 
 #: resources/ui/preferences/page.blp:59
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Структура памяти"
+msgstr "Показывать информацию о памяти"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Показывать информацию о диске"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Network Information"
-msgstr ""
+msgstr "Показывать информацию о сети"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Показывать информацию о ГП"
 
 #: resources/ui/preferences/page.blp:79
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "Информация о процессе и пользователе"
+msgstr "Показывать информацию о вентиляторе"
 
 #: resources/ui/preferences/page.blp:85
-#, fuzzy
 msgid "App Page"
-msgstr "Настройки страницы \"Приложения\""
+msgstr "Страница \"Приложения\""
 
 #: resources/ui/preferences/page.blp:88
 msgid "Merge Process Stats"
@@ -1032,9 +1016,8 @@ msgid "{} {}bps"
 msgstr "{} {}бит/с"
 
 #: src/performance_page/network.rs:487 src/performance_page/network.rs:498
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}Б/c"
+msgstr "{} {}{}Б"
 
 #: src/services_page/mod.rs:637
 msgid "{} Running Services"
