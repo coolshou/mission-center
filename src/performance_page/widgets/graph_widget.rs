@@ -479,7 +479,15 @@ impl GraphWidget {
         self.imp().data_sets.set(data);
     }
 
-    pub fn add_data_point(&self, index: usize, value: f32) {
+    pub fn add_data_point(&self, index: usize, mut value: f32) {
+        if value.is_infinite()
+            || value.is_nan()
+            || value.is_subnormal()
+            || value < self.value_range_min()
+        {
+            value = self.value_range_min();
+        }
+
         let mut data = self.imp().data_sets.take();
         if index < data.len() {
             data[index].data_set.push(value);
@@ -487,6 +495,10 @@ impl GraphWidget {
 
             if self.auto_scale() {
                 self.scale(&mut data, value);
+            } else if value > self.value_range_max() {
+                let data_set = &mut data[index].data_set;
+                data_set.remove(data_set.len() - 1);
+                data_set.push(self.value_range_max());
             }
         }
         self.imp().data_sets.set(data);
@@ -560,22 +572,26 @@ impl GraphWidget {
             }
         }
 
-        while value_max < max_y {
-            max_y /= 2.;
+        let value_max_abs = value_max.abs();
+        let mut max_y_abs = max_y.abs();
+
+        while value_max_abs < max_y_abs {
+            max_y_abs /= 2.;
         }
-        if value_max > max_y {
-            max_y *= 2.;
+        if value_max_abs > max_y_abs {
+            max_y_abs *= 2.;
         }
 
         if self.auto_scale_pow2() {
-            max_y = max_y.round();
-            if max_y < 0. {
-                max_y = -max_y;
-                max_y = round_up_to_next_power_of_two(max_y as u64) as f32 * -1.;
-            } else {
-                max_y = round_up_to_next_power_of_two(max_y as u64) as f32;
-            }
+            max_y_abs = max_y_abs.round();
+            max_y_abs = round_up_to_next_power_of_two(max_y_abs as u64) as f32;
         }
+
+        max_y = if max_y < 0. {
+            max_y_abs * -1.
+        } else {
+            max_y_abs
+        };
 
         self.set_value_range_max(max_y);
     }

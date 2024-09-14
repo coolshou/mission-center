@@ -244,10 +244,6 @@ mod imp {
 
             this.title_temp_name.set_text(&fan.temp_name);
 
-            this.speed_graph.set_auto_scale(false);
-            this.speed_graph.set_auto_scale(false);
-            this.temp_graph.set_auto_scale(false);
-
             this.speed_graph.set_filled(1, false);
             this.speed_graph.set_dashed(1, true);
 

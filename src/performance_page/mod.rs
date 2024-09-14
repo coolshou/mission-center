@@ -1476,14 +1476,14 @@ mod imp {
                 panic!("Settings not set");
             };
 
-            let data_points = settings.int("perfomance-page-data-points") as u32;
-
-            summary.graph_widget().set_data_points(data_points);
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("perfomance-page-data-points") as u32);
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-            let page = FanPage::new(fan_static_info.fan_label.as_ref(), &settings);
+            let page = FanPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
                 FAN_BASE_COLOR[0] as f32 / 255.,
                 FAN_BASE_COLOR[1] as f32 / 255.,
@@ -1536,8 +1536,8 @@ mod imp {
                 sidebar: &gtk::ListBox,
                 index: &mut i32,
             ) {
-                for (disk_graph, drag_controller) in graphs.drain(..) {
-                    sidebar.insert(&disk_graph, *index);
+                for (graph, drag_controller) in graphs.drain(..) {
+                    sidebar.insert(&graph, *index);
                     sidebar
                         .row_at_index(*index)
                         .and_then(|row| Some(row.add_controller(drag_controller)));
@@ -1552,6 +1552,7 @@ mod imp {
             let mut disk_graphs = Vec::with_capacity(summary_graphs.len());
             let mut net_graphs = Vec::with_capacity(summary_graphs.len());
             let mut gpu_graphs = Vec::with_capacity(summary_graphs.len());
+            let mut fan_graphs = Vec::with_capacity(summary_graphs.len());
 
             for (graph, drag_source) in &summary_graphs {
                 graph.set_is_enabled(true);
@@ -1566,6 +1567,8 @@ mod imp {
                     net_graphs.push((graph.clone(), drag_source.clone()));
                 } else if graph.widget_name().starts_with("gpu") {
                     gpu_graphs.push((graph.clone(), drag_source.clone()));
+                } else if graph.widget_name().starts_with("fan") {
+                    fan_graphs.push((graph.clone(), drag_source.clone()));
                 }
             }
 
@@ -1575,6 +1578,7 @@ mod imp {
                 .sort_unstable_by(|(g1, _), (g2, _)| g1.widget_name().cmp(&g2.widget_name()));
             net_graphs.sort_unstable_by(|(g1, _), (g2, _)| g1.widget_name().cmp(&g2.widget_name()));
             gpu_graphs.sort_unstable_by(|(g1, _), (g2, _)| g1.widget_name().cmp(&g2.widget_name()));
+            fan_graphs.sort_unstable_by(|(g1, _), (g2, _)| g1.widget_name().cmp(&g2.widget_name()));
 
             let sidebar = self.sidebar();
             sidebar.remove_all();
@@ -1585,6 +1589,7 @@ mod imp {
             add_graphs_to_sidebar(disk_graphs, &sidebar, &mut index);
             add_graphs_to_sidebar(net_graphs, &sidebar, &mut index);
             add_graphs_to_sidebar(gpu_graphs, &sidebar, &mut index);
+            add_graphs_to_sidebar(fan_graphs, &sidebar, &mut index);
         }
     }
 
@@ -2024,7 +2029,9 @@ mod imp {
                     }
                     Pages::Fan(pages) => {
                         for fan_info in &readings.fans_info {
-                            if let Some((summary, page)) = pages.get(fan_info.fan_label.as_ref()) {
+                            if let Some((summary, page)) =
+                                pages.get(&Self::fan_page_name(fan_info.fan_label.as_ref()))
+                            {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
