@@ -24,7 +24,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
-use crate::{application::MissionCenterApplication, sys_info_v2::Readings};
+use crate::{application::MissionCenterApplication, settings, sys_info_v2::Readings};
 
 mod imp {
     use super::*;
@@ -95,8 +95,6 @@ mod imp {
         summary_mode: Cell<bool>,
         #[property(get, set)]
         collapse_threshold: Cell<i32>,
-
-        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for MissionCenterWindow {
@@ -134,8 +132,6 @@ mod imp {
 
                 summary_mode: Cell::new(false),
                 collapse_threshold: Cell::new(0),
-
-                settings: Cell::new(None),
             }
         }
     }
@@ -205,17 +201,14 @@ mod imp {
             self.obj().notify_info_button_visible();
             self.obj().notify_search_button_visible();
 
-            if let Some(settings) = self.settings.take() {
-                settings
-                    .set_string("window-selected-page", &visible_child_name)
-                    .unwrap_or_else(|_| {
-                        g_critical!(
-                            "MissionCenter",
-                            "Failed to set window-selected-page setting"
-                        );
-                    });
-                self.settings.set(Some(settings));
-            }
+            settings!()
+                .set_string("window-selected-page", &visible_child_name)
+                .unwrap_or_else(|_| {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to set window-selected-page setting"
+                    );
+                });
         }
     }
 
@@ -317,10 +310,6 @@ mod imp {
             use glib::*;
 
             self.parent_constructed();
-
-            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                self.settings.set(app.settings());
-            }
 
             self.configure_actions();
 
@@ -576,11 +565,8 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
-            if let Some(settings) = self.settings.take() {
-                self.stack
-                    .set_visible_child_name(settings.string("window-selected-page").as_str());
-                self.settings.set(Some(settings));
-            }
+            self.stack
+                .set_visible_child_name(settings!().string("window-selected-page").as_str());
         }
     }
 

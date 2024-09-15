@@ -28,6 +28,25 @@ use gtk::{
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
+pub const INTERVAL_STEP: f64 = 0.05;
+pub const BASE_INTERVAL: f64 = 1f64;
+
+#[macro_export]
+macro_rules! mc_app {
+    () => {
+        ::gtk::gio::Application::default()
+            .and_then(|app| app.downcast::<$crate::MissionCenterApplication>().ok())
+            .expect("Failed to get MissionCenterApplication instance")
+    };
+}
+
+#[macro_export]
+macro_rules! settings {
+    () => {
+        $crate::mc_app!().settings()
+    };
+}
+
 mod imp {
     use super::*;
 
@@ -58,6 +77,8 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
+
+            obj.set_default();
 
             self.settings
                 .set(Some(gio::Settings::new("io.missioncenter.MissionCenter")));
@@ -297,8 +318,8 @@ impl MissionCenterApplication {
         }
     }
 
-    pub fn settings(&self) -> Option<gio::Settings> {
-        unsafe { &*self.imp().settings.as_ptr() }.clone()
+    pub fn settings(&self) -> gio::Settings {
+        unsafe { (&*self.imp().settings.as_ptr()).as_ref().unwrap_unchecked() }.clone()
     }
 
     pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {
@@ -383,7 +404,3 @@ impl MissionCenterApplication {
         about.present(Some(&window));
     }
 }
-
-pub const INTERVAL_STEP: f64 = 0.05;
-pub const BASE_INTERVAL: f64 = 1f64;
-pub const BASE_POINTS: u32 = 60;

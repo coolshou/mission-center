@@ -119,7 +119,8 @@ CFLAGS=-O2 ./configure                    \
     --disable-static
 make -j4
 make install && make DESTDIR=$OUT_PATH install
-rm -rf freetype-$FREETYPE_VER*
+cd ../ && rm -rf freetype-$FREETYPE_VER*
+cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gdk-pixbuf.html
 # -------------------------------------------------------------------
@@ -295,7 +296,8 @@ CFLAGS=-O2 ./configure                    \
     --disable-static
 make -j4
 make install && make DESTDIR=$OUT_PATH install
-rm -rf freetype-$FREETYPE_VER*
+cd ../ && rm -rf freetype-$FREETYPE_VER*
+cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
 # ------------------------------------------------------------------
@@ -329,29 +331,29 @@ cmake -GNinja -S ..                    \
     -DSHADERC_SKIP_COPYRIGHT_CHECK=ON  \
     -DSHADERC_ENABLE_WERROR_COMPILE=OFF
 ninja && ninja install
-cd ../../ && rm -rf v$GLSLC_VER shaderc-$GLSLC_VER*
+cd ../../ && rm -rf v$GLSLC_VER* shaderc-$GLSLC_VER*
 cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.16.0
+GTK_VER=4.14.5
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
 tar xvf gtk-$GTK_VER.tar.xz
 cd gtk-$GTK_VER
 # Patch for GLAD Vulkan support
-for f in $SRC_PATH/support/patches/gtk4/*.patch; do
-  patch -p1 < $f
-done
+# for f in $SRC_PATH/support/patches/gtk4/*.patch; do
+#   patch -p1 < $f
+# done
 # Copy glad project into GTK source directory
-cp -rv $SRC_PATH/support/patches/gtk4/glad .
+# cp -rv $SRC_PATH/support/patches/gtk4/glad .
 mkdir build && cd build
 /usr/local/bin/meson setup ..          \
     --prefix=/usr                      \
     --libdir=/usr/lib/$(arch)-linux-gnu \
     --buildtype=release                \
-    -Dvulkan=enabled                   \
+    -Dvulkan=disabled                  \
     -Dintrospection=enabled            \
     -Dbuild-examples=false             \
     -Dbuild-tests=false                \
@@ -400,7 +402,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-LIBADW_VER=1.6.rc
+LIBADW_VER=1.5.4
 LIBADW_VER_MM=$(echo $LIBADW_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/libadwaita/$LIBADW_VER_MM/libadwaita-$LIBADW_VER.tar.xz

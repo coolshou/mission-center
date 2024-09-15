@@ -25,7 +25,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::{widgets::GraphWidget, PageExt};
-use crate::{application::INTERVAL_STEP, i18n::*};
+use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
     use super::*;
@@ -100,8 +100,6 @@ mod imp {
         pub legend_decode: OnceCell<gtk::Picture>,
         pub legend_vram: OnceCell<gtk::Picture>,
         pub legend_gtt: OnceCell<gtk::Picture>,
-
-        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PerformancePageGpu {
@@ -157,8 +155,6 @@ mod imp {
                 legend_decode: Default::default(),
                 legend_vram: Default::default(),
                 legend_gtt: Default::default(),
-
-                settings: Cell::new(None),
             }
         }
     }
@@ -190,18 +186,8 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            let settings = this.imp().settings.take();
-            let mut show_enc_dec_usage = true;
-
-            match settings {
-                Some(settings) => {
-                    show_enc_dec_usage =
-                        settings.boolean("performance-page-gpu-encode-decode-usage-visible");
-
-                    this.imp().settings.set(Some(settings));
-                }
-                None => {}
-            }
+            let show_enc_dec_usage =
+                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
 
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate({
@@ -240,22 +226,17 @@ mod imp {
                         }
                         action.set_state(&glib::Variant::from(visible));
 
-                        let settings = this.settings.take();
-                        if settings.is_some() {
-                            let settings = settings.unwrap();
-                            settings
-                                .set_boolean(
-                                    "performance-page-gpu-encode-decode-usage-visible",
-                                    visible,
-                                )
-                                .unwrap_or_else(|_| {
-                                    g_critical!(
-                                        "MissionCenter::PerformancePage",
-                                        "Failed to save show encode/decode usage"
-                                    );
-                                });
-                            this.settings.set(Some(settings));
-                        }
+                        settings!()
+                            .set_boolean(
+                                "performance-page-gpu-encode-decode-usage-visible",
+                                visible,
+                            )
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save show encode/decode usage"
+                                );
+                            });
                     }
                 }
             });
@@ -325,18 +306,10 @@ mod imp {
                 });
 
             let this = this.imp();
-            let settings = this.settings.take();
-            let mut show_enc_dec_usage = true;
 
-            match settings {
-                Some(settings) => {
-                    show_enc_dec_usage =
-                        settings.boolean("performance-page-gpu-encode-decode-usage-visible");
+            let show_enc_dec_usage =
+                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
 
-                    this.settings.set(Some(settings));
-                }
-                None => {}
-            }
             this.encode_decode_graph.set_visible(show_enc_dec_usage);
             if let Some(object) = this.legend_encode.get() {
                 object.set_visible(show_enc_dec_usage)
@@ -438,7 +411,7 @@ mod imp {
             if index.is_some() {
                 this.gpu_id.set_text(&format!("GPU {}", index.unwrap()));
             } else {
-                this.gpu_id.set_text(&format!("GPU"));
+                this.gpu_id.set_text("GPU");
             }
 
             this.device_name.set_text(&gpu.device_name);
@@ -743,10 +716,6 @@ mod imp {
 
             let obj = self.obj();
             let this = obj.upcast_ref::<super::PerformancePageGpu>().clone();
-
-            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                self.settings.set(app.settings());
-            }
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);

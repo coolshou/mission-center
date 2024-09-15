@@ -326,7 +326,7 @@ mod imp {
                 let fan_temp_c = fan.temp_amount / 1000;
 
                 if let Some(temp_label) = this.temp.get() {
-                    temp_label.set_text(&i18n_f("{} C", &[&format!("{}", fan_temp_c)]));
+                    temp_label.set_text(&i18n_f("{} °C", &[&format!("{}", fan_temp_c)]));
                 }
 
                 let max_temp = this.temp_record_high.get();
@@ -381,7 +381,7 @@ mod imp {
                 this.temp_graph.add_data_point(0, tmp);
 
                 this.temp_max_y.set_text(&i18n_f(
-                    "{} C",
+                    "{} °C",
                     &[&format!("{}", this.temp_record_high.get())],
                 ));
             }

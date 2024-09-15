@@ -34,8 +34,8 @@ use gtk::{
 use widgets::{GraphWidget, SidebarDropHint};
 
 use crate::{
-    application::BASE_POINTS,
     i18n::*,
+    settings,
     sys_info_v2::{DiskType, NetworkDevice},
 };
 
@@ -120,8 +120,6 @@ mod imp {
         action_group: Cell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
-
-        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PerformancePage {
@@ -146,8 +144,6 @@ mod imp {
                 action_group: Cell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
-
-                settings: Cell::new(None),
             }
         }
     }
@@ -190,17 +186,14 @@ mod imp {
                     imp.context_menu_view_actions.set(actions);
                     imp.page_stack.set_visible_child_name(page_name);
 
-                    if let Some(settings) = imp.settings.take() {
-                        settings
-                            .set_string("performance-selected-page", page_name)
-                            .unwrap_or_else(|_| {
-                                glib::g_warning!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to set performance-selected-page setting"
-                                );
-                            });
-                        imp.settings.set(Some(settings));
-                    }
+                    settings!()
+                        .set_string("performance-selected-page", page_name)
+                        .unwrap_or_else(|_| {
+                            glib::g_warning!(
+                                "MissionCenter::PerformancePage",
+                                "Failed to set performance-selected-page setting"
+                            );
+                        });
                 }
             });
 
@@ -923,46 +916,45 @@ mod imp {
                         src.set_content(None::<&gdk::ContentProvider>);
 
                         let this = this.imp();
-                        if let Some(settings) = this.settings.take() {
-                            let sidebar = this.sidebar();
-                            let mut row_index = -1;
-                            let mut sidebar_order = String::new();
-                            loop {
-                                row_index += 1;
-                                let row = match sidebar.row_at_index(row_index) {
-                                    Some(row) => row,
-                                    None => break,
-                                };
 
-                                let graph = match row
-                                    .child()
-                                    .and_then(|child| child.downcast_ref::<SummaryGraph>().cloned())
-                                {
-                                    Some(graph) => graph,
-                                    None => continue,
-                                };
+                        let settings = settings!();
 
-                                sidebar_order.push_str(graph.widget_name().as_str());
-                                sidebar_order.push(';');
-                            }
-
-                            let sidebar_order = if !sidebar_order.is_empty() {
-                                &sidebar_order[..sidebar_order.len() - 1]
-                            } else {
-                                ""
+                        let sidebar = this.sidebar();
+                        let mut row_index = -1;
+                        let mut sidebar_order = String::new();
+                        loop {
+                            row_index += 1;
+                            let row = match sidebar.row_at_index(row_index) {
+                                Some(row) => row,
+                                None => break,
                             };
 
-                            settings
-                                .set_string("performance-sidebar-order", sidebar_order)
-                                .unwrap_or_else(|_| {
-                                    glib::g_warning!(
-                                        "MissionCenter::PerformancePage",
-                                        "Failed to set performance-sidebar-order setting"
-                                    );
-                                });
+                            let graph = match row
+                                .child()
+                                .and_then(|child| child.downcast_ref::<SummaryGraph>().cloned())
+                            {
+                                Some(graph) => graph,
+                                None => continue,
+                            };
 
-                            this.settings.set(Some(settings));
+                            sidebar_order.push_str(graph.widget_name().as_str());
+                            sidebar_order.push(';');
                         }
+
+                        let sidebar_order = if !sidebar_order.is_empty() {
+                            &sidebar_order[..sidebar_order.len() - 1]
+                        } else {
+                            ""
+                        };
+
+                        settings
+                            .set_string("performance-sidebar-order", sidebar_order)
+                            .unwrap_or_else(|_| {
+                                glib::g_warning!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to set performance-sidebar-order setting"
+                                );
+                            });
                     }
                 });
 
@@ -988,10 +980,7 @@ mod imp {
                 1.,
             ));
 
-            let settings = match self.settings.take() {
-                Some(settings) => settings,
-                None => panic!("Settings not set"),
-            };
+            let settings = settings!();
 
             summary
                 .graph_widget()
@@ -1007,7 +996,6 @@ mod imp {
                 CPU_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.settings.set(Some(settings));
             page.set_static_information(readings);
 
             self.configure_page(&page);
@@ -1045,26 +1033,17 @@ mod imp {
                 1.,
             ));
 
-            let settings = self.settings.take();
-            if settings.is_none() {
-                panic!("Settings not set");
-            }
+            let settings = settings!();
 
-            summary.graph_widget().set_data_points(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .int("perfomance-page-data-points") as u32,
-            );
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("perfomance-page-data-points") as u32);
 
-            summary.graph_widget().set_smooth_graphs(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .boolean("performance-smooth-graphs"),
-            );
+            summary
+                .graph_widget()
+                .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-            let page = MemoryPage::new(settings.as_ref().unwrap());
+            let page = MemoryPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
                 MEMORY_BASE_COLOR[1] as f32 / 255.,
@@ -1077,7 +1056,6 @@ mod imp {
                 DISK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.settings.set(settings);
             page.set_static_information(readings);
 
             self.configure_page(&page);
@@ -1159,33 +1137,23 @@ mod imp {
                 1.,
             ));
 
-            let settings = self.settings.take();
-            if settings.is_none() {
-                panic!("Settings not set");
-            }
+            let settings = settings!();
 
-            summary.graph_widget().set_data_points(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .int("perfomance-page-data-points") as u32,
-            );
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("perfomance-page-data-points") as u32);
 
-            summary.graph_widget().set_smooth_graphs(
-                settings
-                    .as_ref()
-                    .unwrap()
-                    .boolean("performance-smooth-graphs"),
-            );
+            summary
+                .graph_widget()
+                .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-            let page = DiskPage::new(&page_name, settings.as_ref().unwrap());
+            let page = DiskPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
                 DISK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.settings.set(settings);
             page.set_static_information(disk_id, disk_static_info);
 
             self.configure_page(&page);
@@ -1256,9 +1224,7 @@ mod imp {
                 ));
             }
 
-            let Some(settings) = self.settings.take() else {
-                panic!("Settings not set");
-            };
+            let settings = settings!();
 
             summary
                 .graph_widget()
@@ -1296,8 +1262,6 @@ mod imp {
                 NETWORK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-
-            self.settings.set(Some(settings));
 
             page.set_static_information(network_device);
             self.configure_page(&page);
@@ -1344,28 +1308,17 @@ mod imp {
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(&page_name);
 
-                let settings = self.settings.take();
-                if settings.is_none() {
-                    panic!("Settings not set");
-                }
+                let settings = settings!();
 
-                summary.graph_widget().set_data_points(
-                    settings
-                        .as_ref()
-                        .unwrap()
-                        .int("perfomance-page-data-points") as u32,
-                );
+                summary
+                    .graph_widget()
+                    .set_data_points(settings.int("perfomance-page-data-points") as u32);
 
-                summary.graph_widget().set_smooth_graphs(
-                    settings
-                        .as_ref()
-                        .unwrap()
-                        .boolean("performance-smooth-graphs"),
-                );
+                summary
+                    .graph_widget()
+                    .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-                let page = GpuPage::new(&static_info.device_name, settings.as_ref().unwrap());
-
-                self.settings.set(settings);
+                let page = GpuPage::new(&static_info.device_name, &settings);
 
                 if !hide_index {
                     summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
@@ -1472,9 +1425,7 @@ mod imp {
             ));
             summary.graph_widget().set_auto_scale(true);
 
-            let Some(settings) = self.settings.take() else {
-                panic!("Settings not set");
-            };
+            let settings = settings!();
 
             summary
                 .graph_widget()
@@ -1490,7 +1441,6 @@ mod imp {
                 FAN_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            self.settings.set(Some(settings));
             page.set_static_information(fan_static_info);
 
             self.configure_page(&page);
@@ -1611,88 +1561,87 @@ mod imp {
 
             this.default_sort_sidebar_entries();
 
-            if let Some(settings) = this.settings.take() {
-                let view_actions = this.context_menu_view_actions.take();
-                let action = if let Some(action) =
-                    view_actions.get(settings.string("performance-selected-page").as_str())
-                {
-                    action
-                } else {
-                    view_actions.get("cpu").expect("All computers have a CPU")
+            let settings = settings!();
+
+            let view_actions = this.context_menu_view_actions.take();
+            let action = if let Some(action) =
+                view_actions.get(settings.string("performance-selected-page").as_str())
+            {
+                action
+            } else {
+                view_actions.get("cpu").expect("All computers have a CPU")
+            };
+            action.activate(None);
+
+            this.context_menu_view_actions.set(view_actions);
+
+            let sidebar = this.sidebar();
+
+            let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
+            let hidden_graphs = hidden_graphs.split(";").collect::<HashSet<_>>();
+
+            let sidebar_order = settings.string("performance-sidebar-order");
+
+            let mut row_map = HashMap::new();
+            let mut row_index = -1;
+            loop {
+                row_index += 1;
+                let row = match sidebar.row_at_index(row_index) {
+                    Some(row) => row,
+                    None => break,
                 };
-                action.activate(None);
 
-                this.context_menu_view_actions.set(view_actions);
-
-                let sidebar = this.sidebar();
-
-                let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
-                let hidden_graphs = hidden_graphs.split(";").collect::<HashSet<_>>();
-
-                let sidebar_order = settings.string("performance-sidebar-order");
-
-                let mut row_map = HashMap::new();
-                let mut row_index = -1;
-                loop {
-                    row_index += 1;
-                    let row = match sidebar.row_at_index(row_index) {
-                        Some(row) => row,
-                        None => break,
-                    };
-
-                    let graph = match row
-                        .child()
-                        .and_then(|child| child.downcast_ref::<SummaryGraph>().cloned())
-                    {
-                        Some(graph) => graph,
-                        None => continue,
-                    };
-
-                    let name = graph.widget_name();
-
-                    if hidden_graphs.contains(name.as_str()) {
-                        graph.set_is_enabled(false);
-                    }
-
-                    row_map.insert(graph.widget_name(), (row, graph));
-                }
-
-                let summary_graphs = this.summary_graphs.take();
-
-                for (i, row_name) in sidebar_order
-                    .split(';')
-                    .enumerate()
-                    .map(|(i, r)| (i as i32, r))
+                let graph = match row
+                    .child()
+                    .and_then(|child| child.downcast_ref::<SummaryGraph>().cloned())
                 {
-                    if let Some((row, graph)) = row_map.remove(row_name) {
-                        let drag_controller = match summary_graphs.get(&graph) {
-                            Some(drag_controller) => drag_controller.clone(),
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Drag controller is missing from summary graphs for {}",
-                                    row_name
-                                );
-                                continue;
-                            }
-                        };
+                    Some(graph) => graph,
+                    None => continue,
+                };
 
-                        sidebar.remove(&row);
-                        drop(row);
+                let name = graph.widget_name();
 
-                        sidebar.insert(&graph, i);
-                        sidebar.row_at_index(i).and_then(|row| {
-                            if !graph.is_enabled() {
-                                row.set_visible(false);
-                            }
-                            Some(row.add_controller(drag_controller))
-                        });
-                    }
+                if hidden_graphs.contains(name.as_str()) {
+                    graph.set_is_enabled(false);
                 }
 
-                this.summary_graphs.set(summary_graphs);
-                this.settings.set(Some(settings));
+                row_map.insert(graph.widget_name(), (row, graph));
             }
+
+            let summary_graphs = this.summary_graphs.take();
+
+            for (i, row_name) in sidebar_order
+                .split(';')
+                .enumerate()
+                .map(|(i, r)| (i as i32, r))
+            {
+                if let Some((row, graph)) = row_map.remove(row_name) {
+                    let drag_controller = match summary_graphs.get(&graph) {
+                        Some(drag_controller) => drag_controller.clone(),
+                        None => {
+                            g_critical!(
+                                "MissionCenter::PerformancePage",
+                                "Drag controller is missing from summary graphs for {}",
+                                row_name
+                            );
+                            continue;
+                        }
+                    };
+
+                    sidebar.remove(&row);
+                    drop(row);
+
+                    sidebar.insert(&graph, i);
+                    sidebar.row_at_index(i).and_then(|row| {
+                        if !graph.is_enabled() {
+                            row.set_visible(false);
+                        }
+                        Some(row.add_controller(drag_controller))
+                    });
+                }
+            }
+
+            this.summary_graphs.set(summary_graphs);
 
             true
         }
@@ -1792,17 +1741,10 @@ mod imp {
 
             let mut result = true;
 
-            let mut data_points = BASE_POINTS;
-            let mut smooth = false;
-            let settings = this.imp().settings.take();
-            if !settings.is_none() {
-                data_points = settings.clone().unwrap().int("perfomance-page-data-points") as u32;
-                smooth = settings
-                    .clone()
-                    .unwrap()
-                    .boolean("performance-smooth-graphs");
-            }
-            this.imp().settings.set(settings);
+            let settings = settings!();
+
+            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
 
             for page in &mut pages {
                 match page {
@@ -2097,10 +2039,6 @@ mod imp {
 
             let this = self.obj().clone();
 
-            if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                self.settings.set(app.settings());
-            }
-
             this.insert_action_group("graph", Some(unsafe { &*self.action_group.as_ptr() }));
 
             self.breakpoint.set_condition(Some(
@@ -2255,26 +2193,24 @@ impl PerformancePage {
             return;
         }
 
-        if let Some(settings) = this.settings.take() {
-            settings
-                .set_string("performance-sidebar-order", "")
-                .unwrap_or_else(|_| {
-                    glib::g_warning!(
-                        "MissionCenter::PerformancePage",
-                        "Failed to set performance-selected-page setting"
-                    );
-                });
-            settings
-                .set_string("performance-sidebar-hidden-graphs", "")
-                .unwrap_or_else(|_| {
-                    glib::g_warning!(
-                        "MissionCenter::PerformancePage",
-                        "Failed to set performance-sidebar-hidden-graphs setting"
-                    );
-                });
+        let settings = settings!();
 
-            this.settings.set(Some(settings));
-        }
+        settings
+            .set_string("performance-sidebar-order", "")
+            .unwrap_or_else(|_| {
+                glib::g_warning!(
+                    "MissionCenter::PerformancePage",
+                    "Failed to set performance-selected-page setting"
+                );
+            });
+        settings
+            .set_string("performance-sidebar-hidden-graphs", "")
+            .unwrap_or_else(|_| {
+                glib::g_warning!(
+                    "MissionCenter::PerformancePage",
+                    "Failed to set performance-sidebar-hidden-graphs setting"
+                );
+            });
 
         this.default_sort_sidebar_entries();
     }
