@@ -237,6 +237,23 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                 warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
             }
         };
+
+        if self.info.is_empty() {
+
+
+            self.info.push(LinuxFanInfo {
+                fan_label: Arc::from("Label"),
+                temp_name: Arc::from("Temp"),
+                temp_amount: 40000,
+                rpm: 7000,
+                percent_vroomimg: -1.,
+
+                fan_index: 1,
+                hwmon_index: 1,
+
+                max_speed: 0,
+            })
+        }
     }
 
     fn info(&'a self) -> Self::Iter {
