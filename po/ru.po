@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-06-11 13:07+0000\n"
+"POT-Creation-Date: 2024-09-08 09:45+0300\n"
+"PO-Revision-Date: 2024-09-14 10:42+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -111,13 +111,12 @@ msgstr ""
 "Поддержка минимизированного представления сводки для простого мониторинга"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Использование ускоренного рендеринга HW для всех графиков в попытке снизить "
-"нагрузку на процессор и общие ресурсы"
+"Использование аппаратного ускорения рендеринга для всех графиков в попытке "
+"снизить нагрузку на процессор и общие ресурсы"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -144,6 +143,9 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Мониторинг Intel GPU поддерживается только для графических процессоров "
+"Broadwell и более поздних версий; он не поддерживает мониторинг VRAM, "
+"питания или температуры"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -151,6 +153,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"При использовании Linux Mint/Cinnamon запущенные приложения могут не "
+"отображаться в разделе «Приложения» (Upstream issue: https://github.com/"
+"linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -292,9 +297,8 @@ msgstr "ЦП"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "Использование за {}{}"
+msgstr "Использование в течение "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
