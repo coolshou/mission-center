@@ -2,7 +2,10 @@ use std::{
     fmt::{Display, Formatter},
     num::NonZeroU32,
     sync::Arc,
+    time::Duration,
 };
+
+use dbus::blocking::{stdintf::org_freedesktop_dbus::Peer, LocalConnection};
 
 use crate::{
     logging::error,
@@ -175,6 +178,23 @@ impl ServiceExt for LinuxService {
 
 impl LinuxServices<'_> {
     pub fn new() -> Self {
+        fn systemd_available() -> bool {
+            let connection = match LocalConnection::new_system() {
+                Ok(c) => c,
+                Err(_) => {
+                    return false;
+                }
+            };
+
+            let systemd1 = connection.with_proxy(
+                "org.freedesktop.systemd1",
+                "/org/freedesktop/systemd1",
+                Duration::from_millis(30_000),
+            );
+
+            systemd1.ping().is_ok()
+        }
+
         let librc_exists = std::path::Path::new("/lib/librc.so.1").exists()
             || std::path::Path::new("/lib64/librc.so.1").exists();
 
@@ -189,7 +209,7 @@ impl LinuxServices<'_> {
                     LinuxServices::Unimplemented
                 }
             }
-        } else if std::path::Path::new("/lib/systemd/systemd").exists() {
+        } else if systemd_available() {
             match systemd::SystemD::new() {
                 Ok(systemd) => LinuxServices::SystemD(systemd),
                 Err(e) => {
