@@ -67,9 +67,9 @@ glib::wrapper! {
 }
 
 impl PreferencesDialog {
-    pub fn new(settings: Option<&gio::Settings>) -> Self {
+    pub fn new() -> Self {
         let this: Self = glib::Object::builder().build();
-        this.add(&page::PreferencesPage::new(settings));
+        this.add(&page::PreferencesPage::new());
 
         this
     }

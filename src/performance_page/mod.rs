@@ -984,7 +984,7 @@ mod imp {
 
             summary
                 .graph_widget()
-                .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                .set_data_points(settings.int("performance-page-data-points") as u32);
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
@@ -1037,7 +1037,7 @@ mod imp {
 
             summary
                 .graph_widget()
-                .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                .set_data_points(settings.int("performance-page-data-points") as u32);
 
             summary
                 .graph_widget()
@@ -1141,7 +1141,7 @@ mod imp {
 
             summary
                 .graph_widget()
-                .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                .set_data_points(settings.int("performance-page-data-points") as u32);
 
             summary
                 .graph_widget()
@@ -1228,13 +1228,13 @@ mod imp {
 
             summary
                 .graph_widget()
-                .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                .set_data_points(settings.int("performance-page-data-points") as u32);
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
             if network_device.max_speed > 0 {
-                if !settings.boolean("perfomance-page-network-dynamic-scaling") {
+                if !settings.boolean("performance-page-network-dynamic-scaling") {
                     summary.graph_widget().set_auto_scale(false);
                     summary.graph_widget().set_auto_scale_pow2(false);
                     summary
@@ -1243,10 +1243,10 @@ mod imp {
                 }
                 let max_speed = network_device.max_speed * 1000 * 1000;
                 let graph = summary.graph_widget();
-                settings.connect_changed(Some("perfomance-page-network-dynamic-scaling"), {
+                settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
                     move |settings, _| {
                         let dynamic_scaling =
-                            settings.boolean("perfomance-page-network-dynamic-scaling");
+                            settings.boolean("performance-page-network-dynamic-scaling");
 
                         graph.set_auto_scale(dynamic_scaling);
                         graph.set_auto_scale_pow2(dynamic_scaling);
@@ -1312,7 +1312,7 @@ mod imp {
 
                 summary
                     .graph_widget()
-                    .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                    .set_data_points(settings.int("performance-page-data-points") as u32);
 
                 summary
                     .graph_widget()
@@ -1429,7 +1429,7 @@ mod imp {
 
             summary
                 .graph_widget()
-                .set_data_points(settings.int("perfomance-page-data-points") as u32);
+                .set_data_points(settings.int("performance-page-data-points") as u32);
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
@@ -1743,7 +1743,7 @@ mod imp {
 
             let settings = settings!();
 
-            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
             for page in &mut pages {

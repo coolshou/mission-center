@@ -97,28 +97,16 @@ mod imp {
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let settings = self.settings.take();
-                self.settings.set(settings.clone());
+                let settings = unsafe { self.settings.take().unwrap_unchecked() };
+                self.settings.set(Some(settings.clone()));
 
                 let sys_info = crate::sys_info_v2::SysInfoV2::new();
 
-                let window =
-                    crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
+                let window = crate::MissionCenterWindow::new(&*application, &settings, &sys_info);
 
                 window.connect_default_height_notify({
-                    let this = self.obj().downgrade();
                     move |window| {
-                        let this = match this.upgrade() {
-                            Some(this) => this,
-                            None => return,
-                        };
-                        let this = this.imp();
-
-                        let settings = this.settings.take();
-                        if settings.is_none() {
-                            return;
-                        }
-                        let settings = settings.unwrap();
+                        let settings = settings!();
                         settings
                             .set_int("window-height", window.default_height())
                             .unwrap_or_else(|err| {
@@ -128,24 +116,11 @@ mod imp {
                                     err
                                 );
                             });
-
-                        this.settings.set(Some(settings));
                     }
                 });
                 window.connect_default_width_notify({
-                    let this = self.obj().downgrade();
                     move |window| {
-                        let this = match this.upgrade() {
-                            Some(this) => this,
-                            None => return,
-                        };
-                        let this = this.imp();
-
-                        let settings = this.settings.take();
-                        if settings.is_none() {
-                            return;
-                        }
-                        let settings = settings.unwrap();
+                        let settings = settings!();
                         settings
                             .set_int("window-width", window.default_width())
                             .unwrap_or_else(|err| {
@@ -155,15 +130,9 @@ mod imp {
                                     err
                                 );
                             });
-
-                        this.settings.set(Some(settings));
                     }
                 });
 
-                if settings.is_none() {
-                    g_critical!("MissionCenter", "Failed to load application settings");
-                }
-                let settings = settings.unwrap();
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
@@ -313,7 +282,7 @@ impl MissionCenterApplication {
                     "MissionCenter",
                     "Unable to get the default MissionCenterApplication instance"
                 );
-                return None;
+                None
             }
         }
     }
@@ -355,12 +324,9 @@ impl MissionCenterApplication {
 
     fn show_preferences(&self) {
         let window = self.active_window().unwrap();
-        let settings = self.imp().settings.take();
 
-        let preferences = crate::preferences::PreferencesDialog::new(settings.as_ref());
+        let preferences = crate::preferences::PreferencesDialog::new();
         preferences.present(Some(&window));
-
-        self.imp().settings.set(settings);
     }
 
     fn show_about(&self) {

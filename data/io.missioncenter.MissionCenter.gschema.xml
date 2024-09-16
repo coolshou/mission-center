@@ -44,18 +44,18 @@
             <summary>How fast should the data be refreshed and the UI updated (in increments of 50ms)</summary>
         </key>
 
-        <key name="perfomance-page-data-points" type="i">
+        <key name="performance-page-data-points" type="i">
             <range min="10" max="600"/>
             <default>60</default>
             <summary>How many points should be displayed on each chart?</summary>
         </key>
 
-        <key name="perfomance-page-network-use-bytes" type="b">
+        <key name="performance-page-network-use-bytes" type="b">
             <default>false</default>
             <summary>Whether or not to use bits (default) or Bytes for network speed</summary>
         </key>
 
-        <key name="perfomance-page-network-dynamic-scaling" type="b">
+        <key name="performance-page-network-dynamic-scaling" type="b">
             <default>true</default>
             <summary>Whether to set graph max to interface max (false) or the max observed (true)</summary>
         </key>

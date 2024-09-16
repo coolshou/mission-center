@@ -586,7 +586,7 @@ glib::wrapper! {
 impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(
         application: &P,
-        settings: Option<&gio::Settings>,
+        settings: &gio::Settings,
         sys_info: &crate::sys_info_v2::SysInfoV2,
     ) -> Self {
         use gtk::glib::*;
@@ -595,40 +595,38 @@ impl MissionCenterWindow {
             .property("application", application)
             .build();
 
-        if let Some(settings) = settings {
-            sys_info.set_update_speed(settings.uint64("app-update-interval-u64"));
-            sys_info.set_core_count_affects_percentages(
-                settings.boolean("apps-page-core-count-affects-percentages"),
-            );
+        sys_info.set_update_speed(settings.uint64("app-update-interval-u64"));
+        sys_info.set_core_count_affects_percentages(
+            settings.boolean("apps-page-core-count-affects-percentages"),
+        );
 
-            settings.connect_changed(Some("app-update-interval-u64"), |settings, _| {
-                use crate::MissionCenterApplication;
+        settings.connect_changed(Some("app-update-interval-u64"), |settings, _| {
+            use crate::MissionCenterApplication;
 
-                let update_speed = settings.uint64("app-update-interval-u64");
-                let app = match MissionCenterApplication::default_instance() {
-                    Some(app) => app,
-                    None => {
-                        g_critical!(
-                            "MissionCenter",
-                            "Failed to get default instance of MissionCenterApplication"
-                        );
-                        return;
-                    }
-                };
-                match app.sys_info() {
-                    Ok(sys_info) => {
-                        sys_info.set_update_speed(update_speed);
-                    }
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter",
-                            "Failed to get sys_info from MissionCenterApplication: {}",
-                            e
-                        );
-                    }
-                };
-            });
-        }
+            let update_speed = settings.uint64("app-update-interval-u64");
+            let app = match MissionCenterApplication::default_instance() {
+                Some(app) => app,
+                None => {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to get default instance of MissionCenterApplication"
+                    );
+                    return;
+                }
+            };
+            match app.sys_info() {
+                Ok(sys_info) => {
+                    sys_info.set_update_speed(update_speed);
+                }
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to get sys_info from MissionCenterApplication: {}",
+                        e
+                    );
+                }
+            };
+        });
 
         this
     }

@@ -18,10 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use adw::{prelude::*, subclass::prelude::*, SpinRow, SwitchRow};
+use gtk::{gio, glib, Scale};
 
-use adw::{prelude::*, subclass::prelude::*, SwitchRow};
-use gtk::{gio, glib};
+use crate::settings;
 
 const MAX_INTERVAL_TICKS: u64 = 200;
 const MIN_INTERVAL_TICKS: u64 = 10;
@@ -32,53 +32,21 @@ const MIN_POINTS: i32 = 10;
 macro_rules! connect_switch_to_setting {
     ($this: expr, $switch_row: expr, $setting: literal) => {
         $switch_row.connect_active_notify({
-            let this = $this.obj().downgrade();
             move |switch_row| {
-                let this = match this.upgrade() {
-                    Some(this) => this,
-                    None => return,
-                };
-                let this = this.imp();
-
-                let settings = this.settings.take();
-                if let Some(settings) = settings {
-                    if let Err(e) = settings.set_boolean($setting, switch_row.is_active()) {
-                        gtk::glib::g_critical!(
-                            "MissionCenter::Preferences",
-                            "Failed to set {} setting: {}",
-                            $setting,
-                            e
-                        );
-                    }
-                    this.settings.set(Some(settings));
+                if let Err(e) = settings!().set_boolean($setting, switch_row.is_active()) {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set {} setting: {}",
+                        $setting,
+                        e
+                    );
                 }
             }
         });
     };
 }
 
-macro_rules! update_switch_from_setting {
-    ($settings: expr , $switch_row: expr, $setting: literal) => {
-        match $settings.take() {
-            None => {
-                gtk::glib::g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure {}, could not load application settings",
-                    $setting
-                );
-            }
-            Some(settings) => {
-                $switch_row.set_active(settings.boolean($setting));
-                $settings.set(Some(settings));
-            }
-        }
-    };
-}
-
 mod imp {
-    use adw::SpinRow;
-    use gtk::Scale;
-
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -114,8 +82,6 @@ mod imp {
         pub remember_sorting: TemplateChild<SwitchRow>,
         #[template_child]
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
-
-        pub settings: Cell<Option<gio::Settings>>,
     }
 
     impl Default for PreferencesPage {
@@ -137,8 +103,6 @@ mod imp {
                 merged_process_stats: Default::default(),
                 remember_sorting: Default::default(),
                 core_count_affects_percentages: Default::default(),
-
-                settings: Cell::new(None),
             }
         }
     }
@@ -148,15 +112,7 @@ mod imp {
             use crate::application::INTERVAL_STEP;
             use glib::g_critical;
 
-            let settings = self.settings.take();
-            if settings.is_none() {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to configure update speed settings, could not load application settings"
-                );
-                return;
-            }
-            let settings = settings.unwrap();
+            let settings = settings!();
 
             let new_interval = (self.update_interval.value() / INTERVAL_STEP).round() as u64;
             let new_points = self.data_points.value() as i32;
@@ -180,7 +136,7 @@ mod imp {
 
             if new_points <= MAX_POINTS && new_points >= MIN_POINTS {
                 if settings
-                    .set_int("perfomance-page-data-points", new_points)
+                    .set_int("performance-page-data-points", new_points)
                     .is_err()
                 {
                     g_critical!(
@@ -194,8 +150,6 @@ mod imp {
                     "Points interval out of bounds",
                 );
             }
-
-            self.settings.set(Some(settings));
         }
     }
 
@@ -248,12 +202,12 @@ mod imp {
             connect_switch_to_setting!(
                 self,
                 self.network_bytes,
-                "perfomance-page-network-use-bytes"
+                "performance-page-network-use-bytes"
             );
             connect_switch_to_setting!(
                 self,
                 self.network_dynamic_scaling,
-                "perfomance-page-network-dynamic-scaling"
+                "performance-page-network-dynamic-scaling"
             );
             connect_switch_to_setting!(self, self.show_cpu, "performance-show-cpu");
             connect_switch_to_setting!(self, self.show_memory, "performance-show-memory");
@@ -288,99 +242,53 @@ glib::wrapper! {
 }
 
 impl PreferencesPage {
-    pub fn new(settings: Option<&gio::Settings>) -> Self {
+    pub fn new() -> Self {
         let this: Self = glib::Object::builder().build();
-
-        this.imp().settings.set(settings.cloned());
 
         this.set_initial_update_speed();
 
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().smooth_graphs,
-            "performance-smooth-graphs"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().network_bytes,
-            "perfomance-page-network-use-bytes"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().network_dynamic_scaling,
-            "perfomance-page-network-dynamic-scaling"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_cpu,
-            "performance-show-cpu"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_memory,
-            "performance-show-memory"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_disks,
-            "performance-show-disks"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_network,
-            "performance-show-network"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_gpus,
-            "performance-show-gpus"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().show_fans,
-            "performance-show-fans"
-        );
+        let imp = this.imp();
+        let settings = settings!();
 
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().merged_process_stats,
-            "apps-page-merged-process-stats"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().remember_sorting,
-            "apps-page-remember-sorting"
-        );
-        update_switch_from_setting!(
-            this.imp().settings,
-            this.imp().core_count_affects_percentages,
-            "apps-page-core-count-affects-percentages"
-        );
+        imp.smooth_graphs
+            .set_active(settings.boolean("performance-smooth-graphs"));
+        imp.network_bytes
+            .set_active(settings.boolean("performance-page-network-use-bytes"));
+        imp.network_dynamic_scaling
+            .set_active(settings.boolean("performance-page-network-dynamic-scaling"));
+        imp.show_cpu
+            .set_active(settings.boolean("performance-show-cpu"));
+        imp.show_memory
+            .set_active(settings.boolean("performance-show-memory"));
+        imp.show_disks
+            .set_active(settings.boolean("performance-show-disks"));
+        imp.show_network
+            .set_active(settings.boolean("performance-show-network"));
+        imp.show_gpus
+            .set_active(settings.boolean("performance-show-gpus"));
+        imp.show_fans
+            .set_active(settings.boolean("performance-show-fans"));
+
+        imp.merged_process_stats
+            .set_active(settings.boolean("apps-page-merged-process-stats"));
+        imp.remember_sorting
+            .set_active(settings.boolean("apps-page-remember-sorting"));
+        imp.core_count_affects_percentages
+            .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
 
         this
     }
 
     fn set_initial_update_speed(&self) {
         use crate::application::INTERVAL_STEP;
-        use gtk::glib::*;
 
-        let settings = match self.imp().settings.take() {
-            None => {
-                g_critical!(
-                    "MissionCenter::Preferences",
-                    "Failed to set up update speed settings, could not load application settings"
-                );
-                return;
-            }
-            Some(settings) => settings,
-        };
-        let data_points = settings.int("perfomance-page-data-points");
+        let settings = settings!();
+
+        let data_points = settings.int("performance-page-data-points");
         let update_interval_s = (settings.uint64("app-update-interval-u64") as f64) * INTERVAL_STEP;
         let this = self.imp();
 
         this.data_points.set_value(data_points as f64);
         this.update_interval.set_value(update_interval_s);
-
-        this.settings.set(Some(settings));
     }
 }

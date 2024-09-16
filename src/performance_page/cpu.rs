@@ -666,7 +666,7 @@ mod imp {
             let settings = settings!();
             let graph_selection = settings.int("performance-page-cpu-graph");
             let show_kernel_times = settings.boolean("performance-page-kernel-times");
-            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
             // Add one for overall CPU utilization
@@ -964,7 +964,7 @@ impl PerformancePageCpu {
         ) {
             let this = this.imp();
 
-            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
             let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
                 * INTERVAL_STEP)
@@ -1010,7 +1010,7 @@ impl PerformancePageCpu {
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
-        settings.connect_changed(Some("perfomance-page-data-points"), {
+        settings.connect_changed(Some("performance-page-data-points"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {

@@ -531,7 +531,7 @@ impl PerformancePageFan {
             this: &PerformancePageFan,
             settings: &gio::Settings,
         ) {
-            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
             let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
                 * INTERVAL_STEP)
@@ -575,7 +575,7 @@ impl PerformancePageFan {
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
-        settings.connect_changed(Some("perfomance-page-data-points"), {
+        settings.connect_changed(Some("performance-page-data-points"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {

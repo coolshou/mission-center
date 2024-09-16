@@ -807,7 +807,7 @@ impl PerformancePageNetwork {
             this: &PerformancePageNetwork,
             settings: &gio::Settings,
         ) {
-            let data_points = settings.int("perfomance-page-data-points") as u32;
+            let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
             let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
                 * INTERVAL_STEP)
@@ -847,22 +847,22 @@ impl PerformancePageNetwork {
 
         this.imp()
             .use_bytes
-            .set(settings.boolean("perfomance-page-network-use-bytes"));
+            .set(settings.boolean("performance-page-network-use-bytes"));
 
         if this.imp().max_speed.get().unwrap_or(0) > 0 {
-            let dynamic_scaling = settings.boolean("perfomance-page-network-dynamic-scaling");
+            let dynamic_scaling = settings.boolean("performance-page-network-dynamic-scaling");
             this.imp().usage_graph.set_auto_scale(dynamic_scaling);
             this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
         }
 
-        settings.connect_changed(Some("perfomance-page-network-dynamic-scaling"), {
+        settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
                     if let Some(speed) = this.imp().max_speed.get() {
                         if speed > 0 {
                             let dynamic_scaling =
-                                settings.boolean("perfomance-page-network-dynamic-scaling");
+                                settings.boolean("performance-page-network-dynamic-scaling");
                             this.imp().usage_graph.set_auto_scale(dynamic_scaling);
                             this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
 
@@ -876,11 +876,11 @@ impl PerformancePageNetwork {
             }
         });
 
-        settings.connect_changed(Some("perfomance-page-network-use-bytes"), {
+        settings.connect_changed(Some("performance-page-network-use-bytes"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
-                    let new_units = settings.boolean("perfomance-page-network-use-bytes");
+                    let new_units = settings.boolean("performance-page-network-use-bytes");
                     let old_units = this.imp().use_bytes.get();
                     if old_units != new_units {
                         let conversion_factor = if new_units { 1. / 8. } else { 8. };
@@ -918,7 +918,7 @@ impl PerformancePageNetwork {
             }
         });
 
-        settings.connect_changed(Some("perfomance-page-data-points"), {
+        settings.connect_changed(Some("performance-page-data-points"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
