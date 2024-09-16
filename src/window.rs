@@ -24,7 +24,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
-use crate::{application::MissionCenterApplication, settings, sys_info_v2::Readings};
+use crate::{app, settings, sys_info_v2::Readings};
 
 mod imp {
     use super::*;
@@ -408,7 +408,6 @@ mod imp {
             self.header_search_entry.connect_search_started({
                 let this = self.obj().downgrade();
                 move |_| {
-                    eprintln!("search started");
                     if let Some(this) = this.upgrade() {
                         let this = this.imp();
 
@@ -601,20 +600,8 @@ impl MissionCenterWindow {
         );
 
         settings.connect_changed(Some("app-update-interval-u64"), |settings, _| {
-            use crate::MissionCenterApplication;
-
             let update_speed = settings.uint64("app-update-interval-u64");
-            let app = match MissionCenterApplication::default_instance() {
-                Some(app) => app,
-                None => {
-                    g_critical!(
-                        "MissionCenter",
-                        "Failed to get default instance of MissionCenterApplication"
-                    );
-                    return;
-                }
-            };
-            match app.sys_info() {
+            match app!().sys_info() {
                 Ok(sys_info) => {
                     sys_info.set_update_speed(update_speed);
                 }
@@ -677,19 +664,12 @@ impl MissionCenterWindow {
             .split_view
             .set_collapsed(self.imp().should_hide_sidebar());
 
-        if let Some(app) = MissionCenterApplication::default_instance() {
-            if let Ok(sys_info) = app.sys_info() {
-                sys_info.continue_reading();
-            } else {
-                g_critical!(
-                    "MissionCenter",
-                    "Failed to get sys_info from MissionCenterApplication"
-                );
-            }
+        if let Ok(sys_info) = app!().sys_info() {
+            sys_info.continue_reading();
         } else {
             g_critical!(
                 "MissionCenter",
-                "Failed to get default instance of MissionCenterApplication"
+                "Failed to get sys_info from MissionCenterApplication"
             );
         }
     }

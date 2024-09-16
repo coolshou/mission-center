@@ -29,6 +29,7 @@ use gtk::glib::g_critical;
 
 pub use super::dbus_interface::*;
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
+use crate::show_error_dialog_and_exit;
 
 macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
@@ -84,33 +85,6 @@ macro_rules! dbus_call {
 
         show_error_dialog_and_exit(&format!("DBus call '{}' failed after {} retries 😟.\nThe app will now close.", $dbus_method_name, RETRY_COUNT));
     }};
-}
-
-fn show_error_dialog_and_exit(message: &str) -> ! {
-    use crate::i18n::*;
-    use adw::prelude::*;
-
-    let message = Arc::<str>::from(message);
-    gtk::glib::idle_add_once(move || {
-        let app_window =
-            crate::MissionCenterApplication::default_instance().and_then(|app| app.active_window());
-
-        let error_dialog = adw::MessageDialog::new(
-            app_window.as_ref(),
-            Some("A fatal error has occurred"),
-            Some(message.as_ref()),
-        );
-        error_dialog.set_modal(true);
-        error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
-        error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
-        error_dialog.connect_response(None, |dialog, _| {
-            dialog.close();
-            std::process::exit(-1);
-        });
-        error_dialog.present();
-    });
-
-    loop {}
 }
 
 pub(crate) struct Gatherer {
@@ -427,22 +401,14 @@ mod tests {
     #[test]
     fn test_gatherer_new() {
         let gatherer = Gatherer::new();
-        assert!(gatherer
-            .child
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .is_none());
+        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_none());
     }
 
     #[test]
     fn test_gatherer_start() {
         let gatherer = Gatherer::new();
         let _ = gatherer.start();
-        assert!(gatherer
-            .child
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .is_some());
+        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_some());
     }
 
     #[test]

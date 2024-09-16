@@ -23,6 +23,7 @@ use std::{cell::Cell, collections::HashMap, sync::Arc};
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::{
+    app,
     i18n::*,
     settings,
     sys_info_v2::{App, Process},
@@ -212,8 +213,7 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("apps-page", Some(&actions));
 
-            let app = crate::application::MissionCenterApplication::default_instance()
-                .expect("Failed to get default MissionCenterApplication instance");
+            let app = app!();
 
             let action = gio::SimpleAction::new("stop", Some(VariantTy::TUPLE));
             action.connect_activate({
@@ -629,16 +629,13 @@ mod imp {
             use glib::g_critical;
             use view_model::{ContentType, ViewModel};
 
-            let window = crate::MissionCenterApplication::default_instance()
-                .and_then(|app| app.active_window())
-                .and_then(|window| window.downcast::<crate::window::MissionCenterWindow>().ok());
-            if window.is_none() {
+            let Some(window) = app!().window() else {
                 g_critical!(
                     "MissionCenter::AppsPage",
                     "Failed to get MissionCenterWindow instance; searching and filtering will not function"
                 );
-            }
-            let window = window.unwrap();
+                return gtk::FilterListModel::new(Some(model), None::<gtk::CustomFilter>);
+            };
 
             let filter = gtk::CustomFilter::new({
                 let window = window.downgrade();

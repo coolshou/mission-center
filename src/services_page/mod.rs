@@ -41,9 +41,9 @@ use list_cell::ListCell;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 
 use crate::{
+    app,
     i18n::*,
     sys_info_v2::{Readings, SysInfoV2},
-    MissionCenterApplication,
 };
 
 mod context_menu_button;
@@ -374,19 +374,9 @@ mod imp {
 
             fn make_gatherer_request(
                 this: WeakRef<super::ServicesPage>,
-                app: WeakRef<MissionCenterApplication>,
                 request: fn(&SysInfoV2, &str),
             ) {
-                let app = match app.upgrade() {
-                    Some(app) => app,
-                    None => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to get MissionCenterApplication instance for action"
-                        );
-                        return;
-                    }
-                };
+                let app = app!();
 
                 let (_, selected_item) = match find_selected_item(this) {
                     Some((this, item)) => (this, item),
@@ -413,14 +403,10 @@ mod imp {
                 };
             }
 
-            let app = MissionCenterApplication::default_instance()
-                .expect("Failed to get default MissionCenterApplication instance");
-
             self.actions.start.connect_activate({
                 let this = this.downgrade();
-                let app = app.downgrade();
                 move |_action, _| {
-                    make_gatherer_request(this.clone(), app.clone(), |sys_info, service_name| {
+                    make_gatherer_request(this.clone(), |sys_info, service_name| {
                         sys_info.start_service(service_name);
                     });
                 }
@@ -428,9 +414,8 @@ mod imp {
 
             self.actions.stop.connect_activate({
                 let this = this.downgrade();
-                let app = app.downgrade();
                 move |_action, _| {
-                    make_gatherer_request(this.clone(), app.clone(), |sys_info, service_name| {
+                    make_gatherer_request(this.clone(), |sys_info, service_name| {
                         sys_info.stop_service(service_name);
                     });
                 }
@@ -438,9 +423,8 @@ mod imp {
 
             self.actions.restart.connect_activate({
                 let this = this.downgrade();
-                let app = app.downgrade();
                 move |_action, _| {
-                    make_gatherer_request(this.clone(), app.clone(), |sys_info, service_name| {
+                    make_gatherer_request(this.clone(), |sys_info, service_name| {
                         sys_info.restart_service(service_name);
                     });
                 }
@@ -476,10 +460,7 @@ mod imp {
         }
 
         pub fn set_up_filter_model(&self, model: gio::ListModel) -> gtk::FilterListModel {
-            let window = match MissionCenterApplication::default_instance()
-                .and_then(|app| app.active_window())
-                .and_then(|window| window.downcast::<crate::window::MissionCenterWindow>().ok())
-            {
+            let window = match app!().window() {
                 Some(window) => window,
                 None => {
                     g_critical!(
@@ -758,13 +739,11 @@ impl ServicesPage {
     pub fn set_initial_readings(&self, readings: &mut Readings) -> bool {
         let this = self.imp();
 
-        let window = MissionCenterApplication::default_instance()
-            .expect("Failed to get default MissionCenterApplication instance")
-            .window()
-            .expect("Failed to get MissionCenterWindow instance");
-        window.add_action(&this.actions.start);
-        window.add_action(&this.actions.stop);
-        window.add_action(&this.actions.restart);
+        if let Some(window) = app!().window() {
+            window.add_action(&this.actions.start);
+            window.add_action(&this.actions.stop);
+            window.add_action(&this.actions.restart);
+        }
 
         let filter_model = this.set_up_filter_model(this.model.clone().into());
         let selection_model = gtk::SingleSelection::new(Some(filter_model));

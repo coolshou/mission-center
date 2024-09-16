@@ -32,18 +32,19 @@ pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
 
 #[macro_export]
-macro_rules! mc_app {
-    () => {
+macro_rules! app {
+    () => {{
+        use ::gtk::glib::object::Cast;
         ::gtk::gio::Application::default()
             .and_then(|app| app.downcast::<$crate::MissionCenterApplication>().ok())
             .expect("Failed to get MissionCenterApplication instance")
-    };
+    }};
 }
 
 #[macro_export]
 macro_rules! settings {
     () => {
-        $crate::mc_app!().settings()
+        $crate::app!().settings()
     };
 }
 
@@ -94,7 +95,7 @@ mod imp {
 
             let application = self.obj();
             // Get the current window or create one if necessary
-            let window = if let Some(window) = application.active_window() {
+            let window = if let Some(window) = application.window() {
                 window
             } else {
                 let settings = unsafe { self.settings.take().unwrap_unchecked() };
@@ -143,16 +144,7 @@ mod imp {
                 settings.connect_changed(
                     Some("apps-page-core-count-affects-percentages"),
                     move |settings, _| {
-                        let app = match super::MissionCenterApplication::default_instance() {
-                            Some(app) => app,
-                            None => {
-                                g_critical!(
-                                    "MissionCenter",
-                                    "Failed to get default instance of MissionCenterApplication"
-                                );
-                                return;
-                            }
-                        };
+                        let app = app!();
                         match app.sys_info() {
                             Ok(sys_info) => {
                                 sys_info.set_core_count_affects_percentages(
@@ -223,68 +215,31 @@ impl MissionCenterApplication {
     }
 
     pub fn set_initial_readings(&self, readings: Readings) {
-        use crate::MissionCenterWindow;
         use gtk::glib::*;
 
-        let window = self.active_window();
-        if window.is_none() {
+        let Some(window) = self.window() else {
             g_critical!(
                 "MissionCenter::Application",
                 "No active window, when trying to refresh data"
             );
             return;
-        }
+        };
 
-        let window = window.unwrap();
-        let window = window.downcast_ref::<MissionCenterWindow>();
-        if window.is_none() {
-            g_critical!(
-                "MissionCenter::Application",
-                "Active window is not a MissionCenterWindow",
-            );
-            return;
-        }
-
-        window.unwrap().set_initial_readings(readings)
+        window.set_initial_readings(readings)
     }
 
     pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
-        use crate::MissionCenterWindow;
         use gtk::glib::*;
 
-        let window = self.active_window();
-        if window.is_none() {
+        let Some(window) = self.window() else {
             g_critical!(
                 "MissionCenter::Application",
                 "No active window, when trying to refresh data"
             );
             return false;
-        }
+        };
 
-        let window = window.unwrap();
-        let window = window.downcast_ref::<MissionCenterWindow>();
-        if window.is_none() {
-            g_critical!(
-                "MissionCenter::Application",
-                "Active window is not a MissionCenterWindow",
-            );
-            return false;
-        }
-
-        window.unwrap().update_readings(readings)
-    }
-
-    pub fn default_instance() -> Option<Self> {
-        match gio::Application::default() {
-            Some(app) => app.downcast_ref::<Self>().cloned(),
-            None => {
-                g_critical!(
-                    "MissionCenter",
-                    "Unable to get the default MissionCenterApplication instance"
-                );
-                None
-            }
-        }
+        window.update_readings(readings)
     }
 
     pub fn settings(&self) -> gio::Settings {
@@ -323,14 +278,27 @@ impl MissionCenterApplication {
     }
 
     fn show_preferences(&self) {
-        let window = self.active_window().unwrap();
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to show preferences"
+            );
+            return;
+        };
 
         let preferences = crate::preferences::PreferencesDialog::new();
         preferences.present(Some(&window));
     }
 
     fn show_about(&self) {
-        let window = self.active_window().unwrap();
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to show about dialog"
+            );
+            return;
+        };
+
         let about = adw::AboutDialog::builder()
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")

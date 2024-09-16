@@ -127,8 +127,7 @@ pub fn show_error_dialog_and_exit(message: &str) -> ! {
 
     let message = Arc::<str>::from(message);
     gtk::glib::idle_add_once(move || {
-        let app_window =
-            MissionCenterApplication::default_instance().and_then(|app| app.active_window());
+        let app_window = app!().window();
 
         let error_dialog = adw::MessageDialog::new(
             app_window.as_ref(),

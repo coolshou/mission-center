@@ -23,7 +23,7 @@ use std::{cell::Cell, num::NonZeroU32};
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
 
-use crate::{application::MissionCenterApplication, i18n::*};
+use crate::{app, i18n::*};
 
 use super::services_list_item::ServicesListItem;
 
@@ -167,26 +167,24 @@ mod imp {
                             return;
                         }
 
-                        if let Some(app) = MissionCenterApplication::default_instance() {
-                            let list_item = this.list_item();
-                            match app.sys_info().and_then(move |sys_info| {
-                                match this.switch_enabled.is_active() {
-                                    // Emitted after the switch is toggled
-                                    true => sys_info.enable_service(&list_item.name()),
-                                    false => sys_info.disable_service(&list_item.name()),
-                                }
-
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                        "MissionCenter::DetailsDialog",
-                                        "Failed to get `sys_info`: {}",
-                                        e
-                                    );
-                                }
-                                _ => {}
+                        let list_item = this.list_item();
+                        match app!().sys_info().and_then(move |sys_info| {
+                            match this.switch_enabled.is_active() {
+                                // Emitted after the switch is toggled
+                                true => sys_info.enable_service(&list_item.name()),
+                                false => sys_info.disable_service(&list_item.name()),
                             }
+
+                            Ok(())
+                        }) {
+                            Err(e) => {
+                                g_warning!(
+                                    "MissionCenter::DetailsDialog",
+                                    "Failed to get `sys_info`: {}",
+                                    e
+                                );
+                            }
+                            _ => {}
                         }
                     }
                 }
@@ -273,28 +271,26 @@ mod imp {
                 self.group_process.set_visible(true);
             }
 
-            if let Some(app) = MissionCenterApplication::default_instance() {
-                let logs = app.sys_info().and_then(|sys_info| {
-                    Ok(sys_info.service_logs(
-                        &list_item.name(),
-                        NonZeroU32::new(pid.parse::<u32>().unwrap_or(0)),
-                    ))
-                });
+            let logs = app!().sys_info().and_then(|sys_info| {
+                Ok(sys_info.service_logs(
+                    &list_item.name(),
+                    NonZeroU32::new(pid.parse::<u32>().unwrap_or(0)),
+                ))
+            });
 
-                match logs {
-                    Ok(logs) => {
-                        if !logs.is_empty() {
-                            self.logs_buffer.set_text(&logs);
-                            self.logs_expander.set_visible(true);
-                        }
+            match logs {
+                Ok(logs) => {
+                    if !logs.is_empty() {
+                        self.logs_buffer.set_text(&logs);
+                        self.logs_expander.set_visible(true);
                     }
-                    Err(e) => {
-                        g_warning!(
-                            "MissionCenter::DetailsDialog",
-                            "Failed to get `sys_info`: {}",
-                            e
-                        );
-                    }
+                }
+                Err(e) => {
+                    g_warning!(
+                        "MissionCenter::DetailsDialog",
+                        "Failed to get `sys_info`: {}",
+                        e
+                    );
                 }
             }
 

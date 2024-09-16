@@ -33,14 +33,16 @@ use std::{
 use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use lazy_static::lazy_static;
 
+use crate::{
+    app,
+    application::{BASE_INTERVAL, INTERVAL_STEP},
+    sys_info_v2::proc_info::process_hierarchy,
+};
 use gatherer::Gatherer;
 pub use gatherer::{
     App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
     OpenGLApi, Process, ProcessUsageStats, Service,
 };
-
-use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
-use crate::sys_info_v2::proc_info::process_hierarchy;
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -542,15 +544,7 @@ impl SysInfoV2 {
             };
 
             move || {
-                use gtk::glib::*;
-                if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                    app.set_initial_readings(initial_readings);
-                } else {
-                    g_critical!(
-                        "MissionCenter::SysInfo",
-                        "Default GtkApplication is not a MissionCenterApplication; failed to set initial readings"
-                    );
-                }
+                app!().set_initial_readings(initial_readings);
             }
         });
 
@@ -684,31 +678,25 @@ impl SysInfoV2 {
                 };
 
                 move || {
-                    if let Some(app) = crate::MissionCenterApplication::default_instance() {
-                        let now = std::time::Instant::now();
-                        let timer = std::time::Instant::now();
-                        if !app.refresh_readings(&mut new_readings) {
-                            g_critical!(
+                    let app = app!();
+                    let now = std::time::Instant::now();
+                    let timer = std::time::Instant::now();
+                    if !app.refresh_readings(&mut new_readings) {
+                        g_critical!(
                             "MissionCenter::SysInfo",
                             "Readings were not completely refreshed, stale readings will be displayed"
                         );
-                        }
-                        g_debug!(
-                            "MissionCenter::Perf",
-                            "UI refresh took: {:?}",
-                            timer.elapsed()
-                        );
-                        g_debug!(
-                            "MissionCenter::SysInfo",
-                            "Refreshed readings in {:?}",
-                            now.elapsed()
-                        );
-                    } else {
-                        g_critical!(
-                            "MissionCenter::SysInfo",
-                            "Default GtkApplication is not a MissionCenterApplication"
-                        );
                     }
+                    g_debug!(
+                        "MissionCenter::Perf",
+                        "UI refresh took: {:?}",
+                        timer.elapsed()
+                    );
+                    g_debug!(
+                        "MissionCenter::SysInfo",
+                        "Refreshed readings in {:?}",
+                        now.elapsed()
+                    );
                 }
             });
 
