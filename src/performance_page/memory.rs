@@ -356,9 +356,11 @@ mod imp {
             let mem_info = &readings.mem_info;
 
             {
-                let used = mem_info.mem_total - (mem_info.mem_available + mem_info.dirty);
-                let dirty = mem_info.mem_total - mem_info.mem_available;
-                let standby = mem_info.mem_total - (used + mem_info.mem_free);
+                let used = mem_info
+                    .mem_total
+                    .saturating_sub(mem_info.mem_available + mem_info.dirty);
+                let dirty = mem_info.mem_total.saturating_sub(mem_info.mem_available);
+                let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
                 this.usage_graph.add_data_point(0, mem_info.committed as _);
                 this.usage_graph.add_data_point(1, dirty as _);
                 this.usage_graph.add_data_point(2, used as _);
