@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::{cell::Cell, collections::HashMap, sync::Arc};
 
 use gtk::{
     gio::{self, ListStore},
@@ -27,7 +27,12 @@ use gtk::{
     subclass::prelude::*,
 };
 
-use crate::{app, i18n::*, settings};
+use crate::{
+    app,
+    i18n::*,
+    settings,
+    sys_info_v2::{App, Process},
+};
 
 mod column_header;
 mod list_item;
@@ -83,8 +88,8 @@ mod imp {
         pub max_disk_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<f32>,
 
-        pub apps: Cell<std::collections::HashMap<std::sync::Arc<str>, crate::sys_info_v2::App>>,
-        pub process_tree: Cell<crate::sys_info_v2::Process>,
+        pub apps: Cell<HashMap<Arc<str>, App>>,
+        pub process_tree: Cell<Process>,
 
         pub use_merge_stats: Cell<bool>,
     }
@@ -133,10 +138,7 @@ mod imp {
     }
 
     impl AppsPage {
-        fn find_process(
-            root_process: &crate::sys_info_v2::Process,
-            pid: u32,
-        ) -> Option<&crate::sys_info_v2::Process> {
+        fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
             if root_process.pid == pid {
                 return Some(root_process);
             }
@@ -1165,7 +1167,7 @@ mod imp {
         fn update_process_model(
             this: &AppsPage,
             model: ListStore,
-            process: &crate::sys_info_v2::Process,
+            process: &Process,
             icon: Option<&str>,
         ) {
             use crate::apps_page::view_model::{ContentType, ViewModel, ViewModelBuilder};
@@ -1484,7 +1486,7 @@ impl AppsPage {
         std::mem::swap(&mut apps, &mut readings.running_apps);
         this.apps.set(apps);
 
-        let mut process_tree = crate::sys_info_v2::Process::default();
+        let mut process_tree = Process::default();
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
