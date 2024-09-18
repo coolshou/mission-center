@@ -1212,8 +1212,7 @@ mod imp {
             {
                 let graph_widget = summary.graph_widget();
                 graph_widget.set_data_set_count(2);
-                graph_widget.set_auto_scale(true);
-                graph_widget.set_auto_scale_pow2(true);
+                graph_widget.set_scaling(GraphWidget::auto_pow2_scaling());
                 graph_widget.set_filled(0, false);
                 graph_widget.set_dashed(0, true);
                 graph_widget.set_base_color(gdk::RGBA::new(
@@ -1235,8 +1234,9 @@ mod imp {
 
             if network_device.max_speed > 0 {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
-                    summary.graph_widget().set_auto_scale(false);
-                    summary.graph_widget().set_auto_scale_pow2(false);
+                    summary
+                        .graph_widget()
+                        .set_scaling(GraphWidget::no_scaling());
                     summary
                         .graph_widget()
                         .set_value_range_max((network_device.max_speed * 8) as f32);
@@ -1253,8 +1253,11 @@ mod imp {
                         let dynamic_scaling =
                             settings.boolean("performance-page-network-dynamic-scaling");
 
-                        graph.set_auto_scale(dynamic_scaling);
-                        graph.set_auto_scale_pow2(dynamic_scaling);
+                        if dynamic_scaling {
+                            graph.set_scaling(GraphWidget::auto_pow2_scaling());
+                        } else {
+                            graph.set_scaling(GraphWidget::no_scaling());
+                        }
                         graph.set_value_range_max(max_speed as f32);
                     }
                 });
@@ -1428,10 +1431,13 @@ mod imp {
                 FAN_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            summary.graph_widget().set_auto_scale(true);
 
             let settings = settings!();
 
+            summary
+                .graph_widget()
+                .set_scaling(GraphWidget::normalized_scaling());
+            summary.graph_widget().set_only_scale_up(true);
             summary
                 .graph_widget()
                 .set_data_points(settings.int("performance-page-data-points") as u32);

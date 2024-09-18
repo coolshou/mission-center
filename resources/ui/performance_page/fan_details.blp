@@ -79,7 +79,7 @@ Box root {
           ]
 
           halign: start;
-          label: _("PWM %");
+          label: _("PWM Percentage");
         }
 
         Label pwm {
@@ -92,29 +92,25 @@ Box root {
       }
     }
 
-    Box temp_legend_box {
-      spacing: 5;
+    Box temp_label_box {
+      orientation: vertical;
+      spacing: 3;
 
-      Box {
-        orientation: vertical;
-        spacing: 3;
+      Label {
+        styles [
+          "caption",
+        ]
 
-        Label {
-          styles [
-            "caption",
-          ]
+        halign: start;
+        label: _("Current Temperature");
+      }
 
-          halign: start;
-          label: _("Current Temperature");
-        }
+      Label temp {
+        styles [
+          "title-4",
+        ]
 
-        Label temp {
-          styles [
-            "title-4",
-          ]
-
-          halign: start;
-        }
+        halign: start;
       }
     }
   }

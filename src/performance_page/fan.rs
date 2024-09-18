@@ -59,7 +59,7 @@ mod imp {
         #[template_child]
         pub temp_graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
-        pub temp_box: TemplateChild<gtk::Box>,
+        pub temp_graph_box: TemplateChild<gtk::Box>,
 
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
@@ -71,17 +71,13 @@ mod imp {
         #[property(get, set)]
         summary_mode: Cell<bool>,
 
-        speed_record_high: Cell<u64>,
-        temp_record_high: Cell<i64>,
-        temp_record_low: Cell<i64>,
-
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Box>,
 
         pub legend_speed: OnceCell<gtk::Picture>,
         pub speed: OnceCell<gtk::Label>,
         pub pwm_legend_box: OnceCell<gtk::Box>,
-        pub temp_legend_box: OnceCell<gtk::Box>,
+        pub temp_label_box: OnceCell<gtk::Box>,
         pub legend_pwm: OnceCell<gtk::Picture>,
         pub pwm: OnceCell<gtk::Label>,
         pub temp: OnceCell<gtk::Label>,
@@ -99,23 +95,19 @@ mod imp {
                 speed_box: Default::default(),
                 temp_max_y: Default::default(),
                 temp_graph_max_duration: Default::default(),
-                temp_box: Default::default(),
+                temp_graph_box: Default::default(),
                 context_menu: Default::default(),
 
                 name: Cell::new(String::new()),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
-                speed_record_high: Cell::new(1),
-                temp_record_high: Cell::new(50),
-                temp_record_low: Cell::new(50),
-
                 infobar_content: Default::default(),
 
                 legend_speed: Default::default(),
                 speed: Default::default(),
                 pwm_legend_box: Default::default(),
-                temp_legend_box: Default::default(),
+                temp_label_box: Default::default(),
                 legend_pwm: Default::default(),
                 pwm: Default::default(),
                 temp: Default::default(),
@@ -252,30 +244,22 @@ mod imp {
                     pwm_legend_box.set_visible(false);
                 }
 
-                if let Some(pwm_pic) = this.legend_pwm.get() {
-                    pwm_pic.set_visible(false);
-                }
-                if let Some(rpm_pic) = this.legend_speed.get() {
-                    rpm_pic.set_visible(false);
+                if let Some(legend_speed) = this.legend_speed.get() {
+                    legend_speed.set_visible(false);
                 }
             }
 
             if fan.temp_amount == i64::MIN {
-                this.temp_box.set_visible(false);
+                this.temp_graph_box.set_visible(false);
 
-                if let Some(temp_legend_box) = this.temp_legend_box.get() {
-                    temp_legend_box.set_visible(false);
-                }
-
-                if let Some(temp) = this.temp.get() {
-                    temp.set_visible(false);
+                if let Some(sidebar_temp_box) = this.temp_label_box.get() {
+                    sidebar_temp_box.set_visible(false);
                 }
             }
 
-            if fan.max_speed != 0 {
-                this.speed_record_high.set(fan.max_speed);
+            if fan.max_speed > 0 {
+                this.speed_max_y.set_text(&format!("{}", fan.max_speed));
             }
-
             true
         }
 
@@ -291,116 +275,77 @@ mod imp {
             if let Some(speed_send) = this.speed.get() {
                 speed_send.set_text(&i18n_f("{} RPM", &[&format!("{}", fan.rpm)]));
             }
-            if let Some(speed_send) = this.pwm.get() {
-                speed_send.set_text(&i18n_f(
+
+            if let Some(pwm) = this.pwm.get() {
+                pwm.set_text(&i18n_f(
                     "{}%",
                     &[&format!("{:.0}", fan.percent_vroomimg * 100.0)],
                 ));
             }
 
-            let cell = this.speed_record_high.get();
-            if fan.rpm > cell {
-                if cell > 1 {
-                    if let Some(speed_data) = this.speed_graph.data(0) {
-                        this.speed_graph.set_data(
-                            0,
-                            speed_data
-                                .into_iter()
-                                .map(|it| {
-                                    if it >= 0. {
-                                        it * cell as f32 / fan.rpm as f32
-                                    } else {
-                                        it
-                                    }
-                                })
-                                .collect::<Vec<_>>(),
-                        )
-                    } else {
-                        // do nothing, should only happen in edge cases
-                    }
-                } // else starting up, dont bother
-                this.speed_record_high.set(fan.rpm);
+            let fan_temp_c = fan.temp_amount as f32 / 1000.0;
+            if let Some(temp) = this.temp.get() {
+                temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
             }
 
-            if fan.temp_amount > i64::MIN {
-                let fan_temp_c = fan.temp_amount / 1000;
+            this.speed_graph.add_data_point(0, fan.rpm as f32);
+            if fan.percent_vroomimg >= 0. {
+                this.speed_graph
+                    .add_data_point(1, fan.percent_vroomimg * 100.);
+            }
 
-                if let Some(temp_label) = this.temp.get() {
-                    temp_label.set_text(&i18n_f("{} °C", &[&format!("{}", fan_temp_c)]));
-                }
-
-                let max_temp = this.temp_record_high.get();
-                let low_temp = this.temp_record_low.get();
-
-                if fan_temp_c >= max_temp {
-                    if let Some(speed_data) = this.temp_graph.data(0) {
-                        this.temp_graph.set_data(
-                            0,
-                            speed_data
-                                .into_iter()
-                                .map(|it| {
-                                    if it >= 0. {
-                                        (it * (max_temp - low_temp) as f32)
-                                            / (fan_temp_c + 1 - low_temp) as f32
-                                    } else {
-                                        it
-                                    }
-                                })
-                                .collect::<Vec<_>>(),
-                        )
-                    } else {
-                        // do nothing, should only happen in edge cases
-                    }
-                    this.temp_record_high.set(fan_temp_c + 1);
-                } else if fan_temp_c <= low_temp {
-                    if let Some(speed_data) = this.temp_graph.data(0) {
-                        this.temp_graph.set_data(
-                            0,
-                            speed_data
-                                .into_iter()
-                                .map(|it| {
-                                    if it >= 0. {
-                                        100f32
-                                            * (it / 100f32 * (max_temp - low_temp) as f32
-                                                + (low_temp - (fan_temp_c - 1)) as f32)
-                                            / (max_temp - (fan_temp_c - 1)) as f32
-                                    } else {
-                                        it
-                                    }
-                                })
-                                .collect::<Vec<_>>(),
-                        )
-                    } else {
-                        // do nothing, should only happen in edge cases
-                    }
-                    this.temp_record_low.set(fan_temp_c - 1);
-                }
-
-                let tmp = 100f32 * (fan_temp_c - this.temp_record_low.get()) as f32
-                    / (this.temp_record_high.get() - this.temp_record_low.get()) as f32;
-                this.temp_graph.add_data_point(0, tmp);
-
-                this.temp_max_y.set_text(&i18n_f(
-                    "{} °C",
-                    &[&format!("{}", this.temp_record_high.get())],
+            if fan.max_speed <= 0 {
+                this.speed_max_y.set_text(&i18n_f(
+                    "{} RPM",
+                    &[&this
+                        .speed_graph
+                        .max_all_time(0)
+                        .unwrap_or(fan.rpm as f32)
+                        .to_string()],
                 ));
             }
 
-            let rpmm = (100 * fan.rpm) as f32 / (this.speed_record_high.get() as f32);
-            this.speed_graph.add_data_point(0, rpmm);
-            this.speed_graph
-                .add_data_point(1, fan.percent_vroomimg * 100.);
-
-            this.speed_max_y.set_text(&i18n_f(
-                "{} RPM",
-                &[&format!("{}", this.speed_record_high.get())],
+            this.temp_graph.add_data_point(0, fan_temp_c);
+            this.temp_max_y.set_text(&format!(
+                "{} °C",
+                this.temp_graph
+                    .max_all_time(0)
+                    .unwrap_or(fan_temp_c.round())
             ));
 
             true
         }
 
         fn data_summary(&self) -> String {
-            r#"Send Help Kics"#.to_string()
+            let unsupported = i18n("Unsupported");
+            let unsupported = glib::GString::from(unsupported);
+
+            format!(
+                r#"Fan
+
+    {}
+    {}
+
+    Speed:               {}
+    PWM Percentage:      {}
+    Current Temperature: {}"#,
+                self.title_fan_name.text(),
+                self.title_temp_name.text(),
+                self.speed
+                    .get()
+                    .map(|s| s.text())
+                    .unwrap_or(unsupported.clone()),
+                self.pwm
+                    .get()
+                    .and_then(|pwm| if !pwm.is_visible() { None } else { Some(pwm) })
+                    .map(|s| s.text())
+                    .unwrap_or(unsupported.clone()),
+                self.temp
+                    .get()
+                    .and_then(|temp| if !temp.is_visible() { None } else { Some(temp) })
+                    .map(|s| s.text())
+                    .unwrap_or(unsupported)
+            )
         }
     }
 
@@ -441,10 +386,6 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
 
-            self.speed_graph.set_data(0, vec![-1.; 60]);
-            self.speed_graph.set_data(1, vec![0.; 60]);
-            self.temp_graph.set_data(0, vec![-1.; 60]);
-
             let sidebar_content_builder = gtk::Builder::from_resource(
                 "/io/missioncenter/MissionCenter/ui/performance_page/fan_details.ui",
             );
@@ -472,9 +413,9 @@ mod imp {
                     .expect("Could not find `pwm_legend_box` object in details pane"),
             );
 
-            let _ = self.temp_legend_box.set(
+            let _ = self.temp_label_box.set(
                 sidebar_content_builder
-                    .object::<gtk::Box>("temp_legend_box")
+                    .object::<gtk::Box>("temp_label_box")
                     .expect("Could not find `temp_legend_box` object in details pane"),
             );
 

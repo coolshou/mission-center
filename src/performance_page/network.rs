@@ -386,8 +386,8 @@ mod imp {
                 this.usage_graph
                     .set_value_range_max(max_speed as f32 * this.obj().byte_conversion_factor());
             } else {
-                this.usage_graph.set_auto_scale(true);
-                this.usage_graph.set_auto_scale_pow2(true);
+                this.usage_graph
+                    .set_scaling(GraphWidget::auto_pow2_scaling());
             }
 
             true
@@ -847,10 +847,22 @@ impl PerformancePageNetwork {
             .use_bytes
             .set(settings.boolean("performance-page-network-use-bytes"));
 
-        if this.imp().max_speed.get().unwrap_or(0) > 0 {
+        let max_speed = this.imp().max_speed.get().unwrap_or(0);
+        if max_speed > 0 {
             let dynamic_scaling = settings.boolean("performance-page-network-dynamic-scaling");
-            this.imp().usage_graph.set_auto_scale(dynamic_scaling);
-            this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
+
+            if dynamic_scaling {
+                this.imp()
+                    .usage_graph
+                    .set_scaling(GraphWidget::auto_pow2_scaling());
+            } else {
+                this.imp()
+                    .usage_graph
+                    .set_scaling(GraphWidget::no_scaling());
+
+                let max = (max_speed / if this.imp().use_bytes.get() { 8 } else { 1 }) as f32;
+                this.imp().usage_graph.set_value_range_max(max);
+            }
         }
 
         settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
@@ -861,11 +873,19 @@ impl PerformancePageNetwork {
                         if speed > 0 {
                             let dynamic_scaling =
                                 settings.boolean("performance-page-network-dynamic-scaling");
-                            this.imp().usage_graph.set_auto_scale(dynamic_scaling);
-                            this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
 
-                            let newmax = speed as f32 * this.byte_conversion_factor();
-                            this.imp().usage_graph.set_value_range_max(newmax);
+                            if dynamic_scaling {
+                                this.imp()
+                                    .usage_graph
+                                    .set_scaling(GraphWidget::auto_pow2_scaling());
+                            } else {
+                                this.imp()
+                                    .usage_graph
+                                    .set_scaling(GraphWidget::no_scaling());
+
+                                let max = speed as f32 * this.byte_conversion_factor();
+                                this.imp().usage_graph.set_value_range_max(max);
+                            }
                         }
                     }
                 }
