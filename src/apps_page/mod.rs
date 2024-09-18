@@ -346,6 +346,15 @@ mod imp {
                 result
             }
 
+            fn update_icons(model: ListStore, icon: &str) {
+                let len = model.n_items();
+                for i in 0..len {
+                    let current = model.item(i).unwrap().downcast::<ViewModel>().unwrap();
+                    current.set_icon(icon);
+                    update_icons(current.children().clone(), icon);
+                }
+            }
+
             let model = glib_clone!(self.apps_model);
             let apps = self.apps.take();
             let process_tree = self.process_tree.take();
@@ -448,7 +457,7 @@ mod imp {
                 };
 
                 let children = view_model.children().clone();
-                if let Some(primary_process) = primary_process {
+                if let Some(_) = primary_process {
                     let root_model = glib_clone!(self.processes_root_model);
                     if let Some(model) = find_pid_in_process_tree(root_model, primary_pid) {
                         if model.pid() != view_model.pid() || children.n_items() == 0 {
@@ -463,12 +472,7 @@ mod imp {
                             .unwrap_or("application-x-executable-symbolic");
 
                         model.set_icon(icon);
-                        Self::update_process_model(
-                            self,
-                            model.children().clone(),
-                            primary_process,
-                            Some(icon),
-                        )
+                        update_icons(model.children().clone(), icon);
                     } else {
                         children.remove_all();
 
@@ -499,7 +503,7 @@ mod imp {
             let process_tree = self.process_tree.take();
             let processes_root_model = glib_clone!(self.processes_root_model);
 
-            Self::update_process_model(self, processes_root_model, &process_tree, None);
+            Self::update_process_model(self, processes_root_model, &process_tree);
 
             self.process_tree.set(process_tree);
         }
@@ -1164,12 +1168,7 @@ mod imp {
                 .set(column_header_gpu_mem);
         }
 
-        fn update_process_model(
-            this: &AppsPage,
-            model: ListStore,
-            process: &Process,
-            icon: Option<&str>,
-        ) {
+        fn update_process_model(this: &AppsPage, model: ListStore, process: &Process) {
             use crate::apps_page::view_model::{ContentType, ViewModel, ViewModelBuilder};
 
             let mut to_remove = Vec::new();
@@ -1254,7 +1253,7 @@ mod imp {
                     let view_model = ViewModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
-                        .icon(icon.unwrap_or("application-x-executable-symbolic"))
+                        .icon("application-x-executable-symbolic")
                         .pid(*pid)
                         .cpu_usage(cpu_usage)
                         .memory_usage(mem_usage)
@@ -1299,7 +1298,7 @@ mod imp {
                             )
                         };
 
-                    view_model.set_icon(icon.unwrap_or("application-x-executable-symbolic"));
+                    view_model.set_icon("application-x-executable-symbolic");
                     view_model.set_cpu_usage(cpu_usage);
                     view_model.set_memory_usage(mem_usage);
                     view_model.set_disk_usage(disk_usage);
@@ -1312,7 +1311,7 @@ mod imp {
                     view_model.children().clone()
                 };
 
-                Self::update_process_model(this, child_model, child, icon);
+                Self::update_process_model(this, child_model, child);
             }
         }
     }
