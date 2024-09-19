@@ -379,14 +379,12 @@ mod imp {
             this.usage_graph.set_filled(0, false);
             this.usage_graph.set_dashed(0, true);
 
-            let max_speed = network_device.max_speed * 1000 * 1000;
-
-            this.max_speed.set(Option::from(max_speed));
+            let max_speed = network_device.max_speed;
+            this.max_speed.set(Some(max_speed));
 
             if max_speed > 0 {
-                this.usage_graph.set_value_range_max(
-                    (max_speed / if this.use_bytes.get() { 8 } else { 1 }) as f32,
-                );
+                this.usage_graph
+                    .set_value_range_max(max_speed as f32 * this.obj().byte_conversion_factor());
             } else {
                 this.usage_graph.set_auto_scale(true);
                 this.usage_graph.set_auto_scale_pow2(true);
@@ -866,9 +864,7 @@ impl PerformancePageNetwork {
                             this.imp().usage_graph.set_auto_scale(dynamic_scaling);
                             this.imp().usage_graph.set_auto_scale_pow2(dynamic_scaling);
 
-                            let newmax =
-                                (speed / if this.imp().use_bytes.get() { 8 } else { 1 }) as f32;
-
+                            let newmax = speed as f32 * this.byte_conversion_factor();
                             this.imp().usage_graph.set_value_range_max(newmax);
                         }
                     }
@@ -908,7 +904,7 @@ impl PerformancePageNetwork {
                         if let Some(speed) = this.imp().max_speed.get() {
                             if speed > 0 {
                                 this.imp().usage_graph.set_value_range_max(
-                                    (speed / if new_units { 8 } else { 1 }) as f32,
+                                    speed as f32 * this.byte_conversion_factor(),
                                 );
                             }
                         }

@@ -658,7 +658,8 @@ impl NetInfo {
         let speed = std::fs::read_to_string(format!("/sys/class/net/{}/speed", if_name));
 
         if let Ok(str) = speed {
-            str.trim().parse::<u64>().unwrap_or(0)
+            // Convert from megabits to bytes
+            (str.trim().parse::<u64>().unwrap_or(0) / 8) * 1_000_000
         } else {
             0
         }
