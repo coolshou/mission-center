@@ -34,6 +34,7 @@ pub enum DiskType {
     SSD,
     NVMe,
     eMMC,
+    SD,
     iSCSI,
     Optical,
 }
