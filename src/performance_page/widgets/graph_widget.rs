@@ -19,6 +19,7 @@
  */
 
 use std::cell::Cell;
+use std::cmp::Ordering;
 
 use glib::{ParamSpec, Properties, Value};
 use gtk::{
@@ -39,6 +40,15 @@ pub use imp::DataSetDescriptor;
 
 use super::GRAPH_RADIUS;
 
+/// Values are truncated to the minimum and maximum values
+const NO_SCALING: i32 = 0;
+/// The graph min and max values are adjusted to the incoming data
+const AUTO_SCALING: i32 = 1;
+/// The graph min and max values are adjusted to the next power of 2
+const AUTO_POW2_SCALING: i32 = 2;
+/// The graph min and max values are hardcoded to the range [0, 1], and all values are normalized to this range
+const NORMALIZED_SCALING: i32 = 3;
+
 mod imp {
     use super::*;
 
@@ -49,6 +59,7 @@ mod imp {
         pub visible: bool,
 
         pub data_set: Vec<f32>,
+        pub max_all_time: f32,
     }
 
     #[derive(Properties)]
@@ -58,14 +69,14 @@ mod imp {
         data_points: Cell<u32>,
         #[property(get, set = Self::set_data_sets)]
         data_set_count: Cell<u32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_value_range_min)]
         value_range_min: Cell<f32>,
-        #[property(get, set)]
+        #[property(get, set = Self::set_value_range_max)]
         value_range_max: Cell<f32>,
+        #[property(get, set = Self::set_scaling)]
+        scaling: Cell<i32>,
         #[property(get, set)]
-        auto_scale: Cell<bool>,
-        #[property(get, set)]
-        auto_scale_pow2: Cell<bool>,
+        only_scale_up: Cell<bool>,
         #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
@@ -97,8 +108,8 @@ mod imp {
                 data_set_count: Cell::new(1),
                 value_range_min: Cell::new(0.),
                 value_range_max: Cell::new(100.),
-                auto_scale: Cell::new(false),
-                auto_scale_pow2: Cell::new(false),
+                scaling: Cell::new(NO_SCALING),
+                only_scale_up: Cell::new(false),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 smooth_graphs: Cell::new(false),
@@ -110,7 +121,9 @@ mod imp {
                     dashed: false,
                     fill: true,
                     visible: true,
+
                     data_set,
+                    max_all_time: 0.,
                 }]),
 
                 scroll_offset: Cell::new(0.),
@@ -120,6 +133,61 @@ mod imp {
     }
 
     impl GraphWidget {
+        fn set_value_range_min(&self, min: f32) {
+            if self.scaling.get() == NORMALIZED_SCALING {
+                self.value_range_min.set(0.);
+                return;
+            }
+
+            self.value_range_min.set(min);
+        }
+
+        fn set_value_range_max(&self, max: f32) {
+            if self.scaling.get() == NORMALIZED_SCALING {
+                self.value_range_max.set(1.);
+                return;
+            }
+
+            self.value_range_max.set(max);
+        }
+
+        fn set_scaling(&self, scaling: i32) {
+            match scaling {
+                NO_SCALING => {
+                    self.scaling.set(NO_SCALING);
+                    let mut data_sets = self.data_sets.take();
+
+                    for values in data_sets.iter_mut() {
+                        for value in values.data_set.iter_mut() {
+                            *value =
+                                value.clamp(self.value_range_min.get(), self.value_range_max.get());
+                        }
+                    }
+
+                    self.data_sets.set(data_sets);
+                }
+                AUTO_SCALING..=AUTO_POW2_SCALING => {
+                    self.scaling.set(scaling);
+
+                    let mut data_sets = self.data_sets.take();
+
+                    for values in data_sets.iter_mut() {
+                        for value in values.data_set.iter_mut() {
+                            *value = value.max(self.value_range_min.get());
+                        }
+                    }
+
+                    self.data_sets.set(data_sets);
+                }
+                NORMALIZED_SCALING => {
+                    self.value_range_min.set(0.);
+                    self.value_range_max.set(1.);
+                    self.scaling.set(NORMALIZED_SCALING);
+                }
+                _ => self.scaling.set(NO_SCALING),
+            }
+        }
+
         fn set_data_points(&self, count: u32) {
             if self.data_points.take() != count {
                 let mut data_points = self.data_sets.take();
@@ -145,7 +213,9 @@ mod imp {
                     dashed: false,
                     fill: true,
                     visible: true,
+
                     data_set: vec![0.; self.data_points.get() as _],
+                    max_all_time: 0.,
                 },
             );
             self.data_sets.set(data_points);
@@ -244,7 +314,7 @@ mod imp {
             width: f32,
             height: f32,
             scale_factor: f64,
-            data_points: &DataSetDescriptor,
+            data_points: &mut DataSetDescriptor,
             color: &gdk::RGBA,
         ) {
             let scale_factor = scale_factor as f32;
@@ -253,21 +323,59 @@ mod imp {
 
             let stroke = Stroke::new(1.);
 
-            let offset = -1. * self.value_range_min.get();
-            let val_max = self.value_range_max.get() - offset;
-            let val_min = self.value_range_min.get() - offset;
+            let val_max = self.value_range_max.get() - self.value_range_min.get();
+            let val_min = 0.;
 
             let spacing_x = width / (data_points.data_set.len() - 1) as f32;
-            let points: Vec<(f32, f32)> = (0..)
-                .zip(&data_points.data_set)
-                .skip_while(|(_, y)| **y <= scale_factor)
-                .map(|(x, y)| {
-                    let x = x as f32 * spacing_x;
-                    let y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
 
-                    (x, y)
-                })
-                .collect();
+            let mut points: Vec<(f32, f32)> = if self.scaling.get() != NORMALIZED_SCALING {
+                (0..)
+                    .map(|x| x as f32)
+                    .zip(
+                        data_points
+                            .data_set
+                            .iter()
+                            .map(|x| *x - self.value_range_min.get()),
+                    )
+                    .skip_while(|(_, y)| *y <= scale_factor)
+                    .collect()
+            } else {
+                let mut min = self.value_range_min.get();
+                let mut max = self.value_range_max.get();
+                for value in data_points.data_set.iter() {
+                    if *value < min {
+                        min = *value;
+                    }
+                    if *value > max {
+                        max = *value;
+                    }
+                }
+
+                if data_points.max_all_time < max {
+                    data_points.max_all_time = max;
+                }
+
+                if self.only_scale_up.get() {
+                    max = data_points.max_all_time;
+                }
+
+                (0..)
+                    .map(|x| x as f32)
+                    .zip(data_points.data_set.iter().map(|x| {
+                        let downscale_factor = max - min;
+                        if downscale_factor == 0. {
+                            0.
+                        } else {
+                            (*x - min) / downscale_factor
+                        }
+                    }))
+                    .collect()
+            };
+
+            for (x, y) in &mut points {
+                *x = *x * spacing_x;
+                *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
+            }
 
             if !points.is_empty() {
                 let startindex;
@@ -332,7 +440,6 @@ mod imp {
         }
 
         fn render(&self, snapshot: &Snapshot, width: f32, height: f32, scale_factor: f64) {
-            let data_sets = self.data_sets.take();
             let base_color = self.base_color.get();
 
             let radius = graphene::Size::new(GRAPH_RADIUS, GRAPH_RADIUS);
@@ -344,7 +451,7 @@ mod imp {
                 radius,
             );
 
-            gtk::prelude::SnapshotExt::push_rounded_clip(snapshot, &bounds);
+            snapshot.push_rounded_clip(&bounds);
 
             if self.obj().grid_visible() {
                 self.draw_grid(
@@ -357,19 +464,19 @@ mod imp {
                 );
             }
 
-            for values in data_sets.iter() {
+            let mut data_sets = self.data_sets.take();
+            for values in &mut data_sets {
                 if !values.visible {
                     continue;
                 }
 
-                self.plot_values(snapshot, width, height, scale_factor, &values, &base_color);
+                self.plot_values(snapshot, width, height, scale_factor, values, &base_color);
             }
+            self.data_sets.set(data_sets);
 
-            gtk::prelude::SnapshotExt::pop(snapshot);
+            snapshot.pop();
 
             self.draw_outline(snapshot, &bounds, &base_color);
-
-            self.data_sets.set(data_sets);
         }
     }
 
@@ -480,55 +587,39 @@ impl GraphWidget {
     }
 
     pub fn add_data_point(&self, index: usize, mut value: f32) {
-        if value.is_infinite()
-            || value.is_nan()
-            || value.is_subnormal()
-            || value < self.value_range_min()
-        {
+        let mut data = self.imp().data_sets.take();
+
+        if index >= data.len() {
+            self.imp().data_sets.set(data);
+            return;
+        }
+
+        if value.is_infinite() || value.is_nan() {
             value = self.value_range_min();
         }
 
-        let mut data = self.imp().data_sets.take();
-        if index < data.len() {
-            data[index].data_set.push(value);
-            data[index].data_set.remove(0);
-
-            if self.auto_scale() {
-                self.scale(&mut data, value);
-            } else if value > self.value_range_max() {
-                let data_set = &mut data[index].data_set;
-                data_set.remove(data_set.len() - 1);
-                data_set.push(self.value_range_max());
-            }
+        if value.is_subnormal() {
+            value = 0.;
         }
+
+        if self.scaling() == NO_SCALING {
+            value = value.clamp(self.value_range_min(), self.value_range_max());
+        } else if self.scaling() == AUTO_SCALING || self.scaling() == AUTO_POW2_SCALING {
+            value = value.max(self.value_range_min());
+        }
+
+        data[index].data_set.push(value);
+        data[index].data_set.remove(0);
+
+        if self.scaling() == AUTO_SCALING || self.scaling() == AUTO_POW2_SCALING {
+            self.scale(&mut data, value);
+        }
+
         self.imp().data_sets.set(data);
 
         if self.is_visible() {
             self.queue_draw();
         }
-    }
-
-    pub fn set_data(&self, index: usize, mut values: Vec<f32>) {
-        use std::cmp::Ordering;
-
-        let imp = self.imp();
-
-        let mut data = imp.data_sets.take();
-        if index < data.len() {
-            values.truncate(data[index].data_set.len());
-            data[index].data_set = values;
-
-            if self.auto_scale() {
-                let max = *data[index]
-                    .data_set
-                    .iter()
-                    .max_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                    .unwrap_or(&0.0);
-                self.scale(&mut data, max);
-            }
-        }
-
-        imp.data_sets.set(data);
     }
 
     pub fn data(&self, index: usize) -> Option<Vec<f32>> {
@@ -540,6 +631,59 @@ impl GraphWidget {
         } else {
             None
         };
+        imp.data_sets.set(data);
+
+        result
+    }
+
+    pub fn set_data(&self, index: usize, mut values: Vec<f32>) {
+        let imp = self.imp();
+        let mut data = imp.data_sets.take();
+
+        if index < data.len() {
+            values.truncate(data[index].data_set.len());
+            data[index].data_set = values;
+
+            for x in &mut data[index].data_set {
+                if x.is_infinite() || x.is_nan() {
+                    *x = self.value_range_min();
+                }
+
+                if x.is_subnormal() {
+                    *x = 0.;
+                }
+
+                if self.scaling() == NO_SCALING {
+                    *x = x.clamp(self.value_range_min(), self.value_range_max());
+                } else if self.scaling() == AUTO_SCALING || self.scaling() == AUTO_POW2_SCALING {
+                    *x = x.max(self.value_range_min());
+                }
+            }
+
+            if self.scaling() == AUTO_SCALING || self.scaling() == AUTO_POW2_SCALING {
+                if let Some(max) = data[index]
+                    .data_set
+                    .iter()
+                    .map(|x| *x)
+                    .max_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                {
+                    self.scale(&mut data, max);
+                }
+            }
+        }
+
+        imp.data_sets.set(data);
+    }
+
+    pub fn max_all_time(&self, index: usize) -> Option<f32> {
+        let imp = self.imp();
+
+        let mut result = None;
+
+        let data = imp.data_sets.take();
+        if index < data.len() {
+            result = Some(data[index].max_all_time);
+        }
         imp.data_sets.set(data);
 
         result
@@ -561,38 +705,64 @@ impl GraphWidget {
             n + 1
         }
 
-        let mut max_y = value.max(self.value_range_max());
+        let min_value = self.value_range_min();
+        let max_norm = self.value_range_max() - min_value;
+        let value = value - min_value;
+
+        let mut max_y = value.max(max_norm);
 
         let mut value_max = value;
         for data_set in data.iter() {
             for value in data_set.data_set.iter() {
-                if value_max < *value {
+                if value_max < (*value - min_value) {
                     value_max = *value;
                 }
             }
         }
 
-        let value_max_abs = value_max.abs();
-        let mut max_y_abs = max_y.abs();
-
-        while value_max_abs < max_y_abs {
-            max_y_abs /= 2.;
+        while value_max < max_y {
+            max_y /= 2.;
         }
-        if value_max_abs > max_y_abs {
-            max_y_abs *= 2.;
+        if value_max > max_y {
+            max_y *= 2.;
         }
 
-        if self.auto_scale_pow2() {
-            max_y_abs = max_y_abs.round();
-            max_y_abs = round_up_to_next_power_of_two(max_y_abs as u64) as f32;
+        max_y += min_value;
+        if self.scaling() == AUTO_POW2_SCALING {
+            max_y = max_y.round();
+            if max_y > 0. {
+                max_y = round_up_to_next_power_of_two(max_y as u64) as f32;
+            }
         }
 
-        max_y = if max_y < 0. {
-            max_y_abs * -1.
-        } else {
-            max_y_abs
-        };
+        if max_y > self.value_range_min() {
+            if (max_y < self.value_range_max()) && self.only_scale_up() {
+                return;
+            }
 
-        self.set_value_range_max(max_y);
+            self.set_value_range_max(max_y);
+        }
+    }
+}
+
+impl GraphWidget {
+    #[inline]
+    pub fn no_scaling() -> i32 {
+        NO_SCALING
+    }
+
+    #[inline]
+    pub fn auto_scaling() -> i32 {
+        AUTO_SCALING
+    }
+
+    #[inline]
+    pub fn auto_pow2_scaling() -> i32 {
+        AUTO_POW2_SCALING
+    }
+
+    #[inline]
+    pub fn normalized_scaling() -> i32 {
+        NORMALIZED_SCALING
     }
 }
