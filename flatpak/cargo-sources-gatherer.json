@@ -41,14 +41,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/app-rummage/app-rummage-0.2.5.crate",
-    "sha256": "ccf6909c99a258f2e5f991742f03e34d11c463f3d3e25a423c2a3088d3ffe5be",
-    "dest": "cargo/vendor/app-rummage-0.2.5"
+    "url": "https://static.crates.io/crates/app-rummage/app-rummage-0.2.6.crate",
+    "sha256": "c015066de1a3af6e3582d1c4bf19f481fe7536e495c30fae84ec63cb08f90622",
+    "dest": "cargo/vendor/app-rummage-0.2.6"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"ccf6909c99a258f2e5f991742f03e34d11c463f3d3e25a423c2a3088d3ffe5be\", \"files\": {}}",
-    "dest": "cargo/vendor/app-rummage-0.2.5",
+    "contents": "{\"package\": \"c015066de1a3af6e3582d1c4bf19f481fe7536e495c30fae84ec63cb08f90622\", \"files\": {}}",
+    "dest": "cargo/vendor/app-rummage-0.2.6",
     "dest-filename": ".cargo-checksum.json"
   },
   {
