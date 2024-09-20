@@ -336,31 +336,31 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.14.5
+GTK_VER=4.16.1
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
 tar xvf gtk-$GTK_VER.tar.xz
 cd gtk-$GTK_VER
 # Patch for GLAD Vulkan support
-# for f in $SRC_PATH/support/patches/gtk4/*.patch; do
-#   patch -p1 < $f
-# done
+for f in $SRC_PATH/support/patches/gtk4/*.patch; do
+  patch -p1 < $f
+done
 # Copy glad project into GTK source directory
-# cp -rv $SRC_PATH/support/patches/gtk4/glad .
+cp -rv $SRC_PATH/support/patches/gtk4/glad .
 mkdir build && cd build
-/usr/local/bin/meson setup ..          \
-    --prefix=/usr                      \
+/usr/local/bin/meson setup ..           \
+    --prefix=/usr                       \
     --libdir=/usr/lib/$(arch)-linux-gnu \
-    --buildtype=release                \
-    -Dvulkan=disabled                  \
-    -Dintrospection=enabled            \
-    -Dbuild-examples=false             \
-    -Dbuild-tests=false                \
-    -Dbuild-demos=false                \
-    -Dbuild-testsuite=false            \
-    -Dbroadway-backend=false           \
-    -Dmedia-gstreamer=disabled         \
+    --buildtype=release                 \
+    -Dvulkan=enabled                    \
+    -Dintrospection=enabled             \
+    -Dbuild-examples=false              \
+    -Dbuild-tests=false                 \
+    -Dbuild-demos=false                 \
+    -Dbuild-testsuite=false             \
+    -Dbroadway-backend=false            \
+    -Dmedia-gstreamer=disabled          \
     -Dprint-cups=disabled
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
 cd ../../ && rm -rf gtk-$GTK_VER*
@@ -402,7 +402,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-LIBADW_VER=1.5.4
+LIBADW_VER=1.6.0
 LIBADW_VER_MM=$(echo $LIBADW_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/libadwaita/$LIBADW_VER_MM/libadwaita-$LIBADW_VER.tar.xz
@@ -449,8 +449,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 cargo install toml2json
 
 cd $SRC_PATH
-rm -rf _build && meson setup _build -Dbuildtype=release -Dprefix=/usr
-ninja -C _build && env DESTDIR=$OUT_PATH ninja -C _build install
+BUILD_DIR=_build-$(arch)
+rm -rf $BUILD_DIR && meson setup $BUILD_DIR -Dbuildtype=release -Dprefix=/usr
+ninja -C $BUILD_DIR && env DESTDIR=$OUT_PATH ninja -C $BUILD_DIR install
 
 glib-compile-schemas $OUT_PATH/usr/share/glib-2.0/schemas/
 
