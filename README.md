@@ -31,10 +31,13 @@ Please note there is ongoing work to overcome all of these.
 
 * No per-process network usage ([#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3))
 * GPU support is experimental
-* Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring.
-* When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
+* Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature
+  monitoring.
+* When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream
+  issue: https://github.com/linuxmint/cinnamon/issues/12015)
 
-Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (themes). If you wish to change the look of any libadwaita application, including Mission Center, it is recommended to use [Gradience](https://gradienceteam.github.io/).
+Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets (
+themes).
 
 ## Installing
 
@@ -192,10 +195,10 @@ Install the required Flatpak runtimes and SDKs:
 
 ```bash
 flatpak install -y \
-    org.freedesktop.Platform//23.08 \
-    org.freedesktop.Sdk//23.08 \
-    org.gnome.Platform//46 \
-    org.gnome.Sdk//46
+    org.freedesktop.Platform//24.08 \
+    org.freedesktop.Sdk//24.08 \
+    org.gnome.Platform//47 \
+    org.gnome.Sdk//47
 ```
 
 Finally build a Flatpak package:
@@ -227,7 +230,8 @@ Report issues to GitLab [issue tracking system](https://gitlab.com/mission-cente
 
 ### Discord
 
-Join [the Discord server](https://discord.gg/RG7QTeB9yk) and let's talk about what you think is missing or can be improved.
+Join [the Discord server](https://discord.gg/RG7QTeB9yk) and let's talk about what you think is missing or can be
+improved.
 
 ### Translations
 
@@ -242,4 +246,5 @@ Comments, suggestions, bug reports and contributions are welcome.
 
 ## License
 
-This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of the license in the file COPYING.
+This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of
+the license in the file COPYING.
