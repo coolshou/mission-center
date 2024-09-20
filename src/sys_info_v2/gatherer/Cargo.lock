@@ -25,9 +25,9 @@ checksum = "4e1496f8fb1fbf272686b8d37f523dab3e4a7443300055e74cdaa449f3114356"
 
 [[package]]
 name = "app-rummage"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84d8957d58fe19d56177118f1fdca392e7a4be3bc24a3556bd25d6100656f382"
+checksum = "ccf6909c99a258f2e5f991742f03e34d11c463f3d3e25a423c2a3088d3ffe5be"
 dependencies = [
  "log",
  "nix",
