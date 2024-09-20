@@ -18,14 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::sync::Arc;
-use std::time::Instant;
-
-use serde::Deserialize;
-
-use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
-
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
+use crate::logging::{critical, warning};
+use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
+use glob::glob;
+use serde::Deserialize;
+use std::{sync::Arc, time::Instant};
 
 #[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {
@@ -460,7 +458,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         if dir_name.starts_with("nvme") {
                             DiskType::NVMe
                         } else if dir_name.starts_with("mmc") {
-                            DiskType::eMMC
+                            Self::get_mmc_type(&dir_name)
                         } else {
                             DiskType::SSD
                         }
@@ -679,5 +677,50 @@ impl LinuxDisksInfo {
         }
 
         mount_points
+    }
+
+    fn get_mmc_type(dir_name: &String) -> DiskType {
+        let Some(hwmon_idx) = dir_name[6..].parse::<u64>().ok() else {
+            return DiskType::Unknown;
+        };
+
+        let globs = match glob(&format!(
+            "/sys/class/mmc_host/mmc{}/mmc{}*/type",
+            hwmon_idx, hwmon_idx
+        )) {
+            Ok(globs) => globs,
+            Err(e) => {
+                warning!("Gatherer::DiskInfo", "Failed to read mmc type entry: {}", e);
+                return DiskType::Unknown;
+            }
+        };
+
+        let mut res = DiskType::Unknown;
+        for entry in globs {
+            res = match entry {
+                Ok(path) => match std::fs::read_to_string(&path).ok() {
+                    Some(typ) => match typ.trim() {
+                        "SD" => DiskType::SD,
+                        "MMC" => DiskType::eMMC,
+                        _ => {
+                            critical!("Gatherer::DiskInfo", "Unknown mmc type: '{}'", typ);
+                            continue;
+                        }
+                    },
+                    _ => {
+                        critical!(
+                            "Gatherer::DiskInfo",
+                            "Could not read mmc type: {}",
+                            path.display()
+                        );
+                        continue;
+                    }
+                },
+                _ => {
+                    continue;
+                }
+            };
+        }
+        res
     }
 }
