@@ -1239,12 +1239,17 @@ mod imp {
                     summary.graph_widget().set_auto_scale_pow2(false);
                     summary
                         .graph_widget()
-                        .set_value_range_max((network_device.max_speed * 1000 * 1000) as f32);
+                        .set_value_range_max((network_device.max_speed * 8) as f32);
                 }
-                let max_speed = network_device.max_speed * 1000 * 1000;
-                let graph = summary.graph_widget();
+                let max_speed = network_device.max_speed * 8;
                 settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
+                    let graph = summary.graph_widget().downgrade();
                     move |settings, _| {
+                        let graph = match graph.upgrade() {
+                            Some(graph) => graph,
+                            None => return,
+                        };
+
                         let dynamic_scaling =
                             settings.boolean("performance-page-network-dynamic-scaling");
 
@@ -1876,7 +1881,7 @@ mod imp {
                                 let send_speed = network_device.send_bps * byte_coeff;
                                 let rec_speed = network_device.recv_bps * byte_coeff;
 
-                                // Search for a group of existing disks and try to add new entries at that position
+                                // Search for a group of existing network devices and try to add new entries at that position
                                 summary
                                     .parent()
                                     .and_then(|p| p.downcast_ref::<gtk::ListBoxRow>().cloned())
@@ -1895,9 +1900,6 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, network_device.send_bps * 8.);
-                                graph_widget.add_data_point(1, network_device.recv_bps * 8.);
-
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
