@@ -47,6 +47,11 @@
         <p>Comments, suggestions, bug reports and contributions welcome</p>
     </description>
 
+    <branding>
+      <color type="primary" scheme_preference="light">#91b3c3</color>
+      <color type="primary" scheme_preference="dark">#071f2b</color>
+    </branding>
+
     <screenshots>
         <screenshot type="default">
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png</image>
