@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::path::Path;
+
 use crate::i18n::*;
 
 #[allow(non_camel_case_types)]
@@ -442,6 +444,13 @@ impl NetInfo {
             NetDeviceType::VPN
         } else if device_if.starts_with("wl") || device_if.starts_with("ww") {
             NetDeviceType::Wireless
+        } else if device_if.starts_with("mlan") {
+            let path = Path::new("/sys/class/net").join(device_if).join("wireless");
+            if path.exists() {
+                NetDeviceType::Wireless
+            } else {
+                NetDeviceType::Other
+            }
         } else {
             NetDeviceType::Other
         }
