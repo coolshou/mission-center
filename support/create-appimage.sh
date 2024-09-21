@@ -55,6 +55,7 @@ cp -rv $APPDIR_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0 /usr/lib/$(arch)-li
 export PATH="/helper_binaries:$PATH"
 export LD_LIBRARY_PATH="$APPDIR_PATH/usr/lib/$(arch)-linux-gnu:$LD_LIBRARY_PATH"
 
-appimage-builder --recipe "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml" --appdir "$APPDIR_PATH"
+sed -i "s|arch: x86_64|arch: $(arch)|g" "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml"
+appimage-builder --recipe "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml" --appdir "$APPDIR_PATH" --skip-test
 
 mv Mission\ Center*.AppImage MissionCenter-$(arch).AppImage

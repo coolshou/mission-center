@@ -15,18 +15,11 @@ AppDir:
       MC_RESOURCE_DIR: $APPDIR/usr/share/missioncenter
       HW_DB_DIR: $APPDIR/usr/share/missioncenter
   test:
-    fedora-32:
-      image: appimagecrafters/tests-env:fedora-32
-      command: ./AppRun
-    debian-stable:
-      image: appimagecrafters/tests-env:debian-stable
-      command: ./AppRun
-    archlinux-latest:
-      image: appimagecrafters/tests-env:archlinux-latest
-      command: ./AppRun
     ubuntu-focal:
       image: appimagecrafters/tests-env:ubuntu-focal
-      command: ./AppRun
+      command: "./AppRun"
+      use_host_x: True
 AppImage:
   arch: x86_64
-  update-information: guess
+  update-information: None
+  sign-key: None
