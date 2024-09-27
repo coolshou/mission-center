@@ -24,6 +24,7 @@ template $AppsPage : Box {
   orientation: vertical;
 
   PopoverMenu context_menu {
+    has-arrow: false;
   }
 
   ScrolledWindow {
@@ -50,6 +51,9 @@ template $AppsPage : Box {
               child: $ListItem {
                 icon: bind (expander.item as <$RowModel>).icon;
                 name: bind (expander.item as <$RowModel>).name;
+                // Needed for the context menu
+                pid: bind (expander.item as <$RowModel>).pid;
+
                 content-type: bind (expander.item as <$RowModel>).content-type;
                 show-expander: bind (expander.item as <$RowModel>).show-expander;
                 expanded: bind (expander.item as <$RowModel>).expanded;
