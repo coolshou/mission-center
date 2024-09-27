@@ -254,7 +254,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
 # ---------------------------------------------------------------------------
-ADW_ICONS_VER=47.beta
+ADW_ICONS_VER=47.0
 ADW_ICONS_VER_MM=$(echo $ADW_ICONS_VER | cut -f1 -d'.')
 # ---------------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/adwaita-icon-theme/$ADW_ICONS_VER_MM/adwaita-icon-theme-$ADW_ICONS_VER.tar.xz
@@ -281,8 +281,7 @@ mkdir build && cd build
     -Dgraphite2=disabled               \
     -Dtests=disabled
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
-cd ../../ && rm -rf harfbuzz-$HARFBUZZ_VER*
-cd $OUT_PATH
+cd $OUT_PATH && rm -rf harfbuzz-$HARFBUZZ_VER*
 # FreeType and Harfbuzz depend on each other, so we need to compile FreeType again
 curl -LO https://downloads.sourceforge.net/freetype/freetype-$FREETYPE_VER.tar.xz
 tar xvf freetype-$FREETYPE_VER.tar.xz
@@ -336,7 +335,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.16.1
+GTK_VER=4.16.2
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
