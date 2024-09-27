@@ -37,8 +37,8 @@ use crate::{
 mod column_header;
 mod list_item;
 mod pid_column;
+mod row_model;
 mod stat_column;
-mod view_model;
 
 pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
 pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97, 0, 0.3); }";
@@ -121,8 +121,8 @@ mod imp {
 
                 tree_list_sorter: Cell::new(None),
 
-                apps_model: Cell::new(ListStore::new::<view_model::ViewModel>()),
-                processes_root_model: Cell::new(ListStore::new::<view_model::ViewModel>()),
+                apps_model: Cell::new(ListStore::new::<row_model::RowModel>()),
+                processes_root_model: Cell::new(ListStore::new::<row_model::RowModel>()),
 
                 max_cpu_usage: Cell::new(0.0),
                 max_memory_usage: Cell::new(0.0),
@@ -320,14 +320,14 @@ mod imp {
         pub fn update_app_model(&self) {
             use crate::glib_clone;
             use gtk::glib::g_critical;
+            use row_model::{ContentType, RowModel, RowModelBuilder};
             use std::collections::BTreeSet;
-            use view_model::{ContentType, ViewModel, ViewModelBuilder};
 
-            fn find_pid_in_process_tree(model: ListStore, pid: u32) -> Option<ViewModel> {
-                fn fpipt_impl(model: ListStore, pid: u32, result: &mut Option<ViewModel>) {
+            fn find_pid_in_process_tree(model: ListStore, pid: u32) -> Option<RowModel> {
+                fn fpipt_impl(model: ListStore, pid: u32, result: &mut Option<RowModel>) {
                     let len = model.n_items();
                     for i in 0..len {
-                        let current = model.item(i).unwrap().downcast::<ViewModel>().unwrap();
+                        let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
                         if current.pid() == pid {
                             *result = Some(current);
                             return;
@@ -335,7 +335,7 @@ mod imp {
                     }
 
                     for i in 0..len {
-                        let current = model.item(i).unwrap().downcast::<ViewModel>().unwrap();
+                        let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
                         fpipt_impl(current.children().clone(), pid, result);
                     }
                 }
@@ -349,7 +349,7 @@ mod imp {
             fn update_icons(model: ListStore, icon: &str) {
                 let len = model.n_items();
                 for i in 0..len {
-                    let current = model.item(i).unwrap().downcast::<ViewModel>().unwrap();
+                    let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
                     current.set_icon(icon);
                     update_icons(current.children().clone(), icon);
                 }
@@ -361,7 +361,7 @@ mod imp {
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
-                let current = model.item(i).unwrap().downcast::<ViewModel>();
+                let current = model.item(i).unwrap().downcast::<RowModel>();
                 if current.is_err() {
                     continue;
                 }
@@ -379,7 +379,7 @@ mod imp {
             for (app_id, app) in &apps {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
-                        let current = current.downcast_ref::<ViewModel>();
+                        let current = current.downcast_ref::<RowModel>();
                         if current.is_none() {
                             return false;
                         }
@@ -410,8 +410,8 @@ mod imp {
                 };
 
                 let pp = primary_process.cloned().unwrap_or_default();
-                let view_model = if pos.is_none() {
-                    let view_model = ViewModelBuilder::new()
+                let row_model = if pos.is_none() {
+                    let row_model = RowModelBuilder::new()
                         .name(app.name.as_ref())
                         .id(app.id.as_ref())
                         .icon(
@@ -432,35 +432,35 @@ mod imp {
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
-                    model.append(&view_model);
+                    model.append(&row_model);
 
-                    view_model
+                    row_model
                 } else {
                     let model: gio::ListModel = model.clone().into();
-                    let view_model = model
+                    let row_model = model
                         .item(pos.unwrap())
                         .unwrap()
-                        .downcast::<ViewModel>()
+                        .downcast::<RowModel>()
                         .unwrap();
 
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
-                    view_model.set_pid(primary_pid);
-                    view_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
-                    view_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
-                    view_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
-                    view_model.set_network_usage(pp.merged_usage_stats.network_usage);
-                    view_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
-                    view_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
+                    row_model.set_pid(primary_pid);
+                    row_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
+                    row_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
+                    row_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
+                    row_model.set_network_usage(pp.merged_usage_stats.network_usage);
+                    row_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
+                    row_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
 
-                    view_model
+                    row_model
                 };
 
-                let children = view_model.children().clone();
+                let children = row_model.children().clone();
                 if let Some(_) = primary_process {
                     let root_model = glib_clone!(self.processes_root_model);
                     if let Some(model) = find_pid_in_process_tree(root_model, primary_pid) {
-                        if model.pid() != view_model.pid() || children.n_items() == 0 {
+                        if model.pid() != row_model.pid() || children.n_items() == 0 {
                             children.remove_all();
                             children.append(&model);
                         }
@@ -512,18 +512,18 @@ mod imp {
             &self,
             lhs: &glib::Object,
             rhs: &glib::Object,
-            compare_fn: fn(&view_model::ViewModel, &view_model::ViewModel) -> std::cmp::Ordering,
+            compare_fn: fn(&row_model::RowModel, &row_model::RowModel) -> std::cmp::Ordering,
         ) -> std::cmp::Ordering {
+            use row_model::{ContentType, RowModel, SectionType};
             use std::cmp::*;
-            use view_model::{ContentType, SectionType, ViewModel};
 
-            let lhs = lhs.downcast_ref::<ViewModel>();
+            let lhs = lhs.downcast_ref::<RowModel>();
             if lhs.is_none() {
                 return Ordering::Equal.into();
             }
             let lhs = lhs.unwrap();
 
-            let rhs = rhs.downcast_ref::<ViewModel>();
+            let rhs = rhs.downcast_ref::<RowModel>();
             if rhs.is_none() {
                 return Ordering::Equal.into();
             }
@@ -594,23 +594,23 @@ mod imp {
         }
 
         pub fn set_up_root_model(&self) -> ListStore {
-            use view_model::{ContentType, SectionType, ViewModel, ViewModelBuilder};
+            use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
-            let apps_section_header = ViewModelBuilder::new()
+            let apps_section_header = RowModelBuilder::new()
                 .name(&i18n("Apps"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Apps)
                 .show_expander(false)
                 .build();
 
-            let processes_section_header = ViewModelBuilder::new()
+            let processes_section_header = RowModelBuilder::new()
                 .name(&i18n("Processes"))
                 .content_type(ContentType::SectionHeader)
                 .section_type(SectionType::Processes)
                 .show_expander(false)
                 .build();
 
-            let root_model = ListStore::new::<ViewModel>();
+            let root_model = ListStore::new::<RowModel>();
             root_model.append(&apps_section_header);
             root_model.append(&processes_section_header);
 
@@ -620,15 +620,15 @@ mod imp {
         pub fn set_up_tree_model(&self, model: gio::ListModel) -> gtk::TreeListModel {
             use crate::glib_clone;
 
-            use view_model::{ContentType, SectionType, ViewModel};
+            use row_model::{ContentType, RowModel, SectionType};
 
             let this = self.obj().downgrade();
             gtk::TreeListModel::new(model, false, true, move |model_entry| {
-                let view_model = model_entry.downcast_ref::<ViewModel>();
-                if view_model.is_none() {
+                let row_model = model_entry.downcast_ref::<RowModel>();
+                if row_model.is_none() {
                     return None;
                 }
-                let view_model = view_model.unwrap();
+                let row_model = row_model.unwrap();
 
                 let this = this.upgrade();
                 if this.is_none() {
@@ -637,15 +637,15 @@ mod imp {
                 let this = this.unwrap();
                 let this = this.imp();
 
-                let content_type = view_model.content_type();
+                let content_type = row_model.content_type();
 
                 if content_type == ContentType::SectionHeader as u8 {
-                    if view_model.section_type() == SectionType::Apps as u8 {
+                    if row_model.section_type() == SectionType::Apps as u8 {
                         let apps_model = glib_clone!(this.apps_model);
                         return Some(apps_model.into());
                     }
 
-                    if view_model.section_type() == SectionType::Processes as u8 {
+                    if row_model.section_type() == SectionType::Processes as u8 {
                         let processes_model = glib_clone!(this.processes_root_model);
                         return Some(processes_model.into());
                     }
@@ -656,7 +656,7 @@ mod imp {
                 if content_type == ContentType::Process as u8
                     || content_type == ContentType::App as u8
                 {
-                    return Some(view_model.children().clone().into());
+                    return Some(row_model.children().clone().into());
                 }
 
                 None
@@ -665,7 +665,7 @@ mod imp {
 
         pub fn set_up_filter_model(&self, model: gio::ListModel) -> gtk::FilterListModel {
             use glib::g_critical;
-            use view_model::{ContentType, ViewModel};
+            use row_model::{ContentType, RowModel};
 
             let Some(window) = app!().window() else {
                 g_critical!(
@@ -694,20 +694,20 @@ mod imp {
                         return true;
                     }
 
-                    let view_model = match obj
+                    let row_model = match obj
                         .downcast_ref::<gtk::TreeListRow>()
                         .and_then(|row| row.item())
-                        .and_then(|item| item.downcast::<ViewModel>().ok())
+                        .and_then(|item| item.downcast::<RowModel>().ok())
                     {
                         None => return false,
                         Some(vm) => vm,
                     };
-                    if view_model.content_type() == ContentType::SectionHeader as u8 {
+                    if row_model.content_type() == ContentType::SectionHeader as u8 {
                         return true;
                     }
 
-                    let entry_name = view_model.name().to_lowercase();
-                    let pid = view_model.pid().to_string();
+                    let entry_name = row_model.name().to_lowercase();
+                    let pid = row_model.pid().to_string();
                     let search_query = window.header_search_entry.text().to_lowercase();
 
                     if entry_name.contains(&search_query) || pid.contains(&search_query) {
@@ -1022,7 +1022,7 @@ mod imp {
             gtk::SortListModel::new(Some(model), Some(tree_list_sorter))
         }
 
-        pub fn set_up_view_model(&self) {
+        pub fn set_up_model(&self) {
             let root_model = self.set_up_root_model();
             let tree_model = self.set_up_tree_model(root_model.into());
             let filter_model = self.set_up_filter_model(tree_model.into());
@@ -1169,11 +1169,11 @@ mod imp {
         }
 
         fn update_process_model(this: &AppsPage, model: ListStore, process: &Process) {
-            use crate::apps_page::view_model::{ContentType, ViewModel, ViewModelBuilder};
+            use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
 
             let mut to_remove = Vec::new();
             for i in 0..model.n_items() {
-                let current = model.item(i).unwrap().downcast::<ViewModel>();
+                let current = model.item(i).unwrap().downcast::<RowModel>();
                 if current.is_err() {
                     continue;
                 }
@@ -1192,7 +1192,7 @@ mod imp {
             for (pid, child) in &process.children {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
-                        let current = current.downcast_ref::<ViewModel>();
+                        let current = current.downcast_ref::<RowModel>();
                         if current.is_none() {
                             return false;
                         }
@@ -1250,7 +1250,7 @@ mod imp {
                             )
                         };
 
-                    let view_model = ViewModelBuilder::new()
+                    let row_model = RowModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
                         .icon("application-x-executable-symbolic")
@@ -1266,15 +1266,15 @@ mod imp {
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
 
-                    view_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&child.merged_usage_stats);
 
-                    model.append(&view_model);
-                    view_model.children().clone()
+                    model.append(&row_model);
+                    row_model.children().clone()
                 } else {
-                    let view_model = model
+                    let row_model = model
                         .item(pos.unwrap())
                         .unwrap()
-                        .downcast::<ViewModel>()
+                        .downcast::<RowModel>()
                         .unwrap();
 
                     let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
@@ -1298,17 +1298,17 @@ mod imp {
                             )
                         };
 
-                    view_model.set_icon("application-x-executable-symbolic");
-                    view_model.set_cpu_usage(cpu_usage);
-                    view_model.set_memory_usage(mem_usage);
-                    view_model.set_disk_usage(disk_usage);
-                    view_model.set_network_usage(net_usage);
-                    view_model.set_gpu_usage(gpu_usage);
-                    view_model.set_gpu_memory_usage(gpu_mem_usage);
+                    row_model.set_icon("application-x-executable-symbolic");
+                    row_model.set_cpu_usage(cpu_usage);
+                    row_model.set_memory_usage(mem_usage);
+                    row_model.set_disk_usage(disk_usage);
+                    row_model.set_network_usage(net_usage);
+                    row_model.set_gpu_usage(gpu_usage);
+                    row_model.set_gpu_memory_usage(gpu_mem_usage);
 
-                    view_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&child.merged_usage_stats);
 
-                    view_model.children().clone()
+                    row_model.children().clone()
                 };
 
                 Self::update_process_model(this, child_model, child);
@@ -1325,7 +1325,7 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             list_item::ListItem::ensure_type();
 
-            view_model::ViewModel::ensure_type();
+            row_model::RowModel::ensure_type();
 
             column_header::ColumnHeader::ensure_type();
             pid_column::PidColumn::ensure_type();
@@ -1489,7 +1489,7 @@ impl AppsPage {
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
-        this.set_up_view_model();
+        this.set_up_model();
 
         this.update_processes_models();
         this.update_app_model();

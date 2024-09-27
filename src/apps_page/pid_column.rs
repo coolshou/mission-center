@@ -39,14 +39,14 @@ mod imp {
         label: TemplateChild<gtk::Label>,
 
         #[property(set = Self::set_content_type, type = u8)]
-        content_type: Cell<crate::apps_page::view_model::ContentType>,
+        content_type: Cell<crate::apps_page::row_model::ContentType>,
         #[property(get, set = Self::set_value)]
         value: Cell<u32>,
     }
 
     impl Default for PidColumn {
         fn default() -> Self {
-            use crate::apps_page::view_model::ContentType;
+            use crate::apps_page::row_model::ContentType;
 
             Self {
                 label: TemplateChild::default(),
@@ -58,7 +58,7 @@ mod imp {
 
     impl PidColumn {
         fn set_content_type(&self, v: u8) {
-            use crate::apps_page::view_model::ContentType;
+            use crate::apps_page::row_model::ContentType;
 
             let content_type = match v {
                 0 => ContentType::SectionHeader,
@@ -77,7 +77,7 @@ mod imp {
 
     impl PidColumn {
         fn update_label(&self) {
-            use crate::apps_page::view_model::ContentType;
+            use crate::apps_page::row_model::ContentType;
 
             if self.content_type.get() != ContentType::Process
                 && self.content_type.get() != ContentType::App

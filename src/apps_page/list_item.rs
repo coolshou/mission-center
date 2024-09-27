@@ -29,7 +29,7 @@ use gtk::{
 };
 
 use crate::{
-    apps_page::view_model::{ContentType, ViewModel},
+    apps_page::row_model::{ContentType, RowModel},
     i18n::*,
 };
 
@@ -291,7 +291,7 @@ mod imp {
                 let view_model = match tree_expander
                     .downcast_ref::<gtk::TreeExpander>()
                     .and_then(|te| te.item())
-                    .and_then(|model| model.downcast::<ViewModel>().ok())
+                    .and_then(|model| model.downcast::<RowModel>().ok())
                 {
                     None => {
                         g_critical!(
@@ -351,7 +351,7 @@ mod imp {
                                     .parent()
                                     .and_downcast_ref::<gtk::TreeExpander>()
                                     .and_then(|te| te.item())
-                                    .and_downcast::<ViewModel>()
+                                    .and_downcast::<RowModel>()
                                 {
                                     None => {
                                         g_critical!(
