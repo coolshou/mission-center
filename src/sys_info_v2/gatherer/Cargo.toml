@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = { version = "1.0" }
-app-rummage = { version = "*" }
+app-rummage = { version = "0.2.7" }
 arrayvec = { version = "0.7" }
 ash = { version = "0.38" }
 bincode = { version = "1.3" }
