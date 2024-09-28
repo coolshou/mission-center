@@ -303,7 +303,6 @@ mod imp {
                         }
                     };
 
-                    eprintln!("Showing menu for PID {pid} at {}x{}", anchor.x(), anchor.y());
                     list_item.row().and_then(|row| {
                         let _ = row.activate_action("listitem.select", Some(&glib::Variant::from((true, true))));
                         None::<()>
