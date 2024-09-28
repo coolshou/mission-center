@@ -311,14 +311,28 @@ impl MissionCenterApplication {
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
             .release_notes(
-                r#"<ul>
-<li>New Services page: view and control system services using SystemD or OpenRC</li>
-<li>New smooth graphs option</li>
-<li>CPU frequency governor and driver are now displayed where supported</li>
-<li>Indices are no longer shown next to devices if there is only one of its kind</li>
-<li>A bunch of small tweaks that makes the app more consistent</li>
-<li>Translation updates and fixes</li>
-</ul>"#,
+                r#"<ul><li>Add a new Fan Page that monitors system fans and reports RPM, PWM and temperature information</li>
+<li>Add support for hiding and rearranging devices in the Performance sidebar</li>
+<li>Overhaul the Memory Page to convey more information</li>
+<li>Update GPU page UI to better reflect what aspects of the GPU can be monitored</li>
+<li>Add GTT information to the GPU page (AMD only)</li>
+<li>Add network total data transfer information to the Network Page</li>
+<li>Show application icons for processes that belong to a known application</li>
+<li>Switch to AdwDialog for the About and Preferences dialogs</li>
+<li>Update NVTOP for better GPU support</li>
+<li>Initial support for Snap</li>
+<li>Update to latest GNOME (47) Platform for all supported packaging formats</li>
+<li>Add support for `zenpower` when monitoring AMD CPU temperature</li>
+<li>Fix a seeming CPU usage spike when the app starts</li>
+<li>Improved app detection</li>
+<li>Supress some network device related errors that were flooding the SystemD journal</li>
+<li>Hide CPU frequency governor and power preference information when not supported</li>
+<li>Update CPU frequency governor and power preference information while the app is running</li>
+<li>Add an option to use bytes instead of bits for network data transfer information</li>
+<li>Add support for more device types in the Network Page</li>
+<li>Detect SystemD more reliably using D-Bus instead of searching for a library on disk</li>
+<li>Fix a memory leak that occurred when filtering apps and processes</li>
+<li>Clean up graph labels to be more consistent across different pages</li></ul>"#,
             )
             .build();
 
