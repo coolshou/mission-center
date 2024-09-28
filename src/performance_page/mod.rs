@@ -1590,7 +1590,10 @@ mod imp {
             let sidebar = this.sidebar();
 
             let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
-            let hidden_graphs = hidden_graphs.split(";").collect::<HashSet<_>>();
+            let hidden_graphs = hidden_graphs
+                .split(";")
+                .filter(|g| !g.is_empty())
+                .collect::<HashSet<_>>();
 
             let sidebar_order = settings.string("performance-sidebar-order");
 
@@ -1615,6 +1618,7 @@ mod imp {
 
                 if hidden_graphs.contains(name.as_str()) {
                     graph.set_is_enabled(false);
+                    row.set_visible(false);
                 }
 
                 row_map.insert(graph.widget_name(), (row, graph));
@@ -1624,6 +1628,7 @@ mod imp {
 
             for (i, row_name) in sidebar_order
                 .split(';')
+                .filter(|g| !g.is_empty())
                 .enumerate()
                 .map(|(i, r)| (i as i32, r))
             {

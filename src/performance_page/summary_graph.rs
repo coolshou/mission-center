@@ -180,13 +180,17 @@ mod imp {
                     let settings = settings!();
 
                     let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
-                    let mut hidden_graphs = hidden_graphs.split(";").collect::<HashSet<_>>();
+                    let mut hidden_graphs = hidden_graphs
+                        .split(";")
+                        .filter(|g| !g.is_empty())
+                        .collect::<HashSet<_>>();
                     let name = this.widget_name();
+                    let name = name.as_str();
 
-                    if switch.is_active() && hidden_graphs.contains(name.as_str()) {
-                        hidden_graphs.remove(name.as_str());
-                    } else if !switch.is_active() && !hidden_graphs.contains(name.as_str()) {
-                        hidden_graphs.insert(name.as_str());
+                    if switch.is_active() && hidden_graphs.contains(name) {
+                        hidden_graphs.remove(name);
+                    } else if !switch.is_active() && !hidden_graphs.contains(name) {
+                        hidden_graphs.insert(name);
                     }
 
                     let mut output = String::new();
