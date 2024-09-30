@@ -38,6 +38,7 @@ mod performance_page;
 mod preferences;
 mod services_page;
 mod sys_info_v2;
+mod theme_selector;
 mod window;
 
 #[macro_export]
