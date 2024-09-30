@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-09-13 10:41+0000\n"
+"PO-Revision-Date: 2024-09-28 18:15+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -109,7 +109,6 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Zminimalizowany widok ogólny w celu prostego monitorowania"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
@@ -170,7 +169,6 @@ msgid "DEPRECATED! NO LONGER IN USE!"
 msgstr "NIEAKTUALNE! NIEUŻYWANE!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
@@ -184,11 +182,15 @@ msgstr "Ile punktów pokazywać na każdym wykresie?"
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"Ustawia, czy prędkość sieci pokazywać w bitach (domyślnie) lub w bajtach ("
+"wielkie \"B\")"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Wysokość wykresu ma się kończyć na maksymalnej wartości interfejsu (fałsz) "
+"czy na maksymalnej zaobserwowanej wartości (prawda)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -230,7 +232,7 @@ msgstr "Domyślna strona po otwarciu zakładki wydajność"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Linie na wykresach wydajności gładkie lub nie"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
@@ -239,9 +241,8 @@ msgstr "Domyślnie pokazuj informacje o procesorze"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Pobieranie dodatkowych informacji nie powiodło się"
+msgstr "Domyślnie pokazuj informacje o pamięci"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
@@ -278,11 +279,11 @@ msgstr "Pokaż wykres procesu kodowania i dekodowania karty graficznej"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Kolejność opcji w pasku bocznym"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Ukrywaj wykresy w panelu bocznym aplikacji"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -386,7 +387,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Wentylatory"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -455,11 +456,11 @@ msgstr "Pamięć podręczna L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Sterownik CPUFreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Zarządca CPUFreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
@@ -508,19 +509,16 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Zużycie pamięci"
+msgstr "Szybkość wiatraka przez "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatura"
+msgstr "Temperatura przez "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Prędkość"
+msgstr "Prędkość wentylatora"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
@@ -723,25 +721,24 @@ msgid "Chart Data Points"
 msgstr "Liczba punktów na wykresie"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Wydajność"
+msgstr "Strona wydajności"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Wygładzone wykresy"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Rysuj gładkie linie na wykresach zamiast prostych"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Pokazuj prędkość sieci w bajtach"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Skaluj wykres użycia sieci dynamicznie"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
@@ -751,34 +748,31 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Pokaż informacje o procesorze"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Skład pamięci"
+msgstr "Pokaż informacje o pamięci"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Pokaż informacje o dyskach"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Pokaż informacje o sieci"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Pokaż informacje kart graficznych"
 
 #: resources/ui/preferences/page.blp:89
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "Proces i użytkownik"
+msgstr "Pokaż informacje o wentylatorach"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "Ustawienia strony aplikacji"
+msgstr "Strona aplikacji"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
