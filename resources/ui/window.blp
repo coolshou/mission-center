@@ -140,7 +140,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             visible: bind template.search-button-visible;
           }
 
-          MenuButton {
+          MenuButton menu_button {
             icon-name: "open-menu-symbolic";
             menu-model: primary_menu;
           }
@@ -221,6 +221,11 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 }
 
 menu primary_menu {
+  section {
+    item {
+      custom: 'theme-selector';
+    }
+  }
   section {
     item {
       label: _("_Preferences");

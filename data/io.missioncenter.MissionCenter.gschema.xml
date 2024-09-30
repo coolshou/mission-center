@@ -17,6 +17,15 @@
         <value nick="None" value="255"/>
     </enum>
 
+    <enum id="io.missioncenter.InterfaceStyle">
+        <!-- ADW_COLOR_SCHEME_DFEAULT -->
+        <value nick="system" value="0"/>
+        <!-- ADW_COLOR_SCHEME_FORCE_LIGHT -->
+        <value nick="light" value="1"/>
+        <!-- ADW_COLOR_SCHEME_FORCE_DARK -->
+        <value nick="dark" value="4"/>
+    </enum>
+
     <schema id="io.missioncenter.MissionCenter" path="/io/missioncenter/MissionCenter/">
         <key name="window-width" type="i">
             <default>600</default>
@@ -31,6 +40,11 @@
             <summary>Which page is shown on application startup</summary>
         </key>
 
+        <key name="window-interface-style" enum="io.missioncenter.InterfaceStyle">
+            <default>"system"</default>
+            <summary>Interface Style</summary>
+            <description>If light or dark interface style should be used</description>
+        </key>
 
         <key name="app-update-interval" type="i">
             <range min="10" max="200"/>

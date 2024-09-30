@@ -21,10 +21,10 @@
 use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{ParamSpec, Properties, Value};
+use glib::{g_critical, ParamSpec, Properties, Value};
 use gtk::{gio, glib};
 
-use crate::{app, settings, sys_info_v2::Readings};
+use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
 
 mod imp {
     use super::*;
@@ -38,6 +38,8 @@ mod imp {
         pub breakpoint: TemplateChild<adw::Breakpoint>,
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub menu_button: TemplateChild<gtk::MenuButton>,
         #[template_child]
         pub window_content: TemplateChild<adw::ToolbarView>,
         #[template_child]
@@ -103,6 +105,7 @@ mod imp {
                 breakpoint: TemplateChild::default(),
                 split_view: TemplateChild::default(),
                 window_content: TemplateChild::default(),
+                menu_button: TemplateChild::default(),
                 bottom_bar: TemplateChild::default(),
                 sidebar_edit_mode_enable_all: TemplateChild::default(),
                 sidebar_edit_mode_disable_all: TemplateChild::default(),
@@ -246,6 +249,100 @@ mod imp {
                 }
             });
             self.obj().add_action(&toggle_search);
+
+            let ty = unsafe { glib::VariantTy::from_str_unchecked("s") };
+            let interface_style =
+                gio::SimpleAction::new_stateful("interface-style", Some(ty), &"default".into());
+            interface_style.connect_activate(|action, param| {
+                let interface_style = param.and_then(|v| v.get::<String>()).unwrap_or_default();
+
+                let style_manager = adw::StyleManager::default();
+
+                let _ = settings!().set_enum(
+                    "window-interface-style",
+                    match interface_style.as_str() {
+                        "default" => {
+                            style_manager.set_color_scheme(adw::ColorScheme::Default);
+                            adw::ffi::ADW_COLOR_SCHEME_DEFAULT
+                        }
+                        "force-light" => {
+                            style_manager.set_color_scheme(adw::ColorScheme::ForceLight);
+                            adw::ffi::ADW_COLOR_SCHEME_FORCE_LIGHT
+                        }
+                        "force-dark" => {
+                            style_manager.set_color_scheme(adw::ColorScheme::ForceDark);
+                            adw::ffi::ADW_COLOR_SCHEME_FORCE_DARK
+                        }
+                        _ => {
+                            g_critical!(
+                                "MissionCenter",
+                                "Invalid value for window-interface-style setting: {}",
+                                interface_style
+                            );
+                            return;
+                        }
+                    },
+                );
+                action.set_state(&interface_style.to_variant());
+            });
+            self.obj().add_action(&interface_style);
+        }
+
+        fn configure_theme_selection(&self) {
+            fn update_interface_style(this: &super::MissionCenterWindow, settings: &gio::Settings) {
+                let Some(action) = this
+                    .lookup_action("interface-style")
+                    .and_then(|a| a.downcast::<gio::SimpleAction>().ok())
+                else {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to get window-interface-style setting"
+                    );
+                    return;
+                };
+
+                let style_manager = adw::StyleManager::default();
+
+                match settings.enum_("window-interface-style") {
+                    adw::ffi::ADW_COLOR_SCHEME_DEFAULT => {
+                        style_manager.set_color_scheme(adw::ColorScheme::Default);
+                        action.set_state(&"default".to_variant());
+                    }
+                    adw::ffi::ADW_COLOR_SCHEME_FORCE_LIGHT => {
+                        style_manager.set_color_scheme(adw::ColorScheme::ForceLight);
+                        action.set_state(&"force-light".to_variant());
+                    }
+                    adw::ffi::ADW_COLOR_SCHEME_FORCE_DARK => {
+                        style_manager.set_color_scheme(adw::ColorScheme::ForceDark);
+                        action.set_state(&"force-dark".to_variant());
+                    }
+                    _ => {
+                        unreachable!("Invalid value for window-interface-style setting");
+                    }
+                }
+            }
+
+            let settings = settings!();
+
+            settings.connect_changed(Some("window-interface-style"), {
+                let this = self.obj().downgrade();
+                move |settings, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    update_interface_style(&this, settings);
+                }
+            });
+            update_interface_style(&self.obj(), &settings);
+
+            if let Some(popover) = self
+                .menu_button
+                .popover()
+                .and_then(|p| p.downcast::<gtk::PopoverMenu>().ok())
+            {
+                popover.add_child(&ThemeSelector::new("win.interface-style"), "theme-selector");
+            }
         }
 
         #[inline]
@@ -312,6 +409,7 @@ mod imp {
             self.parent_constructed();
 
             self.configure_actions();
+            self.configure_theme_selection();
 
             idle_add_local_once({
                 let this = self.obj().downgrade();
