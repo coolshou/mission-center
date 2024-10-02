@@ -152,6 +152,9 @@ fn main() {
     let mut xdg_data_dirs = env::var_os("XDG_DATA_DIRS")
         .map(|str| str.to_string_lossy().to_string())
         .unwrap_or_default();
+    if xdg_data_dirs.is_empty() {
+        xdg_data_dirs = "/usr/share".to_string();
+    }
     xdg_data_dirs.push_str(&format!(":{home}/.local/share"));
     env::set_var("XDG_DATA_DIRS", xdg_data_dirs.replace('~', &home));
 
