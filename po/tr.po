@@ -1,15 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Turkish translation for missioncenter.
+# Copyright (C) 2023-2024 missioncenter's copyright holder
 # This file is distributed under the same license as the missioncenter package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Sabri Ünal <yakushabb@gmail.com>, 2023-2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-09-15 05:41+0000\n"
-"Last-Translator: Burak Hassiktir <burakhassiktir@gmail.com>\n"
+"PO-Revision-Date: 2024-10-02 04:31+0300\n"
+"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Gtranslator 46.1\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -53,7 +53,7 @@ msgstr "Özellikler:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Genel veya işlemci başına kullanımı izleyin"
+msgstr "Genel ya da işlemci başına kullanımı izleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
@@ -65,11 +65,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Bellek ve Takas kullanımı izleme eklendi"
+msgstr "Bellek ve Takas kullanımı izleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Belleğin sistem tarafından nasıl kullanıldığının bir dökümünü görün"
+msgstr "Belleğin sistemce nasıl kullanıldığının dökümünü görün"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
@@ -85,7 +85,7 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Ağ kartı adı, bağlantı türü (Wi-Fi veya Ethernet), kablosuz hızları ve "
+"Ağ kartı adı, bağlantı türü (Kablosuz ya da Kablolu), kablosuz hızı ve "
 "frekansı, donanım adresi, IP adresi gibi ağ arayüzü bilgilerini görün"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
@@ -93,9 +93,9 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Popüler NVTOP projesi tarafından desteklenen genel GPU kullanımını, video "
-"kodlayıcı ve kod çözücü kullanımını, bellek kullanımını ve güç tüketimini "
-"izleyin"
+"Popüler NVTOP projesi tarafından desteklenen genel ekran kartı kullanımını, "
+"video kodlayıcı ve kod çözücü kullanımını, bellek kullanımını ve güç "
+"tüketimini izleyin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -106,13 +106,12 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Basit izleme için küçültülmüş özet görünümünü destekler"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"İşlemci ve genel kaynak kullanımını azaltmak amacıyla tüm grafikler için "
-"donanım hızlandırmalı işleme kullan"
+"İşlemci ve genel kaynak kullanımını azaltmak için tüm grafiklerde donanım "
+"hızlandırmalı işleme kullan"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -141,8 +140,8 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"Intel GPU izleme yalnızca Broadwell ve sonraki GPU'lar için desteklenir; ve "
-"VRAM, güç veya sıcaklık izlemeyi desteklemez"
+"Intel ekran kartı izleme yalnızca Broadwell ve sonraki ekran kartlarını "
+"destekler; VRAM, güç ya da sıcaklık izlemeyi desteklemez"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -180,17 +179,15 @@ msgstr "Her grafikte kaç nokta gösterilmeli?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
-#, fuzzy
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "Ağ hızı için bit (varsayılan) veya Bayt kullanılıp kullanılmayacağı"
+msgstr "Ağ hızı için bit (öntanımlı) ya da Bayt kullanılma durumu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
-#, fuzzy
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
-"Grafik maksimum değerinin arayüz maksimum değerine mi (false) yoksa "
-"gözlemlenen maksimum değere mi (true) ayarlanacağı"
+"Grafik azami değerinin arayüz azami değerine mi (false) yoksa gözlemlenen "
+"azami değere mi (true) ayarlanacağı"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -221,11 +218,11 @@ msgstr "Uygulamalar sayfa görünümünün sıralama yönü"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr "CPU performansı sayfasında hangi grafik gösterilir"
+msgstr "İşlemci performansı sayfasında hangi grafik gösterilir"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr "CPU grafiklerinde çekirdek sürelerini gösterme"
+msgstr "İşlemci grafiklerinde çekirdek sürelerini gösterme"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
@@ -239,36 +236,36 @@ msgstr "Başarım grafiklerinin yumuşak ya da pürüzlü olma durumu"
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr "CPU bilgilerini varsayılan olarak göster"
+msgstr "İşlemci bilgilerini öntanımlı olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr "Bellek bilgilerini varsayılan olarak göster"
+msgstr "Bellek bilgilerini öntanımlı  olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr "Disk bilgilerini varsayılan olarak göster"
+msgstr "Disk bilgilerini öntanımlı  olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr "Ağ bilgilerini varsayılan olarak göster"
+msgstr "Ağ bilgilerini öntanımlı  olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr "GPU bilgilerini varsayılan olarak göster"
+msgstr "Ekran kartı bilgilerini öntanımlı olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr "Fan bilgilerini varsayılan olarak göster"
+msgstr "Fan bilgilerini öntanımlı olarak göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr "Bellek kompozisyonu widget'ını göster"
+msgstr "Bellek kompozisyonu parçacığını göster"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
@@ -387,7 +384,6 @@ msgstr "_Ekran Kartı"
 #: resources/ui/performance_page/gpu.blp:239
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
-#, fuzzy
 msgid "_Fan"
 msgstr "_Fan"
 
@@ -528,7 +524,7 @@ msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
-msgstr "Anlık Sıcaklık"
+msgstr "Geçerli Sıcaklık"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
@@ -705,13 +701,12 @@ msgid "IPv6 address:"
 msgstr "IPv6 adresi:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Genel Ayarlar"
+msgstr "Genel"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr "Güncelleme aralığı"
+msgstr "Güncelleme Aralığı"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
@@ -747,7 +742,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr "CPU Bilgilerini Göster"
+msgstr "İşlemci Bilgilerini Göster"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Memory Information"
@@ -763,7 +758,7 @@ msgstr "Ağ Bilgilerini Göster"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr "GPU Bilgilerini Göster"
+msgstr "Ekran Kartı Bilgilerini Göster"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
@@ -883,15 +878,15 @@ msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr "Hepsi Etkin"
+msgstr "Tümünü Etkinleştir"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr "Hepsi Devre Dışı"
+msgstr "Tümünü Devre Dışı Bırak"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr "Varsayılana Döndür"
+msgstr "Öntanımlıya Sıfırla"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
@@ -927,11 +922,11 @@ msgstr "Hizmetler"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr "_ Tercihler"
+msgstr "_Tercihler"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr "_Görev Merkezi Hakkında"
+msgstr "Görev Merkezi _Hakkında"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
@@ -1157,385 +1152,8 @@ msgstr "Durdu"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr "Hürdoğan Özdoğan <hurdogan26@proton.me>"
+msgstr "Sabri Ünal <yakushabb@gmail.com>"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr "_Çıkış"
-
-#~ msgid "{} {}bps"
-#~ msgstr "{} {}bps"
-
-#~ msgid "Ethernet"
-#~ msgstr "Ethernet"
-
-#~ msgid "Wi-Fi"
-#~ msgstr "Kablosuz"
-
-#~ msgid "Other"
-#~ msgstr "Diğer"
-
-#, fuzzy
-#~ msgid "{:} minute"
-#~ msgid_plural "{:} minutes"
-#~ msgstr[0] "{} dakika{} "
-#~ msgstr[1] "{} dakika{} "
-
-#~ msgid "Flatpak first"
-#~ msgstr "Flatpak öncelikli"
-
-#~ msgid "Video decode utilization"
-#~ msgstr "Video kod çözme"
-
-#~ msgid "_Disk"
-#~ msgstr "_Disk"
-
-#~ msgid "Disk"
-#~ msgstr "Disk"
-
-#~ msgid "Update to GTK 4.12 and libadwaita 1.4"
-#~ msgstr "GTK4.12 ve Libadwaita 1.4 sürümüne güncellendi"
-
-#~ msgid "Fixes:"
-#~ msgstr "Düzeltmeler:"
-
-#~ msgid ""
-#~ "Add an option, to the context menu, to show kernel times, in the CPU "
-#~ "graphs"
-#~ msgstr ""
-#~ "CPU grafiklerinde çekirdek zamanlarını göstermek için içerik menüsüne bir "
-#~ "seçenek ekleyin"
-
-#~ msgid "Add CPU temperature, where possible"
-#~ msgstr "Mümkünse CPU sıcaklığını ekleyin"
-
-#~ msgid ""
-#~ "Implement smarter rounding and display precision of values throughout the "
-#~ "app by QwertyChouskie"
-#~ msgstr ""
-#~ "QwertyChouskie tarafından uygulama genelinde daha akıllı yuvarlama ve "
-#~ "değerlerin hassasiyetini görüntüleme"
-
-#~ msgid ""
-#~ "Use metainfo instead of appdata for application metadata by David "
-#~ "Guglielmi"
-#~ msgstr ""
-#~ "David Guglielmi tarafından uygulama meta verileri için appdata yerine "
-#~ "metainfo kullanın"
-
-#~ msgid ""
-#~ "Fixed a regression where natively installed browsers were not showing up "
-#~ "in the apps list on Fedora"
-#~ msgstr ""
-#~ "Fedora'da yerel olarak yüklenen tarayıcıların uygulamalar listesinde "
-#~ "görünmemesine neden olan bir gerileme düzeltildi"
-
-#~ msgid ""
-#~ "Fixed a regression where Flatpak apps were not showing up in the apps "
-#~ "list on ArchLinux Plasma"
-#~ msgstr ""
-#~ "Flatpak uygulamalarının ArchLinux Plasma'daki uygulamalar listesinde "
-#~ "görünmemesine neden olan bir hata düzeltildi"
-
-#~ msgid ""
-#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-#~ msgstr ""
-#~ "Haritalar uygulaması masaüstü dosyasının doğru şekilde ayrıştırılmamasına "
-#~ "neden olan bir hata düzeltildi"
-
-#~ msgid ""
-#~ "Moved some performance related logs to g_debug to prevent spamming of "
-#~ "system logs"
-#~ msgstr ""
-#~ "Sistem günlüklerinin spamlanmasını önlemek için performansla ilgili bazı "
-#~ "günlükler g_debug'a taşındı"
-
-#~ msgid "Translations:"
-#~ msgstr "Çeviriler:"
-
-#~ msgid "New translation to Korean by Seong-ho Cho"
-#~ msgstr "Seong-ho Cho tarafından Korece'ye yeni çeviri"
-
-#~ msgid "New translation to Dutch by Gert"
-#~ msgstr "Gert tarafından Felemenkçe'ye yeni çeviri"
-
-#~ msgid "New translation to Polish by _Ghost_"
-#~ msgstr "Lehçe'ye _Ghost_ tarafından yapılan yeni çeviri"
-
-#~ msgid "New translation to Italian by beppeilgommista"
-#~ msgstr "beppeilgommista tarafından İtalyanca'ya yeni çeviri"
-
-#~ msgid "New translation to Portuguese (Brazil) by Gérson da Fonseca Henzel"
-#~ msgstr ""
-#~ "Gérson da Fonseca Henzel tarafından Portekizce'ye (Brezilya) yeni çeviri"
-
-#~ msgid "Updated Spanish translation"
-#~ msgstr "İspanyolca çeviri güncellendi"
-
-#~ msgid "Updated Finnish translation"
-#~ msgstr "Fince çeviri güncellendi"
-
-#~ msgid "Updated Russian translation"
-#~ msgstr "Güncellenmiş Rusça çeviri"
-
-#~ msgid "Updated Chinese (Simplified) translation"
-#~ msgstr "Çince (Basitleştirilmiş) çeviri güncellendi"
-
-#~ msgid "Updated Greek translation"
-#~ msgstr "Yunanca çeviri güncellendi"
-
-#~ msgid "Updated German translation"
-#~ msgstr "Almanca çeviri güncellendi"
-
-#~ msgid ""
-#~ "Hotfix release to fix a bug that caused the app to not display any "
-#~ "information for some users"
-#~ msgstr ""
-#~ "Uygulamanın bazı kullanıcılar için herhangi bir bilgi görüntülememesine "
-#~ "neden olan bir hatayı düzeltmek için düzeltme sürümü"
-
-#~ msgid "New app icon by QwertyChouskie"
-#~ msgstr "QwertyChouskie'den yeni uygulama simgesi"
-
-#~ msgid "Add ability to stop and force stop apps and processes"
-#~ msgstr ""
-#~ "Uygulamaları ve işlemleri durdurma ve durdurmaya zorlama özelliği ekleyin"
-
-#~ msgid ""
-#~ "Running apps are now shown more reliably, and should reflect most if not "
-#~ "all running apps"
-#~ msgstr ""
-#~ "Çalışan uygulamalar artık daha güvenilir bir şekilde gösterilmektedir ve "
-#~ "çalışan tüm uygulamaları olmasa da çoğunu yansıtmalıdır"
-
-#~ msgid "Experimental support for Snap apps in the running apps list"
-#~ msgstr ""
-#~ "Çalışan uygulamalar listesinde Snap uygulamaları için deneysel destek"
-
-#~ msgid ""
-#~ "Added a setting to show resource consumption individually per process or "
-#~ "cumulated with their descendants"
-#~ msgstr ""
-#~ "Kaynak tüketimini süreç başına ayrı ayrı veya alt süreçlerle birlikte "
-#~ "kümelenmiş olarak göstermek için bir ayar eklendi"
-
-#~ msgid ""
-#~ "Added a setting to enable persistent sorting in the apps and processes "
-#~ "list"
-#~ msgstr ""
-#~ "Uygulamalar ve işlemler listesinde kalıcı sıralamayı etkinleştirmek için "
-#~ "bir ayar eklendi"
-
-#~ msgid ""
-#~ "Data gathering is now more versatile and will permit new features to be "
-#~ "added quicker and easier"
-#~ msgstr ""
-#~ "Veri toplama artık daha çok yönlüdür ve yeni özelliklerin daha hızlı ve "
-#~ "daha kolay eklenmesine olanak tanıyacaktır"
-
-#~ msgid "App can now be built from GNOME Builder"
-#~ msgstr "Uygulama artık GNOME Builder'dan oluşturulabilir"
-
-#~ msgid "New translation to Norwegian Bokmål by Allan Nordhøy"
-#~ msgstr "Norveççe Bokmål diline Allan Nordhøy tarafından yapılan yeni çeviri"
-
-#~ msgid "New translation to Russian by Ivan Maslikhov"
-#~ msgstr "Ivan Maslikhov tarafından Rusça'ya yeni çeviri"
-
-#~ msgid "New translation to Slovak by mthw0"
-#~ msgstr "mthw0 tarafından Slovakça'ya yeni çeviri"
-
-#~ msgid "New translation to Greek by Yiannis Ioannides"
-#~ msgstr "Yiannis Ioannides tarafından Yunancaya yeni çeviri"
-
-#~ msgid "New translation to Chinese (Simplified) by foxer NS"
-#~ msgstr "foxer NS tarafından Çinceye (Basitleştirilmiş) yeni çeviri"
-
-#~ msgid "New translation to French by Link Mauve"
-#~ msgstr "Link Mauve tarafından Fransızca'ya yeni çeviri"
-
-#~ msgid "New translation to Hungarian by Kovács Bálint Hunor"
-#~ msgstr "Kovács Bálint Hunor tarafından Macarcaya yeni çeviri"
-
-#~ msgid "Updated Czech translation"
-#~ msgstr "Çekçe çeviri güncellendi"
-
-#~ msgid "Updated Portuguese translation"
-#~ msgstr "Portekizce çeviri güncellendi"
-
-#~ msgid "Fixes for Chinese translations by foxer NS"
-#~ msgstr "Foxer NS tarafından yapılan Çince çeviriler için düzeltmeler"
-
-#~ msgid "Add Spanish translation by Óscar Fernández Díaz"
-#~ msgstr "Óscar Fernández Díaz'ın İspanyolca çevirisini ekleyin"
-
-#~ msgid ""
-#~ "The memory tab now shows configured memory speed instead of the maximum "
-#~ "supported by the modules"
-#~ msgstr ""
-#~ "Bellek sekmesi artık modüller tarafından desteklenen maksimum hız yerine "
-#~ "yapılandırılmış bellek hızını gösteriyor"
-
-#~ msgid "Add German translation by TecCheck"
-#~ msgstr "Almanca çeviri eklendi, teşekkürler TecCheck"
-
-#~ msgid ""
-#~ "When a process uses large amounts of CPU or RAM it is now highlighted in "
-#~ "the Apps and Processes list"
-#~ msgstr ""
-#~ "Bir işlem büyük miktarda CPU veya RAM kullandığında artık Uygulamalar ve "
-#~ "İşlemler listesinde vurgulanır"
-
-#~ msgid "Add initial support for building for ARM64"
-#~ msgstr "ARM64 için derlemeye destek ekleyin"
-
-#~ msgid ""
-#~ "Take into account multiple CPU cores and cache sharing when calculating "
-#~ "cache sizes"
-#~ msgstr ""
-#~ "Önbellek boyutlarını hesaplarken birden fazla CPU çekirdeğini ve önbellek "
-#~ "paylaşımını dikkate alın"
-
-#~ msgid ""
-#~ "Fix browsers, installed as native packages, not showing up in the Apps "
-#~ "list"
-#~ msgstr ""
-#~ "Yerel paket olarak yüklenen tarayıcıların Uygulamalar listesinde "
-#~ "görünmemesi sorunu giderildi"
-
-#~ msgid "Translation updates for Traditional Chinese by Peter Dave Hello"
-#~ msgstr ""
-#~ "Peter Dave Hello tarafından Geleneksel Çince için çeviri güncellemeleri"
-
-#~ msgid "Translation fixes for Portuguese by Rafael Fontenelle"
-#~ msgstr "Rafael Fontenelle tarafından Portekizce için çeviri düzeltmeleri"
-
-#~ msgid ""
-#~ "Only show a link-local IPv6 address if no other IPv6 exists by Maximilian"
-#~ msgstr ""
-#~ "Maximilian'dan yalnızca başka bir IPv6 yoksa bağlantı yerel IPv6 adresini "
-#~ "göster"
-
-#~ msgid "Add Traditional Chinese locale by Peter Dave Hello"
-#~ msgstr "Peter Dave Hello tarafından Geleneksel Çince yerel ayarı ekle"
-
-#~ msgid "Add category for application menu by Renner0E"
-#~ msgstr "Renner0E tarafından uygulama menüsü için kategori ekle"
-
-#~ msgid ""
-#~ "Fix a parsing error when parsing the output of `dmidecode` that lead to a "
-#~ "panic"
-#~ msgstr ""
-#~ "dmidecode` çıktısını ayrıştırırken paniğe yol açan bir ayrıştırma "
-#~ "hatasını düzeltin"
-
-#~ msgid ""
-#~ "Use a fallback if `/sys/devices/system/cpu/cpu0/cpufreq/base_frequency` "
-#~ "does not exist, when getting CPU base speed information"
-#~ msgstr ""
-#~ "CPU temel hız bilgisi alınırken `/sys/devices/system/cpu/cpu0/cpufreq/"
-#~ "base_frequency` mevcut değilse bir geri dönüş kullanın"
-
-#~ msgid "Update GPU tab UI to be more adaptive for smaller resolutions"
-#~ msgstr ""
-#~ "GPU sekmesi kullanıcı arayüzünü daha küçük çözünürlükler için daha "
-#~ "uyarlanabilir olacak şekilde güncelleyin"
-
-#~ msgid "Added Czech translation by ondra05"
-#~ msgstr "ondra05 tarafından Çekçe çeviri eklendi"
-
-#~ msgid "Added Portuguese translation by Rilson Joás"
-#~ msgstr "Rilson Joás tarafından Portekizce çeviri eklendi"
-
-#~ msgid ""
-#~ "Add keywords to desktop file to improve search function of desktop "
-#~ "environments by Hannes Kuchelmeister"
-#~ msgstr ""
-#~ "Hannes Kuchelmeister tarafından masaüstü ortamlarının arama işlevini "
-#~ "geliştirmek için masaüstü dosyasına anahtar kelimeler ekleyin"
-
-#~ msgid "Fixed a bug where the app and process list was empty for some users"
-#~ msgstr ""
-#~ "Bazı kullanıcılar için uygulama ve işlem listesinin boş olmasına neden "
-#~ "olan bir hata düzeltildi"
-
-#~ msgid "Fix a crash that occurs when the system is under heavy load"
-#~ msgstr "Sistem ağır yük altındayken meydana gelen bir çökmeyi düzeltin"
-
-#~ msgid "First official release!"
-#~ msgstr "İlk resmi sürüm!"
-
-#~ msgid "Disk transfer rate"
-#~ msgstr "Disk aktarım oranı"
-
-#~ msgid "Overall utilization"
-#~ msgstr "Genel kullanım"
-
-#~ msgid "Resources"
-#~ msgstr "Kaynaklar"
-
-#~ msgid ""
-#~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-#~ msgstr ""
-#~ "GPU desteği deneyseldir ve yalnızca AMD ve nVidia GPU'lar izlenebilir"
-
-#~ msgid "Update Speed"
-#~ msgstr "Güncelleme Hızı"
-
-#~ msgid "Fast"
-#~ msgstr "Hızlı"
-
-#~ msgid "Refresh every half second"
-#~ msgstr "Yarım saniyede bir yenile"
-
-#~ msgid "Normal"
-#~ msgstr "Normal"
-
-#~ msgid "Refresh every second"
-#~ msgstr "Her saniye yenile"
-
-#~ msgid "Slow"
-#~ msgstr "Yavaş"
-
-#~ msgid "Refresh every second and a half"
-#~ msgstr "Hir bir buçuk saniyede bir yenile"
-
-#~ msgid "Very Slow"
-#~ msgstr "Çok Yavaş"
-
-#~ msgid "Refresh every 2 seconds"
-#~ msgstr "Her 2 saniyede bir yenile"
-
-#~ msgid "Supported"
-#~ msgstr "Destekleniyor"
-
-#~ msgid "Authentication failed"
-#~ msgstr "Kimlik doğrulanamadı"
-
-#~ msgid "More info"
-#~ msgstr "Daha çok bilgi"
-
-#~ msgid "Disk utilization percentage might not be accurate"
-#~ msgstr "Disk kullanım yüzdesi doğru olmayabilir"
-
-#~ msgid "No per-process GPU usage"
-#~ msgstr "İşlem başına GPU kullanımı yok"
-
-#~ msgid "Some information requires administrative privileges"
-#~ msgstr "Bazı bilgiler yönetici ayrıcalıkları gerektiriyor"
-
-#~ msgid "% Utilization"
-#~ msgstr "% Kullanım"
-
-#~ msgid "{}: {} {}bps {}: {} {}bps"
-#~ msgstr "{}: {} {}bps {}: {} {}bps"
-
-#~ msgid ""
-#~ "The application currently only supports monitoring, you cannot stop "
-#~ "processes for example"
-#~ msgstr ""
-#~ "Uygulama şu anda yalnızca izlemeyi desteklemektedir, örneğin işlemleri "
-#~ "durduramazsınız"
-
-#~ msgid "% Utilization over {} seconds"
-#~ msgstr "% kullanım {} saniyede"
+msgstr "Çı_k"
