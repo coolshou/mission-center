@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-08-31 03:40+0000\n"
-"Last-Translator: Akira Suzuki <akira.suzuki@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/pt/>\n"
+"PO-Revision-Date: 2024-10-04 11:21+0000\n"
+"Last-Translator: Filie Lima <filipeklinger@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -166,13 +166,10 @@ msgid "DEPRECATED! NO LONGER IN USE!"
 msgstr "OBSOLETO! NÃO ESTÁ MAIS EM USO!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr ""
-"Com que velocidade os dados devem ser atualizados e a interface do usuário "
-"deve ser atualizada"
+msgstr "Com que velocidade os dados devem ser atualizados"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
@@ -181,12 +178,14 @@ msgstr "Quantos pontos devem ser mostrados em cada gráfico?"
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "Usar bits (padrão) ou Bytes para velocidade da rede"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Definir o gráfico máximo para a interface máxima (falso) ou o máximo "
+"observado (verdadeiro)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -231,61 +230,58 @@ msgstr ""
 "Qual página é mostrada na inicialização do aplicativo, na aba de Desempenho"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
-#, fuzzy
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Os gráficos de desempenho devem ser suaves ou dentados?"
+msgstr "Os gráficos de desempenho devem ser suaves ou dentados"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Mostrar informações da CPU por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Falha em adquirir informação adicional de memória"
+msgstr "Mostrar informações de memória por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Mostrar informações do disco por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "Mostrar informações de rede por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Mostrar informações da GPU por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Mostrar informações do fan por padrão"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Melhorar gráfico de composição de memória"
+msgstr "Mostrar o widget de composição de memória"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Mostrar o gráfico de swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Mostrar o gráfico de codificação-decodificação da GPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "A ordenação das entradas na barra lateral do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Gráficos que devem ser ocultados na barra lateral do aplicativo"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -363,7 +359,7 @@ msgstr "_Memória"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Disco"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -390,7 +386,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Ventoinha"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -466,20 +462,19 @@ msgid "Cpufreq governor:"
 msgstr "Regulador de Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Preferências"
+msgstr "Preferências de Energia:"
 
 #: resources/ui/performance_page/disk.blp:63
 #, fuzzy
 msgid "Active time over "
-msgstr "Tempo de atividade"
+msgstr "Tempo de atividade "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 #, fuzzy
 msgid "Throughput over "
-msgstr "Taxa de transferência"
+msgstr "Taxa de transferência "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -516,23 +511,20 @@ msgid "Type:"
 msgstr "Tipo:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Uso de memória"
+msgstr "Velocidade da Fan "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatura"
+msgstr "Temperatura "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Velocidade"
+msgstr "Velocidade da Fan"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "% PWM"
 
 #: resources/ui/performance_page/fan_details.blp:108
 #, fuzzy
@@ -540,19 +532,18 @@ msgid "Current Temperature"
 msgstr "Temperatura"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Codificação de vídeo"
+msgstr "Codificação/decodificação de vídeo "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 #, fuzzy
 msgid "Memory usage over "
-msgstr "Uso de memória"
+msgstr "Uso de memória "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Mostrar uso de codificação/decodificação"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -567,23 +558,20 @@ msgid "Memory usage"
 msgstr "Uso de memória"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Uso de GPU"
+msgstr "Uso de GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "Velocidade de memória"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "Codificação/decodificação de vídeo"
+msgstr "Codificação de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "Codificação/decodificação de vídeo"
+msgstr "Decodificação de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -611,22 +599,20 @@ msgid "Memory"
 msgstr "Memória"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Uso de memória"
+msgstr "Uso de Swap "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Composição da memória"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Composição da memória"
+msgstr "Mostrar Composição da memória"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Mostrar uso de Swap"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -674,7 +660,7 @@ msgstr "Recebido"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Total Recebido"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -682,7 +668,7 @@ msgstr "Enviado"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Total Enviado"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -734,9 +720,8 @@ msgid "Chart Data Points"
 msgstr "Quantidade de dados nos gráficos"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Desempenho"
+msgstr "Página de Desempenho"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -748,21 +733,23 @@ msgstr "Mostrar gráficos com linhas suaves em vez de dentadas"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Mostrar velocidade da rede em bytes"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Dimensione gráficos de rede dinamicamente"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Defina o gráfico de rede para escalar dinamicamente com o uso real ou com a "
+"velocidade máxima do canal"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Mostrar informações da CPU"
 
 #: resources/ui/preferences/page.blp:69
 #, fuzzy
@@ -771,15 +758,15 @@ msgstr "Composição da memória"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Mostrar informações do disco"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Mostrar informações da rede"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Mostrar informações da GPU"
 
 #: resources/ui/preferences/page.blp:89
 #, fuzzy
