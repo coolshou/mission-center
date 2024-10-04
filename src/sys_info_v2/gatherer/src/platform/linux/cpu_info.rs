@@ -18,16 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::{fs::OpenOptions, io::Read, os::unix::ffi::OsStrExt, sync::Arc, time::Instant};
+
+use super::{CPU_COUNT, INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
+use crate::{critical, debug, platform::cpu_info::*};
+
 const PROC_STAT_IGNORE: [usize; 2] = [0, 5];
 const PROC_STAT_IDLE: [usize; 1] = [4];
 const PROC_STAT_KERNEL: [usize; 2] = [6, 7];
-
-use std::{sync::Arc, time::Instant};
-
-use crate::debug;
-use crate::platform::cpu_info::*;
-
-use super::{CPU_COUNT, INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 
 #[derive(Debug, Copy, Clone)]
 struct CpuTicks {
@@ -49,7 +47,7 @@ impl Default for CpuTicks {
 impl CpuTicks {
     pub fn update(&mut self, line: &str) -> (f32, f32) {
         let failure = |e| {
-            crate::critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
+            critical!("Gatherer::CPU", "Failed to read /proc/stat: {}", e);
             0
         };
         let fields = line.split_whitespace();
@@ -550,7 +548,6 @@ impl LinuxCpuInfo {
     }
 
     fn socket_count() -> Option<u8> {
-        use crate::critical;
         use std::{fs::*, io::*};
 
         let mut sockets = std::collections::HashSet::new();
@@ -648,8 +645,6 @@ impl LinuxCpuInfo {
     }
 
     fn base_frequency_khz() -> Option<u64> {
-        use crate::critical;
-
         fn read_from_sys_base_frequency() -> Option<u64> {
             match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
                 Ok(content) => {
@@ -813,7 +808,6 @@ impl LinuxCpuInfo {
     }
 
     fn virtual_machine() -> Option<bool> {
-        use crate::critical;
         use dbus::blocking::{stdintf::org_freedesktop_dbus::Properties, *};
 
         let conn = match Connection::new_system() {
@@ -1122,18 +1116,16 @@ impl LinuxCpuInfo {
     }
 
     fn get_cpufreq_driver_governor() -> (Option<Arc<str>>, Option<Arc<str>>, Option<Arc<str>>) {
-        use crate::critical;
-
         fn get_cpufreq_driver() -> Option<Arc<str>> {
             match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver") {
                 Ok(content) => match std::str::from_utf8(&content) {
                     Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
                     Err(e) => {
                         debug!(
-                                "Gatherer::CPU",
-                                "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
-                                e
-                            );
+                            "Gatherer::CPU",
+                            "Could not read cpufreq driver from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver': {}",
+                            e
+                        );
 
                         None
                     }
@@ -1156,10 +1148,10 @@ impl LinuxCpuInfo {
                     Ok(content) => Some(Arc::from(format!("{}", content.trim()).as_str())),
                     Err(e) => {
                         debug!(
-                                "Gatherer::CPU",
-                                "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
-                                e
-                            );
+                            "Gatherer::CPU",
+                            "Could not read cpufreq governor from '/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor': {}",
+                            e
+                        );
 
                         None
                     }
@@ -1204,42 +1196,118 @@ impl LinuxCpuInfo {
 
     // Adapted from `sysinfo` crate, linux/cpu.rs:415
     fn cpu_frequency_mhz() -> u64 {
-        use crate::critical;
+        #[inline(always)]
+        fn read_sys_cpufreq() -> Option<u64> {
+            let mut result = 0_u64;
 
-        let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
-            Ok(s) => s,
-            Err(e) => {
-                critical!(
-                    "Gatherer::CPU",
-                    "Failed to read frequency: Failed to open /proc/cpuinfo: {}",
-                    e
-                );
-                return 0;
+            let sys_dev_cpu = match std::fs::read_dir("/sys/devices/system/cpu") {
+                Ok(d) => d,
+                Err(e) => {
+                    debug!(
+                        "Gatherer::CPU",
+                        "Failed to read frequency: Failed to open /sys/devices/system/cpu: {}", e
+                    );
+                    return None;
+                }
+            };
+
+            let mut buffer = String::new();
+            for cpu in sys_dev_cpu.filter_map(|d| d.ok()).filter(|d| {
+                d.file_name().as_bytes().starts_with(b"cpu")
+                    && d.file_type().is_ok_and(|ty| ty.is_dir())
+            }) {
+                buffer.clear();
+
+                let mut path = cpu.path();
+                path.push("cpufreq/scaling_cur_freq");
+
+                let mut file = match OpenOptions::new().read(true).open(&path) {
+                    Ok(f) => f,
+                    Err(e) => {
+                        debug!(
+                            "Gatherer::CPU",
+                            "Failed to read frequency: Failed to open /sys/devices/system/cpu/{}/cpufreq/scaling_cur_freq: {}",
+                            cpu.file_name().to_string_lossy(),
+                            e
+                        );
+                        continue;
+                    }
+                };
+
+                match file.read_to_string(&mut buffer) {
+                    Ok(_) => {}
+                    Err(e) => {
+                        debug!(
+                            "Gatherer::CPU",
+                            "Failed to read frequency: Failed to read /sys/devices/system/cpu/{}/cpufreq/scaling_cur_freq: {}",
+                            cpu.file_name().to_string_lossy(),
+                            e
+                        );
+                        continue;
+                    }
+                }
+
+                let freq = match buffer.trim().parse::<u64>() {
+                    Ok(f) => f,
+                    Err(e) => {
+                        debug!(
+                            "Gatherer::CPU",
+                            "Failed to read frequency: Failed to parse /sys/devices/system/cpu/{}/cpufreq/scaling_cur_freq: {}",
+                            cpu.file_name().to_string_lossy(),
+                            e
+                        );
+                        continue;
+                    }
+                };
+
+                result = result.max(freq);
             }
-        };
 
-        let mut result = 0;
-        for line in cpuinfo.split('\n').filter(|line| {
-            line.starts_with("cpu MHz\t")
-                || line.starts_with("BogoMIPS")
-                || line.starts_with("clock\t")
-                || line.starts_with("bogomips per cpu")
-        }) {
-            result = line
-                .split(':')
-                .last()
-                .and_then(|val| val.replace("MHz", "").trim().parse::<f64>().ok())
-                .map(|speed| speed as u64)
-                .unwrap_or_default()
-                .max(result);
+            if result > 0 {
+                Some(result / 1000)
+            } else {
+                None
+            }
         }
 
-        result
+        #[inline(always)]
+        fn read_proc_cpuinfo() -> Option<u64> {
+            let cpuinfo = match std::fs::read_to_string("/proc/cpuinfo") {
+                Ok(s) => s,
+                Err(e) => {
+                    debug!(
+                        "Gatherer::CPU",
+                        "Failed to read frequency: Failed to open /proc/cpuinfo: {}", e
+                    );
+                    return None;
+                }
+            };
+
+            let mut result = 0;
+            for line in cpuinfo
+                .split('\n')
+                .filter(|line| line.starts_with("cpu MHz\t") || line.starts_with("clock\t"))
+            {
+                result = line
+                    .split(':')
+                    .last()
+                    .and_then(|val| val.replace("MHz", "").trim().parse::<f64>().ok())
+                    .map(|speed| speed as u64)
+                    .unwrap_or_default()
+                    .max(result);
+            }
+
+            Some(result)
+        }
+
+        if let Some(freq) = read_sys_cpufreq() {
+            return freq;
+        }
+
+        read_proc_cpuinfo().unwrap_or_default()
     }
 
     fn temperature() -> Option<f32> {
-        use crate::critical;
-
         let dir = match std::fs::read_dir("/sys/class/hwmon") {
             Ok(d) => d,
             Err(e) => {
@@ -1312,8 +1380,6 @@ impl LinuxCpuInfo {
     }
 
     fn handle_count() -> u64 {
-        use crate::critical;
-
         let file_nr = match std::fs::read_to_string("/proc/sys/fs/file-nr") {
             Ok(s) => s,
             Err(e) => {
@@ -1346,8 +1412,6 @@ impl LinuxCpuInfo {
     }
 
     fn uptime() -> std::time::Duration {
-        use crate::critical;
-
         let proc_uptime = match std::fs::read_to_string("/proc/uptime") {
             Ok(s) => s,
             Err(e) => {
@@ -1412,8 +1476,6 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
     }
 
     fn refresh_dynamic_info_cache(&mut self, processes: &crate::platform::Processes) {
-        use crate::critical;
-
         let now = Instant::now();
         if now.duration_since(self.dynamic_refresh_timestamp) < MIN_DELTA_REFRESH {
             return;
@@ -1477,7 +1539,7 @@ impl<'a> CpuInfoExt<'a> for LinuxCpuInfo {
         self.dynamic_info.handle_count = Self::handle_count();
         self.dynamic_info.uptime_seconds = Self::uptime().as_secs();
 
-        self.static_refresh_timestamp = std::time::Instant::now();
+        self.static_refresh_timestamp = Instant::now();
     }
 
     fn static_info(&self) -> &Self::S {
