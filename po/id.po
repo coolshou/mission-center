@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2023-12-04 02:02+0000\n"
-"Last-Translator: Muhammad Hasan Firdaus <hasanteam008@gmail.com>\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/id/>\n"
+"PO-Revision-Date: 2024-10-01 07:34+0000\n"
+"Last-Translator: Muhammad Septyawan <septyawan24@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -133,14 +133,18 @@ msgid "No per-process network usage"
 msgstr "Tidak ada penggunaan jaringan per proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
+#, fuzzy
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "Dukungan GPU masih dalam uji coba"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+#, fuzzy
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Pemantauan Intel GPU hanya mendukung GPU Broadwell dan generasi selanjutnya; "
+"tidak mendukung VRAM, power dan pemantauan suhu"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -159,7 +163,7 @@ msgstr "Halaman mana yang akan ditampilkan saat aplikasi dimulai"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "TIDAK BERLAKU! TIDAK DIGUNAKAN LAGI!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 #, fuzzy
@@ -169,8 +173,9 @@ msgid ""
 msgstr "Seberapa cepat data dan tampilan diperbarui"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
+#, fuzzy
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Berapa banyak titik yang ditampilkan setiap grafik?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
@@ -264,8 +269,9 @@ msgid "Show the swap graph"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
+#, fuzzy
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Tampilkan grafik GPU encode‐decode"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
@@ -518,8 +524,9 @@ msgid "Fan Speed"
 msgstr "Kecepatan"
 
 #: resources/ui/performance_page/fan_details.blp:82
+#, fuzzy
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 #, fuzzy
@@ -527,15 +534,14 @@ msgid "Current Temperature"
 msgstr "Suhu"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Encode video"
+msgstr "Utilisasi encode/decode video "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 #, fuzzy
 msgid "Memory usage over "
-msgstr "Penggunaan Memori"
+msgstr "Penggunaan Memori "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
@@ -599,7 +605,7 @@ msgstr "Memori"
 #: resources/ui/performance_page/memory.blp:115
 #, fuzzy
 msgid "Swap usage over "
-msgstr "Penggunaan Memori"
+msgstr "Penggunaan Memori Swap "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -659,8 +665,9 @@ msgid "Receive"
 msgstr "Terima"
 
 #: resources/ui/performance_page/network_details.blp:78
+#, fuzzy
 msgid "Total Recieved"
-msgstr ""
+msgstr "Total diterima"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -668,7 +675,7 @@ msgstr "Kirim"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Total dikirim"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -712,8 +719,9 @@ msgid "General"
 msgstr "Pengaturan Umum"
 
 #: resources/ui/preferences/page.blp:9
+#, fuzzy
 msgid "Update Interval"
-msgstr ""
+msgstr "Jangka waktu update"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
@@ -1029,14 +1037,17 @@ msgid "SSD"
 msgstr "SSD"
 
 #: src/performance_page/mod.rs:1126
+#, fuzzy
 msgid "NVMe"
 msgstr "NVMe"
 
 #: src/performance_page/mod.rs:1127
+#, fuzzy
 msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/mod.rs:1128
+#, fuzzy
 msgid "iSCSI"
 msgstr "iSCSI"
 
