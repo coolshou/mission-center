@@ -179,6 +179,12 @@ impl ServiceExt for LinuxService {
 impl LinuxServices<'_> {
     pub fn new() -> Self {
         fn systemd_available() -> bool {
+            // If we're a Snap we can't access the Ping method on the org.freedesktop.DBus interface
+            // so fall back to checking if a standard SystemD specific path exists
+            if let Some(_) = std::env::var_os("SNAP_CONTEXT") {
+                return std::path::Path::new("/lib/systemd/systemd").exists();
+            }
+
             let connection = match LocalConnection::new_system() {
                 Ok(c) => c,
                 Err(_) => {
