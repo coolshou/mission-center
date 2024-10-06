@@ -118,6 +118,17 @@
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
+        <release version="0.6.1" date="2024-10-06">
+            <description translate="no">
+                <ul>
+                    <li>Fix crash at startup when using a native package and XDG_DATA_DIRS is empty</li>
+                    <li>Fix devices in the sidebar still showing up even if they were filtered out by the user</li>
+                    <li>Fix Services not showing up in the Snap build</li>
+                    <li>Elipsize some labels that have the potential to overflow in the GPU details section</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.6.0" date="2024-09-28">
             <description translate="no">
                 <p>Features:</p>

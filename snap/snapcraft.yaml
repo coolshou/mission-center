@@ -1,6 +1,6 @@
 name: mission-center
 base: core20
-version: '0.6.0'
+version: '0.6.1'
 summary: Monitor your CPU, Memory, Disk, Network and GPU usage
 description: |
   * Monitor overall or per-thread CPU usage
