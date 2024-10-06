@@ -42,7 +42,7 @@ themes).
 ## Installing
 
 <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/7944261391/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8004560208/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
 
 Also available from https://portable-linux-apps.github.io/apps/mission-center.html
 
