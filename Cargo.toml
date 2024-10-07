@@ -5,11 +5,11 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
-adw = { package = "libadwaita", version = "0.7", features = ["v1_5"] }
+adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
 dbus = { version = "0.9" }
 errno-sys = { version = "0.2.0" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gtk = { package = "gtk4", version = "0.9", features = ["gnome_46"] }
+gtk = { package = "gtk4", version = "0.9", features = ["gnome_47"] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 libudev-sys = { version = "0.1" }

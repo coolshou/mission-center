@@ -75,7 +75,7 @@ mod imp {
         #[template_child]
         pub loading_box: TemplateChild<gtk::Box>,
         #[template_child]
-        pub loading_spinner: TemplateChild<gtk::Spinner>,
+        pub loading_spinner: TemplateChild<adw::Spinner>,
         #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
@@ -748,7 +748,6 @@ impl MissionCenterWindow {
             }
         }
 
-        self.imp().loading_spinner.set_spinning(false);
         self.imp().loading_box.set_visible(false);
         self.imp().header_bar.set_visible(true);
         self.imp().stack.set_visible(true);

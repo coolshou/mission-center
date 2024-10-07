@@ -160,9 +160,9 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
           halign: center;
           hexpand: true;
 
-          Spinner loading_spinner {
-            spinning: true;
-            halign: center;
+          Adw.Spinner loading_spinner {
+            width-request: 42;
+            height-request: 42;
           }
 
           Label {

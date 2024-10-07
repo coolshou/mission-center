@@ -130,19 +130,15 @@ pub fn show_error_dialog_and_exit(message: &str) -> ! {
     gtk::glib::idle_add_once(move || {
         let app_window = app!().window();
 
-        let error_dialog = adw::MessageDialog::new(
-            app_window.as_ref(),
-            Some("A fatal error has occurred"),
-            Some(message.as_ref()),
-        );
-        error_dialog.set_modal(true);
+        let error_dialog =
+            adw::AlertDialog::new(Some("A fatal error has occurred"), Some(message.as_ref()));
         error_dialog.add_responses(&[("close", &i18n("_Quit"))]);
         error_dialog.set_response_appearance("close", adw::ResponseAppearance::Destructive);
         error_dialog.connect_response(None, |dialog, _| {
             dialog.close();
             std::process::exit(-1);
         });
-        error_dialog.present();
+        error_dialog.present(app_window.as_ref());
     });
 
     loop {}

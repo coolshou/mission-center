@@ -71,7 +71,20 @@ mod imp {
             let this = self.obj();
 
             let style_manager = adw::StyleManager::default();
-            // self.color.set(style_manager.accent_color_rgba());
+            style_manager.connect_accent_color_rgba_notify({
+                let this = this.downgrade();
+                move |style_manager| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
+                    this.imp().color.set(style_manager.accent_color_rgba());
+                    this.notify_color();
+                }
+            });
+
+            self.color.set(style_manager.accent_color_rgba());
             this.notify_color();
 
             this.set_sensitive(false);
