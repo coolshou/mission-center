@@ -719,6 +719,8 @@ impl MissionCenterWindow {
     pub fn set_initial_readings(&self, mut readings: Readings) {
         use gtk::glib::*;
 
+        self.add_css_class("mission-center-window");
+
         let ok = self.imp().performance_page.set_initial_readings(&readings);
         if !ok {
             g_critical!(
@@ -727,6 +729,8 @@ impl MissionCenterWindow {
             );
         }
 
+        self.imp().performance_page.add_css_class("mission-center-performance-page");
+
         let ok = self.imp().apps_page.set_initial_readings(&mut readings);
         if !ok {
             g_critical!(
@@ -734,6 +738,8 @@ impl MissionCenterWindow {
                 "Failed to set initial readings for apps page"
             );
         }
+
+        self.imp().apps_page.add_css_class("mission-center-apps-page");
 
         if readings.services.is_empty() {
             g_critical!("MissionCenter", "No services found, hiding services page");
@@ -746,6 +752,7 @@ impl MissionCenterWindow {
                     "Failed to set initial readings for services page"
                 );
             }
+            self.imp().services_page.add_css_class("mission-center-services-page");
         }
 
         self.imp().loading_box.set_visible(false);
