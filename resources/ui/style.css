@@ -54,3 +54,7 @@ window checkbutton.theme-selector radio:checked {
     background-color: var(--accent-bg-color);
     color: var(--accent-fg-color);
 }
+
+.transparent {
+    background-color: transparent;
+}
