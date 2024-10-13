@@ -729,7 +729,9 @@ impl MissionCenterWindow {
             );
         }
 
-        self.imp().performance_page.add_css_class("mission-center-performance-page");
+        self.imp()
+            .performance_page
+            .add_css_class("mission-center-performance-page");
 
         let ok = self.imp().apps_page.set_initial_readings(&mut readings);
         if !ok {
@@ -739,7 +741,9 @@ impl MissionCenterWindow {
             );
         }
 
-        self.imp().apps_page.add_css_class("mission-center-apps-page");
+        self.imp()
+            .apps_page
+            .add_css_class("mission-center-apps-page");
 
         if readings.services.is_empty() {
             g_critical!("MissionCenter", "No services found, hiding services page");
@@ -752,7 +756,9 @@ impl MissionCenterWindow {
                     "Failed to set initial readings for services page"
                 );
             }
-            self.imp().services_page.add_css_class("mission-center-services-page");
+            self.imp()
+                .services_page
+                .add_css_class("mission-center-services-page");
         }
 
         self.imp().loading_box.set_visible(false);
