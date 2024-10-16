@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-10-14 09:42+0000\n"
+"PO-Revision-Date: 2024-10-17 08:15+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -277,9 +277,8 @@ msgstr "Suoritin"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "Käyttö {} aikana"
+msgstr "Käyttö ajanjaksolla "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -453,15 +452,13 @@ msgid "Power preference:"
 msgstr "Tehoetusija:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Aktiivisuusaika"
+msgstr "Aktiivisuusaika ajanjaksolla "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Välityskyky"
+msgstr "Välityskyky ajanjaksolla "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -497,14 +494,12 @@ msgid "Type:"
 msgstr "Tyyppi:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Muistinkulutus"
+msgstr "Tuulettimen nopeus ajanjaksolla "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Lämpötila"
+msgstr "Lämpötila ajanjaksolla "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -519,19 +514,17 @@ msgid "Current Temperature"
 msgstr "Nykyinen lämpötila"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Videon enkoodauksen käyttö"
+msgstr "Videon pakkaus/purku ajanjaksolla "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Muistinkulutus"
+msgstr "Muistinkulutus ajanjaksolla "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Näytä pakkaus/purku"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -546,9 +539,8 @@ msgid "Memory usage"
 msgstr "Muistinkulutus"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Näytönohjaimen käyttö"
+msgstr "GTT:n käyttö"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
@@ -588,9 +580,8 @@ msgid "Memory"
 msgstr "Muisti"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Muistinkulutus"
+msgstr "Swapin käyttö ajanjaksolla "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
