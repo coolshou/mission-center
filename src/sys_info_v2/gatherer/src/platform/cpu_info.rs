@@ -76,7 +76,7 @@ impl Arg for crate::platform::CpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suytsyt)")
+        dbus::Signature::from("(suytsytttt)")
     }
 }
 
@@ -152,7 +152,7 @@ impl Arg for crate::platform::CpuDynamicInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ddadadtdtttt)")
+        dbus::Signature::from("(ddadadtdttttsss)")
     }
 }
 
