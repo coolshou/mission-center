@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-09-15 05:41+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-10-20 11:15+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -50,7 +50,7 @@ msgstr "Monitorear el uso de su CPU, memoria, disco, red y GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "Características:"
+msgstr "Funcionalidades:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
@@ -133,7 +133,7 @@ msgstr "Sin uso de red por proceso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr "El soporte de GPU es experimental"
+msgstr "Se admiten las GPU de manera experimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
@@ -150,8 +150,8 @@ msgid ""
 "cinnamon/issues/12015)"
 msgstr ""
 "Al utilizar Linux Mint/Cinnamon, es posible que las aplicaciones iniciadas "
-"no aparezcan en la sección \"Aplicaciones\" (problema anterior: https://"
-"github.com/linuxmint/cinnamon/issues/12015)"
+"no aparezcan en la sección «Aplicaciones» (defecto originario: https://github"
+".com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -247,27 +247,27 @@ msgstr "Mostrar información de la CPU de forma predeterminada"
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr "Mostrar información de la memoria por defecto"
+msgstr "Mostrar información de la memoria de manera predeterminada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr "Mostrar información del disco por defecto"
+msgstr "Mostrar información del disco de manera predeterminada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr "Mostrar información de red de forma predeterminada"
+msgstr "Mostrar información de red de manera predeterminada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr "Mostrar información de la GPU de forma predeterminada"
+msgstr "Mostrar información de la GPU de manera predeterminada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr "Mostrar información de los fans de forma predeterminada"
+msgstr "Mostrar información del ventilador de manera predeterminada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
@@ -275,7 +275,7 @@ msgstr "Mostrar el widget de la composición de la memoria"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr "Mostrar el gráfico de swap"
+msgstr "Mostrar el gráfico de intercambio"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
@@ -303,7 +303,7 @@ msgstr "Uso superior a "
 #: resources/ui/performance_page/gpu.blp:85
 #: resources/ui/performance_page/gpu.blp:130
 msgid "100%"
-msgstr "100%"
+msgstr "100 %"
 
 #: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
@@ -319,7 +319,7 @@ msgstr "_Procesadores lógicos"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr "Mostrar tiempos del kernel"
+msgstr "Mostrar tiempos del núcleo"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -768,7 +768,7 @@ msgstr "Mostrar información de la GPU"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr "Mostrar información del fan"
+msgstr "Mostrar información del ventilador"
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
@@ -892,7 +892,7 @@ msgstr "Desactivar todo"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr "Restablecer valores por defecto"
+msgstr "Restablecer valores predeterminados"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
