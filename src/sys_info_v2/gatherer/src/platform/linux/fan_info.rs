@@ -163,7 +163,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                             )) {
                                 Arc::from(label.trim().to_case(Case::Title))
                             } else {
-                                continue; // ignore missing label to prevent duplication
+                                Arc::from("")
                             };
 
                             let temp_label = if let Ok(label) = std::fs::read_to_string(format!(
