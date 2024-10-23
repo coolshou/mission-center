@@ -33,6 +33,7 @@ use gtk::{
 
 use widgets::{GraphWidget, SidebarDropHint};
 
+use crate::sys_info_v2::FanInfo;
 use crate::{
     i18n::*,
     settings,
@@ -1403,8 +1404,8 @@ mod imp {
             pages.push(Pages::Fan(fans));
         }
 
-        fn fan_page_name(fan_label: &str) -> String {
-            format!("fan-{}", fan_label)
+        fn fan_page_name(fan_info: &FanInfo) -> String {
+            format!("fan-{}-{}", fan_info.hwmon_index, fan_info.fan_index)
         }
 
         pub fn create_fan_page(
@@ -1416,7 +1417,7 @@ mod imp {
             let fan_static_info =
                 &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
 
-            let page_name = Self::fan_page_name(fan_static_info.fan_label.as_ref());
+            let page_name = Self::fan_page_name(fan_static_info);
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
@@ -1985,8 +1986,7 @@ mod imp {
                     }
                     Pages::Fan(pages) => {
                         for fan_info in &readings.fans_info {
-                            if let Some((summary, page)) =
-                                pages.get(&Self::fan_page_name(fan_info.fan_label.as_ref()))
+                            if let Some((summary, page)) = pages.get(&Self::fan_page_name(fan_info))
                             {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
