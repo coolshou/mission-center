@@ -21,7 +21,7 @@
 use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, ParamSpec, Properties, Value};
+use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::{gio, glib};
 
 use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
@@ -404,8 +404,6 @@ mod imp {
         }
 
         fn constructed(&self) {
-            use glib::*;
-
             self.parent_constructed();
 
             self.configure_actions();
@@ -426,8 +424,10 @@ mod imp {
                 move |_, _| {
                     if let Some(this) = this.upgrade() {
                         let this = this.imp();
-                        this.stack.set_visible_child_name("apps-page");
-                        this.stack.set_visible_child_name("performance-page");
+                        let current_child = this.stack.visible_child_name().unwrap_or_default();
+                        if current_child.as_str() != "performance-page" {
+                            this.stack.set_visible_child_name("performance-page");
+                        }
                     }
                 }
             });
