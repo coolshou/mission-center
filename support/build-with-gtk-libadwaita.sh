@@ -358,7 +358,7 @@ mkdir build && cd build
     -Dbuild-tests=false                 \
     -Dbuild-demos=false                 \
     -Dbuild-testsuite=false             \
-    -Dbroadway-backend=false            \
+    -Dbroadway-backend=true             \
     -Dmedia-gstreamer=disabled          \
     -Dprint-cups=disabled
 ninja && ninja install && env DESTDIR=$OUT_PATH ninja install
@@ -441,8 +441,10 @@ sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packag
 sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/ast_utils.py
 sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/decompiler.py
 
-cd $OUT_PATH
-rm -rf $OUT_PATH/usr/bin
+cd $OUT_PATH/usr
+mv bin bin.old && mkdir bin
+mv bin.old/gtk4-broadwayd bin/
+rm -rf bin.old
 
 export PATH="$HOME/.cargo/bin:$PATH"
 cargo install toml2json

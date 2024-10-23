@@ -48,8 +48,14 @@ index 792a724..d8175a4 100644
 EOF
 patch -u /usr/local/lib/python3.8/dist-packages/appimagebuilder/modules/deploy/apt/package.py -i appimage-builder.patch
 
+pip install --upgrade setuptools packaging packaging-legacy
+pip install --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest "lief>=0.16.0.dev0"
+find /usr/local/lib -name package.py | while read -r file; do sed -i -e "s/^from.packaging/&_legacy/" "${file}"; done
+
 mv $APPDIR_PATH/usr/bin /helper_binaries
-mkdir -p $APPDIR_PATH/usr/bin && mv /helper_binaries/missioncenter* $APPDIR_PATH/usr/bin
+mkdir -p $APPDIR_PATH/usr/bin
+mv /helper_binaries/missioncenter* $APPDIR_PATH/usr/bin/
+mv /helper_binaries/gtk4-broadwayd $APPDIR_PATH/usr/bin/
 cp -rv $APPDIR_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0 /usr/lib/$(arch)-linux-gnu/
 
 export PATH="/helper_binaries:$PATH"
