@@ -10,12 +10,16 @@ if [[ -z "$SRC_PATH" ]]; then
 fi
 
 # Adapted from https://raw.githubusercontent.com/snapcore/snapcraft/master/docker/Dockerfile
+SNAP_ARCH="Unknown"
+if [[ "$(arch)" == "x86_64" ]]; then SNAP_ARCH="amd64"; fi
+if [[ "$(arch)" == "aarch64" ]]; then SNAP_ARCH="arm64"; fi
+
 function install-snap() {
   SNAP_NAME=$1
 
   echo "Installing $SNAP_NAME..."
 
-  curl -L $(curl -H 'X-Ubuntu-Series: 16' "https://api.snapcraft.io/api/v1/snaps/details/$SNAP_NAME" | jq '.download_url' -r) --output $SNAP_NAME.snap
+  curl -L $(curl -H 'X-Ubuntu-Series: 16' -H "X-Ubuntu-Architecture: $SNAP_ARCH" "https://api.snapcraft.io/api/v1/snaps/details/$SNAP_NAME" | jq '.download_url' -r) --output $SNAP_NAME.snap
 
   mkdir -pv /snap/$SNAP_NAME
   unsquashfs -d /snap/$SNAP_NAME/current $SNAP_NAME.snap || true

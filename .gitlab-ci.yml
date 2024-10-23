@@ -28,45 +28,55 @@ build-job:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-portable-build-job:
+portable-build-job-x86:
   stage: portable-build
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-amd64
   script:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y ca-certificates busybox-static skopeo
 
-    - skopeo copy docker://ubuntu:20.04 docker-archive:ubuntu.tar:ubuntu:20.04
-    - tar xf ubuntu.tar
-    - rm ubuntu.tar
-
-    - |
-      cat <<EOF > /build.sh
-      rm -rf /bin /boot /etc /lib* /media /mnt /opt /sbin/ /srv /usr /var
-      mkdir /newroot && tar xf *.tar -C /newroot
-      rm /newroot/etc/hosts && rm /newroot/etc/hostname && rm /newroot/etc/resolv.conf
-      cp -ar /newroot/* / && rm -rf /newroot
-
-      set -e
-
-      apt-get update && apt-get dist-upgrade -y
-
-      SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
-      cd portable && tar zcf ../portable.tar.gz *
-
-      EOF
-
-    - busybox sh /build.sh
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-x86_64.tar.gz *
 
   artifacts:
     paths:
       - 'logs.txt'
-      - 'portable.tar.gz'
+      - 'portable-x86_64.tar.gz'
   rules:
-    - if: $PORTABLE_BUILD != null
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $PORTABLE_TARBALL == null || $PORTABLE_TARBALL == ''
+
+portable-build-job-arm:
+  stage: portable-build
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-arm64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-aarch64.tar.gz *
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable-aarch64.tar.gz'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $PORTABLE_TARBALL == null || $PORTABLE_TARBALL == ''
 
 flatpak-job:
   stage: package
@@ -89,7 +99,7 @@ flatpak-job:
   rules:
     - if: $BUILD_FLATPAK != null
 
-snap-job:
+snap-job-x86:
   stage: package
   script:
     - rm -rf /etc/apt/sources.list.d
@@ -100,8 +110,8 @@ snap-job:
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y curl ca-certificates
 
-    - curl -LO $PORTABLE_TARBALL
-    - mkdir -p snap/local && cd snap/local && tar xf ../../portable.tar.gz && cd ../..
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cd ../..
 
     - SRC_PATH=$PWD bash support/create-snap.sh
 
@@ -109,45 +119,74 @@ snap-job:
     paths:
       - '**/*.snap'
   rules:
-    - if: $BUILD_SNAP != null && $PORTABLE_TARBALL != null
+    - if: $BUILD_SNAP != null
 
-appimage-job:
+snap-job-arm:
   stage: package
+  tags:
+    - saas-linux-medium-arm64
   script:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y ca-certificates busybox-static skopeo
+    - apt-get install -y curl ca-certificates
 
-    - skopeo copy docker://ubuntu:20.04 docker-archive:ubuntu.tar:ubuntu:20.04
-    - tar xf ubuntu.tar
-    - rm ubuntu.tar
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - mkdir -p snap/local && cd snap/local && tar xf ../../portable-aarch64.tar.gz && cd ../..
 
-    - |
-      cat <<EOF > /build.sh
-      rm -rf /bin /boot /etc /lib* /media /mnt /opt /sbin/ /srv /usr /var
-      mkdir /newroot && tar xf *.tar -C /newroot
-      rm /newroot/etc/hosts && rm /newroot/etc/hostname && rm /newroot/etc/resolv.conf
-      cp -ar /newroot/* / && rm -rf /newroot
+    - SRC_PATH=$PWD bash support/create-snap.sh
 
-      set -e
+  artifacts:
+    paths:
+      - '**/*.snap'
+  rules:
+    - if: $BUILD_SNAP != null
 
-      apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
+appimage-job-x86:
+  stage: package
+  image: ubuntu:20.04
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-      curl -LO $PORTABLE_TARBALL
-      cd appimage && /usr/bin/tar xf ../portable.tar.gz && cd ..
+    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
 
-      RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
 
-      EOF
-
-    - busybox sh /build.sh
+    - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
 
   artifacts:
     paths:
       - 'MissionCenter-x86_64.AppImage'
   rules:
-    - if: $BUILD_APPIMAGE != null && $PORTABLE_TARBALL != null
+    - if: $BUILD_APPIMAGE != null
+
+appimage-job-arm:
+  stage: package
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-medium-arm64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
+
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
+
+    - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
+
+  artifacts:
+    paths:
+      - 'MissionCenter-aarch64.AppImage'
+  rules:
+    - if: $BUILD_APPIMAGE != null
