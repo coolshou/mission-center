@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-09-12 07:20+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2024-10-16 04:55+0000\n"
+"Last-Translator: Jonathan Wonneberger <weblate@jonwon.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -511,28 +511,24 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Auslagerungsverbrauch über "
+msgstr "Lüftergeschwindigkeit über "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatur"
+msgstr "Temperatur über "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Geschwindigkeit"
+msgstr "Lüftergeschwindigkeit"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
 msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "Temperatur"
+msgstr "Aktuelle Temperatur"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "

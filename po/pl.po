@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-09-28 18:15+0000\n"
+"PO-Revision-Date: 2024-10-09 11:16+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -265,9 +265,8 @@ msgid "Show fan information by default"
 msgstr "Domyślnie pokazuj informacje o wiatrakach"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Popraw wykres składu pamięci"
+msgstr "Pokaż widżet rozkładu pamięci"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
@@ -525,7 +524,6 @@ msgid "PWM %"
 msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
 msgstr "Temperatura"
 
@@ -564,14 +562,12 @@ msgid "Memory speed"
 msgstr "Szybkość pamięci"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "Dekodowanie i kodowanie wideo"
+msgstr "Kodowanie wideo"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "Dekodowanie i kodowanie wideo"
+msgstr "Dekodowanie wideo"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -604,12 +600,11 @@ msgstr "Użycie stronnicowania przez "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr "Skład pamięci"
+msgstr "Rozkład pamięci"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Skład pamięci"
+msgstr "Pokaż rozkład pamięci"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
@@ -625,7 +620,7 @@ msgstr "Dostępne"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr "Zarezerwowana"
+msgstr "Zarezerwowane"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
@@ -708,7 +703,6 @@ msgid "IPv6 address:"
 msgstr "Adres IPv6:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
 msgstr "Ustawienia ogólne"
 
@@ -745,6 +739,8 @@ msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Ustawia wykres użycia sieci tak, aby dynamicznie skalował się wraz z "
+"faktycznym użyciem lub z maksymalną prędkością interfejsu"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
@@ -900,9 +896,8 @@ msgid "Devices"
 msgstr "Urządzenia"
 
 #: resources/ui/window.blp:70
-#, fuzzy
 msgid "Edit Sidebar"
-msgstr "Pasek boczny"
+msgstr "Edytuj pasek boczny"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
@@ -1060,16 +1055,15 @@ msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Wentylator {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Wentylator"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1098,9 +1092,8 @@ msgid "Disk {} ({})"
 msgstr "Dysk {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Dysk {} ({})"
+msgstr "Dysk ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
@@ -1108,19 +1101,19 @@ msgstr "{} {}{}B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} obr./min."
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1128,16 +1121,15 @@ msgstr "Pobieranie dodatkowych informacji nie powiodło się"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
