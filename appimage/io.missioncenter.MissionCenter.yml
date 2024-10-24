@@ -7,8 +7,8 @@ AppDir:
     id: io.missioncenter.MissionCenter
     name: Mission Center
     icon: io.missioncenter.MissionCenter
-    version: 0.6.1
-    exec: usr/bin/missioncenter
+    version: 0.6.2
+    exec: entrypoint
     exec_args: $@
   runtime:
     env:

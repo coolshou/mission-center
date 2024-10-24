@@ -48,9 +48,13 @@ index 792a724..d8175a4 100644
 EOF
 patch -u /usr/local/lib/python3.8/dist-packages/appimagebuilder/modules/deploy/apt/package.py -i appimage-builder.patch
 
+# https://github.com/AppImageCrafters/appimage-builder/issues/357
 pip install --upgrade setuptools packaging packaging-legacy
 pip install --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest "lief>=0.16.0.dev0"
 find /usr/local/lib -name package.py | while read -r file; do sed -i -e "s/^from.packaging/&_legacy/" "${file}"; done
+
+cc -O2 -o $APPDIR_PATH/entrypoint $RECEIPE_PATH/../support/entrypoint.c
+strip $APPDIR_PATH/entrypoint
 
 mv $APPDIR_PATH/usr/bin /helper_binaries
 mkdir -p $APPDIR_PATH/usr/bin
