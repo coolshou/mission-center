@@ -41,7 +41,8 @@ themes).
 
 ## Installing
 
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8004560208/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8198461967/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="x86_64" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8198461968/artifacts/raw/MissionCenter-aarch64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="ARM64" width=200/></a>
 <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
 <a href="https://snapcraft.io/mission-center"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
 
@@ -60,42 +61,34 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
   <br/>
 
-*CPU overall view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png)
+*CPU view*  
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu.png)
 
 *Memory view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-memory.png)
 
 *Disk view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-disk.png)
 
 *Ethernet and Wi-Fi view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-ethernet.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-wifi.png)
 
 *GPU view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-gpu.png)
+
+*Fan view*  
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-fan.png)
 
 *Apps page*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-apps.png)
 
 *Services page*
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0018-services.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/019-services-filter.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0020-service-details.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-services.png)
 
 *Dark mode*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0021-services-dark.png)
-
-*Summary view*  
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-cpu-dark.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-disk-dark.png)
 
   </details>
 
