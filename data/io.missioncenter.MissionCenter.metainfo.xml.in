@@ -55,61 +55,37 @@
 
     <screenshots>
         <screenshot type="default">
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-memory.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-disk.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-ethernet.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-wifi.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-gpu.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0017-gpu-intel.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-fan.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-apps.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-services.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-cpu-dark.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0018-services.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/019-services-filter.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0020-service-details.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0021-services-dark.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-disk-dark.png</image>
         </screenshot>
     </screenshots>
 
@@ -118,6 +94,21 @@
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
+        <release version="0.6.2" date="2024-10-27">
+            <description translate="no">
+                <ul>
+                    <li>Provide ARM64 variants for supported packaging formats</li>
+                    <li>Add option to toggle between light, dark and system color schemes</li>
+                    <li>Fix a crash that occurs when running on an older processor</li>
+                    <li>Fix device selection in the sidebar jumping to the next available item by itself</li>
+                    <li>Show all detected fans in the system, even if the lack an identifying label</li>
+                    <li>Add `mission-center-window`, `mission-center-performance-page`, `mission-center-apps-page` and `mission-center-services-page` CSS classes to allow some user customizations</li>
+                    <li>Fix sidebar symbolic icon being too small</li>
+                    <li>Minor styling improvements in the Apps and Services pages</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.6.1" date="2024-10-06">
             <description translate="no">
                 <ul>
