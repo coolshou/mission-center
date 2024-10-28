@@ -38,6 +38,8 @@ pub struct GpuDynamicInfo {
     pub free_memory: u64,
     pub used_memory: u64,
     pub used_gtt: u64,
+    pub fan_rpm: u64,
+    pub fan_pwm: u64,
     pub encoder_percent: u32,
     pub decoder_percent: u32,
 }
@@ -58,6 +60,8 @@ impl Default for GpuDynamicInfo {
             free_memory: 0,
             used_memory: 0,
             used_gtt: 0,
+            fan_rpm: 0,
+            fan_pwm: 0,
             encoder_percent: 0,
             decoder_percent: 0,
         }
@@ -133,6 +137,8 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             free_memory: 0,
                             used_memory: 0,
                             used_gtt: 0,
+                            fan_rpm: 0,
+                            fan_pwm: 0,
                             encoder_percent: 0,
                             decoder_percent: 0,
                         };
@@ -414,6 +420,48 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
                                         "Failed to get GpuDynamicInfo: Expected '12: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fm) => fm as _,
+                            },
+                        };
+
+                        this.fan_rpm = match Iterator::next(dynamic_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '13: t', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '13: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fm) => fm as _,
+                            },
+                        };
+
+                        this.used_gtt = match Iterator::next(dynamic_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '13: t', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '13: t', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;

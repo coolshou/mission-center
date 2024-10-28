@@ -59,6 +59,8 @@ pub struct GpuStaticInfo {
     pub direct3d_version: Option<ApiVersion>,
     pub pcie_gen: u8,
     pub pcie_lanes: u8,
+    pub fan_avail: bool,
+    pub fan_max_rpm: u64,
 }
 
 impl Default for GpuStaticInfo {
@@ -77,6 +79,8 @@ impl Default for GpuStaticInfo {
             direct3d_version: None,
             pcie_gen: 0,
             pcie_lanes: 0,
+            fan_avail: false,
+            fan_max_rpm: 0,
         }
     }
 }
@@ -151,6 +155,8 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             direct3d_version: None,
                             pcie_gen: 0,
                             pcie_lanes: 0,
+                            fan_avail: false,
+                            fan_max_rpm: 0,
                         };
 
                         let mut static_info = match static_info.as_iter() {
@@ -476,6 +482,51 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     return None;
                                 }
                                 Some(pcie_lanes) => pcie_lanes as u8,
+                            },
+                        };
+
+                        info.fan_avail = match Iterator::next(static_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuStaticInfo: Expected '11: y', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo: Expected '11: y', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fan_max_rpm) => match fan_max_rpm {
+                                    1 => true,
+                                    _ => false,
+                                }
+                            },
+                        };
+
+                        info.fan_max_rpm = match Iterator::next(static_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuStaticInfo: Expected '11: y', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo: Expected '11: y', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fan_max_rpm) => fan_max_rpm,
                             },
                         };
 

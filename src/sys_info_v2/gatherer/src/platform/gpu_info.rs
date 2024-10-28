@@ -127,32 +127,40 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
 
     /// The number of PCI express lanes in use by the GPU
     fn pcie_lanes(&self) -> u8;
+
+    /// The number of PCI express lanes in use by the GPU
+    fn fan_avail(&self) -> bool;
+
+    /// The number of PCI express lanes in use by the GPU
+    fn fan_max_rpm(&self) -> u64;
 }
 
 impl Arg for crate::platform::GpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yy)")
+        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yybt)")
     }
 }
 
 impl Append for crate::platform::GpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.id(),
-            self.device_name(),
-            self.vendor_id(),
-            self.device_id(),
-            self.total_memory(),
-            self.total_gtt(),
-            self.opengl_version().map(|v| *v).unwrap_or_default(),
-            self.vulkan_version().map(|v| *v).unwrap_or_default(),
-            self.metal_version().map(|v| *v).unwrap_or_default(),
-            self.direct3d_version().map(|v| *v).unwrap_or_default(),
-            self.pcie_gen(),
-            self.pcie_lanes(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.device_name());
+            ia.append(self.vendor_id());
+            ia.append(self.device_id());
+            ia.append(self.total_memory());
+            ia.append(self.total_gtt());
+            ia.append(self.opengl_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.vulkan_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.metal_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.direct3d_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.pcie_gen());
+            ia.append(self.pcie_lanes());
+            ia.append(self.fan_avail());
+            ia.append(self.fan_max_rpm());
+        });
     }
 }
 
@@ -204,6 +212,13 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
 
     /// The amount of gtt/gart available
     fn used_gtt(&self) -> u64;
+
+    /// The amount of gtt/gart available
+    fn fan_rpm(&self) -> u64;
+
+    /// The amount of gtt/gart available
+    fn fan_pwm(&self) -> u64;
+
     /// Utilization percent of the encoding pipeline of the GPU
     fn encoder_percent(&self) -> u32;
 
@@ -215,7 +230,7 @@ impl Arg for crate::platform::GpuDynamicInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suuudduuuutttuu)")
+        dbus::Signature::from("(suuudduuuutttttuu)")
     }
 }
 
@@ -235,6 +250,8 @@ impl Append for crate::platform::GpuDynamicInfo {
             ia.append(self.free_memory());
             ia.append(self.used_memory());
             ia.append(self.used_gtt());
+            ia.append(self.fan_rpm());
+            ia.append(self.fan_pwm());
             ia.append(self.encoder_percent());
             ia.append(self.decoder_percent());
         });

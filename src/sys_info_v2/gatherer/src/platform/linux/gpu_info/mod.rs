@@ -36,6 +36,8 @@ use crate::{
     },
 };
 
+use glob::glob;
+
 #[allow(unused)]
 mod nvtop;
 mod vulkan_info;
@@ -52,6 +54,10 @@ pub struct LinuxGpuStaticInfo {
     vulkan_version: Option<ApiVersion>,
     pcie_gen: u8,
     pcie_lanes: u8,
+    fan_avail: bool,
+    hwmon_idx: u64,
+    fan_idx: u64,
+    fan_max_rpm: u64,
 }
 
 impl LinuxGpuStaticInfo {}
@@ -69,6 +75,10 @@ impl Default for LinuxGpuStaticInfo {
             vulkan_version: None,
             pcie_gen: 0,
             pcie_lanes: 0,
+            fan_avail: false,
+            hwmon_idx: 0,
+            fan_idx: 0,
+            fan_max_rpm: 0,
         }
     }
 }
@@ -121,6 +131,14 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
     fn pcie_lanes(&self) -> u8 {
         self.pcie_lanes
     }
+
+    fn fan_avail(&self) -> bool {
+        self.fan_avail
+    }
+
+    fn fan_max_rpm(&self) -> u64 {
+        self.fan_max_rpm
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -140,6 +158,8 @@ pub struct LinuxGpuDynamicInfo {
     used_gtt: u64,
     encoder_percent: u32,
     decoder_percent: u32,
+    fan_rpm: u64,
+    fan_pwm: u64,
 }
 
 impl Default for LinuxGpuDynamicInfo {
@@ -160,6 +180,8 @@ impl Default for LinuxGpuDynamicInfo {
             used_gtt: 0,
             encoder_percent: 0,
             decoder_percent: 0,
+            fan_rpm: 0,
+            fan_pwm: 0,
         }
     }
 }
@@ -221,6 +243,14 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
 
     fn used_gtt(&self) -> u64 {
         self.used_gtt
+    }
+
+    fn fan_rpm(&self) -> u64 {
+        self.fan_rpm
+    }
+
+    fn fan_pwm(&self) -> u64 {
+        self.fan_pwm
     }
 
     fn encoder_percent(&self) -> u32 {
@@ -667,6 +697,61 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                     0
                 }
             };
+
+            let (fan_avail, hwmon_idx, fan_idx, fan_max_rpm) = {
+                let mut out = None;
+                match glob(format!(
+                    "/sys/bus/pci/devices/{}/hwmon/hwmon*/fan*_input",
+                    pdev.to_lowercase()
+                ).as_ref()) {
+                    Ok(globs) => {
+                        for entry in globs {
+                            match entry {
+                                Ok(path) => {
+                                    // read the first glob result for hwmon location
+                                    let parent_dir = path.parent().unwrap();
+                                    let parent_dir_str = path.parent().unwrap().to_str().unwrap();
+                                    let hwmon_idx =
+                                        if let Some(hwmon_dir) = parent_dir.file_name().unwrap().to_str() {
+                                            hwmon_dir[5..].parse::<u64>().ok().unwrap_or(u64::MAX)
+                                        } else {
+                                            continue;
+                                        };
+
+                                    // read the second glob result for fan index
+                                    let fan_idx = if let Some(hwmon_instance_dir) =
+                                        path.file_name().unwrap().to_str()
+                                    {
+                                        hwmon_instance_dir[3..4]
+                                            .parse::<u64>()
+                                            .ok()
+                                            .unwrap_or(u64::MAX)
+                                    } else {
+                                        continue;
+                                    };
+
+                                    let fan_max_rpm = if let Ok(v) = std::fs::read_to_string(format!(
+                                        "{}/fan{}_max",
+                                        parent_dir_str,
+                                        fan_idx
+                                    )) {
+                                        v.trim().parse::<u64>().ok().unwrap_or(0)
+                                    } else {
+                                        0
+                                    };
+
+                                    out = Some((true, hwmon_idx, fan_idx, fan_max_rpm));
+                                    break;
+                                },
+                                Err(_) => (),
+                            }
+                        }
+                    },
+                    Err(_) => ()
+                }
+                out.unwrap_or((false, 0, 0, 0))
+            };
+
             let ven_dev_id = if let Some(mut f) = uevent_file {
                 buffer.clear();
                 match f.read_to_string(&mut buffer) {
@@ -715,6 +800,11 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
                 pcie_gen: dev.dynamic_info.pcie_link_gen as _,
                 pcie_lanes: dev.dynamic_info.pcie_link_width as _,
+
+                fan_avail,
+                hwmon_idx,
+                fan_idx,
+                fan_max_rpm,
 
                 // Leave the rest for when static info is actually requested
                 ..Default::default()
@@ -887,6 +977,48 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 continue;
             }
             let dynamic_info = unsafe { dynamic_info.unwrap_unchecked() };
+
+            if let Some(static_info) = self.static_info.get(&pci_id) {
+                if static_info.fan_avail {
+                    dynamic_info.fan_rpm = match fs::read_to_string(format!(
+                        "/sys/bus/pci/devices/{}/hwmon/hwmon{}/fan{}_input",
+                        pdev.to_lowercase(),
+                        static_info.hwmon_idx,
+                        static_info.fan_idx,
+                    )) {
+                        Ok(x) => match x.trim().parse::<u64>() {
+                            Ok(x) => x,
+                            Err(x) => {
+                                debug!("Gatherer::GpuInfo", "Failed to parse fan input: {}", x);
+                                0
+                            }
+                        },
+                        Err(x) => {
+                            debug!("Gatherer::GpuInfo", "Failed to read fan input: {}", x);
+                            0
+                        }
+                    };
+                    dynamic_info.fan_pwm = match fs::read_to_string(format!(
+                        "/sys/bus/pci/devices/{}/hwmon/hwmon{}/pwm{}",
+                        pdev.to_lowercase(),
+                        static_info.hwmon_idx,
+                        static_info.fan_idx,
+                    )) {
+                        Ok(x) => match x.trim().parse::<u64>() {
+                            Ok(x) => x,
+                            Err(x) => {
+                                debug!("Gatherer::GpuInfo", "Failed to parse pwm input: {}", x);
+                                0
+                            }
+                        },
+                        Err(x) => {
+                            debug!("Gatherer::GpuInfo", "Failed to read pwm input: {}", x);
+                            0
+                        }
+                    };
+                }
+            }
+
             dynamic_info.id = Arc::from(pdev);
             dynamic_info.temp_celsius = dev.dynamic_info.gpu_temp;
             dynamic_info.fan_speed_percent = dev.dynamic_info.fan_speed;
@@ -966,12 +1098,12 @@ mod tests {
         dbg!(&static_info);
 
         let mut p = Processes::default();
-        gpu_info.refresh_dynamic_info_cache(&mut p);
+        gpu_info.refresh_dynamic_info_cache(&mut p, &static_info);
         let _ = gpu_info.dynamic_info(&pci_id);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
 
-        gpu_info.refresh_dynamic_info_cache(&mut p);
+        gpu_info.refresh_dynamic_info_cache(&mut p, &static_info);
         let dynamic_info = gpu_info.dynamic_info(&pci_id);
         dbg!(&dynamic_info);
     }
