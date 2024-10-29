@@ -76,24 +76,24 @@ impl Arg for crate::platform::CpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suytyytttt)")
+        dbus::Signature::from("(suytsytttt)")
     }
 }
 
 impl Append for crate::platform::CpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.name(),
-            self.logical_cpu_count(),
-            self.socket_count().unwrap_or(0),
-            self.base_frequency_khz().unwrap_or(0),
-            self.virtualization_technology().unwrap_or(""),
-            OptionalBool::from(self.is_virtual_machine()) as u8,
-            self.l1_combined_cache().unwrap_or(0),
-            self.l2_cache().unwrap_or(0),
-            self.l3_cache().unwrap_or(0),
-            self.l4_cache().unwrap_or(0),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.name());
+            ia.append(self.logical_cpu_count());
+            ia.append(self.socket_count().unwrap_or(0));
+            ia.append(self.base_frequency_khz().unwrap_or(0));
+            ia.append(self.virtualization_technology().unwrap_or(""));
+            ia.append(OptionalBool::from(self.is_virtual_machine()) as u8);
+            ia.append(self.l1_combined_cache().unwrap_or(0));
+            ia.append(self.l2_cache().unwrap_or(0));
+            ia.append(self.l3_cache().unwrap_or(0));
+            ia.append(self.l4_cache().unwrap_or(0));
+        });
     }
 }
 
@@ -103,7 +103,7 @@ pub trait CpuDynamicInfoExt<'a>: Default + Append + Arg {
     ///
     /// It is expected that the iterator yields as many values as exactly the number
     /// of CPU logical cores
-    type Iter: Iterator<Item=&'a f32>;
+    type Iter: Iterator<Item = &'a f32>;
 
     /// The overall utilization of the CPU(s)
     fn overall_utilization_percent(&self) -> f32;
@@ -137,34 +137,50 @@ pub trait CpuDynamicInfoExt<'a>: Default + Append + Arg {
 
     /// The number of seconds that have passed since the OS was booted
     fn uptime_seconds(&self) -> u64;
+
+    /// The cpufreq driver
+    fn cpufreq_driver(&self) -> Option<&str>;
+
+    /// The cpufreq governor
+    fn cpufreq_governor(&self) -> Option<&str>;
+
+    /// The energy performance preference
+    fn energy_performance_preference(&self) -> Option<&str>;
 }
 
 impl Arg for crate::platform::CpuDynamicInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ddadadtdtttt)")
+        dbus::Signature::from("(ddadadtdttttsss)")
     }
 }
 
 impl Append for crate::platform::CpuDynamicInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.overall_utilization_percent() as f64,
-            self.overall_kernel_utilization_percent() as f64,
-            self.per_logical_cpu_utilization_percent()
-                .map(|v| *v as f64)
-                .collect::<Vec<_>>(),
-            self.per_logical_cpu_kernel_utilization_percent()
-                .map(|v| *v as f64)
-                .collect::<Vec<_>>(),
-            self.current_frequency_mhz(),
-            self.temperature().map_or(0_f64, |v| v as f64),
-            self.process_count(),
-            self.thread_count(),
-            self.handle_count(),
-            self.uptime_seconds(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.overall_utilization_percent() as f64);
+            ia.append(self.overall_kernel_utilization_percent() as f64);
+            ia.append(
+                self.per_logical_cpu_utilization_percent()
+                    .map(|v| *v as f64)
+                    .collect::<Vec<_>>(),
+            );
+            ia.append(
+                self.per_logical_cpu_kernel_utilization_percent()
+                    .map(|v| *v as f64)
+                    .collect::<Vec<_>>(),
+            );
+            ia.append(self.current_frequency_mhz());
+            ia.append(self.temperature().map_or(0_f64, |v| v as f64));
+            ia.append(self.process_count());
+            ia.append(self.thread_count());
+            ia.append(self.handle_count());
+            ia.append(self.uptime_seconds());
+            ia.append(self.cpufreq_driver().unwrap_or(""));
+            ia.append(self.cpufreq_governor().unwrap_or(""));
+            ia.append(self.energy_performance_preference().unwrap_or(""));
+        });
     }
 }
 
@@ -188,9 +204,6 @@ pub trait CpuInfoExt<'a> {
     /// It is expected that implementors of this trait cache this information, once obtained
     /// from the underlying OS
     fn refresh_dynamic_info_cache(&mut self, processes: &Self::P);
-
-    /// Implementation specific understanding of whether the cache is too old to be relevant
-    fn is_dynamic_info_cache_stale(&self) -> bool;
 
     /// Returns the static information for the CPU.
     fn static_info(&self) -> &Self::S;

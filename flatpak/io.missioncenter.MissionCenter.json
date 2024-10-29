@@ -1,7 +1,7 @@
 {
   "app-id": "io.missioncenter.MissionCenter",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
+  "runtime-version": "47",
   "sdk": "org.gnome.Sdk",
   "command": "missioncenter",
   "build-options": {
@@ -29,7 +29,8 @@
     "--filesystem=xdg-data/flatpak/app:ro",
     "--filesystem=/var/lib/flatpak/app:ro",
     "--filesystem=/snap:ro",
-    "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:~/.local/share/flatpak/exports/share",
+    "--filesystem=/var/lib/snapd:ro",
+    "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:~/.local/share/flatpak/exports/share",
     "--env=LD_PRELOAD="
   ],
   "cleanup": [
@@ -66,27 +67,27 @@
       "sources": [
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.76.0-x86_64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.82.0-x86_64.tar.zst",
           "dest": "rust-toolchain-glibc",
-          "sha256": "68e0a87381b5af9092f81afc79eb1d1e5bd36e5cde058d3ba43f80c0fb7ae03b",
+          "sha256": "73f9a8ddac2942e3b754fbfaf846efbda8bf9fa06977f8929bbdd467dffdd7f5",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.76.0-x86_64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.82.0-x86_64.tar.zst",
           "dest": "rust-toolchain-musl",
-          "sha256": "d9e1ebbf2386daec4394ec7dd672d6312ddce906cf359b2a2526b1b6cb98ca59",
+          "sha256": "168dfaf4ead10417ca7f750a4b0157a6069f71ea90b5976c5c6a4a49b1ddad0a",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/builds/zig-linux-x86_64-0.12.0-dev.415+5af5d87ad.tar.xz",
+          "url": "https://ziglang.org/download/0.12.1/zig-linux-x86_64-0.12.1.tar.xz",
           "dest": "zig",
-          "sha256": "7923f3dbd98916565971d6d9f4fef84d99fcf2c4f39842bf64c4c1a29148c905",
+          "sha256": "8860fc9725c2d9297a63008f853e9b11e3c5a2441217f99c1e3104cc6fa4a443",
           "only-arches": [
             "x86_64"
           ]
@@ -109,27 +110,27 @@
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.76.0-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-glibc-1.82.0-aarch64.tar.zst",
           "dest": "rust-toolchain-glibc",
-          "sha256": "9c80e711ba2740b6f5c66c1d5bf95532f94c7cb7cb6068af942b7e89b24bc467",
+          "sha256": "f42a7d1fa52fcce465968e419bef076bef3a51c9824bd9d9e9514fac0e9a5616",
           "only-arches": [
             "aarch64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.76.0-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.82.0-aarch64.tar.zst",
           "dest": "rust-toolchain-musl",
-          "sha256": "62ec468015a3e2b61c89918c1fb6b5640ef84f593b29475cf90fad62238ffd4f",
+          "sha256": "b5eec242724368dd2b038be29eeef8c6147221710046eae047443ee3930f0d29",
           "only-arches": [
             "aarch64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/builds/zig-linux-aarch64-0.12.0-dev.415+5af5d87ad.tar.xz",
+          "url": "https://ziglang.org/download/0.12.1/zig-linux-aarch64-0.12.1.tar.xz",
           "dest": "zig",
-          "sha256": "5139d9e23ee34d9b8715847eb6ba3eeed87a819a332b4a303313c47836cff4ff",
+          "sha256": "27d4fef393e8d8b5f3b1d19f4dd43bfdb469b4ed17bbc4c2283c1b1fe650ef7f",
           "only-arches": [
             "aarch64"
           ]
@@ -152,11 +153,11 @@
         },
         {
           "type": "file",
-          "path": "clang"
+          "path": "../support/clang"
         },
         {
           "type": "file",
-          "path": "ar"
+          "path": "../support/ar"
         }
       ],
       "cleanup": [
@@ -187,7 +188,7 @@
         {
           "type": "git",
           "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "commit": "80aaee374d332b0c7e04a132cce9c472d6427a1e"
+          "commit": "b308adc3af939b27bd18941710b4499b1131e090"
         }
       ],
       "cleanup": [
@@ -211,7 +212,7 @@
         },
         {
           "type": "inline",
-          "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[source.\"https://github.com/kicsyromy/pathfinder\"]\ngit = \"https://github.com/kicsyromy/pathfinder\"\nreplace-with = \"vendored-sources\"\nrev = \"ec56924f660e6faa83c81c6b62b3c69b9a9fa00e\"\n",
+          "contents": "[source.vendored-sources]\ndirectory = \"cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n",
           "dest": ".cargo",
           "dest-filename": "config.toml"
         },
@@ -245,9 +246,9 @@
             },
             {
               "type": "archive",
-              "url": "https://github.com/Syllo/nvtop/archive/45a1796375cd617d16167869bb88e5e69c809468.tar.gz",
-              "sha256": "ec500c9d7e9fb63b899460ad00a0c1829df72abf5b424066206d832ed87f8667",
-              "dest": "nvtop-45a1796375cd617d16167869bb88e5e69c809468"
+              "url": "https://github.com/Syllo/nvtop/archive/20ea55dbd1eeb4342ff0112fae3ee2a0bfe352ea.tar.gz",
+              "sha256": "f2e41eb4331f116ecee3885b748078a1b6055572ccf6a2f4b0539b5c8bdaf48c",
+              "dest": "nvtop-20ea55dbd1eeb4342ff0112fae3ee2a0bfe352ea"
             },
             {
               "type": "shell",

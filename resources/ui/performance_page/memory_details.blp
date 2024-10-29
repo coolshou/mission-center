@@ -34,31 +34,43 @@ Box root {
       spacing: 15;
 
       Box {
-        orientation: vertical;
-        spacing: 3;
+        orientation: horizontal;
+        spacing: 5;
+
         width-request: 100;
 
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("In use");
+        Picture legend_used {
+          can-shrink: false;
+          content-fit: scale_down;
         }
 
-        Label in_use {
+        Box {
+          orientation: vertical;
+            spacing: 3;
+
+            Label {
+            styles [
+            "caption",
+            ]
+
+            halign: start;
+            label: _("In use");
+          }
+
+          Label in_use {
           styles [
-            "title-4",
+          "title-4",
           ]
 
           halign: start;
+          }
         }
       }
 
       Box {
         orientation: vertical;
         spacing: 3;
+
         width-request: 100;
 
         Label {
@@ -84,26 +96,36 @@ Box root {
       spacing: 15;
 
       Box {
-        orientation: vertical;
-        spacing: 3;
+        orientation: horizontal;
+        spacing: 5;
+
         width-request: 100;
 
-        Label {
-
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Committed");
+        Picture legend_commited {
+          can-shrink: false;
+          content-fit: scale_down;
         }
 
-        Label committed {
-          styles [
-            "title-4",
-          ]
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          Label {
+
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Committed");
+          }
+
+          Label committed {
+            styles [
+              "title-4",
+            ]
 
           halign: start;
+          }
         }
       }
 
@@ -134,6 +156,7 @@ Box root {
     Box bottom_row {
       spacing: 15;
 
+
       Box {
         orientation: vertical;
         spacing: 3;
@@ -145,10 +168,10 @@ Box root {
           ]
 
           halign: start;
-          label: _("Swap available");
+          label: _("Swap used");
         }
 
-        Label swap_available {
+        Label swap_used {
           styles [
             "title-4",
           ]
@@ -168,10 +191,10 @@ Box root {
           ]
 
           halign: start;
-          label: _("Swap used");
+          label: _("Swap available");
         }
 
-        Label swap_used {
+        Label swap_available {
           styles [
             "title-4",
           ]

@@ -1,42 +1,28 @@
 [package]
 name = "missioncenter"
-version = "0.5.0"
+version = "0.6.2"
 edition = "2021"
-build = "build/build.rs"
+build = "build.rs"
 
 [dependencies]
-adw = { package = "libadwaita", version = "0.6", features = ["v1_4"] }
-arrayvec = { version = "0.7" }
+adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
 dbus = { version = "0.9" }
 errno-sys = { version = "0.2.0" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gl = { version = "0.14" }
-gl_loader = { version = "0.1" }
-gtk = { package = "gtk4", version = "0.8", features = ["gnome_45"] }
-interprocess = { version = "1.2" }
+gtk = { package = "gtk4", version = "0.9", features = ["gnome_47"] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 libudev-sys = { version = "0.1" }
-pathfinder_canvas = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_color = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_content = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_geometry = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_gl = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_gpu = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_renderer = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-pathfinder_resources = { git = "https://github.com/kicsyromy/pathfinder", rev = "ec56924f660e6faa83c81c6b62b3c69b9a9fa00e" }
-raw-cpuid = { version = "11.0", default-features = false }
 regex = { version = "1.10" }
-rust-ini = { version = "0.20.0" }
-rusqlite = { version = "0.30.0", features = ["bundled"] }
+rust-ini = { version = "0.21" }
+rusqlite = { version = "0.32", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
-sha2 = { version = "0.10" }
-shared_memory = { package = "shared_memory_extended", version = "0.13" }
+static_assertions = { version = "1.1" }
 textdistance = { version = "1.0" }
-thiserror = { version = "1.0" }
 
 [profile.release]
 opt-level = 3
 lto = true
 strip = "debuginfo"
+codegen-units = 1

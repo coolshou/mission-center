@@ -288,6 +288,48 @@ Box root {
       }
     }
 
+    Label cpufreq_driver_label {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("Cpufreq driver:");
+
+      layout {
+        column: '0';
+        row: '8';
+      }
+    }
+
+    Label cpufreq_governor_label {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("Cpufreq governor:");
+
+      layout {
+        column: '0';
+        row: '9';
+      }
+    }
+
+    Label energy_performance_preference_label {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("Power preference:");
+
+      layout {
+        column: '0';
+        row: '10';
+      }
+    }
+
     Label base_speed {
       styles [
         "caption",
@@ -390,6 +432,45 @@ Box root {
       layout {
         column: '1';
         row: '7';
+      }
+    }
+
+    Label cpufreq_driver {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '8';
+      }
+    }
+
+    Label cpufreq_governor {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '9';
+      }
+    }
+
+    Label energy_performance_preference {
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      layout {
+        column: '1';
+        row: '10';
       }
     }
   }

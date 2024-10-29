@@ -42,9 +42,9 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::debug;
 
 pub unsafe fn run_forked<T, F>(f: F) -> anyhow::Result<T>
-    where
-        T: Serialize + DeserializeOwned + Debug,
-        F: FnOnce() -> Result<T, String>,
+where
+    T: Serialize + DeserializeOwned + Debug,
+    F: FnOnce() -> Result<T, String>,
 {
     let (rx, mut tx) = UnixStream::pair()?;
     rx.set_read_timeout(Some(std::time::Duration::from_secs(1)))?;

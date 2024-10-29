@@ -1,6 +1,6 @@
 /* performance_page/disk.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2024 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,13 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw;
-use adw::subclass::prelude::*;
-use glib::{clone, ParamSpec, Properties, Value};
+use adw::{self, subclass::prelude::*};
+use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use super::{widgets::GraphWidget, PageExt};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-
-use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;
@@ -133,30 +131,37 @@ mod imp {
             this.insert_action_group("graph", Some(&actions));
 
             let action = gio::SimpleAction::new("copy", None);
-            action.connect_activate(clone!(@weak this => move |_, _| {
-                let clipboard = this.clipboard();
-                clipboard.set_text(this.imp().data_summary().as_str());
-            }));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |_, _| {
+                    if let Some(this) = this.upgrade() {
+                        let clipboard = this.clipboard();
+                        clipboard.set_text(this.imp().data_summary().as_str());
+                    }
+                }
+            });
             actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageDisk) {
             let right_click_controller = gtk::GestureClick::new();
             right_click_controller.set_button(3); // Secondary click (AKA right click)
-            right_click_controller.connect_released(
-                clone!(@weak this => move |_click, _n_press, x, y| {
-                    this
-                        .imp()
-                        .context_menu
-                        .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
-                            x.round() as i32,
-                            y.round() as i32,
-                            1,
-                            1,
-                        )));
-                    this.imp().context_menu.popup();
-                }),
-            );
+            right_click_controller.connect_released({
+                let this = this.downgrade();
+                move |_click, _n_press, x, y| {
+                    if let Some(this) = this.upgrade() {
+                        this.imp()
+                            .context_menu
+                            .set_pointing_to(Some(&gtk::gdk::Rectangle::new(
+                                x.round() as i32,
+                                y.round() as i32,
+                                1,
+                                1,
+                            )));
+                        this.imp().context_menu.popup();
+                    }
+                }
+            });
             this.add_controller(right_click_controller);
         }
     }
@@ -164,7 +169,7 @@ mod imp {
     impl PerformancePageDisk {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
-            index: usize,
+            index: Option<i32>,
             disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             use crate::sys_info_v2::DiskType;
@@ -172,9 +177,11 @@ mod imp {
             let t = this.clone();
             this.imp()
                 .usage_graph
-                .connect_resize(move |graph_widget, width, height| {
-                    let width = width as f32;
-                    let height = height as f32;
+                .connect_local("resize", true, move |_| {
+                    let this = t.imp();
+
+                    let width = this.usage_graph.width() as f32;
+                    let height = this.usage_graph.height() as f32;
 
                     let mut a = width;
                     let mut b = height;
@@ -183,18 +190,25 @@ mod imp {
                         b = width;
                     }
 
-                    graph_widget
+                    this.usage_graph
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
-                    t.imp()
-                        .disk_transfer_rate_graph
+                    this.disk_transfer_rate_graph
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                    None
                 });
 
             let this = this.imp();
 
-            this.disk_id
-                .set_text(&i18n_f("Disk {} ({})", &[&format!("{}", index), &disk.id]));
+            if index.is_some() {
+                this.disk_id.set_text(&i18n_f(
+                    "Disk {} ({})",
+                    &[&format!("{}", index.unwrap()), &disk.id],
+                ));
+            } else {
+                this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
+            }
             this.model.set_text(&disk.model);
 
             this.disk_transfer_rate_graph.set_dashed(1, true);
@@ -244,6 +258,7 @@ mod imp {
                     DiskType::SSD => "SSD",
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
+                    DiskType::SD => "SD",
                     DiskType::iSCSI => "iSCSI",
                     DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
@@ -254,9 +269,19 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageDisk,
+            index: Option<usize>,
             disk: &crate::sys_info_v2::DiskInfo,
         ) -> bool {
             let this = this.imp();
+
+            if index.is_some() {
+                this.disk_id.set_text(&i18n_f(
+                    "Drive {} ({})",
+                    &[&format!("{}", index.unwrap()), &disk.id],
+                ));
+            } else {
+                this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
+            }
 
             let max_y =
                 crate::to_human_readable(this.disk_transfer_rate_graph.value_range_max(), 1024.);
@@ -466,6 +491,22 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
+impl PageExt for PerformancePageDisk {
+    fn infobar_collapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(10)));
+    }
+
+    fn infobar_uncollapsed(&self) {
+        self.imp()
+            .infobar_content
+            .get()
+            .and_then(|ic| Some(ic.set_margin_top(65)));
+    }
+}
+
 impl PerformancePageDisk {
     pub fn new(name: &str, settings: &gio::Settings) -> Self {
         let this: Self = glib::Object::builder().property("name", name).build();
@@ -474,8 +515,9 @@ impl PerformancePageDisk {
             this: &PerformancePageDisk,
             settings: &gio::Settings,
         ) {
-            let data_points = settings.int("perfomance-page-data-points") as u32;
-            let graph_max_duration = (((settings.int("app-update-interval") as f64)
+            let data_points = settings.int("performance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
+            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
                 .round() as u32;
@@ -507,50 +549,55 @@ impl PerformancePageDisk {
                 }
             ));
             this.usage_graph.set_data_points(data_points);
+            this.usage_graph.set_smooth_graphs(smooth);
             this.disk_transfer_rate_graph.set_data_points(data_points);
+            this.disk_transfer_rate_graph.set_smooth_graphs(smooth);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
-        settings.connect_changed(
-            Some("perfomance-page-data-points"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("performance-page-data-points"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
-        settings.connect_changed(
-            Some("app-update-interval"),
-            clone!(@weak this => move |settings, _| {
-                update_refresh_rate_sensitive_labels(&this, settings);
-            }),
-        );
+        settings.connect_changed(Some("app-update-interval-u64"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
+        settings.connect_changed(Some("performance-smooth-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
 
         this
     }
 
     pub fn set_static_information(
         &self,
-        index: usize,
+        index: Option<i32>,
         disk: &crate::sys_info_v2::DiskInfo,
     ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(&self, disk: &crate::sys_info_v2::DiskInfo) -> bool {
-        imp::PerformancePageDisk::update_readings(self, disk)
-    }
-
-    pub fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
-    }
-
-    pub fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
+    pub fn update_readings(
+        &self,
+        index: Option<usize>,
+        disk: &crate::sys_info_v2::DiskInfo,
+    ) -> bool {
+        imp::PerformancePageDisk::update_readings(self, index, disk)
     }
 }

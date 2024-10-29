@@ -20,7 +20,7 @@
 
 use gtk::{
     glib,
-    glib::{ParamSpec, prelude::*, Properties, Value},
+    glib::{prelude::*, ParamSpec, Properties, Value},
     prelude::*,
     subclass::prelude::*,
 };
@@ -152,8 +152,8 @@ impl ColumnHeader {
                     ("alignment", alignment.into_glib().into()),
                 ],
             )
-                .downcast()
-                .unwrap()
+            .downcast()
+            .unwrap()
         };
         this
     }

@@ -111,6 +111,9 @@ fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std:
 
 #[cfg(target_os = "linux")]
 fn build_nvtop(src_dir: &std::path::Path) -> Result<(), Box<dyn std::error::Error>> {
+    let _ = pkg_config::Config::new().probe("egl")?;
+    let _ = pkg_config::Config::new().probe("gbm")?;
+
     let libdrm = pkg_config::Config::new()
         .atleast_version("2.4.67")
         .probe("libdrm")?;

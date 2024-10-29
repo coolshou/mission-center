@@ -20,14 +20,33 @@
 
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 
-use adw::subclass::prelude::*;
+use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
     glib::{self, g_critical, property::PropertySet},
-    prelude::*,
 };
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
+
+pub const INTERVAL_STEP: f64 = 0.05;
+pub const BASE_INTERVAL: f64 = 1f64;
+
+#[macro_export]
+macro_rules! app {
+    () => {{
+        use ::gtk::glib::object::Cast;
+        ::gtk::gio::Application::default()
+            .and_then(|app| app.downcast::<$crate::MissionCenterApplication>().ok())
+            .expect("Failed to get MissionCenterApplication instance")
+    }};
+}
+
+#[macro_export]
+macro_rules! settings {
+    () => {
+        $crate::app!().settings()
+    };
+}
 
 mod imp {
     use super::*;
@@ -35,6 +54,7 @@ mod imp {
     pub struct MissionCenterApplication {
         pub settings: Cell<Option<gio::Settings>>,
         pub sys_info: RefCell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub window: RefCell<Option<crate::MissionCenterWindow>>,
     }
 
     impl Default for MissionCenterApplication {
@@ -42,6 +62,7 @@ mod imp {
             Self {
                 settings: Cell::new(None),
                 sys_info: RefCell::new(None),
+                window: RefCell::new(None),
             }
         }
     }
@@ -58,6 +79,8 @@ mod imp {
             self.parent_constructed();
             let obj = self.obj();
 
+            obj.set_default();
+
             self.settings
                 .set(Some(gio::Settings::new("io.missioncenter.MissionCenter")));
 
@@ -72,50 +95,74 @@ mod imp {
 
             let application = self.obj();
             // Get the current window or create one if necessary
-            let window = if let Some(window) = application.active_window() {
+            let window = if let Some(window) = application.window() {
                 window
             } else {
-                let settings = self.settings.take();
-                self.settings.set(settings.clone());
+                let settings = unsafe { self.settings.take().unwrap_unchecked() };
+                self.settings.set(Some(settings.clone()));
 
                 let sys_info = crate::sys_info_v2::SysInfoV2::new();
 
-                let window =
-                    crate::MissionCenterWindow::new(&*application, settings.as_ref(), &sys_info);
+                let window = crate::MissionCenterWindow::new(&*application, &settings, &sys_info);
 
-                self.sys_info.set(Some(sys_info));
-
-                window.connect_default_height_notify(clone!(@weak self as this => move |window| {
-                    let settings = this.settings.take();
-                    if settings.is_none() {
-                        return;
+                window.connect_default_height_notify({
+                    move |window| {
+                        let settings = settings!();
+                        settings
+                            .set_int("window-height", window.default_height())
+                            .unwrap_or_else(|err| {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to save window height: {}",
+                                    err
+                                );
+                            });
                     }
-                    let settings = settings.unwrap();
-                    settings.set_int("window-height", window.default_height()).unwrap_or_else(|err|{
-                        g_critical!("MissionCenter", "Failed to save window height: {}", err);
-                    });
-
-                    this.settings.set(Some(settings));
-                }));
-                window.connect_default_width_notify(clone!(@weak self as this => move|window| {
-                    let settings = this.settings.take();
-                    if settings.is_none() {
-                        return;
+                });
+                window.connect_default_width_notify({
+                    move |window| {
+                        let settings = settings!();
+                        settings
+                            .set_int("window-width", window.default_width())
+                            .unwrap_or_else(|err| {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to save window width: {}",
+                                    err
+                                );
+                            });
                     }
-                    let settings = settings.unwrap();
-                    settings.set_int("window-width", window.default_width()).unwrap_or_else(|err|{
-                        g_critical!("MissionCenter", "Failed to save window width: {}", err);
-                    });
+                });
 
-                    this.settings.set(Some(settings));
-                }));
-
-                if settings.is_none() {
-                    g_critical!("MissionCenter", "Failed to load application settings");
-                }
-                let settings = settings.unwrap();
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
+
+                sys_info.set_core_count_affects_percentages(
+                    settings.boolean("apps-page-core-count-affects-percentages"),
+                );
+
+                settings.connect_changed(
+                    Some("apps-page-core-count-affects-percentages"),
+                    move |settings, _| {
+                        let app = app!();
+                        match app.sys_info() {
+                            Ok(sys_info) => {
+                                sys_info.set_core_count_affects_percentages(
+                                    settings.boolean("apps-page-core-count-affects-percentages"),
+                                );
+                            }
+                            Err(e) => {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to get sys_info from MissionCenterApplication: {}",
+                                    e
+                                );
+                            }
+                        };
+                    },
+                );
+
+                self.sys_info.set(Some(sys_info));
 
                 let provider = gtk::CssProvider::new();
                 provider.load_from_bytes(&Bytes::from_static(include_bytes!(
@@ -132,6 +179,9 @@ mod imp {
             };
 
             window.present();
+
+            self.window
+                .set(window.downcast_ref::<crate::MissionCenterWindow>().cloned());
         }
     }
 
@@ -148,82 +198,52 @@ glib::wrapper! {
 
 impl MissionCenterApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
+        use glib::g_message;
+
         let this: Self = glib::Object::builder()
             .property("application-id", application_id)
             .property("flags", flags)
             .build();
 
+        g_message!(
+            "MissionCenter::Application",
+            "Starting Mission Center v{}",
+            env!("CARGO_PKG_VERSION")
+        );
+
         this
     }
 
     pub fn set_initial_readings(&self, readings: Readings) {
-        use crate::MissionCenterWindow;
         use gtk::glib::*;
 
-        let window = self.active_window();
-        if window.is_none() {
+        let Some(window) = self.window() else {
             g_critical!(
                 "MissionCenter::Application",
                 "No active window, when trying to refresh data"
             );
             return;
-        }
+        };
 
-        let window = window.unwrap();
-        let window = window.downcast_ref::<MissionCenterWindow>();
-        if window.is_none() {
-            g_critical!(
-                "MissionCenter::Application",
-                "Active window is not a MissionCenterWindow",
-            );
-            return;
-        }
-
-        window.unwrap().set_initial_readings(readings)
+        window.set_initial_readings(readings)
     }
 
     pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
-        use crate::MissionCenterWindow;
         use gtk::glib::*;
 
-        let window = self.active_window();
-        if window.is_none() {
+        let Some(window) = self.window() else {
             g_critical!(
                 "MissionCenter::Application",
                 "No active window, when trying to refresh data"
             );
             return false;
-        }
+        };
 
-        let window = window.unwrap();
-        let window = window.downcast_ref::<MissionCenterWindow>();
-        if window.is_none() {
-            g_critical!(
-                "MissionCenter::Application",
-                "Active window is not a MissionCenterWindow",
-            );
-            return false;
-        }
-
-        window.unwrap().update_readings(readings)
+        window.update_readings(readings)
     }
 
-    pub fn default_instance() -> Option<Self> {
-        match gio::Application::default() {
-            Some(app) => app.downcast_ref::<Self>().cloned(),
-            None => {
-                g_critical!(
-                    "MissionCenter",
-                    "Unable to get the default MissionCenterApplication instance"
-                );
-                return None;
-            }
-        }
-    }
-
-    pub fn settings(&self) -> Option<gio::Settings> {
-        let settings = unsafe { &*self.imp().settings.as_ptr() };
-        settings.clone()
+    pub fn settings(&self) -> gio::Settings {
+        unsafe { (&*self.imp().settings.as_ptr()).as_ref().unwrap_unchecked() }.clone()
     }
 
     pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {
@@ -236,6 +256,10 @@ impl MissionCenterApplication {
             })),
             Err(e) => Err(e),
         }
+    }
+
+    pub fn window(&self) -> Option<crate::MissionCenterWindow> {
+        unsafe { &*self.imp().window.as_ptr() }.clone()
     }
 
     fn setup_gactions(&self) {
@@ -254,38 +278,61 @@ impl MissionCenterApplication {
     }
 
     fn show_preferences(&self) {
-        let window = self.active_window().unwrap();
-        let settings = self.imp().settings.take();
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to show preferences"
+            );
+            return;
+        };
 
-        let preferences = crate::preferences::PreferencesWindow::new(&window, settings.as_ref());
-        preferences.present();
-
-        self.imp().settings.set(settings);
+        let preferences = crate::preferences::PreferencesDialog::new();
+        preferences.present(Some(&window));
     }
 
     fn show_about(&self) {
-        let window = self.active_window().unwrap();
-        let about = adw::AboutWindow::builder()
-            .transient_for(&window)
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to show about dialog"
+            );
+            return;
+        };
+
+        let about = adw::AboutDialog::builder()
             .application_name("Mission Center")
             .application_icon("io.missioncenter.MissionCenter")
             .developer_name("Mission Center Developers")
-            .developers(["Romeo Calota", "QwertyChouskie", "jojo2357"])
+            .developers(["Romeo Calota", "QwertyChouskie", "jojo2357", "Jan Luca"])
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
-            .copyright("© 2023 Mission Center Developers")
+            .copyright("© 2024 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
             .release_notes(
-                r#"<ul>
-<li>Display optical device information in the Performance tab</li>
-<li>Fix a bug where the Gatherer process would crash at startup</li>
-<li>Remove the need for admin rights to display extended memory information</li>
-<li>Remove the requirement for `libgcc_s.so.1` on musl-based systems</li>
-<li>Make the saturation and transfer graphs the same height in the disk usage panes</li>
-<li>Translation updates and fixes</li>
-</ul>"#,
+                r#"<ul><li>Add a new Fan Page that monitors system fans and reports RPM, PWM and temperature information</li>
+<li>Add support for hiding and rearranging devices in the Performance sidebar</li>
+<li>Overhaul the Memory Page to convey more information</li>
+<li>Update GPU page UI to better reflect what aspects of the GPU can be monitored</li>
+<li>Add GTT information to the GPU page (AMD only)</li>
+<li>Add network total data transfer information to the Network Page</li>
+<li>Show application icons for processes that belong to a known application</li>
+<li>Switch to AdwDialog for the About and Preferences dialogs</li>
+<li>Update NVTOP for better GPU support</li>
+<li>Initial support for Snap</li>
+<li>Update to latest GNOME (47) Platform for all supported packaging formats</li>
+<li>Add support for `zenpower` when monitoring AMD CPU temperature</li>
+<li>Fix a seeming CPU usage spike when the app starts</li>
+<li>Improved app detection</li>
+<li>Supress some network device related errors that were flooding the SystemD journal</li>
+<li>Hide CPU frequency governor and power preference information when not supported</li>
+<li>Update CPU frequency governor and power preference information while the app is running</li>
+<li>Add an option to use bytes instead of bits for network data transfer information</li>
+<li>Add support for more device types in the Network Page</li>
+<li>Detect SystemD more reliably using D-Bus instead of searching for a library on disk</li>
+<li>Fix a memory leak that occurred when filtering apps and processes</li>
+<li>Clean up graph labels to be more consistent across different pages</li></ul>"#,
             )
             .build();
 
@@ -295,19 +342,13 @@ impl MissionCenterApplication {
                 "GTK https://www.gtk.org/",
                 "GNOME https://www.gnome.org/",
                 "Libadwaita https://gitlab.gnome.org/GNOME/libadwaita",
-                "Pathfinder 3 https://github.com/servo/pathfinder",
-                "sysinfo https://docs.rs/sysinfo/latest/sysinfo",
+                "Blueprint Compiler https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/",
                 "NVTOP https://github.com/Syllo/nvtop",
-                "musl libc https://musl.libc.org/",
                 "Workbench https://github.com/sonnyp/Workbench",
                 "And many more... Thank you all!",
             ],
         );
 
-        about.present();
+        about.present(Some(&window));
     }
 }
-
-pub const INTERVAL_STEP: f64 = 0.05;
-pub const BASE_INTERVAL: f64 = 1f64;
-pub const BASE_POINTS: u32 = 60;

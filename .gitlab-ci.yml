@@ -1,15 +1,18 @@
-image: "ubuntu:23.10"
+image: "ubuntu:24.10"
 
 stages:
   - build
-  - package
+  - flatpak
+  - portable-build
+  - package-appimage-snap
 
-build-job:
+build-job-x86:
   stage: build
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
@@ -24,54 +27,217 @@ build-job:
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-flatpak-job:
-  stage: package
+build-job-arm:
+  stage: build
+  tags:
+    - saas-linux-medium-arm64
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    - ln -sf /usr/bin/python3 /usr/local/bin/python
+
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    - export PATH="$HOME/.cargo/bin:$PATH"
+
+    - pip install meson ninja --break-system-packages
+
+    - meson setup _build -Dbuildtype=release
+    - ninja -C _build
+    - glib-compile-schemas --strict data/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+flatpak-job-x86:
+  stage: flatpak
+  tags:
+    - saas-linux-large-amd64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08 org.gnome.Platform//45 org.gnome.Sdk//45
+    - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
 
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
-    - flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
+    - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
   artifacts:
     paths:
-      - flatpak/missioncenter.flatpak
+      - flatpak/missioncenter-x86_64.flatpak
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $BUILD_FLATPAK != null
 
-appimage-job:
-  stage: package
+flatpak-job-arm:
+  stage: flatpak
+  tags:
+    - saas-linux-large-arm64
   script:
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu mantic-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y podman fuse-overlayfs
+    - apt-get install -y build-essential flatpak flatpak-builder
+    - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+    - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
 
-    - update-alternatives --set iptables /usr/sbin/iptables-legacy
-    - mkdir -p ~/.config/containers
-    - echo '[storage.options.overlay]' > ~/.config/containers/storage.conf
-    - echo 'mount_program = "/usr/bin/fuse-overlayfs"' >> ~/.config/containers/storage.conf
-    - cat ~/.config/containers/storage.conf
+    - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
+    - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
+  artifacts:
+    paths:
+      - flatpak/missioncenter-aarch64.flatpak
+  rules:
+    - if: $BUILD_FLATPAK != null
 
-    - podman pull ubuntu:20.04
-    - podman run --arch=x86_64 -itd --name appimage -v $PWD:/src:Z ubuntu:20.04
-    - podman exec appimage /src/appimage/build.sh
+portable-build-job-x86:
+  stage: portable-build
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-amd64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-x86_64.tar.gz *
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable-x86_64.tar.gz'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
+
+portable-build-job-arm:
+  stage: portable-build
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-arm64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-aarch64.tar.gz *
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable-aarch64.tar.gz'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
+
+snap-job-x86:
+  stage: package-appimage-snap
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y curl ca-certificates
+
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cd ../..
+
+    - SRC_PATH=$PWD bash support/create-snap.sh
+
+  artifacts:
+    paths:
+      - '**/*.snap'
+  rules:
+    - if: $BUILD_SNAP != null
+
+snap-job-arm:
+  stage: package-appimage-snap
+  tags:
+    - saas-linux-medium-arm64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y
+    - apt-get install -y curl ca-certificates
+
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - mkdir -p snap/local && cd snap/local && tar xf ../../portable-aarch64.tar.gz && cd ../..
+
+    - SRC_PATH=$PWD bash support/create-snap.sh
+
+  artifacts:
+    paths:
+      - '**/*.snap'
+  rules:
+    - if: $BUILD_SNAP != null
+
+appimage-job-x86:
+  stage: package-appimage-snap
+  image: ubuntu:20.04
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
+
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
+
+    - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
+
   artifacts:
     paths:
       - 'MissionCenter-x86_64.AppImage'
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "**/Cargo.toml"
-        - "**/meson.build"
-        - "appimage/*"
-        - "resources/ui/**/*"
+    - if: $BUILD_APPIMAGE != null
+
+appimage-job-arm:
+  stage: package-appimage-snap
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-medium-arm64
+  script:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+
+    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
+
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
+    - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
+
+    - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
+
+  artifacts:
+    paths:
+      - 'MissionCenter-aarch64.AppImage'
+  rules:
+    - if: $BUILD_APPIMAGE != null

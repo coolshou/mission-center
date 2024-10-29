@@ -21,14 +21,22 @@
 use std::cell::Cell;
 
 use glib::{ParamSpec, Properties, Value};
-use gtk::{gdk, gdk::prelude::*, glib, prelude::*, subclass::prelude::*};
+use gtk::prelude::WidgetExt;
+use gtk::{
+    gdk,
+    gdk::{gdk_pixbuf, prelude::*},
+    glib, graphene,
+    gsk::{self, FillRule, PathBuilder, Stroke},
+    prelude::*,
+    subclass::prelude::*,
+    Snapshot,
+};
 
-use crate::i18n::*;
+use crate::i18n::i18n_f;
+
+use super::GRAPH_RADIUS;
 
 mod imp {
-    use pathfinder_gl::GLDevice;
-    use pathfinder_renderer::gpu::renderer::Renderer;
-
     use super::*;
 
     #[derive(Properties)]
@@ -43,9 +51,6 @@ mod imp {
 
         pub(crate) mem_info: Cell<crate::sys_info_v2::MemInfo>,
 
-        renderer: Cell<Option<Renderer<GLDevice>>>,
-        render_function: Cell<fn(&Self, width: i32, height: i32, scale_factor: f32)>,
-
         tooltip_texts: Cell<Vec<(f32, String)>>,
     }
 
@@ -58,9 +63,6 @@ mod imp {
 
                 mem_info: Cell::new(crate::sys_info_v2::MemInfo::default()),
 
-                renderer: Cell::new(None),
-                render_function: Cell::new(Self::render_init_pathfinder),
-
                 tooltip_texts: Cell::new(vec![]),
             }
         }
@@ -68,15 +70,7 @@ mod imp {
 
     impl MemoryCompositionWidget {
         #[inline]
-        fn generate_pattern(
-            &self,
-            scale_factor: f32,
-            color: gdk::RGBA,
-        ) -> pathfinder_content::pattern::Pattern {
-            use pathfinder_color::*;
-            use pathfinder_content::pattern::*;
-            use pathfinder_geometry::vector::*;
-
+        fn generate_pattern(&self, scale_factor: f32, color: gdk::RGBA) -> gdk_pixbuf::Pixbuf {
             let pixel_size = scale_factor.trunc() as i32;
             let pattern_width = pixel_size * 2;
             let pattern_height = pixel_size * 2;
@@ -84,80 +78,85 @@ mod imp {
             let mut pattern_data = Vec::with_capacity((pattern_width * pattern_height) as usize);
             for _ in 0..pixel_size {
                 for _ in 0..pixel_size {
-                    pattern_data.push(ColorU::new(
+                    pattern_data.push([
                         (color.red() * 255.) as u8,
                         (color.green() * 255.) as u8,
                         (color.blue() * 255.) as u8,
                         50,
-                    ));
+                    ]);
                 }
                 for _ in 0..pixel_size {
-                    pattern_data.push(ColorU::new(0, 0, 0, 0));
+                    pattern_data.push([0, 0, 0, 0]);
                 }
             }
             for _ in 0..pixel_size {
                 for _ in 0..pixel_size {
-                    pattern_data.push(ColorU::new(0, 0, 0, 0));
+                    pattern_data.push([0, 0, 0, 0]);
                 }
                 for _ in 0..pixel_size {
-                    pattern_data.push(ColorU::new(
+                    pattern_data.push([
                         (color.red() * 255.) as u8,
                         (color.green() * 255.) as u8,
                         (color.blue() * 255.) as u8,
                         50,
-                    ));
+                    ]);
                 }
             }
-            let image = Image::new(
-                Vector2I::new(pattern_width, pattern_height),
-                std::sync::Arc::new(pattern_data),
-            );
 
-            let mut pattern = Pattern::from_image(image);
-            pattern.set_repeat_x(true);
-            pattern.set_repeat_y(true);
-            pattern.set_smoothing_enabled(false);
+            let pattern_data = unsafe {
+                std::slice::from_raw_parts(
+                    pattern_data.as_ptr() as *const u8,
+                    pattern_data.len() * std::mem::size_of::<[u8; 4]>(),
+                )
+            };
 
-            pattern
+            gdk_pixbuf::Pixbuf::from_bytes(
+                &glib::Bytes::from(pattern_data),
+                gdk_pixbuf::Colorspace::Rgb,
+                true,
+                8,
+                pattern_width,
+                pattern_height,
+                pattern_width * 4,
+            )
         }
+
         #[inline]
         fn render_bar(
             &self,
-            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
+            snapshot: &Snapshot,
             x: f32,
             width: f32,
-            height: i32,
-            fill_style: Option<pathfinder_canvas::FillStyle>,
+            height: f32,
+            stroke: &Stroke,
+            stroke_color: &gdk::RGBA,
+            fill: Option<&gdk::RGBA>,
         ) -> f32 {
-            use pathfinder_canvas::*;
+            if let Some(fill) = fill {
+                let path_builder = PathBuilder::new();
+                path_builder.move_to(x, 0.);
+                path_builder.line_to(x + width, 0.);
+                path_builder.line_to(x + width, height);
+                path_builder.line_to(x, height);
+                path_builder.close();
 
-            let mut path = Path2D::new();
-            path.move_to(vec2f(x, 0.));
-            path.line_to(vec2f(x, height as f32));
-            canvas.stroke_path(path);
-
-            if let Some(fill_style) = fill_style {
-                canvas.set_fill_style(fill_style);
-                canvas.fill_rect(RectF::new(vec2f(x, 0.), vec2f(width, height as f32)));
+                snapshot.append_fill(&path_builder.to_path(), FillRule::Winding, fill);
             }
+
+            let path_builder = PathBuilder::new();
+            path_builder.move_to(x, 0.);
+            path_builder.line_to(x, height);
+            let path = path_builder.to_path();
+
+            snapshot.append_stroke(&path, &stroke, stroke_color);
 
             x + width
         }
 
         #[inline]
-        fn render_outline(
-            &self,
-            canvas: &mut pathfinder_canvas::CanvasRenderingContext2D,
-            width: i32,
-            height: i32,
-            scale_factor: f32,
-        ) {
-            use pathfinder_canvas::*;
-
-            canvas.stroke_rect(RectF::new(
-                vec2f(scale_factor / 2., scale_factor / 2.),
-                vec2f(width as f32 - scale_factor, height as f32 - scale_factor),
-            ));
+        fn draw_outline(&self, snapshot: &Snapshot, bounds: &gsk::RoundedRect, color: &gdk::RGBA) {
+            let stroke_color = gdk::RGBA::new(color.red(), color.green(), color.blue(), 1.);
+            snapshot.append_border(&bounds, &[1.; 4], &[stroke_color.clone(); 4]);
         }
 
         fn configure_tooltips(&self) {
@@ -191,49 +190,21 @@ mod imp {
             });
         }
 
-        fn render_init_pathfinder(&self, width: i32, height: i32, scale_factor: f32) {
-            use pathfinder_canvas::*;
-            use pathfinder_gl::*;
-            use pathfinder_renderer::gpu::{options::*, renderer::*};
-            use pathfinder_resources::embedded::*;
+        fn render(&self, snapshot: &Snapshot, width: f32, height: f32, scale_factor: f64) {
+            let texture = gdk::Texture::for_pixbuf(
+                &self.generate_pattern(scale_factor as f32, self.base_color.get()),
+            );
 
-            let mut fboid: gl::types::GLint = 0;
-            unsafe {
-                gl::GetIntegerv(gl::FRAMEBUFFER_BINDING, &mut fboid);
-            }
+            let radius = graphene::Size::new(GRAPH_RADIUS, GRAPH_RADIUS);
+            let bounds = gsk::RoundedRect::new(
+                graphene::Rect::new(0., 0., width, height),
+                radius,
+                radius,
+                radius,
+                radius,
+            );
 
-            let device = GLDevice::new(GLVersion::GL3, fboid as _);
-            let mode = RendererMode::default_for_device(&device);
-
-            let framebuffer_size = Vector2I::new(width, height);
-            let options = RendererOptions {
-                dest: DestFramebuffer::full_window(framebuffer_size.clone()),
-                background_color: None,
-                ..RendererOptions::default()
-            };
-
-            self.renderer.set(Some(Renderer::new(
-                device,
-                &EmbeddedResourceLoader::new(),
-                mode,
-                options,
-            )));
-
-            self.render_function.set(Self::render_all);
-            self.render_all(width, height, scale_factor);
-        }
-
-        fn render_all(&self, width: i32, height: i32, scale_factor: f32) {
-            use pathfinder_canvas::*;
-            use pathfinder_renderer::{concurrent::*, gpu::options::*, options::*};
-
-            let framebuffer_size = Vector2I::new(width, height);
-
-            let mut renderer = self.renderer.take().expect("Uninitialized renderer");
-            renderer.options_mut().dest = DestFramebuffer::full_window(framebuffer_size);
-
-            let this = self.obj();
-            let this = this.upcast_ref::<super::MemoryCompositionWidget>();
+            gtk::prelude::SnapshotExt::push_rounded_clip(snapshot, &bounds);
 
             let mem_info = self.mem_info.get();
 
@@ -243,27 +214,17 @@ mod imp {
                 1.
             };
 
-            let mut canvas =
-                Canvas::new(framebuffer_size.to_f32()).get_context_2d(CanvasFontContext {});
+            let base_color = self.base_color.get();
+            let fill_color = gdk::RGBA::new(
+                base_color.red(),
+                base_color.green(),
+                base_color.blue(),
+                50. / 256.,
+            );
 
-            let base_color = this.imp().base_color.get();
-
-            let fill_background_pattern =
-                FillStyle::Pattern(self.generate_pattern(scale_factor, base_color));
-            let fill_background_solid = FillStyle::Color(ColorU::new(
-                (base_color.red() * 255.) as u8,
-                (base_color.green() * 255.) as u8,
-                (base_color.blue() * 255.) as u8,
-                50,
-            ));
-
-            canvas.set_stroke_style(FillStyle::Color(ColorU::new(
-                (base_color.red() * 255.) as u8,
-                (base_color.green() * 255.) as u8,
-                (base_color.blue() * 255.) as u8,
-                255,
-            )));
-            canvas.set_line_width(scale_factor);
+            let stroke = Stroke::new(1.);
+            let stroke_color =
+                gdk::RGBA::new(base_color.red(), base_color.green(), base_color.blue(), 1.);
 
             let mut tooltip_texts = self.tooltip_texts.take();
             tooltip_texts.clear();
@@ -271,11 +232,13 @@ mod imp {
             // Used memory
             let used = (mem_info.mem_total - (mem_info.mem_available + mem_info.dirty)) as f32;
             let x = self.render_bar(
-                &mut canvas,
+                snapshot,
                 0.,
-                (width as f32 * (used / total)).trunc(),
+                (width * (used / total)).trunc(),
                 height,
-                Some(fill_background_solid.clone()),
+                &stroke,
+                &stroke_color,
+                Some(&fill_color),
             );
 
             let used_hr = crate::to_human_readable(used, 1024.);
@@ -294,21 +257,24 @@ mod imp {
 
             // Dirty memory
             let modified = mem_info.dirty as f32;
-            let bar_width = (width as f32 * (modified / total)).trunc();
-            self.render_bar(
-                &mut canvas,
+            let bar_width = (width * (modified / total)).trunc();
+            let new_x = self.render_bar(
+                snapshot,
                 x.trunc(),
                 bar_width,
                 height,
-                Some(fill_background_solid),
+                &stroke,
+                &stroke_color,
+                Some(&fill_color),
             );
-            let x = self.render_bar(
-                &mut canvas,
-                x.trunc(),
-                bar_width,
-                height,
-                Some(fill_background_pattern.clone()),
+            snapshot.push_repeat(&graphene::Rect::new(x, 0., bar_width, height), None);
+            snapshot.append_texture(
+                &texture,
+                &graphene::Rect::new(0., 0., texture.width() as f32, texture.height() as f32),
             );
+            snapshot.pop();
+
+            let x = new_x;
 
             let modified_hr = crate::to_human_readable(modified, 1024.);
             tooltip_texts.push((
@@ -321,14 +287,18 @@ mod imp {
 
             // Stand-by memory
             let standby = total - (used + mem_info.mem_free as f32);
-            let bar_width = (width as f32 * (standby / total)).trunc();
-            let x = self.render_bar(
-                &mut canvas,
-                x.trunc(),
-                bar_width,
-                height,
-                Some(fill_background_pattern),
+            let bar_width = (width * (standby / total)).trunc();
+
+            let new_x =
+                self.render_bar(snapshot, x, bar_width, height, &stroke, &stroke_color, None);
+            snapshot.push_repeat(&graphene::Rect::new(x, 0., bar_width, height), None);
+            snapshot.append_texture(
+                &texture,
+                &graphene::Rect::new(0., 0., texture.width() as f32, texture.height() as f32),
             );
+            snapshot.pop();
+
+            let x = new_x;
 
             let standby_hr = crate::to_human_readable(standby, 1024.);
             tooltip_texts.push((
@@ -339,29 +309,24 @@ mod imp {
                 )
             ));
 
-            // Free memory
+            // // Free memory
             let free = mem_info.mem_free as f32;
-            self.render_bar(&mut canvas, x, 1., height, None);
+            self.render_bar(snapshot, x, 1., height, &stroke, &stroke_color, None);
 
             let free_hr = crate::to_human_readable(free, 1024.);
             tooltip_texts.push((
-                width as f32 + 1.,
+                width + 1.,
                 i18n_f(
                     "Free ({}B)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
                     &[&format!("{:.2} {}{}", free_hr.0, free_hr.1, if free_hr.1.is_empty() { "" } else { "i" })],
                 ),
             ));
 
-            self.render_outline(&mut canvas, width, height, scale_factor);
+            gtk::prelude::SnapshotExt::pop(snapshot);
 
-            canvas.into_canvas().into_scene().build_and_render(
-                &mut renderer,
-                BuildOptions::default(),
-                executor::SequentialExecutor,
-            );
+            self.draw_outline(snapshot, &bounds, &stroke_color);
 
             self.tooltip_texts.set(tooltip_texts);
-            self.renderer.set(Some(renderer));
         }
     }
 
@@ -369,16 +334,10 @@ mod imp {
     impl ObjectSubclass for MemoryCompositionWidget {
         const NAME: &'static str = "MemoryCompositionWidget";
         type Type = super::MemoryCompositionWidget;
-        type ParentType = gtk::GLArea;
+        type ParentType = gtk::Widget;
     }
 
     impl ObjectImpl for MemoryCompositionWidget {
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            self.configure_tooltips();
-        }
-
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -390,48 +349,59 @@ mod imp {
         fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
             self.derived_property(id, pspec)
         }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            self.configure_tooltips();
+        }
     }
 
     impl WidgetImpl for MemoryCompositionWidget {
         fn realize(&self) {
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::MemoryCompositionWidget>();
-
             self.parent_realize();
-
-            this.set_has_stencil_buffer(true);
-            this.set_auto_render(true);
         }
-    }
 
-    impl GLAreaImpl for MemoryCompositionWidget {
-        fn render(&self, _: &gdk::GLContext) -> glib::Propagation {
-            let obj = self.obj();
-            let this = obj.upcast_ref::<super::MemoryCompositionWidget>();
+        fn snapshot(&self, snapshot: &Snapshot) {
+            use glib::g_critical;
 
-            let scale_factor = this.scale_factor();
-            let mut viewport_info: [gl::types::GLint; 4] = [0; 4];
-            unsafe {
-                gl::GetIntegerv(gl::VIEWPORT, &mut viewport_info[0]);
-            }
-            let width = viewport_info[2];
-            let height = viewport_info[3];
+            let this = self.obj();
 
-            unsafe {
-                gl::ClearColor(0.0, 0.0, 0.0, 0.0);
-                gl::Clear(gl::COLOR_BUFFER_BIT);
-            }
+            let native = match this.native() {
+                Some(native) => native,
+                None => {
+                    g_critical!(
+                        "MissionCenter::MemoryCompositionWidget",
+                        "Failed to get native"
+                    );
+                    return;
+                }
+            };
 
-            self.render_function.get()(self, width, height, scale_factor as f32);
+            let surface = match native.surface() {
+                Some(surface) => surface,
+                None => {
+                    g_critical!(
+                        "MissionCenter::MemoryCompositionWidget",
+                        "Failed to get surface"
+                    );
+                    return;
+                }
+            };
 
-            glib::Propagation::Proceed
+            self.render(
+                snapshot,
+                this.width() as f32,
+                this.height() as f32,
+                surface.scale(),
+            );
         }
     }
 }
 
 glib::wrapper! {
     pub struct MemoryCompositionWidget(ObjectSubclass<imp::MemoryCompositionWidget>)
-        @extends gtk::GLArea, gtk::Widget,
+        @extends gtk::Widget,
         @implements gtk::Buildable;
 }
 
@@ -447,6 +417,6 @@ impl MemoryCompositionWidget {
 
     pub fn update_memory_information(&self, mem_info: &crate::sys_info_v2::MemInfo) {
         self.imp().mem_info.set(mem_info.clone());
-        self.queue_render();
+        self.queue_draw();
     }
 }
