@@ -32,6 +32,7 @@ mod imp {
 
     const GRAPH_SELECTION_OVERALL: i32 = 1;
     const GRAPH_SELECTION_ALL: i32 = 2;
+    const GRAPH_SELECTION_STACKED: i32 = 3;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageCpu)]
@@ -152,6 +153,11 @@ mod imp {
                 None,
                 &glib::Variant::from(graph_selection == GRAPH_SELECTION_ALL),
             );
+            let stacked_action = gio::SimpleAction::new_stateful(
+                "stacked-all-processors",
+                None,
+                &glib::Variant::from(graph_selection == GRAPH_SELECTION_STACKED),
+            );
             let apa = all_processors_action.clone();
             overall_action.connect_activate({
                 let this = this.downgrade();
@@ -166,8 +172,10 @@ mod imp {
                     let graph_widgets = this.imp().graph_widgets.take();
 
                     graph_widgets[0].set_visible(true);
+                    graph_widgets[1].set_visible(false);
+                    graph_widgets[2].set_visible(false);
 
-                    for graph_widget in graph_widgets.iter().skip(1) {
+                    for graph_widget in graph_widgets.iter().skip(3) {
                         graph_widget.set_visible(false);
                     }
 
@@ -200,8 +208,10 @@ mod imp {
                     let graph_widgets = this.imp().graph_widgets.take();
 
                     graph_widgets[0].set_visible(false);
+                    graph_widgets[1].set_visible(false);
+                    graph_widgets[2].set_visible(false);
 
-                    for graph_widget in graph_widgets.iter().skip(1) {
+                    for graph_widget in graph_widgets.iter().skip(3) {
                         graph_widget.set_visible(true);
                     }
 
@@ -221,6 +231,42 @@ mod imp {
                 }
             });
             actions.add_action(&all_processors_action);
+
+            let spa = overall_action.clone();
+            stacked_action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+
+                    let graph_widgets = this.imp().graph_widgets.take();
+
+                    graph_widgets[0].set_visible(false);
+                    graph_widgets[1].set_visible(true);
+                    graph_widgets[2].set_visible(true);
+
+                    for graph_widget in graph_widgets.iter().skip(3) {
+                        graph_widget.set_visible(false);
+                    }
+
+                    action.set_state(&glib::Variant::from(true));
+                    spa.set_state(&glib::Variant::from(false));
+
+                    settings!()
+                        .set_int("performance-page-cpu-graph", GRAPH_SELECTION_STACKED)
+                        .unwrap_or_else(|_| {
+                            g_critical!(
+                                "MissionCenter::PerformancePage",
+                                "Failed to save selected CPU graph"
+                            );
+                        });
+
+                    this.imp().graph_widgets.set(graph_widgets);
+                }
+            });
+            actions.add_action(&stacked_action);
 
             let action = gio::SimpleAction::new_stateful(
                 "kernel_times",
@@ -243,7 +289,7 @@ mod imp {
                         .unwrap_or(false);
 
                     graph_widgets[0].set_data_visible(1, visible);
-                    for graph_widget in graph_widgets.iter().skip(1) {
+                    for graph_widget in graph_widgets.iter().skip(3) {
                         graph_widget.set_data_visible(1, visible);
                     }
 
@@ -435,8 +481,16 @@ mod imp {
             graph_widgets[0].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
             graph_widgets[0].add_data_point(1, dynamic_cpu_info.overall_kernel_utilization_percent);
 
+            graph_widgets[1].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
+
+            let mut max_val: f32 = 0f32;
+
             // Update per-core graphs
             for i in 0..dynamic_cpu_info.per_logical_cpu_utilization_percent.len() {
+                if max_val < dynamic_cpu_info.per_logical_cpu_utilization_percent[i] {
+                    max_val = dynamic_cpu_info.per_logical_cpu_utilization_percent[i];
+                }
+
                 let graph_widget = &mut graph_widgets[i + 1];
                 graph_widget
                     .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
@@ -445,6 +499,8 @@ mod imp {
                     dynamic_cpu_info.per_logical_cpu_kernel_utilization_percent[i],
                 );
             }
+
+            graph_widgets[2].add_data_point(0, max_val);
 
             this.graph_widgets.set(graph_widgets);
 
@@ -706,6 +762,23 @@ mod imp {
                 None
             });
 
+            graph_widgets.push(GraphWidget::new());
+            graph_widgets.push(GraphWidget::new());
+            self.usage_graphs.attach(&graph_widgets[1], 0, 0, 1, 1);
+            self.usage_graphs.attach(&graph_widgets[2], 0, 1, 1, 1);
+            graph_widgets[1].set_data_points(data_points);
+            graph_widgets[2].set_data_points(data_points);
+            graph_widgets[1].set_smooth_graphs(smooth);
+            graph_widgets[2].set_smooth_graphs(smooth);
+            graph_widgets[1].set_scroll(true);
+            graph_widgets[2].set_scroll(true);
+            graph_widgets[1].set_data_set_count(1);
+            graph_widgets[2].set_data_set_count(1);
+            graph_widgets[1].set_base_color(&base_color);
+            graph_widgets[2].set_base_color(&base_color);
+            graph_widgets[1].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
+            graph_widgets[2].set_visible(graph_selection == GRAPH_SELECTION_STACKED);
+
             for i in 0..cpu_count {
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
@@ -718,7 +791,7 @@ mod imp {
                     graph_widgets[graph_widget_index].connect_local("resize", true, move |_| {
                         let graph_widgets = this.imp().graph_widgets.take();
 
-                        for graph_widget in graph_widgets.iter().skip(1) {
+                        for graph_widget in graph_widgets.iter().skip(3) {
                             let width = graph_widget.width() as f32;
                             let height = graph_widget.height() as f32;
 
