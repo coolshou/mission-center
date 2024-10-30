@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-09-06 17:37+0000\n"
+"PO-Revision-Date: 2024-10-30 14:01+0000\n"
 "Last-Translator: jhihyu lin <thomas.jy.lin@gmail.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -169,12 +169,12 @@ msgstr "每張圖表要顯示多少點？"
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "是否使用 bits（位元，預設）或 Bytes （位元組）表示網路速度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
-msgstr ""
+msgstr "圖形最大值是否設定為介面最大值（關）或觀察到的最大值（開）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -218,54 +218,52 @@ msgstr "性能圖表應該是平滑的還是鋸齒狀的"
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "預設顯示 CPU 資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "無法獲取額外的記憶體資訊"
+msgstr "預設顯示記憶體資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "預設顯示磁碟資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "預設顯示網路資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "預設顯示 GPU 資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "預設顯示風扇資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "記憶體組成"
+msgstr "顯示記憶體組成小工具"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "顯示交換空間圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "顯示 GPU 編解碼圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "應用程式側欄中條目的順序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "隱藏在應用程式側邊欄中的圖表"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -275,7 +273,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr "近 {}{} 使用率 "
+msgstr "使用率 "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -369,7 +367,7 @@ msgstr "GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_風扇"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -491,28 +489,24 @@ msgid "Type:"
 msgstr "類型："
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
 msgstr "記憶體使用率 "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "溫度"
+msgstr "溫度 "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "速度"
+msgstr "風扇速度"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "溫度"
+msgstr "目前溫度"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
@@ -525,7 +519,7 @@ msgstr "記憶體使用率 "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "顯示編解碼使用率"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -540,9 +534,8 @@ msgid "Memory usage"
 msgstr "記憶體使用率"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "GPU 使用率"
+msgstr "GTT 使用率"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
@@ -582,7 +575,6 @@ msgid "Memory"
 msgstr "記憶體"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
 msgstr "記憶體使用率 "
 
@@ -591,13 +583,12 @@ msgid "Memory composition"
 msgstr "記憶體組成"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "記憶體組成"
+msgstr "顯示記憶體組成"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "顯示交換空間使用率"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -645,7 +636,7 @@ msgstr "接收"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "總接收"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -653,7 +644,7 @@ msgstr "傳送"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "總傳送"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -692,9 +683,8 @@ msgid "IPv6 address:"
 msgstr "IPv6 位址："
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "一般設定"
+msgstr "一般"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -705,9 +695,8 @@ msgid "Chart Data Points"
 msgstr "圖表數據樣點"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "效能"
+msgstr "效能頁面"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -719,48 +708,45 @@ msgstr "將圖表繪製為平滑線而不是鋸齒線"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "以 Bytes （位元組）顯示網路速度"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "動態縮放網路圖表"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
-msgstr ""
+msgstr "將網路圖表設定為根據實際使用情況或通道最大速度動態縮放"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "顯示 CPU 資訊"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "記憶體組成"
+msgstr "顯示記憶體資訊"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "顯示磁碟資訊"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "顯示網路資訊"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "顯示 GPU 資訊"
 
 #: resources/ui/preferences/page.blp:89
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "進程與使用者資訊"
+msgstr "顯示風扇資訊"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "應用程式頁面設定"
+msgstr "應用程式頁面"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -869,26 +855,24 @@ msgid "PID"
 msgstr "PID"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "已啟用"
+msgstr "全部啟用"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "全部停用"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "重設為預設值"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
 msgstr "裝置"
 
 #: resources/ui/window.blp:70
-#, fuzzy
 msgid "Edit Sidebar"
-msgstr "切換側邊欄"
+msgstr "編輯側邊欄"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
@@ -1043,16 +1027,15 @@ msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "風扇 {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "風扇"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1090,19 +1073,19 @@ msgstr "{} {}{}B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1110,16 +1093,15 @@ msgstr "無法獲取額外的記憶體資訊"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
