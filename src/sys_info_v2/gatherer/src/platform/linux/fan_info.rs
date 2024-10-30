@@ -130,7 +130,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
 
         self.info.clear();
 
-        match glob("/sys/class/hwmon/hwmon*/fan*_input") {
+        match glob("/sys/class/hwmon/hwmon[0-9]*/fan[0-9]*_input") {
             Ok(globs) => {
                 for entry in globs {
                     match entry {
@@ -149,7 +149,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                             let findex = if let Some(hwmon_instance_dir) =
                                 path.file_name().unwrap().to_str()
                             {
-                                hwmon_instance_dir[3..4]
+                                hwmon_instance_dir[3..(hwmon_instance_dir.len()-"_input".len())]
                                     .parse::<u64>()
                                     .ok()
                                     .unwrap_or(u64::MAX)
