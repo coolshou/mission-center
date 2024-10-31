@@ -140,7 +140,7 @@ And then to run the app:
 If you want to install the app just run:
 
 ```bash
-ninja -C _build install
+ninja -C $BUILD_ROOT install
 ```
 
 And run the app from your launcher or from the command-line:
