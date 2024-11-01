@@ -106,97 +106,130 @@ template $PerformancePageGpu: Box {
         orientation: vertical;
         spacing: 10;
 
-        Box {
-          orientation: vertical;
-          spacing: 10;
+				Box fan_graph {
+					orientation: vertical;
 
-          Box fan_graph {
-            orientation: vertical;
+					Box {
+						Label {
+							styles [
+								"caption",
+							]
 
-            Box {
-              Label {
-                styles [
-                  "caption",
-                ]
+							label: _("Fan speed over ");
+						}
+						Label {
+							styles [
+								"caption",
+							]
 
-                label: _("Fan speed over ");
-              }
-              Label {
-                styles [
-                  "caption",
-                ]
+							hexpand: true;
+							halign: start;
+							label: bind graph_max_duration.label;
+						}
 
-                hexpand: true;
-                halign: start;
-                label: bind graph_max_duration.label;
-              }
+						Label {
+							styles [
+								"caption",
+							]
+							label: _("100%");
+						}
+					}
 
-              Label {
-                styles [
-                  "caption",
-                ]
-                label: _("100%");
-              }
-            }
+					$GraphWidget usage_graph_fan {
+						vexpand: true;
+						hexpand: true;
 
-            $GraphWidget fan_usage_graph {
-              vexpand: true;
-              hexpand: true;
+						width-request: 50;
+						height-request: 30;
 
-              width-request: 50;
-              height-request: 30;
+						base-color: bind template.base-color;
+						data-set-count: 2;
+						scroll: true;
+					}
+				}
+				Box temp_graph {
+					orientation: vertical;
 
-              base-color: bind template.base-color;
-              data-set-count: 2;
-              scroll: true;
-            }
+					Box {
+						Label {
+							styles [
+								"caption",
+							]
+
+							label: _("Temperature over ");
+						}
+						Label {
+							styles [
+								"caption",
+							]
+
+							hexpand: true;
+							halign: start;
+							label: bind graph_max_duration.label;
+						}
+
+						Label {
+							styles [
+								"caption",
+							]
+							label: _("100%");
+						}
+					}
+
+					$GraphWidget usage_graph_temp {
+						vexpand: true;
+						hexpand: true;
+
+						width-request: 50;
+						height-request: 30;
+
+						base-color: bind template.base-color;
+						data-set-count: 1;
+						scroll: true;
+
+						scaling: 3;
+						only-scale-up: true;
           }
         }
+				Box power_graph {
+					orientation: vertical;
 
-        Box {
-          orientation: vertical;
-          spacing: 10;
+					Box {
+						Label {
+							styles [
+								"caption",
+							]
 
-          Box temp_graph {
-            orientation: vertical;
+							label: _("Power draw over ");
+						}
+						Label {
+							styles [
+								"caption",
+							]
 
-            Box {
-              Label {
-                styles [
-                  "caption",
-                ]
+							hexpand: true;
+							halign: start;
+							label: bind graph_max_duration.label;
+						}
 
-                label: _("Temperature over ");
-              }
-              Label {
-                styles [
-                  "caption",
-                ]
+						Label {
+							styles [
+								"caption",
+							]
+							label: _("100%");
+						}
+					}
 
-                hexpand: true;
-                halign: start;
-                label: bind graph_max_duration.label;
-              }
+					$GraphWidget usage_graph_power {
+						vexpand: true;
+						hexpand: true;
 
-              Label {
-                styles [
-                  "caption",
-                ]
-                label: _("100%");
-              }
-            }
+						width-request: 50;
+						height-request: 30;
 
-            $GraphWidget temp_usage_graph {
-              vexpand: true;
-              hexpand: true;
-
-              width-request: 50;
-              height-request: 30;
-
-              base-color: bind template.base-color;
-              data-set-count: 1;
-              scroll: true;
-            }
+						base-color: bind template.base-color;
+						data-set-count: 1;
+						scroll: true;
           }
         }
       }
@@ -240,7 +273,7 @@ template $PerformancePageGpu: Box {
 						height-request: 40;
 
 						base-color: bind template.base-color;
-						data-set-count: 2;
+						data-set-count: 1;
 						scroll: true;
 					}
 				}

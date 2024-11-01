@@ -44,11 +44,11 @@ mod imp {
         #[template_child]
         pub fan_graph: TemplateChild<gtk::Box>,
         #[template_child]
-        pub fan_usage_graph: TemplateChild<GraphWidget>,
+        pub usage_graph_fan: TemplateChild<GraphWidget>,
         #[template_child]
         pub temp_graph: TemplateChild<gtk::Box>,
         #[template_child]
-        pub temp_usage_graph: TemplateChild<GraphWidget>,
+        pub usage_graph_temp: TemplateChild<GraphWidget>,
         #[template_child]
         pub gtt_graph: TemplateChild<gtk::Box>,
         #[template_child]
@@ -121,9 +121,9 @@ mod imp {
                 device_name: Default::default(),
                 usage_graph_overall: Default::default(),
                 fan_graph: Default::default(),
-                fan_usage_graph: Default::default(),
+                usage_graph_fan: Default::default(),
                 temp_graph: Default::default(),
-                temp_usage_graph: Default::default(),
+                usage_graph_temp: Default::default(),
                 gtt_graph: Default::default(),
                 usage_graph_gtt: Default::default(),
                 memory_graph: Default::default(),
@@ -259,24 +259,23 @@ mod imp {
                 .connect_local("resize", true, move |_| {
                     let this = t.imp();
 
-                    let width = this.usage_graph_overall.width() as f32;
-                    let height = this.usage_graph_overall.height() as f32;
+                    let set_width = |graph: &TemplateChild<GraphWidget>| {
+						let width = graph.width() as f32;
+						let height = graph.height() as f32;
 
-                    let mut a = width;
-                    let mut b = height;
-                    if width > height {
-                        a = height;
-                        b = width;
-                    }
+						let mut a = width;
+						let mut b = height;
+						if width > height {
+							a = height;
+							b = width;
+						}
 
-                    this.usage_graph_overall
-                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+						graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+					};
 
-                    this.fan_usage_graph
-                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-
-                    this.usage_graph_memory
-                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+					for graph in [&this.usage_graph_overall, &this.usage_graph_memory, &this.usage_graph_gtt, &this.usage_graph_fan, &this.usage_graph_temp] {
+						set_width(graph)
+					}
 
                     None
                 });
@@ -317,8 +316,8 @@ mod imp {
 
                 this.memory_graph.set_visible(false);
             }
-            this.fan_usage_graph.set_dashed(1, true);
-            this.fan_usage_graph.set_filled(1, false);
+            this.usage_graph_fan.set_dashed(1, true);
+            this.usage_graph_fan.set_filled(1, false);
 
             let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
             let total_memory = format!(
@@ -357,7 +356,7 @@ mod imp {
                 if let Some(memory_usage_max) = this.memory_usage_max.get() {
                     memory_usage_max.set_text(&total_memory);
                 }
-                this.memory_graph_label.set_text("Memory/GTT usage over ");
+                this.memory_graph_label.set_text("Memory usage over ");
             } else {
                 this.legend_vram
                     .get()
@@ -399,10 +398,10 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
             }
 
-            this.usage_graph_gtt
+            this.usage_graph_memory
                 .set_value_range_max(gpu.total_memory as f32);
 
-            this.usage_graph_memory
+            this.usage_graph_gtt
                 .set_value_range_max(gpu.total_gtt as f32);
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
@@ -464,17 +463,16 @@ mod imp {
             this.usage_graph_overall
                 .add_data_point(2, gpu.decoder_percent as f32);
 
-            this.fan_usage_graph
+            this.usage_graph_fan
                 .add_data_point(0, gpu.fan_rpm as f32 * 100.0 / gpu_static.fan_max_rpm as f32);
-            this.fan_usage_graph
+            this.usage_graph_fan
                 .add_data_point(1, gpu.fan_pwm as f32);
 
-            this.temp_usage_graph
+            this.usage_graph_temp
                 .add_data_point(0, gpu.temp_celsius as f32);
 
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
-
             this.usage_graph_gtt
                 .add_data_point(0, gpu.used_gtt as f32);
 
@@ -968,8 +966,8 @@ impl PerformancePageGpu {
 
             this.usage_graph_overall.set_data_points(data_points);
             this.usage_graph_overall.set_smooth_graphs(smooth);
-            this.fan_usage_graph.set_data_points(data_points);
-            this.fan_usage_graph.set_smooth_graphs(smooth);
+            this.usage_graph_fan.set_data_points(data_points);
+            this.usage_graph_fan.set_smooth_graphs(smooth);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
             this.usage_graph_gtt.set_data_points(data_points);
