@@ -94,7 +94,7 @@ template $PerformancePageGpu: Box {
         height-request: 50;
 
         base-color: bind template.base-color;
-        data-set-count: 1;
+        data-set-count: 3;
         scroll: true;
       }
     }
@@ -102,45 +102,102 @@ template $PerformancePageGpu: Box {
       orientation: vertical;
       spacing: 10;
 
-      Box encode_decode_graph {
-        orientation: vertical;
+      Box {
+        orientation: horizontal;
+        spacing: 10;
 
         Box {
-          Label {
-            styles [
-              "caption",
-            ]
+          orientation: vertical;
+          spacing: 10;
 
-            label: _("Video encode/decode utilization over ");
-          }
-          Label {
-            styles [
-              "caption",
-            ]
+          Box fan_graph {
+            orientation: vertical;
 
-            hexpand: true;
-            halign: start;
-            label: bind graph_max_duration.label;
-          }
+            Box {
+              Label {
+                styles [
+                  "caption",
+                ]
 
-          Label {
-            styles [
-              "caption",
-            ]
-            label: _("100%");
+                label: _("Fan speed over ");
+              }
+              Label {
+                styles [
+                  "caption",
+                ]
+
+                hexpand: true;
+                halign: start;
+                label: bind graph_max_duration.label;
+              }
+
+              Label {
+                styles [
+                  "caption",
+                ]
+                label: _("100%");
+              }
+            }
+
+            $GraphWidget fan_usage_graph {
+              vexpand: true;
+              hexpand: true;
+
+              width-request: 50;
+              height-request: 30;
+
+              base-color: bind template.base-color;
+              data-set-count: 2;
+              scroll: true;
+            }
           }
         }
 
-        $GraphWidget usage_graph_encode_decode {
-          vexpand: true;
-          hexpand: true;
+        Box {
+          orientation: vertical;
+          spacing: 10;
 
-          width-request: 50;
-          height-request: 30;
+          Box temp_graph {
+            orientation: vertical;
 
-          base-color: bind template.base-color;
-          data-set-count: 2;
-          scroll: true;
+            Box {
+              Label {
+                styles [
+                  "caption",
+                ]
+
+                label: _("Temperature over ");
+              }
+              Label {
+                styles [
+                  "caption",
+                ]
+
+                hexpand: true;
+                halign: start;
+                label: bind graph_max_duration.label;
+              }
+
+              Label {
+                styles [
+                  "caption",
+                ]
+                label: _("100%");
+              }
+            }
+
+            $GraphWidget temp_usage_graph {
+              vexpand: true;
+              hexpand: true;
+
+              width-request: 50;
+              height-request: 30;
+
+              base-color: bind template.base-color;
+              data-set-count: 1;
+              scroll: true;
+            }
+          }
         }
       }
 
@@ -173,6 +230,47 @@ template $PerformancePageGpu: Box {
         }
 
         $GraphWidget usage_graph_memory {
+          vexpand: true;
+          hexpand: true;
+
+          width-request: 100;
+          height-request: 40;
+
+          base-color: bind template.base-color;
+          data-set-count: 2;
+          scroll: true;
+        }
+      }
+
+      Box power_graph {
+        orientation: vertical;
+
+        Box {
+          Label power_graph_label {
+            styles [
+              "caption",
+            ]
+
+            label: _("Power draw over ");
+          }
+          Label {
+            styles [
+            "caption",
+            ]
+
+            hexpand: true;
+            halign: start;
+            label: bind graph_max_duration.label;
+          }
+
+          Label total_power {
+            styles [
+              "caption",
+            ]
+          }
+        }
+
+        $GraphWidget power_usage_graph {
           vexpand: true;
           hexpand: true;
 

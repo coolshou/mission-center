@@ -58,6 +58,7 @@ pub struct LinuxGpuStaticInfo {
     hwmon_idx: u64,
     fan_idx: u64,
     fan_max_rpm: u64,
+    fan_max_pwm: u64,
 }
 
 impl LinuxGpuStaticInfo {}
@@ -79,6 +80,7 @@ impl Default for LinuxGpuStaticInfo {
             hwmon_idx: 0,
             fan_idx: 0,
             fan_max_rpm: 0,
+            fan_max_pwm: 255, // must never be zero
         }
     }
 }
@@ -698,7 +700,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
 
-            let (fan_avail, hwmon_idx, fan_idx, fan_max_rpm) = {
+            let (fan_avail, hwmon_idx, fan_idx, fan_max_rpm, fan_max_pwm) = {
                 let mut out = None;
                 match glob(format!(
                     "/sys/bus/pci/devices/{}/hwmon/hwmon*/fan*_input",
@@ -740,7 +742,17 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                                         0
                                     };
 
-                                    out = Some((true, hwmon_idx, fan_idx, fan_max_rpm));
+                                    let fan_max_pwm = if let Ok(v) = std::fs::read_to_string(format!(
+                                        "{}/pwm{}_max",
+                                        parent_dir_str,
+                                        fan_idx
+                                    )) {
+                                        v.trim().parse::<u64>().ok().and_then(|x| Some(if x == 0 {255} else {x})).unwrap_or(255)
+                                    } else {
+                                        255
+                                    };
+
+                                    out = Some((true, hwmon_idx, fan_idx, fan_max_rpm, fan_max_pwm));
                                     break;
                                 },
                                 Err(_) => (),
@@ -749,7 +761,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                     },
                     Err(_) => ()
                 }
-                out.unwrap_or((false, 0, 0, 0))
+                out.unwrap_or((false, 0, 0, 0, 255))
             };
 
             let ven_dev_id = if let Some(mut f) = uevent_file {
@@ -805,6 +817,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 hwmon_idx,
                 fan_idx,
                 fan_max_rpm,
+                fan_max_pwm,
 
                 // Leave the rest for when static info is actually requested
                 ..Default::default()
@@ -1005,7 +1018,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                         static_info.fan_idx,
                     )) {
                         Ok(x) => match x.trim().parse::<u64>() {
-                            Ok(x) => x,
+                            Ok(x) => x * 100 / static_info.fan_max_pwm,
                             Err(x) => {
                                 debug!("Gatherer::GpuInfo", "Failed to parse pwm input: {}", x);
                                 0

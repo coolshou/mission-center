@@ -449,7 +449,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             },
                         };
 
-                        this.used_gtt = match Iterator::next(dynamic_info) {
+                        this.fan_pwm = match Iterator::next(dynamic_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",

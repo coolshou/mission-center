@@ -42,9 +42,17 @@ mod imp {
         #[template_child]
         pub usage_graph_overall: TemplateChild<GraphWidget>,
         #[template_child]
-        pub encode_decode_graph: TemplateChild<gtk::Box>,
+        pub fan_graph: TemplateChild<gtk::Box>,
         #[template_child]
-        pub usage_graph_encode_decode: TemplateChild<GraphWidget>,
+        pub fan_usage_graph: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub temp_graph: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub temp_usage_graph: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub power_graph: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub power_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub memory_graph: TemplateChild<gtk::Box>,
         #[template_child]
@@ -82,6 +90,8 @@ mod imp {
         pub encode_percent: OnceCell<gtk::Label>,
         pub decode_percent: OnceCell<gtk::Label>,
         pub temperature: OnceCell<gtk::Label>,
+        pub fan_speed: OnceCell<gtk::Label>,
+        pub fan_pwm: OnceCell<gtk::Label>,
         pub opengl_version: OnceCell<gtk::Label>,
         pub vulkan_version: OnceCell<gtk::Label>,
         pub pcie_speed_label: OnceCell<gtk::Label>,
@@ -100,6 +110,8 @@ mod imp {
         pub legend_decode: OnceCell<gtk::Picture>,
         pub legend_vram: OnceCell<gtk::Picture>,
         pub legend_gtt: OnceCell<gtk::Picture>,
+        pub legend_fan_rpm: OnceCell<gtk::Picture>,
+        pub legend_fan_pwm: OnceCell<gtk::Picture>,
     }
 
     impl Default for PerformancePageGpu {
@@ -108,8 +120,12 @@ mod imp {
                 gpu_id: Default::default(),
                 device_name: Default::default(),
                 usage_graph_overall: Default::default(),
-                encode_decode_graph: Default::default(),
-                usage_graph_encode_decode: Default::default(),
+                fan_graph: Default::default(),
+                fan_usage_graph: Default::default(),
+                temp_graph: Default::default(),
+                temp_usage_graph: Default::default(),
+                power_graph: Default::default(),
+                power_usage_graph: Default::default(),
                 memory_graph: Default::default(),
                 total_memory: Default::default(),
                 memory_graph_label: Default::default(),
@@ -137,6 +153,8 @@ mod imp {
                 encode_percent: Default::default(),
                 decode_percent: Default::default(),
                 temperature: Default::default(),
+                fan_speed: Default::default(),
+                fan_pwm: Default::default(),
                 opengl_version: Default::default(),
                 vulkan_version: Default::default(),
                 pcie_speed_label: Default::default(),
@@ -155,6 +173,8 @@ mod imp {
                 legend_decode: Default::default(),
                 legend_vram: Default::default(),
                 legend_gtt: Default::default(),
+                legend_fan_rpm: Default::default(),
+                legend_fan_pwm: Default::default(),
             }
         }
     }
@@ -186,9 +206,6 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
-            let show_enc_dec_usage =
-                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
-
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate({
                 let this = this.downgrade();
@@ -196,47 +213,6 @@ mod imp {
                     if let Some(this) = this.upgrade() {
                         let clipboard = this.clipboard();
                         clipboard.set_text(this.imp().data_summary().as_str());
-                    }
-                }
-            });
-            actions.add_action(&action);
-
-            let action = gio::SimpleAction::new_stateful(
-                "enc_dec_usage",
-                None,
-                &glib::Variant::from(show_enc_dec_usage),
-            );
-            action.connect_activate({
-                let this = this.downgrade();
-                move |action, _| {
-                    if let Some(this) = this.upgrade() {
-                        let this = &this.imp();
-
-                        let visible = !action
-                            .state()
-                            .and_then(|v| v.get::<bool>())
-                            .unwrap_or(false);
-
-                        this.encode_decode_graph.set_visible(visible);
-                        if let Some(object) = this.legend_encode.get() {
-                            object.set_visible(visible)
-                        }
-                        if let Some(object) = this.legend_decode.get() {
-                            object.set_visible(visible)
-                        }
-                        action.set_state(&glib::Variant::from(visible));
-
-                        settings!()
-                            .set_boolean(
-                                "performance-page-gpu-encode-decode-usage-visible",
-                                visible,
-                            )
-                            .unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to save show encode/decode usage"
-                                );
-                            });
                     }
                 }
             });
@@ -296,7 +272,7 @@ mod imp {
                     this.usage_graph_overall
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
-                    this.usage_graph_encode_decode
+                    this.fan_usage_graph
                         .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
                     this.usage_graph_memory
@@ -306,17 +282,6 @@ mod imp {
                 });
 
             let this = this.imp();
-
-            let show_enc_dec_usage =
-                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
-
-            this.encode_decode_graph.set_visible(show_enc_dec_usage);
-            if let Some(object) = this.legend_encode.get() {
-                object.set_visible(show_enc_dec_usage)
-            }
-            if let Some(object) = this.legend_decode.get() {
-                object.set_visible(show_enc_dec_usage)
-            }
 
             // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
             // Hide the things that are missing and adjust the graphs
@@ -351,10 +316,9 @@ mod imp {
                 }
 
                 this.memory_graph.set_visible(false);
-            } else {
-                this.usage_graph_encode_decode.set_dashed(0, true);
-                this.usage_graph_encode_decode.set_filled(0, false);
             }
+            this.fan_usage_graph.set_dashed(1, true);
+            this.fan_usage_graph.set_filled(1, false);
 
             let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
             let total_memory = format!(
@@ -429,6 +393,15 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
             }
 
+            if let Some(legend_fan_rpm) = this.legend_fan_rpm.get() {
+                legend_fan_rpm
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
+            }
+            if let Some(legend_fan_pwm) = this.legend_fan_pwm.get() {
+                legend_fan_pwm
+                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
+            }
+
             this.usage_graph_memory
                 .set_value_range_max(gpu.total_memory as f32);
 
@@ -486,10 +459,21 @@ mod imp {
                 utilization.set_text(&format!("{}%", gpu.util_percent));
             }
 
-            this.usage_graph_encode_decode
-                .add_data_point(0, gpu.encoder_percent as f32);
-            this.usage_graph_encode_decode
-                .add_data_point(1, gpu.decoder_percent as f32);
+            this.usage_graph_overall
+                .add_data_point(1, gpu.encoder_percent as f32);
+            this.usage_graph_overall
+                .add_data_point(2, gpu.decoder_percent as f32);
+
+            this.fan_usage_graph
+                .add_data_point(0, gpu.fan_rpm as f32 * 100.0 / gpu_static.fan_max_rpm as f32);
+            this.fan_usage_graph
+                .add_data_point(1, gpu.fan_pwm as f32);
+
+            this.temp_usage_graph
+                .add_data_point(0, gpu.temp_celsius as f32);
+
+            this.power_usage_graph
+                .add_data_point(0, gpu.power_draw_watts as f32 * 100.0 / gpu.power_draw_max_watts);
 
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
@@ -578,6 +562,12 @@ mod imp {
             }
             if let Some(temperature) = this.temperature.get() {
                 temperature.set_text(&format!("{}°C", gpu.temp_celsius));
+            }
+            if let Some(fan_speed) = this.fan_speed.get() {
+                fan_speed.set_text(&format!("{} rpm", gpu.fan_rpm));
+            }
+            if let Some(fan_pwm) = this.fan_pwm.get() {
+                fan_pwm.set_text(&format!("{}%", gpu.fan_pwm));
             }
 
             true
@@ -810,6 +800,16 @@ mod imp {
                     .object::<gtk::Label>("temperature")
                     .expect("Could not find `temperature` object in details pane"),
             );
+            let _ = self.fan_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("fan_speed")
+                    .expect("Could not find `fan_speed` object in details pane"),
+            );
+            let _ = self.fan_pwm.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("fan_pwm")
+                    .expect("Could not find `fan_pwm` object in details pane"),
+            );
             let _ = self.opengl_version.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("opengl_version")
@@ -870,6 +870,16 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Picture>("legend_decode")
                     .expect("Could not find `legend_decode` object in details pane"),
+            );
+            let _ = self.legend_fan_rpm.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_fan_rpm")
+                    .expect("Could not find `legend_fan_rpm` object in details pane"),
+            );
+            let _ = self.legend_fan_pwm.set(
+                sidebar_content_builder
+                    .object::<gtk::Picture>("legend_fan_pwm")
+                    .expect("Could not find `legend_fan_pwm` object in details pane"),
             );
             let _ = self.legend_vram.set(
                 sidebar_content_builder
@@ -965,8 +975,8 @@ impl PerformancePageGpu {
 
             this.usage_graph_overall.set_data_points(data_points);
             this.usage_graph_overall.set_smooth_graphs(smooth);
-            this.usage_graph_encode_decode.set_data_points(data_points);
-            this.usage_graph_encode_decode.set_smooth_graphs(smooth);
+            this.fan_usage_graph.set_data_points(data_points);
+            this.fan_usage_graph.set_smooth_graphs(smooth);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
         }
@@ -998,24 +1008,6 @@ impl PerformancePageGpu {
                 }
             }
         });
-
-        fn set_hidden_vram(this: &PerformancePageGpu, settings: &gio::Settings) {
-            let visible = settings.boolean("performance-page-gpu-encode-decode-usage-visible");
-
-            let this = this.imp();
-
-            this.encode_decode_graph.set_visible(visible);
-        }
-
-        settings.connect_changed(Some("performance-page-gpu-encode-decode-usage-visible"), {
-            let this = this.downgrade();
-            move |settings, _| {
-                if let Some(this) = this.upgrade() {
-                    set_hidden_vram(&this, settings);
-                }
-            }
-        });
-
         this
     }
 
