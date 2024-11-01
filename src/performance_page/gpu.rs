@@ -50,9 +50,9 @@ mod imp {
         #[template_child]
         pub temp_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
-        pub power_graph: TemplateChild<gtk::Box>,
+        pub gtt_graph: TemplateChild<gtk::Box>,
         #[template_child]
-        pub power_usage_graph: TemplateChild<GraphWidget>,
+        pub usage_graph_gtt: TemplateChild<GraphWidget>,
         #[template_child]
         pub memory_graph: TemplateChild<gtk::Box>,
         #[template_child]
@@ -124,8 +124,8 @@ mod imp {
                 fan_usage_graph: Default::default(),
                 temp_graph: Default::default(),
                 temp_usage_graph: Default::default(),
-                power_graph: Default::default(),
-                power_usage_graph: Default::default(),
+                gtt_graph: Default::default(),
+                usage_graph_gtt: Default::default(),
                 memory_graph: Default::default(),
                 total_memory: Default::default(),
                 memory_graph_label: Default::default(),
@@ -339,9 +339,6 @@ mod imp {
 
             // show gtt for amd cards
             if gpu.vendor_id == 0x1002 {
-                this.usage_graph_memory.set_dashed(1, true);
-                this.usage_graph_memory.set_filled(1, false);
-
                 if let Some(legend_gtt) = this.legend_gtt.get() {
                     legend_gtt
                         .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
@@ -402,8 +399,11 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
             }
 
-            this.usage_graph_memory
+            this.usage_graph_gtt
                 .set_value_range_max(gpu.total_memory as f32);
+
+            this.usage_graph_memory
+                .set_value_range_max(gpu.total_gtt as f32);
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
@@ -472,18 +472,11 @@ mod imp {
             this.temp_usage_graph
                 .add_data_point(0, gpu.temp_celsius as f32);
 
-            this.power_usage_graph
-                .add_data_point(0, gpu.power_draw_watts as f32 * 100.0 / gpu.power_draw_max_watts);
-
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
 
-            let mut gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
-            if gtt_factor.is_infinite() || gtt_factor.is_nan() || gtt_factor.is_subnormal() {
-                gtt_factor = 0.;
-            }
-            this.usage_graph_memory
-                .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
+            this.usage_graph_gtt
+                .add_data_point(0, gpu.used_gtt as f32);
 
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
             if let Some(memory_usage_current) = this.memory_usage_current.get() {
@@ -979,6 +972,8 @@ impl PerformancePageGpu {
             this.fan_usage_graph.set_smooth_graphs(smooth);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
+            this.usage_graph_gtt.set_data_points(data_points);
+            this.usage_graph_gtt.set_smooth_graphs(smooth);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 

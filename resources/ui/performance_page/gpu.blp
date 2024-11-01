@@ -99,11 +99,11 @@ template $PerformancePageGpu: Box {
       }
     }
     Box {
-      orientation: vertical;
+      orientation: horizontal;
       spacing: 10;
 
       Box {
-        orientation: horizontal;
+        orientation: vertical;
         spacing: 10;
 
         Box {
@@ -200,88 +200,92 @@ template $PerformancePageGpu: Box {
           }
         }
       }
+      Box {
+				spacing: 10;
+				orientation: vertical;
 
-      Box memory_graph {
-        orientation: vertical;
+				Box memory_graph {
+					orientation: vertical;
 
-        Box {
-          Label memory_graph_label {
-            styles [
-              "caption",
-            ]
+					Box {
+						Label memory_graph_label {
+							styles [
+								"caption",
+							]
 
-            label: _("Memory usage over ");
-          }
-          Label {
-            styles [
-            "caption",
-            ]
+							label: _("Memory usage over ");
+						}
+						Label {
+							styles [
+							"caption",
+							]
 
-            hexpand: true;
-            halign: start;
-            label: bind graph_max_duration.label;
-          }
+							hexpand: true;
+							halign: start;
+							label: bind graph_max_duration.label;
+						}
 
-          Label total_memory {
-            styles [
-              "caption",
-            ]
-          }
-        }
+						Label total_memory {
+							styles [
+								"caption",
+							]
+						}
+					}
 
-        $GraphWidget usage_graph_memory {
-          vexpand: true;
-          hexpand: true;
+					$GraphWidget usage_graph_memory {
+						vexpand: true;
+						hexpand: true;
 
-          width-request: 100;
-          height-request: 40;
+						width-request: 100;
+						height-request: 40;
 
-          base-color: bind template.base-color;
-          data-set-count: 2;
-          scroll: true;
-        }
-      }
+						base-color: bind template.base-color;
+						data-set-count: 2;
+						scroll: true;
+					}
+				}
 
-      Box power_graph {
-        orientation: vertical;
+				Box gtt_graph {
+					orientation: vertical;
 
-        Box {
-          Label power_graph_label {
-            styles [
-              "caption",
-            ]
+					Box {
+						Label power_graph_label {
+							styles [
+								"caption",
+							]
 
-            label: _("Power draw over ");
-          }
-          Label {
-            styles [
-            "caption",
-            ]
+							label: _("GTT usage over ");
+						}
+						Label {
+							styles [
+							"caption",
+							]
 
-            hexpand: true;
-            halign: start;
-            label: bind graph_max_duration.label;
-          }
+							hexpand: true;
+							halign: start;
+							label: bind graph_max_duration.label;
+						}
 
-          Label total_power {
-            styles [
-              "caption",
-            ]
-          }
-        }
+						Label total_gtt {
+							styles [
+								"caption",
+							]
+						}
+					}
 
-        $GraphWidget power_usage_graph {
-          vexpand: true;
-          hexpand: true;
+					$GraphWidget usage_graph_gtt {
+						vexpand: true;
+						hexpand: true;
 
-          width-request: 100;
-          height-request: 40;
+						width-request: 100;
+						height-request: 40;
 
-          base-color: bind template.base-color;
-          data-set-count: 2;
-          scroll: true;
-        }
-      }
+						base-color: bind template.base-color;
+						data-set-count: 1;
+						scroll: true;
+					}
+				}
+			}
     }
   }
 
