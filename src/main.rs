@@ -163,7 +163,7 @@ fn main() {
         PKGDATADIR.to_owned()
     };
 
-    let resources = gio::Resource::load(gresource_dir + "/missioncenter.gresource")
+    let resources = gio::Resource::load(&format!("{gresource_dir}/missioncenter.gresource"))
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
