@@ -52,6 +52,11 @@ Also available from https://portable-linux-apps.github.io/apps/mission-center.ht
 Might also be available in your distribution's repository:  
 [![](https://repology.org/badge/vertical-allrepos/mission-center.svg)](https://repology.org/project/mission-center/versions)
 
+Installed by default in:
+ * [Aurora](https://getaurora.dev/)
+ * [Bluefin](https://projectbluefin.io/)
+ * [DeLinuxCo](https://www.delinuxco.com/)
+
 Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
 
 ## Screenshots
