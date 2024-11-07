@@ -331,7 +331,19 @@ template $PerformancePageGpu: Box {
 menu context_menu_model {
   section {
     item {
-      label: _("Show Encode/Decode Usage");
+      label: _("Show fan speed graph");
+      action: "graph.enc_dec_usage";
+    }
+    item {
+      label: _("Show temperature graph");
+      action: "graph.enc_dec_usage";
+    }
+    item {
+      label: _("Show power draw graph");
+      action: "graph.enc_dec_usage";
+    }
+    item {
+      label: _("Show GTT Usage graph");
       action: "graph.enc_dec_usage";
     }
   }

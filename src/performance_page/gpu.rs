@@ -104,6 +104,9 @@ mod imp {
         pub box_gtt_usage: OnceCell<gtk::Box>,
         pub box_power_draw: OnceCell<gtk::Box>,
         pub box_decode: OnceCell<gtk::Box>,
+        pub box_fan_pwm: OnceCell<gtk::Box>,
+        pub box_fan: OnceCell<gtk::Box>,
+
         pub encode_label: OnceCell<gtk::Label>,
 
         pub legend_encode: OnceCell<gtk::Picture>,
@@ -167,6 +170,9 @@ mod imp {
                 box_gtt_usage: Default::default(),
                 box_power_draw: Default::default(),
                 box_decode: Default::default(),
+                box_fan: Default::default(),
+                box_fan_pwm: Default::default(),
+
                 encode_label: Default::default(),
 
                 legend_encode: Default::default(),
@@ -217,6 +223,13 @@ mod imp {
                 }
             });
             actions.add_action(&action);
+
+            let action = gio::SimpleAction::new_stateful(
+                "",
+                None,
+                &glib::Variant::from(true),
+            );
+            actions.add_action(&action)
         }
 
         fn configure_context_menu(this: &super::PerformancePageGpu) {
@@ -316,6 +329,13 @@ mod imp {
 
                 this.memory_graph.set_visible(false);
             }
+
+            if !gpu.fan_avail {
+				this.fan_graph.set_visible(false);
+				this.box_fan_pwm.get().and_then(|b| Some(b.set_visible(false)));
+				this.box_fan.get().and_then(|b| Some(b.set_visible(false)));
+			}
+
             this.usage_graph_fan.set_dashed(1, true);
             this.usage_graph_fan.set_filled(1, false);
 
@@ -781,6 +801,16 @@ mod imp {
                     .object::<gtk::Box>("box_decode")
                     .expect("Could not find `box_decode` object in details pane"),
             );
+            let _ = self.box_fan.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_fan")
+                    .expect("Could not find `box_fan` object in details pane"),
+            );
+            let _ = self.box_fan_pwm.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_fan_pwm")
+                    .expect("Could not find `box_fan_pwm` object in details pane"),
+            );
             let _ = self.encode_label.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("encode_label")
@@ -1001,6 +1031,29 @@ impl PerformancePageGpu {
                 }
             }
         });
+
+
+        //fn set_hidden_temp(this: &PerformancePageMemory, settings: &gio::Settings) {
+            //let visible = settings.boolean("performance-page-gpu-temp-visible");
+
+            //let this = this.imp();
+
+            //this.big_box.set_homogeneous(visible);
+            //this.big_box.set_spacing(if visible { 10 } else { 0 });
+            //this.swap_box.set_visible(visible);
+            //this.swap_usage_graph.set_visible(visible);
+            //this.mem_box.set_has_tooltip(true);
+        //}
+
+        settings.connect_changed(Some("performance-page-memory-swap-visible"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    this.imp().temp_graph.set_visible(settings.boolean("performance-page-gpu-temp-visible"));
+                }
+            }
+        });
+
         this
     }
 
