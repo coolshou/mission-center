@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-11-16 06:00+0000\n"
+"PO-Revision-Date: 2024-11-17 12:01+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
@@ -43,7 +43,8 @@ msgstr "Sledovat využití systémových prostředků"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "Sledujte využití procesoru, paměti, disků, sítě a grafik"
+msgstr ""
+"Sledujte využití procesoru, operační paměti, disků, sítě a grafických čipů"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
@@ -85,15 +86,15 @@ msgid ""
 msgstr ""
 "Zobrazte si informace o síťových rozhraních jako název síťové karty, typ "
 "připojení (Wi-Fi nebo Ethernet), bezdrátové rychlosti a frekvence, "
-"hardwarové či IP adresy"
+"hardwarové a IP adresy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Sledujte celkové využití grafik, video kodéru a dekodéru, paměti a spotřebu ("
-"založeno na oblíbeném projektu NVTOP)"
+"Sledujte celkové využití grafických čipů, jejich video kodéru a dekodéru, "
+"paměti a spotřebu (založeno na oblíbeném projektu NVTOP)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -181,8 +182,8 @@ msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
 "Zda výšku grafu nastavit podle rychlosti, která je pro dané rozhraní "
-"specifikačním maximem nebo na tu v daném intervalu nejvyšší pozorovanou "
-"(zapnuto)"
+"specifikačním maximem (vypnuto) nebo na tu v daném intervalu nejvyšší "
+"pozorovanou (zapnuto)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -200,7 +201,7 @@ msgstr "Řazení sloupců bude zachováno mezi restarty aplikace"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Zobrazit Využití procesoru u Aplikací a Procesů, v měřítku podle počtu "
+"Zobrazit Využití procesoru u Aplikací a Procesů v měřítku podle počtu "
 "dostupných jader"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
@@ -531,7 +532,7 @@ msgstr "Využití paměti za "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr "Zobrazit využití Encode/Decode"
+msgstr "Zobrazit využití Enkódování/dekódování"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -1120,7 +1121,7 @@ msgstr "{} {}{} B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} Běžící služby"
+msgstr "{} Běžících služeb"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
