@@ -8,18 +8,22 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-11-17 12:01+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
+"Language-Team: Hebrew <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
+"n % 10 == 0) ? 2 : 3));\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "מרכז המשימות"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -30,11 +34,11 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "מפתחי מרכז המשימות"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "מעקב אחר השימוש במשאבי מערכת"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
