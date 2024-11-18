@@ -68,4 +68,6 @@ export LD_LIBRARY_PATH="$APPDIR_PATH/usr/lib/$(arch)-linux-gnu:$LD_LIBRARY_PATH"
 sed -i "s|arch: x86_64|arch: $(arch)|g" "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml"
 appimage-builder --recipe "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml" --appdir "$APPDIR_PATH" --skip-test
 
-mv Mission\ Center*.AppImage MissionCenter-$(arch).AppImage
+MC_VERSION=$(grep -oP 'version: \K.*' "$RECEIPE_PATH/io.missioncenter.MissionCenter.yml" | tail -n1)
+
+mv Mission\ Center*.AppImage MissionCenter_v$MC_VERSION-$(arch).AppImage
