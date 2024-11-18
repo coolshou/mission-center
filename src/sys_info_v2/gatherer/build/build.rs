@@ -53,8 +53,10 @@ struct Package {
 }
 
 fn prepare_third_party_sources() -> Result<Vec<std::path::PathBuf>, Box<dyn std::error::Error>> {
-    let third_party_path =
-        std::path::PathBuf::from(&format!("{}/3rdparty", std::env::var("CARGO_MANIFEST_DIR")?));
+    let third_party_path = std::path::PathBuf::from(&format!(
+        "{}/3rdparty",
+        std::env::var("CARGO_MANIFEST_DIR")?
+    ));
     let mut out_dir = std::env::var("OUT_DIR")?;
     out_dir.push_str("/../../native");
     std::fs::create_dir_all(&out_dir)?;
