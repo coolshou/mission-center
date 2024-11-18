@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-10-09 11:16+0000\n"
+"PO-Revision-Date: 2024-11-19 15:00+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -151,7 +151,7 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
-"Uruchomione aplikacje pod Linux Mint lub Cinnamone mogę się nie pokazywać w "
+"Uruchomione aplikacje pod Linux Mint lub Cinnamon mogą się nie pokazywać w "
 "sekcji \"Aplikacje\" (więcej informacji: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 
@@ -197,7 +197,7 @@ msgstr ""
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "Wyświetlaj statystyki procesów nadrzędnych i podrzędnych indywidualnie lub "
-"łącząc w górę"
+"sumując wraz z procesami podrzędnymi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
@@ -521,7 +521,7 @@ msgstr "Prędkość wentylatora"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
@@ -553,9 +553,8 @@ msgid "Memory usage"
 msgstr "Zużycie pamięci"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Użycie GPU"
+msgstr "Zużycie pamięci GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
@@ -652,7 +651,7 @@ msgstr "Ustawienia sieci"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr "Odebrane"
+msgstr "Odbierane"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
@@ -660,7 +659,7 @@ msgstr "Odebrane całościowo"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr "Wysłane"
+msgstr "Wysyłane"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
@@ -786,7 +785,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Skaluj zużycie procesora do liczby rdzeni"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
@@ -879,17 +878,16 @@ msgid "PID"
 msgstr "PID"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "Włączony"
+msgstr "Włącz wszystkie"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Wyłącz wszystkie"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Ustawienia domyślne"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
@@ -925,11 +923,11 @@ msgstr "Serwisy"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr "Preferencje"
+msgstr "_Preferencje"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr "O programie"
+msgstr "_O programie"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
@@ -1006,7 +1004,6 @@ msgstr ""
 "potrzebowały więcej pamięci"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Dysk {} ({})"
 
@@ -1137,7 +1134,7 @@ msgstr "Uruchomione serwisy: {}"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "Serwisy z błędami: {}. Wszystkie serwisy: {}"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
@@ -1147,7 +1144,7 @@ msgstr "Uruchomione"
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "Z błędami"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
@@ -1156,7 +1153,7 @@ msgstr "Zatrzymane"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr "ewm & a.lewicki95"
+msgstr "ewm, a.lewicki95 & Holek"
 
 #: src/main.rs:139
 msgid "_Quit"
