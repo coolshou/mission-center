@@ -78,7 +78,7 @@ compile_commands.json
 
 # Project specific
 /flatpak/missioncenter.flatpak
-/subprojects/blueprint-compiler
+/subprojects/blueprint-compiler-*
 /subprojects/packagecache
 _build
 BUILD

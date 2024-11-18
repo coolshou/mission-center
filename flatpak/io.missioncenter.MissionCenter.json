@@ -186,9 +186,9 @@
       "buildsystem": "meson",
       "sources": [
         {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "commit": "b308adc3af939b27bd18941710b4499b1131e090"
+          "type": "archive",
+          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/a42ec3a9450d865b9856d7ad3128edadd9a5fe1b/blueprint-compiler-a42ec3a9450d865b9856d7ad3128edadd9a5fe1b.tar.bz2",
+          "sha256": "1bf00aa3019324348171f09cee184cadaf0078e49978c1154ce9f5f813d495f7"
         }
       ],
       "cleanup": [
