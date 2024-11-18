@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-08-07 07:09+0000\n"
-"Last-Translator: Joachim256 <jachymnet@seznam.cz>\n"
+"PO-Revision-Date: 2024-11-17 12:01+0000\n"
+"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
 "Language: cs\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -29,21 +29,22 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Správce úloh;Sledování zdrojů;Sledování systému;Procesor;Procesy;Sledování "
-"výkonu;CPU;GPU;Grafika;Disk;Paměť;Síť;Využití"
+"Správce úloh;Sledování prostředků;Sledování systému;Procesor;Procesy;"
+"Sledování výkonu;CPU;GPU;Grafika;Disk;Paměť;Síť;Využití"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr "Vývojáři Střediska misí"
+msgstr "Vývojáři Střediska mise"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr "Sledovat využití zdrojů systému"
+msgstr "Sledovat využití systémových prostředků"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "Sledujte využití procesoru, paměti, disků, sítě a grafik"
+msgstr ""
+"Sledujte využití procesoru, operační paměti, disků, sítě a grafických čipů"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
@@ -51,15 +52,15 @@ msgstr "Funkce:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Sledujte celkové či vlákenní využití procesoru"
+msgstr "Sledujte využití procesoru – celkové i jednotlivými vlákny"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Sledujte počet procesů, vláken a popisovačů, dobu od spuštění, takt "
-"(základní a současný) a velikosti mezipamětí"
+"Zobrazte si počty procesů, vláken a popisovačů, dobu od spuštění, takt ("
+"základní i momentální) a velikosti mezipamětí"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -71,11 +72,11 @@ msgstr "Zobrazte si rozbor využití paměti systémem"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Sledujte využití disku a přenosové rychlosti"
+msgstr "Sledujte využití disku a rychlosti přenosů"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Sledujte síťové využití a přenosové rychlosti"
+msgstr "Sledujte vytížení sítě a rychlosti přenosů"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -83,60 +84,61 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Získejte informace o síťových rozhraních jako název síťové karty, typ "
+"Zobrazte si informace o síťových rozhraních jako název síťové karty, typ "
 "připojení (Wi-Fi nebo Ethernet), bezdrátové rychlosti a frekvence, "
-"hardwarové adresy či IP adresy"
+"hardwarové a IP adresy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Sledujte celkové využití grafik, video kodéru a dekodéru, paměti a spotřebu "
-"díky populárnímu projektu NVTOP"
+"Sledujte celkové využití grafických čipů, jejich video kodéru a dekodéru, "
+"paměti a spotřebu (založeno na oblíbeném projektu NVTOP)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Zobrazte si rozbor využití zdrojů dle aplikace a procesu"
+msgstr "Zobrazte si rozbor využití prostředků podle aplikace či procesu"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "Podporuje zmenšené souhrnné zobrazení pro jednoduché sledování"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Používat OpenGL vykreslování pro všechny grafy pro zmenšení nároků na "
-"procesor a obecné snížení využití zdrojů"
+"Používat hardwarově urychlované vykreslování pro všechny grafy a pokusit se "
+"tím snížit vytížení procesoru (a využití systémových prostředků obecně)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Používá GTK4 a Libadwaitu"
+msgstr "Používá GTK4 a Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr "Napsáno v Rustu"
+msgstr "Napsáno v jazyce Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Omezení (na překonání se pracuje):"
+msgstr "Omezení (na jejich překonání se pracuje):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr "Chybí využití sítě procesem"
+msgstr "Chybí rozbor využívání sítě jednotlivými procesy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr "Podpora pro grafickou kartu je experimentální"
+msgstr "Podpora pro grafické čipy je experimentální"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Sledování GPU Intel je podporované pouze pro generaci Broadwell a novější; "
+"nepodporuje sledování VRAM, spotřeby energie a teplot"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -144,18 +146,21 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Při používání v Linux Mint/Cinnamon se může stávat, že spuštěné aplikace "
+"nebudou zobrazovány v sekci „Aplikace“ (nahlášený problém v upstream: "
+"https://github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "Komentáře, návrhy, hlášení chyb a přispívání vítáno"
+msgstr "Komentáře, nápady, hlášení chyb a přispívání zapojením se vítáno"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr "Která stránka se zobrazí po spuštění aplikace"
+msgstr "Která stránka je zobrazena po spuštění aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "ZASTARALÉ! JIŽ SE NEPOUŽÍVÁ!"
+msgstr "ZASTARALÉ! UŽ SE NEPOUŽÍVÁ!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
@@ -170,107 +175,108 @@ msgstr "Kolik bodů má být zobrazeno v každém grafu?"
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "Zda pro rychlost sítě použít bity (výchozí) či bajty"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Zda výšku grafu nastavit podle rychlosti, která je pro dané rozhraní "
+"specifikačním maximem (vypnuto) nebo na tu v daném intervalu nejvyšší "
+"pozorovanou (zapnuto)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Statistiky rodičovského a dceřiných procesů jsou zobrazeny samostatně či "
+"Statistiky nadřazených a podřízených procesů jsou zobrazeny samostatně či "
 "spojeny nahoru"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr "Řazení sloupců setrvá mezi restarty aplikace"
+msgstr "Řazení sloupců bude zachováno mezi restarty aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Zobrazit Využití procesoru u Aplikací a Procesů škálované podle počtu "
+"Zobrazit Využití procesoru u Aplikací a Procesů v měřítku podle počtu "
 "dostupných jader"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
-msgstr "ID sloupce podle kterého je záložka aplikace seřazená"
+msgstr "Identifikátor sloupce, podle kterého je stránka Aplikace řazená"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr "Směr řazení zobrazení ve stránce aplikace"
+msgstr "Směr řazení zobrazení na stránce Aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Jaký graf se zobrazí na stránce výkonu procesoru"
+msgstr "Jaký graf se zobrazí na stránce Výkon procesoru"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr "Zobrazit časy jádra v procesorových grafech"
+msgstr "V grafech procesoru zobrazovat časy jádra systému"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "Jaká stránka se zobrazí po spuštění aplikace na záložce výkonu"
+msgstr "Která stránka se zobrazí po spuštění aplikace, na záložce výkon"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Zdali mají být grafy výkonu hladké, nebo zubaté"
+msgstr "Zda mají být grafy výkonu vyhlazené nebo zubaté"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o procesoru"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Získání dalších informací o paměti se nezdařilo"
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o paměti"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o disku"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o síti"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o grafickém čipu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Ve výchozím stavu rovnou zobrazovat i informace o ventilátoru"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Složení paměti"
+msgstr "Zobrazit prvek týkající se skladby využití paměti"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Zobrazit graf odkládacího prostoru"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Zobrazit graf grafu enkódování-dekódování na gpu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Pořadí položek v postranním panelu aplikace"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Grafy, které nezobrazovat v postranním panelu aplikace"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -279,9 +285,8 @@ msgstr "Procesor"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "Využití za {}{}"
+msgstr "Využití za "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -295,15 +300,15 @@ msgstr "Změnit G_raf na"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr "_Celkové využití"
+msgstr "Celkové využi_tí"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
-msgstr "_Logické procesory"
+msgstr "Logické _procesory"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr "Zobrazit časy jádra"
+msgstr "Zobrazit časy jádra systému"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -348,7 +353,7 @@ msgstr "Pa_měť"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "Je_dnotka"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -375,7 +380,7 @@ msgstr "_Grafika"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Ventilátor"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -383,7 +388,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr "_Kopírovat"
+msgstr "Z_kopírovat"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
@@ -432,38 +437,36 @@ msgstr "Virtuální stroj:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "Mezipaměť L1:"
+msgstr "Mezipaměť 1. úrovně:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "Mezipaměť L2:"
+msgstr "Mezipaměť 2. úrovně:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "Mezipaměť L3:"
+msgstr "Mezipaměť 3. úrovně:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq ovladač:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq řízení:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr ""
+msgstr "Preference výkon/spotřeba:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Aktivní čas"
+msgstr "Aktivní čas za "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Prostupnost"
+msgstr "Prostupnost za "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -499,43 +502,37 @@ msgid "Type:"
 msgstr "Typ:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Využití paměti"
+msgstr "Otáčky ventilátoru za "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Teplota"
+msgstr "Teplota za "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Takt"
+msgstr "Výkon ventilátoru"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "Teplota"
+msgstr "Stávající teplota"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Využití kódování videa"
+msgstr "Využití kódování/dekódování videa za "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Využití paměti"
+msgstr "Využití paměti za "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Zobrazit využití Enkódování/dekódování"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -550,23 +547,20 @@ msgid "Memory usage"
 msgstr "Využití paměti"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Využití GPU"
+msgstr "Využití GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "Rychlost paměti"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "Kódování / dekódování videa"
+msgstr "Kódování videa"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "Kódování / dekódování videa"
+msgstr "Dekódování videa"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -586,7 +580,7 @@ msgstr "Rychlost PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
-msgstr "Adresa PCI sběrnice:"
+msgstr "Adresa na PCI sběrnici:"
 
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
@@ -594,22 +588,20 @@ msgid "Memory"
 msgstr "Paměť"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Využití paměti"
+msgstr "Využití odkládacího prostoru za "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr "Složení paměti"
+msgstr "Skladba využití paměti"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Složení paměti"
+msgstr "Zobrazit skladbu využití paměti"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Zobrazit využití odkládacího prostoru"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -621,7 +613,7 @@ msgstr "Dostupná"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr "Potvrzeno"
+msgstr "Potvrzená"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
@@ -649,7 +641,7 @@ msgstr "Typ modulů:"
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr "_Nastavení sítě"
+msgstr "Nas_tavení sítě"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
@@ -657,7 +649,7 @@ msgstr "Příjem"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Staženo celkem"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -665,7 +657,7 @@ msgstr "Odesílání"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Odesláno celkem"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -704,7 +696,6 @@ msgid "IPv6 address:"
 msgstr "IPv6 adresa:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
 msgstr "Obecné"
 
@@ -717,62 +708,60 @@ msgid "Chart Data Points"
 msgstr "Počet záznamů v grafu"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Výkon"
+msgstr "Stránka ohledně výkonu"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr "Hladké grafy"
+msgstr "Vyhlazené grafy"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Kreslí grafy jako hladké čáry místo zubatých"
+msgstr "Vykreslovat grafy jako hladké čáry namísto zubatých"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Zobrazit rychlost sítě v bajtech"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Dynamicky měnit měřítko grafu sítě"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Nastavit graf sítě tak, aby měnil měřítko dynamicky na základě stávajícího "
+"využití nebo maximální rychlosti kanálu"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Zobrazit informace o procesoru"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Složení paměti"
+msgstr "Zobrazit informace o operační paměti"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Zobrazit informace o disku"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Zobrazit informace o síti"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Zobrazit informace o grafickém čipu"
 
 #: resources/ui/preferences/page.blp:89
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "Proces a informace uživatele"
+msgstr "Zobrazit informace o ventilátoru"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "Nastavení záložky aplikace"
+msgstr "Stránka aplikací"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -784,17 +773,15 @@ msgstr "Zapamatovat řazení"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr ""
-"Zapamatovat si řazení aplikačního a procesového seznamu mezi restarty "
-"aplikace"
+msgstr "Zapamatovat si řazení seznamu aplikací a procesů mezi restarty aplikace"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr "Škálovat Využití procesoru podle počtu jader"
+msgstr "Uzpůsobit měřítko grafu využití procesoru podle počtu jader"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr "Detaily služby"
+msgstr "Podrobnosti o službě"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
@@ -807,7 +794,7 @@ msgstr "Aktuální stav služby"
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
 msgid "Name"
-msgstr "Jméno"
+msgstr "Název"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
@@ -828,11 +815,11 @@ msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr "Proces a informace uživatele"
+msgstr "Informace o procesu a uživateli"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr "ID procesu"
+msgstr "Identif. procesu"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -856,57 +843,55 @@ msgstr "Skupina"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr "Logy"
+msgstr "Záznamy událostí"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Restart"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr "Detaily"
+msgstr "Podrobnosti"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
 msgstr "ID procesu"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "Zapnuto"
+msgstr "Povolit vše"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Zakázat vše"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Vrátit do výchozího nastavení"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
 msgstr "Zařízení"
 
 #: resources/ui/window.blp:70
-#, fuzzy
 msgid "Edit Sidebar"
-msgstr "Přepnout postranní panel"
+msgstr "Upravit postranní panel"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr "Přepnout postranní panel"
+msgstr "Vyp/zap. postranní panel"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
@@ -934,11 +919,11 @@ msgstr "_Předvolby"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr "_O MissionCenter"
+msgstr "_O Středisku mise"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "Jednotka"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
@@ -995,7 +980,7 @@ msgid ""
 msgstr ""
 "Pohotovostní ({}B)\n"
 "\n"
-"Paměť, která obsahuje data a kód v mězipaměti, jež nejsou aktivně používány"
+"Paměť, která obsahuje data a kód v mezipaměti, které nejsou aktivně používány"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -1010,9 +995,8 @@ msgstr ""
 "kdy operační systém, ovladače či aplikace budou potřebovat více paměti"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
-#, fuzzy
 msgid "Drive {} ({})"
-msgstr "Disk {} ({})"
+msgstr "Jednotka {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
@@ -1036,7 +1020,7 @@ msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr "Optické"
+msgstr "Optická"
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -1059,16 +1043,15 @@ msgstr "Grafika"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Ventilátor {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Ventilátor"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}b/s"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1090,36 +1073,35 @@ msgstr "{} sekund{}"
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr "{} minut{} "
+msgstr "{} minutu{} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Disk {} ({})"
+msgstr "Jednotka ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{} B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} ot/min"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{} %"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1127,39 +1109,38 @@ msgstr "Získání dalších informací o paměti se nezdařilo"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "b/s"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{} B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} Běžící služby"
+msgstr "{} Běžících služeb"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr "{} selhaných služeb z celkových {}"
+msgstr "{} zhavarovaných služeb z celkových {}"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr "Běžící"
+msgstr "Spuštěné"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "Zhavarovalo"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Zastaveno"
 
 #: src/application.rs:373
 msgid "translator-credits"

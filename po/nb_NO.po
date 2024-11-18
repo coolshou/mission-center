@@ -8,22 +8,21 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2023-07-24 19:42+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/nb_NO/>\n"
+"PO-Revision-Date: 2024-11-06 18:00+0000\n"
+"Last-Translator: ovl-1 <ovl-002@mailinator.com>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
+"mission-center/mission-center/nb_NO/>\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
-#, fuzzy
 msgid "Mission Center"
-msgstr "Kontrollkommando"
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -41,11 +40,11 @@ msgstr "Utviklere"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr "Hold øye med ressursbruk"
+msgstr "Overvåk bruken av systemressurser"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr "Hold øye med prosessor, minne, lagring, nettverk, og grafikkbruk"
+msgstr "Overvåk bruken av CPU, minne, disk, nettverk og GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
@@ -53,19 +52,19 @@ msgstr "Funksjoner:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Overvåk hele prosessoren, eller hver tråd"
+msgstr "Overvåk CPU-bruken totalt eller per tråd"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Vis systemprosesser, tråder, og håndter antall, oppetid, klokkehastighet "
-"(grunn-nivå og nåværende), og hurtigerstørrelser"
+"Se systemprosesser, tråder og handles-antall , oppetid, klokkehastighet ("
+"basis og gjeldende), hurtigbufferstørrelser"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Hold øye med minne- og sidevekslingsfilbruk"
+msgstr "Overvåk bruken av RAM og sidevekslingsfil"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
@@ -73,11 +72,11 @@ msgstr "Vis et sammendrag av hvordan minnet brukes av systemet"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Hold øye med diskbruk og overføringshastigheter"
+msgstr "Overvåk diskutnyttelse og overføringshastigheter"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Hold øye med nettverksbruk og overføringshastigheter"
+msgstr "Overvåk nettverksutnyttelse og overføringshastigheter"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -94,8 +93,8 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Hold øye med helhetlig grafikkbruk, videokoding- og videodekodingsbruk, "
-"minnebruk, og strømforbruk, i kraft av det populære NVTOP-prosjektet."
+"Overvåk samlet GPU-bruk, bruk av videokoder og -dekoder, minnebruk og "
+"strømforbruk, drevet av det populære NVTOP-prosjektet"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -103,16 +102,15 @@ msgstr "Vis et sammendrag av ressursbruk per program og prosess"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Støtter minifisert sammendragsvisning for enkelt oppsyn"
+msgstr "Støtter en forminsket sammendragsvisning for enkel overvåking"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Bruk OpenGL-opptegning for alle diagrammer i forsøk på å redusere prosess- "
-"og helhetlig ressursbruk"
+"Bruk maskinvareakselerert gjengivelse for alle grafer i et forsøk på å "
+"redusere CPU- og ressursbruken totalt sett"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -152,29 +150,29 @@ msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Kommentarer, forslag, feilrapporter og bidrag ønskes"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
-#, fuzzy
 msgid "Which page is shown on application startup"
-msgstr "Side vist ved programstart"
+msgstr "Hvilken side vises ved programoppstart"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Hvor raskt data skal oppfriskes og grensesnittet endres"
+msgstr ""
+"Hvor raskt skal dataene gjenoppfriskes og brukerflaten oppdateres (i trinn "
+"på 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Hvor mange punkter skal vises på hvert diagram?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "Om du vil bruke bits (standard) eller byte for nettverkshastighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
@@ -185,16 +183,20 @@ msgstr ""
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Statistikk for overordnede og underordnede prosesser vises individuelt eller "
+"sammenslått oppover"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Kolonnesortering opprettholdes ved omstarter av programmet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Vis CPU-bruk for programmer og prosesser skalert til antall tilgjengelige "
+"kjerner"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
@@ -202,62 +204,61 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Sorteringsretningen for program-sidevisningen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Hvilet diagram som skal vises for prosessorytelsessiden"
+msgstr "Hvilken graf vises på CPU-ytelsessiden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Vis kjerne(kernel)-tider i CPU-grafene"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "Side i ytelsesfanen vist ved programstart,"
+msgstr "Hvilken side vises ved oppstart av programmet, i ytelsesfanen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Skal ytelsesgrafer være jevnet ut eller taggete"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Vis CPU-informasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr ""
+msgstr "Vis minneinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Vis diskinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "Vis nettverksinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Vis GPU-informasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Vis vifteinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Minnesammensetning"
+msgstr "Vis widgeten for minnesammensetning"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Vis grafen for sidevekslingsfil"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
@@ -269,7 +270,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Grafer som skal være skjult i programmets sidepanel"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -278,9 +279,8 @@ msgstr "Prosessor"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "% bruk i løpet av {} sekunder"
+msgstr "Utnyttelse over "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -294,7 +294,7 @@ msgstr "Endre _diagram til"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr "Helhetlig _bruk"
+msgstr "Samlet u_tnyttelse"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
@@ -302,7 +302,7 @@ msgstr "Logiske _prosessorer"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Vis kjerne(kernel)-tider"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -347,7 +347,7 @@ msgstr "_Minne"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Stasjon"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -374,7 +374,7 @@ msgstr "_Grafikk"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Vifte"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -453,14 +453,12 @@ msgid "Cpufreq governor:"
 msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Innstillinger"
+msgstr "Strømpreferanse:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Tid aktiv"
+msgstr "Aktiv tid over "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
@@ -503,43 +501,37 @@ msgid "Type:"
 msgstr "Type:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Minnebruk"
+msgstr "Viftehastighet over "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatur"
+msgstr "Temperatur over "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Hastighet"
+msgstr "Viftehastighet"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
 msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "Temperatur"
+msgstr "Gjeldende temperatur"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Videokoding"
+msgstr "Utnyttelse av videokoding/dekoding over "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Minnebruk"
+msgstr "Minnebruk over "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Vis bruk av koding/dekoding"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -597,22 +589,20 @@ msgid "Memory"
 msgstr "Minne"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Minnebruk"
+msgstr "Bruk av sidevekslingsfil over "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Minnesammensetning"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Minnesammensetning"
+msgstr "Vis minnesammensetning"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Vis bruk av sidevekslingsfil"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -661,7 +651,7 @@ msgstr "Mottak"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Totalt mottatt"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -669,7 +659,7 @@ msgstr "Forsendelse"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Totalt sendt"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -708,74 +698,72 @@ msgid "IPv6 address:"
 msgstr "IPv6-adresse:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Generelle innstillinger"
+msgstr "Generelt"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Oppdateringsintervall"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Diagramdatapunkter"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Ytelse"
+msgstr "Ytelsesside"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Jevne grafer"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Tegn grafer som utjevnet linje i stedet for taggete linje"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Vis nettverkshastighet i byte"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Skaler nettverksgrafer dynamisk"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Still inn nettverksgrafen til å skalere dynamisk med faktisk bruk eller med "
+"kanalens maksimale hastighet"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Vis CPU-informasjon"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Minnesammensetning"
+msgstr "Vis minneinformasjon"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Vis diskinformasjon"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Vis nettverkinformasjon"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Vis GPU-informasjon"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr ""
+msgstr "Vis vifteinformasjon"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "Generelle innstillinger"
+msgstr "Programside"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -783,12 +771,12 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Husk sortering"
 
 #: resources/ui/preferences/page.blp:104
-#, fuzzy
 msgid "Remember the sorting of the app and process list across app restarts"
-msgstr "Feilfiks der programmet og prosesslisten var tom for noen brukere"
+msgstr ""
+"Husk sorteringen av program- og prosesslisten ved omstarter av programmet"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
@@ -796,15 +784,15 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Tjenestedetaljer"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Tjenestens gjeldende status"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
@@ -814,15 +802,15 @@ msgstr "Navn"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Beskrivelse"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Aktivert"
 
 #: resources/ui/services_page/details_dialog.blp:213
 #, fuzzy
@@ -831,7 +819,7 @@ msgstr "Prosesser"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Prosess- og brukerinformasjon"
 
 #: resources/ui/services_page/details_dialog.blp:230
 #, fuzzy
@@ -852,35 +840,35 @@ msgstr "I/T"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Bruker"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Logger"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Stopp"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Start på nytt"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
@@ -888,27 +876,27 @@ msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "Aktiver alle"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Deaktiver alle"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Tilbakestill til standard"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr ""
+msgstr "Enheter"
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr ""
+msgstr "Rediger sidepanel"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Vis sidepanel"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
@@ -916,7 +904,7 @@ msgstr "Skriv navn eller PID for å søke"
 
 #: resources/ui/window.blp:173
 msgid "Loading..."
-msgstr ""
+msgstr "Laster..."
 
 #: resources/ui/window.blp:187
 msgid "Performance"
@@ -928,7 +916,7 @@ msgstr "Programmer"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr ""
+msgstr "Tjenester"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
@@ -940,11 +928,11 @@ msgstr "_Om"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "Stasjon"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU-bruk"
 
 #: src/apps_page/mod.rs:1403
 #, fuzzy
@@ -954,21 +942,20 @@ msgstr "Grafikk-enhet {}"
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
 msgid "Stop Application"
-msgstr ""
+msgstr "Stopp program"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Framtving stopp av program"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
-#, fuzzy
 msgid "Stop Process"
-msgstr "Prosesser"
+msgstr "Stopp prosess"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Framtving stopp av prosess"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -1040,7 +1027,7 @@ msgstr "ISCSI"
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr ""
+msgstr "Optisk"
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -1065,16 +1052,15 @@ msgstr "_Grafikk"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Vifte {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Vifte"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{} {}bps"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1090,14 +1076,13 @@ msgstr "Nei"
 
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
-#, fuzzy
 msgid "{} second{}"
-msgstr "{} sekunder"
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minutt{} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
@@ -1126,7 +1111,7 @@ msgstr ""
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1147,16 +1132,16 @@ msgstr "{} {}{}B/s"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Kjørende tjenester"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} feilende tjenester av totalt {}"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "Kjørende"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
@@ -1166,7 +1151,7 @@ msgstr ""
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Stoppet"
 
 #: src/application.rs:373
 msgid "translator-credits"
