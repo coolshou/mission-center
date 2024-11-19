@@ -18,6 +18,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use crate::{critical, debug};
+use ash::{vk, Entry};
+
 pub struct VulkanInfo {
     _entry: ash::Entry,
     vk_instance: ash::Instance,
@@ -33,9 +36,6 @@ impl Drop for VulkanInfo {
 
 impl VulkanInfo {
     pub fn new() -> Option<Self> {
-        use crate::{critical, debug};
-        use ash::{vk, Entry};
-
         let _entry = match unsafe { Entry::load() } {
             Ok(e) => e,
             Err(e) => {
@@ -72,7 +72,7 @@ impl VulkanInfo {
         debug!("Gatherer::VkInfo", "Created Vulkan instance");
 
         Some(Self {
-            _entry: _entry,
+            _entry,
             vk_instance: instance,
         })
     }
@@ -82,17 +82,17 @@ impl VulkanInfo {
     ) -> Option<std::collections::HashMap<u32, crate::platform::ApiVersion>> {
         use crate::{debug, platform::ApiVersion, warning};
 
-        let physical_devices = match self.vk_instance.enumerate_physical_devices() {
-            Ok(pd) => pd,
-            Err(e) => {
+        let physical_devices = self
+            .vk_instance
+            .enumerate_physical_devices()
+            .unwrap_or_else(|e| {
                 warning!(
                     "Gatherer::GPU",
                     "Failed to get Vulkan information: No Vulkan capable devices found ({})",
                     e
                 );
                 vec![]
-            }
-        };
+            });
 
         let mut supported_versions = std::collections::HashMap::new();
 

@@ -18,14 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{
-    collections::HashMap,
-    fs,
-    sync::{Arc, RwLock},
-    time::Instant,
-};
-
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
+use crate::platform::platform_impl::gpu_info::nvtop::GPUInfoStaticInfoValid;
 use crate::{
     gpu_info_valid,
     logging::{critical, debug, error, warning},
@@ -35,6 +29,13 @@ use crate::{
         OpenGLApiVersion, ProcessesExt,
     },
 };
+use std::num::NonZero;
+use std::{
+    collections::HashMap,
+    fs,
+    sync::{Arc, RwLock},
+    time::Instant,
+};
 
 #[allow(unused)]
 mod nvtop;
@@ -43,15 +44,15 @@ mod vulkan_info;
 #[derive(Debug, Clone)]
 pub struct LinuxGpuStaticInfo {
     id: Arc<str>,
-    device_name: Arc<str>,
+    device_name: Option<Arc<str>>,
     vendor_id: u16,
     device_id: u16,
-    total_memory: u64,
-    total_gtt: u64,
+    total_memory: Option<NonZero<u64>>,
+    total_gtt: Option<NonZero<u64>>,
     opengl_version: Option<OpenGLApiVersion>,
     vulkan_version: Option<ApiVersion>,
-    pcie_gen: u8,
-    pcie_lanes: u8,
+    pcie_gen: Option<NonZero<u8>>,
+    pcie_lanes: Option<NonZero<u8>>,
 }
 
 impl LinuxGpuStaticInfo {}
@@ -60,15 +61,15 @@ impl Default for LinuxGpuStaticInfo {
     fn default() -> Self {
         Self {
             id: Arc::from(""),
-            device_name: Arc::from(""),
+            device_name: None,
             vendor_id: 0,
             device_id: 0,
-            total_memory: 0,
-            total_gtt: 0,
+            total_memory: None,
+            total_gtt: None,
             opengl_version: None,
             vulkan_version: None,
-            pcie_gen: 0,
-            pcie_lanes: 0,
+            pcie_gen: None,
+            pcie_lanes: None,
         }
     }
 }
@@ -78,8 +79,8 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         self.id.as_ref()
     }
 
-    fn device_name(&self) -> &str {
-        self.device_name.as_ref()
+    fn device_name(&self) -> Option<&str> {
+        self.device_name.as_ref().map(|s| s.as_ref())
     }
 
     fn vendor_id(&self) -> u16 {
@@ -90,11 +91,11 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         self.device_id
     }
 
-    fn total_memory(&self) -> u64 {
+    fn total_memory(&self) -> Option<NonZero<u64>> {
         self.total_memory
     }
 
-    fn total_gtt(&self) -> u64 {
+    fn total_shared_memory(&self) -> Option<NonZero<u64>> {
         self.total_gtt
     }
 
@@ -114,11 +115,11 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         None
     }
 
-    fn pcie_gen(&self) -> u8 {
+    fn pcie_gen(&self) -> Option<NonZero<u8>> {
         self.pcie_gen
     }
 
-    fn pcie_lanes(&self) -> u8 {
+    fn pcie_lanes(&self) -> Option<NonZero<u8>> {
         self.pcie_lanes
     }
 }
@@ -617,15 +618,17 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             }
 
             let device_name =
-                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) };
-            let device_name = device_name.to_str().unwrap_or_else(|_| "Unknown");
+                if gpu_info_valid!(dev.static_info, GPUInfoStaticInfoValid::DeviceNameValid) {
+                    unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
+                        .to_str()
+                        .ok()
+                } else {
+                    None
+                };
 
             let mut uevent_path = ArrayString::<64>::new();
             let _ = write!(uevent_path, "/sys/bus/pci/devices/{}/uevent", pdev);
-            let uevent_file = match std::fs::OpenOptions::new()
-                .read(true)
-                .open(uevent_path.as_str())
-            {
+            let uevent_file = match fs::OpenOptions::new().read(true).open(uevent_path.as_str()) {
                 Ok(f) => Some(f),
                 Err(_) => {
                     uevent_path.clear();
@@ -634,10 +637,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                         "/sys/bus/pci/devices/{}/uevent",
                         pdev.to_lowercase()
                     );
-                    match std::fs::OpenOptions::new()
-                        .read(true)
-                        .open(uevent_path.as_str())
-                    {
+                    match fs::OpenOptions::new().read(true).open(uevent_path.as_str()) {
                         Ok(f) => Some(f),
                         Err(_) => {
                             warning!(
@@ -655,16 +655,10 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 "/sys/bus/pci/devices/{}/mem_info_gtt_total",
                 pdev.to_lowercase()
             )) {
-                Ok(x) => match x.trim().parse::<u64>() {
-                    Ok(x) => x,
-                    Err(x) => {
-                        debug!("Gatherer::GpuInfo", "Failed to parse total gtt: {}", x);
-                        0
-                    }
-                },
+                Ok(x) => x.trim().parse::<u64>().ok().and_then(|v| NonZero::new(v)),
                 Err(x) => {
                     debug!("Gatherer::GpuInfo", "Failed to read total gtt: {}", x);
-                    0
+                    None
                 }
             };
             let ven_dev_id = if let Some(mut f) = uevent_file {
@@ -706,15 +700,36 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
             let static_info = LinuxGpuStaticInfo {
                 id: Arc::from(pdev),
-                device_name: Arc::from(device_name),
+                device_name: device_name.map(|name| Arc::from(name)),
                 vendor_id: ven_dev_id.0,
                 device_id: ven_dev_id.1,
 
-                total_memory: dev.dynamic_info.total_memory,
+                total_memory: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GPUInfoDynamicInfoValid::TotalMemoryValid
+                ) {
+                    NonZero::new(dev.dynamic_info.total_memory)
+                } else {
+                    None
+                },
                 total_gtt,
 
-                pcie_gen: dev.dynamic_info.pcie_link_gen as _,
-                pcie_lanes: dev.dynamic_info.pcie_link_width as _,
+                pcie_gen: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GPUInfoDynamicInfoValid::PcieLinkGenValid
+                ) {
+                    NonZero::new(dev.dynamic_info.pcie_link_gen as _)
+                } else {
+                    None
+                },
+                pcie_lanes: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GPUInfoDynamicInfoValid::PcieLinkWidthValid
+                ) {
+                    NonZero::new(dev.dynamic_info.pcie_link_width as _)
+                } else {
+                    None
+                },
 
                 // Leave the rest for when static info is actually requested
                 ..Default::default()
@@ -869,13 +884,10 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 "/sys/bus/pci/devices/{}/mem_info_gtt_used",
                 pdev.to_lowercase()
             )) {
-                Ok(x) => match x.trim().parse::<u64>() {
-                    Ok(x) => x,
-                    Err(x) => {
-                        debug!("Gatherer::GpuInfo", "Failed to parse used gtt: {}", x);
-                        0
-                    }
-                },
+                Ok(x) => x.trim().parse::<u64>().unwrap_or_else(|x| {
+                    debug!("Gatherer::GpuInfo", "Failed to parse used gtt: {}", x);
+                    0
+                }),
                 Err(x) => {
                     debug!("Gatherer::GpuInfo", "Failed to read used gtt: {}", x);
                     0
