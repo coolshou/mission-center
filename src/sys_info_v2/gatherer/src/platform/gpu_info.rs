@@ -17,9 +17,9 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
 use dbus::arg::{Append, Arg};
 use serde::{Deserialize, Serialize};
+use std::num::NonZero;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
@@ -86,7 +86,7 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     fn id(&self) -> &str;
 
     /// The human-readable name of the GPU
-    fn device_name(&self) -> &str;
+    fn device_name(&self) -> Option<&str>;
 
     /// The PCI vendor identifier
     fn vendor_id(&self) -> u16;
@@ -97,10 +97,10 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     /// The total amount of GPU memory available to the device
     ///
     /// It is platform/driver specific if this value includes any memory shared with system RAM
-    fn total_memory(&self) -> u64;
+    fn total_memory(&self) -> Option<NonZero<u64>>;
 
-    /// The total amount of gtt/gart available
-    fn total_gtt(&self) -> u64;
+    /// The total amount of GTT/GART memory available
+    fn total_shared_memory(&self) -> Option<NonZero<u64>>;
 
     /// The version of OpenGL that the GPU supports
     ///
@@ -123,10 +123,10 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     fn direct3d_version(&self) -> Option<&ApiVersion>;
 
     /// The PCI express lane generation that the GPU is mounted on
-    fn pcie_gen(&self) -> u8;
+    fn pcie_gen(&self) -> Option<NonZero<u8>>;
 
     /// The number of PCI express lanes in use by the GPU
-    fn pcie_lanes(&self) -> u8;
+    fn pcie_lanes(&self) -> Option<NonZero<u8>>;
 }
 
 impl Arg for crate::platform::GpuStaticInfo {
@@ -141,17 +141,19 @@ impl Append for crate::platform::GpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
         ia.append((
             self.id(),
-            self.device_name(),
+            self.device_name().unwrap_or_default(),
             self.vendor_id(),
             self.device_id(),
-            self.total_memory(),
-            self.total_gtt(),
+            self.total_memory().map(|v| v.get()).unwrap_or_default(),
+            self.total_shared_memory()
+                .map(|v| v.get())
+                .unwrap_or_default(),
             self.opengl_version().map(|v| *v).unwrap_or_default(),
             self.vulkan_version().map(|v| *v).unwrap_or_default(),
             self.metal_version().map(|v| *v).unwrap_or_default(),
             self.direct3d_version().map(|v| *v).unwrap_or_default(),
-            self.pcie_gen(),
-            self.pcie_lanes(),
+            self.pcie_gen().map(|v| v.get()).unwrap_or_default(),
+            self.pcie_lanes().map(|v| v.get()).unwrap_or_default(),
         ));
     }
 }
@@ -172,7 +174,7 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     /// implementations provide the most user relevant value here
     fn temp_celsius(&self) -> u32;
 
-    /// The speed of the fan represented as a percentage from it's maximum speed
+    /// The speed of the fan represented as a percentage from its maximum speed
     fn fan_speed_percent(&self) -> u32;
 
     /// Load of the graphics pipeline
@@ -204,6 +206,7 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
 
     /// The amount of gtt/gart available
     fn used_gtt(&self) -> u64;
+
     /// Utilization percent of the encoding pipeline of the GPU
     fn encoder_percent(&self) -> u32;
 
