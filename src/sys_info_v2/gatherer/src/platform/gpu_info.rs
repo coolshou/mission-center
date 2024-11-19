@@ -102,6 +102,9 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     /// The total amount of gtt/gart available
     fn total_gtt(&self) -> u64;
 
+    /// The maximum power draw in watts
+    fn power_draw_max_watts(&self) -> f32;
+
     /// The version of OpenGL that the GPU supports
     ///
     /// If the platform does not provide OpenGL support it should return None
@@ -139,7 +142,7 @@ impl Arg for crate::platform::GpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yybt)")
+        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yybtd)")
     }
 }
 
@@ -160,6 +163,7 @@ impl Append for crate::platform::GpuStaticInfo {
             ia.append(self.pcie_lanes());
             ia.append(self.fan_avail());
             ia.append(self.fan_max_rpm());
+            ia.append(self.power_draw_max_watts() as f64);
         });
     }
 }
@@ -188,9 +192,6 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
 
     /// The power draw in watts
     fn power_draw_watts(&self) -> f32;
-
-    /// The maximum power that the GPU is allowed to draw
-    fn power_draw_max_watts(&self) -> f32;
 
     /// The current GPU core clock frequency
     fn clock_speed_mhz(&self) -> u32;
@@ -230,7 +231,7 @@ impl Arg for crate::platform::GpuDynamicInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suuudduuuutttttuu)")
+        dbus::Signature::from("(suuuduuuutttttuu)")
     }
 }
 
@@ -242,7 +243,6 @@ impl Append for crate::platform::GpuDynamicInfo {
             ia.append(self.fan_speed_percent());
             ia.append(self.util_percent());
             ia.append(self.power_draw_watts() as f64);
-            ia.append(self.power_draw_max_watts() as f64);
             ia.append(self.clock_speed_mhz());
             ia.append(self.clock_speed_max_mhz());
             ia.append(self.mem_speed_mhz());

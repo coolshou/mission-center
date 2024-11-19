@@ -30,7 +30,6 @@ pub struct GpuDynamicInfo {
     pub fan_speed_percent: u32,
     pub util_percent: u32,
     pub power_draw_watts: f32,
-    pub power_draw_max_watts: f32,
     pub clock_speed_mhz: u32,
     pub clock_speed_max_mhz: u32,
     pub mem_speed_mhz: u32,
@@ -52,7 +51,6 @@ impl Default for GpuDynamicInfo {
             fan_speed_percent: 0,
             util_percent: 0,
             power_draw_watts: 0.0,
-            power_draw_max_watts: 0.0,
             clock_speed_mhz: 0,
             clock_speed_max_mhz: 0,
             mem_speed_mhz: 0,
@@ -129,7 +127,6 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             fan_speed_percent: 0,
                             util_percent: 0,
                             power_draw_watts: 0.0,
-                            power_draw_max_watts: 0.0,
                             clock_speed_mhz: 0,
                             clock_speed_max_mhz: 0,
                             mem_speed_mhz: 0,
@@ -257,27 +254,6 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     return None;
                                 }
                                 Some(pd) => pd as _,
-                            },
-                        };
-
-                        this.power_draw_max_watts = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '5: d', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '5: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pdm) => pdm as _,
                             },
                         };
 

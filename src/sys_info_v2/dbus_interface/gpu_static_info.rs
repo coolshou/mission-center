@@ -61,6 +61,7 @@ pub struct GpuStaticInfo {
     pub pcie_lanes: u8,
     pub fan_avail: bool,
     pub fan_max_rpm: u64,
+    pub power_draw_max_watts: f32,
 }
 
 impl Default for GpuStaticInfo {
@@ -81,6 +82,7 @@ impl Default for GpuStaticInfo {
             pcie_lanes: 0,
             fan_avail: false,
             fan_max_rpm: 0,
+            power_draw_max_watts: 0.0,
         }
     }
 }
@@ -157,6 +159,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                             pcie_lanes: 0,
                             fan_avail: false,
                             fan_max_rpm: 0,
+                            power_draw_max_watts: 0.0,
                         };
 
                         let mut static_info = match static_info.as_iter() {
@@ -527,6 +530,27 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     return None;
                                 }
                                 Some(fan_max_rpm) => fan_max_rpm,
+                            },
+                        };
+
+                        info.power_draw_max_watts = match Iterator::next(static_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuStaticInfo: Expected '12: y', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_f64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo: Expected '12: y', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(power_draw_max_watts) => power_draw_max_watts as f32,
                             },
                         };
 

@@ -50,6 +50,7 @@ pub struct LinuxGpuStaticInfo {
     device_id: u16,
     total_memory: u64,
     total_gtt: u64,
+    power_draw_max_watts: f32,
     opengl_version: Option<OpenGLApiVersion>,
     vulkan_version: Option<ApiVersion>,
     pcie_gen: u8,
@@ -72,6 +73,7 @@ impl Default for LinuxGpuStaticInfo {
             device_id: 0,
             total_memory: 0,
             total_gtt: 0,
+            power_draw_max_watts: 0.0,
             opengl_version: None,
             vulkan_version: None,
             pcie_gen: 0,
@@ -108,6 +110,10 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
 
     fn total_gtt(&self) -> u64 {
         self.total_gtt
+    }
+
+    fn power_draw_max_watts(&self) -> f32 {
+        self.power_draw_max_watts
     }
 
     fn opengl_version(&self) -> Option<&OpenGLApiVersion> {
@@ -213,10 +219,6 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
 
     fn power_draw_watts(&self) -> f32 {
         self.power_draw_watts
-    }
-
-    fn power_draw_max_watts(&self) -> f32 {
-        self.power_draw_max_watts
     }
 
     fn clock_speed_mhz(&self) -> u32 {
@@ -809,6 +811,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
                 total_memory: dev.dynamic_info.total_memory,
                 total_gtt,
+                power_draw_max_watts: dev.dynamic_info.power_draw_max as f32 / 1000.,
 
                 pcie_gen: dev.dynamic_info.pcie_link_gen as _,
                 pcie_lanes: dev.dynamic_info.pcie_link_width as _,

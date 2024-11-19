@@ -273,22 +273,22 @@ mod imp {
                     let this = t.imp();
 
                     let set_width = |graph: &TemplateChild<GraphWidget>| {
-						let width = graph.width() as f32;
-						let height = graph.height() as f32;
+                        let width = graph.width() as f32;
+                        let height = graph.height() as f32;
 
-						let mut a = width;
-						let mut b = height;
-						if width > height {
-							a = height;
-							b = width;
-						}
+                        let mut a = width;
+                        let mut b = height;
+                        if width > height {
+                            a = height;
+                            b = width;
+                        }
 
-						graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-					};
+                        graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+                    };
 
-					for graph in [&this.usage_graph_overall, &this.usage_graph_memory, &this.usage_graph_gtt, &this.usage_graph_fan, &this.usage_graph_temp] {
-						set_width(graph)
-					}
+                    for graph in [&this.usage_graph_overall, &this.usage_graph_memory, &this.usage_graph_gtt, &this.usage_graph_fan, &this.usage_graph_temp] {
+                        set_width(graph)
+                    }
 
                     None
                 });
@@ -331,10 +331,10 @@ mod imp {
             }
 
             if !gpu.fan_avail {
-				this.fan_graph.set_visible(false);
-				this.box_fan_pwm.get().and_then(|b| Some(b.set_visible(false)));
-				this.box_fan.get().and_then(|b| Some(b.set_visible(false)));
-			}
+                this.fan_graph.set_visible(false);
+                this.box_fan_pwm.get().and_then(|b| Some(b.set_visible(false)));
+                this.box_fan.get().and_then(|b| Some(b.set_visible(false)));
+            }
 
             this.usage_graph_fan.set_dashed(1, true);
             this.usage_graph_fan.set_filled(1, false);
@@ -424,6 +424,9 @@ mod imp {
             this.usage_graph_gtt
                 .set_value_range_max(gpu.total_gtt as f32);
 
+            this.usage_graph_gtt
+                .set_value_range_max(gpu.total_gtt as f32);
+
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
                     "{}{}.{}",
@@ -460,6 +463,20 @@ mod imp {
 
             if let Some(pci_addr) = this.pci_addr.get() {
                 pci_addr.set_text(gpu.id.as_ref());
+            }
+
+            let power_limit = if gpu.power_draw_max_watts != 0.0 {
+                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
+            } else {
+                None
+            };
+            if let Some(power_draw_max) = this.power_draw_max.get() {
+                if let Some(power_limit) = power_limit {
+                    power_draw_max.set_text(&format!(
+                        " / {0:.2$} {1}W",
+                        power_limit.0, power_limit.1, power_limit.2
+                    ));
+                }
             }
 
             true
@@ -546,25 +563,25 @@ mod imp {
             }
 
             let power_draw = crate::to_human_readable(gpu.power_draw_watts, 1000.);
-            let power_limit = if gpu.power_draw_max_watts != 0.0 {
-                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
-            } else {
-                None
-            };
+            //let power_limit = if gpu.power_draw_max_watts != 0.0 {
+                //Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
+            //} else {
+                //None
+            //};
             if let Some(power_draw_current) = this.power_draw_current.get() {
                 power_draw_current.set_text(&format!(
                     "{0:.2$} {1}W",
                     power_draw.0, power_draw.1, power_draw.2
                 ));
             }
-            if let Some(power_draw_max) = this.power_draw_max.get() {
-                if let Some(power_limit) = power_limit {
-                    power_draw_max.set_text(&format!(
-                        " / {0:.2$} {1}W",
-                        power_limit.0, power_limit.1, power_limit.2
-                    ));
-                }
-            }
+            //if let Some(power_draw_max) = this.power_draw_max.get() {
+                //if let Some(power_limit) = power_limit {
+                    //power_draw_max.set_text(&format!(
+                        //" / {0:.2$} {1}W",
+                        //power_limit.0, power_limit.1, power_limit.2
+                    //));
+                //}
+            //}
             if let Some(encode_percent) = this.encode_percent.get() {
                 encode_percent.set_text(&format!("{}%", gpu.encoder_percent));
             }
