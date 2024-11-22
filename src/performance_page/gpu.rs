@@ -318,19 +318,85 @@ mod imp {
                 object.set_visible(show_enc_dec_usage)
             }
 
-            // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
-            // Hide the things that are missing and adjust the graphs
-            if gpu.vendor_id == 0x8086 {
-                this.box_power_draw
-                    .get()
-                    .and_then(|b| Some(b.set_visible(false)));
+            if let Some(total_memory) = gpu.total_memory {
+                let total_memory = total_memory.get() as f32;
+                let total_memory_hr = crate::to_human_readable(total_memory, 1024.);
+                let total_memory_str = format!(
+                    "{0:.2$} {1}{3}B",
+                    total_memory_hr.0,
+                    total_memory_hr.1,
+                    total_memory_hr.2,
+                    if total_memory_hr.1.is_empty() {
+                        ""
+                    } else {
+                        "i"
+                    },
+                );
+
+                this.usage_graph_memory.set_value_range_max(total_memory);
+
+                if let Some(memory_usage_max) = this.memory_usage_max.get() {
+                    memory_usage_max.set_text(&total_memory_str);
+                }
+
+                if let Some(total_shared_memory) = gpu.total_shared_memory {
+                    let total_gtt =
+                        crate::to_human_readable(total_shared_memory.get() as f32, 1024.);
+                    let total_gtt = format!(
+                        "{0:.2$} {1}{3}B",
+                        total_gtt.0,
+                        total_gtt.1,
+                        total_gtt.2,
+                        if total_gtt.1.is_empty() { "" } else { "i" },
+                    );
+
+                    this.usage_graph_memory.set_dashed(1, true);
+                    this.usage_graph_memory.set_filled(1, false);
+
+                    if let Some(legend_gtt) = this.legend_gtt.get() {
+                        legend_gtt.set_resource(Some(
+                            "/io/missioncenter/MissionCenter/line-dashed-gpu.svg",
+                        ));
+                    }
+                    if let Some(legend_vram) = this.legend_vram.get() {
+                        legend_vram.set_resource(Some(
+                            "/io/missioncenter/MissionCenter/line-solid-gpu.svg",
+                        ));
+                    }
+
+                    this.total_memory
+                        .set_text(&format!("{total_memory_str} / {total_gtt}"));
+                    if let Some(gtt_usage_max) = this.gtt_usage_max.get() {
+                        gtt_usage_max.set_text(&total_gtt);
+                    }
+
+                    if let Some(memory_usage_max) = this.memory_usage_max.get() {
+                        memory_usage_max.set_text(&total_memory_str);
+                    }
+                    this.memory_graph_label
+                        .set_text(&i18n("Dedicated and shared memory usage over "));
+                } else {
+                    this.legend_vram
+                        .get()
+                        .and_then(|b| Some(b.set_visible(false)));
+                    this.box_gtt_usage
+                        .get()
+                        .and_then(|b| Some(b.set_visible(false)));
+
+                    this.total_memory.set_text(&total_memory_str);
+                }
+            } else {
                 this.box_mem_usage
                     .get()
                     .and_then(|b| Some(b.set_visible(false)));
                 this.box_mem_speed
                     .get()
                     .and_then(|b| Some(b.set_visible(false)));
-                this.box_temp.get().and_then(|b| Some(b.set_visible(false)));
+
+                this.memory_graph.set_visible(false);
+            }
+
+            if gpu.encode_decode_shared {
                 this.box_decode
                     .get()
                     .and_then(|b| Some(b.set_visible(false)));
@@ -339,73 +405,28 @@ mod imp {
                     .and_then(|b| Some(b.set_visible(false)));
                 this.encode_label
                     .get()
-                    .and_then(|b| Some(b.set_label("Video encode/decode")));
-
-                if gpu.pcie_gen == 0 || gpu.pcie_lanes == 0 {
-                    this.pcie_speed_label
-                        .get()
-                        .and_then(|l| Some(l.set_visible(false)));
-                    this.pcie_speed
-                        .get()
-                        .and_then(|l| Some(l.set_visible(false)));
-                }
-
-                this.memory_graph.set_visible(false);
+                    .and_then(|b| Some(b.set_label(&i18n("Video encode/decode"))));
             } else {
                 this.usage_graph_encode_decode.set_dashed(0, true);
                 this.usage_graph_encode_decode.set_filled(0, false);
             }
 
-            let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
-            let total_memory = format!(
-                "{0:.2$} {1}{3}B",
-                total_memory.0,
-                total_memory.1,
-                total_memory.2,
-                if total_memory.1.is_empty() { "" } else { "i" },
-            );
-            let total_gtt = crate::to_human_readable(gpu.total_gtt as f32, 1024.);
-            let total_gtt = format!(
-                "{0:.2$} {1}{3}B",
-                total_gtt.0,
-                total_gtt.1,
-                total_gtt.2,
-                if total_gtt.1.is_empty() { "" } else { "i" },
-            );
+            if gpu.pcie_gen.is_none() || gpu.pcie_lanes.is_none() {
+                this.pcie_speed_label
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.pcie_speed
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+            }
 
-            // show gtt for amd cards
-            if gpu.vendor_id == 0x1002 {
-                this.usage_graph_memory.set_dashed(1, true);
-                this.usage_graph_memory.set_filled(1, false);
-
-                if let Some(legend_gtt) = this.legend_gtt.get() {
-                    legend_gtt
-                        .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
-                }
-                if let Some(legend_vram) = this.legend_vram.get() {
-                    legend_vram
-                        .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
-                }
-
-                this.total_memory
-                    .set_text(&format!("{total_memory} / {total_gtt}"));
-                if let Some(gtt_usage_max) = this.gtt_usage_max.get() {
-                    gtt_usage_max.set_text(&total_gtt);
-                }
-
-                if let Some(memory_usage_max) = this.memory_usage_max.get() {
-                    memory_usage_max.set_text(&total_memory);
-                }
-                this.memory_graph_label.set_text("Memory/GTT usage over ");
-            } else {
-                this.legend_vram
+            // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
+            // Hide the things that are missing and adjust the graphs
+            if gpu.vendor_id == 0x8086 {
+                this.box_power_draw
                     .get()
                     .and_then(|b| Some(b.set_visible(false)));
-                this.box_gtt_usage
-                    .get()
-                    .and_then(|b| Some(b.set_visible(false)));
-
-                this.total_memory.set_text(&total_memory);
+                this.box_temp.get().and_then(|b| Some(b.set_visible(false)));
             }
 
             if index.is_some() {
@@ -416,10 +437,6 @@ mod imp {
 
             this.device_name.set_text(&gpu.device_name);
 
-            if let Some(memory_usage_max) = this.memory_usage_max.get() {
-                memory_usage_max.set_text(&total_memory);
-            }
-
             if let Some(legend_encode) = this.legend_encode.get() {
                 legend_encode
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
@@ -428,9 +445,6 @@ mod imp {
                 legend_decode
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
             }
-
-            this.usage_graph_memory
-                .set_value_range_max(gpu.total_memory as f32);
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
@@ -463,7 +477,11 @@ mod imp {
             }
 
             if let Some(pcie_speed) = this.pcie_speed.get() {
-                pcie_speed.set_text(&format!("PCIe Gen {} x{} ", gpu.pcie_gen, gpu.pcie_lanes));
+                pcie_speed.set_text(&format!(
+                    "PCIe Gen {} x{} ",
+                    gpu.pcie_gen.map(|v| v.get()).unwrap_or_default(),
+                    gpu.pcie_lanes.map(|v| v.get()).unwrap_or_default()
+                ));
             }
 
             if let Some(pci_addr) = this.pci_addr.get() {
@@ -491,15 +509,21 @@ mod imp {
             this.usage_graph_encode_decode
                 .add_data_point(1, gpu.decoder_percent as f32);
 
-            this.usage_graph_memory
-                .add_data_point(0, gpu.used_memory as f32);
+            if let Some(total_memory) = gpu_static.total_memory {
+                this.usage_graph_memory
+                    .add_data_point(0, gpu.used_memory as f32);
 
-            let mut gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
-            if gtt_factor.is_infinite() || gtt_factor.is_nan() || gtt_factor.is_subnormal() {
-                gtt_factor = 0.;
+                if let Some(total_shared_memory) = gpu_static.total_shared_memory {
+                    let mut gtt_factor =
+                        total_memory.get() as f32 / total_shared_memory.get() as f32;
+                    if gtt_factor.is_infinite() || gtt_factor.is_nan() || gtt_factor.is_subnormal()
+                    {
+                        gtt_factor = 0.;
+                    }
+                    this.usage_graph_memory
+                        .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
+                }
             }
-            this.usage_graph_memory
-                .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
 
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
             if let Some(memory_usage_current) = this.memory_usage_current.get() {

@@ -53,6 +53,7 @@ pub struct LinuxGpuStaticInfo {
     vulkan_version: Option<ApiVersion>,
     pcie_gen: Option<NonZero<u8>>,
     pcie_lanes: Option<NonZero<u8>>,
+    encode_decode_shared: bool,
 }
 
 impl LinuxGpuStaticInfo {}
@@ -70,6 +71,7 @@ impl Default for LinuxGpuStaticInfo {
             vulkan_version: None,
             pcie_gen: None,
             pcie_lanes: None,
+            encode_decode_shared: false,
         }
     }
 }
@@ -121,6 +123,10 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
 
     fn pcie_lanes(&self) -> Option<NonZero<u8>> {
         self.pcie_lanes
+    }
+
+    fn encode_decode_shared(&self) -> bool {
+        self.encode_decode_shared
     }
 }
 
@@ -730,6 +736,8 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 } else {
                     None
                 },
+
+                encode_decode_shared: dev.static_info.encode_decode_shared != 0,
 
                 // Leave the rest for when static info is actually requested
                 ..Default::default()
