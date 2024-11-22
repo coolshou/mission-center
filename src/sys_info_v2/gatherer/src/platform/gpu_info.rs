@@ -127,34 +127,40 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
 
     /// The number of PCI express lanes in use by the GPU
     fn pcie_lanes(&self) -> Option<NonZero<u8>>;
+
+    /// Returns true if the encode and decode pipelines share resources
+    fn encode_decode_shared(&self) -> bool;
 }
 
 impl Arg for crate::platform::GpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yy)")
+        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yyb)")
     }
 }
 
 impl Append for crate::platform::GpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.id(),
-            self.device_name().unwrap_or_default(),
-            self.vendor_id(),
-            self.device_id(),
-            self.total_memory().map(|v| v.get()).unwrap_or_default(),
-            self.total_shared_memory()
-                .map(|v| v.get())
-                .unwrap_or_default(),
-            self.opengl_version().map(|v| *v).unwrap_or_default(),
-            self.vulkan_version().map(|v| *v).unwrap_or_default(),
-            self.metal_version().map(|v| *v).unwrap_or_default(),
-            self.direct3d_version().map(|v| *v).unwrap_or_default(),
-            self.pcie_gen().map(|v| v.get()).unwrap_or_default(),
-            self.pcie_lanes().map(|v| v.get()).unwrap_or_default(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.device_name().unwrap_or_default());
+            ia.append(self.vendor_id());
+            ia.append(self.device_id());
+            ia.append(self.total_memory().map(|v| v.get()).unwrap_or_default());
+            ia.append(
+                self.total_shared_memory()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.opengl_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.vulkan_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.metal_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.direct3d_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.pcie_gen().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.pcie_lanes().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.encode_decode_shared());
+        });
     }
 }
 

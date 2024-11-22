@@ -1269,10 +1269,10 @@ mod imp {
                     .enumerate()
                     .map(|(i, g)| {
                         let total_memory = readings.gpu_static_info[i].total_memory;
-                        if total_memory == 0 {
-                            return 0;
+                        match total_memory {
+                            Some(total_memory) => (g.used_memory * 100) / total_memory,
+                            None => 0,
                         }
-                        (g.used_memory * 100) / total_memory
                     })
                     .sum::<u64>() as f32
                     / readings.gpu_dynamic_info.len() as f32;
@@ -1580,7 +1580,7 @@ impl AppsPage {
                     readings
                         .gpu_static_info
                         .iter()
-                        .map(|g| g.total_memory as f32)
+                        .map(|g| g.total_memory.map(|m| m.get() as f32).unwrap_or_default())
                         .sum(),
                 );
             }
