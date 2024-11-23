@@ -44,6 +44,7 @@ mod cpu;
 mod disk;
 mod fan;
 mod gpu;
+mod gpu_details;
 mod memory;
 mod network;
 mod summary_graph;
@@ -55,6 +56,7 @@ type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
+type GpuDetails = gpu_details::GpuDetails;
 type FanPage = fan::PerformancePageFan;
 
 trait PageExt {
