@@ -152,8 +152,7 @@ mod imp {
                             .unwrap_or(false);
 
                         this.encode_decode_graph.set_visible(visible);
-                        this.infobar_content.legend_encode().set_visible(visible);
-                        this.infobar_content.legend_decode().set_visible(visible);
+                        this.infobar_content.set_encode_decode_visible(visible);
                         action.set_state(&glib::Variant::from(visible));
 
                         settings!()
@@ -242,11 +241,7 @@ mod imp {
 
             this.encode_decode_graph.set_visible(show_enc_dec_usage);
             this.infobar_content
-                .legend_encode()
-                .set_visible(show_enc_dec_usage);
-            this.infobar_content
-                .legend_decode()
-                .set_visible(show_enc_dec_usage);
+                .set_encode_decode_visible(show_enc_dec_usage);
 
             if let Some(total_memory) = gpu.total_memory {
                 let total_memory = total_memory.get() as f32;
@@ -264,6 +259,7 @@ mod imp {
                 );
 
                 this.usage_graph_memory.set_value_range_max(total_memory);
+                this.infobar_content.set_total_memory_valid(true);
 
                 this.infobar_content
                     .memory_usage_max()
@@ -282,13 +278,7 @@ mod imp {
 
                     this.usage_graph_memory.set_dashed(1, true);
                     this.usage_graph_memory.set_filled(1, false);
-
-                    this.infobar_content
-                        .legend_gtt()
-                        .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
-                    this.infobar_content
-                        .legend_vram()
-                        .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
+                    this.infobar_content.set_total_shared_memory_valid(true);
 
                     this.total_memory
                         .set_text(&format!("{total_memory_str} / {total_gtt}"));
@@ -300,34 +290,23 @@ mod imp {
                     this.memory_graph_label
                         .set_text(&i18n("Dedicated and shared memory usage over "));
                 } else {
-                    this.infobar_content.legend_vram().set_visible(false);
-                    this.infobar_content.box_gtt_usage().set_visible(false);
-
+                    this.infobar_content.set_total_shared_memory_valid(false);
                     this.total_memory.set_text(&total_memory_str);
                 }
             } else {
-                this.infobar_content.box_mem_usage().set_visible(false);
-                this.infobar_content.box_mem_speed().set_visible(false);
-                this.infobar_content.legend_vram().set_visible(false);
-                this.infobar_content.box_gtt_usage().set_visible(false);
-
+                this.infobar_content.set_total_memory_valid(false);
                 this.memory_graph.set_visible(false);
             }
 
+            this.infobar_content
+                .set_encode_decode_shared(gpu.encode_decode_shared);
             if gpu.encode_decode_shared {
-                this.infobar_content.box_decode().set_visible(false);
-                this.infobar_content.legend_encode().set_visible(false);
                 this.infobar_content
                     .encode_label()
                     .set_label(&i18n("Video encode/decode"));
             } else {
                 this.usage_graph_encode_decode.set_dashed(0, true);
                 this.usage_graph_encode_decode.set_filled(0, false);
-            }
-
-            if gpu.pcie_gen.is_none() || gpu.pcie_lanes.is_none() {
-                this.infobar_content.pcie_speed_label().set_visible(false);
-                this.infobar_content.pcie_speed().set_visible(false);
             }
 
             // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
@@ -344,13 +323,6 @@ mod imp {
             }
 
             this.device_name.set_text(&gpu.device_name);
-
-            this.infobar_content
-                .legend_encode()
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
-            this.infobar_content
-                .legend_decode()
-                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
@@ -378,11 +350,15 @@ mod imp {
             };
             this.infobar_content.vulkan_version().set_text(&vk_version);
 
-            this.infobar_content.pcie_speed().set_text(&format!(
-                "PCIe Gen {} x{} ",
-                gpu.pcie_gen.map(|v| v.get()).unwrap_or_default(),
-                gpu.pcie_lanes.map(|v| v.get()).unwrap_or_default()
-            ));
+            this.infobar_content
+                .set_pcie_info_visible(gpu.pcie_gen.is_some() && gpu.pcie_lanes.is_some());
+            if this.infobar_content.pcie_info_visible() {
+                this.infobar_content.pcie_speed().set_text(&format!(
+                    "PCIe Gen {} x{} ",
+                    gpu.pcie_gen.map(|v| v.get()).unwrap_or_default(),
+                    gpu.pcie_lanes.map(|v| v.get()).unwrap_or_default()
+                ));
+            }
 
             this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
 
