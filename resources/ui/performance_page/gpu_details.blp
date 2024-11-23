@@ -134,10 +134,14 @@ template $GpuDetails: Box {
     }
 
     Box box_mem_usage {
+      visible: bind template.total_memory_valid;
+
       orientation: horizontal;
       spacing: 5;
 
       Picture legend_vram {
+        visible: bind template.total_shared_memory_valid;
+
         can-shrink: false;
         content-fit: scale_down;
       }
@@ -188,6 +192,8 @@ template $GpuDetails: Box {
     }
 
     Box box_gtt_usage {
+      visible: bind template.total_shared_memory_valid;
+
       orientation: horizontal;
       spacing: 5;
 
@@ -242,6 +248,8 @@ template $GpuDetails: Box {
     }
 
     Box box_mem_speed {
+      visible: bind template.total_memory_valid;
+
       orientation: vertical;
       spacing: 3;
 
@@ -290,10 +298,14 @@ template $GpuDetails: Box {
       orientation: horizontal;
       spacing: 20;
 
+      visible: bind template.encode_decode_visible;
+
       Box {
         spacing: 5;
 
         Picture legend_encode {
+          visible: bind template.encode_decode_shared inverted;
+
           can-shrink: false;
           content-fit: scale_down;
         }
@@ -323,6 +335,8 @@ template $GpuDetails: Box {
       }
       Box box_decode {
         spacing: 5;
+
+        visible: bind template.encode_decode_shared inverted;
 
         Picture legend_decode {
           can-shrink: false;
@@ -417,6 +431,8 @@ template $GpuDetails: Box {
     }
 
     Label pcie_speed_label {
+      visible: bind template.pcie_info_visible;
+
       styles [
         "caption",
       ]
@@ -475,6 +491,8 @@ template $GpuDetails: Box {
     }
 
     Label pcie_speed {
+      visible: bind template.pcie_info_visible;
+
       styles [
         "caption",
       ]

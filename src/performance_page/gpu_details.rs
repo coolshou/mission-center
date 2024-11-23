@@ -94,8 +94,16 @@ mod imp {
         #[template_child]
         pub legend_gtt: TemplateChild<gtk::Picture>,
 
-        #[property(get)]
-        total_mem_available: Cell<bool>,
+        #[property(get, set)]
+        total_memory_valid: Cell<bool>,
+        #[property(get, set)]
+        total_shared_memory_valid: Cell<bool>,
+        #[property(get, set)]
+        encode_decode_visible: Cell<bool>,
+        #[property(get, set)]
+        encode_decode_shared: Cell<bool>,
+        #[property(get, set)]
+        pcie_info_visible: Cell<bool>,
     }
 
     impl Default for GpuDetails {
@@ -134,7 +142,11 @@ mod imp {
                 legend_vram: TemplateChild::default(),
                 legend_gtt: TemplateChild::default(),
 
-                total_mem_available: Cell::new(true),
+                total_memory_valid: Cell::new(true),
+                total_shared_memory_valid: Cell::new(false),
+                encode_decode_visible: Cell::new(true),
+                encode_decode_shared: Cell::new(false),
+                pcie_info_visible: Cell::new(true),
             }
         }
     }
@@ -171,6 +183,16 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.legend_encode
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
+            self.legend_decode
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
+
+            self.legend_gtt
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
+            self.legend_vram
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
         }
     }
 
