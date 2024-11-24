@@ -178,46 +178,46 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     ///
     /// While all modern chips report several temperatures from the GPU card, it is expected that
     /// implementations provide the most user relevant value here
-    fn temp_celsius(&self) -> u32;
+    fn temp_celsius(&self) -> Option<u32>;
 
     /// The speed of the fan represented as a percentage from its maximum speed
-    fn fan_speed_percent(&self) -> u32;
+    fn fan_speed_percent(&self) -> Option<u32>;
 
     /// Load of the graphics pipeline
-    fn util_percent(&self) -> u32;
+    fn util_percent(&self) -> Option<u32>;
 
     /// The power draw in watts
-    fn power_draw_watts(&self) -> f32;
+    fn power_draw_watts(&self) -> Option<f32>;
 
     /// The maximum power that the GPU is allowed to draw
-    fn power_draw_max_watts(&self) -> f32;
+    fn power_draw_max_watts(&self) -> Option<f32>;
 
     /// The current GPU core clock frequency
-    fn clock_speed_mhz(&self) -> u32;
+    fn clock_speed_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The maximum allowed GPU core clock frequency
-    fn clock_speed_max_mhz(&self) -> u32;
+    fn clock_speed_max_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The current speed of the on-board memory
-    fn mem_speed_mhz(&self) -> u32;
+    fn mem_speed_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The maximum speed of the on-board memory
-    fn mem_speed_max_mhz(&self) -> u32;
+    fn mem_speed_max_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The amount of memory available
-    fn free_memory(&self) -> u64;
+    fn free_memory(&self) -> Option<u64>;
 
     /// The memory that is currently being used
-    fn used_memory(&self) -> u64;
+    fn used_memory(&self) -> Option<u64>;
 
-    /// The amount of gtt/gart available
-    fn used_gtt(&self) -> u64;
+    /// The amount of shared memory available
+    fn used_shared_memory(&self) -> Option<u64>;
 
     /// Utilization percent of the encoding pipeline of the GPU
-    fn encoder_percent(&self) -> u32;
+    fn encoder_percent(&self) -> Option<u32>;
 
     /// Utilization percent of the decoding pipeline of the GPU
-    fn decoder_percent(&self) -> u32;
+    fn decoder_percent(&self) -> Option<u32>;
 }
 
 impl Arg for crate::platform::GpuDynamicInfo {
@@ -232,20 +232,36 @@ impl Append for crate::platform::GpuDynamicInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
         ia.append_struct(|ia| {
             ia.append(self.id());
-            ia.append(self.temp_celsius());
-            ia.append(self.fan_speed_percent());
-            ia.append(self.util_percent());
-            ia.append(self.power_draw_watts() as f64);
-            ia.append(self.power_draw_max_watts() as f64);
-            ia.append(self.clock_speed_mhz());
-            ia.append(self.clock_speed_max_mhz());
-            ia.append(self.mem_speed_mhz());
-            ia.append(self.mem_speed_max_mhz());
-            ia.append(self.free_memory());
-            ia.append(self.used_memory());
-            ia.append(self.used_gtt());
-            ia.append(self.encoder_percent());
-            ia.append(self.decoder_percent());
+            ia.append(self.temp_celsius().unwrap_or(u32::MAX));
+            ia.append(self.fan_speed_percent().unwrap_or(u32::MAX));
+            ia.append(self.util_percent().unwrap_or(u32::MAX));
+            ia.append(
+                self.power_draw_watts()
+                    .map(|v| v as f64)
+                    .unwrap_or(f64::INFINITY),
+            );
+            ia.append(
+                self.power_draw_max_watts()
+                    .map(|v| v as f64)
+                    .unwrap_or(f64::INFINITY),
+            );
+            ia.append(self.clock_speed_mhz().map(|v| v.get()).unwrap_or_default());
+            ia.append(
+                self.clock_speed_max_mhz()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.mem_speed_mhz().map(|v| v.get()).unwrap_or_default());
+            ia.append(
+                self.mem_speed_max_mhz()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.free_memory().unwrap_or(u64::MAX));
+            ia.append(self.used_memory().unwrap_or(u64::MAX));
+            ia.append(self.used_shared_memory().unwrap_or(u64::MAX));
+            ia.append(self.encoder_percent().unwrap_or(u32::MAX));
+            ia.append(self.decoder_percent().unwrap_or(u32::MAX));
         });
     }
 }
