@@ -51,69 +51,7 @@ Box root {
         halign: start;
       }
     }
-    Box {
-      spacing: 5;
 
-      Picture legend_encode {
-        can-shrink: false;
-        content-fit: scale_down;
-      }
-      Box {
-        orientation: vertical;
-        spacing: 3;
-
-        Label encode_label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Video encode");
-        }
-
-        Label encode_percent {
-          styles [
-            "title-4",
-          ]
-
-          ellipsize: middle;
-
-          halign: start;
-        }
-      }
-    }
-    Box box_decode {
-      spacing: 5;
-
-      Picture legend_decode {
-        can-shrink: false;
-        content-fit: scale_down;
-      }
-      Box {
-        orientation: vertical;
-        spacing: 3;
-        halign: end;
-
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Video decode");
-        }
-        Label decode_percent {
-          styles [
-            "title-4",
-          ]
-
-          ellipsize: middle;
-
-          halign: start;
-        }
-      }
-    }
     Box {
       orientation: vertical;
       spacing: 3;
@@ -184,94 +122,6 @@ Box root {
         }
 
         Label power_draw_max {
-          styles [
-            "title-4",
-          ]
-
-          ellipsize: middle;
-
-          halign: start;
-        }
-      }
-    }
-
-    Box box_temp {
-      orientation: vertical;
-      spacing: 3;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Temperature");
-      }
-
-      Label temperature {
-        styles [
-          "title-4",
-        ]
-
-        ellipsize: middle;
-
-        halign: start;
-      }
-    }
-
-    Box box_fan {
-      spacing: 5;
-
-      Picture legend_fan_rpm {
-        can-shrink: false;
-        content-fit: scale_down;
-      }
-      Box {
-        orientation: vertical;
-        spacing: 3;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Fan Speed");
-        }
-
-        Label fan_speed {
-          styles [
-            "title-4",
-          ]
-
-          ellipsize: middle;
-
-          halign: start;
-        }
-      }
-    }
-
-    Box box_fan_pwm {
-      spacing: 5;
-
-      Picture legend_fan_pwm {
-        can-shrink: false;
-        content-fit: scale_down;
-      }
-      Box {
-        orientation: vertical;
-        spacing: 3;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Fan pwm");
-        }
-
-        Label fan_pwm {
           styles [
             "title-4",
           ]
@@ -433,6 +283,99 @@ Box root {
 
           halign: start;
         }
+      }
+    }
+
+    Box {
+      orientation: horizontal;
+      spacing: 20;
+
+      Box {
+        spacing: 5;
+
+        Picture legend_encode {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          Label encode_label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Video encode");
+          }
+
+          Label encode_percent {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
+        }
+      }
+      Box box_decode {
+        spacing: 5;
+
+        Picture legend_decode {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          halign: end;
+
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Video decode");
+          }
+          Label decode_percent {
+            styles [
+              "title-4",
+            ]
+
+            ellipsize: middle;
+
+            halign: start;
+          }
+        }
+      }
+    }
+
+    Box box_temp {
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Temperature");
+      }
+
+      Label temperature {
+        styles [
+          "title-4",
+        ]
+
+        ellipsize: middle;
+
+        halign: start;
       }
     }
   }

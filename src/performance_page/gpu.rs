@@ -42,17 +42,9 @@ mod imp {
         #[template_child]
         pub usage_graph_overall: TemplateChild<GraphWidget>,
         #[template_child]
-        pub fan_graph: TemplateChild<gtk::Box>,
+        pub encode_decode_graph: TemplateChild<gtk::Box>,
         #[template_child]
-        pub usage_graph_fan: TemplateChild<GraphWidget>,
-        #[template_child]
-        pub temp_graph: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub usage_graph_temp: TemplateChild<GraphWidget>,
-        #[template_child]
-        pub gtt_graph: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub usage_graph_gtt: TemplateChild<GraphWidget>,
+        pub usage_graph_encode_decode: TemplateChild<GraphWidget>,
         #[template_child]
         pub memory_graph: TemplateChild<gtk::Box>,
         #[template_child]
@@ -90,8 +82,6 @@ mod imp {
         pub encode_percent: OnceCell<gtk::Label>,
         pub decode_percent: OnceCell<gtk::Label>,
         pub temperature: OnceCell<gtk::Label>,
-        pub fan_speed: OnceCell<gtk::Label>,
-        pub fan_pwm: OnceCell<gtk::Label>,
         pub opengl_version: OnceCell<gtk::Label>,
         pub vulkan_version: OnceCell<gtk::Label>,
         pub pcie_speed_label: OnceCell<gtk::Label>,
@@ -104,17 +94,12 @@ mod imp {
         pub box_gtt_usage: OnceCell<gtk::Box>,
         pub box_power_draw: OnceCell<gtk::Box>,
         pub box_decode: OnceCell<gtk::Box>,
-        pub box_fan_pwm: OnceCell<gtk::Box>,
-        pub box_fan: OnceCell<gtk::Box>,
-
         pub encode_label: OnceCell<gtk::Label>,
 
         pub legend_encode: OnceCell<gtk::Picture>,
         pub legend_decode: OnceCell<gtk::Picture>,
         pub legend_vram: OnceCell<gtk::Picture>,
         pub legend_gtt: OnceCell<gtk::Picture>,
-        pub legend_fan_rpm: OnceCell<gtk::Picture>,
-        pub legend_fan_pwm: OnceCell<gtk::Picture>,
     }
 
     impl Default for PerformancePageGpu {
@@ -123,12 +108,8 @@ mod imp {
                 gpu_id: Default::default(),
                 device_name: Default::default(),
                 usage_graph_overall: Default::default(),
-                fan_graph: Default::default(),
-                usage_graph_fan: Default::default(),
-                temp_graph: Default::default(),
-                usage_graph_temp: Default::default(),
-                gtt_graph: Default::default(),
-                usage_graph_gtt: Default::default(),
+                encode_decode_graph: Default::default(),
+                usage_graph_encode_decode: Default::default(),
                 memory_graph: Default::default(),
                 total_memory: Default::default(),
                 memory_graph_label: Default::default(),
@@ -156,8 +137,6 @@ mod imp {
                 encode_percent: Default::default(),
                 decode_percent: Default::default(),
                 temperature: Default::default(),
-                fan_speed: Default::default(),
-                fan_pwm: Default::default(),
                 opengl_version: Default::default(),
                 vulkan_version: Default::default(),
                 pcie_speed_label: Default::default(),
@@ -170,17 +149,12 @@ mod imp {
                 box_gtt_usage: Default::default(),
                 box_power_draw: Default::default(),
                 box_decode: Default::default(),
-                box_fan: Default::default(),
-                box_fan_pwm: Default::default(),
-
                 encode_label: Default::default(),
 
                 legend_encode: Default::default(),
                 legend_decode: Default::default(),
                 legend_vram: Default::default(),
                 legend_gtt: Default::default(),
-                legend_fan_rpm: Default::default(),
-                legend_fan_pwm: Default::default(),
             }
         }
     }
@@ -212,6 +186,9 @@ mod imp {
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
 
+            let show_enc_dec_usage =
+                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
+
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate({
                 let this = this.downgrade();
@@ -225,11 +202,45 @@ mod imp {
             actions.add_action(&action);
 
             let action = gio::SimpleAction::new_stateful(
-                "",
+                "enc_dec_usage",
                 None,
-                &glib::Variant::from(true),
+                &glib::Variant::from(show_enc_dec_usage),
             );
-            actions.add_action(&action)
+            action.connect_activate({
+                let this = this.downgrade();
+                move |action, _| {
+                    if let Some(this) = this.upgrade() {
+                        let this = &this.imp();
+
+                        let visible = !action
+                            .state()
+                            .and_then(|v| v.get::<bool>())
+                            .unwrap_or(false);
+
+                        this.encode_decode_graph.set_visible(visible);
+                        if let Some(object) = this.legend_encode.get() {
+                            object.set_visible(visible)
+                        }
+                        if let Some(object) = this.legend_decode.get() {
+                            object.set_visible(visible)
+                        }
+                        action.set_state(&glib::Variant::from(visible));
+
+                        settings!()
+                            .set_boolean(
+                                "performance-page-gpu-encode-decode-usage-visible",
+                                visible,
+                            )
+                            .unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to save show encode/decode usage"
+                                );
+                            });
+                    }
+                }
+            });
+            actions.add_action(&action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageGpu) {
@@ -272,28 +283,40 @@ mod imp {
                 .connect_local("resize", true, move |_| {
                     let this = t.imp();
 
-                    let set_width = |graph: &TemplateChild<GraphWidget>| {
-                        let width = graph.width() as f32;
-                        let height = graph.height() as f32;
+                    let width = this.usage_graph_overall.width() as f32;
+                    let height = this.usage_graph_overall.height() as f32;
 
-                        let mut a = width;
-                        let mut b = height;
-                        if width > height {
-                            a = height;
-                            b = width;
-                        }
-
-                        graph.set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
-                    };
-
-                    for graph in [&this.usage_graph_overall, &this.usage_graph_memory, &this.usage_graph_gtt, &this.usage_graph_fan, &this.usage_graph_temp] {
-                        set_width(graph)
+                    let mut a = width;
+                    let mut b = height;
+                    if width > height {
+                        a = height;
+                        b = width;
                     }
+
+                    this.usage_graph_overall
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                    this.usage_graph_encode_decode
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
+
+                    this.usage_graph_memory
+                        .set_vertical_line_count((width * (a / b) / 30.).round().max(5.) as u32);
 
                     None
                 });
 
             let this = this.imp();
+
+            let show_enc_dec_usage =
+                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
+
+            this.encode_decode_graph.set_visible(show_enc_dec_usage);
+            if let Some(object) = this.legend_encode.get() {
+                object.set_visible(show_enc_dec_usage)
+            }
+            if let Some(object) = this.legend_decode.get() {
+                object.set_visible(show_enc_dec_usage)
+            }
 
             // Intel GPUs don't offer a great deal of information, and combine video encode and decode data
             // Hide the things that are missing and adjust the graphs
@@ -328,16 +351,10 @@ mod imp {
                 }
 
                 this.memory_graph.set_visible(false);
+            } else {
+                this.usage_graph_encode_decode.set_dashed(0, true);
+                this.usage_graph_encode_decode.set_filled(0, false);
             }
-
-            if !gpu.fan_avail {
-                this.fan_graph.set_visible(false);
-                this.box_fan_pwm.get().and_then(|b| Some(b.set_visible(false)));
-                this.box_fan.get().and_then(|b| Some(b.set_visible(false)));
-            }
-
-            this.usage_graph_fan.set_dashed(1, true);
-            this.usage_graph_fan.set_filled(1, false);
 
             let total_memory = crate::to_human_readable(gpu.total_memory as f32, 1024.);
             let total_memory = format!(
@@ -358,6 +375,9 @@ mod imp {
 
             // show gtt for amd cards
             if gpu.vendor_id == 0x1002 {
+                this.usage_graph_memory.set_dashed(1, true);
+                this.usage_graph_memory.set_filled(1, false);
+
                 if let Some(legend_gtt) = this.legend_gtt.get() {
                     legend_gtt
                         .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
@@ -376,7 +396,7 @@ mod imp {
                 if let Some(memory_usage_max) = this.memory_usage_max.get() {
                     memory_usage_max.set_text(&total_memory);
                 }
-                this.memory_graph_label.set_text("Memory usage over ");
+                this.memory_graph_label.set_text("Memory/GTT usage over ");
             } else {
                 this.legend_vram
                     .get()
@@ -409,23 +429,8 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
             }
 
-            if let Some(legend_fan_rpm) = this.legend_fan_rpm.get() {
-                legend_fan_rpm
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
-            }
-            if let Some(legend_fan_pwm) = this.legend_fan_pwm.get() {
-                legend_fan_pwm
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
-            }
-
             this.usage_graph_memory
                 .set_value_range_max(gpu.total_memory as f32);
-
-            this.usage_graph_gtt
-                .set_value_range_max(gpu.total_gtt as f32);
-
-            this.usage_graph_gtt
-                .set_value_range_max(gpu.total_gtt as f32);
 
             let ogl_version = if let Some(opengl_version) = gpu.opengl_version.as_ref() {
                 format!(
@@ -465,20 +470,6 @@ mod imp {
                 pci_addr.set_text(gpu.id.as_ref());
             }
 
-            let power_limit = if gpu.power_draw_max_watts != 0.0 {
-                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
-            } else {
-                None
-            };
-            if let Some(power_draw_max) = this.power_draw_max.get() {
-                if let Some(power_limit) = power_limit {
-                    power_draw_max.set_text(&format!(
-                        " / {0:.2$} {1}W",
-                        power_limit.0, power_limit.1, power_limit.2
-                    ));
-                }
-            }
-
             true
         }
 
@@ -495,23 +486,20 @@ mod imp {
                 utilization.set_text(&format!("{}%", gpu.util_percent));
             }
 
-            this.usage_graph_overall
-                .add_data_point(1, gpu.encoder_percent as f32);
-            this.usage_graph_overall
-                .add_data_point(2, gpu.decoder_percent as f32);
-
-            this.usage_graph_fan
-                .add_data_point(0, gpu.fan_rpm as f32 * 100.0 / gpu_static.fan_max_rpm as f32);
-            this.usage_graph_fan
-                .add_data_point(1, gpu.fan_pwm as f32);
-
-            this.usage_graph_temp
-                .add_data_point(0, gpu.temp_celsius as f32);
+            this.usage_graph_encode_decode
+                .add_data_point(0, gpu.encoder_percent as f32);
+            this.usage_graph_encode_decode
+                .add_data_point(1, gpu.decoder_percent as f32);
 
             this.usage_graph_memory
                 .add_data_point(0, gpu.used_memory as f32);
-            this.usage_graph_gtt
-                .add_data_point(0, gpu.used_gtt as f32);
+
+            let mut gtt_factor = gpu_static.total_memory as f32 / gpu_static.total_gtt as f32;
+            if gtt_factor.is_infinite() || gtt_factor.is_nan() || gtt_factor.is_subnormal() {
+                gtt_factor = 0.;
+            }
+            this.usage_graph_memory
+                .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
 
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
             if let Some(memory_usage_current) = this.memory_usage_current.get() {
@@ -563,25 +551,25 @@ mod imp {
             }
 
             let power_draw = crate::to_human_readable(gpu.power_draw_watts, 1000.);
-            //let power_limit = if gpu.power_draw_max_watts != 0.0 {
-                //Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
-            //} else {
-                //None
-            //};
+            let power_limit = if gpu.power_draw_max_watts != 0.0 {
+                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
+            } else {
+                None
+            };
             if let Some(power_draw_current) = this.power_draw_current.get() {
                 power_draw_current.set_text(&format!(
                     "{0:.2$} {1}W",
                     power_draw.0, power_draw.1, power_draw.2
                 ));
             }
-            //if let Some(power_draw_max) = this.power_draw_max.get() {
-                //if let Some(power_limit) = power_limit {
-                    //power_draw_max.set_text(&format!(
-                        //" / {0:.2$} {1}W",
-                        //power_limit.0, power_limit.1, power_limit.2
-                    //));
-                //}
-            //}
+            if let Some(power_draw_max) = this.power_draw_max.get() {
+                if let Some(power_limit) = power_limit {
+                    power_draw_max.set_text(&format!(
+                        " / {0:.2$} {1}W",
+                        power_limit.0, power_limit.1, power_limit.2
+                    ));
+                }
+            }
             if let Some(encode_percent) = this.encode_percent.get() {
                 encode_percent.set_text(&format!("{}%", gpu.encoder_percent));
             }
@@ -590,12 +578,6 @@ mod imp {
             }
             if let Some(temperature) = this.temperature.get() {
                 temperature.set_text(&format!("{}°C", gpu.temp_celsius));
-            }
-            if let Some(fan_speed) = this.fan_speed.get() {
-                fan_speed.set_text(&format!("{} rpm", gpu.fan_rpm));
-            }
-            if let Some(fan_pwm) = this.fan_pwm.get() {
-                fan_pwm.set_text(&format!("{}%", gpu.fan_pwm));
             }
 
             true
@@ -818,16 +800,6 @@ mod imp {
                     .object::<gtk::Box>("box_decode")
                     .expect("Could not find `box_decode` object in details pane"),
             );
-            let _ = self.box_fan.set(
-                sidebar_content_builder
-                    .object::<gtk::Box>("box_fan")
-                    .expect("Could not find `box_fan` object in details pane"),
-            );
-            let _ = self.box_fan_pwm.set(
-                sidebar_content_builder
-                    .object::<gtk::Box>("box_fan_pwm")
-                    .expect("Could not find `box_fan_pwm` object in details pane"),
-            );
             let _ = self.encode_label.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("encode_label")
@@ -837,16 +809,6 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("temperature")
                     .expect("Could not find `temperature` object in details pane"),
-            );
-            let _ = self.fan_speed.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("fan_speed")
-                    .expect("Could not find `fan_speed` object in details pane"),
-            );
-            let _ = self.fan_pwm.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("fan_pwm")
-                    .expect("Could not find `fan_pwm` object in details pane"),
             );
             let _ = self.opengl_version.set(
                 sidebar_content_builder
@@ -908,16 +870,6 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Picture>("legend_decode")
                     .expect("Could not find `legend_decode` object in details pane"),
-            );
-            let _ = self.legend_fan_rpm.set(
-                sidebar_content_builder
-                    .object::<gtk::Picture>("legend_fan_rpm")
-                    .expect("Could not find `legend_fan_rpm` object in details pane"),
-            );
-            let _ = self.legend_fan_pwm.set(
-                sidebar_content_builder
-                    .object::<gtk::Picture>("legend_fan_pwm")
-                    .expect("Could not find `legend_fan_pwm` object in details pane"),
             );
             let _ = self.legend_vram.set(
                 sidebar_content_builder
@@ -1013,12 +965,10 @@ impl PerformancePageGpu {
 
             this.usage_graph_overall.set_data_points(data_points);
             this.usage_graph_overall.set_smooth_graphs(smooth);
-            this.usage_graph_fan.set_data_points(data_points);
-            this.usage_graph_fan.set_smooth_graphs(smooth);
+            this.usage_graph_encode_decode.set_data_points(data_points);
+            this.usage_graph_encode_decode.set_smooth_graphs(smooth);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
-            this.usage_graph_gtt.set_data_points(data_points);
-            this.usage_graph_gtt.set_smooth_graphs(smooth);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -1049,24 +999,19 @@ impl PerformancePageGpu {
             }
         });
 
+        fn set_hidden_vram(this: &PerformancePageGpu, settings: &gio::Settings) {
+            let visible = settings.boolean("performance-page-gpu-encode-decode-usage-visible");
 
-        //fn set_hidden_temp(this: &PerformancePageMemory, settings: &gio::Settings) {
-            //let visible = settings.boolean("performance-page-gpu-temp-visible");
+            let this = this.imp();
 
-            //let this = this.imp();
+            this.encode_decode_graph.set_visible(visible);
+        }
 
-            //this.big_box.set_homogeneous(visible);
-            //this.big_box.set_spacing(if visible { 10 } else { 0 });
-            //this.swap_box.set_visible(visible);
-            //this.swap_usage_graph.set_visible(visible);
-            //this.mem_box.set_has_tooltip(true);
-        //}
-
-        settings.connect_changed(Some("performance-page-memory-swap-visible"), {
+        settings.connect_changed(Some("performance-page-gpu-encode-decode-usage-visible"), {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
-                    this.imp().temp_graph.set_visible(settings.boolean("performance-page-gpu-temp-visible"));
+                    set_hidden_vram(&this, settings);
                 }
             }
         });
