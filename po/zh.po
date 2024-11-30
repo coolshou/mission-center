@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-06-17 17:09+0000\n"
+"PO-Revision-Date: 2024-11-30 02:01+0000\n"
 "Last-Translator: ZhangPeng <scbeta@qq.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"mission-center/mission-center/zh_Hans/>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/mission-center/mission-center/zh_Hans/>\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -103,7 +103,6 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "支持缩小的摘要视图以进行简单监控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
@@ -133,7 +132,8 @@ msgstr "GPU支持是实验性的"
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
-msgstr ""
+msgstr "Intel GPU 监控仅支持 Broadwell 及更高版本的 GPU;并且不支持 "
+"VRAM、电源或温度监控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -141,6 +141,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"使用 Linux Mint/Cinnamon "
+"时，启动的应用程序可能不会显示在“应用程序”部分（上游问题：https://github.com/"
+"linuxmint/cinnamon/issues/12015）"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -167,12 +170,12 @@ msgstr "每个图表上应该显示多少个点？"
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "是否使用位（默认）或字节来表示网络速度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
-msgstr ""
+msgstr "是将图形最大值设置为接口最大值 （false） 还是观察到的最大值 （true）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -216,54 +219,52 @@ msgstr "性能图应该是平滑的还是锯齿状的"
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "默认显示 CPU 信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "获取扩展内存信息失败"
+msgstr "默认显示内存信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "默认显示磁盘信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "默认显示网络信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "默认显示 GPU 信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "默认显示风扇信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "优化内存组成显示图形"
+msgstr "显示内存组成小部件"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "显示交换空间图形"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "显示 gpu 编码-解码图形"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "应用程序侧边栏中的条目顺序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "应该隐藏在应用程序侧边栏中的图表"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -272,9 +273,8 @@ msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "使用率超过 {}{}"
+msgstr "使用率 - 最近 "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -368,7 +368,7 @@ msgstr "GPU(_G)"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "风扇(_F)"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -448,15 +448,13 @@ msgid "Power preference:"
 msgstr "电源偏好："
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "活动时间"
+msgstr "活动时间 - 最近 "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "吞吐量"
+msgstr "吞吐量 - 最近 "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -492,43 +490,37 @@ msgid "Type:"
 msgstr "类型："
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "内存使用率"
+msgstr "风扇速度 - 最近 "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "温度"
+msgstr "温度 - 最近 "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "速度"
+msgstr "风扇速度"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "温度"
+msgstr "当前温度"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "视频编码利用率"
+msgstr "视频编码/解码使用率 - 最近 "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "内存使用率"
+msgstr "内存使用率 - 最近 "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "显示编码/解码使用情况"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -540,26 +532,23 @@ msgstr "功率消耗"
 
 #: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
-msgstr "内存使用率"
+msgstr "专用GPU内存"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "GPU使用率"
+msgstr "共享GPU内存"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "内存速度"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "视频编解码"
+msgstr "视频编码"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "视频编解码"
+msgstr "视频解码"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -587,22 +576,20 @@ msgid "Memory"
 msgstr "内存"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "内存使用率"
+msgstr "交换空间使用率 - 最近 "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "内存组成"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "内存组成"
+msgstr "显示内存组成"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "显示交换空间使用情况"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -650,7 +637,7 @@ msgstr "接收"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "收到总数"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -658,7 +645,7 @@ msgstr "发送"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "发送总数"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -697,9 +684,8 @@ msgid "IPv6 address:"
 msgstr "IPv6 地址："
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "一般设置"
+msgstr "一般"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -710,9 +696,8 @@ msgid "Chart Data Points"
 msgstr "图表数据点"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "性能"
+msgstr "性能页面"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -724,48 +709,45 @@ msgstr "将图形绘制为平滑线而不是锯齿状线"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "显示网络速度（以字节为单位）"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "动态缩放网络图形"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
-msgstr ""
+msgstr "将网络图形设置为根据实际使用情况或通道最大速度动态扩展"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "显示 CPU 信息"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "内存组成"
+msgstr "显示内存信息"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "显示磁盘信息"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "显示网络信息"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "显示 GPU 信息"
 
 #: resources/ui/preferences/page.blp:89
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "进程与用户信息"
+msgstr "显示风扇信息"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "“应用”页面设置"
+msgstr "“应用”页面"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -874,26 +856,24 @@ msgid "PID"
 msgstr "PID"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "已启用"
+msgstr "全部启用"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "全部禁用"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "重置为默认值"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
 msgstr "设备"
 
 #: resources/ui/window.blp:70
-#, fuzzy
 msgid "Edit Sidebar"
-msgstr "切换侧边栏"
+msgstr "编辑侧边栏"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
@@ -1048,16 +1028,15 @@ msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "风扇 {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "风扇"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}b/秒"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1095,19 +1074,19 @@ msgstr "{} {}{}B/秒"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1115,16 +1094,15 @@ msgstr "获取扩展内存信息失败"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "字节/秒"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "位/秒"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/秒"
+msgstr "{} {}{}字节"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
