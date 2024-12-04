@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
 "PO-Revision-Date: 2024-12-04 21:31+0000\n"
-"Last-Translator: Europa 91 <europa91@pm.me>\n"
+"Last-Translator: Denis MARCQ <denis.marcq@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -185,7 +185,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr "Combien de points doivent être affichés sur chaque graphique?"
+msgstr "Combien de points doivent être affichés sur chaque diagramme ?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
@@ -209,8 +209,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
-"Le tri par colonne est maintenu entre les redémarrages de l'application"
+msgstr "Le tri par colonne est restauré à chaque démarrage de l'application"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
@@ -338,7 +337,7 @@ msgstr "Afficher les temps noyau"
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr "Vue _sommaire de graphe"
+msgstr "Vue épurée"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
