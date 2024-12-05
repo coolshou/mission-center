@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-04 21:39+0000\n"
-"Last-Translator: Ogu <trevisiolugo@gmail.com>\n"
+"PO-Revision-Date: 2024-12-05 22:00+0000\n"
+"Last-Translator: Europa 91 <europa91@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -141,25 +141,23 @@ msgid "GPU support is experimental"
 msgstr "Le support GPU est expérimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
-#, fuzzy
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"La surveillance des GPU Intel n'est prise en charge que pour les GPU "
-"Broadwell et ultérieurs ; elle ne prend pas en charge la surveillance de la "
-"VRAM, de l'alimentation ou de la température."
+"La surveillance des GPU Intel est prise en charge uniquement par Broadwell "
+"et les GPU  ultérieurs ; et elle ne prend pas en charge la surveillance de "
+"la VRAM, de l'alimentation ou de la température"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
-#, fuzzy
 msgid ""
 "When using Linux Mint/Cinnamon, launched applications may not show up in the "
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
 "Lors de l'utilisation de Linux Mint/Cinnamon, les applications lancées "
-"peuvent ne pas apparaître dans la section « Applications » (Voir  : https://"
-"github.com/linuxmint/cinnamon/issues/12015)"
+"peuvent ne pas apparaître dans la section « Applications » (Voir  : "
+"https://github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -477,7 +475,7 @@ msgstr "Governor Cpufreq :"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr "_Préférences de consommation batterie"
+msgstr "_Préférences de consommation de la batterie"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
