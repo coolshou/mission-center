@@ -457,11 +457,16 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
+                let capacity = drive.size().block_on().unwrap_or(u64::MAX);
+                if capacity == 0 {
+                    continue;
+                }
+
                 let r#type = if drive.optical().block_on().unwrap_or(false) {
                     DiskType::Optical
                 } else {
                     let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
-                    if rate == NonRotating {
+                    if rate == NonRotating || rate == Unknown {
                         if dir_name.starts_with("nvme") {
                             DiskType::NVMe
                         } else if dir_name.starts_with("mmc") {
@@ -469,14 +474,10 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         } else {
                             DiskType::SSD
                         }
-                    } else if rate == Unknown {
-                        DiskType::Unknown
                     } else { // it is rotating and not optical, as per above
                         DiskType::HDD
                     }
                 };
-
-                let capacity = drive.size().block_on().unwrap_or(u64::MAX);
 
                 let fs_info = Self::filesystem_info(&dir_name);
                 let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
