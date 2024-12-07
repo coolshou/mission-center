@@ -202,18 +202,18 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 Err(_) => { continue; }
             };
 
-            let Ok(block) = object.block().block_on() else {
+            let Ok(drive) = object.drive().block_on() else {
                 continue;
             };
 
-            if !object.partition_table().block_on().is_ok() {
+            let Some(block) = client.block_for_drive(&drive, true).block_on() else {
                 warning!(
                     "MissionCenter::DiskInfo",
-                    "Device has no partition table: {:?}",
+                    "Device has no block: {:?}",
                     object_path
                 );
                 continue;
-            }
+            };
 
             let Ok(device) = block.device().block_on().map(|it| String::from_utf8(it)) else {
                 warning!(
