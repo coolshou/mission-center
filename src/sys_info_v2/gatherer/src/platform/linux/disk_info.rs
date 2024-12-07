@@ -212,6 +212,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 continue;
             };
 
+            let device = device.trim_matches(char::from(0));
+
             let dir_name = match std::path::Path::new(&device).file_name() {
                 Some(name) => name.to_string_lossy().into_owned(),
                 None => { continue; }
