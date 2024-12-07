@@ -24,6 +24,10 @@ use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
 use glob::glob;
 use serde::Deserialize;
 use std::{sync::Arc, time::Instant};
+use std::any::Any;
+use pollster::FutureExt;
+use udisks2::Client;
+use udisks2::zbus::zvariant::OwnedObjectPath;
 
 #[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {
@@ -153,6 +157,7 @@ pub struct DiskStats {
 }
 
 pub struct LinuxDisksInfo {
+    client: Result<Client, udisks2::Error>,
     info: Vec<(DiskStats, LinuxDiskInfo)>,
 
     refresh_timestamp: Instant,
@@ -173,64 +178,43 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
         let mut prev_disks = std::mem::take(&mut self.info);
 
-        let entries = match std::fs::read_dir("/sys/block") {
-            Ok(e) => e,
-            Err(e) => {
-                critical!(
-                    "Gatherer::DiskInfo",
-                    "Failed to refresh disk information, failed to read disk entries: {}",
-                    e
-                );
-                return;
-            }
+        let client = match &self.client {
+            Ok(client) => client,
+            Err(_) => { return }
         };
-        for entry in entries {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    warning!("Gatherer::DiskInfo", "Failed to read disk entry: {}", e);
-                    continue;
-                }
-            };
-            let file_type = match entry.file_type() {
-                Ok(ft) => ft,
-                Err(e) => {
-                    warning!(
-                        "Gatherer::DiskInfo",
-                        "Failed to read disk entry file type: {}",
-                        e
-                    );
-                    continue;
-                }
+
+        let objects = match client.object_manager().get_managed_objects().block_on() {
+            Ok(objects) => objects,
+            Err(_) => { return }
+        };
+
+        for object in objects {
+            let object = match client.object(object.0) {
+                Ok(object) => object,
+                Err(_) => { continue; }
             };
 
-            let dir_name = if file_type.is_symlink() {
-                let path = match entry.path().read_link() {
-                    Err(e) => {
-                        warning!(
-                            "Gatherer::DiskInfo",
-                            "Failed to read disk entry symlink: {}",
-                            e
-                        );
-                        continue;
-                    }
-                    Ok(p) => {
-                        let path = std::path::Path::new("/sys/block").join(p);
-                        if !path.is_dir() {
-                            continue;
-                        }
-                        path
-                    }
-                };
-
-                match path.file_name() {
-                    None => continue,
-                    Some(dir_name) => dir_name.to_string_lossy().into_owned(),
-                }
-            } else if file_type.is_dir() {
-                entry.file_name().to_string_lossy().into_owned()
-            } else {
+            let Ok(block) = object.block().block_on() else {
                 continue;
+            };
+
+            if !object.partition_table().block_on().is_ok() {
+                continue;
+            }
+
+            let Ok(device) = block.device().block_on().map(|it| String::from_utf8(it)) else {
+                // todo uh oh!
+                continue;
+            };
+
+            let Ok(device) = device else {
+                // todo uh oh!
+                continue;
+            };
+
+            let dir_name = match std::path::Path::new(&device).file_name() {
+                Some(name) => name.to_string_lossy().into_owned(),
+                None => { continue; }
             };
 
             let mut prev_disk_index = None;
@@ -240,6 +224,12 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     break;
                 }
             }
+
+            let drive = match client.drive_for_block(&block).block_on() {
+                Ok(drive) => drive,
+                // todo ruh roh!
+                Err(_) => { continue; }
+            };
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
 
@@ -439,17 +429,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
-                if dir_name.starts_with("loop")
-                    || dir_name.starts_with("ram")
-                    || dir_name.starts_with("zram")
-                    || dir_name.starts_with("fd")
-                    || dir_name.starts_with("md")
-                    || dir_name.starts_with("dm")
-                    || dir_name.starts_with("zd")
-                {
-                    continue;
-                }
-
                 let r#type = if let Ok(v) =
                     std::fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
                 {
@@ -476,26 +455,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     DiskType::Unknown
                 };
 
-                let capacity = if let Ok(v) =
-                    std::fs::read_to_string(format!("/sys/block/{}/size", dir_name))
-                {
-                    v.trim().parse::<u64>().ok().map_or(u64::MAX, |v| v * 512)
-                } else {
-                    u64::MAX
-                };
+                let capacity = drive.size().block_on().unwrap_or(u64::MAX);
 
                 let fs_info = Self::filesystem_info(&dir_name);
                 let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
 
-                let vendor =
-                    std::fs::read_to_string(format!("/sys/block/{}/device/vendor", dir_name))
-                        .ok()
-                        .unwrap_or("".to_string());
+                let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
-                let model =
-                    std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
-                        .ok()
-                        .unwrap_or("".to_string());
+                let model = drive.model().block_on().unwrap_or("".to_string());
 
                 let model = Arc::<str>::from(format!("{} {}", vendor.trim(), model.trim()));
 
@@ -540,6 +507,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 impl LinuxDisksInfo {
     pub fn new() -> Self {
         Self {
+            client: Client::new().block_on(),
             info: vec![],
 
             refresh_timestamp: *INITIAL_REFRESH_TS,
