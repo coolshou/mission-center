@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
+use std::collections::HashMap;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
@@ -27,7 +27,7 @@ use dbus::arg::RefArg;
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver};
 use dbus_crossroads::Crossroads;
 use lazy_static::lazy_static;
-
+use pollster::FutureExt;
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
 use logging::{critical, debug, error, message, warning};
 use platform::{
@@ -436,6 +436,62 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .collect::<Vec<_>>(),)));
 
                 Some(ctx)
+            },
+        );
+
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `EjectDisk`..."
+        );
+        builder.method_with_cr_custom::<(String,), (u8,), &str, _>(
+            "EjectDisk",
+            ("eject_result",),
+            ("info",),
+            move |mut ctx, _, (id,): (String,)| {
+                let client = match &SYSTEM_STATE
+                    .disk_info
+                    .read()
+                    .unwrap_or_else(PoisonError::into_inner)
+                    .client {
+                    Ok(client) => client,
+                    Err(_) => {
+                        ctx.reply(Err(dbus::MethodErr::failed(&"No Client")))?;
+                        return Some(ctx)
+                    }
+                };
+
+                let object = match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
+                    Ok(object) => object,
+                    Err(_) => {
+                        return Some(ctx)
+                    }
+                };
+
+                let block = match object.block().block_on() {
+                    Ok(block) => block,
+                    Err(_) => {
+                        return Some(ctx)
+                    }
+                };
+
+                let drive = match client.drive_for_block(&block).block_on() {
+                    Ok(drive) => drive,
+                    Err(_) => {
+                        return Some(ctx)
+                    }
+                };
+
+                let result = drive.eject(HashMap::new()).block_on();
+
+                Some(ctx)
+/*                ctx.reply(Ok((SYSTEM_STATE
+                                  .disk_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .info()
+                                  .find(|c| c.id.as_ref() == id)
+                                  .map(|c| c.eject()),)));*/
+
             },
         );
 

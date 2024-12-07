@@ -27,6 +27,7 @@ use std::{sync::Arc, time::Instant};
 use std::any::Any;
 use pollster::FutureExt;
 use udisks2::Client;
+use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::zbus::zvariant::OwnedObjectPath;
 
 #[derive(Debug, Default, Deserialize)]
@@ -54,6 +55,7 @@ pub struct LinuxDiskInfo {
     pub response_time_ms: f32,
     pub read_speed: u64,
     pub write_speed: u64,
+    pub ejectable: bool,
 }
 
 impl Default for LinuxDiskInfo {
@@ -70,6 +72,7 @@ impl Default for LinuxDiskInfo {
             response_time_ms: 0.,
             read_speed: 0,
             write_speed: 0,
+            ejectable: false,
         }
     }
 }
@@ -135,6 +138,10 @@ impl DiskInfoExt for LinuxDiskInfo {
     fn write_speed(&self) -> u64 {
         self.write_speed
     }
+
+    fn ejectable(&self) -> bool {
+        self.ejectable
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -157,7 +164,7 @@ pub struct DiskStats {
 }
 
 pub struct LinuxDisksInfo {
-    client: Result<Client, udisks2::Error>,
+    pub client: Result<Client, udisks2::Error>,
     info: Vec<(DiskStats, LinuxDiskInfo)>,
 
     refresh_timestamp: Instant,
@@ -431,11 +438,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
-                let r#type = if let Ok(v) =
-                    std::fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
-                {
-                    let v = v.trim().parse::<u8>().ok().map_or(u8::MAX, |v| v);
-                    if v == 0 {
+                let r#type = if drive.optical().block_on().unwrap_or(false) {
+                    DiskType::Optical
+                } else {
+                    let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
+                    if rate == NonRotating {
                         if dir_name.starts_with("nvme") {
                             DiskType::NVMe
                         } else if dir_name.starts_with("mmc") {
@@ -443,18 +450,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         } else {
                             DiskType::SSD
                         }
-                    } else {
-                        if dir_name.starts_with("sr") {
-                            DiskType::Optical
-                        } else {
-                            match v {
-                                1 => DiskType::HDD,
-                                _ => DiskType::Unknown,
-                            }
-                        }
+                    } else if rate == Unknown {
+                        DiskType::Unknown
+                    } else { // it is rotating and not optical, as per above
+                        DiskType::HDD
                     }
-                } else {
-                    DiskType::Unknown
                 };
 
                 let capacity = drive.size().block_on().unwrap_or(u64::MAX);
@@ -495,6 +495,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         response_time_ms: 0.,
                         read_speed: 0,
                         write_speed: 0,
+                        ejectable: drive.ejectable().block_on().unwrap_or(false),
                     },
                 ));
             }
