@@ -439,7 +439,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        message!(
+        /*message!(
             "Gatherer::Main",
             "Registering D-Bus method `EjectDisk`..."
         );
@@ -493,7 +493,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                   .map(|c| c.eject()),)));*/
 
             },
-        );
+        );*/
 
         message!("Gatherer::Main", "Registering D-Bus method `GetGPUList`...");
         builder.method_with_cr_custom::<(), (Vec<String>,), &str, _>(
