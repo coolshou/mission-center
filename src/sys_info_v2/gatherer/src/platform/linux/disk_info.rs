@@ -195,8 +195,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             Err(_) => { return }
         };
 
-        for object in objects {
-            let object = match client.object(object.0) {
+        for raw_object in objects {
+            let object_path = raw_object.0;
+            let object = match client.object(object_path.clone()) {
                 Ok(object) => object,
                 Err(_) => { continue; }
             };
@@ -206,16 +207,29 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             };
 
             if !object.partition_table().block_on().is_ok() {
+                warning!(
+                    "MissionCenter::DiskInfo",
+                    "Device has no partition table: {:?}",
+                    object_path
+                );
                 continue;
             }
 
             let Ok(device) = block.device().block_on().map(|it| String::from_utf8(it)) else {
-                // todo uh oh!
+                warning!(
+                    "MissionCenter::DiskInfo",
+                    "Failed to get block's device: {:?}",
+                    object_path
+                );
                 continue;
             };
 
             let Ok(device) = device else {
-                // todo uh oh!
+                warning!(
+                    "MissionCenter::DiskInfo",
+                    "Failed to get block's device: {:?}",
+                    object_path
+                );
                 continue;
             };
 
@@ -236,8 +250,13 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
             let drive = match client.drive_for_block(&block).block_on() {
                 Ok(drive) => drive,
-                // todo ruh roh!
-                Err(_) => { continue; }
+                Err(_) => {
+                    warning!(
+                        "MissionCenter::DiskInfo",
+                        "Failed to get block's drive: {:?}",
+                        object_path
+                    );
+                    continue; }
             };
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
