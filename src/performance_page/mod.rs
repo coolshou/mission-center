@@ -1850,7 +1850,11 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                if disk.smart_enabled {
+                                    summary.set_info2(format!("{:.0}% ({:.0} °C)", disk.busy_percent, disk.smart_temperature - 273.15));
+                                } else {
+                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                }
 
                                 result &= page.update_readings(
                                     if hide_index { None } else { Some(index) },

@@ -91,30 +91,30 @@ impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyttbddttbbdbyt)")
+        Signature::from("(ssyttbddttbbdbtt)")
     }
 }
 
 impl Append for crate::platform::DiskInfo {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.id(),
-            self.model(),
-            self.r#type() as u8,
-            self.capacity(),
-            self.formatted(),
-            self.is_system_disk(),
-            self.busy_percent() as f64,
-            self.response_time_ms() as f64,
-            self.read_speed(),
-            self.write_speed(),
-            self.ejectable(),
-            self.smart_enabled(),
-            self.smart_temperature(),
-            self.smart_failing(),
-            self.smart_num_bad_sectors(),
-            self.smart_power_on_seconds(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.model());
+            ia.append(self.r#type() as u8);
+            ia.append(self.capacity());
+            ia.append(self.formatted());
+            ia.append(self.is_system_disk());
+            ia.append(self.busy_percent() as f64);
+            ia.append(self.response_time_ms() as f64);
+            ia.append(self.read_speed());
+            ia.append(self.write_speed());
+            ia.append(self.ejectable());
+            ia.append(self.smart_enabled());
+            ia.append(self.smart_temperature());
+            ia.append(self.smart_failing());
+            ia.append(self.smart_num_bad_sectors() as u64);
+            ia.append(self.smart_power_on_seconds());
+        });
     }
 }
 

@@ -121,7 +121,7 @@ impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssyttbddttbbdbyt)")
+        Signature::from("a(ssyttbddttbbdbtt)")
     }
 }
 
@@ -493,20 +493,20 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '14: y', got None",
+                                    "Failed to get DiskInfo: Expected '14: t', got None",
                                 );
                                 continue;
                             }
-                            Some(arg) => match arg.as_i64() {
+                            Some(arg) => match arg.as_u64() {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '14: y', got {:?}",
+                                        "Failed to get DiskInfo: Expected '14: t', got {:?}",
                                         arg.arg_type(),
                                     );
                                     continue;
                                 }
-                                Some(ws) => ws,
+                                Some(ws) => ws as i64,
                             },
                         };
 
