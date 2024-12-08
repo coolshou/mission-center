@@ -79,13 +79,19 @@ pub trait DiskInfoExt: Default + Append + Arg {
 
     /// The disk's write speed in bytes per second
     fn ejectable(&self) -> bool;
+
+    fn smart_enabled(&self) -> bool;
+    fn smart_temperature(&self) -> f64;
+    fn smart_failing(&self) -> bool;
+    fn smart_num_bad_sectors(&self) -> i64;
+    fn smart_power_on_seconds(&self) -> u64;
 }
 
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyttbddttb)")
+        Signature::from("(ssyttbddttbbdbyt)")
     }
 }
 
@@ -103,6 +109,11 @@ impl Append for crate::platform::DiskInfo {
             self.read_speed(),
             self.write_speed(),
             self.ejectable(),
+            self.smart_enabled(),
+            self.smart_temperature(),
+            self.smart_failing(),
+            self.smart_num_bad_sectors(),
+            self.smart_power_on_seconds(),
         ));
     }
 }
