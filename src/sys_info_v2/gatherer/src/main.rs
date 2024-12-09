@@ -26,8 +26,10 @@ use std::sync::{
 use dbus::arg::RefArg;
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver};
 use dbus_crossroads::Crossroads;
+use glob::glob;
 use lazy_static::lazy_static;
 use pollster::FutureExt;
+use udisks2::zbus::zvariant::Value;
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
 use logging::{critical, debug, error, message, warning};
 use platform::{
@@ -439,30 +441,38 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        /*message!(
+        message!(
             "Gatherer::Main",
             "Registering D-Bus method `EjectDisk`..."
         );
-        builder.method_with_cr_custom::<(String,), (u8,), &str, _>(
+        builder.method_with_cr_custom::<(String,), (), &str, _>(
             "EjectDisk",
-            ("eject_result",),
-            ("info",),
+            ("eject_disk",),
+            (),
             move |mut ctx, _, (id,): (String,)| {
-                let client = match &SYSTEM_STATE
+                let Ok(client) = &SYSTEM_STATE
                     .disk_info
                     .read()
                     .unwrap_or_else(PoisonError::into_inner)
-                    .client {
-                    Ok(client) => client,
-                    Err(_) => {
-                        ctx.reply(Err(dbus::MethodErr::failed(&"No Client")))?;
-                        return Some(ctx)
-                    }
+                    .client else {
+                    critical!(
+                            "Gatherer::Main",
+                            "fale 0",
+                        );
+                    ctx.reply(Ok(()));
+                    return Some(ctx)
                 };
+
+                println!("{}", id);
 
                 let object = match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                     Ok(object) => object,
                     Err(_) => {
+                        critical!(
+                            "Gatherer::Main",
+                            "fale 1",
+                        );
+                        ctx.reply(Ok(()));
                         return Some(ctx)
                     }
                 };
@@ -470,6 +480,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let block = match object.block().block_on() {
                     Ok(block) => block,
                     Err(_) => {
+                        critical!(
+                            "Gatherer::Main",
+                            "fale 2",
+                        );
+                        ctx.reply(Ok(()));
                         return Some(ctx)
                     }
                 };
@@ -477,11 +492,126 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let drive = match client.drive_for_block(&block).block_on() {
                     Ok(drive) => drive,
                     Err(_) => {
+                        critical!(
+                            "Gatherer::Main",
+                            "fale 3",
+                        );
+                        ctx.reply(Ok(()));
                         return Some(ctx)
                     }
                 };
 
-                let result = drive.eject(HashMap::new()).block_on();
+                let entries = match glob(format!("/sys/block/{}/{}*", id, id).as_str()) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        critical!(
+                            "Gatherer::DiskInfo",
+                            "Failed to read filesystem information for '{}': {}",
+                            id,
+                            e
+                        );
+
+                        ctx.reply(Ok(()));
+                        return Some(ctx)
+                    }
+                };
+
+                let mut some_path = false;
+
+                for entry in entries.filter_map(Result::ok) {
+                    let Some(filename) = entry.file_name() else {
+                        continue;
+                    };
+
+                    some_path = true;
+
+                    let fsobject = match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", filename.to_str().unwrap())) {
+                        Ok(object) => object,
+                        Err(_) => {
+                            critical!(
+                                "Gatherer::Main",
+                                "fale 1",
+                            );
+                            continue
+                        }
+                    };
+
+                    let Ok(fs) = fsobject.filesystem().block_on() else {
+                        continue
+                    };
+
+                    let mut options = HashMap::new();
+                    options.insert("auth.no_user_interaction", Value::from(false));
+
+                    match fs.unmount(options).block_on() {
+                        Ok(_) => {}
+                        Err(e) => {
+                            critical!(
+                                "Gatherer::Main",
+                                "YIKES {}",
+                                e
+                            );
+                            ctx.reply(Ok(()));
+                            return Some(ctx)
+                        }
+                    }
+                }
+
+                if !some_path {
+                    match object.filesystem().block_on() {
+                        Ok(fs) => {
+                            let mut options = HashMap::new();
+                            options.insert("auth.no_user_interaction", Value::from(false));
+
+                            match fs.unmount(options).block_on() {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    critical!(
+                                        "Gatherer::Main",
+                                        "YIKES {}",
+                                        e
+                                    );
+                                    ctx.reply(Ok(()));
+                                    return Some(ctx)
+                                }
+                            }
+                        }
+                        Err(_) => {}
+                    }
+                }
+
+/*                let mut options = HashMap::new();
+                options.insert("auth.no_user_interaction", Value::from(false));
+
+                let result = drive.power_off(options).block_on();
+
+                match result {
+                    Ok(_) => {}
+                    Err(e) => {
+                        critical!(
+                            "Gatherer::Main",
+                            "Failed po {}",
+                            e
+                        )
+                    }
+                }*/
+
+                let mut options = HashMap::new();
+                options.insert("auth.no_user_interaction", Value::from(false));
+                let result = drive.eject(options).block_on();
+
+                match result {
+                    Ok(_) => {}
+                    Err(e) => {
+                        critical!(
+                            "Gatherer::Main",
+                            "Failed ej {}",
+                            e
+                        )
+                    }
+                }
+
+                ctx.reply(Ok(()));
 
                 Some(ctx)
 /*                ctx.reply(Ok((SYSTEM_STATE
@@ -493,7 +623,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                   .map(|c| c.eject()),)));*/
 
             },
-        );*/
+        );
 
         message!("Gatherer::Main", "Registering D-Bus method `GetGPUList`...");
         builder.method_with_cr_custom::<(), (Vec<String>,), &str, _>(

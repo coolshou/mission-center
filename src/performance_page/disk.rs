@@ -29,6 +29,8 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 mod imp {
+    use adw::glib::g_warning;
+    use crate::app;
     use super::*;
 
     #[derive(Properties)]
@@ -71,6 +73,9 @@ mod imp {
         pub formatted: OnceCell<gtk::Label>,
         pub system_disk: OnceCell<gtk::Label>,
         pub disk_type: OnceCell<gtk::Label>,
+        pub eject: OnceCell<gtk::Button>,
+
+        pub raw_disk_id: OnceCell<String>,
     }
 
     impl Default for PerformancePageDisk {
@@ -100,6 +105,8 @@ mod imp {
                 formatted: Default::default(),
                 system_disk: Default::default(),
                 disk_type: Default::default(),
+                eject: Default::default(),
+                raw_disk_id: Default::default(),
             }
         }
     }
@@ -200,6 +207,8 @@ mod imp {
                 });
 
             let this = this.imp();
+
+            let _ = this.raw_disk_id.set(disk.id.to_string());
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
@@ -477,6 +486,40 @@ mod imp {
                     .object::<gtk::Label>("disk_type")
                     .expect("Could not find `disk_type` object in details pane"),
             );
+            let _ = self.eject.set(
+                sidebar_content_builder
+                    .object::<gtk::Button>("eject")
+                    .expect("Could not find `eject` object in details pane"),
+            );
+
+            self.eject.get().expect("Rip").connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+
+                        match app!().sys_info().and_then(move |sys_info| {
+                            match this.raw_disk_id.get() {
+                                None => {
+                                    //todo uh oh
+                                }
+                                Some(disk_id) => {sys_info.eject_disk(disk_id)}
+                            }
+
+                            Ok(())
+                        }) {
+                            Err(e) => {
+                                g_warning!(
+                                    "MissionCenter::DetailsDialog",
+                                    "Failed to get `sys_info`: {}",
+                                    e
+                                );
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            });
         }
     }
 

@@ -130,6 +130,7 @@ enum Message {
     EnableService(Arc<str>),
     DisableService(Arc<str>),
     GetServiceLogs(Arc<str>, Option<NonZeroU32>),
+    EjectDisk(Arc<str>),
 }
 
 enum Response {
@@ -425,6 +426,36 @@ impl SysInfoV2 {
             }
         }
     }
+
+    pub fn eject_disk(&self, disk_id: &str) {
+        match self
+            .sender
+            .send(Message::EjectDisk(Arc::<str>::from(disk_id))) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending EjectDisk({}) to gatherer: {}",
+                    disk_id,
+                    e
+                );
+
+                return;
+            }
+            _ => {}
+        }
+
+/*        match self.receiver.recv() {
+            Ok(Response::String(logs)) => logs,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving GetServiceLogs response: {}",
+                    e
+                );
+                Arc::from("")
+            }
+        }*/
+    }
 }
 
 impl SysInfoV2 {
@@ -478,6 +509,9 @@ impl SysInfoV2 {
                             e
                         );
                     }
+                }
+                Message::EjectDisk(disk_id) => {
+                    gatherer.eject_disk(&disk_id);
                 }
             },
             Err(_) => {}

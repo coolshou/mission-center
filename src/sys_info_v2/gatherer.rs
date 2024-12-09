@@ -332,6 +332,10 @@ impl Gatherer {
         dbus_call!(self, get_disks_info, "GetDisksInfo");
     }
 
+    pub fn eject_disk(&self, disk_id: &str) {
+        dbus_call!(self, eject_disk, "EjectDisk", disk_id);
+    }
+
     pub fn fans_info(&self) -> Vec<FanInfo> {
         dbus_call!(self, get_fans_info, "GetFansInfo");
     }
