@@ -18,6 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 use std::collections::HashMap;
+use std::path::Path;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
@@ -551,6 +552,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 "YIKES {}",
                                 e
                             );
+                            if let Ok(mountpoint) = fs.mount_points().block_on() {
+                                let points = mountpoint.iter().map(|c| Path::new(std::str::from_utf8(c).unwrap_or("")));
+                                let processes = &SYSTEM_STATE
+                                    .processes
+                                    .read()
+                                    .unwrap_or_else(PoisonError::into_inner)
+                                    .process_cache
+                                    .iter()
+                                    .map(|cess| (cess.0, cess.1.blocking_dirs()))
+                                    .filter(|cess| !cess.1.iter().any(|p|));
+                            }
+
                             ctx.reply(Ok(()));
                             return Some(ctx)
                         }

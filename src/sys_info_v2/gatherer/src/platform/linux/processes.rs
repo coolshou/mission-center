@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -96,6 +97,26 @@ pub struct LinuxProcess {
     pub cgroup: Option<Arc<str>>,
 
     raw_stats: RawStats,
+}
+
+impl LinuxProcess {
+    pub(crate) fn blocking_dirs(&self) -> Vec<PathBuf> {
+        let mut out = vec![];
+        match std::fs::read_dir(format!("/proc/{}/fd", self.pid)) {
+            Ok(dirr) => {
+                for dir in dirr.filter_map(|d| d.ok()) {
+                    let Ok(lenk) = std::fs::read_link(dir.path()) else {
+                        continue;
+                    };
+
+                    out.push(lenk);
+                }
+            }
+            Err(_) => {}
+        }
+
+        out
+    }
 }
 
 impl Default for LinuxProcess {
