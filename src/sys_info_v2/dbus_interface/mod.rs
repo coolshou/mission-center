@@ -220,9 +220,9 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
 
 #[derive(Debug)]
 pub struct EjectResult {
-    success: bool,
+    pub success: bool,
 
-    blocking_processes: Vec<(u32, Vec<String>, Vec<String>)>,
+    pub blocking_processes: Vec<(u32, Vec<String>, Vec<String>)>,
 }
 
 impl Default for EjectResult {

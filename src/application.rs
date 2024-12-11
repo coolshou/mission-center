@@ -27,6 +27,7 @@ use gtk::{
 };
 
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
+use crate::sys_info_v2::EjectResult;
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
@@ -350,5 +351,24 @@ impl MissionCenterApplication {
         );
 
         about.present(Some(&window));
+    }
+
+    pub fn handle_eject_result(&self, result: EjectResult) {
+        if !result.success {
+            let Some(window) = self.window() else {
+                g_critical!(
+                    "MissionCenter::Application",
+                    "No active window, when trying to show eject dialog"
+                );
+                return;
+            };
+
+            window.handle_eject_result(result);
+/*            let dialogue = adw::Dialog::builder()
+                .title("Eject failed".to_string())
+                .build();
+
+            dialogue.present(Some(&window));*/
+        }
     }
 }

@@ -94,6 +94,8 @@ pub type NetInfo = net_info::NetInfo;
 pub type NetworkDevice = net_info::NetworkDevice;
 pub type NetDeviceType = net_info::NetDeviceType;
 
+pub type EjectResult = dbus_interface::EjectResult;
+
 pub type Pid = u32;
 
 lazy_static! {
@@ -513,7 +515,7 @@ impl SysInfoV2 {
                     }
                 }
                 Message::EjectDisk(disk_id) => {
-                    println!("{:?}", gatherer.eject_disk(&disk_id));
+                    app!().handle_eject_result(gatherer.eject_disk(&disk_id));
                 }
             },
             Err(_) => {}
