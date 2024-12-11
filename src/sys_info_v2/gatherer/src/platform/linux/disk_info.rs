@@ -25,6 +25,8 @@ use glob::glob;
 use serde::Deserialize;
 use std::{sync::Arc, time::Instant};
 use std::any::Any;
+use std::collections::HashMap;
+use std::path::PathBuf;
 use pollster::FutureExt;
 use udisks2::Client;
 use udisks2::drive::RotationRate::{NonRotating, Unknown};

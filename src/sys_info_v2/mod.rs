@@ -444,17 +444,19 @@ impl SysInfoV2 {
             _ => {}
         }
 
-/*        match self.receiver.recv() {
+/*        let blogs = match self.receiver.recv() {
             Ok(Response::String(logs)) => logs,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
-                    "Error receiving GetServiceLogs response: {}",
+                    "Error receiving EjectDisk response: {}",
                     e
                 );
                 Arc::from("")
             }
-        }*/
+        };
+
+        println!("Bloggosphere: {}", blogs);*/
     }
 }
 

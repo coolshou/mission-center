@@ -18,20 +18,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
 };
 
-use dbus::arg::RefArg;
-use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver};
-use dbus_crossroads::Crossroads;
+use crate::platform::{FanInfo, FansInfo, FansInfoExt};
+use dbus::arg::{AppendAll, Arg, ArgType, IterAppend, RefArg};
+use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver, Signature};
+use dbus_crossroads::{Context, Crossroads};
 use glob::glob;
 use lazy_static::lazy_static;
-use pollster::FutureExt;
-use udisks2::zbus::zvariant::Value;
-use crate::platform::{FanInfo, FansInfo, FansInfoExt};
 use logging::{critical, debug, error, message, warning};
 use platform::{
     Apps, AppsExt, CpuDynamicInfo, CpuInfo, CpuInfoExt, CpuStaticInfo, CpuStaticInfoExt, DiskInfo,
@@ -39,6 +37,8 @@ use platform::{
     PlatformUtilitiesExt, Processes, ProcessesExt, Service, ServiceController,
     ServiceControllerExt, Services, ServicesError, ServicesExt,
 };
+use pollster::FutureExt;
+use udisks2::zbus::zvariant::Value;
 
 #[allow(unused_imports)]
 mod logging;
@@ -442,63 +442,51 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        message!(
-            "Gatherer::Main",
-            "Registering D-Bus method `EjectDisk`..."
-        );
-        builder.method_with_cr_custom::<(String,), (), &str, _>(
+        message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
+        builder.method_with_cr_custom::<(String,), (Vec<(u32, Vec<String>, Vec<String>)>,), &str, _>(
             "EjectDisk",
             ("eject_disk",),
-            (),
+            ("eject_result",),
             move |mut ctx, _, (id,): (String,)| {
+
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
                     .read()
                     .unwrap_or_else(PoisonError::into_inner)
-                    .client else {
-                    critical!(
-                            "Gatherer::Main",
-                            "fale 0",
-                        );
+                    .client
+                else {
+                    critical!("Gatherer::Main", "fale 0",);
                     ctx.reply(Ok(()));
-                    return Some(ctx)
+                    return Some(ctx);
                 };
 
                 println!("{}", id);
 
-                let object = match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
-                    Ok(object) => object,
-                    Err(_) => {
-                        critical!(
-                            "Gatherer::Main",
-                            "fale 1",
-                        );
-                        ctx.reply(Ok(()));
-                        return Some(ctx)
-                    }
-                };
+                let object =
+                    match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
+                        Ok(object) => object,
+                        Err(_) => {
+                            critical!("Gatherer::Main", "fale 1",);
+                            ctx.reply(Ok(()));
+                            return Some(ctx);
+                        }
+                    };
 
                 let block = match object.block().block_on() {
                     Ok(block) => block,
                     Err(_) => {
-                        critical!(
-                            "Gatherer::Main",
-                            "fale 2",
-                        );
+                        critical!("Gatherer::Main", "fale 2",);
                         ctx.reply(Ok(()));
-                        return Some(ctx)
+                        return Some(ctx);
                     }
                 };
 
                 let drive = match client.drive_for_block(&block).block_on() {
                     Ok(drive) => drive,
                     Err(_) => {
-                        critical!(
-                            "Gatherer::Main",
-                            "fale 3",
-                        );
+                        critical!("Gatherer::Main", "fale 3",);
                         ctx.reply(Ok(()));
-                        return Some(ctx)
+                        return Some(ctx);
                     }
                 };
 
@@ -513,7 +501,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         );
 
                         ctx.reply(Ok(()));
-                        return Some(ctx)
+                        return Some(ctx);
                     }
                 };
 
@@ -526,19 +514,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     some_path = true;
 
-                    let fsobject = match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", filename.to_str().unwrap())) {
+                    let fsobject = match client.object(format!(
+                        "/org/freedesktop/UDisks2/block_devices/{}",
+                        filename.to_str().unwrap()
+                    )) {
                         Ok(object) => object,
                         Err(_) => {
-                            critical!(
-                                "Gatherer::Main",
-                                "fale 1",
-                            );
-                            continue
+                            critical!("Gatherer::Main", "fale 1",);
+                            continue;
                         }
                     };
 
                     let Ok(fs) = fsobject.filesystem().block_on() else {
-                        continue
+                        continue;
                     };
 
                     let mut options = HashMap::new();
@@ -547,25 +535,60 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match fs.unmount(options).block_on() {
                         Ok(_) => {}
                         Err(e) => {
-                            critical!(
-                                "Gatherer::Main",
-                                "YIKES {}",
-                                e
-                            );
+                            critical!("Gatherer::Main", "YIKES {}", e);
                             if let Ok(mountpoint) = fs.mount_points().block_on() {
-                                let points = mountpoint.iter().map(|c| Path::new(std::str::from_utf8(c).unwrap_or("")));
-                                let processes = &SYSTEM_STATE
+                                let points = mountpoint
+                                    .iter()
+                                    .map(|c| Path::new(std::str::from_utf8(c).unwrap_or("").trim_matches(char::from(0))))
+                                    .collect::<std::collections::HashSet<_>>();
+                                let processes = SYSTEM_STATE
                                     .processes
                                     .read()
                                     .unwrap_or_else(PoisonError::into_inner)
                                     .process_cache
-                                    .iter()
-                                    .map(|cess| (cess.0, cess.1.blocking_dirs()))
-                                    .filter(|cess| !cess.1.iter().any(|p|));
+                                    .clone();
+
+                                let mut blocks = Vec::new();
+
+                                for (pid, proc) in processes.iter() {
+                                    let mut cwds = Vec::new();
+                                    let mut paths = Vec::new();
+                                    if let Ok(cwd) = std::fs::read_link(format!("/proc/{pid}/cwd"))
+                                    {
+                                        let cwdd = cwd.as_path();
+                                        if points.iter().any(|p| cwdd.starts_with(p)) {
+                                            cwds.push(cwdd.display().to_string());
+                                        }
+                                    }
+
+                                    if let Ok(readdir) =
+                                        std::fs::read_dir(format!("/proc/{pid}/fd"))
+                                    {
+                                        for fd in readdir.filter_map(|fd| fd.ok()) {
+                                            let real_path = match fd.path().read_link() {
+                                                Ok(path) => path,
+                                                Err(_) => continue,
+                                            };
+
+                                            if points.iter().any(|p| real_path.starts_with(p)) {
+                                                paths.push(real_path.display().to_string());
+                                            }
+                                        }
+                                    }
+
+                                    if paths.len() > 0 || cwds.len() > 0 {
+                                        blocks.push((pid, cwds, paths))
+                                    }
+                                }
+
+                                println!("{:?}", blocks);
+
+                                // ctx.reply(Ok((blocks,)));
+                                // return Some(ctx);
                             }
 
                             ctx.reply(Ok(()));
-                            return Some(ctx)
+                            return Some(ctx);
                         }
                     }
                 }
@@ -579,35 +602,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             match fs.unmount(options).block_on() {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    critical!(
-                                        "Gatherer::Main",
-                                        "YIKES {}",
-                                        e
-                                    );
+                                    critical!("Gatherer::Main", "YIKES {}", e);
                                     ctx.reply(Ok(()));
-                                    return Some(ctx)
+                                    return Some(ctx);
                                 }
                             }
                         }
                         Err(_) => {}
                     }
                 }
-
-/*                let mut options = HashMap::new();
-                options.insert("auth.no_user_interaction", Value::from(false));
-
-                let result = drive.power_off(options).block_on();
-
-                match result {
-                    Ok(_) => {}
-                    Err(e) => {
-                        critical!(
-                            "Gatherer::Main",
-                            "Failed po {}",
-                            e
-                        )
-                    }
-                }*/
 
                 let mut options = HashMap::new();
                 options.insert("auth.no_user_interaction", Value::from(false));
@@ -616,25 +619,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 match result {
                     Ok(_) => {}
                     Err(e) => {
-                        critical!(
-                            "Gatherer::Main",
-                            "Failed ej {}",
-                            e
-                        )
+                        critical!("Gatherer::Main", "Failed ej {}", e)
                     }
                 }
 
                 ctx.reply(Ok(()));
 
                 Some(ctx)
-/*                ctx.reply(Ok((SYSTEM_STATE
-                                  .disk_info
-                                  .read()
-                                  .unwrap_or_else(PoisonError::into_inner)
-                                  .info()
-                                  .find(|c| c.id.as_ref() == id)
-                                  .map(|c| c.eject()),)));*/
-
             },
         );
 
