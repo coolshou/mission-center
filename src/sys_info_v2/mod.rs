@@ -513,7 +513,7 @@ impl SysInfoV2 {
                     }
                 }
                 Message::EjectDisk(disk_id) => {
-                    gatherer.eject_disk(&disk_id);
+                    println!("{:?}", gatherer.eject_disk(&disk_id));
                 }
             },
             Err(_) => {}
