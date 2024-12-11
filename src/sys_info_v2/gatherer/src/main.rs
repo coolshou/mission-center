@@ -25,7 +25,7 @@ use std::sync::{
 };
 
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
-use dbus::arg::{AppendAll, Arg, ArgType, IterAppend, RefArg};
+use dbus::arg::{Append, AppendAll, Arg, ArgType, IterAppend, RefArg};
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver, Signature};
 use dbus_crossroads::{Context, Crossroads};
 use glob::glob;
@@ -443,11 +443,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
 
         message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,), (Vec<(u32, Vec<String>, Vec<String>)>,), &str, _>(
+        builder.method_with_cr_custom::<(String,), (EjectResult,), &str, _>(
             "EjectDisk",
             ("eject_disk",),
             ("eject_result",),
             move |mut ctx, _, (id,): (String,)| {
+                let mut rezult = EjectResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
@@ -456,7 +457,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .client
                 else {
                     critical!("Gatherer::Main", "fale 0",);
-                    ctx.reply(Ok(()));
+                    ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
 
@@ -467,7 +468,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         Ok(object) => object,
                         Err(_) => {
                             critical!("Gatherer::Main", "fale 1",);
-                            ctx.reply(Ok(()));
+                            ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
                     };
@@ -476,7 +477,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Ok(block) => block,
                     Err(_) => {
                         critical!("Gatherer::Main", "fale 2",);
-                        ctx.reply(Ok(()));
+                        ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
                 };
@@ -485,7 +486,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Ok(drive) => drive,
                     Err(_) => {
                         critical!("Gatherer::Main", "fale 3",);
-                        ctx.reply(Ok(()));
+                        ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
                 };
@@ -500,12 +501,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             e
                         );
 
-                        ctx.reply(Ok(()));
+                        ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
                 };
 
                 let mut some_path = false;
+                let mut some_err = false;
 
                 for entry in entries.filter_map(Result::ok) {
                     let Some(filename) = entry.file_name() else {
@@ -532,12 +534,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let mut options = HashMap::new();
                     options.insert("auth.no_user_interaction", Value::from(false));
 
-                    match fs.unmount(options).block_on() {
-                        Ok(_) => {}
-                        Err(e) => {
-                            critical!("Gatherer::Main", "YIKES {}", e);
-                            if let Ok(mountpoint) = fs.mount_points().block_on() {
-                                let points = mountpoint
+                    let mountpoints = fs.mount_points().block_on().unwrap_or(Vec::new());
+
+                    if !mountpoints.is_empty() {
+                        match fs.unmount(options).block_on() {
+                            Ok(_) => {}
+                            Err(e) => {
+                                some_err = true;
+                                critical!("Gatherer::Main", "YIKES {}", e);
+                                let points = mountpoints
                                     .iter()
                                     .map(|c| Path::new(std::str::from_utf8(c).unwrap_or("").trim_matches(char::from(0))))
                                     .collect::<std::collections::HashSet<_>>();
@@ -548,7 +553,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     .process_cache
                                     .clone();
 
-                                let mut blocks = Vec::new();
+                                let mut blocks = &mut rezult.blocking_processes;
 
                                 for (pid, proc) in processes.iter() {
                                     let mut cwds = Vec::new();
@@ -577,7 +582,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     }
 
                                     if paths.len() > 0 || cwds.len() > 0 {
-                                        blocks.push((pid, cwds, paths))
+                                        blocks.push((*pid, cwds, paths))
                                     }
                                 }
 
@@ -586,10 +591,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 // ctx.reply(Ok((blocks,)));
                                 // return Some(ctx);
                             }
-
-                            ctx.reply(Ok(()));
-                            return Some(ctx);
                         }
+                    } else {
+                        debug!("Gatherer::Main", "{:?} does not have any mountpoints", filename)
                     }
                 }
 
@@ -602,9 +606,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             match fs.unmount(options).block_on() {
                                 Ok(_) => {}
                                 Err(e) => {
+                                    some_err = true;
                                     critical!("Gatherer::Main", "YIKES {}", e);
-                                    ctx.reply(Ok(()));
-                                    return Some(ctx);
                                 }
                             }
                         }
@@ -612,18 +615,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
 
-                let mut options = HashMap::new();
-                options.insert("auth.no_user_interaction", Value::from(false));
-                let result = drive.eject(options).block_on();
+                if !some_err {
+                    let mut options = HashMap::new();
+                    options.insert("auth.no_user_interaction", Value::from(false));
+                    let result = drive.eject(options).block_on();
 
-                match result {
-                    Ok(_) => {}
-                    Err(e) => {
-                        critical!("Gatherer::Main", "Failed ej {}", e)
+                    match result {
+                        Ok(_) => {rezult.success = true}
+                        Err(e) => {
+                            critical!("Gatherer::Main", "Failed ej {}", e)
+                        }
                     }
                 }
 
-                ctx.reply(Ok(()));
+                ctx.reply(Ok((rezult,)));
 
                 Some(ctx)
             },
@@ -1025,4 +1030,36 @@ fn execute_no_reply<SF: Send + Sync + 'static, E: std::fmt::Display>(
     });
 
     Ok(())
+}
+
+pub struct EjectResult {
+    success: bool,
+
+    blocking_processes: Vec<(u32, Vec<String>, Vec<String>)>,
+}
+
+impl Default for EjectResult {
+    fn default() -> Self {
+        Self {
+            success: false,
+            blocking_processes: vec![],
+        }
+    }
+}
+
+impl Append for EjectResult {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append((
+            self.success,
+            self.blocking_processes.clone(),
+        ));
+    }
+}
+
+impl Arg for EjectResult {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("(ba(ua(s)a(s)))")
+    }
 }

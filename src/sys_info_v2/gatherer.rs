@@ -332,7 +332,7 @@ impl Gatherer {
         dbus_call!(self, get_disks_info, "GetDisksInfo");
     }
 
-    pub fn eject_disk(&self, disk_id: &str) {
+    pub fn eject_disk(&self, disk_id: &str) -> EjectResult {
         dbus_call!(self, eject_disk, "EjectDisk", disk_id);
     }
 
