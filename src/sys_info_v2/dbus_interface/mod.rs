@@ -330,32 +330,130 @@ impl<'a> Get<'a> for EjectResult {
                     );
                     return None;
                 }
-                Some(arr) => {
-                    for s in arr {
-                        let mut new_item = (0u32, vec![], vec![]);
+                Some(mut block_list) => {
+                    let mut block_list = block_list.as_mut();
+                    while true {
+                        match Iterator::next(block_list) {
+                            None => { break; }
+                            Some(block_tuple) => {
+                                match block_tuple.as_iter() {
+                                    None => {
+                                        println!("f");
+                                        return None;
+                                    }
+                                    Some(mut tuple_iter) => {
+                                        let mut new_item = (u32::MAX, vec![], vec![]);
+
+                                        let mut tuple_iter = tuple_iter.as_mut();
+                                        match Iterator::next(tuple_iter) {
+                                            None => {}
+                                            Some(arg) => {
+                                                match arg.as_u64() {
+                                                    None => {
+                                                        return None;
+                                                    }
+                                                    Some(arr) => {
+                                                        new_item.0 = arr as u32;
+                                                    }
+                                                };
+                                            }
+                                        }
+                                        match Iterator::next(tuple_iter) {
+                                            None => {}
+                                            Some(arg) => {
+                                                match arg.as_iter() {
+                                                    None => {
+                                                        return None;
+                                                    }
+                                                    Some(arr) => {
+                                                        for strink in arr {
+                                                            new_item.1.push(strink.as_str().unwrap_or("").to_string());
+                                                        }
+                                                    }
+                                                };
+                                            }
+                                        }
+                                        match Iterator::next(tuple_iter) {
+                                            None => {}
+                                            Some(arg) => {
+                                                match arg.as_iter() {
+                                                    None => {
+                                                        return None;
+                                                    }
+                                                    Some(arr) => {
+                                                        for strink in arr {
+                                                            new_item.2.push(strink.as_str().unwrap_or("").to_string());
+                                                        }
+                                                    }
+                                                };
+                                            }
+                                        }
+
+                                        this.blocking_processes.push(new_item);
+                                    }
+                                }
+                            }
+                        }
+                    }
+/*                    for s in block_list {
+                        let s = match s.as_iter() {
+                            None => {continue;}
+                            Some(i) => i,
+                        };
+                        let mut s = s.as_mut();
+                        match Iterator::next(s) {
+                            None => {}
+                            Some(arg) => {
+                                println!("0 {:?}", arg);
+                            }
+                        }
+                        match Iterator::next(s) {
+                            None => {}
+                            Some(arg) => {
+                                println!("1 {:?}", arg);
+                            }
+                        }
+                        match Iterator::next(s) {
+                            None => {}
+                            Some(arg) => {
+                                println!("2 {:?}", arg);
+                            }
+                        }
+                        continue;
+/*                        let mut new_item = (u32::MAX, vec![], vec![]);
                         if let Some(s) = s.as_u64() {
                             new_item.0 = s as u32;
+                        } else {
+                            println!("WTF");
                         }
 
                         if let Some(s) = s.as_iter() {
                             for s in s {
                                 if let Some(s) = s.as_str() {
                                     new_item.1.push(s.to_string());
+                                } else {
+                                    println!("WTFF {:?}", s);
                                 }
                             }
+                        } else {
+                            println!("WTFY");
                         }
 
                         if let Some(s) = s.as_iter() {
                             for s in s {
                                 if let Some(s) = s.as_str() {
                                     new_item.2.push(s.to_string());
+                                } else {
+                                    println!("WTFF");
                                 }
                             }
+                        } else {
+                            println!("WTFY");
                         }
 
-                        this.blocking_processes.push(new_item);
+                        this.blocking_processes.push(new_item);*/
                     }
-                }
+*/                }
             },
         }
 
