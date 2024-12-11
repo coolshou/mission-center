@@ -36,6 +36,7 @@ Box root {
       Box {
         orientation: vertical;
         spacing: 3;
+        width-request: 100;
 
         Label {
           styles [
@@ -58,7 +59,7 @@ Box root {
       Box {
         orientation: vertical;
         spacing: 3;
-        width-request: 120;
+        width-request: 100;
 
         Label {
           styles [
@@ -94,6 +95,7 @@ Box root {
         Box {
           orientation: vertical;
           spacing: 3;
+          width-request: 100;
 
           Label {
 
@@ -106,6 +108,29 @@ Box root {
           }
 
           Label read_speed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Total Read");
+          }
+
+          Label total_read {
             styles [
               "title-4",
             ]
@@ -126,7 +151,7 @@ Box root {
         Box {
           orientation: vertical;
           spacing: 3;
-          width-request: 120;
+          width-request: 100;
 
           Label {
             styles [
@@ -138,6 +163,29 @@ Box root {
           }
 
           Label write_speed {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Total Written");
+          }
+
+          Label total_write {
             styles [
               "title-4",
             ]
