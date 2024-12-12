@@ -36,13 +36,12 @@ mod imp {
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureRow)]
-    #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui")]
     pub struct EjectFailureRow {
         pub icon: OnceCell<gtk::Image>,
         pub pid: OnceCell<gtk::Label>,
         pub name: OnceCell<gtk::Label>,
         pub open_files: OnceCell<gtk::Label>,
+        pub row_entry: OnceCell<gtk::ListBoxRow>
     }
 
     impl EjectFailureRow {
@@ -71,6 +70,7 @@ mod imp {
                 name: Default::default(),
                 pid: Default::default(),
                 open_files: Default::default(),
+                row_entry: Default::default(),
             }
         }
     }
@@ -101,6 +101,11 @@ mod imp {
                 "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui",
             );
 
+            let _ = self.row_entry.set(
+                sidebar_content_builder
+                    .object::<gtk::ListBoxRow>("root")
+                    .expect("Could not find `root` object in details pane"),
+            );
             let _ = self.icon.set(
                 sidebar_content_builder
                     .object::<gtk::Image>("icon")

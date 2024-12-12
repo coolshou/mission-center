@@ -79,7 +79,7 @@ mod imp {
 
                 println!("Creating app {}", appname);
 
-                modelo.append(&app_root);
+                modelo.append(app_root.imp().row_entry.get().expect("Missing row entry"));
 
                 for process in processes {
                     println!("Creating process {}", process.0);
@@ -90,7 +90,7 @@ mod imp {
                         .pid(process.0)
                         .build();
 
-                    modelo.append(&new_root);
+                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
                 }
             }
         }
