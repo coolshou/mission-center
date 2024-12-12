@@ -29,7 +29,6 @@ use std::{
     },
     time::Duration,
 };
-
 use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use lazy_static::lazy_static;
 
@@ -43,6 +42,7 @@ pub use gatherer::{
     App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
     OpenGLApi, Process, ProcessUsageStats, Service,
 };
+use crate::sys_info_v2::Response::EjectResultResponse;
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -137,6 +137,7 @@ enum Message {
 
 enum Response {
     String(Arc<str>),
+    EjectResultResponse(EjectResult),
 }
 
 #[derive(Debug)]
@@ -426,10 +427,19 @@ impl SysInfoV2 {
                 );
                 Arc::from("")
             }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving GetServiceLogs response. Wrong type"
+                );
+                Arc::from("")
+            }
         }
     }
 
-    pub fn eject_disk(&self, disk_id: &str) {
+    pub fn eject_disk(&self, disk_id: &str) -> EjectResult {
+        println!("Eject!!!");
+
         match self
             .sender
             .send(Message::EjectDisk(Arc::<str>::from(disk_id))) {
@@ -441,24 +451,32 @@ impl SysInfoV2 {
                     e
                 );
 
-                return;
+                return EjectResult::default()
             }
             _ => {}
         }
 
-/*        let blogs = match self.receiver.recv() {
-            Ok(Response::String(logs)) => logs,
+        match self.receiver.recv() {
+            Ok(Response::EjectResultResponse(logs)) => {
+                logs
+            }
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error receiving EjectDisk response: {}",
                     e
                 );
-                Arc::from("")
+                EjectResult::default()
             }
-        };
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving EjectDisk response. Wrong type"
+                );
+                EjectResult::default()
 
-        println!("Bloggosphere: {}", blogs);*/
+            }
+        }
     }
 }
 
@@ -515,7 +533,13 @@ impl SysInfoV2 {
                     }
                 }
                 Message::EjectDisk(disk_id) => {
-                    app!().handle_eject_result(gatherer.eject_disk(&disk_id));
+                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id))) {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending EjectDisk response: {}",
+                            e
+                        );
+                    }
                 }
             },
             Err(_) => {}

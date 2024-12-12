@@ -1,40 +1,106 @@
-/* ui/performance_page/disk_eject_failure_dialog.blp
- *
- * Copyright 2025 Mission-Center-Devs
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
-
- using Gtk 4.0;
+using Gtk 4.0;
 using Adw 1;
 
-template $EjectFailureDialog: Adw.AlertDialog {
-  heading: _("Failed To Eject");
-
+template $EjectFailureDialog: Adw.Dialog {
   Adw.ToolbarView {
-    Box {
+    [top]
+    Adw.HeaderBar {
+      title-widget: Label {
+        styles [
+          "heading"
+        ]
+
+        label: _("Eject Disk Failed");
+      };
+    }
+
+    Adw.Clamp {
       ScrolledWindow {
         hscrollbar-policy: never;
         propagate-natural-height: true;
 
-        ListBox column_view {
+        ColumnView column_view {
           styles [
             "rich-list",
             "transparent"
           ]
+
+          show-row-separators: false;
+          show-column-separators: true;
+
+          ColumnViewColumn name_column {
+            resizable: true;
+            expand: true;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  child: $ListItem {
+                    icon: bind (expander.item as <$RowModel>).icon;
+                    name: bind (expander.item as <$RowModel>).name;
+                    // Needed for the context menu
+                    pid: bind (expander.item as <$RowModel>).pid;
+
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                    show-expander: bind (expander.item as <$RowModel>).show-expander;
+                    expanded: bind (expander.item as <$RowModel>).expanded;
+
+                    files-open: bind (expander.item as <$RowModel>).files-open;
+                  };
+                };
+              }
+            };
+          }
+
+          ColumnViewColumn pid_column {
+            resizable: true;
+            fixed-width: 90;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  hide-expander: true;
+                  indent-for-depth: false;
+                  indent-for-icon: false;
+
+                  halign: end;
+
+                  child: $PidColumn {
+                    value: bind (expander.item as <$RowModel>).pid;
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                  };
+                };
+              }
+            };
+          }
+
+          ColumnViewColumn files_open_column {
+            resizable: true;
+            fixed-width: 200;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  hide-expander: true;
+                  indent-for-depth: false;
+                  indent-for-icon: false;
+
+                  halign: end;
+
+                  child: $FilesOpenColumn {
+                    value: bind (expander.item as <$RowModel>).files-open;
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                  };
+                };
+              }
+            };
+          }
         }
       }
     }

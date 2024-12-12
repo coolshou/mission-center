@@ -20,7 +20,7 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw::{self, subclass::prelude::*};
+use adw::{self, subclass::prelude::*, prelude::AdwDialogExt};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
@@ -31,6 +31,9 @@ use crate::i18n::*;
 mod imp {
     use adw::glib::g_warning;
     use crate::app;
+    use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
+    use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
+    use crate::sys_info_v2::EjectResult;
     use super::*;
 
     #[derive(Properties)]
@@ -76,6 +79,11 @@ mod imp {
         pub eject: OnceCell<gtk::Button>,
 
         pub raw_disk_id: OnceCell<String>,
+
+        #[property(name = "eject-failure-dialog", get = Self::eject_failure_dialog, set = Self::set_eject_failure_dialog, type = Option<EjectFailureDialog>
+        )]
+        eject_failure_dialog: Cell<Option<EjectFailureDialog>>,
+        pub eject_failure_dialog_visible: Cell<bool>,
     }
 
     impl Default for PerformancePageDisk {
@@ -107,6 +115,9 @@ mod imp {
                 disk_type: Default::default(),
                 eject: Default::default(),
                 raw_disk_id: Default::default(),
+
+                eject_failure_dialog: Cell::new(None),
+                eject_failure_dialog_visible: Cell::new(false),
             }
         }
     }
@@ -129,6 +140,39 @@ mod imp {
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
             self.infobar_content.get().map(|ic| ic.clone().into())
+        }
+
+        fn eject_failure_dialog(&self) -> Option<EjectFailureDialog> {
+            unsafe { &*self.eject_failure_dialog.as_ptr() }.clone()
+        }
+
+        fn set_eject_failure_dialog(&self, widget: Option<&EjectFailureDialog>) {
+            println!("SET EJECT FAILURE DIALOG");
+            if let Some(widget) = widget {
+                widget.connect_closed({
+                    let this = self.obj().downgrade();
+                    move |_| {
+                        if let Some(this) = this.upgrade() {
+                            this.imp().eject_failure_dialog_visible.set(false);
+                        }
+                    }
+                });
+
+                unsafe { widget.set_data("list-item", EjectFailureRowBuilder::new().build()) };
+            }
+
+            self.eject_failure_dialog.set(widget.cloned());
+        }
+
+        fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
+            let details_dialog =
+                unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
+            details_dialog.map(move |d| {
+                self.eject_failure_dialog_visible.set(true);
+                d.imp().apply_eject_result(result);
+
+                d.present(Some(this));
+            });
         }
     }
 
@@ -396,6 +440,8 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            EjectFailureDialog::ensure_type();
+
             klass.bind_template();
         }
 
@@ -495,16 +541,21 @@ mod imp {
             self.eject.get().expect("Rip").connect_clicked({
                 let this = self.obj().downgrade();
                 move |_| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
+                    if let Some(that) = this.upgrade() {
+                        let this = that.imp();
+                        let that = &that;
 
                         match app!().sys_info().and_then(move |sys_info| {
-                            match this.raw_disk_id.get() {
+                            let eject_result = match this.raw_disk_id.get() {
                                 None => {
                                     //todo uh oh
+
+                                    return Ok(());
                                 }
                                 Some(disk_id) => {sys_info.eject_disk(disk_id)}
-                            }
+                            };
+
+                            this.show_eject_result(that, eject_result);
 
                             Ok(())
                         }) {

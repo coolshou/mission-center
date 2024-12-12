@@ -48,6 +48,8 @@ mod memory;
 mod network;
 mod summary_graph;
 mod widgets;
+mod eject_failure_dialog;
+mod eject_failure_row;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
