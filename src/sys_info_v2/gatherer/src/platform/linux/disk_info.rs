@@ -56,7 +56,9 @@ pub struct LinuxDiskInfo {
     pub busy_percent: f32,
     pub response_time_ms: f32,
     pub read_speed: u64,
+    pub total_read: u64,
     pub write_speed: u64,
+    pub total_write: u64,
     pub ejectable: bool,
 
     pub smart_enabled: bool,
@@ -79,7 +81,9 @@ impl Default for LinuxDiskInfo {
             busy_percent: 0.,
             response_time_ms: 0.,
             read_speed: 0,
+            total_read: 0,
             write_speed: 0,
+            total_write: 0,
             ejectable: false,
 
             smart_enabled: false,
@@ -149,8 +153,16 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.read_speed
     }
 
+    fn total_read(&self) -> u64 {
+        self.total_read
+    }
+
     fn write_speed(&self) -> u64 {
         self.write_speed
+    }
+
+    fn total_write(&self) -> u64 {
+        self.total_write
     }
 
     fn ejectable(&self) -> bool {
@@ -506,7 +518,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 info.busy_percent = busy_percent;
                 info.response_time_ms = response_time_ms;
                 info.read_speed = read_speed;
+                info.total_read = sectors_read * 512;
                 info.write_speed = write_speed;
+                info.total_write = sectors_written * 512;
 
                 info.smart_enabled = smart_enabled;
                 info.smart_failing = smart_failing;
@@ -573,7 +587,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         busy_percent: 0.,
                         response_time_ms: 0.,
                         read_speed: 0,
+                        total_read: 0,
                         write_speed: 0,
+                        total_write: 0,
                         ejectable: drive.ejectable().block_on().unwrap_or(false),
 
                         smart_enabled,
