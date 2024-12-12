@@ -31,7 +31,7 @@ mod imp {
     use adw::gio::ListStore;
     use adw::glib::WeakRef;
     use crate::glib_clone;
-    use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRowModel};
+    use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
     use crate::sys_info_v2::{App, EjectResult, Process};
     use super::*;
 
@@ -41,17 +41,7 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui")]
     pub struct EjectFailureDialog {
         #[template_child]
-        pub column_view: TemplateChild<gtk::ColumnView>,
-        #[template_child]
-        pub name_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub pid_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub files_open_column: TemplateChild<gtk::ColumnViewColumn>,
-
-        pub tree_list_sorter: Cell<Option<gtk::TreeListRowSorter>>,
-
-        pub apps_model: Cell<ListStore>,
+        pub column_view: TemplateChild<gtk::ListBox>,
     }
 
     impl EjectFailureDialog {
@@ -59,11 +49,9 @@ mod imp {
             let app = app!();
             let parsed_results = app.handle_eject_result(result);
 
-            let modelo = glib_clone!(self.apps_model);
+            let modelo = self.column_view.get();
 
-            while modelo.n_items() > 0 {
-                modelo.remove(0);
-            }
+            modelo.remove_all();
 
             println!("Whamming");
 
@@ -82,22 +70,16 @@ mod imp {
                     app_root
                         .icon(iconname)
                         .name(&*appname)
-                        .content_type(ContentType::App)
-                        .show_expander(true)
                         .build()
                 } else {
                     app_root
                         .name("NO APP")
-                        .content_type(ContentType::Process)
-                        .show_expander(true)
                         .build()
                 };
 
                 println!("Creating app {}", appname);
 
                 modelo.append(&app_root);
-
-                let children = app_root.children().clone();
 
                 for process in processes {
                     println!("Creating process {}", process.0);
@@ -108,7 +90,7 @@ mod imp {
                         .pid(process.0)
                         .build();
 
-                    children.append(&new_root);
+                    modelo.append(&new_root);
                 }
             }
         }
@@ -118,11 +100,6 @@ mod imp {
         fn default() -> Self {
             Self {
                 column_view: Default::default(),
-                name_column: Default::default(),
-                pid_column: Default::default(),
-                files_open_column: Default::default(),
-                tree_list_sorter: Cell::new(None),
-                apps_model: Cell::new(ListStore::new::<EjectFailureRowModel>()),
             }
         }
     }
