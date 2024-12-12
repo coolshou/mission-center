@@ -158,7 +158,7 @@ mod imp {
                     }
                 });
 
-                unsafe { widget.set_data("list-item", EjectFailureRowBuilder::new().build()) };
+                // unsafe { widget.set_data("list-item", EjectFailureRowBuilder::new().build()) };
             }
 
             self.eject_failure_dialog.set(widget.cloned());
