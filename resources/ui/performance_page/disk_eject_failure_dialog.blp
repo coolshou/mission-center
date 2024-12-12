@@ -1,0 +1,108 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $EjectFailureDialog: Adw.Dialog {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      title-widget: Label {
+        styles [
+          "heading"
+        ]
+
+        label: _("Eject Disk Failed");
+      };
+    }
+
+    Adw.Clamp {
+      ScrolledWindow {
+        hscrollbar-policy: never;
+        propagate-natural-height: true;
+
+        ColumnView column_view {
+          styles [
+            "rich-list",
+            "transparent"
+          ]
+
+          show-row-separators: false;
+          show-column-separators: true;
+
+          ColumnViewColumn name_column {
+            resizable: true;
+            expand: true;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  child: $ListItem {
+                    icon: bind (expander.item as <$RowModel>).icon;
+                    name: bind (expander.item as <$RowModel>).name;
+                    // Needed for the context menu
+                    pid: bind (expander.item as <$RowModel>).pid;
+
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                    show-expander: bind (expander.item as <$RowModel>).show-expander;
+                    expanded: bind (expander.item as <$RowModel>).expanded;
+
+                    files-open: bind (expander.item as <$RowModel>).files-open;
+                  };
+                };
+              }
+            };
+          }
+
+          ColumnViewColumn pid_column {
+            resizable: true;
+            fixed-width: 90;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  hide-expander: true;
+                  indent-for-depth: false;
+                  indent-for-icon: false;
+
+                  halign: end;
+
+                  child: $PidColumn {
+                    value: bind (expander.item as <$RowModel>).pid;
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                  };
+                };
+              }
+            };
+          }
+
+          ColumnViewColumn files_open_column {
+            resizable: true;
+            fixed-width: 200;
+
+            factory: BuilderListItemFactory {
+              template ListItem {
+                // focusable: false;
+                child: TreeExpander expander {
+                  list-row: bind template.item as <ListItem>;
+                  hide-expander: true;
+                  indent-for-depth: false;
+                  indent-for-icon: false;
+
+                  halign: end;
+
+                  child: $FilesOpenColumn {
+                    value: bind (expander.item as <$RowModel>).files-open;
+                    content-type: bind (expander.item as <$RowModel>).content-type;
+                  };
+                };
+              }
+            };
+          }
+        }
+      }
+    }
+  }
+}
