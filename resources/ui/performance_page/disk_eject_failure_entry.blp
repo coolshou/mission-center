@@ -2,25 +2,31 @@ using Gtk 4.0;
 //using Adw 1;
 
 ListBoxRow root {
-Box {
-  Image icon {
-  }
+  Box {
+    Image icon {
+    }
 
-  Label pid {
-  }
+    Label pid {
+      width-request: 50;
+      halign: start;
+    }
 
-  Label name {
-  }
+    Label name {
+      width-request: 100;
+      halign: start;
+    }
 
-  Label open_files {
-  }
+    Label open_files {
+      hexpand: true;
+      halign: start;
+    }
 
-  Button kill {
+    Button kill {
     child: Box {
       Label {
         label: _("Kill");
       }
     };
-  }
+    }
   }
 }
