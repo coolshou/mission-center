@@ -132,7 +132,7 @@ enum Message {
     EnableService(Arc<str>),
     DisableService(Arc<str>),
     GetServiceLogs(Arc<str>, Option<NonZeroU32>),
-    EjectDisk(Arc<str>),
+    EjectDisk(Arc<str>, bool),
 }
 
 enum Response {
@@ -437,12 +437,12 @@ impl SysInfoV2 {
         }
     }
 
-    pub fn eject_disk(&self, disk_id: &str) -> EjectResult {
+    pub fn eject_disk(&self, disk_id: &str, force: bool) -> EjectResult {
         println!("Eject!!!");
 
         match self
             .sender
-            .send(Message::EjectDisk(Arc::<str>::from(disk_id))) {
+            .send(Message::EjectDisk(Arc::<str>::from(disk_id), force)) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -532,8 +532,8 @@ impl SysInfoV2 {
                         );
                     }
                 }
-                Message::EjectDisk(disk_id) => {
-                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id))) {
+                Message::EjectDisk(disk_id, use_force) => {
+                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id, use_force))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending EjectDisk response: {}",

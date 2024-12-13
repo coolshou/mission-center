@@ -170,12 +170,12 @@ mod imp {
             self.eject_failure_dialog.set(widget.cloned());
         }
 
-        fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
+        pub(crate) fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
             let details_dialog =
                 unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
             details_dialog.map(move |d| {
                 self.eject_failure_dialog_visible.set(true);
-                d.imp().apply_eject_result(result);
+                d.imp().apply_eject_result(result, this);
 
                 d.present(Some(this));
             });
@@ -590,7 +590,7 @@ mod imp {
 
                                     return Ok(());
                                 }
-                                Some(disk_id) => {sys_info.eject_disk(disk_id)}
+                                Some(disk_id) => {sys_info.eject_disk(disk_id, false)}
                             };
 
                             this.show_eject_result(that, eject_result);
