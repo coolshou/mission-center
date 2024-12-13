@@ -443,11 +443,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
 
         message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,), (EjectResult,), &str, _>(
+        builder.method_with_cr_custom::<(String,bool), (EjectResult,), &str, _>(
             "EjectDisk",
-            ("eject_disk",),
+            ("eject_disk","use_force"),
             ("eject_result",),
-            move |mut ctx, _, (id,): (String,)| {
+            move |mut ctx, _, (id,force): (String,bool)| {
                 let mut rezult = EjectResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
@@ -576,6 +576,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             };
 
                                             if points.iter().any(|p| real_path.starts_with(p)) {
+                                                // todo kill this process and then retry if force
                                                 paths.push(real_path.display().to_string());
                                             }
                                         }

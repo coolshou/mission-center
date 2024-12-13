@@ -28,11 +28,12 @@ use gtk::{
 mod imp {
     use std::cell::OnceCell;
     use adw::gio::ListStore;
-    use gtk::prelude::WidgetExt;
+    use gtk::prelude::{ButtonExt, WidgetExt};
     use gtk::subclass::prelude::WidgetImpl;
     use gtk::TemplateChild;
     use super::*;
     use gtk::subclass::widget::WidgetClassExt;
+    use crate::app;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureRow)]
@@ -41,7 +42,10 @@ mod imp {
         pub pid: OnceCell<gtk::Label>,
         pub name: OnceCell<gtk::Label>,
         pub open_files: OnceCell<gtk::Label>,
-        pub row_entry: OnceCell<gtk::ListBoxRow>
+        pub kill: OnceCell<gtk::Button>,
+        pub row_entry: OnceCell<gtk::ListBoxRow>,
+
+        pub raw_pid: Cell<Option<u32>>,
     }
 
     impl EjectFailureRow {
@@ -70,7 +74,9 @@ mod imp {
                 name: Default::default(),
                 pid: Default::default(),
                 open_files: Default::default(),
+                kill: Default::default(),
                 row_entry: Default::default(),
+                raw_pid: Default::default(),
             }
         }
     }
@@ -126,6 +132,27 @@ mod imp {
                     .object::<gtk::Label>("open_files")
                     .expect("Could not find `open_files` object in details pane"),
             );
+            let _ = self.kill.set(
+                sidebar_content_builder
+                    .object::<gtk::Button>("kill")
+                    .expect("Could not find `kill` object in details pane"),
+            );
+
+            let kill_button = self.kill.get().unwrap();
+            kill_button.add_css_class("destructive-action");
+
+            kill_button.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(that) = this.upgrade() {
+                        let this = that.imp();
+
+                        println!("killering");
+
+                        app!().sys_info().expect("Failed to get sys_info").kill_process(this.raw_pid.get().expect("No pid???"));
+                    }
+                }
+            });
         }
     }
 
@@ -207,6 +234,7 @@ impl EjectFailureRowBuilder {
         {
             let this = this.imp();
 
+            this.raw_pid.set(Some(self.pid));
             this.pid.get().expect("Damn").set_label(format!("{}", self.pid).as_str());
             this.name.get().expect("Damn").set_label(self.name.as_str());
             this.set_icon(self.icon.as_str());

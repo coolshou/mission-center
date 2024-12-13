@@ -82,7 +82,7 @@ pub trait Gatherer {
     fn get_cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
-    fn eject_disk(&self, disk_id: &str) -> Result<EjectResult, dbus::Error>;
+    fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
     fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
@@ -119,8 +119,8 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
         res.map(|v| v.into())
     }
 
-    fn eject_disk(&self, disk_id: &str) -> Result<EjectResult, dbus::Error> {
-        self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id,))
+    fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error> {
+        self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id, use_force))
     }
 
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error> {
