@@ -30,7 +30,7 @@ mod imp {
     use std::sync::Arc;
     use adw::gio::ListStore;
     use adw::glib::WeakRef;
-    use crate::glib_clone;
+    use crate::{glib_clone, i18n};
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
     use crate::sys_info_v2::{App, EjectResult, Process};
     use super::*;
@@ -53,44 +53,41 @@ mod imp {
 
             modelo.remove_all();
 
-            println!("Whamming");
-
             for parsed_result in parsed_results {
                 let appname = parsed_result.0.to_string();
                 let (app_obj, processes) = parsed_result.1;
-
-                let app_root = EjectFailureRowBuilder::new();
 
                 let iconname = match app_obj.icon.as_ref() {
                     Some(icon) => icon,
                     None => {&Arc::from("")}
                 };
 
-                let app_root = if appname != "" {
-                    app_root
-                        .icon(iconname)
-                        .name(&*appname)
-                        .build()
-                } else {
-                    app_root
-                        .name("NO APP")
-                        .build()
-                };
-
-                println!("Creating app {}", appname);
-
-                modelo.append(app_root.imp().row_entry.get().expect("Missing row entry"));
+                println!("Creating app {}", &appname);
 
                 for process in processes {
                     println!("Creating process {}", process.0);
 
-                    let new_root = EjectFailureRowBuilder::new()
-                        .icon(iconname)
-                        .files_open(process.1.clone())
-                        .pid(process.0)
-                        .build();
+                    if !process.1.is_empty() {
+                        let new_root = EjectFailureRowBuilder::new()
+                            .icon(iconname)
+                            .files_open(process.1.clone())
+                            .pid(process.0)
+                            .name(&appname)
+                            .build();
 
-                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                        modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                    }
+
+                    if !process.2.is_empty() {
+                        let new_root = EjectFailureRowBuilder::new()
+                            .icon(iconname)
+                            .files_open(process.2.clone())
+                            .pid(process.0)
+                            .name(&appname)
+                            .build();
+
+                        modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                    }
                 }
             }
         }
@@ -108,7 +105,7 @@ mod imp {
     impl ObjectSubclass for EjectFailureDialog {
         const NAME: &'static str = "EjectFailureDialog";
         type Type = super::EjectFailureDialog;
-        type ParentType = adw::Dialog;
+        type ParentType = adw::AlertDialog;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -136,6 +133,9 @@ mod imp {
             self.parent_constructed();
 
             // todo init here
+            self.obj().add_response("close", &i18n::i18n("Close"));
+            self.obj().add_response("retry", &i18n::i18n("Retry"));
+            self.obj().add_response("kill", &i18n::i18n("Kill All"));
         }
     }
 
@@ -154,11 +154,17 @@ mod imp {
             // todo buttons here
         }
     }
+
+    impl AdwAlertDialogImpl for EjectFailureDialog {
+        fn response(&self, response: &str) {
+            println!("Got response: {}", response);
+        }
+    }
 }
 
 glib::wrapper! {
     pub struct EjectFailureDialog(ObjectSubclass<imp::EjectFailureDialog>)
-        @extends adw::Dialog, gtk::Widget,
+        @extends adw::AlertDialog, adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
