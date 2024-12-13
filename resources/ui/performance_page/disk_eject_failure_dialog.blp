@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $EjectFailureDialog: Adw.Dialog {
+template $EjectFailureDialog: Adw.AlertDialog {
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {
@@ -14,7 +14,7 @@ template $EjectFailureDialog: Adw.Dialog {
       };
     }
 
-    Adw.Clamp {
+    Box {
       ScrolledWindow {
         hscrollbar-policy: never;
         propagate-natural-height: true;

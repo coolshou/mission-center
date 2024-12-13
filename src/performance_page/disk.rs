@@ -29,7 +29,9 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 mod imp {
+    use std::future::IntoFuture;
     use adw::glib::g_warning;
+    use adw::prelude::AlertDialogExtManual;
     use crate::app;
     use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
@@ -153,14 +155,14 @@ mod imp {
         fn set_eject_failure_dialog(&self, widget: Option<&EjectFailureDialog>) {
             println!("SET EJECT FAILURE DIALOG");
             if let Some(widget) = widget {
-                widget.connect_closed({
+/*                widget.connect_closed({
                     let this = self.obj().downgrade();
                     move |_| {
                         if let Some(this) = this.upgrade() {
                             this.imp().eject_failure_dialog_visible.set(false);
                         }
                     }
-                });
+                });*/
 
                 // unsafe { widget.set_data("list-item", EjectFailureRowBuilder::new().build()) };
             }
