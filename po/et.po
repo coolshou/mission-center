@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-12-15 16:33+0000\n"
+"Last-Translator: Priit Jõerüüt <hwlate@joeruut.com>\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/et/>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.9-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -370,15 +373,15 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr ""
+msgstr "Kiirus"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr ""
+msgstr "Protsessid"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr ""
+msgstr "Lõimed"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
@@ -398,31 +401,31 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Virtuaalseid protsessoreid:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr ""
+msgstr "Virtualiseerimine:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Virtuaalmasin:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr ""
+msgstr "L1-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr ""
+msgstr "L2-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr ""
+msgstr "L3-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreqi draiver:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
@@ -874,19 +877,19 @@ msgstr ""
 
 #: resources/ui/window.blp:187
 msgid "Performance"
-msgstr ""
+msgstr "Jõudlus"
 
 #: resources/ui/window.blp:199 src/apps_page/mod.rs:562
 msgid "Apps"
-msgstr ""
+msgstr "Rakendused"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr ""
+msgstr "Teenused"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr ""
+msgstr "_Eelistused"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
