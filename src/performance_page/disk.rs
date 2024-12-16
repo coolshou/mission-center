@@ -65,8 +65,10 @@ mod imp {
         pub avg_response_time: OnceCell<gtk::Label>,
         pub legend_read: OnceCell<gtk::Picture>,
         pub read_speed: OnceCell<gtk::Label>,
+        pub total_read: OnceCell<gtk::Label>,
         pub legend_write: OnceCell<gtk::Picture>,
         pub write_speed: OnceCell<gtk::Label>,
+        pub total_write: OnceCell<gtk::Label>,
         pub capacity: OnceCell<gtk::Label>,
         pub formatted: OnceCell<gtk::Label>,
         pub system_disk: OnceCell<gtk::Label>,
@@ -94,8 +96,10 @@ mod imp {
                 avg_response_time: Default::default(),
                 legend_read: Default::default(),
                 read_speed: Default::default(),
+                total_read: Default::default(),
                 legend_write: Default::default(),
                 write_speed: Default::default(),
+                total_write: Default::default(),
                 capacity: Default::default(),
                 formatted: Default::default(),
                 system_disk: Default::default(),
@@ -313,12 +317,24 @@ mod imp {
                 read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
             }
 
+            let trd = crate::to_human_readable(disk.total_read as f32, 1024.);
+            let i = if trd.1.is_empty() { "" } else { "i" };
+            if let Some(total_read) = this.total_read.get() {
+                total_read.set_text(&format!("{0:.2$} {1}{3}B", trd.0, trd.1, trd.2, i,));
+            }
+
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.write_speed as f32);
             let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
             let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
                 write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
+            }
+
+            let twt = crate::to_human_readable(disk.total_write as f32, 1024.);
+            let i = if twt.1.is_empty() { "" } else { "i" };
+            if let Some(total_write) = this.total_write.get() {
+                total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
             }
 
             true
@@ -339,7 +355,9 @@ mod imp {
     Type:        {}
 
     Read speed:            {}
+    Total read:            {}
     Write speed:           {}
+    Total written          {}
     Active time:           {}
     Average response time: {}"#,
                 self.disk_id.label(),
@@ -364,7 +382,15 @@ mod imp {
                     .get()
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
+                self.total_read
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
                 self.write_speed
+                    .get()
+                    .map(|l| l.label())
+                    .unwrap_or(unknown.into()),
+                self.total_write
                     .get()
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
@@ -447,6 +473,11 @@ mod imp {
                     .object::<gtk::Label>("read_speed")
                     .expect("Could not find `read_speed` object in details pane"),
             );
+            let _ = self.total_read.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("total_read")
+                    .expect("Could not find `total_read` object in details pane"),
+            );
             let _ = self.legend_write.set(
                 sidebar_content_builder
                     .object::<gtk::Picture>("legend_write")
@@ -456,6 +487,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("write_speed")
                     .expect("Could not find `write_speed` object in details pane"),
+            );
+            let _ = self.total_write.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("total_write")
+                    .expect("Could not find `write_total` object in details pane"),
             );
             let _ = self.capacity.set(
                 sidebar_content_builder

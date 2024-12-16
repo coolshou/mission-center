@@ -246,9 +246,9 @@
             },
             {
               "type": "archive",
-              "url": "https://github.com/Syllo/nvtop/archive/20ea55dbd1eeb4342ff0112fae3ee2a0bfe352ea.tar.gz",
-              "sha256": "f2e41eb4331f116ecee3885b748078a1b6055572ccf6a2f4b0539b5c8bdaf48c",
-              "dest": "nvtop-20ea55dbd1eeb4342ff0112fae3ee2a0bfe352ea"
+              "url": "https://github.com/Syllo/nvtop/archive/19382d93086acf36f32a8d72173fb9968232e3c1.tar.gz",
+              "sha256": "73acacb17f1e142b1e6a2eb79eada5c1735c72ed57bdfe2c4e43c59600558679",
+              "dest": "nvtop-19382d93086acf36f32a8d72173fb9968232e3c1"
             },
             {
               "type": "shell",

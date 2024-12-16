@@ -49,7 +49,9 @@ pub struct LinuxDiskInfo {
     pub busy_percent: f32,
     pub response_time_ms: f32,
     pub read_speed: u64,
+    pub total_read: u64,
     pub write_speed: u64,
+    pub total_write: u64,
 }
 
 impl Default for LinuxDiskInfo {
@@ -65,7 +67,9 @@ impl Default for LinuxDiskInfo {
             busy_percent: 0.,
             response_time_ms: 0.,
             read_speed: 0,
+            total_read: 0,
             write_speed: 0,
+            total_write: 0,
         }
     }
 }
@@ -128,8 +132,16 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.read_speed
     }
 
+    fn total_read(&self) -> u64 {
+        self.total_read
+    }
+
     fn write_speed(&self) -> u64 {
         self.write_speed
+    }
+
+    fn total_write(&self) -> u64 {
+        self.total_write
     }
 }
 
@@ -435,7 +447,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 info.busy_percent = busy_percent;
                 info.response_time_ms = response_time_ms;
                 info.read_speed = read_speed;
+                info.total_read = sectors_read * 512;
                 info.write_speed = write_speed;
+                info.total_write = sectors_written * 512;
 
                 self.info.push((disk_stat, info));
             } else {
@@ -525,7 +539,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         busy_percent: 0.,
                         response_time_ms: 0.,
                         read_speed: 0,
+                        total_read: 0,
                         write_speed: 0,
+                        total_write: 0,
                     },
                 ));
             }
