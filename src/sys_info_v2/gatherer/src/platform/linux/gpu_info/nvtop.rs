@@ -112,6 +112,7 @@ pub enum GPUInfoDynamicInfoValid {
     PcieRxValid,
     PcieTxValid,
     FanSpeedValid,
+    FanRpmValid,
     GpuTempValid,
     PowerDrawValid,
     PowerDrawMaxValid,
@@ -140,6 +141,7 @@ pub struct GPUInfoDynamicInfo {
     pub pcie_rx: u32,
     pub pcie_tx: u32,
     pub fan_speed: u32,
+    pub fan_rpm: u32,
     pub gpu_temp: u32,
     pub power_draw: u32,
     pub power_draw_max: u32,
@@ -200,6 +202,7 @@ pub struct GPUProcess {
     pub decode_usage: u32,
     pub gpu_memory_usage: libc::c_ulonglong,
     pub gpu_memory_percentage: u32,
+
     pub cpu_usage: u32,
     pub cpu_memory_virt: libc::c_ulong,
     pub cpu_memory_res: libc::c_ulong,
@@ -231,6 +234,9 @@ extern "C" {
     pub fn init_extract_gpuinfo_intel();
     pub fn init_extract_gpuinfo_msm();
     pub fn init_extract_gpuinfo_nvidia();
+    pub fn init_extract_gpuinfo_panfrost();
+    pub fn init_extract_gpuinfo_panthor();
+    pub fn init_extract_gpuinfo_v3d();
 
     pub fn gpuinfo_populate_static_infos(devices: *mut ListHead) -> u8;
     pub fn gpuinfo_refresh_dynamic_info(devices: *mut ListHead) -> u8;

@@ -269,6 +269,10 @@ impl LinuxGpuInfo {
             nvtop::init_extract_gpuinfo_intel();
             nvtop::init_extract_gpuinfo_amdgpu();
             nvtop::init_extract_gpuinfo_nvidia();
+            nvtop::init_extract_gpuinfo_v3d();
+            nvtop::init_extract_gpuinfo_msm();
+            nvtop::init_extract_gpuinfo_panfrost();
+            nvtop::init_extract_gpuinfo_panthor();
         }
 
         let gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
