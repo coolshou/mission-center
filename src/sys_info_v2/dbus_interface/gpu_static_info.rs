@@ -139,23 +139,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                 }
                 Some(arr) => {
                     for static_info in arr {
-                        let empty_string = Arc::<str>::from("");
-
-                        let mut info = GpuStaticInfo {
-                            id: empty_string.clone(),
-                            device_name: empty_string,
-                            vendor_id: 0,
-                            device_id: 0,
-                            total_memory: None,
-                            total_shared_memory: None,
-                            opengl_version: None,
-                            vulkan_version: None,
-                            metal_version: None,
-                            direct3d_version: None,
-                            pcie_gen: None,
-                            pcie_lanes: None,
-                            encode_decode_shared: false,
-                        };
+                        let mut info = GpuStaticInfo::default();
 
                         let mut static_info = match static_info.as_iter() {
                             None => {

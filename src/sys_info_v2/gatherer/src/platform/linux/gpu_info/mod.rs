@@ -19,7 +19,9 @@
  */
 
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
-use crate::platform::platform_impl::gpu_info::nvtop::GpuInfoStaticInfoValid;
+use crate::platform::platform_impl::gpu_info::nvtop::{
+    GpuInfoProcessInfoValid, GpuInfoStaticInfoValid,
+};
 use crate::{
     gpu_info_valid,
     logging::{critical, debug, error, warning},
@@ -550,7 +552,6 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         if self.gpu_list_refreshed {
             return;
         }
-
         self.gpu_list_refreshed = true;
 
         let mut gpu_list = self.gpu_list.write().unwrap();
@@ -1001,12 +1002,36 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                     None
                 }
             };
+            dynamic_info.util_percent =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuUtilRateValid) {
+                    Some(dev.dynamic_info.gpu_util_rate)
+                } else {
+                    if dynamic_info.encoder_percent.is_some()
+                        || dynamic_info.decoder_percent.is_some()
+                    {
+                        // If the GPU is being used for encoding or decoding, just average the two
+                        // and use that as the utilization rate
+                        Some((dev.dynamic_info.encoder_rate + dev.dynamic_info.decoder_rate) / 2)
+                    } else {
+                        // If no other value is available, just use the utilization rate as is even if it's wrong
+                        Some(dev.dynamic_info.gpu_util_rate)
+                    }
+                };
 
             for i in 0..dev.processes_count as usize {
                 let process = unsafe { &*dev.processes.add(i) };
+                let gpu_usage_valid =
+                    gpu_info_valid!(process, GpuInfoProcessInfoValid::GpuUsageValid);
+                let gpu_memory_usage_valid =
+                    gpu_info_valid!(process, GpuInfoProcessInfoValid::GpuMemoryUsageValid);
                 if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
-                    proc.usage_stats.gpu_usage = process.gpu_usage as f32;
-                    proc.usage_stats.gpu_memory_usage = process.gpu_memory_usage as f32;
+                    if gpu_usage_valid {
+                        proc.usage_stats.gpu_usage = process.gpu_usage as f32;
+                    }
+
+                    if gpu_memory_usage_valid {
+                        proc.usage_stats.gpu_memory_usage = process.gpu_memory_usage as f32;
+                    }
                 }
             }
         }

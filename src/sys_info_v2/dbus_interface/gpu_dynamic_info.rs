@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
+use std::num::NonZero;
 use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
@@ -26,40 +26,40 @@ use gtk::glib::g_critical;
 #[derive(Debug, Clone)]
 pub struct GpuDynamicInfo {
     pub id: Arc<str>,
-    pub temp_celsius: u32,
-    pub fan_speed_percent: u32,
-    pub util_percent: u32,
-    pub power_draw_watts: f32,
-    pub power_draw_max_watts: f32,
-    pub clock_speed_mhz: u32,
-    pub clock_speed_max_mhz: u32,
-    pub mem_speed_mhz: u32,
-    pub mem_speed_max_mhz: u32,
-    pub free_memory: u64,
-    pub used_memory: u64,
-    pub used_gtt: u64,
-    pub encoder_percent: u32,
-    pub decoder_percent: u32,
+    pub temp_celsius: Option<u32>,
+    pub fan_speed_percent: Option<u32>,
+    pub util_percent: Option<u32>,
+    pub power_draw_watts: Option<f32>,
+    pub power_draw_max_watts: Option<f32>,
+    pub clock_speed_mhz: Option<NonZero<u32>>,
+    pub clock_speed_max_mhz: Option<NonZero<u32>>,
+    pub mem_speed_mhz: Option<NonZero<u32>>,
+    pub mem_speed_max_mhz: Option<NonZero<u32>>,
+    pub free_memory: Option<u64>,
+    pub used_memory: Option<u64>,
+    pub used_shared_memory: Option<u64>,
+    pub encoder_percent: Option<u32>,
+    pub decoder_percent: Option<u32>,
 }
 
 impl Default for GpuDynamicInfo {
     fn default() -> Self {
         Self {
             id: Arc::from(""),
-            temp_celsius: 0,
-            fan_speed_percent: 0,
-            util_percent: 0,
-            power_draw_watts: 0.0,
-            power_draw_max_watts: 0.0,
-            clock_speed_mhz: 0,
-            clock_speed_max_mhz: 0,
-            mem_speed_mhz: 0,
-            mem_speed_max_mhz: 0,
-            free_memory: 0,
-            used_memory: 0,
-            used_gtt: 0,
-            encoder_percent: 0,
-            decoder_percent: 0,
+            temp_celsius: None,
+            fan_speed_percent: None,
+            util_percent: None,
+            power_draw_watts: None,
+            power_draw_max_watts: None,
+            clock_speed_mhz: None,
+            clock_speed_max_mhz: None,
+            mem_speed_mhz: None,
+            mem_speed_max_mhz: None,
+            free_memory: None,
+            used_memory: None,
+            used_shared_memory: None,
+            encoder_percent: None,
+            decoder_percent: None,
         }
     }
 }
@@ -106,7 +106,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got None",
                 );
-                return None;
+                None
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -115,27 +115,11 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                         "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    None
                 }
                 Some(arr) => {
                     for dynamic_info in arr {
-                        let mut this = GpuDynamicInfo {
-                            id: Arc::from(""),
-                            temp_celsius: 0,
-                            fan_speed_percent: 0,
-                            util_percent: 0,
-                            power_draw_watts: 0.0,
-                            power_draw_max_watts: 0.0,
-                            clock_speed_mhz: 0,
-                            clock_speed_max_mhz: 0,
-                            mem_speed_mhz: 0,
-                            mem_speed_max_mhz: 0,
-                            free_memory: 0,
-                            used_memory: 0,
-                            used_gtt: 0,
-                            encoder_percent: 0,
-                            decoder_percent: 0,
-                        };
+                        let mut this = GpuDynamicInfo::default();
 
                         let mut dynamic_info = match dynamic_info.as_iter() {
                             None => {
@@ -187,7 +171,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(temp) => temp as _,
+                                Some(temp) => {
+                                    let temp = temp as u32;
+                                    if temp == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(temp)
+                                    }
+                                }
                             },
                         };
 
@@ -208,7 +199,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(fs) => fs as _,
+                                Some(fs) => {
+                                    let fs = fs as u32;
+                                    if fs == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(fs)
+                                    }
+                                }
                             },
                         };
 
@@ -229,7 +227,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(up) => up as _,
+                                Some(up) => {
+                                    let up = up as u32;
+                                    if up == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(up)
+                                    }
+                                }
                             },
                         };
 
@@ -250,7 +255,13 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(pd) => pd as _,
+                                Some(pd) => {
+                                    if pd == f64::INFINITY {
+                                        None
+                                    } else {
+                                        Some(pd as _)
+                                    }
+                                }
                             },
                         };
 
@@ -271,7 +282,13 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(pdm) => pdm as _,
+                                Some(pdm) => {
+                                    if pdm == f64::INFINITY {
+                                        None
+                                    } else {
+                                        Some(pdm as _)
+                                    }
+                                }
                             },
                         };
 
@@ -292,7 +309,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(cs) => cs as _,
+                                Some(cs) => NonZero::new(cs as u32),
                             },
                         };
 
@@ -313,7 +330,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(csm) => csm as _,
+                                Some(csm) => NonZero::new(csm as u32),
                             },
                         };
 
@@ -334,7 +351,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(ms) => ms as _,
+                                Some(ms) => NonZero::new(ms as u32),
                             },
                         };
 
@@ -355,7 +372,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(msm) => msm as _,
+                                Some(msm) => NonZero::new(msm as u32),
                             },
                         };
 
@@ -376,7 +393,13 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(fm) => fm as _,
+                                Some(fm) => {
+                                    if fm == u64::MAX {
+                                        None
+                                    } else {
+                                        Some(fm)
+                                    }
+                                }
                             },
                         };
 
@@ -397,11 +420,17 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(um) => um as _,
+                                Some(um) => {
+                                    if um == u64::MAX {
+                                        None
+                                    } else {
+                                        Some(um)
+                                    }
+                                }
                             },
                         };
 
-                        this.used_gtt = match Iterator::next(dynamic_info) {
+                        this.used_shared_memory = match Iterator::next(dynamic_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -418,7 +447,13 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(fm) => fm as _,
+                                Some(sm) => {
+                                    if sm == u64::MAX {
+                                        None
+                                    } else {
+                                        Some(sm)
+                                    }
+                                }
                             },
                         };
 
@@ -439,7 +474,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(ep) => ep as _,
+                                Some(ep) => {
+                                    let ep = ep as u32;
+                                    if ep == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(ep)
+                                    }
+                                }
                             },
                         };
 
@@ -460,7 +502,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(dp) => dp as _,
+                                Some(dp) => {
+                                    let dp = dp as u32;
+                                    if dp == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(dp)
+                                    }
+                                }
                             },
                         };
 

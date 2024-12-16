@@ -1254,7 +1254,7 @@ mod imp {
                 let avg = readings
                     .gpu_dynamic_info
                     .iter()
-                    .map(|g| g.util_percent)
+                    .map(|g| g.util_percent.unwrap_or(0))
                     .sum::<u32>() as f32
                     / readings.gpu_dynamic_info.len() as f32;
                 column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
@@ -1270,7 +1270,7 @@ mod imp {
                     .map(|(i, g)| {
                         let total_memory = readings.gpu_static_info[i].total_memory;
                         match total_memory {
-                            Some(total_memory) => (g.used_memory * 100) / total_memory,
+                            Some(total_memory) => (g.used_memory.unwrap_or(0) * 100) / total_memory,
                             None => 0,
                         }
                     })

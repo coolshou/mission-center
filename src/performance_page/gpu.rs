@@ -373,19 +373,19 @@ mod imp {
             let this = this.imp();
 
             this.usage_graph_overall
-                .add_data_point(0, gpu.util_percent as f32);
+                .add_data_point(0, gpu.util_percent.unwrap_or(0) as f32);
             this.infobar_content
                 .utilization()
-                .set_text(&format!("{}%", gpu.util_percent));
+                .set_text(&format!("{}%", gpu.util_percent.unwrap_or(0)));
 
             this.usage_graph_encode_decode
-                .add_data_point(0, gpu.encoder_percent as f32);
+                .add_data_point(0, gpu.encoder_percent.unwrap_or(0) as f32);
             this.usage_graph_encode_decode
-                .add_data_point(1, gpu.decoder_percent as f32);
+                .add_data_point(1, gpu.decoder_percent.unwrap_or(0) as f32);
 
             if let Some(total_memory) = gpu_static.total_memory {
                 this.usage_graph_memory
-                    .add_data_point(0, gpu.used_memory as f32);
+                    .add_data_point(0, gpu.used_memory.unwrap_or(0) as f32);
 
                 if let Some(total_shared_memory) = gpu_static.total_shared_memory {
                     let mut gtt_factor =
@@ -395,11 +395,11 @@ mod imp {
                         gtt_factor = 0.;
                     }
                     this.usage_graph_memory
-                        .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
+                        .add_data_point(1, gpu.used_shared_memory.unwrap_or(0) as f32 * gtt_factor);
                 }
             }
 
-            let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
+            let used_memory = crate::to_human_readable(gpu.used_memory.unwrap_or(0) as f32, 1024.);
             this.infobar_content
                 .memory_usage_current()
                 .set_text(&format!(
@@ -410,7 +410,8 @@ mod imp {
                     if used_memory.1.is_empty() { "" } else { "i" },
                 ));
 
-            let used_gtt = crate::to_human_readable(gpu.used_gtt as f32, 1024.);
+            let used_gtt =
+                crate::to_human_readable(gpu.used_shared_memory.unwrap_or(0) as f32, 1024.);
             this.infobar_content.gtt_usage_current().set_text(&format!(
                 "{0:.2$} {1}{3}B",
                 used_gtt.0,
@@ -419,10 +420,14 @@ mod imp {
                 if used_gtt.1.is_empty() { "" } else { "i" },
             ));
 
-            let clock_speed =
-                crate::to_human_readable(gpu.clock_speed_mhz as f32 * 1_000_000., 1000.);
-            let cs_max =
-                crate::to_human_readable(gpu.clock_speed_max_mhz as f32 * 1_000_000., 1000.);
+            let clock_speed = crate::to_human_readable(
+                gpu.clock_speed_mhz.map(|v| v.get()).unwrap_or(0) as f32 * 1_000_000.,
+                1000.,
+            );
+            let cs_max = crate::to_human_readable(
+                gpu.clock_speed_max_mhz.map(|v| v.get()).unwrap_or(0) as f32 * 1_000_000.,
+                1000.,
+            );
             this.infobar_content
                 .clock_speed_current()
                 .set_text(&format!(
@@ -433,9 +438,14 @@ mod imp {
                 .clock_speed_max()
                 .set_text(&format!("{0:.2$} {1}Hz", cs_max.0, cs_max.1, cs_max.2));
 
-            let memory_speed =
-                crate::to_human_readable(gpu.mem_speed_mhz as f32 * 1_000_000., 1000.);
-            let ms_max = crate::to_human_readable(gpu.mem_speed_max_mhz as f32 * 1_000_000., 1000.);
+            let memory_speed = crate::to_human_readable(
+                gpu.mem_speed_mhz.map(|v| v.get()).unwrap_or(0) as f32 * 1_000_000.,
+                1000.,
+            );
+            let ms_max = crate::to_human_readable(
+                gpu.mem_speed_max_mhz.map(|v| v.get()).unwrap_or(0) as f32 * 1_000_000.,
+                1000.,
+            );
             this.infobar_content
                 .memory_speed_current()
                 .set_text(&format!(
@@ -446,9 +456,12 @@ mod imp {
                 .memory_speed_max()
                 .set_text(&format!("{0:.2$} {1}Hz", ms_max.0, ms_max.1, ms_max.2));
 
-            let power_draw = crate::to_human_readable(gpu.power_draw_watts, 1000.);
-            let power_limit = if gpu.power_draw_max_watts != 0.0 {
-                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
+            let power_draw = crate::to_human_readable(gpu.power_draw_watts.unwrap_or(0.0), 1000.);
+            let power_limit = if gpu.power_draw_max_watts.unwrap_or(0.0) != 0.0 {
+                Some(crate::to_human_readable(
+                    gpu.power_draw_max_watts.unwrap_or(0.0),
+                    1000.,
+                ))
             } else {
                 None
             };
@@ -464,13 +477,13 @@ mod imp {
             }
             this.infobar_content
                 .encode_percent()
-                .set_text(&format!("{}%", gpu.encoder_percent));
+                .set_text(&format!("{}%", gpu.encoder_percent.unwrap_or(0)));
             this.infobar_content
                 .decode_percent()
-                .set_text(&format!("{}%", gpu.decoder_percent));
+                .set_text(&format!("{}%", gpu.decoder_percent.unwrap_or(0)));
             this.infobar_content
                 .temperature()
-                .set_text(&format!("{}°C", gpu.temp_celsius));
+                .set_text(&format!("{}°C", gpu.temp_celsius.unwrap_or(0)));
 
             true
         }

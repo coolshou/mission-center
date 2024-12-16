@@ -1340,7 +1340,8 @@ mod imp {
                 summary.set_info1(static_info.device_name.as_ref());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
-                    dynamic_info.util_percent, dynamic_info.temp_celsius
+                    dynamic_info.util_percent.unwrap_or(0),
+                    dynamic_info.temp_celsius.unwrap_or(0)
                 ));
                 summary.set_base_color(gdk::RGBA::new(
                     GPU_BASE_COLOR[0] as f32 / 255.,
@@ -1964,14 +1965,18 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                if gpu.temp_celsius > 20 {
+                                graph_widget
+                                    .add_data_point(0, gpu.util_percent.unwrap_or(0) as f32);
+                                let temp_celsius = gpu.temp_celsius.unwrap_or(0);
+                                if temp_celsius > 20 {
                                     summary.set_info2(format!(
                                         "{}% ({} °C)",
-                                        gpu.util_percent, gpu.temp_celsius
+                                        gpu.util_percent.unwrap_or(0),
+                                        temp_celsius
                                     ));
                                 } else {
-                                    summary.set_info2(format!("{}%", gpu.util_percent));
+                                    summary
+                                        .set_info2(format!("{}%", gpu.util_percent.unwrap_or(0)));
                                 }
                                 let id = gpu.id.clone();
                                 let mut gpu_static = None;
