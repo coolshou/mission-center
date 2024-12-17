@@ -140,9 +140,9 @@ pub struct LinuxGpuDynamicInfo {
     util_percent: Option<u32>,
     power_draw_watts: Option<f32>,
     power_draw_max_watts: Option<f32>,
-    clock_speed_mhz: Option<NonZero<u32>>,
+    clock_speed_mhz: Option<u32>,
     clock_speed_max_mhz: Option<NonZero<u32>>,
-    mem_speed_mhz: Option<NonZero<u32>>,
+    mem_speed_mhz: Option<u32>,
     mem_speed_max_mhz: Option<NonZero<u32>>,
     free_memory: Option<u64>,
     used_memory: Option<u64>,
@@ -204,7 +204,7 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
         self.power_draw_max_watts
     }
 
-    fn clock_speed_mhz(&self) -> Option<NonZero<u32>> {
+    fn clock_speed_mhz(&self) -> Option<u32> {
         self.clock_speed_mhz
     }
 
@@ -212,7 +212,7 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
         self.clock_speed_max_mhz
     }
 
-    fn mem_speed_mhz(&self) -> Option<NonZero<u32>> {
+    fn mem_speed_mhz(&self) -> Option<u32> {
         self.mem_speed_mhz
     }
 
@@ -951,7 +951,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 dev.dynamic_info,
                 GpuInfoDynamicInfoValid::GpuClockSpeedValid
             ) {
-                NonZero::new(dev.dynamic_info.gpu_clock_speed)
+                Some(dev.dynamic_info.gpu_clock_speed)
             } else {
                 None
             };
@@ -967,7 +967,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 dev.dynamic_info,
                 GpuInfoDynamicInfoValid::MemClockSpeedValid
             ) {
-                NonZero::new(dev.dynamic_info.mem_clock_speed)
+                Some(dev.dynamic_info.mem_clock_speed)
             } else {
                 None
             };
@@ -1010,16 +1010,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuUtilRateValid) {
                     Some(dev.dynamic_info.gpu_util_rate)
                 } else {
-                    if dynamic_info.encoder_percent.is_some()
-                        || dynamic_info.decoder_percent.is_some()
-                    {
-                        // If the GPU is being used for encoding or decoding, just average the two
-                        // and use that as the utilization rate
-                        Some((dev.dynamic_info.encoder_rate + dev.dynamic_info.decoder_rate) / 2)
-                    } else {
-                        // If no other value is available, just use the utilization rate as is even if it's wrong
-                        Some(dev.dynamic_info.gpu_util_rate)
-                    }
+                    None
                 };
 
             for i in 0..dev.processes_count as usize {

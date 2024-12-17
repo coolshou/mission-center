@@ -1958,36 +1958,35 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in &readings.gpu_dynamic_info {
+                        for (index, dynamic_info) in readings.gpu_dynamic_info.iter().enumerate() {
                             if let Some((summary, page)) =
-                                pages.get(&Self::gpu_page_name(gpu.id.as_ref()))
+                                pages.get(&Self::gpu_page_name(dynamic_info.id.as_ref()))
                             {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget
-                                    .add_data_point(0, gpu.util_percent.unwrap_or(0) as f32);
-                                let temp_celsius = gpu.temp_celsius.unwrap_or(0);
+                                graph_widget.add_data_point(
+                                    0,
+                                    dynamic_info.util_percent.unwrap_or(0) as f32,
+                                );
+                                let temp_celsius = dynamic_info.temp_celsius.unwrap_or(0);
                                 if temp_celsius > 20 {
                                     summary.set_info2(format!(
                                         "{}% ({} °C)",
-                                        gpu.util_percent.unwrap_or(0),
+                                        dynamic_info.util_percent.unwrap_or(0),
                                         temp_celsius
                                     ));
                                 } else {
-                                    summary
-                                        .set_info2(format!("{}%", gpu.util_percent.unwrap_or(0)));
-                                }
-                                let id = gpu.id.clone();
-                                let mut gpu_static = None;
-                                for gpu_stat in &readings.gpu_static_info {
-                                    if id == gpu_stat.id {
-                                        gpu_static = Some(gpu_stat);
-                                        break;
-                                    }
+                                    summary.set_info2(format!(
+                                        "{}%",
+                                        dynamic_info.util_percent.unwrap_or(0)
+                                    ));
                                 }
 
-                                result &= page.update_readings(gpu, gpu_static.unwrap());
+                                result &= page.update_readings(
+                                    &readings.gpu_static_info[index],
+                                    dynamic_info,
+                                );
                             }
                         }
                     }

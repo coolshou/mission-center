@@ -53,6 +53,8 @@ template $GpuDetails: Box {
     }
 
     Box {
+      visible: bind template.clock_speed_available;
+
       orientation: vertical;
       spacing: 3;
 
@@ -76,7 +78,7 @@ template $GpuDetails: Box {
           halign: start;
         }
 
-        Label {
+        Label clock_speed_separator{
           styles [
             "title-4",
           ]
@@ -98,6 +100,8 @@ template $GpuDetails: Box {
     }
 
     Box box_power_draw {
+      visible: bind template.power_draw_available;
+
       orientation: vertical;
       spacing: 3;
 
@@ -107,7 +111,7 @@ template $GpuDetails: Box {
         ]
 
         halign: start;
-        label: _("Power draw");
+        label: _("Power Draw");
       }
 
       Box {
@@ -119,6 +123,15 @@ template $GpuDetails: Box {
           ellipsize: middle;
 
           halign: start;
+        }
+
+        Label power_draw_separator{
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
         }
 
         Label power_draw_max {
@@ -134,13 +147,13 @@ template $GpuDetails: Box {
     }
 
     Box box_mem_usage {
-      visible: bind template.total_memory_valid;
+      visible: bind template.dedicated_memory_available;
 
       orientation: horizontal;
       spacing: 5;
 
       Picture legend_vram {
-        visible: bind template.total_shared_memory_valid;
+        visible: bind template.shared_memory_available;
 
         can-shrink: false;
         content-fit: scale_down;
@@ -149,17 +162,20 @@ template $GpuDetails: Box {
       Box {
         orientation: vertical;
         spacing: 3;
-        Label {
+
+        Label memory_usage_title {
           styles [
             "caption",
           ]
 
           halign: start;
-          label: _("Memory usage");
+          label: _("Memory Usage");
         }
 
         Box {
           Label memory_usage_current {
+            visible: bind template.used_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -170,6 +186,8 @@ template $GpuDetails: Box {
           }
 
           Label {
+            visible: bind template.show_dedicated_separator;
+
             styles [
               "title-4",
             ]
@@ -179,6 +197,8 @@ template $GpuDetails: Box {
           }
 
           Label memory_usage_max {
+            visible: bind template.total_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -192,12 +212,14 @@ template $GpuDetails: Box {
     }
 
     Box box_gtt_usage {
-      visible: bind template.total_shared_memory_valid;
+      visible: bind template.shared_memory_available;
 
       orientation: horizontal;
       spacing: 5;
 
       Picture legend_gtt {
+        visible: bind template.dedicated_memory_available;
+
         can-shrink: false;
         content-fit: scale_down;
       }
@@ -205,17 +227,19 @@ template $GpuDetails: Box {
       Box {
         orientation: vertical;
         spacing: 3;
-        Label {
+        Label shared_memory_usage_title {
           styles [
             "caption",
           ]
 
           halign: start;
-          label: _("Shared memory usage");
+          label: _("Shared Memory Usage");
         }
 
         Box {
           Label gtt_usage_current {
+            visible: bind template.used_shared_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -226,6 +250,8 @@ template $GpuDetails: Box {
           }
 
           Label gtt_separator {
+            visible: bind template.show_shared_separator;
+
             styles [
               "title-4",
             ]
@@ -235,6 +261,8 @@ template $GpuDetails: Box {
           }
 
           Label gtt_usage_max {
+            visible: bind template.total_shared_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -248,7 +276,7 @@ template $GpuDetails: Box {
     }
 
     Box box_mem_speed {
-      visible: bind template.total_memory_valid;
+      visible: bind template.memory_speed_available;
 
       orientation: vertical;
       spacing: 3;
@@ -259,7 +287,7 @@ template $GpuDetails: Box {
         ]
 
         halign: start;
-        label: _("Memory speed");
+        label: _("Memory Speed");
       }
 
       Box {
@@ -273,7 +301,7 @@ template $GpuDetails: Box {
           halign: start;
         }
 
-        Label {
+        Label memory_speed_separator {
           styles [
             "title-4",
           ]
@@ -298,7 +326,7 @@ template $GpuDetails: Box {
       orientation: horizontal;
       spacing: 20;
 
-      visible: bind template.encode_decode_visible;
+      visible: bind template.encode_decode_available;
 
       Box {
         spacing: 5;
@@ -309,6 +337,7 @@ template $GpuDetails: Box {
           can-shrink: false;
           content-fit: scale_down;
         }
+
         Box {
           orientation: vertical;
           spacing: 3;
@@ -333,6 +362,7 @@ template $GpuDetails: Box {
           }
         }
       }
+
       Box box_decode {
         spacing: 5;
 
@@ -342,6 +372,7 @@ template $GpuDetails: Box {
           can-shrink: false;
           content-fit: scale_down;
         }
+
         Box {
           orientation: vertical;
           spacing: 3;

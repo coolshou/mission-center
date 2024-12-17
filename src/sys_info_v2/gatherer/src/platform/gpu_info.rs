@@ -193,13 +193,13 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     fn power_draw_max_watts(&self) -> Option<f32>;
 
     /// The current GPU core clock frequency
-    fn clock_speed_mhz(&self) -> Option<NonZero<u32>>;
+    fn clock_speed_mhz(&self) -> Option<u32>;
 
     /// The maximum allowed GPU core clock frequency
     fn clock_speed_max_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The current speed of the on-board memory
-    fn mem_speed_mhz(&self) -> Option<NonZero<u32>>;
+    fn mem_speed_mhz(&self) -> Option<u32>;
 
     /// The maximum speed of the on-board memory
     fn mem_speed_max_mhz(&self) -> Option<NonZero<u32>>;
@@ -245,13 +245,13 @@ impl Append for crate::platform::GpuDynamicInfo {
                     .map(|v| v as f64)
                     .unwrap_or(f64::INFINITY),
             );
-            ia.append(self.clock_speed_mhz().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.clock_speed_mhz().unwrap_or(u32::MAX));
             ia.append(
                 self.clock_speed_max_mhz()
                     .map(|v| v.get())
                     .unwrap_or_default(),
             );
-            ia.append(self.mem_speed_mhz().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.mem_speed_mhz().unwrap_or(u32::MAX));
             ia.append(
                 self.mem_speed_max_mhz()
                     .map(|v| v.get())

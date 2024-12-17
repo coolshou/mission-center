@@ -31,9 +31,9 @@ pub struct GpuDynamicInfo {
     pub util_percent: Option<u32>,
     pub power_draw_watts: Option<f32>,
     pub power_draw_max_watts: Option<f32>,
-    pub clock_speed_mhz: Option<NonZero<u32>>,
+    pub clock_speed_mhz: Option<u32>,
     pub clock_speed_max_mhz: Option<NonZero<u32>>,
-    pub mem_speed_mhz: Option<NonZero<u32>>,
+    pub mem_speed_mhz: Option<u32>,
     pub mem_speed_max_mhz: Option<NonZero<u32>>,
     pub free_memory: Option<u64>,
     pub used_memory: Option<u64>,
@@ -309,7 +309,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(cs) => NonZero::new(cs as u32),
+                                Some(cs) => {
+                                    let cs = cs as u32;
+                                    if cs == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(cs)
+                                    }
+                                }
                             },
                         };
 
@@ -351,7 +358,14 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(ms) => NonZero::new(ms as u32),
+                                Some(ms) => {
+                                    let ms = ms as u32;
+                                    if ms == u32::MAX {
+                                        None
+                                    } else {
+                                        Some(ms)
+                                    }
+                                }
                             },
                         };
 

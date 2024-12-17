@@ -34,9 +34,13 @@ mod imp {
         #[template_child]
         pub utilization: TemplateChild<gtk::Label>,
         #[template_child]
+        pub memory_usage_title: TemplateChild<gtk::Label>,
+        #[template_child]
         pub memory_usage_current: TemplateChild<gtk::Label>,
         #[template_child]
         pub memory_usage_max: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub shared_memory_usage_title: TemplateChild<gtk::Label>,
         #[template_child]
         pub gtt_usage_current: TemplateChild<gtk::Label>,
         #[template_child]
@@ -44,13 +48,19 @@ mod imp {
         #[template_child]
         pub clock_speed_current: TemplateChild<gtk::Label>,
         #[template_child]
+        pub clock_speed_separator: TemplateChild<gtk::Label>,
+        #[template_child]
         pub clock_speed_max: TemplateChild<gtk::Label>,
         #[template_child]
         pub memory_speed_current: TemplateChild<gtk::Label>,
         #[template_child]
+        pub memory_speed_separator: TemplateChild<gtk::Label>,
+        #[template_child]
         pub memory_speed_max: TemplateChild<gtk::Label>,
         #[template_child]
         pub power_draw_current: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub power_draw_separator: TemplateChild<gtk::Label>,
         #[template_child]
         pub power_draw_max: TemplateChild<gtk::Label>,
         #[template_child]
@@ -95,13 +105,35 @@ mod imp {
         pub legend_gtt: TemplateChild<gtk::Picture>,
 
         #[property(get, set)]
-        total_memory_valid: Cell<bool>,
+        clock_speed_available: Cell<bool>,
         #[property(get, set)]
-        total_shared_memory_valid: Cell<bool>,
+        power_draw_available: Cell<bool>,
         #[property(get, set)]
-        encode_decode_visible: Cell<bool>,
+        memory_speed_available: Cell<bool>,
+        #[property(get, set)]
+        encode_decode_available: Cell<bool>,
         #[property(get, set)]
         encode_decode_shared: Cell<bool>,
+        #[property(get, set = Self::set_total_memory_valid)]
+        total_memory_valid: Cell<bool>,
+        #[property(get, set = Self::set_used_memory_valid)]
+        used_memory_valid: Cell<bool>,
+        #[allow(dead_code)]
+        #[property(get = Self::dedicated_memory_available, type = bool)]
+        dedicated_memory_available: [u8; 0],
+        #[allow(dead_code)]
+        #[property(get = Self::show_dedicated_separator, type = bool)]
+        show_dedicated_separator: [u8; 0],
+        #[property(get, set = Self::set_total_shared_memory_valid)]
+        total_shared_memory_valid: Cell<bool>,
+        #[property(get, set = Self::set_used_shared_memory_valid)]
+        used_shared_memory_valid: Cell<bool>,
+        #[allow(dead_code)]
+        #[property(get = Self::shared_memory_available, type = bool)]
+        shared_memory_available: [u8; 0],
+        #[allow(dead_code)]
+        #[property(get = Self::show_shared_separator, type = bool)]
+        show_shared_separator: [u8; 0],
         #[property(get, set)]
         pcie_info_visible: Cell<bool>,
     }
@@ -110,15 +142,20 @@ mod imp {
         fn default() -> Self {
             Self {
                 utilization: TemplateChild::default(),
+                memory_usage_title: TemplateChild::default(),
                 memory_usage_current: TemplateChild::default(),
                 memory_usage_max: TemplateChild::default(),
+                shared_memory_usage_title: TemplateChild::default(),
                 gtt_usage_current: TemplateChild::default(),
                 gtt_usage_max: TemplateChild::default(),
                 clock_speed_current: TemplateChild::default(),
+                clock_speed_separator: TemplateChild::default(),
                 clock_speed_max: TemplateChild::default(),
                 memory_speed_current: TemplateChild::default(),
+                memory_speed_separator: TemplateChild::default(),
                 memory_speed_max: TemplateChild::default(),
                 power_draw_current: TemplateChild::default(),
+                power_draw_separator: TemplateChild::default(),
                 power_draw_max: TemplateChild::default(),
                 encode_percent: TemplateChild::default(),
                 decode_percent: TemplateChild::default(),
@@ -142,16 +179,65 @@ mod imp {
                 legend_vram: TemplateChild::default(),
                 legend_gtt: TemplateChild::default(),
 
-                total_memory_valid: Cell::new(true),
-                total_shared_memory_valid: Cell::new(false),
-                encode_decode_visible: Cell::new(true),
+                clock_speed_available: Cell::new(true),
+                power_draw_available: Cell::new(true),
+                memory_speed_available: Cell::new(true),
+                encode_decode_available: Cell::new(true),
                 encode_decode_shared: Cell::new(false),
+                total_memory_valid: Cell::new(true),
+                used_memory_valid: Cell::new(true),
+                dedicated_memory_available: [0; 0],
+                show_dedicated_separator: [0; 0],
+                total_shared_memory_valid: Cell::new(false),
+                used_shared_memory_valid: Cell::new(false),
+                shared_memory_available: [0; 0],
+                show_shared_separator: [0; 0],
                 pcie_info_visible: Cell::new(true),
             }
         }
     }
 
-    impl GpuDetails {}
+    impl GpuDetails {
+        fn set_total_memory_valid(&self, valid: bool) {
+            self.total_memory_valid.set(valid);
+            self.obj().notify_dedicated_memory_available();
+            self.obj().notify_show_dedicated_separator();
+        }
+
+        fn set_used_memory_valid(&self, valid: bool) {
+            self.used_memory_valid.set(valid);
+            self.obj().notify_dedicated_memory_available();
+            self.obj().notify_show_dedicated_separator();
+        }
+
+        fn dedicated_memory_available(&self) -> bool {
+            self.total_memory_valid.get() || self.used_memory_valid.get()
+        }
+
+        fn show_dedicated_separator(&self) -> bool {
+            self.total_memory_valid.get() && self.used_memory_valid.get()
+        }
+
+        fn set_total_shared_memory_valid(&self, valid: bool) {
+            self.total_shared_memory_valid.set(valid);
+            self.obj().notify_shared_memory_available();
+            self.obj().notify_show_shared_separator();
+        }
+
+        fn set_used_shared_memory_valid(&self, valid: bool) {
+            self.used_shared_memory_valid.set(valid);
+            self.obj().notify_shared_memory_available();
+            self.obj().notify_show_shared_separator();
+        }
+
+        fn shared_memory_available(&self) -> bool {
+            self.total_shared_memory_valid.get() || self.used_shared_memory_valid.get()
+        }
+
+        fn show_shared_separator(&self) -> bool {
+            self.total_shared_memory_valid.get() && self.used_shared_memory_valid.get()
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for GpuDetails {
@@ -216,122 +302,143 @@ impl GpuDetails {
         glib::Object::builder().build()
     }
 
-    pub fn utilization(&self) -> gtk::Label {
-        self.imp().utilization.clone()
+    pub fn utilization(&self) -> &gtk::Label {
+        &self.imp().utilization
     }
 
-    pub fn memory_usage_current(&self) -> gtk::Label {
-        self.imp().memory_usage_current.clone()
-    }
-    pub fn memory_usage_max(&self) -> gtk::Label {
-        self.imp().memory_usage_max.clone()
+    pub fn memory_usage_title(&self) -> &gtk::Label {
+        &self.imp().memory_usage_title
     }
 
-    pub fn gtt_usage_current(&self) -> gtk::Label {
-        self.imp().gtt_usage_current.clone()
+    pub fn memory_usage_current(&self) -> &gtk::Label {
+        &self.imp().memory_usage_current
     }
 
-    pub fn gtt_usage_max(&self) -> gtk::Label {
-        self.imp().gtt_usage_max.clone()
+    pub fn memory_usage_max(&self) -> &gtk::Label {
+        &self.imp().memory_usage_max
     }
 
-    pub fn clock_speed_current(&self) -> gtk::Label {
-        self.imp().clock_speed_current.clone()
+    pub fn shared_memory_usage_title(&self) -> &gtk::Label {
+        &self.imp().shared_memory_usage_title
     }
 
-    pub fn clock_speed_max(&self) -> gtk::Label {
-        self.imp().clock_speed_max.clone()
+    pub fn shared_mem_usage_current(&self) -> &gtk::Label {
+        &self.imp().gtt_usage_current
     }
 
-    pub fn memory_speed_current(&self) -> gtk::Label {
-        self.imp().memory_speed_current.clone()
+    pub fn shared_mem_usage_max(&self) -> &gtk::Label {
+        &self.imp().gtt_usage_max
     }
 
-    pub fn memory_speed_max(&self) -> gtk::Label {
-        self.imp().memory_speed_max.clone()
+    pub fn clock_speed_current(&self) -> &gtk::Label {
+        &self.imp().clock_speed_current
     }
 
-    pub fn power_draw_current(&self) -> gtk::Label {
-        self.imp().power_draw_current.clone()
+    pub fn clock_speed_separator(&self) -> &gtk::Label {
+        &self.imp().clock_speed_separator
     }
 
-    pub fn power_draw_max(&self) -> gtk::Label {
-        self.imp().power_draw_max.clone()
+    pub fn clock_speed_max(&self) -> &gtk::Label {
+        &self.imp().clock_speed_max
     }
 
-    pub fn encode_percent(&self) -> gtk::Label {
-        self.imp().encode_percent.clone()
+    pub fn memory_speed_current(&self) -> &gtk::Label {
+        &self.imp().memory_speed_current
     }
 
-    pub fn decode_percent(&self) -> gtk::Label {
-        self.imp().decode_percent.clone()
+    pub fn memory_speed_separator(&self) -> &gtk::Label {
+        &self.imp().memory_speed_separator
     }
 
-    pub fn temperature(&self) -> gtk::Label {
-        self.imp().temperature.clone()
+    pub fn memory_speed_max(&self) -> &gtk::Label {
+        &self.imp().memory_speed_max
     }
 
-    pub fn opengl_version(&self) -> gtk::Label {
-        self.imp().opengl_version.clone()
+    pub fn power_draw_current(&self) -> &gtk::Label {
+        &self.imp().power_draw_current
     }
 
-    pub fn vulkan_version(&self) -> gtk::Label {
-        self.imp().vulkan_version.clone()
+    pub fn power_draw_separator(&self) -> &gtk::Label {
+        &self.imp().power_draw_separator
     }
 
-    pub fn pcie_speed_label(&self) -> gtk::Label {
-        self.imp().pcie_speed_label.clone()
+    pub fn power_draw_max(&self) -> &gtk::Label {
+        &self.imp().power_draw_max
     }
 
-    pub fn pcie_speed(&self) -> gtk::Label {
-        self.imp().pcie_speed.clone()
+    pub fn encode_percent(&self) -> &gtk::Label {
+        &self.imp().encode_percent
     }
 
-    pub fn pci_addr(&self) -> gtk::Label {
-        self.imp().pci_addr.clone()
+    pub fn decode_percent(&self) -> &gtk::Label {
+        &self.imp().decode_percent
     }
 
-    pub fn box_temp(&self) -> gtk::Box {
-        self.imp().box_temp.clone()
+    pub fn temperature(&self) -> &gtk::Label {
+        &self.imp().temperature
     }
 
-    pub fn box_mem_speed(&self) -> gtk::Box {
-        self.imp().box_mem_speed.clone()
+    pub fn opengl_version(&self) -> &gtk::Label {
+        &self.imp().opengl_version
     }
 
-    pub fn box_mem_usage(&self) -> gtk::Box {
-        self.imp().box_mem_usage.clone()
+    pub fn vulkan_version(&self) -> &gtk::Label {
+        &self.imp().vulkan_version
     }
 
-    pub fn box_gtt_usage(&self) -> gtk::Box {
-        self.imp().box_gtt_usage.clone()
+    pub fn pcie_speed_label(&self) -> &gtk::Label {
+        &self.imp().pcie_speed_label
     }
 
-    pub fn box_power_draw(&self) -> gtk::Box {
-        self.imp().box_power_draw.clone()
+    pub fn pcie_speed(&self) -> &gtk::Label {
+        &self.imp().pcie_speed
     }
 
-    pub fn box_decode(&self) -> gtk::Box {
-        self.imp().box_decode.clone()
+    pub fn pci_addr(&self) -> &gtk::Label {
+        &self.imp().pci_addr
     }
 
-    pub fn encode_label(&self) -> gtk::Label {
-        self.imp().encode_label.clone()
+    pub fn box_temp(&self) -> &gtk::Box {
+        &self.imp().box_temp
     }
 
-    pub fn legend_encode(&self) -> gtk::Picture {
-        self.imp().legend_encode.clone()
+    pub fn box_mem_speed(&self) -> &gtk::Box {
+        &self.imp().box_mem_speed
     }
 
-    pub fn legend_decode(&self) -> gtk::Picture {
-        self.imp().legend_decode.clone()
+    pub fn box_mem_usage(&self) -> &gtk::Box {
+        &self.imp().box_mem_usage
     }
 
-    pub fn legend_vram(&self) -> gtk::Picture {
-        self.imp().legend_vram.clone()
+    pub fn box_gtt_usage(&self) -> &gtk::Box {
+        &self.imp().box_gtt_usage
     }
 
-    pub fn legend_gtt(&self) -> gtk::Picture {
-        self.imp().legend_gtt.clone()
+    pub fn box_power_draw(&self) -> &gtk::Box {
+        &self.imp().box_power_draw
+    }
+
+    pub fn box_decode(&self) -> &gtk::Box {
+        &self.imp().box_decode
+    }
+
+    pub fn encode_label(&self) -> &gtk::Label {
+        &self.imp().encode_label
+    }
+
+    pub fn legend_encode(&self) -> &gtk::Picture {
+        &self.imp().legend_encode
+    }
+
+    pub fn legend_decode(&self) -> &gtk::Picture {
+        &self.imp().legend_decode
+    }
+
+    pub fn legend_vram(&self) -> &gtk::Picture {
+        &self.imp().legend_vram
+    }
+
+    pub fn legend_gtt(&self) -> &gtk::Picture {
+        &self.imp().legend_gtt
     }
 }
