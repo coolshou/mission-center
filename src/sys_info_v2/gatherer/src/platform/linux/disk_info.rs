@@ -345,7 +345,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             }
 
             println!("Reading thermals for {}", dir_name);
-            println!("Reading thermals {:?}", glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).map(|p| format!("{:?}", p)));
+            println!("Reading thermals {:?}", glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).map(|p| format!("{:?}", p)).collect::<Vec<_>>);
 
             let temp_inputs = glob(format!("/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input", dir_name).as_str()).unwrap()
                 .filter_map(Result::ok)
