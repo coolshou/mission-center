@@ -344,7 +344,15 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 }
             }
 
-            let temp_inputs = glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).filter_map(|f| std::fs::read_to_string(f).ok()).filter_map(|s| s.as_f64()).map(|i| i + 273.15).collect::<Vec<_>>();
+            println!("Reading thermals for {}", dir_name);
+            println!("Reading thermals {:?}", glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap());
+
+            let temp_inputs = glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap()
+                .filter_map(Result::ok)
+                .filter_map(|f| std::fs::read_to_string(f).ok())
+                .filter_map(|s| s.as_f64())
+                .map(|i| i + 273.15)
+                .collect::<Vec<_>>();
 
             let drive_temperature_k= if !temp_inputs.is_empty() {
                 temp_inputs[0]
