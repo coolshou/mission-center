@@ -102,7 +102,7 @@ impl Arg for GpuStaticInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yyb)")
+        dbus::Signature::from("a(ssqqtt(yyy)(qqq)(qqq)(qqq)yyb)")
     }
 }
 

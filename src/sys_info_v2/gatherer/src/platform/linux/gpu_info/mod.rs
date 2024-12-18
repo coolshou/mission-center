@@ -1021,11 +1021,11 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                     gpu_info_valid!(process, GpuInfoProcessInfoValid::GpuMemoryUsageValid);
                 if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
                     if gpu_usage_valid {
-                        proc.usage_stats.gpu_usage = process.gpu_usage as f32;
+                        proc.usage_stats.gpu_usage += process.gpu_usage as f32;
                     }
 
                     if gpu_memory_usage_valid {
-                        proc.usage_stats.gpu_memory_usage = process.gpu_memory_usage as f32;
+                        proc.usage_stats.gpu_memory_usage += process.gpu_memory_usage as f32;
                     }
                 }
             }

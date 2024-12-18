@@ -152,46 +152,22 @@ mod imp {
             });
             actions.add_action(&action);
 
-            let show_enc_dec_usage =
-                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
-
             let action = &this.imp().show_enc_dec_action;
             action.set_enabled(true);
-            action.set_state(&glib::Variant::from(show_enc_dec_usage));
-            action.connect_activate({
-                let this = this.downgrade();
-                move |action, _| {
-                    if let Some(this) = this.upgrade() {
-                        let this = &this.imp();
+            action.connect_activate(move |action, _| {
+                let visible = !action
+                    .state()
+                    .and_then(|v| v.get::<bool>())
+                    .unwrap_or(false);
 
-                        let visible = !action
-                            .state()
-                            .and_then(|v| v.get::<bool>())
-                            .unwrap_or(false);
-
-                        this.obj().set_encode_decode_available(visible);
-                        action.set_state(&glib::Variant::from(visible));
-
-                        // The usage graph is `homogeneous: true`, so we need to hide the container if all
-                        // contained graphs are hidden so that the usage graph expands to fill the available
-                        // space.
-                        this.container_bottom.set_visible(
-                            this.memory_graph.is_visible() || this.encode_decode_available.get(),
+                settings!()
+                    .set_boolean("performance-page-gpu-encode-decode-usage-visible", visible)
+                    .unwrap_or_else(|_| {
+                        g_critical!(
+                            "MissionCenter::PerformancePage",
+                            "Failed to save show encode/decode usage"
                         );
-
-                        settings!()
-                            .set_boolean(
-                                "performance-page-gpu-encode-decode-usage-visible",
-                                visible,
-                            )
-                            .unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::PerformancePage",
-                                    "Failed to save show encode/decode usage"
-                                );
-                            });
-                    }
-                }
+                    });
             });
             actions.add_action(action);
         }
@@ -273,6 +249,8 @@ mod imp {
             let settings = settings!();
             let show_enc_dec_usage =
                 settings.boolean("performance-page-gpu-encode-decode-usage-visible");
+            this.show_enc_dec_action
+                .set_state(&glib::Variant::from(show_enc_dec_usage));
             settings.connect_changed(Some("performance-page-gpu-encode-decode-usage-visible"), {
                 let this = this.obj().downgrade();
                 move |settings, _| {
@@ -282,14 +260,21 @@ mod imp {
                         let show_enc_dec_usage =
                             settings.boolean("performance-page-gpu-encode-decode-usage-visible");
 
-                        this.obj().set_encode_decode_available(show_enc_dec_usage);
+                        let action = &this.show_enc_dec_action;
+                        this.obj()
+                            .set_encode_decode_available(action.is_enabled() && show_enc_dec_usage);
+                        this.show_enc_dec_action
+                            .set_state(&glib::Variant::from(show_enc_dec_usage));
+
+                        // The usage graph is `homogeneous: true`, so we need to hide the container if all
+                        // contained graphs are hidden so that the usage graph expands to fill the available
+                        // space.
+                        this.container_bottom.set_visible(
+                            this.memory_graph.is_visible() || this.encode_decode_available.get(),
+                        );
                     }
                 }
             });
-
-            if !show_enc_dec_usage {
-                this.obj().set_encode_decode_available(false);
-            }
 
             this.infobar_content
                 .set_encode_decode_shared(static_info.encode_decode_shared);

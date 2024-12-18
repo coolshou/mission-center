@@ -1965,22 +1965,17 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(
-                                    0,
-                                    dynamic_info.util_percent.unwrap_or(0) as f32,
-                                );
-                                let temp_celsius = dynamic_info.temp_celsius.unwrap_or(0);
-                                if temp_celsius > 20 {
+
+                                let util_percent = dynamic_info.util_percent.unwrap_or(0);
+                                graph_widget.add_data_point(0, util_percent as f32);
+
+                                if let Some(temp_celsius) = dynamic_info.temp_celsius {
                                     summary.set_info2(format!(
                                         "{}% ({} °C)",
-                                        dynamic_info.util_percent.unwrap_or(0),
-                                        temp_celsius
+                                        util_percent, temp_celsius
                                     ));
                                 } else {
-                                    summary.set_info2(format!(
-                                        "{}%",
-                                        dynamic_info.util_percent.unwrap_or(0)
-                                    ));
+                                    summary.set_info2(format!("{}%", util_percent));
                                 }
 
                                 result &= page.update_readings(

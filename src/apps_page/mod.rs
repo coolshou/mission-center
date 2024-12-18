@@ -1580,7 +1580,7 @@ impl AppsPage {
                     readings
                         .gpu_static_info
                         .iter()
-                        .map(|g| g.total_memory.map(|m| m.get() as f32).unwrap_or_default())
+                        .map(|g| g.total_memory.map(|m| m.get() as f32).unwrap_or(0.0))
                         .sum(),
                 );
             }
