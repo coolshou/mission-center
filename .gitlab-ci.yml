@@ -214,7 +214,7 @@ appimage-job-x86:
 
   artifacts:
     paths:
-      - 'MissionCenter-x86_64.AppImage'
+      - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null
 
@@ -238,6 +238,6 @@ appimage-job-arm:
 
   artifacts:
     paths:
-      - 'MissionCenter-aarch64.AppImage'
+      - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null

@@ -21,7 +21,7 @@
 use std::cell::Cell;
 
 use adw::{self, subclass::prelude::*};
-use glib::{g_warning, ParamSpec, Properties, Value};
+use glib::{g_critical, g_warning, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::{widgets::GraphWidget, GpuDetails, PageExt};
@@ -46,6 +46,8 @@ mod imp {
         pub device_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub graph_utilization: TemplateChild<GraphWidget>,
+        #[template_child]
+        pub container_bottom: TemplateChild<gtk::Box>,
         #[template_child]
         pub encode_decode_graph: TemplateChild<gtk::Box>,
         #[template_child]
@@ -75,6 +77,8 @@ mod imp {
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: GpuDetails,
+
+        show_enc_dec_action: gio::SimpleAction,
     }
 
     impl Default for PerformancePageGpu {
@@ -83,6 +87,7 @@ mod imp {
                 gpu_id: Default::default(),
                 device_name: Default::default(),
                 graph_utilization: Default::default(),
+                container_bottom: Default::default(),
                 encode_decode_graph: Default::default(),
                 usage_graph_encode_decode: Default::default(),
                 memory_graph: Default::default(),
@@ -96,9 +101,15 @@ mod imp {
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
-                encode_decode_available: Cell::new(false),
+                encode_decode_available: Cell::new(true),
 
                 infobar_content: GpuDetails::new(),
+
+                show_enc_dec_action: gio::SimpleAction::new_stateful(
+                    "enc_dec_usage",
+                    None,
+                    &glib::Variant::from(true),
+                ),
             }
         }
     }
@@ -126,12 +137,8 @@ mod imp {
 
     impl PerformancePageGpu {
         fn configure_actions(this: &super::PerformancePageGpu) {
-            use gtk::glib::*;
             let actions = gio::SimpleActionGroup::new();
             this.insert_action_group("graph", Some(&actions));
-
-            let show_enc_dec_usage =
-                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
 
             let action = gio::SimpleAction::new("copy", None);
             action.connect_activate({
@@ -145,11 +152,12 @@ mod imp {
             });
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new_stateful(
-                "enc_dec_usage",
-                None,
-                &glib::Variant::from(show_enc_dec_usage),
-            );
+            let show_enc_dec_usage =
+                settings!().boolean("performance-page-gpu-encode-decode-usage-visible");
+
+            let action = &this.imp().show_enc_dec_action;
+            action.set_enabled(true);
+            action.set_state(&glib::Variant::from(show_enc_dec_usage));
             action.connect_activate({
                 let this = this.downgrade();
                 move |action, _| {
@@ -163,6 +171,13 @@ mod imp {
 
                         this.obj().set_encode_decode_available(visible);
                         action.set_state(&glib::Variant::from(visible));
+
+                        // The usage graph is `homogeneous: true`, so we need to hide the container if all
+                        // contained graphs are hidden so that the usage graph expands to fill the available
+                        // space.
+                        this.container_bottom.set_visible(
+                            this.memory_graph.is_visible() || this.encode_decode_available.get(),
+                        );
 
                         settings!()
                             .set_boolean(
@@ -178,7 +193,7 @@ mod imp {
                     }
                 }
             });
-            actions.add_action(&action);
+            actions.add_action(action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageGpu) {
@@ -345,6 +360,12 @@ mod imp {
             this.update_memory_speed(dynamic_info);
             this.update_video_encode_decode(static_info, dynamic_info);
             this.update_temperature(dynamic_info);
+
+            // The usage graph is `homogeneous: true`, so we need to hide the container if all
+            // contained graphs are hidden so that the usage graph expands to fill the available
+            // space.
+            this.container_bottom
+                .set_visible(this.memory_graph.is_visible() || this.encode_decode_available.get());
 
             true
         }
@@ -733,19 +754,27 @@ mod imp {
                 }
             }
 
-            self.obj()
-                .set_encode_decode_available(encode_decode_info_available);
+            self.show_enc_dec_action
+                .set_enabled(encode_decode_info_available);
+            self.obj().set_encode_decode_available(
+                encode_decode_info_available
+                    && self
+                        .show_enc_dec_action
+                        .state()
+                        .and_then(|v| v.get::<bool>())
+                        .unwrap_or(false),
+            );
         }
 
         fn update_temperature(&self, dynamic_info: &GpuDynamicInfo) {
             if let Some(temp) = dynamic_info.temp_celsius {
-                self.infobar_content.temperature().set_visible(true);
+                self.infobar_content.box_temp().set_visible(true);
 
                 self.infobar_content
                     .temperature()
                     .set_text(&format!("{}°C", temp));
             } else {
-                self.infobar_content.temperature().set_visible(false);
+                self.infobar_content.box_temp().set_visible(false);
             }
         }
     }
