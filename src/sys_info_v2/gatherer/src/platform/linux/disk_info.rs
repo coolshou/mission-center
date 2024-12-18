@@ -344,15 +344,12 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             }
 
             let (
-                smart_supported,
                 drive_temperature_k,
-            ) = match drive_ata {
+            ) = match &drive_ata {
                 Ok(drive_ata) => {(
-                    drive_ata.smart_supported().block_on().unwrap_or(false),
                     drive_ata.smart_temperature().block_on().unwrap_or(0.0),
                 )}
                 Err(_) => {(
-                    false,
                     0.0,
                 )}
             };
@@ -492,6 +489,17 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
+                let (
+                    smart_supported,
+                ) = match drive_ata {
+                    Ok(drive_ata) => {(
+                        drive_ata.smart_supported().block_on().unwrap_or(false),
+                    )}
+                    Err(_) => {(
+                        false,
+                    )}
+                };
+
                 let capacity = drive.size().block_on().unwrap_or(u64::MAX);
                 if capacity == 0 {
                     continue;
