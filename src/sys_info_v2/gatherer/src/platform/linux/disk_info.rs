@@ -27,6 +27,7 @@ use std::{sync::Arc, time::Instant};
 use std::any::Any;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use dbus::arg::RefArg;
 use pollster::FutureExt;
 use udisks2::Client;
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
@@ -343,16 +344,19 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 }
             }
 
-            let (
-                drive_temperature_k,
-            ) = match &drive_ata {
-                Ok(drive_ata) => {(
-                    drive_ata.smart_temperature().block_on().unwrap_or(0.0),
-                )}
-                Err(_) => {(
-                    0.0,
-                )}
-            };
+            let temp_inputs = glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).filter_map(|f| std::fs::read_to_string(f).ok()).filter_map(|s| s.as_f64()).map(|i| i + 273.15).collect::<Vec<_>>();
+
+            let drive_temperature_k= if !temp_inputs.is_empty() {
+                temp_inputs[0]
+            } else {
+                match &drive_ata {
+                Ok(drive_ata) => {
+                    drive_ata.smart_temperature().block_on().unwrap_or(0.0)
+                }
+                Err(_) => {
+                    0.0
+                }
+            }};
 
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
