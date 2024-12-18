@@ -116,33 +116,6 @@ Box root {
           }
         }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Total Read");
-          }
-
-          Label total_read {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box {
-        spacing: 5;
-
         Picture legend_write {
           can-shrink: false;
           content-fit: scale_down;
@@ -169,6 +142,42 @@ Box root {
 
             halign: start;
           }
+        }
+      }
+
+      Box {
+        spacing: 5;
+
+        Box {
+          // guess-n-check until it looks the same as the top row. the answer is 4
+          width-request: 4;
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          width-request: 100;
+
+          Label {
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Total Read");
+          }
+
+          Label total_read {
+            styles [
+              "title-4",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          width-request: 4;
         }
 
         Box {
