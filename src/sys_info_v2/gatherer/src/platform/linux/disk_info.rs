@@ -505,6 +505,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     continue;
                 }
 
+                // todo should we do this?
                 let r#type = if drive.optical().block_on().unwrap_or(false) {
                     DiskType::Optical
                 } else {
