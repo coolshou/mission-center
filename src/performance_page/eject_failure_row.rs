@@ -142,6 +142,7 @@ mod imp {
             kill_button.add_css_class("destructive-action");
 
             kill_button.connect_clicked({
+                println!("klikt");
                 let this = self.obj().downgrade();
                 move |_| {
                     if let Some(that) = this.upgrade() {

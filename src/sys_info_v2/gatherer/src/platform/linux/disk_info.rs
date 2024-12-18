@@ -58,12 +58,9 @@ pub struct LinuxDiskInfo {
     pub read_speed: u64,
     pub write_speed: u64,
     pub ejectable: bool,
+    pub drive_temperature_k: f64,
 
-    pub smart_enabled: bool,
-    pub smart_temperature: f64,
-    pub smart_failing: bool,
-    pub smart_num_bad_sectors: i64,
-    pub smart_power_on_seconds: u64,
+    pub smart_supported: bool,
 }
 
 impl Default for LinuxDiskInfo {
@@ -82,11 +79,9 @@ impl Default for LinuxDiskInfo {
             write_speed: 0,
             ejectable: false,
 
-            smart_enabled: false,
-            smart_temperature: 0.0,
-            smart_failing: false,
-            smart_num_bad_sectors: 0,
-            smart_power_on_seconds: 0,
+            drive_temperature_k: 0.0,
+
+            smart_supported: false,
         }
     }
 }
@@ -157,24 +152,12 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.ejectable
     }
 
-    fn smart_enabled(&self) -> bool {
-        self.smart_enabled
+    fn drive_temperature(&self) -> f64 {
+        self.drive_temperature_k
     }
 
-    fn smart_temperature(&self) -> f64 {
-        self.smart_temperature
-    }
-
-    fn smart_failing(&self) -> bool {
-        self.smart_failing
-    }
-
-    fn smart_num_bad_sectors(&self) -> i64 {
-        self.smart_num_bad_sectors
-    }
-
-    fn smart_power_on_seconds(&self) -> u64 {
-        self.smart_power_on_seconds
+    fn smart_supported(&self) -> bool {
+        self.smart_supported
     }
 }
 
@@ -360,20 +343,17 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 }
             }
 
-            let (smart_enabled, smart_temperature, smart_failing, smart_num_bad_sectors, smart_power_on_seconds) = match drive_ata {
+            let (
+                smart_supported,
+                drive_temperature_k,
+            ) = match drive_ata {
                 Ok(drive_ata) => {(
-                    drive_ata.smart_enabled().block_on().unwrap_or(false),
+                    drive_ata.smart_supported().block_on().unwrap_or(false),
                     drive_ata.smart_temperature().block_on().unwrap_or(0.0),
-                    drive_ata.smart_failing().block_on().unwrap_or(false),
-                    drive_ata.smart_num_bad_sectors().block_on().unwrap_or(0),
-                    drive_ata.smart_power_on_seconds().block_on().unwrap_or(0),
                 )}
                 Err(_) => {(
                     false,
                     0.0,
-                    false,
-                    0,
-                    0
                 )}
             };
 
@@ -508,11 +488,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 info.read_speed = read_speed;
                 info.write_speed = write_speed;
 
-                info.smart_enabled = smart_enabled;
-                info.smart_failing = smart_failing;
-                info.smart_temperature = smart_temperature;
-                info.smart_num_bad_sectors = smart_num_bad_sectors;
-                info.smart_power_on_seconds = smart_power_on_seconds;
+                info.drive_temperature_k = drive_temperature_k;
 
                 self.info.push((disk_stat, info));
             } else {
@@ -575,12 +551,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         read_speed: 0,
                         write_speed: 0,
                         ejectable: drive.ejectable().block_on().unwrap_or(false),
+                        drive_temperature_k,
 
-                        smart_enabled,
-                        smart_temperature,
-                        smart_failing,
-                        smart_num_bad_sectors,
-                        smart_power_on_seconds,
+                        smart_supported,
                     },
                 ));
             }
