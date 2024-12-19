@@ -270,7 +270,8 @@ mod imp {
                         // contained graphs are hidden so that the usage graph expands to fill the available
                         // space.
                         this.container_bottom.set_visible(
-                            this.memory_graph.is_visible() || this.encode_decode_available.get(),
+                            this.memory_graph.property::<bool>("visible")
+                                || this.encode_decode_available.get(),
                         );
                     }
                 }
@@ -349,8 +350,9 @@ mod imp {
             // The usage graph is `homogeneous: true`, so we need to hide the container if all
             // contained graphs are hidden so that the usage graph expands to fill the available
             // space.
-            this.container_bottom
-                .set_visible(this.memory_graph.is_visible() || this.encode_decode_available.get());
+            this.container_bottom.set_visible(
+                this.memory_graph.property::<bool>("visible") || this.encode_decode_available.get(),
+            );
 
             true
         }

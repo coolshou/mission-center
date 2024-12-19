@@ -18,25 +18,29 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
-use crate::platform::platform_impl::gpu_info::nvtop::{
-    GpuInfoProcessInfoValid, GpuInfoStaticInfoValid,
-};
-use crate::{
-    gpu_info_valid,
-    logging::{critical, debug, error, warning},
-    platform::platform_impl::gpu_info::nvtop::GpuInfoDynamicInfoValid,
-    platform::{
-        platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
-        OpenGLApiVersion, ProcessesExt,
-    },
-};
-use std::num::NonZero;
 use std::{
     collections::HashMap,
     fs,
+    num::NonZero,
+    ops::DerefMut,
     sync::{Arc, RwLock},
     time::Instant,
+};
+
+use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
+use crate::{
+    gpu_info_valid,
+    logging::{critical, debug, error, warning},
+    platform::{
+        platform_impl::{
+            gpu_info::nvtop::{
+                GpuInfoDynamicInfoValid, GpuInfoProcessInfoValid, GpuInfoStaticInfoValid,
+            },
+            run_forked,
+        },
+        ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, OpenGLApiVersion,
+        ProcessesExt,
+    },
 };
 
 #[allow(unused)]
@@ -265,17 +269,19 @@ impl Drop for LinuxGpuInfo {
 
 impl LinuxGpuInfo {
     pub fn new() -> Self {
-        use std::ops::DerefMut;
-
-        unsafe {
-            nvtop::init_extract_gpuinfo_intel();
-            nvtop::init_extract_gpuinfo_amdgpu();
-            nvtop::init_extract_gpuinfo_nvidia();
-            nvtop::init_extract_gpuinfo_v3d();
-            nvtop::init_extract_gpuinfo_msm();
-            nvtop::init_extract_gpuinfo_panfrost();
-            nvtop::init_extract_gpuinfo_panthor();
+        fn init_extraction() {
+            static INIT: std::sync::Once = std::sync::Once::new();
+            INIT.call_once(|| unsafe {
+                nvtop::init_extract_gpuinfo_intel();
+                nvtop::init_extract_gpuinfo_amdgpu();
+                nvtop::init_extract_gpuinfo_nvidia();
+                nvtop::init_extract_gpuinfo_v3d();
+                nvtop::init_extract_gpuinfo_msm();
+                nvtop::init_extract_gpuinfo_panfrost();
+                nvtop::init_extract_gpuinfo_panthor();
+            });
         }
+        init_extraction();
 
         let gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
@@ -911,11 +917,18 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
 
-            let dynamic_info = self.dynamic_info.get_mut(&pci_id);
-            if dynamic_info.is_none() {
-                continue;
-            }
-            let dynamic_info = unsafe { dynamic_info.unwrap_unchecked() };
+            let dynamic_info = match self.dynamic_info.get_mut(&pci_id) {
+                Some(di) => di,
+                None => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "Unable to find dynamic info for device {}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+
             dynamic_info.id = Arc::from(pdev);
             dynamic_info.temp_celsius =
                 if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuTempValid) {
@@ -993,14 +1006,30 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 };
             dynamic_info.used_shared_memory = used_shared_memory;
             dynamic_info.encoder_percent = {
-                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::EncoderRateValid) {
+                // FIXME: Concession, if the value is 0, we assume it might be valid even if the
+                //        validity check fails.
+                //        This is needed because these values are not set to valid until the first
+                //        time the encoding function of the GPU is used
+
+                let valid =
+                    gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::EncoderRateValid);
+
+                if valid || dev.dynamic_info.encoder_rate == 0 {
                     Some(dev.dynamic_info.encoder_rate)
                 } else {
                     None
                 }
             };
             dynamic_info.decoder_percent = {
-                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::DecoderRateValid) {
+                // FIXME: Concession, if the value is 0, we assume it might be valid even if the
+                //        validity check fails.
+                //        This is needed because these values are not set to valid until the first
+                //        time the decoding function of the GPU is used
+
+                let valid =
+                    gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::DecoderRateValid);
+
+                if valid || dev.dynamic_info.decoder_rate == 0 {
                     Some(dev.dynamic_info.decoder_rate)
                 } else {
                     None

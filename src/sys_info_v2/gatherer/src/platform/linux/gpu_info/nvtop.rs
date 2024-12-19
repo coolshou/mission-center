@@ -145,7 +145,7 @@ pub struct GpuInfoDynamicInfo {
     pub gpu_temp: u32,
     pub power_draw: u32,
     pub power_draw_max: u32,
-    pub multi_instance_mode: u8,
+    pub multi_instance_mode: bool,
     pub valid: [u8; (GPU_INFO_DYNAMIC_INFO_COUNT + 7) / 8],
 }
 
