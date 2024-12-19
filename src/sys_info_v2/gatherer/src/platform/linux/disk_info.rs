@@ -348,7 +348,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 .filter_map(Result::ok)
                 .filter_map(|f| std::fs::read_to_string(f).ok())
                 .filter_map(|v| v.trim().parse::<f64>().ok())
-                .map(|i| i + 273.15)
+                .map(|i| i/1000.0 + 273.15)
                 .collect::<Vec<_>>();
 
             let drive_temperature_k= if !temp_inputs.is_empty() {
