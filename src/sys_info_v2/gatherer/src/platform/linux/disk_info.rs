@@ -357,12 +357,12 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             }
 
             println!("Reading thermals for {}", dir_name);
-            println!("Reading thermals {:?}", glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).filter_map(|f| std::fs::read_to_string(f).ok()).map(|p| format!("{:?}", p)).collect::<Vec<_>>());
+            println!("Reading thermals {:?}", glob(format!("/sys/block/{}/device/hwmon*/temp*_input", dir_name).as_str()).unwrap().filter_map(Result::ok).filter_map(|f| std::fs::read_to_string(f).ok()).filter_map(|s| s.trim().as_f64()).map(|p| format!("{:?}", p)).collect::<Vec<_>>());
 
             let temp_inputs = glob(format!("/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input", dir_name).as_str()).unwrap()
                 .filter_map(Result::ok)
                 .filter_map(|f| std::fs::read_to_string(f).ok())
-                .filter_map(|s| s.as_f64())
+                .filter_map(|s| s.trim().as_f64())
                 .map(|i| i + 273.15)
                 .collect::<Vec<_>>();
 
