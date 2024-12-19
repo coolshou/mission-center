@@ -217,23 +217,44 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
         let client = match &self.client {
             Ok(client) => client,
-            Err(_) => { return }
+            Err(e) => {
+                critical!(
+                    "Gatherer::DiskInfo",
+                    "Could not get udisks dbus client: {}",
+                    e
+                );
+                return
+            }
         };
 
         let objects = match client.object_manager().get_managed_objects().block_on() {
             Ok(objects) => objects,
-            Err(_) => { return }
+            Err(e) => {
+                critical!(
+                    "Gatherer::DiskInfo",
+                    "Could not get udisks dbus client: {}",
+                    e
+                );
+                return
+            }
         };
 
         for raw_object in objects {
             let object_path = raw_object.0;
             let object = match client.object(object_path.clone()) {
                 Ok(object) => object,
-                Err(_) => { continue; }
+                Err(_) => {
+                    continue;
+                }
             };
 
-            let Ok(drive) = object.drive().block_on() else {
-                continue;
+            let drive = match object.drive().block_on() {
+                Ok(drive) => {
+                    drive
+                },
+                Err(e) => {
+                    continue;
+                }
             };
 
             let drive_ata = object.drive_ata().block_on();
@@ -288,7 +309,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         "Failed to get block's drive: {:?}",
                         object_path
                     );
-                    continue; }
+                    continue;
+                }
             };
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
@@ -523,7 +545,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     )}
                 };
 
-                let capacity = drive.size().block_on().unwrap_or(u64::MAX);
+                let capacity = block.size().block_on().unwrap_or(u64::MAX);
                 if capacity == 0 {
                     continue;
                 }
