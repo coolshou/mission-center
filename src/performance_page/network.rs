@@ -347,9 +347,6 @@ mod imp {
                     if let Some(signal_strength) = this.signal_strength.get() {
                         signal_strength.set_visible(true);
                     }
-                    if let Some(max_bitrate) = this.max_bitrate.get() {
-                        max_bitrate.set_visible(true);
-                    }
                     if let Some(frequency) = this.frequency.get() {
                         frequency.set_visible(true);
                     }
@@ -358,6 +355,12 @@ mod imp {
                 }
                 _ => connection_type.to_string(),
             };
+
+            if let Some(max_bitrate) = this.max_bitrate.get() {
+                if connection_type == NetDeviceType::Wireless || network_device.max_speed > 0 {
+                    max_bitrate.set_visible(true);
+                }
+            }
 
             if let Some(connection_type_label) = this.connection_type_label.get() {
                 connection_type_label.set_text(&conn_type);
@@ -437,20 +440,6 @@ mod imp {
                         },
                     ));
                 }
-                if let Some(max_bitrate) = this.max_bitrate.get() {
-                    max_bitrate.set_text(&wireless_info.bitrate_kbps.as_ref().map_or(
-                        i18n("Unknown"),
-                        |kbps| {
-                            let (val, unit, dec_to_display) =
-                                crate::to_human_readable(*kbps as f32 * 1000. * byte_coeff, 1024.);
-                            format!(
-                                "{}{}",
-                                format!("{0:.2$} {1}", val, unit, dec_to_display),
-                                data_per_time
-                            )
-                        },
-                    ));
-                }
                 if let Some(frequency) = this.frequency.get() {
                     frequency.set_text(&wireless_info.frequency_mhz.as_ref().map_or(
                         i18n("Unknown"),
@@ -460,6 +449,28 @@ mod imp {
                             format!("{0:.2$} {1}Hz", freq, unit, dec_to_display)
                         },
                     ));
+                }
+            }
+
+            if let Some(max_bitrate) = this.max_bitrate.get() {
+                if network_device.max_speed > 0 {
+                    let (val, unit, dec_to_display) = crate::to_human_readable(
+                        network_device.max_speed as f32 * byte_coeff,
+                        1024.,
+                    );
+
+                    max_bitrate.set_text(
+                        format!(
+                            "{}{}",
+                            format!("{0:.2$} {1}", val, unit, dec_to_display),
+                            data_per_time
+                        )
+                        .as_str(),
+                    );
+
+                    max_bitrate.set_visible(true);
+                } else {
+                    max_bitrate.set_visible(false);
                 }
             }
 
