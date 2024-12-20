@@ -79,6 +79,7 @@ mod imp {
         pub system_disk: OnceCell<gtk::Label>,
         pub disk_type: OnceCell<gtk::Label>,
         pub eject: OnceCell<gtk::Button>,
+        pub smart: OnceCell<gtk::Button>,
 
         pub raw_disk_id: OnceCell<String>,
 
@@ -86,6 +87,11 @@ mod imp {
         )]
         eject_failure_dialog: Cell<Option<EjectFailureDialog>>,
         pub eject_failure_dialog_visible: Cell<bool>,
+
+        #[property(name = "smart-dialog", get = Self::smart_dialog, set = Self::smart_dialog, type = Option<SmartDialog>
+        )]
+        smart_dialog: Cell<Option<SmartDialog>>,
+        pub smart_dialog_visible: Cell<bool>,
     }
 
     impl Default for PerformancePageDisk {
