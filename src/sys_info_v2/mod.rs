@@ -133,11 +133,13 @@ enum Message {
     DisableService(Arc<str>),
     GetServiceLogs(Arc<str>, Option<NonZeroU32>),
     EjectDisk(Arc<str>, bool),
+    SmartInfo(Arc<str>),
 }
 
 enum Response {
     String(Arc<str>),
     EjectResultResponse(EjectResult),
+    SmartResultResponse(SmartResult),
 }
 
 #[derive(Debug)]
@@ -438,8 +440,6 @@ impl SysInfoV2 {
     }
 
     pub fn eject_disk(&self, disk_id: &str, force: bool) -> EjectResult {
-        println!("Eject!!!");
-
         match self
             .sender
             .send(Message::EjectDisk(Arc::<str>::from(disk_id), force)) {
@@ -475,6 +475,45 @@ impl SysInfoV2 {
                 );
                 EjectResult::default()
 
+            }
+        }
+    }
+
+    pub fn smart_info(&self, disk_id: &str) -> SmartResult {
+        match self
+            .sender
+            .send(Message::SmartInfo(Arc::<str>::from(disk_id))) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending SmartInfo({}) to gatherer: {}",
+                    disk_id,
+                    e
+                );
+
+                return EjectResult::default()
+            }
+            _ => {}
+        }
+
+        match self.receiver.recv() {
+            Ok(Response::SmartResultResponse(logs)) => {
+                logs
+            }
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving SmartResult response: {}",
+                    e
+                );
+                EjectResult::SmartResult()
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving SmartResult response. Wrong type"
+                );
+                EjectResult::SmartResult()
             }
         }
     }

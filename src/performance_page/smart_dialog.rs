@@ -45,9 +45,7 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_dialog.ui")]
     pub struct SmartDialog {
         #[template_child]
-        pub column_view: TemplateChild<gtk::ListBox>,
-
-        pub parent_page: Cell<Option<PerformancePageDisk>>,
+        pub power_on: TemplateChild<gtk::Label>,
     }
 
     impl SmartDialog {
@@ -57,8 +55,7 @@ mod imp {
     impl Default for SmartDialog {
         fn default() -> Self {
             Self {
-                column_view: Default::default(),
-                parent_page: Cell::new(None),
+                power_on: Default::default(),
             }
         }
     }
