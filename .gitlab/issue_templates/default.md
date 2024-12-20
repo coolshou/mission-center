@@ -7,8 +7,9 @@
 ```
 
 ## Other Info
-OS: Some Wierd Linux Distro
-Installation Type: OS/Flatpak/Appimage/Snap
+- OS: Some Wierd Linux Distro
+- DE: Plasma/Gnome/Other
+- Installation Type: OS/Flatpak/Appimage/Snap
 
-CPU: Intel 8086
-GPU: Nvidia H100s
+- CPU: Intel 4004
+- GPU: Nvidia H100s

@@ -8,77 +8,70 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-13 11:27+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
-"Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/fi/>\n"
-"Language: fi\n"
+"PO-Revision-Date: 2024-12-15 16:33+0000\n"
+"Last-Translator: Priit Jõerüüt <hwlate@joeruut.com>\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/et/>\n"
+"Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.9-rc\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Tehtäväkeskus"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Mission "
-"Center;tehtäväkeskus;resurssit;suoritin;prosessit;suorituskyky;näytönohjain;"
-"levy;muisti;verkko"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr "Mission Center -kehittäjät"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr "Tarkkaile järjestelmän resurssien käyttöä"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Tarkkaile suorittimen, muistin, levyn, verkon ja näytönohjaimen käyttöä"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "Ominaisuudet:"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Tarkkaile suorittimen käyttöä yleisesti tai säiekohtaisesti"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Näe järjestelmän prosessi-, säie- ja kahvamäärät, toiminta-aika, "
-"kellotaajuus (perustaajuus ja nykyinen taajuus) ja välimuistien koot"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Tarkkaile keskusmuistin ja swapin käyttöä"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Näe erittely, miten järjestelmä käyttää muistia"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Tarkkaile levyn käyttöä ja siirtonopeuksia"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Tarkkaile verkon käyttöä ja siirtonopeuksia"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -86,61 +79,52 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Näe verkkoliitäntöjen tiedot kuten verkkokortin nimi, yhteyden tyyppi (Wi-Fi "
-"tai Ethernet), langattoman verkon nopeus ja taajuus, laiteosoite sekä IP-"
-"osoite"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Seuraa GPU:n yleistä käyttöä, videokooderin ja dekooderin käyttöä, muistin "
-"käyttöä ja virrankulutusta NVTOP-projektin avulla"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Näe erittely, miten sovellukset ja prosessit käyttävät resursseja"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Tukee pienennettyä yhteenvetonäkymää yksinkertaista seurantaa varten"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Käytä laitteistokiihdytettyä hahmonnusta kaikissa kaavioissa vähentääksesi "
-"suorittimen ja yleistä resurssien käyttöä"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Käyttää GTK4:ää ja Libadwaitaa"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr "Kirjoitettu Rustilla"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Rajoitukset (näiden kaikkien ratkaisemiseksi tehdään töitä):"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr "Ei prosessikohtaista verkon käyttöä"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr "GPU-tuki on kokeellista"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"Intelin GPU-seurantaa tuetaan vain Broadwellin ja myöhempien GPU:iden kanssa;"
-" eikä tue VRAM-muistia, tehoa tai lämpötilan seurantaa"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -148,128 +132,115 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
-"Kun käytät Linux Mint/Cinnamonia, käynnistetyt sovellukset eivät välttämättä "
-"näy \"Sovellukset\"-osiossa (Upstream-ongelma: https://github.com/linuxmint/"
-"cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
-"Kommentit, ehdotukset, vikailmoitukset ja osallistumiset ovat tervetulleita"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr "Sovelluksen käynnistyessä avattava sivu"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "VANHENNETTU! EI ENÄÄ KÄYTÖSSÄ!"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Kuinka nopeasti tiedot tulisi päivittää ja käyttöliittymä päivitetään (50 ms:"
-"n välein)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr "Kuinka monta pistettä kussakin kaaviossa tulee näyttää?"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
-"Asetetaanko kaavion maksimi käyttöliittymän maksimiarvoksi (false) vai "
-"havaittu maksimi (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Prosessin ja sen lapsiprosessin tilastot näytetään yksittäin tai yhdistettynä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sarakejärjestys säilyy sovelluksen uudelleenkäynnistysten välillä"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Näytä sovellusten ja prosessien suorittimen käyttö käytettävissä olevien "
-"ytimien määrään skaalatuna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
-msgstr "Saraketunnus, jonka mukaan Sovellukset-sivunäkymä on lajiteltu"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr "Sovellukset-sivunäkymän lajittelusuunta"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Mikä kaavio näkyy suorittimen suorituskykysivulla"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr "Näytä ytimen ajat CPU-kaavioissa"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
-"Mikä sivu näkyy sovelluksen käynnistyksen yhteydessä, Suorituskyky-"
-"välilehdellä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Pitäisikö suorituskykykaavioiden olla tasaisia tai rosoisia"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr "Näytä suorittimen tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr "Näytä muistin tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr "Näytä levyn tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr "Näytä verkon tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr "Näytä näytönohjaimen tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr "Näytä tuulettimen tiedot oletuksena"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr "Näytä muistin kokoonpano -vekotin"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr "Näytä vaihtokaavio"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
@@ -277,43 +248,43 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr "Merkintöjen järjestys sovelluksen sivupalkissa"
+msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr "Kaaviot, jotka tulisi piilottaa sovelluksen sivupalkissa"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
 msgid "CPU"
-msgstr "Suoritin"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr "Käyttö ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
 #: resources/ui/performance_page/gpu.blp:130
 msgid "100%"
-msgstr "100 %"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
-msgstr "Vaih_da kaavioksi"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr "Käytt_ö yhteensä"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
-msgstr "_Loogiset suorittimet"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr "Näytä ydinajat"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -322,7 +293,7 @@ msgstr "Näytä ydinajat"
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr "Kaavion _yhteenvedon näkymä"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -331,7 +302,7 @@ msgstr "Kaavion _yhteenvedon näkymä"
 #: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr "_Näytä"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -340,7 +311,7 @@ msgstr "_Näytä"
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr "_Suoritin"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -349,7 +320,7 @@ msgstr "_Suoritin"
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr "_Muisti"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -358,7 +329,7 @@ msgstr "_Muisti"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr "_Asema"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -367,7 +338,7 @@ msgstr "_Asema"
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr "_Verkko"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -376,7 +347,7 @@ msgstr "_Verkko"
 #: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr "_Näytönohjain"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:159
 #: resources/ui/performance_page/disk.blp:180
@@ -385,7 +356,7 @@ msgstr "_Näytönohjain"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr "_Tuuletin"
+msgstr ""
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -393,130 +364,130 @@ msgstr "_Tuuletin"
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr "_Kopioi"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr "Käyttö"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr "Nopeus"
+msgstr "Kiirus"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr "Prosessit"
+msgstr "Protsessid"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr "Säikeet"
+msgstr "Lõimed"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
-msgstr "Kahvat"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr "Toiminta-aika"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr "Perusnopeus:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr "Kantoja:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr "Virtuaalisia suorittimia:"
+msgstr "Virtuaalseid protsessoreid:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr "Virtualisointi:"
+msgstr "Virtualiseerimine:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr "Virtuaalikone:"
+msgstr "Virtuaalmasin:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "L1-välimuisti:"
+msgstr "L1-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "L2-välimuisti:"
+msgstr "L2-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "L3-välimuisti:"
+msgstr "L3-vahemälu:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr "Cpufreq-ajuri:"
+msgstr "Cpufreqi draiver:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr "Cpufreq-ohjain:"
+msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr "Tehoetusija:"
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr "Aktiivisuusaika ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr "Välityskyky ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr "Aktiivisuusaika"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr "Keskimääräinen vasteaika"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr "Lukunopeus"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr "Kirjoitusnopeus"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr "Kapasiteetti:"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr "Alustettu:"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr "Järjestelmälevy:"
+msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
-msgstr "Tyyppi:"
+msgstr ""
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr "Tuulettimen nopeus ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr "Lämpötila ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
-msgstr "Tuulettimen nopeus"
+msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
@@ -524,309 +495,305 @@ msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
-msgstr "Nykyinen lämpötila"
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr "Videon pakkaus/purku ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr "Muistinkulutus ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr "Näytä pakkaus/purku"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
-msgstr "Kellotaajuus"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
-msgstr "Virrankulutus"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
-msgstr "Muistinkulutus"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:208
 msgid "GTT usage"
-msgstr "GTT:n käyttö"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
-msgstr "Muistin nopeus"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
-msgstr "Videon pakkaus"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:343
 msgid "Video decode"
-msgstr "Videon purku"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
-msgstr "Lämpötila"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
-msgstr "OpenGL-versio:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
-msgstr "Vulkan-versio:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
-msgstr "PCI Express -nopeus:"
+msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
-msgstr "PCI-väylän osoite:"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
 msgid "Memory"
-msgstr "Muisti"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr "Swapin käyttö ajanjaksolla "
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr "Muistin kulutus"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:185
 msgid "Show Memory Composition"
-msgstr "Näytä muistin kokoonpano"
+msgstr ""
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr "Näytä swapin käyttö"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
-msgstr "Käytössä"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
-msgstr "Saatavilla"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr "Kommitoitu"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
-msgstr "Välimuistissa"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr "Swap-tilaa käytetty"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
-msgstr "Swap-tilaa saatavilla"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
-msgstr "Nopeus:"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
-msgstr "Paikkoja käytetty:"
+msgstr ""
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
-msgstr "Kantakoko:"
+msgstr ""
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr "_Verkkoasetukset"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr "Vastaanotto"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr "Vastaanotettu yhteensä"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr "Lähetys"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr "Lähetetty yhteensä"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
-msgstr "Liitännän nimi:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
-msgstr "Yhteyden tyyppi:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr "SSID:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
-msgstr "Signaalin voimakkuus:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
-msgstr "Enimmäisnopeus;:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
-msgstr "Taajuus:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
-msgstr "Laiteosoite:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
-msgstr "IPv4-osoite:"
+msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
-msgstr "IPv6-osoite:"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr "Yleiset"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr "Päivitysväli"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Kaavion datapisteet"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
-msgstr "Suorituskykysivu"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr "Sulavat kaaviot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Piirrä kaaviot sulavana viivana rosoisen viivan sijaan"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr "Näytä verkon nopeus tavuissa"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr "Skaalaa verkon kaaviot dynaamisesti"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
-"Aseta verkon kaavio skaalautumaan dynaamisesti käytön tai kanavan "
-"enimmäisnopeuden mukaan"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr "Näytä suorittimen tiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Memory Information"
-msgstr "Näytä muistin tiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr "Näytä levyn tiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr "Näytä verkon tiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr "Näytä näytönohjaimen tiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr "Näytä tuuletintiedot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
-msgstr "Sovellussivu"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr "Yhdistä prosessitilastot"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
-msgstr "Muista järjestys"
+msgstr ""
 
 #: resources/ui/preferences/page.blp:104
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-"uudelleenkäynnistyksen välillä"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr "Skaalaa suoritinkäyttö ydinmäärän mukaan"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr "Palvelun tiedot"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr "Tila"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr "Palvelun nykyinen tila"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
 msgid "Name"
-msgstr "Nimi"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr "Kuvaus"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr "Tila"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr "Käytössä"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
-msgstr "Prosessi"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr "Prosessi- ja käyttäjätiedot"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr "Prosessin ID"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -838,125 +805,125 @@ msgstr "Prosessin ID"
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr "-"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr "Käyttäjä"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr "Ryhmä"
+msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr "Lokit"
+msgstr ""
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr "Käynnistä"
+msgstr ""
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr "Pysäytä"
+msgstr ""
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr "Käynnistä uudelleen"
+msgstr ""
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr "Tiedot"
+msgstr ""
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
-msgstr "PID"
+msgstr ""
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr "Ota kaikki käyttöön"
+msgstr ""
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr "Poista kaikki käytöstä"
+msgstr ""
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr "Palauta oletusarvo"
+msgstr ""
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr "Laitteet"
+msgstr ""
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr "Muokkaa sivupalkkia"
+msgstr ""
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr "Näytä/piilota sivupalkki"
+msgstr ""
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
-msgstr "Kirjoita nimi tai PID etsiäksesi"
+msgstr ""
 
 #: resources/ui/window.blp:173
 msgid "Loading..."
-msgstr "Ladataan..."
+msgstr ""
 
 #: resources/ui/window.blp:187
 msgid "Performance"
-msgstr "Suorituskyky"
+msgstr "Jõudlus"
 
 #: resources/ui/window.blp:199 src/apps_page/mod.rs:562
 msgid "Apps"
-msgstr "Sovellukset"
+msgstr "Rakendused"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr "Palvelut"
+msgstr "Teenused"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr "_Asetukset"
+msgstr "_Eelistused"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr "_Tietoja - Tehtäväkeskus"
+msgstr ""
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr "Asema"
+msgstr ""
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr "Näytönohjaimen käyttö"
+msgstr ""
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
-msgstr "Näytönohjaimen muisti"
+msgstr ""
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
 msgid "Stop Application"
-msgstr "Pysäytä sovellus"
+msgstr ""
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr "Pakota sovelluksen pysäytys"
+msgstr ""
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
 msgid "Stop Process"
-msgstr "Pysäytä prosessi"
+msgstr ""
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr "Pakota prosessin pysäytys"
+msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -964,9 +931,6 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Käytössä ({} B)\n"
-"\n"
-"Muistin käyttö käyttöjärjestelmän ja käynnissä olevien sovellusten toimesta"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -975,10 +939,6 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Muokattu ({} t)\n"
-"\n"
-"Muisti, jonka sisältö tulee kirjoittaa levylle, ennen kuin sitä on "
-"mahdollista käyttää toisen prosessin toimesta"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -986,10 +946,6 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Lepo ({} t)\n"
-"\n"
-"Muisti, joka sisältää välimuistiin asetettua dataa ja koodia, joka ei ole "
-"aktiivisessa käytössä"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -998,38 +954,34 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Vapaa ({} t)\n"
-"\n"
-"Muisti, joka ei tällä hetkellä ole käytössä, ja otetaan käyttöön, kun "
-"käyttöjärjestelmä, ajurit tai sovellukset tarvitsevat muistia"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr "Asema {} ({})"
+msgstr ""
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
-msgstr "HDD"
+msgstr ""
 
 #: src/performance_page/mod.rs:1125
 msgid "SSD"
-msgstr "SSD"
+msgstr ""
 
 #: src/performance_page/mod.rs:1126
 msgid "NVMe"
-msgstr "NVMe"
+msgstr ""
 
 #: src/performance_page/mod.rs:1127
 msgid "eMMC"
-msgstr "eMMC"
+msgstr ""
 
 #: src/performance_page/mod.rs:1128
 msgid "iSCSI"
-msgstr "iSCSI"
+msgstr ""
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr "Optinen"
+msgstr ""
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -1040,65 +992,65 @@ msgstr "Optinen"
 #: src/performance_page/network.rs:520 src/performance_page/network.rs:570
 #: src/performance_page/network.rs:606
 msgid "Unknown"
-msgstr "Tuntematon"
+msgstr ""
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr "Näytönohjain {}"
+msgstr ""
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
-msgstr "Näytönohjain"
+msgstr ""
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr "Tuuletin {}"
+msgstr ""
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr "Tuuletin"
+msgstr ""
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}{}"
+msgstr ""
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
-msgstr "Ei tuettu"
+msgstr ""
 
 #: src/performance_page/cpu.rs:344 src/performance_page/disk.rs:247
 msgid "Yes"
-msgstr "Kyllä"
+msgstr ""
 
 #: src/performance_page/cpu.rs:346 src/performance_page/disk.rs:249
 msgid "No"
-msgstr "Ei"
+msgstr ""
 
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr "{} sekuntia{}"
+msgstr ""
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr "{} minuutti{} "
+msgstr ""
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr "Levy {} ({})"
+msgstr ""
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr "Asema ({})"
+msgstr ""
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr "{} {}{} t/s"
+msgstr ""
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr "{}"
+msgstr ""
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
@@ -1106,187 +1058,55 @@ msgstr ""
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr "{} %"
+msgstr ""
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr "{} °C"
+msgstr ""
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
-msgstr "Muistin lisätietojen saaminen epäonnistui"
+msgstr ""
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr "t/s"
+msgstr ""
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr "b/s"
+msgstr ""
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr "{} {}{} t"
+msgstr ""
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} palvelua käynnissä"
+msgstr ""
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr "{}/{} epäonnistunutta palvelua"
+msgstr ""
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr "Käynnissä"
+msgstr ""
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr "Epäonnistui"
+msgstr ""
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr "Pysäytetty"
+msgstr ""
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr "Jiri Grönroos"
+msgstr ""
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr "_Lopeta"
-
-#~ msgid "{} {}bps"
-#~ msgstr "{} {} bps"
-
-#~ msgid "Ethernet"
-#~ msgstr "Ethernet"
-
-#~ msgid "Wi-Fi"
-#~ msgstr "Wi-Fi"
-
-#~ msgid "Other"
-#~ msgstr "Muu"
-
-#~ msgid "{:} minute"
-#~ msgid_plural "{:} minutes"
-#~ msgstr[0] "{:} minuutti"
-#~ msgstr[1] "{:} minuuttia"
-
-#~ msgid "Flatpak first"
-#~ msgstr "Flatpak ensisijaisesti"
-
-#~ msgid "Video decode utilization"
-#~ msgstr "Videon dekoodauksen käyttö"
-
-#~ msgid "_Disk"
-#~ msgstr "_Levy"
-
-#~ msgid "Disk"
-#~ msgstr "Levy"
-
-#, fuzzy
-#~ msgid "Fix a bug where the Gatherer process would crash at startup"
-#~ msgstr ""
-#~ "Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-#~ "uudelleenkäynnistyksen välillä"
-
-#, fuzzy
-#~ msgid ""
-#~ "Fix a bug where the number of CPUs was incorrectly detected on some "
-#~ "systems"
-#~ msgstr ""
-#~ "Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-#~ "uudelleenkäynnistyksen välillä"
-
-#, fuzzy
-#~ msgid "Update to GTK 4.12 and libadwaita 1.4"
-#~ msgstr "Käyttää GTK4:ää ja Libadwaitaa"
-
-#~ msgid "Fixes:"
-#~ msgstr "Korjaukset:"
-
-#, fuzzy
-#~ msgid ""
-#~ "Fixed a bug where the Maps app desktop file wasn't being parsed correctly"
-#~ msgstr ""
-#~ "Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-#~ "uudelleenkäynnistyksen välillä"
-
-#~ msgid "Translations:"
-#~ msgstr "Käännökset:"
-
-#, fuzzy
-#~ msgid "Fixed a bug where the app and process list was empty for some users"
-#~ msgstr ""
-#~ "Muista sovellus- ja prosessiluettelon järjestys sovelluksen "
-#~ "uudelleenkäynnistyksen välillä"
-
-#~ msgid "First official release!"
-#~ msgstr "Ensimmäinen virallinen julkaisu!"
-
-#~ msgid "Disk transfer rate"
-#~ msgstr "Levyn siirtonopeus"
-
-#~ msgid "Overall utilization"
-#~ msgstr "Käyttö yhteensä"
-
-#~ msgid "Resources"
-#~ msgstr "Resurssit"
-
-#~ msgid ""
-#~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-#~ msgstr ""
-#~ "Näytönohjaintuki on kokeellinen, ja vain AMD:n ja nVidian näytönohjaimia "
-#~ "on mahdollista tarkkailla"
-
-#~ msgid "Update Speed"
-#~ msgstr "Päivitysnopeus"
-
-#~ msgid "Fast"
-#~ msgstr "Nopea"
-
-#~ msgid "Refresh every half second"
-#~ msgstr "Päivitä puolen sekunnin välein"
-
-#~ msgid "Normal"
-#~ msgstr "Tavallinen"
-
-#~ msgid "Refresh every second"
-#~ msgstr "Päivitä sekunnin välein"
-
-#~ msgid "Slow"
-#~ msgstr "Hidas"
-
-#~ msgid "Refresh every second and a half"
-#~ msgstr "Päivitä 1,5 sekunnin välein"
-
-#~ msgid "Very Slow"
-#~ msgstr "Erittäin hidas"
-
-#~ msgid "Refresh every 2 seconds"
-#~ msgstr "Päivitä kahden sekunnin välein"
-
-#~ msgid "Supported"
-#~ msgstr "Tuettu"
-
-#~ msgid "Authentication failed"
-#~ msgstr "Tunnistautuminen epäonnistui"
-
-#~ msgid "More info"
-#~ msgstr "Lisätietoja"
-
-#~ msgid "Some information requires administrative privileges"
-#~ msgstr "Jotkin tiedot vaativat ylläpitäjän oikeuksia"
-
-#~ msgid "% Utilization"
-#~ msgstr "%-käyttö"
-
-#~ msgid "{}: {} {}bps {}: {} {}bps"
-#~ msgstr "{}: {} {} bps {}: {} {} bps"
-
-#~ msgid "% Utilization over {} seconds"
-#~ msgstr "%-käyttö {} sekunnin aikana"
+msgstr ""

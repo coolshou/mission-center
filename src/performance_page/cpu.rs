@@ -458,7 +458,7 @@ mod imp {
             if let Some(speed) = this.speed.get() {
                 speed.set_text(&format!(
                     "{:.2} GHz",
-                    readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
+                    readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1000.
                 ));
             }
 
