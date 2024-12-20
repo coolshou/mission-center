@@ -26,197 +26,209 @@ Box root {
   orientation: vertical;
   spacing: 20;
 
-  Box dynamic_data {
-    orientation: vertical;
-    spacing: 10;
-
-    Box top_row {
-      spacing: 5;
-
-      Box {
-        width-request: 4;
-      }
-
-      Box {
-        orientation: vertical;
-        spacing: 3;
-        width-request: 100;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Active time");
-        }
-
-        Label active_time {
-          styles [
-            "title-4",
-          ]
-
-          halign: start;
-        }
-      }
-
-      Box {
-        width-request: 4;
-      }
-
-      Box {
-        orientation: vertical;
-        spacing: 3;
-        width-request: 100;
-
-        Label {
-          styles [
-            "caption",
-          ]
-
-          halign: start;
-          label: _("Avg. response time");
-        }
-
-        Label avg_response_time {
-          styles [
-            "title-4",
-          ]
-
-          halign: start;
-        }
-      }
-    }
-
-    Box bottom_row {
-      orientation: vertical;
-      spacing: 15;
-
-      Box {
-        spacing: 5;
-
-        Picture legend_read {
-          can-shrink: false;
-          content-fit: scale_down;
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Read speed");
-          }
-
-          Label read_speed {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Picture legend_write {
-          can-shrink: false;
-          content-fit: scale_down;
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Write speed");
-          }
-
-          Label write_speed {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-
-      Box {
-        spacing: 5;
-
-        Box {
-          // guess-n-check until it looks the same as the top row. the answer is 4
-          width-request: 4;
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Total Read");
-          }
-
-          Label total_read {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          width-request: 4;
-        }
-
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          width-request: 100;
-
-          Label {
-            styles [
-              "caption",
-            ]
-
-            halign: start;
-            label: _("Total Written");
-          }
-
-          Label total_write {
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-          }
-        }
-      }
-    }
-  }
-
-  Grid system_info {
+  Grid {
     row-spacing: 5;
-    column-spacing: 10;
+    column-spacing: 0;
+
+    styles [
+      "layout-grid"
+    ]
+
+    Picture legend_read {
+      layout {
+        column: '0';
+        row: '0';
+      }
+
+      can-shrink: false;
+      content-fit: scale_down;
+    }
+
+    Box {
+      layout {
+        column: '1';
+        row: '0';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Read speed");
+      }
+
+      Label read_speed {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Picture legend_write {
+      layout {
+        column: '2';
+        row: '0';
+      }
+
+      can-shrink: false;
+      content-fit: scale_down;
+    }
+
+    Box {
+      layout {
+        column: '3';
+        row: '0';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Write speed");
+      }
+
+      Label write_speed {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      layout {
+        column: '1';
+        row: '1';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Total Read");
+      }
+
+      Label total_read {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      layout {
+        column: '3';
+        row: '1';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Total Written");
+      }
+
+      Label total_write {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      layout {
+        column: '1';
+        row: '2';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Active time");
+      }
+
+      Label active_time {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      layout {
+        column: '3';
+        row: '2';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Avg. response time");
+      }
+
+      Label avg_response_time {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
+      layout {
+        column: '0';
+        row: '4';
+      }
+      height-request: 10;
+    }
 
     Label {
       styles [
@@ -227,8 +239,8 @@ Box root {
       label: _("Capacity:");
 
       layout {
-        column: '0';
-        row: '0';
+        column: '1';
+        row: '5';
       }
     }
 
@@ -241,8 +253,8 @@ Box root {
       label: _("Formatted:");
 
       layout {
-        column: '0';
-        row: '1';
+        column: '1';
+        row: '6';
       }
     }
 
@@ -255,8 +267,8 @@ Box root {
       label: _("System disk:");
 
       layout {
-        column: '0';
-        row: '2';
+        column: '1';
+        row: '7';
       }
     }
 
@@ -269,8 +281,8 @@ Box root {
       label: _("Type:");
 
       layout {
-        column: '0';
-        row: '3';
+        column: '1';
+        row: '8';
       }
     }
 
@@ -282,8 +294,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '1';
-        row: '0';
+        column: '3';
+        row: '5';
       }
     }
 
@@ -295,8 +307,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '1';
-        row: '1';
+        column: '3';
+        row: '6';
       }
     }
 
@@ -308,8 +320,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '1';
-        row: '2';
+        column: '3';
+        row: '7';
       }
     }
 
@@ -321,8 +333,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '1';
-        row: '3';
+        column: '3';
+        row: '8';
       }
     }
   }
