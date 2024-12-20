@@ -83,6 +83,7 @@ pub trait Gatherer {
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
     fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error>;
+    fn smart_info(&self, disk_id: &str) -> Result<SmartResult, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
     fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
@@ -121,6 +122,10 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
 
     fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error> {
         self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id, use_force))
+    }
+
+    fn smart_info(&self, disk_id: &str) -> Result<SmartResult, dbus::Error> {
+        self.method_call(MC_GATHERER_INTERFACE_NAME, "SmartInfo", (disk_id,))
     }
 
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error> {
@@ -458,5 +463,128 @@ impl<'a> Get<'a> for EjectResult {
         }
 
         Some(this.into())
+    }
+}
+
+#[derive(Debug)]
+pub struct SmartResult {
+    pub success: bool,
+
+    pub blocking_processes: Vec<(String, i32)>,
+}
+
+impl Default for SmartResult {
+    fn default() -> Self {
+        Self {
+            success: false,
+            blocking_processes: vec![],
+        }
+    }
+}
+
+impl Append for SmartResult {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append((
+            self.success,
+            self.blocking_processes.clone(),
+        ));
+    }
+}
+
+impl Arg for SmartResult {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("(ba(si))")
+    }
+}
+
+impl ReadAll for SmartResult {
+    fn read(i: &mut Iter) -> Result<Self, dbus::arg::TypeMismatchError> {
+        i.get().ok_or(TypeMismatchError::new(
+            ArgType::Invalid,
+            ArgType::Invalid,
+            0,
+        ))
+    }
+}
+
+impl<'a> Get<'a> for SmartResult {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
+        let mut this = Self::default();
+
+        let dynamic_info = match Iterator::next(i) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get CpuDynamicInfo: Expected '0: STRUCT', got None",
+                );
+                return None;
+            }
+            Some(id) => id,
+        };
+
+        let mut dynamic_info = match dynamic_info.as_iter() {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get CpuDynamicInfo: Expected '0: STRUCT', got None, failed to iterate over fields",
+                );
+                return None;
+            }
+            Some(i) => i,
+        };
+        let dynamic_info = dynamic_info.as_mut();
+
+        match Iterator::next(dynamic_info) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get boolean: Expected '0: boolean', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_u64() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get boolean: Expected '0: boolean', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(arr) => {
+                    this.success = arr != 0
+                }
+            },
+        }
+
+        match Iterator::next(dynamic_info) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get boolean: Expected '1: Vec<>', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_iter() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get Vec<Arc<str>>: Expected '1: Vec<>', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(mut block_list) => {
+                    for block in block_list {
+                        let entry_iter = block.as_iter().expect("shiiid").as_mut();
+                        let entry_str = block.as_str().unwrap_or("");
+                    }
+                }
+            }
+        }
     }
 }

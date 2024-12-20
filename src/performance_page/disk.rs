@@ -35,6 +35,7 @@ mod imp {
     use crate::app;
     use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
+    use crate::performance_page::smart_dialog::SmartDialog;
     use crate::sys_info_v2::EjectResult;
     use super::*;
 
@@ -126,10 +127,13 @@ mod imp {
                 system_disk: Default::default(),
                 disk_type: Default::default(),
                 eject: Default::default(),
+                smart: Default::default(),
                 raw_disk_id: Default::default(),
 
                 eject_failure_dialog: Cell::new(None),
                 eject_failure_dialog_visible: Cell::new(false),
+                smart_dialog: Cell::new(None),
+                smart_dialog_visible: Cell::new(false),
             }
         }
     }
@@ -159,21 +163,15 @@ mod imp {
         }
 
         fn set_eject_failure_dialog(&self, widget: Option<&EjectFailureDialog>) {
-            println!("SET EJECT FAILURE DIALOG");
-            if let Some(widget) = widget {
-/*                widget.connect_closed({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(this) = this.upgrade() {
-                            this.imp().eject_failure_dialog_visible.set(false);
-                        }
-                    }
-                });*/
-
-                // unsafe { widget.set_data("list-item", EjectFailureRowBuilder::new().build()) };
-            }
-
             self.eject_failure_dialog.set(widget.cloned());
+        }
+
+        fn smart_dialog(&self) -> Option<SmartDialog> {
+            unsafe { &*self.smart_dialog.as_ptr() }.clone()
+        }
+
+        fn set_smart_dialog(&self, widget: Option<&SmartDialog>) {
+            self.smart_dialog.set(widget.cloned());
         }
 
         pub(crate) fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
@@ -600,6 +598,40 @@ mod imp {
                             };
 
                             this.show_eject_result(that, eject_result);
+
+                            Ok(())
+                        }) {
+                            Err(e) => {
+                                g_warning!(
+                                    "MissionCenter::DetailsDialog",
+                                    "Failed to get `sys_info`: {}",
+                                    e
+                                );
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            });
+
+            self.smart.get().expect("wtf").connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    if let Some(that) = this.upgrade() {
+                        let this = that.imp();
+                        let that = &that;
+
+                        match app!().sys_info().and_then(move |sys_info| {
+                            let eject_result = match this.raw_disk_id.get() {
+                                None => {
+                                    //todo uh oh
+
+                                    return Ok(());
+                                }
+                                Some(disk_id) => {sys_info.smart_info(disk_id)}
+                            };
+
+                            this.show_smart_info(that, eject_result);
 
                             Ok(())
                         }) {
