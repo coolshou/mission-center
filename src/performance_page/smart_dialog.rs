@@ -36,7 +36,7 @@ mod imp {
     use crate::performance_page::disk::PerformancePageDisk;
     use crate::performance_page::DiskPage;
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
-    use crate::sys_info_v2::{App, EjectResult, Process};
+    use crate::sys_info_v2::{App, EjectResult, Process, SataSmartResult};
     use super::*;
 
     #[derive(Properties)]
@@ -45,17 +45,51 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_data_dialog.ui")]
     pub struct SmartDataDialog {
         #[template_child]
-        pub power_on: TemplateChild<gtk::Label>,
+        pub column_view: TemplateChild<gtk::ListBox>,
+
+        pub parent_page: Cell<Option<PerformancePageDisk>>,
     }
 
     impl SmartDataDialog {
         // todo populate self
+        pub fn apply_smart_result(&self, result: SataSmartResult, parent: &PerformancePageDisk) {
+            let modelo = self.column_view.get();
+
+            self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
+
+            modelo.remove_all();
+
+            for parsed_result in result.blocking_processes {
+                if !process.1.is_empty() {
+                    let new_root = EjectFailureRowBuilder::new()
+                        .icon(iconname)
+                        .files_open(process.1.clone())
+                        .pid(process.0)
+                        .name(&appname)
+                        .build();
+
+                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                }
+
+                if !process.2.is_empty() {
+                    let new_root = EjectFailureRowBuilder::new()
+                        .icon(iconname)
+                        .files_open(process.2.clone())
+                        .pid(process.0)
+                        .name(&appname)
+                        .build();
+
+                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                }
+            }
+        }
     }
 
     impl Default for SmartDataDialog {
         fn default() -> Self {
             Self {
-                power_on: Default::default(),
+                column_view: Default::default(),
+                parent_page: Cell::new(None),
             }
         }
     }

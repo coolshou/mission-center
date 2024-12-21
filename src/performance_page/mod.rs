@@ -51,6 +51,7 @@ mod widgets;
 mod eject_failure_dialog;
 mod eject_failure_row;
 mod smart_dialog;
+mod smart_dialog_row;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
