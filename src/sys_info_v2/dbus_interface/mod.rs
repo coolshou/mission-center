@@ -83,7 +83,7 @@ pub trait Gatherer {
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
     fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error>;
-    fn smart_info(&self, disk_id: &str) -> Result<SmartResult, dbus::Error>;
+    fn smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
     fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
@@ -124,7 +124,7 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
         self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id, use_force))
     }
 
-    fn smart_info(&self, disk_id: &str) -> Result<SmartResult, dbus::Error> {
+    fn smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error> {
         self.method_call(MC_GATHERER_INTERFACE_NAME, "SmartInfo", (disk_id,))
     }
 
@@ -467,13 +467,13 @@ impl<'a> Get<'a> for EjectResult {
 }
 
 #[derive(Debug)]
-pub struct SmartResult {
+pub struct SataSmartResult {
     pub success: bool,
 
     pub blocking_processes: Vec<(String, i32)>,
 }
 
-impl Default for SmartResult {
+impl Default for SataSmartResult {
     fn default() -> Self {
         Self {
             success: false,
@@ -482,7 +482,7 @@ impl Default for SmartResult {
     }
 }
 
-impl Append for SmartResult {
+impl Append for SataSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
             self.success,
@@ -491,7 +491,7 @@ impl Append for SmartResult {
     }
 }
 
-impl Arg for SmartResult {
+impl Arg for SataSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
@@ -499,7 +499,7 @@ impl Arg for SmartResult {
     }
 }
 
-impl ReadAll for SmartResult {
+impl ReadAll for SataSmartResult {
     fn read(i: &mut Iter) -> Result<Self, dbus::arg::TypeMismatchError> {
         i.get().ok_or(TypeMismatchError::new(
             ArgType::Invalid,
@@ -509,7 +509,7 @@ impl ReadAll for SmartResult {
     }
 }
 
-impl<'a> Get<'a> for SmartResult {
+impl<'a> Get<'a> for SataSmartResult {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
 
@@ -579,12 +579,52 @@ impl<'a> Get<'a> for SmartResult {
                     return None;
                 }
                 Some(mut block_list) => {
-                    for block in block_list {
-                        let entry_iter = block.as_iter().expect("shiiid").as_mut();
-                        let entry_str = block.as_str().unwrap_or("");
+                    let mut block_list = block_list.as_mut();
+                    while true {
+                        match Iterator::next(block_list) {
+                            None => { break; }
+                            Some(arg) => {
+                                match arg.as_iter() {
+                                    None => { break; }
+                                    Some(mut arr) => {
+                                        let arr = arr.as_mut();
+
+                                        let mut new_entry = (String::default(), 0i32);
+
+                                        match Iterator::next(arr) {
+                                            None => { break; }
+                                            Some(arg) => {
+                                                match arg.as_str() {
+                                                    None => { break; }
+                                                    Some(strink) => {
+                                                        new_entry.0 = String::from(strink);
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        match Iterator::next(arr) {
+                                            None => { break; }
+                                            Some(arg) => {
+                                                match arg.as_i64() {
+                                                    None => { break; }
+                                                    Some(strink) => {
+                                                        new_entry.1 = strink as i32;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        this.blocking_processes.push(new_entry);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
+        };
+
+        Some(this)
     }
 }

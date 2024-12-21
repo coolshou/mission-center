@@ -40,19 +40,19 @@ mod imp {
     use super::*;
 
     #[derive(Properties)]
-    #[properties(wrapper_type = super::SmartDialog)]
+    #[properties(wrapper_type = super::SmartDataDialog)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_dialog.ui")]
-    pub struct SmartDialog {
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_data_dialog.ui")]
+    pub struct SmartDataDialog {
         #[template_child]
         pub power_on: TemplateChild<gtk::Label>,
     }
 
-    impl SmartDialog {
+    impl SmartDataDialog {
         // todo populate self
     }
 
-    impl Default for SmartDialog {
+    impl Default for SmartDataDialog {
         fn default() -> Self {
             Self {
                 power_on: Default::default(),
@@ -61,9 +61,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for SmartDialog {
-        const NAME: &'static str = "SmartDialog";
-        type Type = super::SmartDialog;
+    impl ObjectSubclass for SmartDataDialog {
+        const NAME: &'static str = "SmartDataDialog";
+        type Type = super::SmartDataDialog;
         type ParentType = adw::Dialog;
 
         fn class_init(klass: &mut Self::Class) {
@@ -75,7 +75,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for SmartDialog {
+    impl ObjectImpl for SmartDataDialog {
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -93,7 +93,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for SmartDialog {
+    impl WidgetImpl for SmartDataDialog {
         fn realize(&self) {
             self.parent_realize();
 
@@ -101,7 +101,7 @@ mod imp {
         }
     }
 
-    impl AdwDialogImpl for SmartDialog {
+    impl AdwDialogImpl for SmartDataDialog {
         fn closed(&self) {
 
         }
@@ -109,7 +109,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct SmartDialog(ObjectSubclass<imp::SmartDialog>)
+    pub struct SmartDataDialog(ObjectSubclass<imp::SmartDataDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
