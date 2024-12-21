@@ -182,7 +182,14 @@ mod imp {
         }
 
         pub(crate) fn show_smart_info(&self, this: &super::PerformancePageDisk, result: SataSmartResult) {
-            println!("All back: {:?}", result);
+            let sata_smart_dialog =
+                unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
+            sata_smart_dialog.map(move |d| {
+                self.smart_dialog_visible.set(true);
+                d.imp().apply_smart_result(result, this);
+
+                d.present(Some(this));
+            });
         }
     }
 

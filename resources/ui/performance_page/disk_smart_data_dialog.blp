@@ -3,12 +3,16 @@ using Adw 1;
 
 template $SmartDataDialog: Adw.Dialog {
   Box {
-    Label {
-      label: _("Power On Time");
-    }
+    ScrolledWindow {
+      hscrollbar-policy: never;
+      propagate-natural-height: true;
 
-    Label power_on {
-
+      ListBox column_view {
+        styles [
+          "rich-list",
+          "transparent"
+        ]
+      }
     }
   }
 }

@@ -696,7 +696,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if let Ok(ata) = drive_object.drive_ata().block_on() {
                     let mut options = HashMap::new();
 
-                    let black = match ata.smart_get_attributes(options).block_on() {
+                    let attributes = match ata.smart_get_attributes(options).block_on() {
                         Ok(res) => res,
                         Err(_) => {
                             println!("No ATA!!!");
@@ -705,8 +705,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     };
 
-                    for thing in black {
-                        rezult.data.push((thing.1, thing.3))
+                    for entry in attributes {
+                        rezult.data.push(SataSmartEntry {
+                            id: entry.0,
+                            name: entry.1,
+                            flags: entry.2,
+                            value: entry.3,
+                            worst: entry.4,
+                            threshold: entry.5,
+                            pretty: entry.6,
+                            pretty_unit: entry.7,
+                        })
                     }
                 } else {
                     println!("No ATA!");
@@ -1147,13 +1156,61 @@ impl Arg for EjectResult {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct SataSmartEntry {
+    id: u8,
+    name: String,
+    flags: u16,
+    value: i32,
+    worst: i32,
+    threshold: i32,
+    pretty: i64,
+    pretty_unit: i32,
+}
 
+impl Default for SataSmartEntry {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            name: "".to_string(),
+            flags: 0,
+            value: 0,
+            worst: 0,
+            threshold: 0,
+            pretty: 0,
+            pretty_unit: 0,
+        }
+    }
+}
+
+impl Append for SataSmartEntry {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append((
+            self.id,
+            self.name.clone(),
+            self.flags,
+            self.value,
+            self.worst,
+            self.threshold,
+            self.pretty,
+            self.pretty_unit,
+        ));
+    }
+}
+
+impl Arg for SataSmartEntry {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("(ysqiiixi)")
+    }
+}
 
 #[derive(Debug)]
 pub struct SataSmartResult {
     success: bool,
 
-    data: Vec<(String, i32)>,
+    data: Vec<SataSmartEntry>,
 }
 
 impl Default for SataSmartResult {
@@ -1178,6 +1235,6 @@ impl Arg for SataSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ba(si))")
+        Signature::from("(ba(ysqiiixi))")
     }
 }
