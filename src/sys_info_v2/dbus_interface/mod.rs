@@ -513,6 +513,8 @@ impl<'a> Get<'a> for SataSmartResult {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
 
+        println!("Readering");
+
         let mut this = Self::default();
 
         let dynamic_info = match Iterator::next(i) {
@@ -624,6 +626,8 @@ impl<'a> Get<'a> for SataSmartResult {
                 }
             }
         };
+
+        println!("Readed");
 
         Some(this)
     }

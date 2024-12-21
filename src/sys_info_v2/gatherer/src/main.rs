@@ -712,8 +712,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     println!("No ATA!");
                 }
 
-                println!("Sneding back {:?}", rezult);
-
                 ctx.reply(Ok((rezult,)));
                 Some(ctx)
             }
