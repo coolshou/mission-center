@@ -35,8 +35,8 @@ mod imp {
     use crate::app;
     use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
-    use crate::performance_page::smart_dialog::SmartDialog;
-    use crate::sys_info_v2::EjectResult;
+    use crate::performance_page::smart_dialog::SmartDataDialog;
+    use crate::sys_info_v2::{EjectResult, SataSmartResult};
     use super::*;
 
     #[derive(Properties)]
@@ -91,9 +91,9 @@ mod imp {
         eject_failure_dialog: Cell<Option<EjectFailureDialog>>,
         pub eject_failure_dialog_visible: Cell<bool>,
 
-        #[property(name = "smart-dialog", get = Self::smart_dialog, set = Self::smart_dialog, type = Option<SmartDialog>
+        #[property(name = "smart-dialog", get = Self::smart_dialog, set = Self::set_smart_dialog, type = Option<SmartDataDialog>
         )]
-        smart_dialog: Cell<Option<SmartDialog>>,
+        smart_dialog: Cell<Option<SmartDataDialog>>,
         pub smart_dialog_visible: Cell<bool>,
     }
 
@@ -166,11 +166,11 @@ mod imp {
             self.eject_failure_dialog.set(widget.cloned());
         }
 
-        fn smart_dialog(&self) -> Option<SmartDialog> {
+        fn smart_dialog(&self) -> Option<SmartDataDialog> {
             unsafe { &*self.smart_dialog.as_ptr() }.clone()
         }
 
-        fn set_smart_dialog(&self, widget: Option<&SmartDialog>) {
+        fn set_smart_dialog(&self, widget: Option<&SmartDataDialog>) {
             self.smart_dialog.set(widget.cloned());
         }
 
@@ -183,6 +183,10 @@ mod imp {
 
                 d.present(Some(this));
             });
+        }
+
+        pub(crate) fn show_smart_info(&self, this: &super::PerformancePageDisk, result: SataSmartResult) {
+            println!("All back: {:?}", result);
         }
     }
 
@@ -578,6 +582,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Button>("eject")
                     .expect("Could not find `eject` object in details pane"),
+            );
+            let _ = self.smart.set(
+                sidebar_content_builder
+                    .object::<gtk::Button>("smart")
+                    .expect("Could not find `smart` object in details pane"),
             );
 
             self.eject.get().expect("Rip").connect_clicked({

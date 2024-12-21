@@ -42,7 +42,8 @@ pub use gatherer::{
     App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
     OpenGLApi, Process, ProcessUsageStats, Service,
 };
-use crate::sys_info_v2::Response::EjectResultResponse;
+use crate::sys_info_v2::Message::SmartInfo;
+use crate::sys_info_v2::Response::{EjectResultResponse, SmartResultResponse};
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -95,6 +96,7 @@ pub type NetworkDevice = net_info::NetworkDevice;
 pub type NetDeviceType = net_info::NetDeviceType;
 
 pub type EjectResult = dbus_interface::EjectResult;
+pub type SataSmartResult = dbus_interface::SataSmartResult;
 
 pub type Pid = u32;
 
@@ -139,7 +141,7 @@ enum Message {
 enum Response {
     String(Arc<str>),
     EjectResultResponse(EjectResult),
-    SmartResultResponse(SmartResult),
+    SmartResultResponse(SataSmartResult),
 }
 
 #[derive(Debug)]
@@ -479,7 +481,7 @@ impl SysInfoV2 {
         }
     }
 
-    pub fn smart_info(&self, disk_id: &str) -> SmartResult {
+    pub fn smart_info(&self, disk_id: &str) -> SataSmartResult {
         match self
             .sender
             .send(Message::SmartInfo(Arc::<str>::from(disk_id))) {
@@ -491,7 +493,7 @@ impl SysInfoV2 {
                     e
                 );
 
-                return EjectResult::default()
+                return SataSmartResult::default()
             }
             _ => {}
         }
@@ -506,14 +508,14 @@ impl SysInfoV2 {
                     "Error receiving SmartResult response: {}",
                     e
                 );
-                EjectResult::SmartResult()
+                SataSmartResult::default()
             }
             _ => {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error receiving SmartResult response. Wrong type"
                 );
-                EjectResult::SmartResult()
+                SataSmartResult::default()
             }
         }
     }
@@ -573,6 +575,15 @@ impl SysInfoV2 {
                 }
                 Message::EjectDisk(disk_id, use_force) => {
                     if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id, use_force))) {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending EjectDisk response: {}",
+                            e
+                        );
+                    }
+                }
+                Message::SmartInfo(disk_id) => {
+                    if let Err(e) = tx.send(SmartResultResponse(gatherer.smart_info(&disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending EjectDisk response: {}",

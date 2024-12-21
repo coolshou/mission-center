@@ -635,15 +635,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-
-
-        message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,), (SmartResult,), &str, _>(
-            "EjectDisk",
+        message!("Gatherer::Main", "Registering D-Bus method `SmartInfo`...");
+        builder.method_with_cr_custom::<(String,), (SataSmartResult,), &str, _>(
+            "SmartInfo",
             ("smart_disk",),
             ("smart_info",),
             move |mut ctx, _, (id,): (String,)| {
-                let mut rezult = SmartResult::default();
+                let mut rezult = SataSmartResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
@@ -656,7 +654,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Some(ctx);
                 };
 
-                println!("{}", id);
+                println!("Smarting {}", id);
 
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
@@ -695,26 +693,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 };
 
-                if let Ok(ata) = object.drive_ata().block_on() {
+                if let Ok(ata) = drive_object.drive_ata().block_on() {
                     let mut options = HashMap::new();
 
                     let black = match ata.smart_get_attributes(options).block_on() {
                         Ok(res) => res,
                         Err(_) => {
-                            ctx.reply(Ok((rezult,)));
-                            return Some(ctx);
-                        }
-                    };
-
-                    for thing in black {
-                        rezult.data.push((thing.1, thing.3))
-                    }
-                } else if let Ok(nvme) = object.nvme_controller().block_on() {
-                    let mut options = HashMap::new();
-
-                    let black = match nvme.smart_get_attributes(options).block_on() {
-                        Ok(res) => res,
-                        Err(_) => {
+                            println!("No ATA!!!");
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -724,8 +709,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         rezult.data.push((thing.1, thing.3))
                     }
                 } else {
-
+                    println!("No ATA!");
                 }
+
+                println!("Sneding back {:?}", rezult);
 
                 ctx.reply(Ok((rezult,)));
                 Some(ctx)
@@ -1164,13 +1151,14 @@ impl Arg for EjectResult {
 
 
 
-pub struct SmartResult {
+#[derive(Debug)]
+pub struct SataSmartResult {
     success: bool,
 
     data: Vec<(String, i32)>,
 }
 
-impl Default for SmartResult {
+impl Default for SataSmartResult {
     fn default() -> Self {
         Self {
             success: false,
@@ -1179,7 +1167,7 @@ impl Default for SmartResult {
     }
 }
 
-impl Append for SmartResult {
+impl Append for SataSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
             self.success,
@@ -1188,7 +1176,7 @@ impl Append for SmartResult {
     }
 }
 
-impl Arg for SmartResult {
+impl Arg for SataSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
