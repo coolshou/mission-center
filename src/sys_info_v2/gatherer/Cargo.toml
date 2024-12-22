@@ -30,6 +30,7 @@ static_assertions = { version = "1.1" }
 thiserror = { version = "2.0.3" }
 
 pollster = "0.4.0"
+#udisks2 = { git = "https://github.com/jojo2357/udisks-rs.git", rev = "c839e4937a7ea0ce69e695381454a7bb31fae1ad" }
 udisks2 = "0.2.0"
 
 [build-dependencies]

@@ -19,11 +19,46 @@ template $SmartDataDialog: Adw.Dialog {
         hscrollbar-policy: never;
         propagate-natural-height: true;
 
-        ListBox column_view {
-          styles [
-            "rich-list",
-            "transparent"
-          ]
+        Box {
+          orientation: vertical;
+
+          Box {
+            orientation: horizontal;
+            Label id {
+              label: _("ID");
+            }
+
+            Label attribute {
+              label: _("Attribute");
+            }
+
+            Label value {
+              label: _("Value");
+            }
+
+            Label normalized {
+              label: _("Normalized");
+            }
+
+            Label threshold {
+              label: _("Threshold");
+            }
+
+            Label worst {
+              label: _("Worst");
+            }
+
+            Label pretty {
+              label: _("Pretty Value");
+            }
+          }
+
+          ListBox column_view {
+            styles [
+              "rich-list",
+              "transparent"
+            ]
+          }
         }
       }
     }
