@@ -47,6 +47,7 @@
         <file preprocess="xml-stripblanks">ui/performance_page/disk_eject_failure_dialog.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_eject_failure_entry.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_smart_data_dialog.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/disk_smart_data_entry.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/fan.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/fan_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/gpu.ui</file>

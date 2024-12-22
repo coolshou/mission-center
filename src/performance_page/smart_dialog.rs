@@ -61,15 +61,17 @@ mod imp {
             modelo.remove_all();
 
             for parsed_result in result.blocking_processes {
+                let new_row = SmartDialogRowBuilder::new()
+                    .id(parsed_result.id)
+                    .attribute(parsed_result.name.as_str())
+                    .value(parsed_result.value)
+                    .threshold(parsed_result.threshold)
+                    .pretty(parsed_result.pretty)
+                    .worst(parsed_result.worst)
+                    .build();
+
                 modelo.append(
-                    &SmartDialogRowBuilder::new()
-                        .id(parsed_result.id)
-                        .attribute(parsed_result.name.as_str())
-                        .value(parsed_result.value)
-                        .threshold(parsed_result.threshold)
-                        .normalized(parsed_result.threshold)
-                        .worst(parsed_result.worst)
-                        .build()
+                    new_row.imp().row_entry.get().expect("Missing row entry")
                 )
             }
         }
