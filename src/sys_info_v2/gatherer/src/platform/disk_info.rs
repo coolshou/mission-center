@@ -45,6 +45,18 @@ impl Default for DiskType {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskSmartInterface {
+    Dumb = 0,
+    Ata,
+    NVMe,
+}
+
+impl Default for DiskSmartInterface {
+    fn default() -> Self { Self::Dumb }
+}
+
 /// Describes the static (unchanging) information about a physical disk
 pub trait DiskInfoExt: Default + Append + Arg {
     /// The disk's unique identifier
@@ -55,6 +67,8 @@ pub trait DiskInfoExt: Default + Append + Arg {
 
     /// The disk's type
     fn r#type(&self) -> DiskType;
+
+    fn smart_interface(&self) -> DiskSmartInterface;
 
     /// The disk's capacity in bytes
     fn capacity(&self) -> u64;
@@ -87,14 +101,13 @@ pub trait DiskInfoExt: Default + Append + Arg {
     fn ejectable(&self) -> bool;
 
     fn drive_temperature(&self) -> f64;
-    fn smart_supported(&self) -> bool;
 }
 
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyttbddttttbdb)")
+        Signature::from("(ssyyttbddttttbd)")
     }
 }
 
@@ -104,6 +117,7 @@ impl Append for crate::platform::DiskInfo {
             ia.append(self.id());
             ia.append(self.model());
             ia.append(self.r#type() as u8);
+            ia.append(self.smart_interface() as u8);
             ia.append(self.capacity());
             ia.append(self.formatted());
             ia.append(self.is_system_disk());
@@ -115,7 +129,6 @@ impl Append for crate::platform::DiskInfo {
             ia.append(self.total_write());
             ia.append(self.ejectable());
             ia.append(self.drive_temperature());
-            ia.append(self.smart_supported());
         });
     }
 }

@@ -88,7 +88,7 @@ mod imp {
             self.parent_constructed();
 
             let sidebar_content_builder = gtk::Builder::from_resource(
-                "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui",
+                "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_data_entry.ui",
             );
 
             let _ = self.row_entry.set(
@@ -202,11 +202,13 @@ impl SmartDialogRowBuilder {
         {
             let this = this.imp();
 
-            this.id.set(Some(self.pid));
-            this.pid.get().expect("Damn").set_label(format!("{}", self.pid).as_str());
-            this.name.get().expect("Damn").set_label(self.name.as_str());
+            this.id.get().expect("damn").set_label(format!("{}", self.id).as_str());
+            this.worst.get().expect("Damn").set_label(format!("{}", self.worst).as_str());
+            this.value.get().expect("Damn").set_label(format!("{}", self.value).as_str());
+            this.threshold.get().expect("Damn").set_label(format!("{}", self.threshold).as_str());
+            this.normalized.get().expect("Damn").set_label(format!("{}", self.normalized).as_str());
 
-            this.open_files.get().expect("Damn").set_label(self.files_open.join("\n").as_str());
+            this.attribute.get().expect("Damn").set_label(self.attribute.as_str());
         }
 
         this

@@ -34,7 +34,7 @@ pub use apps::{App, AppMap};
 pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
 pub use cpu_static_info::CpuStaticInfo;
-pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
+pub use disk_info::{DiskInfo, DiskInfoVec, DiskType, DiskSmartInterface};
 pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
@@ -84,7 +84,8 @@ pub trait Gatherer {
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
     fn eject_disk(&self, disk_id: &str, use_force: bool) -> Result<EjectResult, dbus::Error>;
-    fn smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error>;
+    fn sata_smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error>;
+    fn nvme_smart_info(&self, disk_id: &str) -> Result<NVMeSmartResult, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
     fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
     fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
@@ -125,8 +126,12 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
         self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id, use_force))
     }
 
-    fn smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error> {
-        self.method_call(MC_GATHERER_INTERFACE_NAME, "SmartInfo", (disk_id,))
+    fn sata_smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error> {
+        self.method_call(MC_GATHERER_INTERFACE_NAME, "SataSmartInfo", (disk_id,))
+    }
+
+    fn nvme_smart_info(&self, disk_id: &str) -> Result<NVMeSmartResult, dbus::Error> {
+        self.method_call(MC_GATHERER_INTERFACE_NAME, "NVMeSmartInfo", (disk_id,))
     }
 
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error> {
@@ -469,14 +474,14 @@ impl<'a> Get<'a> for EjectResult {
 
 #[derive(Debug, Clone)]
 pub struct SataSmartEntry {
-    id: u8,
-    name: String,
-    flags: u16,
-    value: i32,
-    worst: i32,
-    threshold: i32,
-    pretty: i64,
-    pretty_unit: i32,
+    pub id: u8,
+    pub name: String,
+    pub flags: u16,
+    pub value: i32,
+    pub worst: i32,
+    pub threshold: i32,
+    pub pretty: i64,
+    pub pretty_unit: i32,
 }
 
 impl Default for SataSmartEntry {
@@ -997,8 +1002,6 @@ impl<'a> Get<'a> for SataSmartResult {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
 
-        println!("Readering");
-
         let mut this = Self::default();
 
         let dynamic_info = match Iterator::next(i) {
@@ -1071,6 +1074,101 @@ impl<'a> Get<'a> for SataSmartResult {
                     }
                 }
             }
+        };
+
+        Some(this)
+    }
+}
+
+#[derive(Debug)]
+pub struct NVMeSmartResult {
+    pub success: bool,
+}
+
+impl Default for NVMeSmartResult {
+    fn default() -> Self {
+        Self {
+            success: false,
+        }
+    }
+}
+
+impl Append for NVMeSmartResult {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append((
+            self.success,
+        ));
+    }
+}
+
+impl Arg for NVMeSmartResult {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("(b)")
+    }
+}
+
+impl ReadAll for NVMeSmartResult {
+    fn read(i: &mut Iter) -> Result<Self, dbus::arg::TypeMismatchError> {
+        i.get().ok_or(TypeMismatchError::new(
+            ArgType::Invalid,
+            ArgType::Invalid,
+            0,
+        ))
+    }
+}
+
+impl<'a> Get<'a> for NVMeSmartResult {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
+        let mut this = Self::default();
+
+        let dynamic_info = match Iterator::next(i) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get CpuDynamicInfo: Expected '0: STRUCT', got None",
+                );
+                return None;
+            }
+            Some(id) => id,
+        };
+
+        let mut dynamic_info = match dynamic_info.as_iter() {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get CpuDynamicInfo: Expected '0: STRUCT', got None, failed to iterate over fields",
+                );
+                return None;
+            }
+            Some(i) => i,
+        };
+        let dynamic_info = dynamic_info.as_mut();
+
+        match Iterator::next(dynamic_info) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get boolean: Expected '0: boolean', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_u64() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get boolean: Expected '0: boolean', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(arr) => {
+                    this.success = arr != 0
+                }
+            },
         };
 
         Some(this)
