@@ -21,11 +21,10 @@
 use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
-use gtk::glib::g_critical;
 
-use super::{deser_array, deser_str};
+use super::deserialize_field;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct App {
     pub name: Arc<str>,
     pub icon: Option<Arc<str>>,
@@ -36,6 +35,8 @@ pub struct App {
 
 impl From<&dyn RefArg> for App {
     fn from(value: &dyn RefArg) -> Self {
+        use gtk::glib::g_critical;
+
         let empty_string = Arc::<str>::from("");
 
         let mut this = App {
@@ -58,12 +59,16 @@ impl From<&dyn RefArg> for App {
         };
         let app = app.as_mut();
 
-        this.name = match deser_str(app, "App", 0) {
+        this.name = match deserialize_field(app, "App", "'s' at index 0", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
             Some(name) => name,
             None => return this,
         };
 
-        this.icon = match deser_str(app, "App", 1) {
+        this.icon = match deserialize_field(app, "App", "'s' at index 1", |arg| {
+            arg.as_str().map(Arc::<str>::from)
+        }) {
             Some(icon) => {
                 if icon.is_empty() {
                     None
@@ -74,17 +79,21 @@ impl From<&dyn RefArg> for App {
             None => return this,
         };
 
-        this.id = match deser_str(app, "App", 2) {
+        this.id = match deserialize_field(app, "App", "'s' at index 2", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
             Some(id) => id,
             None => return this,
         };
 
-        this.command = match deser_str(app, "App", 3) {
+        this.command = match deserialize_field(app, "App", "'s' at index 3", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
             Some(command) => command,
             None => return this,
         };
 
-        match deser_array(app, "App", 4) {
+        match deserialize_field(app, "App", "ARRAY at index 4", |arg| arg.as_iter()) {
             Some(pids) => {
                 for p in pids {
                     if let Some(p) = p.as_u64() {
@@ -135,6 +144,8 @@ impl ReadAll for AppMap {
 
 impl<'a> Get<'a> for AppMap {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use gtk::glib::g_critical;
+
         let mut this = HashMap::new();
 
         match Iterator::next(i) {

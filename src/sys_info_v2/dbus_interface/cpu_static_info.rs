@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_str, deser_u32, deser_u64, deser_u8};
+use super::deserialize_field;
 
 #[derive(Debug, Clone)]
 pub struct CpuStaticInfo {
@@ -102,101 +102,130 @@ impl<'a> Get<'a> for CpuStaticInfo {
         };
         let static_info = static_info.as_mut();
 
-        this.name = match deser_str(static_info, "CpuStaticInfo", 0) {
+        this.name = match deserialize_field(static_info, "CpuStaticInfo", "'s' at index 0", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
             Some(n) => n,
             None => return None,
         };
 
-        this.logical_cpu_count = match deser_u32(static_info, "CpuStaticInfo", 1) {
-            Some(lcc) => lcc,
-            None => return None,
-        };
+        this.logical_cpu_count =
+            match deserialize_field(static_info, "CpuStaticInfo", "'1: u' at index 1", |arg| {
+                arg.as_u64()
+            }) {
+                Some(lcc) => lcc as _,
+                None => return None,
+            };
 
-        this.socket_count = match deser_u8(static_info, "CpuStaticInfo", 2) {
-            Some(sc) => {
-                if sc == 0 {
-                    None
-                } else {
-                    Some(sc)
+        this.socket_count =
+            match deserialize_field(static_info, "CpuStaticInfo", "'2: y' at index 2", |arg| {
+                arg.as_u64()
+            }) {
+                Some(sc) => {
+                    if sc == 0 {
+                        None
+                    } else {
+                        Some(sc as _)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.base_frequency_khz = match deser_u64(static_info, "CpuStaticInfo", 3) {
-            Some(bf) => {
-                if bf == 0 {
-                    None
-                } else {
-                    Some(bf)
+        this.base_frequency_khz =
+            match deserialize_field(static_info, "CpuStaticInfo", "'3: t' at index 3", |arg| {
+                arg.as_u64()
+            }) {
+                Some(bf) => {
+                    if bf == 0 {
+                        None
+                    } else {
+                        Some(bf)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.virtualization_technology = match deser_str(static_info, "CpuStaticInfo", 4) {
-            Some(ivs) => {
-                if ivs.is_empty() {
-                    None
-                } else {
-                    Some(ivs)
+        this.virtualization_technology =
+            match deserialize_field(static_info, "CpuStaticInfo", "'4: s' at index 4", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(ivs) => {
+                    if ivs.is_empty() {
+                        None
+                    } else {
+                        Some(ivs)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.is_virtual_machine = match deser_u64(static_info, "CpuStaticInfo", 5) {
-            Some(ivm) => match ivm {
-                0 => Some(false),
-                1 => Some(true),
-                _ => None,
-            },
-            None => return None,
-        };
+        this.is_virtual_machine =
+            match deserialize_field(static_info, "CpuStaticInfo", "'5: y' at index 5", |arg| {
+                arg.as_u64()
+            }) {
+                Some(ivm) => match ivm {
+                    0 => Some(false),
+                    1 => Some(true),
+                    _ => None,
+                },
+                None => return None,
+            };
 
-        this.l1_combined_cache = match deser_u64(static_info, "CpuStaticInfo", 6) {
-            Some(l1) => {
-                if l1 == 0 {
-                    None
-                } else {
-                    Some(l1)
+        this.l1_combined_cache =
+            match deserialize_field(static_info, "CpuStaticInfo", "'6: t' at index 6", |arg| {
+                arg.as_u64()
+            }) {
+                Some(l1) => {
+                    if l1 == 0 {
+                        None
+                    } else {
+                        Some(l1)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.l2_cache = match deser_u64(static_info, "CpuStaticInfo", 7) {
-            Some(l2) => {
-                if l2 == 0 {
-                    None
-                } else {
-                    Some(l2)
+        this.l2_cache =
+            match deserialize_field(static_info, "CpuStaticInfo", "'7: t' at index 7", |arg| {
+                arg.as_u64()
+            }) {
+                Some(l2) => {
+                    if l2 == 0 {
+                        None
+                    } else {
+                        Some(l2)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.l3_cache = match deser_u64(static_info, "CpuStaticInfo", 8) {
-            Some(l3) => {
-                if l3 == 0 {
-                    None
-                } else {
-                    Some(l3)
+        this.l3_cache =
+            match deserialize_field(static_info, "CpuStaticInfo", "'8: t' at index 8", |arg| {
+                arg.as_u64()
+            }) {
+                Some(l3) => {
+                    if l3 == 0 {
+                        None
+                    } else {
+                        Some(l3)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.l4_cache = match deser_u64(static_info, "CpuStaticInfo", 9) {
-            Some(l4) => {
-                if l4 == 0 {
-                    None
-                } else {
-                    Some(l4)
+        this.l4_cache =
+            match deserialize_field(static_info, "CpuStaticInfo", "'9: t' at index 9", |arg| {
+                arg.as_u64()
+            }) {
+                Some(l4) => {
+                    if l4 == 0 {
+                        None
+                    } else {
+                        Some(l4)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
         Some(this)
     }

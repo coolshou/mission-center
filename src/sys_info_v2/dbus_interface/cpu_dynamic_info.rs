@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_array, deser_f32, deser_str, deser_u64};
+use super::deserialize_field;
 
 #[derive(Debug, Default, Clone)]
 pub struct CpuDynamicInfo {
@@ -102,18 +102,25 @@ impl<'a> Get<'a> for CpuDynamicInfo {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        this.overall_utilization_percent = match deser_f32(dynamic_info, "CpuDynamicInfo", 0) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.overall_utilization_percent =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 0", |arg| {
+                arg.as_f64()
+            }) {
+                Some(u) => u as f32,
+                None => return None,
+            };
 
-        this.overall_kernel_utilization_percent = match deser_f32(dynamic_info, "CpuDynamicInfo", 1)
-        {
-            Some(u) => u,
-            None => return None,
-        };
+        this.overall_kernel_utilization_percent =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 1", |arg| {
+                arg.as_f64()
+            }) {
+                Some(u) => u as f32,
+                None => return None,
+            };
 
-        match deser_array(dynamic_info, "CpuDynamicInfo", 2) {
+        match deserialize_field(dynamic_info, "CpuDynamicInfo", "ARRAY at index 2", |arg| {
+            arg.as_iter()
+        }) {
             Some(iter) => {
                 for v in iter {
                     this.per_logical_cpu_utilization_percent
@@ -123,7 +130,9 @@ impl<'a> Get<'a> for CpuDynamicInfo {
             None => return None,
         }
 
-        match deser_array(dynamic_info, "CpuDynamicInfo", 4) {
+        match deserialize_field(dynamic_info, "CpuDynamicInfo", "ARRAY at index 4", |arg| {
+            arg.as_iter()
+        }) {
             Some(iter) => {
                 for v in iter {
                     this.per_logical_cpu_kernel_utilization_percent
@@ -133,74 +142,101 @@ impl<'a> Get<'a> for CpuDynamicInfo {
             None => return None,
         }
 
-        this.current_frequency_mhz = match deser_u64(dynamic_info, "CpuDynamicInfo", 6) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.current_frequency_mhz =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 6", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.temperature = match deser_f32(dynamic_info, "CpuDynamicInfo", 7) {
-            Some(u) => {
-                if u == 0. {
-                    None
-                } else {
-                    Some(u)
+        this.temperature =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 7", |arg| {
+                arg.as_f64()
+            }) {
+                Some(u) => {
+                    if u == 0. {
+                        None
+                    } else {
+                        Some(u as f32)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.process_count = match deser_u64(dynamic_info, "CpuDynamicInfo", 8) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.process_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 8", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.thread_count = match deser_u64(dynamic_info, "CpuDynamicInfo", 9) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.thread_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 9", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.handle_count = match deser_u64(dynamic_info, "CpuDynamicInfo", 10) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.handle_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 10", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.uptime_seconds = match deser_u64(dynamic_info, "CpuDynamicInfo", 11) {
-            Some(u) => u,
-            None => return None,
-        };
+        this.uptime_seconds =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 11", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.cpufreq_driver = match deser_str(dynamic_info, "CpuDynamicInfo", 12) {
-            Some(s) => {
-                if s.is_empty() {
-                    None
-                } else {
-                    Some(s)
+        this.cpufreq_driver =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 12", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.cpufreq_governor = match deser_str(dynamic_info, "CpuDynamicInfo", 13) {
-            Some(s) => {
-                if s.is_empty() {
-                    None
-                } else {
-                    Some(s)
+        this.cpufreq_governor =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 13", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
-        this.energy_performance_preference = match deser_str(dynamic_info, "CpuDynamicInfo", 14) {
-            Some(s) => {
-                if s.is_empty() {
-                    None
-                } else {
-                    Some(s)
+        this.energy_performance_preference =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 14", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
                 }
-            }
-            None => return None,
-        };
+                None => return None,
+            };
 
         Some(this)
     }

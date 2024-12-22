@@ -18,12 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::fmt::Write;
 use std::sync::Arc;
 
+use arrayvec::ArrayString;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::{deser_str, deser_struct, deser_u16, deser_u64, deser_u8};
+use super::deserialize_field;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -167,62 +169,96 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         };
                         let static_info = static_info.as_mut();
 
-                        info.id = match deser_str(static_info, "GpuStaticInfo", 0) {
+                        info.id = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'s' at index 0",
+                            |arg| arg.as_str().map(Arc::from),
+                        ) {
                             Some(id) => id,
                             None => return None,
                         };
 
-                        info.device_name = match deser_str(static_info, "GpuStaticInfo", 1) {
+                        info.device_name = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'s' at index 1",
+                            |arg| arg.as_str().map(Arc::from),
+                        ) {
                             Some(name) => name,
                             None => return None,
                         };
 
-                        info.vendor_id = match deser_u16(static_info, "GpuStaticInfo", 2) {
-                            Some(vendor_id) => vendor_id,
+                        info.vendor_id = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'q' at index 2",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(vendor_id) => vendor_id as _,
                             None => return None,
                         };
 
-                        info.device_id = match deser_u16(static_info, "GpuStaticInfo", 3) {
-                            Some(device_id) => device_id,
+                        info.device_id = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'3: q' at index 3",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(device_id) => device_id as _,
                             None => return None,
                         };
 
-                        info.total_memory = match deser_u64(static_info, "GpuStaticInfo", 4) {
+                        info.total_memory = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'t' at index 4",
+                            |arg| arg.as_u64(),
+                        ) {
                             Some(total_memory) => total_memory,
                             None => return None,
                         };
 
-                        info.total_gtt = match deser_u64(static_info, "GpuStaticInfo", 5) {
+                        info.total_gtt = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'t' at index 5",
+                            |arg| arg.as_u64(),
+                        ) {
                             Some(total_gtt) => total_gtt,
                             None => return None,
                         };
 
-                        info.opengl_version = match deser_struct(static_info, "GpuStaticInfo", 6) {
+                        info.opengl_version = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "STRUCT at index 6",
+                            |arg| arg.as_iter(),
+                        ) {
                             Some(mut it) => {
-                                let it = it.as_mut();
-                                let major = if let Some(major) = it.next() {
+                                let major = if let Some(major) = Iterator::next(it.as_mut()) {
                                     major.as_u64().unwrap_or(0)
                                 } else {
                                     g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
-                                    );
+                                            "MissionCenter::GathererDBusProxy",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
+                                        );
 
                                     0
                                 };
 
-                                let minor = if let Some(minor) = it.next() {
+                                let minor = if let Some(minor) = Iterator::next(it.as_mut()) {
                                     minor.as_u64().unwrap_or(0)
                                 } else {
                                     g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
-                                    );
+                                            "MissionCenter::GathererDBusProxy",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
+                                        );
 
                                     0
                                 };
 
-                                let gl_api = if let Some(minor) = it.next() {
+                                let gl_api = if let Some(minor) = Iterator::next(it.as_mut()) {
                                     match minor.as_u64().unwrap_or(OpenGLApi::Invalid as u64) {
                                         0 => OpenGLApi::OpenGL,
                                         1 => OpenGLApi::OpenGLES,
@@ -230,9 +266,9 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     }
                                 } else {
                                     g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
-                                    );
+                                            "MissionCenter::GathererDBusProxy",
+                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
+                                        );
 
                                     OpenGLApi::Invalid
                                 };
@@ -252,55 +288,96 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
 
                         let mut api_versions = [None; 3];
                         for i in 0..3 {
-                            api_versions[i] =
-                                match deser_struct(static_info, "GpuStaticInfo", i + 7) {
-                                    Some(mut it) => {
-                                        let major = deser_u16(
-                                            it.as_mut(),
-                                            "GpuStaticInfo(ApiVersion)",
-                                            i + 9,
-                                        )
-                                        .unwrap_or(0);
+                            let mut description = ArrayString::<18>::new();
+                            write!(&mut description, "STRUCT at index {}", i + 7).unwrap_or_else(|_| {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuStaticInfo(ApiVersion): Expected 'y at index {}', failed to write description",
+                                    i + 7,
+                                );
+                            });
 
-                                        let minor = deser_u16(
-                                            it.as_mut(),
-                                            "GpuStaticInfo(ApiVersion)",
-                                            i + 10,
-                                        )
-                                        .unwrap_or(0);
+                            api_versions[i] = match deserialize_field(
+                                static_info,
+                                "GpuStaticInfo",
+                                &description,
+                                |arg| arg.as_iter(),
+                            ) {
+                                Some(mut it) => {
+                                    description.clear();
+                                    write!(&mut description, "y at index {}", i + 7).unwrap_or_else(|_| {
+                                        g_critical!(
+                                            "MissionCenter::GathererDBusProxy",
+                                            "Failed to get GpuStaticInfo(ApiVersion): Expected 'y at index {}', failed to write description",
+                                            i + 7,
+                                        );
+                                    });
 
-                                        let patch = deser_u16(
-                                            it.as_mut(),
-                                            "GpuStaticInfo(ApiVersion)",
-                                            i + 11,
-                                        )
-                                        .unwrap_or(0);
+                                    let major = match deserialize_field(
+                                        it.as_mut(),
+                                        "GpuStaticInfo(ApiVersion)",
+                                        &description,
+                                        |arg| arg.as_u64(),
+                                    ) {
+                                        Some(major) => major as u16,
+                                        None => 0,
+                                    };
 
-                                        if major == 0 {
-                                            None
-                                        } else {
-                                            Some(ApiVersion {
-                                                major,
-                                                minor,
-                                                patch,
-                                            })
-                                        }
+                                    let minor = match deserialize_field(
+                                        it.as_mut(),
+                                        "GpuStaticInfo(ApiVersion)",
+                                        &description,
+                                        |arg| arg.as_u64(),
+                                    ) {
+                                        Some(minor) => minor as u16,
+                                        None => 0,
+                                    };
+
+                                    let patch = match deserialize_field(
+                                        it.as_mut(),
+                                        "GpuStaticInfo(ApiVersion)",
+                                        &description,
+                                        |arg| arg.as_u64(),
+                                    ) {
+                                        Some(patch) => patch as u16,
+                                        None => 0,
+                                    };
+
+                                    if major == 0 {
+                                        None
+                                    } else {
+                                        Some(ApiVersion {
+                                            major,
+                                            minor,
+                                            patch,
+                                        })
                                     }
-                                    None => return None,
-                                };
+                                }
+                                None => return None,
+                            };
                         }
 
                         info.vulkan_version = api_versions[0];
                         info.metal_version = api_versions[1];
                         info.direct3d_version = api_versions[2];
 
-                        info.pcie_gen = match deser_u8(static_info, "GpuStaticInfo", 10) {
-                            Some(pcie_gen) => pcie_gen,
+                        info.pcie_gen = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'y' at index 10",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(pcie_gen) => pcie_gen as u8,
                             None => return None,
                         };
 
-                        info.pcie_lanes = match deser_u8(static_info, "GpuStaticInfo", 11) {
-                            Some(pcie_lanes) => pcie_lanes,
+                        info.pcie_lanes = match deserialize_field(
+                            static_info,
+                            "GpuStaticInfo",
+                            "'y' at index 11",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(pcie_lanes) => pcie_lanes as u8,
                             None => return None,
                         };
 
