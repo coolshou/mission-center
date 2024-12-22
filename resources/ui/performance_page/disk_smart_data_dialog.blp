@@ -2,16 +2,29 @@ using Gtk 4.0;
 using Adw 1;
 
 template $SmartDataDialog: Adw.Dialog {
-  Box {
-    ScrolledWindow {
-      hscrollbar-policy: never;
-      propagate-natural-height: true;
-
-      ListBox column_view {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      title-widget: Label {
         styles [
-          "rich-list",
-          "transparent"
+          "heading"
         ]
+
+        label: _("Smart Dater");
+      };
+    }
+
+    Box {
+      ScrolledWindow {
+        hscrollbar-policy: never;
+        propagate-natural-height: true;
+
+        ListBox column_view {
+          styles [
+            "rich-list",
+            "transparent"
+          ]
+        }
       }
     }
   }

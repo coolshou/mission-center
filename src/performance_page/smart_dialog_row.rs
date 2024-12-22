@@ -43,6 +43,7 @@ mod imp {
         pub id: OnceCell<gtk::Label>,
         pub attribute: OnceCell<gtk::Label>,
         pub value: OnceCell<gtk::Label>,
+        pub pretty: OnceCell<gtk::Label>,
         pub normalized: OnceCell<gtk::Label>,
         pub threshold: OnceCell<gtk::Label>,
         pub worst: OnceCell<gtk::Label>,
@@ -58,6 +59,7 @@ mod imp {
                 id: Default::default(),
                 attribute: Default::default(),
                 value: Default::default(),
+                pretty: Default::default(),
                 normalized: Default::default(),
                 threshold: Default::default(),
                 worst: Default::default(),
@@ -111,6 +113,11 @@ mod imp {
                     .object::<gtk::Label>("value")
                     .expect("Could not find `value` object in details pane"),
             );
+            let _ = self.pretty.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("pretty")
+                    .expect("Could not find `pretty` object in details pane"),
+            );
             let _ = self.normalized.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("normalized")
@@ -132,26 +139,13 @@ mod imp {
     impl WidgetImpl for SmartDialogRow {}
 }
 
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ContentType {
-    SectionHeader,
-    App,
-    Process,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum SectionType {
-    Apps,
-    Processes,
-}
-
 pub struct SmartDialogRowBuilder {
     id: u8,
     attribute: glib::GString,
     value: i32,
     normalized: i32,
     threshold: i32,
+    pretty: i64,
     worst: i32,
 }
 
@@ -163,6 +157,7 @@ impl SmartDialogRowBuilder {
             value: 0,
             normalized: 0,
             threshold: 0,
+            pretty: 0,
             worst: 0,
         }
     }
@@ -182,8 +177,8 @@ impl SmartDialogRowBuilder {
         self
     }
 
-    pub fn normalized(mut self, normalized: i32) -> Self {
-        self.normalized = normalized;
+    pub fn pretty(mut self, pretty: i64) -> Self {
+        self.pretty = pretty;
         self
     }
 
@@ -205,6 +200,7 @@ impl SmartDialogRowBuilder {
             this.id.get().expect("damn").set_label(format!("{}", self.id).as_str());
             this.worst.get().expect("Damn").set_label(format!("{}", self.worst).as_str());
             this.value.get().expect("Damn").set_label(format!("{}", self.value).as_str());
+            this.pretty.get().expect("Damn").set_label(format!("{}", self.pretty).as_str());
             this.threshold.get().expect("Damn").set_label(format!("{}", self.threshold).as_str());
             this.normalized.get().expect("Damn").set_label(format!("{}", self.normalized).as_str());
 
