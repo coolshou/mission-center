@@ -796,6 +796,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     };
 
+                    if let Some(avail_spare) = attributes.get("") {
+
+                    }
+
                     println!("{:?}", attributes);
                 } else {
                     println!("No NVME!");
@@ -1322,21 +1326,67 @@ impl Arg for SataSmartResult {
 #[derive(Debug)]
 pub struct NVMeSmartResult {
     success: bool,
+
+    avail_spare: u8,
+    spare_thresh: u8,
+    percent_used: u8,
+    total_data_read: u64,
+    total_data_written: u64,
+    ctrl_busy_minutes: u64,
+    power_cycles: u64,
+    unsafe_shutdowns: u64,
+    media_errors: u64,
+    num_err_log_entries: u64,
+    temp_sensors: Vec<u16>,
+    wctemp: u16,
+    cctemp: u16,
+    warning_temp_time: u32,
+    critical_temp_time: u32,
 }
 
 impl Default for NVMeSmartResult {
     fn default() -> Self {
         Self {
             success: false,
+            avail_spare: 0,
+            spare_thresh: 0,
+            percent_used: 0,
+            total_data_read: 0,
+            total_data_written: 0,
+            ctrl_busy_minutes: 0,
+            power_cycles: 0,
+            unsafe_shutdowns: 0,
+            media_errors: 0,
+            num_err_log_entries: 0,
+            temp_sensors: vec![],
+            wctemp: 0,
+            cctemp: 0,
+            warning_temp_time: 0,
+            critical_temp_time: 0,
         }
     }
 }
 
 impl Append for NVMeSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.success,
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.success);
+            ia.append(self.avail_spare);
+            ia.append(self.spare_thresh);
+            ia.append(self.percent_used);
+            ia.append(self.total_data_read);
+            ia.append(self.total_data_written);
+            ia.append(self.ctrl_busy_minutes);
+            ia.append(self.power_cycles);
+            ia.append(self.unsafe_shutdowns);
+            ia.append(self.media_errors);
+            ia.append(self.num_err_log_entries);
+            ia.append(self.temp_sensors.clone());
+            ia.append(self.wctemp);
+            ia.append(self.cctemp);
+            ia.append(self.warning_temp_time);
+            ia.append(self.critical_temp_time);
+        });
     }
 }
 
@@ -1344,6 +1394,6 @@ impl Arg for NVMeSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(b)")
+        Signature::from("(byyyttttttta(q)qquu)")
     }
 }

@@ -1082,13 +1082,44 @@ impl<'a> Get<'a> for SataSmartResult {
 
 #[derive(Debug)]
 pub struct NVMeSmartResult {
-    pub success: bool,
+    success: bool,
+
+    avail_spare: u8,
+    spare_thresh: u8,
+    percent_used: u8,
+    total_data_read: u64,
+    total_data_written: u64,
+    ctrl_busy_minutes: u64,
+    power_cycles: u64,
+    unsafe_shutdowns: u64,
+    media_errors: u64,
+    num_err_log_entries: u64,
+    temp_sensors: Vec<u16>,
+    wctemp: u16,
+    cctemp: u16,
+    warning_temp_time: u32,
+    critical_temp_time: u32,
 }
 
 impl Default for NVMeSmartResult {
     fn default() -> Self {
         Self {
             success: false,
+            avail_spare: 0,
+            spare_thresh: 0,
+            percent_used: 0,
+            total_data_read: 0,
+            total_data_written: 0,
+            ctrl_busy_minutes: 0,
+            power_cycles: 0,
+            unsafe_shutdowns: 0,
+            media_errors: 0,
+            num_err_log_entries: 0,
+            temp_sensors: vec![],
+            wctemp: 0,
+            cctemp: 0,
+            warning_temp_time: 0,
+            critical_temp_time: 0,
         }
     }
 }
@@ -1105,7 +1136,7 @@ impl Arg for NVMeSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(b)")
+        Signature::from("(byyyttttttta(q)qquu)")
     }
 }
 
