@@ -62,3 +62,8 @@ window checkbutton.theme-selector radio:checked {
 grid.layout-grid picture {
     padding-right: 0.5em;
 }
+
+grid.layout-grid :nth-child(even) {
+    width: 50%;
+    max-width: 50%;
+}
