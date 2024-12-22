@@ -23,6 +23,8 @@ use std::sync::Arc;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
+use super::deserialize_field;
+
 #[derive(Debug, Clone)]
 pub struct GpuDynamicInfo {
     pub id: Arc<str>,
@@ -106,7 +108,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got None",
                 );
-                return None;
+                None
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -115,7 +117,7 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                         "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    None
                 }
                 Some(arr) => {
                     for dynamic_info in arr {
@@ -149,319 +151,154 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                         };
                         let dynamic_info = dynamic_info.as_mut();
 
-                        this.id = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '0: s', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(id) => Arc::<str>::from(id),
-                            },
+                        this.id = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'s' at index 0",
+                            |arg| arg.as_str().map(Arc::from),
+                        ) {
+                            Some(n) => n,
+                            None => return None,
                         };
 
-                        this.temp_celsius = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '1: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '1: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(temp) => temp as _,
-                            },
+                        this.temp_celsius = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'1: u' at index 1",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(tc) => tc as _,
+                            None => return None,
                         };
 
-                        this.fan_speed_percent = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '2: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '2: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(fs) => fs as _,
-                            },
+                        this.fan_speed_percent = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'2: u' at index 2",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(fs) => fs as _,
+                            None => return None,
                         };
 
-                        this.util_percent = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '3: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '3: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(up) => up as _,
-                            },
+                        this.util_percent = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'3: u' at index 3",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(up) => up as _,
+                            None => return None,
                         };
 
-                        this.power_draw_watts = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '4: d', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '4: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pd) => pd as _,
-                            },
+                        this.power_draw_watts = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'4: d' at index 4",
+                            |arg| arg.as_f64(),
+                        ) {
+                            Some(pd) => pd as _,
+                            None => return None,
                         };
 
-                        this.power_draw_max_watts = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '5: d', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '5: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pdm) => pdm as _,
-                            },
+                        this.power_draw_max_watts = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'5: d' at index 5",
+                            |arg| arg.as_f64(),
+                        ) {
+                            Some(pdm) => pdm as _,
+                            None => return None,
                         };
 
-                        this.clock_speed_mhz = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '6: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '6: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(cs) => cs as _,
-                            },
+                        this.clock_speed_mhz = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'6: u' at index 6",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(cs) => cs as _,
+                            None => return None,
                         };
 
-                        this.clock_speed_max_mhz = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '7: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '7: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(csm) => csm as _,
-                            },
+                        this.clock_speed_max_mhz = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'7: u' at index 7",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(csm) => csm as _,
+                            None => return None,
                         };
 
-                        this.mem_speed_mhz = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '8: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '8: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(ms) => ms as _,
-                            },
+                        this.mem_speed_mhz = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'8: u' at index 8",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(ms) => ms as _,
+                            None => return None,
                         };
 
-                        this.mem_speed_max_mhz = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '9: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '9: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(msm) => msm as _,
-                            },
+                        this.mem_speed_max_mhz = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'9: u' at index 9",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(msm) => msm as _,
+                            None => return None,
                         };
 
-                        this.free_memory = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '10: t', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '10: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(fm) => fm as _,
-                            },
+                        this.free_memory = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'10: t' at index 10",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(fm) => fm as _,
+                            None => return None,
                         };
 
-                        this.used_memory = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '11: t', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '11: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(um) => um as _,
-                            },
+                        this.used_memory = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'11: t' at index 11",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(um) => um as _,
+                            None => return None,
                         };
 
-                        this.used_gtt = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '12: t', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '12: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(fm) => fm as _,
-                            },
+                        this.used_gtt = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'12: t' at index 12",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(ug) => ug as _,
+                            None => return None,
                         };
 
-                        this.encoder_percent = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '13: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '13: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(ep) => ep as _,
-                            },
+                        this.encoder_percent = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'13: u' at index 13",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(ep) => ep as _,
+                            None => return None,
                         };
 
-                        this.decoder_percent = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '14: u', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '14: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(dp) => dp as _,
-                            },
+                        this.decoder_percent = match deserialize_field(
+                            dynamic_info,
+                            "GpuDynamicInfo",
+                            "'14: u' at index 14",
+                            |arg| arg.as_u64(),
+                        ) {
+                            Some(dp) => dp as _,
+                            None => return None,
                         };
 
                         result.push(this);

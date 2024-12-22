@@ -26,6 +26,8 @@ use dbus::{
     Signature,
 };
 
+use super::deserialize_field;
+
 #[derive(Debug, Clone)]
 pub struct Service {
     pub name: Arc<str>,
@@ -125,185 +127,81 @@ impl<'a> Get<'a> for ServiceMap {
                         };
                         let service = i.as_mut();
 
-                        this.name = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '0: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(n) => Arc::<str>::from(n),
-                            },
-                        };
+                        this.name =
+                            match deserialize_field(service, "Service", "'s' at index 0", |arg| {
+                                arg.as_str()
+                            }) {
+                                Some(n) => Arc::from(n),
+                                None => continue,
+                            };
 
-                        this.description = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '1: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '1: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(d) => Arc::<str>::from(d),
-                            },
-                        };
+                        this.description =
+                            match deserialize_field(service, "Service", "'s' at index 1", |arg| {
+                                arg.as_str()
+                            }) {
+                                Some(d) => Arc::from(d),
+                                None => continue,
+                            };
 
-                        this.enabled = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '2: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '2: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.enabled =
+                            match deserialize_field(service, "Service", "'b' at index 2", |arg| {
+                                arg.as_i64()
+                            }) {
                                 Some(e) => e != 0,
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.running = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '3: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '3: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.running =
+                            match deserialize_field(service, "Service", "'b' at index 3", |arg| {
+                                arg.as_i64()
+                            }) {
                                 Some(r) => r != 0,
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.failed = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '4: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '4: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(r) => r != 0,
-                            },
-                        };
+                        this.failed =
+                            match deserialize_field(service, "Service", "'b' at index 4", |arg| {
+                                arg.as_i64()
+                            }) {
+                                Some(f) => f != 0,
+                                None => continue,
+                            };
 
-                        this.pid = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '5: u', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '5: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.pid =
+                            match deserialize_field(service, "Service", "'u' at index 5", |arg| {
+                                arg.as_u64()
+                            }) {
                                 Some(p) => NonZeroU32::new(p as u32),
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.user = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '6: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '6: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.user =
+                            match deserialize_field(service, "Service", "'s' at index 6", |arg| {
+                                arg.as_str()
+                            }) {
                                 Some(u) => {
                                     if u.is_empty() {
                                         None
                                     } else {
-                                        Some(Arc::<str>::from(u))
+                                        Some(Arc::from(u))
                                     }
                                 }
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.group = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '7: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '7: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.group =
+                            match deserialize_field(service, "Service", "'s' at index 7", |arg| {
+                                arg.as_str()
+                            }) {
                                 Some(g) => {
                                     if g.is_empty() {
                                         None
                                     } else {
-                                        Some(Arc::<str>::from(g))
+                                        Some(Arc::from(g))
                                     }
                                 }
-                            },
-                        };
+                                None => continue,
+                            };
 
                         result.insert(this.name.clone(), this);
                     }

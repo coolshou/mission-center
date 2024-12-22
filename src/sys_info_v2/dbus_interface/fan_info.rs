@@ -17,9 +17,13 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+use std::sync::Arc;
+
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
 use dbus::Signature;
-use std::sync::Arc;
+
+use super::deserialize_field;
 
 #[derive(Debug, Clone)]
 pub struct FanInfo {
@@ -145,173 +149,69 @@ impl<'a> Get<'a> for FanInfoVec {
                         };
                         let fan_info = i.as_mut();
 
-                        this.fan_label = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '0: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(n) => Arc::<str>::from(n),
-                            },
-                        };
+                        this.fan_label =
+                            match deserialize_field(fan_info, "FanInfo", "'s' at index 0", |arg| {
+                                arg.as_str().map(Arc::from)
+                            }) {
+                                Some(n) => n,
+                                None => continue,
+                            };
 
-                        this.temp_name = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '1: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '1: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(m) => Arc::<str>::from(m),
-                            },
-                        };
+                        this.temp_name =
+                            match deserialize_field(fan_info, "FanInfo", "'s' at index 1", |arg| {
+                                arg.as_str().map(Arc::from)
+                            }) {
+                                Some(n) => n,
+                                None => continue,
+                            };
 
-                        this.temp_amount = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '2: y', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '2: y', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.temp_amount =
+                            match deserialize_field(fan_info, "FanInfo", "'x' at index 2", |arg| {
+                                arg.as_i64()
+                            }) {
                                 Some(s) => s,
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.rpm = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '3: t', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '3: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                        this.rpm =
+                            match deserialize_field(fan_info, "FanInfo", "'t' at index 3", |arg| {
+                                arg.as_u64()
+                            }) {
                                 Some(c) => c,
-                            },
-                        };
+                                None => continue,
+                            };
 
-                        this.percent_vroomimg = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '4: t', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '4: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(f) => f as f32,
-                            },
-                        };
+                        this.percent_vroomimg =
+                            match deserialize_field(fan_info, "FanInfo", "'t' at index 4", |arg| {
+                                arg.as_f64().map(|f| f as f32)
+                            }) {
+                                Some(c) => c,
+                                None => continue,
+                            };
 
-                        this.fan_index = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '5: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '5: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(i) => i,
-                            },
-                        };
+                        this.fan_index =
+                            match deserialize_field(fan_info, "FanInfo", "'t' at index 5", |arg| {
+                                arg.as_u64()
+                            }) {
+                                Some(c) => c,
+                                None => continue,
+                            };
 
-                        this.hwmon_index = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '6: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '6: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(bp) => bp,
-                            },
-                        };
+                        this.hwmon_index =
+                            match deserialize_field(fan_info, "FanInfo", "'t' at index 6", |arg| {
+                                arg.as_u64()
+                            }) {
+                                Some(c) => c,
+                                None => continue,
+                            };
 
-                        this.max_speed = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '7: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '7: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(bp) => bp,
-                            },
-                        };
+                        this.max_speed =
+                            match deserialize_field(fan_info, "FanInfo", "'t' at index 7", |arg| {
+                                arg.as_u64()
+                            }) {
+                                Some(c) => c,
+                                None => continue,
+                            };
 
                         result.push(this);
                     }

@@ -22,6 +22,8 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
+use super::deserialize_field;
+
 #[derive(Debug, Default, Clone)]
 pub struct CpuDynamicInfo {
     pub overall_utilization_percent: f32,
@@ -100,138 +102,58 @@ impl<'a> Get<'a> for CpuDynamicInfo {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        this.overall_utilization_percent = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '0: d', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_f64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '0: d', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(u) => u as _,
-            },
-        };
+        this.overall_utilization_percent =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 0", |arg| {
+                arg.as_f64()
+            }) {
+                Some(u) => u as f32,
+                None => return None,
+            };
 
-        this.overall_kernel_utilization_percent = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '1: d', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_f64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '1: d', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(u) => u as _,
-            },
-        };
+        this.overall_kernel_utilization_percent =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 1", |arg| {
+                arg.as_f64()
+            }) {
+                Some(u) => u as f32,
+                None => return None,
+            };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '2: ARRAY', got None",
-                );
-                return None;
+        match deserialize_field(dynamic_info, "CpuDynamicInfo", "ARRAY at index 2", |arg| {
+            arg.as_iter()
+        }) {
+            Some(iter) => {
+                for v in iter {
+                    this.per_logical_cpu_utilization_percent
+                        .push(v.as_f64().unwrap_or(0.) as f32);
+                }
             }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '2: ARRAY', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(u) => {
-                    for v in u {
-                        this.per_logical_cpu_utilization_percent
-                            .push(v.as_f64().unwrap_or(0.) as f32);
-                    }
-                }
-            },
+            None => return None,
         }
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '4: ARRAY', got None",
-                );
-                return None;
+        match deserialize_field(dynamic_info, "CpuDynamicInfo", "ARRAY at index 4", |arg| {
+            arg.as_iter()
+        }) {
+            Some(iter) => {
+                for v in iter {
+                    this.per_logical_cpu_kernel_utilization_percent
+                        .push(v.as_f64().unwrap_or(0.) as f32);
+                }
             }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '4: ARRAY', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(u) => {
-                    for v in u {
-                        this.per_logical_cpu_kernel_utilization_percent
-                            .push(v.as_f64().unwrap_or(0.) as f32);
-                    }
-                }
-            },
+            None => return None,
         }
 
-        this.current_frequency_mhz = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '6: t', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '6: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(f) => f,
-            },
-        };
+        this.current_frequency_mhz =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 6", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.temperature = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '7: d', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_f64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '7: d', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
+        this.temperature =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'d' at index 7", |arg| {
+                arg.as_f64()
+            }) {
                 Some(u) => {
                     if u == 0. {
                         None
@@ -239,163 +161,82 @@ impl<'a> Get<'a> for CpuDynamicInfo {
                         Some(u as f32)
                     }
                 }
-            },
-        };
+                None => return None,
+            };
 
-        this.process_count = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '8: t', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '8: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(pc) => pc,
-            },
-        };
+        this.process_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 8", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.thread_count = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '9: t', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '9: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(tc) => tc,
-            },
-        };
+        this.thread_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 9", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.handle_count = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '10: t', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '10: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(hc) => hc,
-            },
-        };
+        this.handle_count =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 10", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.uptime_seconds = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuDynamicInfo: Expected '11: t', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuDynamicInfo: Expected '11: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(us) => us,
-            },
-        };
-        this.cpufreq_driver = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '12: s', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '12: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(ivs) => match ivs {
-                    "" => None,
-                    _ => Some(Arc::from(ivs)),
-                },
-            },
-        };
+        this.uptime_seconds =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'t' at index 11", |arg| {
+                arg.as_u64()
+            }) {
+                Some(u) => u,
+                None => return None,
+            };
 
-        this.cpufreq_governor = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '13: s', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '13: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
+        this.cpufreq_driver =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 12", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
                 }
-                Some(ivs) => match ivs {
-                    "" => None,
-                    _ => Some(Arc::from(ivs)),
-                },
-            },
-        };
+                None => return None,
+            };
 
-        this.energy_performance_preference = match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '14: s', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '14: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
+        this.cpufreq_governor =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 13", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
                 }
-                Some(ivs) => match ivs {
-                    "" => None,
-                    _ => Some(Arc::from(ivs)),
-                },
-            },
-        };
+                None => return None,
+            };
+
+        this.energy_performance_preference =
+            match deserialize_field(dynamic_info, "CpuDynamicInfo", "'s' at index 14", |arg| {
+                arg.as_str().map(Arc::<str>::from)
+            }) {
+                Some(s) => {
+                    if s.is_empty() {
+                        None
+                    } else {
+                        Some(s)
+                    }
+                }
+                None => return None,
+            };
 
         Some(this)
     }

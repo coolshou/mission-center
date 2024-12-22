@@ -26,6 +26,8 @@ use std::{
     sync::Arc,
 };
 
+use adw::glib::g_critical;
+use dbus::arg::RefArg;
 use dbus::{
     arg::ArgType,
     blocking::{LocalConnection, Proxy},
@@ -79,6 +81,37 @@ impl TypeMismatchError {
 
 const_assert!(size_of::<TypeMismatchError>() == size_of::<dbus::arg::TypeMismatchError>());
 const_assert!(align_of::<TypeMismatchError>() == align_of::<dbus::arg::TypeMismatchError>());
+
+fn deserialize_field<'a, T, E>(
+    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+    extractor: E,
+) -> Option<T>
+where
+    E: FnOnce(&'a dyn RefArg) -> Option<T>,
+{
+    match iter.next() {
+        None => {
+            g_critical!(
+                "MissionCenter::GathererDBusProxy",
+                "Failed to read DBus data for {context}: Expected {expected_desc}, got None",
+            );
+            None
+        }
+        Some(arg) => match extractor(arg) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to read DBus data for {context}: Expected {expected_desc}, got {:?}",
+                    arg.arg_type(),
+                );
+                None
+            }
+            Some(v) => Some(v),
+        },
+    }
+}
 
 pub trait Gatherer {
     fn get_cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;

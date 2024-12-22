@@ -22,6 +22,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
 
+use super::deserialize_field;
+
 #[derive(Debug, Clone)]
 pub struct App {
     pub name: Arc<str>,
@@ -57,122 +59,52 @@ impl From<&dyn RefArg> for App {
         };
         let app = app.as_mut();
 
-        this.name = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '0: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '0: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(n) => Arc::from(n),
-            },
+        this.name = match deserialize_field(app, "App", "'s' at index 0", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
+            Some(name) => name,
+            None => return this,
         };
 
-        this.icon = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '1: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '1: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
+        this.icon = match deserialize_field(app, "App", "'s' at index 1", |arg| {
+            arg.as_str().map(Arc::<str>::from)
+        }) {
+            Some(icon) => {
+                if icon.is_empty() {
+                    None
+                } else {
+                    Some(icon)
                 }
-                Some(icon) => {
-                    if icon.is_empty() {
-                        None
-                    } else {
-                        Some(Arc::from(icon))
+            }
+            None => return this,
+        };
+
+        this.id = match deserialize_field(app, "App", "'s' at index 2", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
+            Some(id) => id,
+            None => return this,
+        };
+
+        this.command = match deserialize_field(app, "App", "'s' at index 3", |arg| {
+            arg.as_str().map(Arc::from)
+        }) {
+            Some(command) => command,
+            None => return this,
+        };
+
+        match deserialize_field(app, "App", "ARRAY at index 4", |arg| arg.as_iter()) {
+            Some(pids) => {
+                for p in pids {
+                    if let Some(p) = p.as_u64() {
+                        this.pids.push(p as u32);
                     }
                 }
-            },
-        };
-
-        this.id = match Iterator::next(app) {
+            }
             None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '2: s', got None",
-                );
                 return this;
             }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '2: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(id) => Arc::from(id),
-            },
         };
-
-        this.command = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '3: 2', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '3: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(c) => Arc::from(c),
-            },
-        };
-
-        match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '4: ARRAY', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '4: ARRAY', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(pids) => {
-                    for p in pids {
-                        if let Some(p) = p.as_u64() {
-                            this.pids.push(p as u32);
-                        }
-                    }
-                }
-            },
-        }
 
         this
     }
