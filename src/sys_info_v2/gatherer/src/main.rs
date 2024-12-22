@@ -635,9 +635,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        message!("Gatherer::Main", "Registering D-Bus method `SmartInfo`...");
+        message!("Gatherer::Main", "Registering D-Bus method `SataSmartInfo`...");
         builder.method_with_cr_custom::<(String,), (SataSmartResult,), &str, _>(
-            "SmartInfo",
+            "SataSmartInfo",
             ("smart_disk",),
             ("smart_info",),
             move |mut ctx, _, (id,): (String,)| {
@@ -719,6 +719,86 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 } else {
                     println!("No ATA!");
+                }
+
+                ctx.reply(Ok((rezult,)));
+                Some(ctx)
+            }
+        );
+
+        message!("Gatherer::Main", "Registering D-Bus method `NVMeSmartInfo`...");
+        builder.method_with_cr_custom::<(String,), (NVMeSmartResult,), &str, _>(
+            "NVMeSmartInfo",
+            ("smart_disk",),
+            ("smart_info",),
+            move |mut ctx, _, (id,): (String,)| {
+                let mut rezult = NVMeSmartResult::default();
+
+                let Ok(client) = &SYSTEM_STATE
+                    .disk_info
+                    .read()
+                    .unwrap_or_else(PoisonError::into_inner)
+                    .client
+                else {
+                    critical!("Gatherer::Main", "fale 0",);
+                    ctx.reply(Ok((rezult,)));
+                    return Some(ctx);
+                };
+
+                println!("Smarting {}", id);
+
+                let object =
+                    match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
+                        Ok(object) => object,
+                        Err(_) => {
+                            critical!("Gatherer::Main", "fale 1",);
+                            ctx.reply(Ok((rezult,)));
+                            return Some(ctx);
+                        }
+                    };
+
+                let block = match object.block().block_on() {
+                    Ok(block) => block,
+                    Err(_) => {
+                        critical!("Gatherer::Main", "fale 2",);
+                        ctx.reply(Ok((rezult,)));
+                        return Some(ctx);
+                    }
+                };
+
+                let drive_path = match block.drive().block_on() {
+                    Ok(drive) => drive,
+                    Err(_) => {
+                        critical!("Gatherer::Main", "fale 3",);
+                        ctx.reply(Ok((rezult,)));
+                        return Some(ctx);
+                    }
+                };
+
+                let drive_object = match client.object(drive_path) {
+                    Ok(drive_object) => drive_object,
+                    Err(_) => {
+                        critical!("Gatherer::Main", "fale 3",);
+                        ctx.reply(Ok((rezult,)));
+                        return Some(ctx);
+                    }
+                };
+
+                if let Ok(nvme) = drive_object.nvme_controller().block_on() {
+                    let mut options = HashMap::new();
+
+                    let attributes = match nvme.smart_get_attributes(options).block_on() {
+                        Ok(res) => res,
+                        Err(_) => {
+                            println!("No ATA!!!");
+                            ctx.reply(Ok((rezult,)));
+                            return Some(ctx);
+                        }
+                    };
+
+                    println!("{:?}", attributes);
+                } else {
+                    println!("No NVME!");
                 }
 
                 ctx.reply(Ok((rezult,)));
@@ -1236,5 +1316,34 @@ impl Arg for SataSmartResult {
 
     fn signature() -> Signature<'static> {
         Signature::from("(ba(ysqiiixi))")
+    }
+}
+
+#[derive(Debug)]
+pub struct NVMeSmartResult {
+    success: bool,
+}
+
+impl Default for NVMeSmartResult {
+    fn default() -> Self {
+        Self {
+            success: false,
+        }
+    }
+}
+
+impl Append for NVMeSmartResult {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append((
+            self.success,
+        ));
+    }
+}
+
+impl Arg for NVMeSmartResult {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("(b)")
     }
 }

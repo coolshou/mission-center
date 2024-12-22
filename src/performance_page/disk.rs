@@ -36,7 +36,7 @@ mod imp {
     use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
     use crate::performance_page::smart_dialog::SmartDataDialog;
-    use crate::sys_info_v2::{EjectResult, SataSmartResult};
+    use crate::sys_info_v2::{DiskType, DiskSmartInterface, EjectResult, SataSmartResult};
     use super::*;
 
     #[derive(Properties)]
@@ -85,6 +85,7 @@ mod imp {
         pub smart: OnceCell<gtk::Button>,
 
         pub raw_disk_id: OnceCell<String>,
+        pub raw_smart_interface: OnceCell<DiskSmartInterface>,
 
         #[property(name = "eject-failure-dialog", get = Self::eject_failure_dialog, set = Self::set_eject_failure_dialog, type = Option<EjectFailureDialog>
         )]
@@ -128,7 +129,9 @@ mod imp {
                 disk_type: Default::default(),
                 eject: Default::default(),
                 smart: Default::default(),
+
                 raw_disk_id: Default::default(),
+                raw_smart_interface: Default::default(),
 
                 eject_failure_dialog: Cell::new(None),
                 eject_failure_dialog_visible: Cell::new(false),
@@ -274,6 +277,7 @@ mod imp {
             let this = this.imp();
 
             let _ = this.raw_disk_id.set(disk.id.to_string());
+            let _ = this.raw_smart_interface.set(disk.smart_interface.clone());
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
@@ -638,16 +642,30 @@ mod imp {
                         let that = &that;
 
                         match app!().sys_info().and_then(move |sys_info| {
-                            let eject_result = match this.raw_disk_id.get() {
+                            let disk_id = match this.raw_disk_id.get() {
                                 None => {
                                     //todo uh oh
-
-                                    return Ok(());
+                                    return Ok(())
                                 }
-                                Some(disk_id) => {sys_info.smart_info(disk_id)}
+                                Some(d) => {d}
                             };
 
-                            this.show_smart_info(that, eject_result);
+                            match this.raw_smart_interface.get() {
+                                Some(DiskSmartInterface::NVMe) => {
+                                    let smart_info = sys_info.nvme_smart_info(disk_id);
+
+                                    println!("Got back {:?}", smart_info);
+                                }
+                                Some(DiskSmartInterface::Ata) => {
+                                    let smart_info = sys_info.sata_smart_info(disk_id);
+
+                                    this.show_smart_info(that, smart_info);
+                                }
+                                e => {
+                                    println!("Unknown interface {:?}", e);
+                                    // todo panic!
+                                }
+                            }
 
                             Ok(())
                         }) {

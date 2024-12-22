@@ -32,6 +32,7 @@ use pollster::FutureExt;
 use udisks2::Client;
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::zbus::zvariant::OwnedObjectPath;
+use crate::platform::DiskSmartInterface;
 
 #[derive(Debug, Default, Deserialize)]
 struct LSBLKBlockDevice {
@@ -50,6 +51,7 @@ pub struct LinuxDiskInfo {
     pub id: Arc<str>,
     pub model: Arc<str>,
     pub r#type: DiskType,
+    pub smart_interface: DiskSmartInterface,
     pub capacity: u64,
     pub formatted: u64,
     pub system_disk: bool,
@@ -62,8 +64,6 @@ pub struct LinuxDiskInfo {
     pub total_write: u64,
     pub ejectable: bool,
     pub drive_temperature_k: f64,
-
-    pub smart_supported: bool,
 }
 
 impl Default for LinuxDiskInfo {
@@ -72,6 +72,7 @@ impl Default for LinuxDiskInfo {
             id: Arc::from(""),
             model: Arc::from(""),
             r#type: DiskType::default(),
+            smart_interface: Default::default(),
             capacity: 0,
             formatted: 0,
             system_disk: false,
@@ -85,8 +86,6 @@ impl Default for LinuxDiskInfo {
             ejectable: false,
 
             drive_temperature_k: 0.0,
-
-            smart_supported: false,
         }
     }
 }
@@ -123,6 +122,11 @@ impl DiskInfoExt for LinuxDiskInfo {
 
     fn r#type(&self) -> DiskType {
         self.r#type
+    }
+
+    fn smart_interface(&self) -> DiskSmartInterface {
+        // todo why?
+        self.smart_interface.clone()
     }
 
     fn capacity(&self) -> u64 {
@@ -167,10 +171,6 @@ impl DiskInfoExt for LinuxDiskInfo {
 
     fn drive_temperature(&self) -> f64 {
         self.drive_temperature_k
-    }
-
-    fn smart_supported(&self) -> bool {
-        self.smart_supported
     }
 }
 
@@ -534,16 +534,16 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
-                let (
-                    smart_supported,
-                ) = match drive_ata {
-                    Ok(drive_ata) => {(
-                        drive_ata.smart_supported().block_on().unwrap_or(false),
-                    )}
-                    Err(_) => {(
-                        false,
-                    )}
+                let result = object.nvme_controller().block_on();
+                let smart_interface = if drive_ata.is_ok() {
+                    DiskSmartInterface::Ata
+                } else if result.is_ok() {
+                    DiskSmartInterface::NVMe
+                } else {
+                    DiskSmartInterface::Dumb
                 };
+
+                println!("Found smart tyoe of {:?} {:?} ({})", object.object_path(), smart_interface, object_path);
 
                 let capacity = block.size().block_on().unwrap_or(u64::MAX);
                 if capacity == 0 {
@@ -596,6 +596,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         id: Arc::from(dir_name),
                         model,
                         r#type,
+                        smart_interface,
                         capacity,
                         formatted,
                         system_disk,
@@ -608,8 +609,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         total_write: 0,
                         ejectable: drive.ejectable().block_on().unwrap_or(false),
                         drive_temperature_k,
-
-                        smart_supported,
                     },
                 ));
             }

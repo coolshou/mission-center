@@ -35,11 +35,22 @@ pub enum DiskType {
     iSCSI,
     Optical,
 }
-
 impl Default for DiskType {
     fn default() -> Self {
         Self::Unknown
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskSmartInterface {
+    Dumb,
+    Ata,
+    NVMe,
+}
+
+impl Default for DiskSmartInterface {
+    fn default() -> Self { Self::Dumb }
 }
 
 #[derive(Debug, Clone)]
@@ -47,6 +58,7 @@ pub struct DiskInfo {
     pub id: Arc<str>,
     pub model: Arc<str>,
     pub r#type: DiskType,
+    pub smart_interface: DiskSmartInterface,
     pub capacity: u64,
     pub formatted: u64,
     pub system_disk: bool,
@@ -59,8 +71,6 @@ pub struct DiskInfo {
     pub total_write: u64,
     pub ejectable: bool,
     pub drive_temperature: f64,
-
-    pub smart_supported: bool,
 }
 
 impl Default for DiskInfo {
@@ -69,6 +79,7 @@ impl Default for DiskInfo {
             id: Arc::from(""),
             model: Arc::from(""),
             r#type: DiskType::default(),
+            smart_interface: DiskSmartInterface::default(),
             capacity: 0,
             formatted: 0,
             system_disk: false,
@@ -82,7 +93,6 @@ impl Default for DiskInfo {
             ejectable: false,
 
             drive_temperature: 0.0,
-            smart_supported: false,
         }
     }
 }
@@ -119,7 +129,7 @@ impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssyttbddttttbdb)")
+        Signature::from("a(ssyyttbddttttbd)")
     }
 }
 
@@ -244,11 +254,11 @@ impl<'a> Get<'a> for DiskInfoVec {
                             },
                         };
 
-                        this.capacity = match Iterator::next(disk_info) {
+                        this.smart_interface = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '3: t', got None",
+                                    "Failed to get DiskInfo: Expected '3: y', got None",
                                 );
                                 continue;
                             }
@@ -256,16 +266,20 @@ impl<'a> Get<'a> for DiskInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '3: t', got {:?}",
+                                        "Failed to get DiskInfo: Expected '3: y', got {:?}",
                                         arg.arg_type(),
                                     );
                                     continue;
                                 }
-                                Some(c) => c,
+                                Some(t) => match t {
+                                    1 => DiskSmartInterface::Ata,
+                                    2 => DiskSmartInterface::NVMe,
+                                    _ => DiskSmartInterface::Dumb,
+                                },
                             },
                         };
 
-                        this.formatted = match Iterator::next(disk_info) {
+                        this.capacity = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -282,6 +296,27 @@ impl<'a> Get<'a> for DiskInfoVec {
                                     );
                                     continue;
                                 }
+                                Some(c) => c,
+                            },
+                        };
+
+                        this.formatted = match Iterator::next(disk_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get DiskInfo: Expected '5: t', got None",
+                                );
+                                continue;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get DiskInfo: Expected '5: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    continue;
+                                }
                                 Some(f) => f,
                             },
                         };
@@ -290,7 +325,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '5: b', got None",
+                                    "Failed to get DiskInfo: Expected '6: b', got None",
                                 );
                                 continue;
                             }
@@ -298,7 +333,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '5: b', got {:?}",
+                                        "Failed to get DiskInfo: Expected '6: b', got {:?}",
                                         arg.arg_type(),
                                     );
                                     continue;
@@ -311,27 +346,6 @@ impl<'a> Get<'a> for DiskInfoVec {
                         };
 
                         this.busy_percent = match Iterator::next(disk_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '6: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '6: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(bp) => bp as _,
-                            },
-                        };
-
-                        this.response_time_ms = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -348,32 +362,32 @@ impl<'a> Get<'a> for DiskInfoVec {
                                     );
                                     continue;
                                 }
+                                Some(bp) => bp as _,
+                            },
+                        };
+
+                        this.response_time_ms = match Iterator::next(disk_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get DiskInfo: Expected '8: d', got None",
+                                );
+                                continue;
+                            }
+                            Some(arg) => match arg.as_f64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get DiskInfo: Expected '8: d', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    continue;
+                                }
                                 Some(rt) => rt as _,
                             },
                         };
 
                         this.read_speed = match Iterator::next(disk_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '8: t', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '8: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(rs) => rs,
-                            },
-                        };
-
-                        this.total_read = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -394,7 +408,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             },
                         };
 
-                        this.write_speed = match Iterator::next(disk_info) {
+                        this.total_read = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -411,11 +425,11 @@ impl<'a> Get<'a> for DiskInfoVec {
                                     );
                                     continue;
                                 }
-                                Some(ws) => ws,
+                                Some(rs) => rs,
                             },
                         };
 
-                        this.total_write = match Iterator::next(disk_info) {
+                        this.write_speed = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -436,11 +450,11 @@ impl<'a> Get<'a> for DiskInfoVec {
                             },
                         };
 
-                        this.ejectable = match Iterator::next(disk_info) {
+                        this.total_write = match Iterator::next(disk_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '12: b', got None",
+                                    "Failed to get DiskInfo: Expected '12: t', got None",
                                 );
                                 continue;
                             }
@@ -448,7 +462,28 @@ impl<'a> Get<'a> for DiskInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '12: b', got {:?}",
+                                        "Failed to get DiskInfo: Expected '12: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    continue;
+                                }
+                                Some(ws) => ws,
+                            },
+                        };
+
+                        this.ejectable = match Iterator::next(disk_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get DiskInfo: Expected '13: b', got None",
+                                );
+                                continue;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get DiskInfo: Expected '13: b', got {:?}",
                                         arg.arg_type(),
                                     );
                                     continue;
@@ -464,7 +499,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '13: d', got None",
+                                    "Failed to get DiskInfo: Expected '14: d', got None",
                                 );
                                 continue;
                             }
@@ -472,36 +507,12 @@ impl<'a> Get<'a> for DiskInfoVec {
                                 None => {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '13: d', got {:?}",
+                                        "Failed to get DiskInfo: Expected '14: d', got {:?}",
                                         arg.arg_type(),
                                     );
                                     continue;
                                 }
                                 Some(ws) => ws
-                            },
-                        };
-
-                        this.smart_supported = match Iterator::next(disk_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '14: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '14: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(ws) => match ws {
-                                    1 => true,
-                                    _ => false,
-                                },
                             },
                         };
 

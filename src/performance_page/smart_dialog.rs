@@ -36,6 +36,7 @@ mod imp {
     use crate::performance_page::disk::PerformancePageDisk;
     use crate::performance_page::DiskPage;
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
+    use crate::performance_page::smart_dialog_row::SmartDialogRowBuilder;
     use crate::sys_info_v2::{App, EjectResult, Process, SataSmartResult};
     use super::*;
 
@@ -60,27 +61,16 @@ mod imp {
             modelo.remove_all();
 
             for parsed_result in result.blocking_processes {
-                if !process.1.is_empty() {
-                    let new_root = EjectFailureRowBuilder::new()
-                        .icon(iconname)
-                        .files_open(process.1.clone())
-                        .pid(process.0)
-                        .name(&appname)
-                        .build();
-
-                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
-                }
-
-                if !process.2.is_empty() {
-                    let new_root = EjectFailureRowBuilder::new()
-                        .icon(iconname)
-                        .files_open(process.2.clone())
-                        .pid(process.0)
-                        .name(&appname)
-                        .build();
-
-                    modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
-                }
+                modelo.append(
+                    &SmartDialogRowBuilder::new()
+                        .id(parsed_result.id)
+                        .attribute(parsed_result.name.as_str())
+                        .value(parsed_result.value)
+                        .threshold(parsed_result.threshold)
+                        .normalized(parsed_result.threshold)
+                        .worst(parsed_result.worst)
+                        .build()
+                )
             }
         }
     }

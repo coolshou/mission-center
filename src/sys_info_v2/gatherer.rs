@@ -336,8 +336,12 @@ impl Gatherer {
         dbus_call!(self, eject_disk, "EjectDisk", disk_id, use_force);
     }
 
-    pub fn smart_info(&self, disk_id: &str) -> SataSmartResult {
-        dbus_call!(self, smart_info, "SmartInfo", disk_id);
+    pub fn sata_smart_info(&self, disk_id: &str) -> SataSmartResult {
+        dbus_call!(self, sata_smart_info, "SataSmartInfo", disk_id);
+    }
+
+    pub fn nvme_smart_info(&self, disk_id: &str) -> NVMeSmartResult {
+        dbus_call!(self, nvme_smart_info, "NVMeSmartInfo", disk_id);
     }
 
     pub fn fans_info(&self) -> Vec<FanInfo> {
