@@ -22,31 +22,14 @@ use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::logging::{critical, warning};
 use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
 use glob::glob;
-use serde::Deserialize;
 use std::{sync::Arc, time::Instant};
-use std::any::Any;
 use std::cmp::max;
 use std::collections::HashMap;
-use std::convert::Infallible;
-use std::path::PathBuf;
 use dbus::arg::RefArg;
 use pollster::FutureExt;
 use udisks2::{Client, Object};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
-use udisks2::zbus::zvariant::OwnedObjectPath;
 use crate::platform::DiskSmartInterface;
-
-#[derive(Debug, Default, Deserialize)]
-struct LSBLKBlockDevice {
-    name: String,
-    mountpoints: Vec<Option<String>>,
-    children: Option<Vec<Option<LSBLKBlockDevice>>>,
-}
-
-#[derive(Debug, Deserialize)]
-struct LSBLKOutput {
-    blockdevices: Vec<Option<LSBLKBlockDevice>>,
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -670,139 +653,6 @@ impl LinuxDisksInfo {
 
             refresh_timestamp: *INITIAL_REFRESH_TS,
         }
-    }
-
-    fn filesystem_info(device_name: &str) -> Option<(bool, u64)> {
-        use crate::{critical, warning};
-
-        let entries = match std::fs::read_dir(format!("/sys/block/{}", device_name)) {
-            Ok(e) => e,
-            Err(e) => {
-                critical!(
-                    "Gatherer::DiskInfo",
-                    "Failed to read filesystem information for '{}': {}",
-                    device_name,
-                    e
-                );
-
-                return None;
-            }
-        };
-
-        let is_root_device = Self::mount_points(&device_name)
-            .iter()
-            .map(|v| v.as_str())
-            .any(|v| v == "/");
-        let mut formatted_size = 0_u64;
-        for entry in entries {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    warning!(
-                        "Gatherer::DiskInfo",
-                        "Failed to read some filesystem information for '{}': {}",
-                        device_name,
-                        e
-                    );
-                    continue;
-                }
-            };
-
-            let part_name = entry.file_name();
-            let part_name = part_name.to_string_lossy();
-            if !part_name.starts_with(device_name) {
-                continue;
-            }
-            std::fs::read_to_string(format!("/sys/block/{}/{}/size", &device_name, part_name))
-                .ok()
-                .map(|v| v.trim().parse::<u64>().ok().map_or(0, |v| v * 512))
-                .map(|v| {
-                    formatted_size += v;
-                });
-        }
-
-        Some((is_root_device, formatted_size))
-    }
-
-    fn mount_points(device_name: &str) -> Vec<String> {
-        use crate::critical;
-
-        let mut cmd = std::process::Command::new("lsblk");
-        cmd.arg("-o").arg("NAME,MOUNTPOINTS").arg("--json");
-
-        let lsblk_out = if let Ok(output) = cmd.output() {
-            if output.stderr.len() > 0 {
-                critical!(
-                    "Gatherer::DiskInfo",
-                    "Failed to refresh block device information, host command execution failed: {}",
-                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
-                );
-                return vec![];
-            }
-
-            output.stdout
-        } else {
-            critical!(
-                "Gatherer::DiskInfo",
-                "Failed to refresh block device information, host command execution failed"
-            );
-            return vec![];
-        };
-
-        let mut lsblk_out = match serde_json::from_slice::<LSBLKOutput>(lsblk_out.as_slice()) {
-            Ok(v) => v,
-            Err(e) => {
-                critical!(
-                    "MissionCenter::DiskInfo",
-                    "Failed to refresh block device information, host command execution failed: {}",
-                    e
-                );
-                return vec![];
-            }
-        };
-
-        let mut mount_points = vec![];
-        for block_device in lsblk_out
-            .blockdevices
-            .iter_mut()
-            .filter_map(|bd| bd.as_mut())
-        {
-            let block_device = core::mem::take(block_device);
-            if block_device.name != device_name {
-                continue;
-            }
-
-            let children = match block_device.children {
-                None => break,
-                Some(c) => c,
-            };
-
-            fn find_mount_points(
-                mut block_devices: Vec<Option<LSBLKBlockDevice>>,
-                mount_points: &mut Vec<String>,
-            ) {
-                for block_device in block_devices.iter_mut().filter_map(|bd| bd.as_mut()) {
-                    let mut block_device = core::mem::take(block_device);
-
-                    for mountpoint in block_device
-                        .mountpoints
-                        .iter_mut()
-                        .filter_map(|mp| mp.as_mut())
-                    {
-                        mount_points.push(core::mem::take(mountpoint));
-                    }
-
-                    if let Some(children) = block_device.children {
-                        find_mount_points(children, mount_points);
-                    }
-                }
-            }
-
-            find_mount_points(children, &mut mount_points);
-            break;
-        }
-
-        mount_points
     }
 
     fn get_mmc_type(dir_name: &String) -> DiskType {
