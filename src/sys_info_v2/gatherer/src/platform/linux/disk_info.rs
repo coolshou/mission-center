@@ -26,10 +26,11 @@ use serde::Deserialize;
 use std::{sync::Arc, time::Instant};
 use std::any::Any;
 use std::collections::HashMap;
+use std::convert::Infallible;
 use std::path::PathBuf;
 use dbus::arg::RefArg;
 use pollster::FutureExt;
-use udisks2::Client;
+use udisks2::{Client, Object};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::zbus::zvariant::OwnedObjectPath;
 use crate::platform::DiskSmartInterface;
@@ -227,58 +228,117 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             }
         };
 
-        for raw_object in objects {
-            let object_path = raw_object.0;
-            let object = match client.object(object_path.clone()) {
-                Ok(object) => object,
-                Err(_) => {
-                    continue;
-                }
-            };
+        let mut block_list = vec![];
+        let mut drive_block_map = HashMap::new();
+        let mut drive_path_map = HashMap::new();
 
-            let drive = match object.drive().block_on() {
-                Ok(drive) => {
-                    drive
-                },
-                Err(e) => {
-                    continue;
-                }
+        for (object_path, _) in objects {
+            // println!("Scannering {}", object_path);
+            let Ok(mut object) = client.object(object_path.clone()) else {
+                // println!("No oject");
+                continue;
             };
+            if let Ok(drive) = object.drive().block_on() {
+                // println!("drive");
+                drive_block_map.insert(object_path, (drive, object, vec![]));
+            } else {
+                let partition = object.partition().block_on();
+
+                let drive = if let Ok(block) = object.block().block_on() {
+                    let Ok(drive_path) = block.drive().block_on() else {
+                        continue;
+                    };
+                    println!("{}", drive_path);
+                    drive_path_map.insert(drive_path.clone(), String::from_utf8(block.device().block_on().unwrap()).unwrap());
+                    let drive = drive_path.to_string();
+                    if drive == "/" {
+                        // println!("No drive");
+                        continue;
+                    }
+                    drive_path
+                } else {
+                    continue
+                };
+
+                if let Ok(encrypted) = object.encrypted().block_on() {
+                    let Ok(new_object_path) = encrypted.cleartext_device().block_on() else {
+                        // println!("No cleartext");
+                        // todo how tf did i get here?
+                        continue;
+                    };
+
+                    // println!("Swapping {} for {}", object_path, new_object_path);
+
+                    object = match client.object(new_object_path.clone()) {
+                        Ok(o) => {o}
+                        Err(_) => {
+                            // println!("Noooo clearertext");
+                            continue;
+                        }
+                    };
+                }
+
+                if let Ok(block) = object.block().block_on() {
+                    let fs = object.filesystem().block_on();
+
+                    block_list.push((block, partition, fs, drive));
+
+                    // println!("Pushing {}", object_path);
+                } else {
+                    // println!("No block");
+                }
+            }
+        }
+
+        for (block, partition, filesystem, parent) in block_list {
+            if let Some((_, _, ref mut block_list)) = drive_block_map.get_mut(&parent) {
+                // println!("Adding {:?}", parent);
+                block_list.push((block, partition, filesystem));
+            } else {
+                // println!("I never saw {}", parent);
+            }
+        }
+
+        // println!("entering loop");
+
+        for (object_path, (drive, object, blocks)) in drive_block_map.iter() {
+            println!("object_path: {:?}", object_path);
 
             let drive_ata = object.drive_ata().block_on();
 
-            let Some(block) = client.block_for_drive(&drive, true).block_on() else {
-                warning!(
-                    "MissionCenter::DiskInfo",
-                    "Device has no block: {:?}",
-                    object_path
-                );
+            let Some((block, _, _)) = blocks.get(0) else {
                 continue;
             };
 
-            let Ok(device) = block.device().block_on().map(|it| String::from_utf8(it)) else {
-                warning!(
-                    "MissionCenter::DiskInfo",
-                    "Failed to get block's device: {:?}",
-                    object_path
-                );
+            let Ok(dirs) = std::fs::read_dir("/sys/block") else {
                 continue;
             };
 
-            let Ok(device) = device else {
-                warning!(
-                    "MissionCenter::DiskInfo",
-                    "Failed to get block's device: {:?}",
-                    object_path
-                );
+            let mut dir_name = None;
+
+            let Ok(raw_dir_name) = block.device().block_on().map(|it| String::from_utf8(it).unwrap()) else {
                 continue;
             };
 
-            let device = device.trim_matches(char::from(0));
+            let Some(raw_dir_name) = drive_path_map.get(object_path) else {
+                // std::path::Path::new(&raw_dir_name).file_name().map(|it| it.to_str().unwrap().trim_matches(char::from(0))) else {
+                continue;
+            };
 
-            let dir_name = match std::path::Path::new(&device).file_name() {
-                Some(name) => name.to_string_lossy().into_owned(),
-                None => { continue; }
+            let Some(raw_dir_name) = std::path::Path::new(raw_dir_name).file_name().map(|it| it.to_str().unwrap().trim_matches(char::from(0))) else {
+                continue;
+            };
+
+            for dir in dirs.filter_map(Result::ok) {
+                if raw_dir_name.starts_with(dir.file_name().to_str().unwrap()) {
+                    dir_name = Some(dir.file_name().into_string().unwrap());
+                    break;
+                }
+            }
+
+            let Some(dir_name) = dir_name else {
+                println!("Unknown device {}", raw_dir_name);
+                continue;
             };
 
             let mut prev_disk_index = None;
@@ -288,18 +348,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     break;
                 }
             }
-
-            let drive = match client.drive_for_block(&block).block_on() {
-                Ok(drive) => drive,
-                Err(_) => {
-                    warning!(
-                        "MissionCenter::DiskInfo",
-                        "Failed to get block's drive: {:?}",
-                        object_path
-                    );
-                    continue;
-                }
-            };
 
             let stats = std::fs::read_to_string(format!("/sys/block/{}/stat", dir_name));
 
@@ -520,6 +568,48 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
+                let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
+                    println!("Using root block {:?}", String::from_utf8(root_block.device().block_on().unwrap()));
+                    root_block.size().block_on().unwrap_or(0)
+                } else {
+                    println!("Summering");
+                    blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
+                };
+
+                if capacity == 0 {
+                    println!("Ignoring {:?}", object_path);
+                    continue;
+                }
+
+                let mut formatted = 0;
+                let mut has_root = false;
+
+                println!("Scanning {} blocks", blocks.len());
+
+                for (b, p, f) in blocks {
+                    println!("{:?} {:?} {:?}", String::from_utf8(b.device().block_on().unwrap_or_default()).unwrap_or_default(), p.is_ok(), f.is_ok());
+                    if let Ok(p) = p {
+                        let thissize = p.size().block_on().unwrap_or(0);
+                        println!("Using block {}", thissize);
+                        formatted += thissize;
+                    } else if let Ok(f) = f {
+                        let thissize = f.size().block_on().unwrap_or(0);
+                        println!("Using block {}", thissize);
+                        formatted += thissize;
+                    }
+
+                    if let Ok(f) = f {
+                        if let Ok(mountpoints) = f.mount_points().block_on() {
+                            let mountpoints = mountpoints.iter().map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
+                            // println!("Using fs {:?}", mountpoints.clone().collect::<Vec<_>>());
+
+                            has_root |= mountpoints.map(|it| it.trim_matches(char::from(0)) == "/").reduce(|out, curr| out || curr).unwrap_or(false);
+                        } else {
+                            println!("Missing any mountpoints??")
+                        }
+                    }
+                }
+
                 let result = object.nvme_controller().block_on();
                 let smart_interface = if drive_ata.is_ok() {
                     DiskSmartInterface::Ata
@@ -529,12 +619,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     DiskSmartInterface::Dumb
                 };
 
-                println!("Found smart tyoe of {:?} {:?} ({})", object.object_path(), smart_interface, object_path);
-
-                let capacity = block.size().block_on().unwrap_or(u64::MAX);
-                if capacity == 0 {
-                    continue;
-                }
+                // println!("Found smart tyoe of {:?} {:?} ({})", object.object_path(), smart_interface, object_path);
 
                 // todo should we do this?
                 let r#type = if drive.optical().block_on().unwrap_or(false) {
@@ -554,8 +639,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     }
                 };
 
-                let fs_info = Self::filesystem_info(&dir_name);
-                let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
+                // let fs_info = Self::filesystem_info(&dir_name);
+                // let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
+
+                let system_disk = has_root;
+                let formatted = formatted;
 
                 let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
