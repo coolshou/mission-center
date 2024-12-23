@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-23 17:11+0000\n"
-"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
+"PO-Revision-Date: 2024-12-23 17:14+0000\n"
+"Last-Translator: asilva <andre.f.r.da.silva+weblate@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt/>\n"
 "Language: pt\n"
@@ -73,7 +73,7 @@ msgstr "Veja um detalhe de como a memória está a ser utilizada pelo sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Monitorize a utilização do disco e as taxas de transferência"
+msgstr "Monitorizar utilização de Disco e velocidades de transferência"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
@@ -125,7 +125,8 @@ msgstr "Desenvolvido em Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Limitações (há trabalho em andamento para superar todas elas):"
+msgstr ""
+"Limitações (existem desenvolvimentos em curso para ultrapassar as mesmas)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
