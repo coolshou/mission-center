@@ -574,6 +574,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         if let Ok(mountpoints) = f.mount_points().block_on() {
                             let mountpoints = mountpoints.iter().map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
 
+                            println!("Checking for root partitions {:?}", mountpoints.clone().collect::<Vec<_>>());
+
                             has_root |= mountpoints.map(|it| it.trim_matches(char::from(0)) == "/").reduce(|out, curr| out || curr).unwrap_or(false);
                         }
                     }
