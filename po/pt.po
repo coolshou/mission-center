@@ -126,7 +126,7 @@ msgstr "Desenvolvido em Rust"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr ""
-"Limitações (existem desenvolvimentos em curso para ultrapassar as mesmas)"
+"Limitações (existem desenvolvimentos em curso para ultrapassar as mesmas):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
