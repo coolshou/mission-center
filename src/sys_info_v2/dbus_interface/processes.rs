@@ -23,7 +23,7 @@ use std::{collections::HashMap, sync::Arc};
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::deserialize_field;
+use super::{deser_iter, deser_str, deser_u32, deser_u64, deser_usize};
 
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
@@ -112,16 +112,12 @@ impl From<&dyn RefArg> for Process {
 
         let process = process.as_mut();
 
-        this.name = match deserialize_field(process, "Process", "'s' at index 0", |arg| {
-            arg.as_str().map(Arc::from)
-        }) {
+        this.name = match deser_str(process, "Process", "'s' at index 0") {
             Some(name) => name,
             None => return this,
         };
 
-        if let Some(cmds) =
-            deserialize_field(process, "Process", "ARRAY at index 1", |arg| arg.as_iter())
-        {
+        if let Some(cmds) = deser_iter(process, "Process", "ARRAY at index 1") {
             for c in cmds {
                 if let Some(c) = c.as_str() {
                     this.cmd.push(Arc::from(c));
@@ -131,38 +127,33 @@ impl From<&dyn RefArg> for Process {
             return this;
         }
 
-        this.exe = match deserialize_field(process, "Process", "'s' at index 3", |arg| {
-            arg.as_str().map(Arc::from)
-        }) {
+        this.exe = match deser_str(process, "Process", "'s' at index 3") {
             Some(exe) => exe,
             None => return this,
         };
 
-        this.state =
-            match deserialize_field(process, "Process", "'y' at index 4", |arg| arg.as_u64()) {
-                Some(u) => {
-                    if u < ProcessState::Unknown as u64 {
-                        unsafe { core::mem::transmute(u as u8) }
-                    } else {
-                        ProcessState::Unknown
-                    }
+        this.state = match deser_u64(process, "Process", "'y' at index 4") {
+            Some(u) => {
+                if u < ProcessState::Unknown as u64 {
+                    unsafe { core::mem::transmute(u as u8) }
+                } else {
+                    ProcessState::Unknown
                 }
-                None => return this,
-            };
-
-        this.pid = match deserialize_field(process, "Process", "'u' at index 5", |arg| arg.as_u64())
-        {
-            Some(p) => p as _,
+            }
             None => return this,
         };
 
-        this.parent =
-            match deserialize_field(process, "Process", "'u' at index 6", |arg| arg.as_u64()) {
-                Some(p) => p as _,
-                None => return this,
-            };
+        this.pid = match deser_u32(process, "Process", "'u' at index 5") {
+            Some(p) => p,
+            None => return this,
+        };
 
-        match deserialize_field(process, "Process", "STRUCT at index 7", |arg| arg.as_iter()) {
+        this.parent = match deser_u32(process, "Process", "'u' at index 6") {
+            Some(p) => p,
+            None => return this,
+        };
+
+        match deser_iter(process, "Process", "STRUCT at index 7") {
             Some(arg) => {
                 let mut values = [0_f32; 6];
 
@@ -182,11 +173,10 @@ impl From<&dyn RefArg> for Process {
             None => return this,
         };
 
-        this.task_count =
-            match deserialize_field(process, "Process", "'t' at index 8", |arg| arg.as_u64()) {
-                Some(tc) => tc as _,
-                None => return this,
-            };
+        this.task_count = match deser_usize(process, "Process", "'t' at index 8") {
+            Some(tc) => tc,
+            None => return this,
+        };
 
         this
     }

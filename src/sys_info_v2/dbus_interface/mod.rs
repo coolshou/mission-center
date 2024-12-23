@@ -82,7 +82,7 @@ impl TypeMismatchError {
 const_assert!(size_of::<TypeMismatchError>() == size_of::<dbus::arg::TypeMismatchError>());
 const_assert!(align_of::<TypeMismatchError>() == align_of::<dbus::arg::TypeMismatchError>());
 
-fn deserialize_field<'a, T, E>(
+fn deser<'a, T, E>(
     iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
     context: &str,
     expected_desc: &str,
@@ -111,6 +111,103 @@ where
             Some(v) => Some(v),
         },
     }
+}
+
+fn deser_iter<'a>(
+    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<Box<dyn Iterator<Item = &'a dyn RefArg> + 'a>> {
+    deser(iter, context, expected_desc, |arg| arg.as_iter())
+}
+
+fn deser_u64(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<u64> {
+    deser(iter, context, expected_desc, |arg| arg.as_u64())
+}
+
+fn deser_u32(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<u32> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_u64().map(|v| v as u32)
+    })
+}
+
+fn deser_u16(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<u16> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_u64().map(|v| v as u16)
+    })
+}
+
+fn deser_u8(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<u8> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_u64().map(|v| v as u8)
+    })
+}
+
+fn deser_usize(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<usize> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_u64().map(|v| v as usize)
+    })
+}
+
+fn deser_i64(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<i64> {
+    deser(iter, context, expected_desc, |arg| arg.as_i64())
+}
+
+fn deser_bool(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<bool> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_u64().map(|v| match v {
+            0 => false,
+            _ => true,
+        })
+    })
+}
+
+fn deser_f32(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<f32> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_f64().map(|v| v as f32)
+    })
+}
+
+fn deser_str(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+) -> Option<Arc<str>> {
+    deser(iter, context, expected_desc, |arg| {
+        arg.as_str().map(Arc::from)
+    })
 }
 
 pub trait Gatherer {
