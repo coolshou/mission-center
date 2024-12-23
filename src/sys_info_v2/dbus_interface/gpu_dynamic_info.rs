@@ -23,7 +23,7 @@ use std::sync::Arc;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::deserialize_field;
+use super::{deser_f32, deser_str, deser_u32, deser_u64};
 
 #[derive(Debug, Clone)]
 pub struct GpuDynamicInfo {
@@ -151,153 +151,108 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                         };
                         let dynamic_info = dynamic_info.as_mut();
 
-                        this.id = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'s' at index 0",
-                            |arg| arg.as_str().map(Arc::from),
-                        ) {
+                        this.id = match deser_str(dynamic_info, "GpuDynamicInfo", "'s' at index 0")
+                        {
                             Some(n) => n,
                             None => return None,
                         };
 
-                        this.temp_celsius = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'1: u' at index 1",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(tc) => tc as _,
-                            None => return None,
-                        };
+                        this.temp_celsius =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'1: u' at index 1") {
+                                Some(tc) => tc,
+                                None => return None,
+                            };
 
-                        this.fan_speed_percent = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'2: u' at index 2",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(fs) => fs as _,
-                            None => return None,
-                        };
+                        this.fan_speed_percent =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'2: u' at index 2") {
+                                Some(fs) => fs,
+                                None => return None,
+                            };
 
-                        this.util_percent = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'3: u' at index 3",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(up) => up as _,
-                            None => return None,
-                        };
+                        this.util_percent =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'3: u' at index 3") {
+                                Some(up) => up,
+                                None => return None,
+                            };
 
-                        this.power_draw_watts = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'4: d' at index 4",
-                            |arg| arg.as_f64(),
-                        ) {
-                            Some(pd) => pd as _,
-                            None => return None,
-                        };
+                        this.power_draw_watts =
+                            match deser_f32(dynamic_info, "GpuDynamicInfo", "'4: d' at index 4") {
+                                Some(pd) => pd,
+                                None => return None,
+                            };
 
-                        this.power_draw_max_watts = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'5: d' at index 5",
-                            |arg| arg.as_f64(),
-                        ) {
-                            Some(pdm) => pdm as _,
-                            None => return None,
-                        };
+                        this.power_draw_max_watts =
+                            match deser_f32(dynamic_info, "GpuDynamicInfo", "'5: d' at index 5") {
+                                Some(pdm) => pdm,
+                                None => return None,
+                            };
 
-                        this.clock_speed_mhz = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'6: u' at index 6",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(cs) => cs as _,
-                            None => return None,
-                        };
+                        this.clock_speed_mhz =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'6: u' at index 6") {
+                                Some(cs) => cs,
+                                None => return None,
+                            };
 
-                        this.clock_speed_max_mhz = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'7: u' at index 7",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(csm) => csm as _,
-                            None => return None,
-                        };
+                        this.clock_speed_max_mhz =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'7: u' at index 7") {
+                                Some(csm) => csm,
+                                None => return None,
+                            };
 
-                        this.mem_speed_mhz = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'8: u' at index 8",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(ms) => ms as _,
-                            None => return None,
-                        };
+                        this.mem_speed_mhz =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'8: u' at index 8") {
+                                Some(ms) => ms,
+                                None => return None,
+                            };
 
-                        this.mem_speed_max_mhz = match deserialize_field(
-                            dynamic_info,
-                            "GpuDynamicInfo",
-                            "'9: u' at index 9",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(msm) => msm as _,
-                            None => return None,
-                        };
+                        this.mem_speed_max_mhz =
+                            match deser_u32(dynamic_info, "GpuDynamicInfo", "'9: u' at index 9") {
+                                Some(msm) => msm,
+                                None => return None,
+                            };
 
-                        this.free_memory = match deserialize_field(
+                        this.free_memory = match deser_u64(
                             dynamic_info,
                             "GpuDynamicInfo",
                             "'10: t' at index 10",
-                            |arg| arg.as_u64(),
                         ) {
-                            Some(fm) => fm as _,
+                            Some(fm) => fm,
                             None => return None,
                         };
 
-                        this.used_memory = match deserialize_field(
+                        this.used_memory = match deser_u64(
                             dynamic_info,
                             "GpuDynamicInfo",
                             "'11: t' at index 11",
-                            |arg| arg.as_u64(),
                         ) {
-                            Some(um) => um as _,
+                            Some(um) => um,
                             None => return None,
                         };
 
-                        this.used_gtt = match deserialize_field(
+                        this.used_gtt = match deser_u64(
                             dynamic_info,
                             "GpuDynamicInfo",
                             "'12: t' at index 12",
-                            |arg| arg.as_u64(),
                         ) {
-                            Some(ug) => ug as _,
+                            Some(ug) => ug,
                             None => return None,
                         };
 
-                        this.encoder_percent = match deserialize_field(
+                        this.encoder_percent = match deser_u32(
                             dynamic_info,
                             "GpuDynamicInfo",
                             "'13: u' at index 13",
-                            |arg| arg.as_u64(),
                         ) {
-                            Some(ep) => ep as _,
+                            Some(ep) => ep,
                             None => return None,
                         };
 
-                        this.decoder_percent = match deserialize_field(
+                        this.decoder_percent = match deser_u32(
                             dynamic_info,
                             "GpuDynamicInfo",
                             "'14: u' at index 14",
-                            |arg| arg.as_u64(),
                         ) {
-                            Some(dp) => dp as _,
+                            Some(dp) => dp,
                             None => return None,
                         };
 

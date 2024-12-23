@@ -26,7 +26,7 @@ use dbus::{
     Signature,
 };
 
-use super::deserialize_field;
+use super::{deser_bool, deser_str, deser_u32};
 
 #[derive(Debug, Clone)]
 pub struct Service {
@@ -127,81 +127,57 @@ impl<'a> Get<'a> for ServiceMap {
                         };
                         let service = i.as_mut();
 
-                        this.name =
-                            match deserialize_field(service, "Service", "'s' at index 0", |arg| {
-                                arg.as_str()
-                            }) {
-                                Some(n) => Arc::from(n),
-                                None => continue,
-                            };
+                        this.name = match deser_str(service, "Service", "'s' at index 0") {
+                            Some(n) => n,
+                            None => continue,
+                        };
 
-                        this.description =
-                            match deserialize_field(service, "Service", "'s' at index 1", |arg| {
-                                arg.as_str()
-                            }) {
-                                Some(d) => Arc::from(d),
-                                None => continue,
-                            };
+                        this.description = match deser_str(service, "Service", "'s' at index 1") {
+                            Some(d) => d,
+                            None => continue,
+                        };
 
-                        this.enabled =
-                            match deserialize_field(service, "Service", "'b' at index 2", |arg| {
-                                arg.as_i64()
-                            }) {
-                                Some(e) => e != 0,
-                                None => continue,
-                            };
+                        this.enabled = match deser_bool(service, "Service", "'b' at index 2") {
+                            Some(e) => e,
+                            None => continue,
+                        };
 
-                        this.running =
-                            match deserialize_field(service, "Service", "'b' at index 3", |arg| {
-                                arg.as_i64()
-                            }) {
-                                Some(r) => r != 0,
-                                None => continue,
-                            };
+                        this.running = match deser_bool(service, "Service", "'b' at index 3") {
+                            Some(r) => r,
+                            None => continue,
+                        };
 
-                        this.failed =
-                            match deserialize_field(service, "Service", "'b' at index 4", |arg| {
-                                arg.as_i64()
-                            }) {
-                                Some(f) => f != 0,
-                                None => continue,
-                            };
+                        this.failed = match deser_bool(service, "Service", "'b' at index 4") {
+                            Some(f) => f,
+                            None => continue,
+                        };
 
-                        this.pid =
-                            match deserialize_field(service, "Service", "'u' at index 5", |arg| {
-                                arg.as_u64()
-                            }) {
-                                Some(p) => NonZeroU32::new(p as u32),
-                                None => continue,
-                            };
+                        this.pid = match deser_u32(service, "Service", "'u' at index 5") {
+                            Some(p) => NonZeroU32::new(p),
+                            None => continue,
+                        };
 
-                        this.user =
-                            match deserialize_field(service, "Service", "'s' at index 6", |arg| {
-                                arg.as_str()
-                            }) {
-                                Some(u) => {
-                                    if u.is_empty() {
-                                        None
-                                    } else {
-                                        Some(Arc::from(u))
-                                    }
+                        this.user = match deser_str(service, "Service", "'s' at index 6") {
+                            Some(u) => {
+                                if u.is_empty() {
+                                    None
+                                } else {
+                                    Some(u)
                                 }
-                                None => continue,
-                            };
+                            }
+                            None => continue,
+                        };
 
-                        this.group =
-                            match deserialize_field(service, "Service", "'s' at index 7", |arg| {
-                                arg.as_str()
-                            }) {
-                                Some(g) => {
-                                    if g.is_empty() {
-                                        None
-                                    } else {
-                                        Some(Arc::from(g))
-                                    }
+                        this.group = match deser_str(service, "Service", "'s' at index 7") {
+                            Some(g) => {
+                                if g.is_empty() {
+                                    None
+                                } else {
+                                    Some(g)
                                 }
-                                None => continue,
-                            };
+                            }
+                            None => continue,
+                        };
 
                         result.insert(this.name.clone(), this);
                     }

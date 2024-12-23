@@ -23,7 +23,7 @@ use std::sync::Arc;
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
 use dbus::Signature;
 
-use super::deserialize_field;
+use super::{deser_f32, deser_i64, deser_str, deser_u64};
 
 #[derive(Debug, Clone)]
 pub struct FanInfo {
@@ -149,69 +149,46 @@ impl<'a> Get<'a> for FanInfoVec {
                         };
                         let fan_info = i.as_mut();
 
-                        this.fan_label =
-                            match deserialize_field(fan_info, "FanInfo", "'s' at index 0", |arg| {
-                                arg.as_str().map(Arc::from)
-                            }) {
-                                Some(n) => n,
-                                None => continue,
-                            };
+                        this.fan_label = match deser_str(fan_info, "FanInfo", "'s' at index 0") {
+                            Some(n) => n,
+                            None => continue,
+                        };
 
-                        this.temp_name =
-                            match deserialize_field(fan_info, "FanInfo", "'s' at index 1", |arg| {
-                                arg.as_str().map(Arc::from)
-                            }) {
-                                Some(n) => n,
-                                None => continue,
-                            };
+                        this.temp_name = match deser_str(fan_info, "FanInfo", "'s' at index 1") {
+                            Some(n) => n,
+                            None => continue,
+                        };
 
-                        this.temp_amount =
-                            match deserialize_field(fan_info, "FanInfo", "'x' at index 2", |arg| {
-                                arg.as_i64()
-                            }) {
-                                Some(s) => s,
-                                None => continue,
-                            };
+                        this.temp_amount = match deser_i64(fan_info, "FanInfo", "'x' at index 2") {
+                            Some(s) => s,
+                            None => continue,
+                        };
 
-                        this.rpm =
-                            match deserialize_field(fan_info, "FanInfo", "'t' at index 3", |arg| {
-                                arg.as_u64()
-                            }) {
-                                Some(c) => c,
-                                None => continue,
-                            };
+                        this.rpm = match deser_u64(fan_info, "FanInfo", "'t' at index 3") {
+                            Some(c) => c,
+                            None => continue,
+                        };
 
                         this.percent_vroomimg =
-                            match deserialize_field(fan_info, "FanInfo", "'t' at index 4", |arg| {
-                                arg.as_f64().map(|f| f as f32)
-                            }) {
+                            match deser_f32(fan_info, "FanInfo", "'t' at index 4") {
                                 Some(c) => c,
                                 None => continue,
                             };
 
-                        this.fan_index =
-                            match deserialize_field(fan_info, "FanInfo", "'t' at index 5", |arg| {
-                                arg.as_u64()
-                            }) {
-                                Some(c) => c,
-                                None => continue,
-                            };
+                        this.fan_index = match deser_u64(fan_info, "FanInfo", "'t' at index 5") {
+                            Some(c) => c,
+                            None => continue,
+                        };
 
-                        this.hwmon_index =
-                            match deserialize_field(fan_info, "FanInfo", "'t' at index 6", |arg| {
-                                arg.as_u64()
-                            }) {
-                                Some(c) => c,
-                                None => continue,
-                            };
+                        this.hwmon_index = match deser_u64(fan_info, "FanInfo", "'t' at index 6") {
+                            Some(c) => c,
+                            None => continue,
+                        };
 
-                        this.max_speed =
-                            match deserialize_field(fan_info, "FanInfo", "'t' at index 7", |arg| {
-                                arg.as_u64()
-                            }) {
-                                Some(c) => c,
-                                None => continue,
-                            };
+                        this.max_speed = match deser_u64(fan_info, "FanInfo", "'t' at index 7") {
+                            Some(c) => c,
+                            None => continue,
+                        };
 
                         result.push(this);
                     }

@@ -25,7 +25,7 @@ use arrayvec::ArrayString;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::deserialize_field;
+use super::{deser_iter, deser_str, deser_u16, deser_u64, deser_u8};
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -169,96 +169,71 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         };
                         let static_info = static_info.as_mut();
 
-                        info.id = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'s' at index 0",
-                            |arg| arg.as_str().map(Arc::from),
-                        ) {
+                        info.id = match deser_str(static_info, "GpuStaticInfo", "'s' at index 0") {
                             Some(id) => id,
                             None => return None,
                         };
 
-                        info.device_name = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'s' at index 1",
-                            |arg| arg.as_str().map(Arc::from),
-                        ) {
-                            Some(name) => name,
-                            None => return None,
-                        };
+                        info.device_name =
+                            match deser_str(static_info, "GpuStaticInfo", "'s' at index 1") {
+                                Some(name) => name,
+                                None => return None,
+                            };
 
-                        info.vendor_id = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'q' at index 2",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(vendor_id) => vendor_id as _,
-                            None => return None,
-                        };
+                        info.vendor_id =
+                            match deser_u16(static_info, "GpuStaticInfo", "'q' at index 2") {
+                                Some(vendor_id) => vendor_id,
+                                None => return None,
+                            };
 
-                        info.device_id = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'3: q' at index 3",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(device_id) => device_id as _,
-                            None => return None,
-                        };
+                        info.device_id =
+                            match deser_u16(static_info, "GpuStaticInfo", "'3: q' at index 3") {
+                                Some(device_id) => device_id,
+                                None => return None,
+                            };
 
-                        info.total_memory = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'t' at index 4",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(total_memory) => total_memory,
-                            None => return None,
-                        };
+                        info.total_memory =
+                            match deser_u64(static_info, "GpuStaticInfo", "'t' at index 4") {
+                                Some(total_memory) => total_memory,
+                                None => return None,
+                            };
 
-                        info.total_gtt = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'t' at index 5",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(total_gtt) => total_gtt,
-                            None => return None,
-                        };
+                        info.total_gtt =
+                            match deser_u64(static_info, "GpuStaticInfo", "'t' at index 5") {
+                                Some(total_gtt) => total_gtt,
+                                None => return None,
+                            };
 
-                        info.opengl_version = match deserialize_field(
+                        info.opengl_version = match deser_iter(
                             static_info,
                             "GpuStaticInfo",
                             "STRUCT at index 6",
-                            |arg| arg.as_iter(),
                         ) {
                             Some(mut it) => {
-                                let major = if let Some(major) = Iterator::next(it.as_mut()) {
+                                let it = it.as_mut();
+                                let major = if let Some(major) = it.next() {
                                     major.as_u64().unwrap_or(0)
                                 } else {
                                     g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
-                                        );
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
+                                    );
 
                                     0
                                 };
 
-                                let minor = if let Some(minor) = Iterator::next(it.as_mut()) {
+                                let minor = if let Some(minor) = it.next() {
                                     minor.as_u64().unwrap_or(0)
                                 } else {
                                     g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
-                                        );
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
+                                    );
 
                                     0
                                 };
 
-                                let gl_api = if let Some(minor) = Iterator::next(it.as_mut()) {
+                                let gl_api = if let Some(minor) = it.next() {
                                     match minor.as_u64().unwrap_or(OpenGLApi::Invalid as u64) {
                                         0 => OpenGLApi::OpenGL,
                                         1 => OpenGLApi::OpenGLES,
@@ -266,9 +241,9 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     }
                                 } else {
                                     g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
-                                        );
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
+                                    );
 
                                     OpenGLApi::Invalid
                                 };
@@ -297,11 +272,10 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                 );
                             });
 
-                            api_versions[i] = match deserialize_field(
+                            api_versions[i] = match deser_iter(
                                 static_info,
                                 "GpuStaticInfo",
                                 &description,
-                                |arg| arg.as_iter(),
                             ) {
                                 Some(mut it) => {
                                     description.clear();
@@ -313,35 +287,26 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                         );
                                     });
 
-                                    let major = match deserialize_field(
+                                    let major = deser_u16(
                                         it.as_mut(),
                                         "GpuStaticInfo(ApiVersion)",
                                         &description,
-                                        |arg| arg.as_u64(),
-                                    ) {
-                                        Some(major) => major as u16,
-                                        None => 0,
-                                    };
+                                    )
+                                    .unwrap_or(0);
 
-                                    let minor = match deserialize_field(
+                                    let minor = deser_u16(
                                         it.as_mut(),
                                         "GpuStaticInfo(ApiVersion)",
                                         &description,
-                                        |arg| arg.as_u64(),
-                                    ) {
-                                        Some(minor) => minor as u16,
-                                        None => 0,
-                                    };
+                                    )
+                                    .unwrap_or(0);
 
-                                    let patch = match deserialize_field(
+                                    let patch = deser_u16(
                                         it.as_mut(),
                                         "GpuStaticInfo(ApiVersion)",
                                         &description,
-                                        |arg| arg.as_u64(),
-                                    ) {
-                                        Some(patch) => patch as u16,
-                                        None => 0,
-                                    };
+                                    )
+                                    .unwrap_or(0);
 
                                     if major == 0 {
                                         None
@@ -361,25 +326,17 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         info.metal_version = api_versions[1];
                         info.direct3d_version = api_versions[2];
 
-                        info.pcie_gen = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'y' at index 10",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(pcie_gen) => pcie_gen as u8,
-                            None => return None,
-                        };
+                        info.pcie_gen =
+                            match deser_u8(static_info, "GpuStaticInfo", "'y' at index 10") {
+                                Some(pcie_gen) => pcie_gen,
+                                None => return None,
+                            };
 
-                        info.pcie_lanes = match deserialize_field(
-                            static_info,
-                            "GpuStaticInfo",
-                            "'y' at index 11",
-                            |arg| arg.as_u64(),
-                        ) {
-                            Some(pcie_lanes) => pcie_lanes as u8,
-                            None => return None,
-                        };
+                        info.pcie_lanes =
+                            match deser_u8(static_info, "GpuStaticInfo", "'y' at index 11") {
+                                Some(pcie_lanes) => pcie_lanes,
+                                None => return None,
+                            };
 
                         result.push(info);
                     }
