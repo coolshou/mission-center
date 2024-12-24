@@ -638,7 +638,7 @@ impl SysInfoV2 {
                     if let Err(e) = tx.send(NVMeSmartResultResponse(gatherer.nvme_smart_info(&disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
-                            "Error sending SataSmartInfo response: {}",
+                            "Error sending NVMeSmartInfo response: {}",
                             e
                         );
                     }

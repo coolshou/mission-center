@@ -796,11 +796,70 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     };
 
-                    if let Some(avail_spare) = attributes.get("") {
-
+                    if let Some(num_err_log_entries) = attributes.get("num_err_log_entries") {
+                        rezult.num_err_log_entries = num_err_log_entries.try_into().unwrap_or_default();
                     }
 
+                    if let Some(critical_temp_time) = attributes.get("critical_temp_time") {
+                        rezult.critical_temp_time = critical_temp_time.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(wctemp) = attributes.get("wctemp") {
+                        rezult.wctemp = wctemp.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(ctrl_busy_time) = attributes.get("ctrl_busy_time") {
+                        rezult.ctrl_busy_minutes = ctrl_busy_time.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(media_errors) = attributes.get("media_errors") {
+                        rezult.media_errors = media_errors.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(warning_temp_time) = attributes.get("warning_temp_time") {
+                        rezult.warning_temp_time = warning_temp_time.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(avail_spare) = attributes.get("avail_spare") {
+                        rezult.avail_spare = avail_spare.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(power_cycles) = attributes.get("power_cycles") {
+                        rezult.power_cycles = power_cycles.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(cctemp) = attributes.get("cctemp") {
+                        rezult.cctemp = cctemp.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(unsafe_shutdowns) = attributes.get("unsafe_shutdowns") {
+                        rezult.unsafe_shutdowns = unsafe_shutdowns.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(spare_thresh) = attributes.get("spare_thresh") {
+                        rezult.spare_thresh = spare_thresh.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(total_data_written) = attributes.get("total_data_written") {
+                        rezult.total_data_written = total_data_written.try_into().unwrap_or_default();
+                    }
+
+                    // if let Some(temp_sensors) = attributes.get("temp_sensors") {
+                    //     rezult.temp_sensors = temp_sensors.try_into().unwrap_or_default();
+                    // }
+
+                    if let Some(total_data_read) = attributes.get("total_data_read") {
+                        rezult.total_data_read = total_data_read.try_into().unwrap_or_default();
+                    }
+
+                    if let Some(percent_used) = attributes.get("percent_used") {
+                        rezult.percent_used = percent_used.try_into().unwrap_or_default();
+                    }
+
+                    rezult.success = true;
+
                     println!("{:?}", attributes);
+                    println!("Sending {:?}", rezult);
                 } else {
                     println!("No NVME!");
                 }
