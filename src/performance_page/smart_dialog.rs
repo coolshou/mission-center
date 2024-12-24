@@ -36,8 +36,8 @@ mod imp {
     use crate::performance_page::disk::PerformancePageDisk;
     use crate::performance_page::DiskPage;
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
-    use crate::performance_page::smart_dialog_row::SmartDialogRowBuilder;
-    use crate::sys_info_v2::{App, EjectResult, Process, SataSmartResult};
+    use crate::performance_page::sata_smart_dialog_row::SmartDialogRowBuilder;
+    use crate::sys_info_v2::{App, EjectResult, NVMeSmartResult, Process, SataSmartResult};
     use super::*;
 
     #[derive(Properties)]
@@ -53,7 +53,7 @@ mod imp {
 
     impl SmartDataDialog {
         // todo populate self
-        pub fn apply_smart_result(&self, result: SataSmartResult, parent: &PerformancePageDisk) {
+        pub fn apply_sata_smart_result(&self, result: SataSmartResult, parent: &PerformancePageDisk) {
             let modelo = self.column_view.get();
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
@@ -74,6 +74,15 @@ mod imp {
                     new_row.imp().row_entry.get().expect("Missing row entry")
                 )
             }
+        }
+
+        pub fn apply_nvme_smart_result(&self, result: NVMeSmartResult, parent: &PerformancePageDisk) {
+            let modelo = self.column_view.get();
+
+            self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
+
+            modelo.remove_all();
+
         }
     }
 
