@@ -15,7 +15,41 @@ template $SmartDataDialog: Adw.Dialog {
     }
 
     Box {
-      ScrolledWindow {
+      Grid common_data {
+        Label {
+          label: _("Powered On");
+
+          layout {
+            column: '0';
+            row: '0';
+          }
+        }
+
+        Label powered_on {
+          layout {
+            column: '1';
+            row: '0';
+          }
+        }
+
+        Label {
+          label: _("Status String");
+
+          layout {
+            column: '2';
+            row: '0';
+          }
+        }
+
+        Label status {
+          layout {
+            column: '3';
+            row: '0';
+          }
+        }
+      }
+
+      ScrolledWindow data_data {
         hscrollbar-policy: never;
         propagate-natural-height: true;
 

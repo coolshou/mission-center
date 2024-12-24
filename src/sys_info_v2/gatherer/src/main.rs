@@ -856,7 +856,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         rezult.percent_used = percent_used.try_into().unwrap_or_default();
                     }
 
-                    rezult.success = true;
+                    rezult.common_smart_result.success = true;
 
                     println!("{:?}", attributes);
                     println!("Sending {:?}", rezult);
@@ -1349,9 +1349,38 @@ impl Arg for SataSmartEntry {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct CommonSmartResult {
+    pub success: bool,
+
+    pub powered_on_seconds: u64,
+    pub status: String,
+}
+
+impl Default for CommonSmartResult {
+    fn default() -> Self {
+        Self {
+            success: false,
+            powered_on_seconds: 0,
+            status: "".to_string(),
+        }
+    }
+}
+
+impl Append for CommonSmartResult {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
+        ia.append_struct(|ia| {
+            ia.append(self.success);
+            ia.append(self.powered_on_seconds);
+            ia.append(self.status.clone());
+        });
+    }
+}
+
+
 #[derive(Debug)]
 pub struct SataSmartResult {
-    success: bool,
+    common_data: CommonSmartResult,
 
     data: Vec<SataSmartEntry>,
 }
@@ -1359,7 +1388,7 @@ pub struct SataSmartResult {
 impl Default for SataSmartResult {
     fn default() -> Self {
         Self {
-            success: false,
+            common_data: Default::default(),
             data: vec![],
         }
     }
@@ -1368,7 +1397,7 @@ impl Default for SataSmartResult {
 impl Append for SataSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
-            self.success,
+            self.common_data.clone(),
             self.data.clone(),
         ));
     }
@@ -1378,13 +1407,13 @@ impl Arg for SataSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ba(ysqiiixi))")
+        Signature::from("((bts)a(ysqiiixi))")
     }
 }
 
 #[derive(Debug)]
 pub struct NVMeSmartResult {
-    success: bool,
+    common_smart_result: CommonSmartResult,
 
     avail_spare: u8,
     spare_thresh: u8,
@@ -1406,7 +1435,7 @@ pub struct NVMeSmartResult {
 impl Default for NVMeSmartResult {
     fn default() -> Self {
         Self {
-            success: false,
+            common_smart_result: Default::default(),
             avail_spare: 0,
             spare_thresh: 0,
             percent_used: 0,
@@ -1429,7 +1458,7 @@ impl Default for NVMeSmartResult {
 impl Append for NVMeSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_struct(|ia| {
-            ia.append(self.success);
+            ia.append(self.common_smart_result.clone());
             ia.append(self.avail_spare);
             ia.append(self.spare_thresh);
             ia.append(self.percent_used);
@@ -1453,6 +1482,6 @@ impl Arg for NVMeSmartResult {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(byyyttttttta(q)qquu)")
+        Signature::from("((bts)yyyttttttta(q)qquu)")
     }
 }
