@@ -694,6 +694,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 if let Ok(ata) = drive_object.drive_ata().block_on() {
+                    rezult.common_data.powered_on_seconds = ata.smart_power_on_seconds().block_on().unwrap();
+                    rezult.common_data.status = ata.smart_selftest_status().block_on().unwrap();
                     let mut options = HashMap::new();
 
                     let attributes = match ata.smart_get_attributes(options).block_on() {
@@ -715,7 +717,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             threshold: entry.5,
                             pretty: entry.6,
                             pretty_unit: entry.7,
-                        })
+                        });
                     }
                 } else {
                     println!("No ATA!");
