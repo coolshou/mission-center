@@ -1191,23 +1191,23 @@ impl<'a> Get<'a> for SataSmartResult {
 
 #[derive(Debug)]
 pub struct NVMeSmartResult {
-    common_smart_result: CommonSmartResult,
+    pub common_smart_result: CommonSmartResult,
 
-    avail_spare: u8,
-    spare_thresh: u8,
-    percent_used: u8,
-    total_data_read: u64,
-    total_data_written: u64,
-    ctrl_busy_minutes: u64,
-    power_cycles: u64,
-    unsafe_shutdowns: u64,
-    media_errors: u64,
-    num_err_log_entries: u64,
-    temp_sensors: Vec<u16>,
-    wctemp: u16,
-    cctemp: u16,
-    warning_temp_time: u32,
-    critical_temp_time: u32,
+    pub avail_spare: u8,
+    pub spare_thresh: u8,
+    pub percent_used: u8,
+    pub total_data_read: u64,
+    pub total_data_written: u64,
+    pub ctrl_busy_minutes: u64,
+    pub power_cycles: u64,
+    pub unsafe_shutdowns: u64,
+    pub media_errors: u64,
+    pub num_err_log_entries: u64,
+    pub temp_sensors: Vec<u16>,
+    pub wctemp: u16,
+    pub cctemp: u16,
+    pub warning_temp_time: u32,
+    pub critical_temp_time: u32,
 }
 
 impl Default for NVMeSmartResult {

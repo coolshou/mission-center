@@ -96,6 +96,7 @@ pub type NetworkDevice = net_info::NetworkDevice;
 pub type NetDeviceType = net_info::NetDeviceType;
 
 pub type EjectResult = dbus_interface::EjectResult;
+pub type CommonSmartResult = dbus_interface::CommonSmartResult;
 pub type SataSmartResult = dbus_interface::SataSmartResult;
 pub type NVMeSmartResult = dbus_interface::NVMeSmartResult;
 

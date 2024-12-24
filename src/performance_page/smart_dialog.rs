@@ -37,7 +37,7 @@ mod imp {
     use crate::performance_page::DiskPage;
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
     use crate::performance_page::sata_smart_dialog_row::SmartDialogRowBuilder;
-    use crate::sys_info_v2::{App, EjectResult, NVMeSmartResult, Process, SataSmartResult};
+    use crate::sys_info_v2::{App, CommonSmartResult, EjectResult, NVMeSmartResult, Process, SataSmartResult};
     use super::*;
 
     #[derive(Properties)]
@@ -47,13 +47,28 @@ mod imp {
     pub struct SmartDataDialog {
         #[template_child]
         pub column_view: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub powered_on: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub status: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub sata_data: TemplateChild<gtk::ScrolledWindow>,
 
         pub parent_page: Cell<Option<PerformancePageDisk>>,
     }
 
     impl SmartDataDialog {
+        fn apply_common_smart_result(&self, result: CommonSmartResult) {
+            self.powered_on.set_text(result.powered_on_seconds.to_string().as_str());
+            self.status.set_text(result.status.to_string().as_str());
+        }
+
         // todo populate self
         pub fn apply_sata_smart_result(&self, result: SataSmartResult, parent: &PerformancePageDisk) {
+            self.apply_common_smart_result(result.common_smart_result);
+
+            self.sata_data.set_visible(true);
+
             let modelo = self.column_view.get();
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
@@ -77,6 +92,10 @@ mod imp {
         }
 
         pub fn apply_nvme_smart_result(&self, result: NVMeSmartResult, parent: &PerformancePageDisk) {
+            self.apply_common_smart_result(result.common_smart_result);
+
+            self.sata_data.set_visible(false);
+
             let modelo = self.column_view.get();
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
@@ -90,6 +109,9 @@ mod imp {
         fn default() -> Self {
             Self {
                 column_view: Default::default(),
+                powered_on: Default::default(),
+                status: Default::default(),
+                sata_data: Default::default(),
                 parent_page: Cell::new(None),
             }
         }

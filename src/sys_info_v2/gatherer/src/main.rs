@@ -858,6 +858,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     rezult.common_smart_result.success = true;
 
+                    rezult.common_smart_result.powered_on_seconds = nvme.smart_power_on_hours().block_on().unwrap() * 3600;
+                    rezult.common_smart_result.status = nvme.smart_selftest_status().block_on().unwrap();
+
                     println!("{:?}", attributes);
                     println!("Sending {:?}", rezult);
                 } else {
