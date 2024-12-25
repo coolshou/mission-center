@@ -54,6 +54,38 @@ mod imp {
         #[template_child]
         pub sata_data: TemplateChild<gtk::ScrolledWindow>,
 
+        #[template_child]
+        pub avail_spare: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub spare_thresh: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub percent_used: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub data_read: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub data_written: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub ctrl_busy_minutes: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub power_cycles: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub unsafe_shutdowns: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub media_errors: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub num_err_log_entries: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub temp_sensors: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub wctemp: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub cctemp: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub warning_temp_time: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub critical_temp_time: TemplateChild<gtk::Label>,
+
+
         pub parent_page: Cell<Option<PerformancePageDisk>>,
     }
 
@@ -102,6 +134,38 @@ mod imp {
 
             modelo.remove_all();
 
+            self.percent_used.set_text(&format!("{}%", result.percent_used));
+
+            self.avail_spare.set_text(result.avail_spare.to_string().as_str());
+            self.spare_thresh.set_text(result.spare_thresh.to_string().as_str());
+
+            let used_memory = crate::to_human_readable(result.total_data_read as f32, 1024.);
+            self.data_read.set_text(&format!(
+                "{0:.2$} {1}{3}B",
+                used_memory.0,
+                used_memory.1,
+                used_memory.2,
+                if used_memory.1.is_empty() { "" } else { "i" },
+            ));
+            let used_memory = crate::to_human_readable(result.total_data_written as f32, 1024.);
+            self.data_written.set_text(&format!(
+                "{0:.2$} {1}{3}B",
+                used_memory.0,
+                used_memory.1,
+                used_memory.2,
+                if used_memory.1.is_empty() { "" } else { "i" },
+            ));
+
+            self.wctemp.set_text(result.wctemp.to_string().as_str());
+            self.cctemp.set_text(result.cctemp.to_string().as_str());
+            self.warning_temp_time.set_text(result.warning_temp_time.to_string().as_str());
+            self.critical_temp_time.set_text(result.critical_temp_time.to_string().as_str());
+            self.temp_sensors.set_text(&format!("{:?}", result.temp_sensors));
+            self.unsafe_shutdowns.set_text(result.unsafe_shutdowns.to_string().as_str());
+            self.media_errors.set_text(result.media_errors.to_string().as_str());
+            self.num_err_log_entries.set_text(result.num_err_log_entries.to_string().as_str());
+            self.power_cycles.set_text(result.power_cycles.to_string().as_str());
+            self.ctrl_busy_minutes.set_text(result.ctrl_busy_minutes.to_string().as_str());
         }
     }
 
@@ -112,6 +176,21 @@ mod imp {
                 powered_on: Default::default(),
                 status: Default::default(),
                 sata_data: Default::default(),
+                avail_spare: Default::default(),
+                spare_thresh: Default::default(),
+                percent_used: Default::default(),
+                data_read: Default::default(),
+                data_written: Default::default(),
+                ctrl_busy_minutes: Default::default(),
+                power_cycles: Default::default(),
+                unsafe_shutdowns: Default::default(),
+                media_errors: Default::default(),
+                num_err_log_entries: Default::default(),
+                temp_sensors: Default::default(),
+                wctemp: Default::default(),
+                cctemp: Default::default(),
+                warning_temp_time: Default::default(),
+                critical_temp_time: Default::default(),
                 parent_page: Cell::new(None),
             }
         }
