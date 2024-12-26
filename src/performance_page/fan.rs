@@ -294,6 +294,9 @@ mod imp {
                     .add_data_point(1, fan.percent_vroomimg * 100.);
             }
 
+            this.speed_graph.try_increment_scroll();
+            this.temp_graph.try_increment_scroll();
+
             if fan.max_speed <= 0 {
                 this.speed_max_y.set_text(&i18n_f(
                     "{} RPM",

@@ -446,6 +446,10 @@ mod imp {
                 );
             }
 
+            for widget in &mut graph_widgets {
+                widget.try_increment_scroll();
+            }
+
             this.graph_widgets.set(graph_widgets);
 
             if let Some(utilization) = this.utilization.get() {

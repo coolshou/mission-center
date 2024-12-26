@@ -92,7 +92,7 @@ mod imp {
 
         pub data_sets: Cell<Vec<DataSetDescriptor>>,
 
-        scroll_offset: Cell<f32>,
+        pub scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
     }
 
@@ -126,7 +126,7 @@ mod imp {
                     max_all_time: 0.,
                 }]),
 
-                scroll_offset: Cell::new(0.),
+                scroll_offset: Cell::new(0),
                 prev_size: Cell::new((0, 0)),
             }
         }
@@ -289,10 +289,9 @@ mod imp {
             let x_offset = if self.obj().scroll() {
                 vertical_line_count += 1;
 
-                let mut x_offset = self.scroll_offset.get();
-                x_offset += width / data_point_count as f32;
+                let x_index = self.scroll_offset.get();
+                let mut x_offset = (x_index as f32) * width / (data_point_count as f32);
                 x_offset %= col_width;
-                self.scroll_offset.set(x_offset);
 
                 x_offset
             } else {
@@ -584,6 +583,16 @@ impl GraphWidget {
             data[index].visible = visible;
         }
         self.imp().data_sets.set(data);
+    }
+
+    pub fn try_increment_scroll(&self) {
+        if !self.scroll() {
+            return;
+        }
+
+        self.imp()
+            .scroll_offset
+            .set(self.imp().scroll_offset.get().wrapping_add(1));
     }
 
     pub fn add_data_point(&self, index: usize, mut value: f32) {

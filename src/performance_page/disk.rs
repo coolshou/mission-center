@@ -337,6 +337,9 @@ mod imp {
                 total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
             }
 
+            this.usage_graph.try_increment_scroll();
+            this.disk_transfer_rate_graph.try_increment_scroll();
+
             true
         }
 
