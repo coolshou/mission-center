@@ -27,10 +27,10 @@ use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::{gio, prelude::*};
 use lazy_static::lazy_static;
 
-use crate::i18n::{i18n, i18n_f};
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use window::MissionCenterWindow;
+use crate::i18n::{i18n, i18n_f};
 
 mod application;
 mod apps_page;
@@ -134,30 +134,33 @@ pub fn seconds_to_string(time: u64) -> String {
 }
 
 // tysm gdu
-pub fn to_human_readable_time(seconds: u64) -> String {
-    const USEC_PER_YEAR: u64 = 60 * 60 * 6 * 1461; // ((60 * 60 * 24) as f32 * 365.25);
-    const USEC_PER_MONTH: u64 = 60 * 30 * 1461; // ((60 * 60 * 24) as f32 * 365.25 / 12.0);
-    const USEC_PER_DAY: u64 = 60 * 60 * 24;
-    const USEC_PER_HOUR: u64 = 60 * 60;
-    const USEC_PER_MINUTE: u64 = 60;
+pub fn to_human_readable_time(
+    seconds: u64,
+) -> String {
+    let USEC_PER_YEAR = 60 * 60 * 6 * 1461;// ((60 * 60 * 24) as f32 * 365.25);
+    let USEC_PER_MONTH = 60 * 30 * 1461;// ((60 * 60 * 24) as f32 * 365.25 / 12.0);
+    let USEC_PER_DAY = (60 * 60 * 24);
+    let USEC_PER_HOUR = (60 * 60);
+    let USEC_PER_MINUTE = (60);
 
     let mut t = seconds;
-    let years = t / USEC_PER_YEAR;
+    let years  =  (t / USEC_PER_YEAR);
     t -= years * USEC_PER_YEAR;
 
-    let months = t / USEC_PER_MONTH;
+    let months =  (t / USEC_PER_MONTH);
     t -= months * USEC_PER_MONTH;
 
-    let days = t / USEC_PER_DAY;
+    let days =  (t / USEC_PER_DAY);
     t -= days * USEC_PER_DAY;
 
-    let hours = t / USEC_PER_HOUR;
+    let hours =  (t / USEC_PER_HOUR);
     t -= hours * USEC_PER_HOUR;
 
-    let minutes = t / USEC_PER_MINUTE;
+    let minutes =  (t / USEC_PER_MINUTE);
     t -= minutes * USEC_PER_MINUTE;
 
-    let seconds = t;
+    let seconds =  t;
+    t -= seconds;
 
     let string3 = years_to_string(years);
     let years_str = string3.as_str();
@@ -172,23 +175,34 @@ pub fn to_human_readable_time(seconds: u64) -> String {
     let string5 = seconds_to_string(seconds);
     let seconds_str = string5.as_str();
 
-    if years > 0 {
+    if (years > 0)
+    {
         /* Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days */
         i18n_f("{}, {} and {}", &[years_str, months_str, days_str])
-    } else if months > 0 {
+    }
+    else if (months > 0)
+    {
         /* Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days */
         i18n_f("{} and {}", &[months_str, days_str])
-    } else if days > 0 {
+    }
+    else if (days > 0)
+    {
         /* Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours */
         i18n_f("{} and {}", &[days_str, hours_str])
-    } else if hours > 0 {
+    }
+    else if (hours > 0)
+    {
         /* Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes */
         i18n_f("{} and {}", &[hours_str, minutes_str])
-    } else if minutes > 0 {
+    }
+    else if (minutes > 0)
+    {
         String::from(minutes_str)
     } else if seconds == 0 {
         seconds_str.to_string()
-    } else {
+    }
+    else
+    {
         i18n("Less than a minute")
     }
 }

@@ -955,12 +955,65 @@ impl<'a> Get<'a> for SataSmartEntry {
     }
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum SmartTestResult {
+    UNKNOWN_RESULT = 0,
+    Success,
+    Aborted,
+    FatalError,
+    InProgress,
+    // ATA only
+    Interrupted,
+    ErrorUnknown,
+    ErrorElectrical,
+    ErrorServo,
+    ErrorRead,
+    ErrorHandling,
+    //NVMe only
+    CtrlReset,
+    NsRemoved,
+    AbortedFormat,
+    UnknownSegmentFailed,
+    KnownSegmentFailed,
+    AbortedUnknown,
+    AbortedSanitize,
+}
+
+impl From<String> for SmartTestResult {
+    fn from(value: String) -> Self {
+        match value.as_str() {
+            "success" => SmartTestResult::Success,
+            "aborted" => SmartTestResult::Aborted,
+            "fatal" => SmartTestResult::FatalError,
+            "fatal_error" => SmartTestResult::FatalError,
+            "inprogress" => SmartTestResult::InProgress,
+
+            "error_unknown" => SmartTestResult::ErrorUnknown,
+            "error_electrical" => SmartTestResult::ErrorElectrical,
+            "error_servo" => SmartTestResult::ErrorServo,
+            "error_read" => SmartTestResult::ErrorRead,
+            "error_handling" => SmartTestResult::ErrorHandling,
+
+            "ctrl_reset" => SmartTestResult::CtrlReset,
+            "ns_removed" => SmartTestResult::NsRemoved,
+            "aborted_format" => SmartTestResult::AbortedFormat,
+            "unknown_seg_fail" => SmartTestResult::UnknownSegmentFailed,
+            "known_seg_fail" => SmartTestResult::KnownSegmentFailed,
+            "aborted_unknown" => SmartTestResult::AbortedUnknown,
+            "aborted_sanitize" => SmartTestResult::AbortedSanitize,
+
+            _ => SmartTestResult::UNKNOWN_RESULT
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct CommonSmartResult {
     pub success: bool,
 
     pub powered_on_seconds: u64,
-    pub status: Arc<str>,
+    pub last_update_time: u64,
+    pub test_result: SmartTestResult,
 }
 
 impl Default for CommonSmartResult {
@@ -968,7 +1021,8 @@ impl Default for CommonSmartResult {
         Self {
             success: false,
             powered_on_seconds: 0,
-            status: Arc::from(""),
+            last_update_time: 0,
+            test_result: SmartTestResult::UNKNOWN_RESULT,
         }
     }
 }
@@ -978,7 +1032,8 @@ impl Append for CommonSmartResult {
         ia.append_struct(|ia| {
             ia.append(self.success);
             ia.append(self.powered_on_seconds);
-            ia.append(self.status.as_ref());
+            ia.append(self.last_update_time);
+            ia.append(self.test_result as u8);
         });
     }
 }
@@ -1051,21 +1106,63 @@ impl From<&dyn RefArg> for CommonSmartResult {
             None => {
                 g_critical!(
                     "MissionCenter::GathererDBusProxy",
-                    "Failed to get String: Expected '2: String', got None",
+                    "Failed to get u64: Expected '2: u64', got None",
                 );
                 return this;
             }
-            Some(arg) => match arg.as_str() {
+            Some(arg) => match arg.as_u64() {
                 None => {
                     g_critical!(
                         "MissionCenter::GathererDBusProxy",
-                        "Failed to get String: Expected '2: String', got {:?}",
+                        "Failed to get u64: Expected '2: u64', got {:?}",
                         arg.arg_type(),
                     );
                     return this;
                 }
                 Some(arr) => {
-                    this.status = Arc::from(arr);
+                    this.last_update_time = arr;
+                }
+            },
+        }
+
+        match Iterator::next(dynamic_info) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to get u64: Expected '2: u64', got None",
+                );
+                return this;
+            }
+            Some(arg) => match arg.as_u64() {
+                None => {
+                    g_critical!(
+                        "MissionCenter::GathererDBusProxy",
+                        "Failed to get u64: Expected '2: u64', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return this;
+                }
+                Some(arr) => {
+                    this.test_result = match arr {
+                        1 => SmartTestResult::Success,
+                        2 => SmartTestResult::Aborted,
+                        3 => SmartTestResult::FatalError,
+                        4 => SmartTestResult::InProgress,
+                        5 => SmartTestResult::Interrupted,
+                        6 => SmartTestResult::ErrorUnknown,
+                        7 => SmartTestResult::ErrorElectrical,
+                        8 => SmartTestResult::ErrorServo,
+                        9 => SmartTestResult::ErrorRead,
+                        10 => SmartTestResult::ErrorHandling,
+                        11 => SmartTestResult::CtrlReset,
+                        12 => SmartTestResult::NsRemoved,
+                        13 => SmartTestResult::AbortedFormat,
+                        14 => SmartTestResult::UnknownSegmentFailed,
+                        15 => SmartTestResult::KnownSegmentFailed,
+                        16 => SmartTestResult::AbortedUnknown,
+                        17 => SmartTestResult::AbortedSanitize,
+                        _ => SmartTestResult::UNKNOWN_RESULT,
+                    };
                 }
             },
         }
