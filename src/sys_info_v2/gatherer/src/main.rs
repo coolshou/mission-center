@@ -654,8 +654,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Some(ctx);
                 };
 
-                println!("Smarting {}", id);
-
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
@@ -695,7 +693,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 if let Ok(ata) = drive_object.drive_ata().block_on() {
                     rezult.common_data.powered_on_seconds = ata.smart_power_on_seconds().block_on().unwrap();
-                    rezult.common_data.status = ata.smart_selftest_status().block_on().unwrap();
+                    rezult.common_data.last_update_time = ata.smart_updated().block_on().unwrap();
+                    rezult.common_data.test_result = SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
+
                     let mut options = HashMap::new();
 
                     let attributes = match ata.smart_get_attributes(options).block_on() {
@@ -746,8 +746,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
-
-                println!("Smarting {}", id);
 
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
@@ -861,10 +859,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rezult.common_smart_result.success = true;
 
                     rezult.common_smart_result.powered_on_seconds = nvme.smart_power_on_hours().block_on().unwrap() * 3600;
-                    rezult.common_smart_result.status = nvme.smart_selftest_status().block_on().unwrap();
-
-                    println!("{:?}", attributes);
-                    println!("Sending {:?}", rezult);
+                    rezult.common_smart_result.test_result = SmartTestResult::from(nvme.smart_selftest_status().block_on().unwrap());
+                    rezult.common_smart_result.last_update_time = nvme.smart_updated().block_on().unwrap();
                 } else {
                     println!("No NVME!");
                 }
@@ -1354,12 +1350,65 @@ impl Arg for SataSmartEntry {
     }
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum SmartTestResult {
+    UNKNOWN_RESULT = 0,
+    Success,
+    Aborted,
+    FatalError,
+    InProgress,
+    // ATA only
+    Interrupted,
+    ErrorUnknown,
+    ErrorElectrical,
+    ErrorServo,
+    ErrorRead,
+    ErrorHandling,
+    //NVMe only
+    CtrlReset,
+    NsRemoved,
+    AbortedFormat,
+    UnknownSegmentFailed,
+    KnownSegmentFailed,
+    AbortedUnknown,
+    AbortedSanitize,
+}
+
+impl From<String> for SmartTestResult {
+    fn from(value: String) -> Self {
+        match value.as_str() {
+            "success" => SmartTestResult::Success,
+            "aborted" => SmartTestResult::Aborted,
+            "fatal" => SmartTestResult::FatalError,
+            "fatal_error" => SmartTestResult::FatalError,
+            "inprogress" => SmartTestResult::InProgress,
+
+            "error_unknown" => SmartTestResult::ErrorUnknown,
+            "error_electrical" => SmartTestResult::ErrorElectrical,
+            "error_servo" => SmartTestResult::ErrorServo,
+            "error_read" => SmartTestResult::ErrorRead,
+            "error_handling" => SmartTestResult::ErrorHandling,
+
+            "ctrl_reset" => SmartTestResult::CtrlReset,
+            "ns_removed" => SmartTestResult::NsRemoved,
+            "aborted_format" => SmartTestResult::AbortedFormat,
+            "unknown_seg_fail" => SmartTestResult::UnknownSegmentFailed,
+            "known_seg_fail" => SmartTestResult::KnownSegmentFailed,
+            "aborted_unknown" => SmartTestResult::AbortedUnknown,
+            "aborted_sanitize" => SmartTestResult::AbortedSanitize,
+
+            _ => SmartTestResult::UNKNOWN_RESULT
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct CommonSmartResult {
     pub success: bool,
 
     pub powered_on_seconds: u64,
-    pub status: String,
+    pub last_update_time: u64,
+    pub test_result: SmartTestResult,
 }
 
 impl Default for CommonSmartResult {
@@ -1367,7 +1416,8 @@ impl Default for CommonSmartResult {
         Self {
             success: false,
             powered_on_seconds: 0,
-            status: "".to_string(),
+            last_update_time: 0,
+            test_result: SmartTestResult::UNKNOWN_RESULT,
         }
     }
 }
@@ -1377,7 +1427,8 @@ impl Append for CommonSmartResult {
         ia.append_struct(|ia| {
             ia.append(self.success);
             ia.append(self.powered_on_seconds);
-            ia.append(self.status.clone());
+            ia.append(self.last_update_time);
+            ia.append(self.test_result as u8);
         });
     }
 }

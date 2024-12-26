@@ -353,6 +353,15 @@ mod imp {
                     DiskType::Unknown => "Unknown",
                 });
             }
+
+            if let Some(eject_button) = this.eject.get() {
+                eject_button.set_visible(disk.ejectable);
+            }
+
+            if let Some(smart_button) = this.smart.get() {
+                smart_button.set_visible(disk.smart_interface != DiskSmartInterface::Dumb);
+            }
+
             true
         }
 
@@ -665,7 +674,7 @@ mod imp {
                                 Some(DiskSmartInterface::NVMe) => {
                                     let smart_info = sys_info.nvme_smart_info(disk_id);
 
-                                    println!("Got back {:?}", smart_info);
+                                    // println!("Got back {:?}", smart_info);
 
                                     this.show_nvme_smart_info(that, smart_info);
                                 }

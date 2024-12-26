@@ -25,7 +25,7 @@ template $SmartDataDialog: Adw.Dialog {
 
       Grid common_data {
         Label {
-          label: _("Powered On");
+          label: _("Last Updated");
           halign: end;
 
           layout {
@@ -34,7 +34,7 @@ template $SmartDataDialog: Adw.Dialog {
           }
         }
 
-        Label powered_on {
+        Label last_updated {
           hexpand: true;
 
           layout {
@@ -44,7 +44,26 @@ template $SmartDataDialog: Adw.Dialog {
         }
 
         Label {
-          label: _("Status String");
+          label: _("Powered On");
+          halign: end;
+
+          layout {
+            column: '0';
+            row: '1';
+          }
+        }
+
+        Label powered_on {
+          hexpand: true;
+
+          layout {
+            column: '1';
+            row: '1';
+          }
+        }
+
+        Label {
+          label: _("Drive Health");
           halign: end;
 
           layout {
@@ -53,12 +72,31 @@ template $SmartDataDialog: Adw.Dialog {
           }
         }
 
-        Label status {
+        Label health {
           hexpand: true;
 
           layout {
             column: '3';
             row: '0';
+          }
+        }
+
+        Label {
+          label: _("SMART Test Status");
+          halign: end;
+
+          layout {
+            column: '2';
+            row: '1';
+          }
+        }
+
+        Label status {
+          hexpand: true;
+
+          layout {
+            column: '3';
+            row: '1';
           }
         }
       }
@@ -171,7 +209,7 @@ template $SmartDataDialog: Adw.Dialog {
           Label {
             halign: start;
 
-            label: _("Control Busy Minutes");
+            label: _("Control Busy Time");
 
             layout {
               column: '0';

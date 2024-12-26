@@ -91,8 +91,11 @@ mod imp {
 
     impl SmartDataDialog {
         fn apply_common_smart_result(&self, result: CommonSmartResult) {
-            self.powered_on.set_text(result.powered_on_seconds.to_string().as_str());
-            self.status.set_text(result.status.to_string().as_str());
+            let powered_on_nice = crate::to_human_readable_time(result.powered_on_seconds);
+            self.powered_on.set_text(powered_on_nice.as_str());
+            // self.status.set_text(result.status.to_string().as_str());
+            self.status.set_text(format!("{:?}", result.test_result).as_str());
+            self.
         }
 
         // todo populate self
@@ -156,15 +159,19 @@ mod imp {
                 if used_memory.1.is_empty() { "" } else { "i" },
             ));
 
-            self.wctemp.set_text(result.wctemp.to_string().as_str());
-            self.cctemp.set_text(result.cctemp.to_string().as_str());
-            self.warning_temp_time.set_text(result.warning_temp_time.to_string().as_str());
-            self.critical_temp_time.set_text(result.critical_temp_time.to_string().as_str());
+            self.warning_temp_time.set_text(crate::to_human_readable_time(result.warning_temp_time as u64).as_str());
+            self.critical_temp_time.set_text(crate::to_human_readable_time(result.critical_temp_time as u64).as_str());
+            self.ctrl_busy_minutes.set_text(crate::to_human_readable_time(result.ctrl_busy_minutes * 60).as_str());
+
+            self.wctemp.set_text(&i18n_f("{} °C", &[&format!("{}", result.wctemp - 273)]));
+            self.cctemp.set_text(&i18n_f("{} °C", &[&format!("{}", result.cctemp - 273)]));
+
             self.temp_sensors.set_text(&format!("{:?}", result.temp_sensors));
             self.unsafe_shutdowns.set_text(result.unsafe_shutdowns.to_string().as_str());
             self.media_errors.set_text(result.media_errors.to_string().as_str());
             self.num_err_log_entries.set_text(result.num_err_log_entries.to_string().as_str());
             self.power_cycles.set_text(result.power_cycles.to_string().as_str());
+
             self.ctrl_busy_minutes.set_text(result.ctrl_busy_minutes.to_string().as_str());
         }
     }
