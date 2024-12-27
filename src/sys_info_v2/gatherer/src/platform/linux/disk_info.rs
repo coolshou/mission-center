@@ -412,6 +412,18 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 }
             }};
 
+            // we check out here in case of media removal or similar
+            let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
+                root_block.size().block_on().unwrap_or(0)
+            } else {
+                blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
+            };
+
+            if capacity == 0 {
+                _ = prev_disk_index.map(|i| prev_disks.remove(i));
+                continue;
+            }
+
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
                     if read_ticks_weighted_ms < disk_stat.read_ticks_weighted_ms {
@@ -549,16 +561,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 self.info.push((disk_stat, info));
             } else {
-                let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
-                    root_block.size().block_on().unwrap_or(0)
-                } else {
-                    blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
-                };
-
-                if capacity == 0 {
-                    continue;
-                }
-
                 let mut formatted = 0;
                 let mut has_root = false;
 
@@ -575,13 +577,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                     formatted += thissize;
 
-                    println!("{:?}", f);
-
                     if let Ok(f) = f {
                         if let Ok(mountpoints) = f.mount_points().block_on() {
                             let mountpoints = mountpoints.iter().map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
-
-                            println!("Checking for root partitions on {:?}", mountpoints.clone().collect::<Vec<_>>());
 
                             has_root |= mountpoints.map(|it| it.trim_matches(char::from(0)) == "/").reduce(|out, curr| out || curr).unwrap_or(false);
                         } else {
