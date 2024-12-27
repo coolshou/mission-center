@@ -746,7 +746,7 @@ impl From<&dyn RefArg> for SataSmartEntry {
         };
 
         this.name = match deser_str(dynamic_info, "GathererDBusProxy", 1) {
-            Some(i) => i.into_string(),
+            Some(i) => i.to_string(),
             None => return this
         };
 
