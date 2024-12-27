@@ -251,7 +251,7 @@ impl SmartDialogRowBuilder {
 */
         // this
 
-        SmartDialogRow::new(self.id, self.attribute, self.value, self.pretty, self.units, self.threshold, self.worst, &match self.flags & 0b1 { 0 => i18n("Pre-Fail"), _ => i18n("Old-Age")}, &match self.flags & 0b10 >> 1 { 0 => i18n("Online"), _ => i18n("Offline")}, "IDK LMAO")
+        SmartDialogRow::new(self.id, self.attribute, self.value, self.pretty, self.units, self.threshold, self.worst, &match self.flags & 0b1 { 1 => i18n("Pre-Fail"), _ => i18n("Old-Age")}, &match self.flags & 0b10 >> 1 { 0 => i18n("Online"), _ => i18n("Offline")}, "IDK LMAO")
     }
 }
 
