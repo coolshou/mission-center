@@ -144,15 +144,16 @@ mod imp {
             kill_button.connect_clicked({
                 println!("klikt");
                 let this = self.obj().downgrade();
-                move |_| {
+                // move |_| {
                     if let Some(that) = this.upgrade() {
                         let this = that.imp();
+                //         let this = this.upgrade();
 
-                        println!("killering");
+                        println!("killering {:?}", this.raw_pid.get());
 
                         app!().sys_info().expect("Failed to get sys_info").kill_process(this.raw_pid.get().expect("No pid???"));
                     }
-                }
+                // }
             });
         }
     }
