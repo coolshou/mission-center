@@ -24,6 +24,7 @@ use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
+use crate::i18n::{i18n, i18n_f};
 
 mod imp {
     use std::cell::OnceCell;
@@ -143,6 +144,7 @@ pub struct SmartDialogRowBuilder {
     id: u8,
     attribute: glib::GString,
     value: i32,
+    units: i32,
     normalized: i32,
     threshold: i32,
     pretty: i64,
@@ -155,6 +157,7 @@ impl SmartDialogRowBuilder {
             id: 0,
             attribute: Default::default(),
             value: 0,
+            units: 0,
             normalized: 0,
             threshold: 0,
             pretty: 0,
@@ -172,8 +175,9 @@ impl SmartDialogRowBuilder {
         self
     }
 
-    pub fn value(mut self, value: i32) -> Self {
+    pub fn value(mut self, value: i32, units: i32) -> Self {
         self.value = value;
+        self.units = units;
         self
     }
 
@@ -199,8 +203,18 @@ impl SmartDialogRowBuilder {
 
             this.id.get().expect("damn").set_label(format!("{}", self.id).as_str());
             this.worst.get().expect("Damn").set_label(format!("{}", self.worst).as_str());
+
             this.value.get().expect("Damn").set_label(format!("{}", self.value).as_str());
-            this.pretty.get().expect("Damn").set_label(format!("{}", self.pretty).as_str());
+
+            this.pretty.get().expect("Damn").set_label(&match self.units {
+                0 => i18n("N/A"),
+                2 => crate::to_human_readable_time(self.pretty as u64 / 1000),
+                3 => i18n_f("{} sectors", &[&format!("{}", self.pretty)]),
+                4 => i18n_f("{} °C", &[&format!("{}", (self.pretty - 273150) / 1000)]),
+                _ => format!("{}", self.pretty),
+            });
+
+            // this.pretty.get().expect("Damn").set_label(format!("{}", self.pretty).as_str());
             this.threshold.get().expect("Damn").set_label(format!("{}", self.threshold).as_str());
             this.normalized.get().expect("Damn").set_label(format!("{}", self.normalized).as_str());
 
