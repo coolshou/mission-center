@@ -127,37 +127,37 @@ impl<'a> Get<'a> for ServiceMap {
                         };
                         let service = i.as_mut();
 
-                        this.name = match deser_str(service, "Service", "'s' at index 0") {
+                        this.name = match deser_str(service, "Service", 0) {
                             Some(n) => n,
                             None => continue,
                         };
 
-                        this.description = match deser_str(service, "Service", "'s' at index 1") {
+                        this.description = match deser_str(service, "Service", 1) {
                             Some(d) => d,
                             None => continue,
                         };
 
-                        this.enabled = match deser_bool(service, "Service", "'b' at index 2") {
+                        this.enabled = match deser_bool(service, "Service", 2) {
                             Some(e) => e,
                             None => continue,
                         };
 
-                        this.running = match deser_bool(service, "Service", "'b' at index 3") {
+                        this.running = match deser_bool(service, "Service", 3) {
                             Some(r) => r,
                             None => continue,
                         };
 
-                        this.failed = match deser_bool(service, "Service", "'b' at index 4") {
+                        this.failed = match deser_bool(service, "Service", 4) {
                             Some(f) => f,
                             None => continue,
                         };
 
-                        this.pid = match deser_u32(service, "Service", "'u' at index 5") {
+                        this.pid = match deser_u32(service, "Service", 5) {
                             Some(p) => NonZeroU32::new(p),
                             None => continue,
                         };
 
-                        this.user = match deser_str(service, "Service", "'s' at index 6") {
+                        this.user = match deser_str(service, "Service", 6) {
                             Some(u) => {
                                 if u.is_empty() {
                                     None
@@ -168,7 +168,7 @@ impl<'a> Get<'a> for ServiceMap {
                             None => continue,
                         };
 
-                        this.group = match deser_str(service, "Service", "'s' at index 7") {
+                        this.group = match deser_str(service, "Service", 7) {
                             Some(g) => {
                                 if g.is_empty() {
                                     None

@@ -149,43 +149,42 @@ impl<'a> Get<'a> for FanInfoVec {
                         };
                         let fan_info = i.as_mut();
 
-                        this.fan_label = match deser_str(fan_info, "FanInfo", "'s' at index 0") {
+                        this.fan_label = match deser_str(fan_info, "FanInfo", 0) {
                             Some(n) => n,
                             None => continue,
                         };
 
-                        this.temp_name = match deser_str(fan_info, "FanInfo", "'s' at index 1") {
+                        this.temp_name = match deser_str(fan_info, "FanInfo", 1) {
                             Some(n) => n,
                             None => continue,
                         };
 
-                        this.temp_amount = match deser_i64(fan_info, "FanInfo", "'x' at index 2") {
+                        this.temp_amount = match deser_i64(fan_info, "FanInfo", 2) {
                             Some(s) => s,
                             None => continue,
                         };
 
-                        this.rpm = match deser_u64(fan_info, "FanInfo", "'t' at index 3") {
+                        this.rpm = match deser_u64(fan_info, "FanInfo", 3) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.percent_vroomimg =
-                            match deser_f32(fan_info, "FanInfo", "'t' at index 4") {
-                                Some(c) => c,
-                                None => continue,
-                            };
-
-                        this.fan_index = match deser_u64(fan_info, "FanInfo", "'t' at index 5") {
+                        this.percent_vroomimg = match deser_f32(fan_info, "FanInfo", 4) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.hwmon_index = match deser_u64(fan_info, "FanInfo", "'t' at index 6") {
+                        this.fan_index = match deser_u64(fan_info, "FanInfo", 5) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.max_speed = match deser_u64(fan_info, "FanInfo", "'t' at index 7") {
+                        this.hwmon_index = match deser_u64(fan_info, "FanInfo", 6) {
+                            Some(c) => c,
+                            None => continue,
+                        };
+
+                        this.max_speed = match deser_u64(fan_info, "FanInfo", 7) {
                             Some(c) => c,
                             None => continue,
                         };

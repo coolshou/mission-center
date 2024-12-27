@@ -23,7 +23,7 @@ use std::{collections::HashMap, sync::Arc};
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::{deser_iter, deser_str};
+use super::{deser_array, deser_str};
 
 #[derive(Debug, Clone)]
 pub struct App {
@@ -58,12 +58,12 @@ impl From<&dyn RefArg> for App {
         };
         let app = app.as_mut();
 
-        this.name = match deser_str(app, "App", "'s' at index 0") {
+        this.name = match deser_str(app, "App", 0) {
             Some(name) => name,
             None => return this,
         };
 
-        this.icon = match deser_str(app, "App", "'s' at index 1") {
+        this.icon = match deser_str(app, "App", 1) {
             Some(icon) => {
                 if icon.is_empty() {
                     None
@@ -74,17 +74,17 @@ impl From<&dyn RefArg> for App {
             None => return this,
         };
 
-        this.id = match deser_str(app, "App", "'s' at index 2") {
+        this.id = match deser_str(app, "App", 2) {
             Some(id) => id,
             None => return this,
         };
 
-        this.command = match deser_str(app, "App", "'s' at index 3") {
+        this.command = match deser_str(app, "App", 3) {
             Some(command) => command,
             None => return this,
         };
 
-        match deser_iter(app, "App", "ARRAY at index 4") {
+        match deser_array(app, "App", 4) {
             Some(pids) => {
                 for p in pids {
                     if let Some(p) = p.as_u64() {
