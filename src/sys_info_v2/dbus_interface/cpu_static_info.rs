@@ -22,6 +22,8 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
+use super::{deser_str, deser_u32, deser_u64, deser_u8};
+
 #[derive(Debug, Clone)]
 pub struct CpuStaticInfo {
     pub name: Arc<str>,
@@ -100,257 +102,100 @@ impl<'a> Get<'a> for CpuStaticInfo {
         };
         let static_info = static_info.as_mut();
 
-        this.name = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '0: s', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '0: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(n) => Arc::<str>::from(n),
-            },
+        this.name = match deser_str(static_info, "CpuStaticInfo", 0) {
+            Some(n) => n,
+            None => return None,
         };
 
-        this.logical_cpu_count = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '1: u', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '1: u', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(lcc) => lcc as _,
-            },
+        this.logical_cpu_count = match deser_u32(static_info, "CpuStaticInfo", 1) {
+            Some(lcc) => lcc,
+            None => return None,
         };
 
-        this.socket_count = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '2: y', got None",
-                );
-                return None;
+        this.socket_count = match deser_u8(static_info, "CpuStaticInfo", 2) {
+            Some(sc) => {
+                if sc == 0 {
+                    None
+                } else {
+                    Some(sc)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '2: y', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(sc) => {
-                    if sc == 0 {
-                        None
-                    } else {
-                        Some(sc as _)
-                    }
-                }
-            },
+            None => return None,
         };
 
-        this.base_frequency_khz = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '3: t', got None",
-                );
-                return None;
+        this.base_frequency_khz = match deser_u64(static_info, "CpuStaticInfo", 3) {
+            Some(bf) => {
+                if bf == 0 {
+                    None
+                } else {
+                    Some(bf)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '3: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(bf) => {
-                    if bf == 0 {
-                        None
-                    } else {
-                        Some(bf)
-                    }
-                }
-            },
+            None => return None,
         };
 
-        this.virtualization_technology = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '4: s', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '4: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
+        this.virtualization_technology = match deser_str(static_info, "CpuStaticInfo", 4) {
+            Some(ivs) => {
+                if ivs.is_empty() {
+                    None
+                } else {
+                    Some(ivs)
                 }
-                Some(ivs) => match ivs {
-                    "" => None,
-                    _ => Some(Arc::from(ivs)),
-                },
-            },
+            }
+            None => return None,
         };
 
-        this.is_virtual_machine = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '5: y', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '5: y', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(ivm) => match ivm {
-                    0 => Some(false),
-                    1 => Some(true),
-                    _ => None,
-                },
+        this.is_virtual_machine = match deser_u64(static_info, "CpuStaticInfo", 5) {
+            Some(ivm) => match ivm {
+                0 => Some(false),
+                1 => Some(true),
+                _ => None,
             },
+            None => return None,
         };
 
-        this.l1_combined_cache = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '6: t', got None",
-                );
-                return None;
+        this.l1_combined_cache = match deser_u64(static_info, "CpuStaticInfo", 6) {
+            Some(l1) => {
+                if l1 == 0 {
+                    None
+                } else {
+                    Some(l1)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '6: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(l1) => {
-                    if l1 == 0 {
-                        None
-                    } else {
-                        Some(l1) as _
-                    }
-                }
-            },
+            None => return None,
         };
 
-        this.l2_cache = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '7: t', got None",
-                );
-                return None;
+        this.l2_cache = match deser_u64(static_info, "CpuStaticInfo", 7) {
+            Some(l2) => {
+                if l2 == 0 {
+                    None
+                } else {
+                    Some(l2)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '7: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(l2) => {
-                    if l2 == 0 {
-                        None
-                    } else {
-                        Some(l2)
-                    }
-                }
-            },
+            None => return None,
         };
 
-        this.l3_cache = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '8: t', got None",
-                );
-                return None;
+        this.l3_cache = match deser_u64(static_info, "CpuStaticInfo", 8) {
+            Some(l3) => {
+                if l3 == 0 {
+                    None
+                } else {
+                    Some(l3)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '8: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(l3) => {
-                    if l3 == 0 {
-                        None
-                    } else {
-                        Some(l3)
-                    }
-                }
-            },
+            None => return None,
         };
 
-        this.l4_cache = match Iterator::next(static_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get CpuStaticInfo: Expected '9: t', got None",
-                );
-                return None;
+        this.l4_cache = match deser_u64(static_info, "CpuStaticInfo", 9) {
+            Some(l4) => {
+                if l4 == 0 {
+                    None
+                } else {
+                    Some(l4)
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get CpuStaticInfo: Expected '9: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(l4) => {
-                    if l4 == 0 {
-                        None
-                    } else {
-                        Some(l4)
-                    }
-                }
-            },
+            None => return None,
         };
 
         Some(this)

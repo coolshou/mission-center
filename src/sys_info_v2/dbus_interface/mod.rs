@@ -20,6 +20,7 @@
 
 use std::{
     collections::HashMap,
+    fmt::Write,
     mem::{align_of, size_of},
     num::NonZeroU32,
     rc::Rc,
@@ -28,6 +29,8 @@ use std::{
 
 use dbus::{arg::ArgType, blocking::{LocalConnection, Proxy}, Signature};
 use dbus::arg::{Append, Arg, Get, Iter, IterAppend, ReadAll, RefArg};
+use adw::glib::g_critical;
+use arrayvec::ArrayString;
 use static_assertions::const_assert;
 
 pub use apps::{App, AppMap};
@@ -78,6 +81,164 @@ impl TypeMismatchError {
 
 const_assert!(size_of::<TypeMismatchError>() == size_of::<dbus::arg::TypeMismatchError>());
 const_assert!(align_of::<TypeMismatchError>() == align_of::<dbus::arg::TypeMismatchError>());
+
+fn deser<'a, T, E>(
+    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    context: &str,
+    expected_desc: &str,
+    extractor: E,
+) -> Option<T>
+where
+    E: FnOnce(&'a dyn RefArg) -> Option<T>,
+{
+    match iter.next() {
+        None => {
+            g_critical!(
+                "MissionCenter::GathererDBusProxy",
+                "Failed to read DBus data for {context}: Expected {expected_desc}, got None",
+            );
+            None
+        }
+        Some(arg) => match extractor(arg) {
+            None => {
+                g_critical!(
+                    "MissionCenter::GathererDBusProxy",
+                    "Failed to read DBus data for {context}: Expected {expected_desc}, got {:?}",
+                    arg.arg_type(),
+                );
+                None
+            }
+            Some(v) => Some(v),
+        },
+    }
+}
+
+fn deser_struct<'a>(
+    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<Box<dyn Iterator<Item = &'a dyn RefArg> + 'a>> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "STRUCT at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_iter())
+}
+
+fn deser_array<'a>(
+    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<Box<dyn Iterator<Item = &'a dyn RefArg> + 'a>> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "STRUCT at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_iter())
+}
+
+fn deser_u64(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<u64> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'t' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_u64())
+}
+
+fn deser_u32(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<u32> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'u' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_u64().map(|v| v as u32)
+    })
+}
+
+fn deser_u16(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<u16> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'q' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_u64().map(|v| v as u16)
+    })
+}
+
+fn deser_u8(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<u8> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'y' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_u64().map(|v| v as u8)
+    })
+}
+
+fn deser_usize(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<usize> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'t' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_u64().map(|v| v as usize)
+    })
+}
+
+fn deser_i64(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<i64> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'x' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_i64())
+}
+
+fn deser_bool(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<bool> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'b' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_u64().map(|v| match v {
+            0 => false,
+            _ => true,
+        })
+    })
+}
+
+fn deser_f32(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<f32> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'d' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_f64().map(|v| v as f32)
+    })
+}
+
+fn deser_str(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<Arc<str>> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'s' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_str().map(Arc::from)
+    })
+}
 
 pub trait Gatherer {
     fn get_cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;

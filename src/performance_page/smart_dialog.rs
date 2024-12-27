@@ -53,6 +53,8 @@ mod imp {
         pub status: TemplateChild<gtk::Label>,
         #[template_child]
         pub sata_data: TemplateChild<gtk::ScrolledWindow>,
+        #[template_child]
+        pub nvme_data: TemplateChild<gtk::ScrolledWindow>,
 
         #[template_child]
         pub avail_spare: TemplateChild<gtk::Label>,
@@ -95,7 +97,6 @@ mod imp {
             self.powered_on.set_text(powered_on_nice.as_str());
             // self.status.set_text(result.status.to_string().as_str());
             self.status.set_text(format!("{:?}", result.test_result).as_str());
-            self.
         }
 
         // todo populate self
@@ -103,6 +104,7 @@ mod imp {
             self.apply_common_smart_result(result.common_smart_result);
 
             self.sata_data.set_visible(true);
+            self.nvme_data.set_visible(false);
 
             let modelo = self.column_view.get();
 
@@ -130,6 +132,7 @@ mod imp {
             self.apply_common_smart_result(result.common_smart_result);
 
             self.sata_data.set_visible(false);
+            self.nvme_data.set_visible(false);
 
             let modelo = self.column_view.get();
 
@@ -183,6 +186,7 @@ mod imp {
                 powered_on: Default::default(),
                 status: Default::default(),
                 sata_data: Default::default(),
+                nvme_data: Default::default(),
                 avail_spare: Default::default(),
                 spare_thresh: Default::default(),
                 percent_used: Default::default(),

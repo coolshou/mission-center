@@ -21,6 +21,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
+use gtk::glib::g_critical;
+
+use super::{deser_array, deser_str};
 
 #[derive(Debug, Clone)]
 pub struct App {
@@ -33,8 +36,6 @@ pub struct App {
 
 impl From<&dyn RefArg> for App {
     fn from(value: &dyn RefArg) -> Self {
-        use gtk::glib::g_critical;
-
         let empty_string = Arc::<str>::from("");
 
         let mut this = App {
@@ -57,122 +58,44 @@ impl From<&dyn RefArg> for App {
         };
         let app = app.as_mut();
 
-        this.name = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '0: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '0: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(n) => Arc::from(n),
-            },
+        this.name = match deser_str(app, "App", 0) {
+            Some(name) => name,
+            None => return this,
         };
 
-        this.icon = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '1: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '1: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
+        this.icon = match deser_str(app, "App", 1) {
+            Some(icon) => {
+                if icon.is_empty() {
+                    None
+                } else {
+                    Some(icon)
                 }
-                Some(icon) => {
-                    if icon.is_empty() {
-                        None
-                    } else {
-                        Some(Arc::from(icon))
+            }
+            None => return this,
+        };
+
+        this.id = match deser_str(app, "App", 2) {
+            Some(id) => id,
+            None => return this,
+        };
+
+        this.command = match deser_str(app, "App", 3) {
+            Some(command) => command,
+            None => return this,
+        };
+
+        match deser_array(app, "App", 4) {
+            Some(pids) => {
+                for p in pids {
+                    if let Some(p) = p.as_u64() {
+                        this.pids.push(p as u32);
                     }
                 }
-            },
-        };
-
-        this.id = match Iterator::next(app) {
+            }
             None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '2: s', got None",
-                );
                 return this;
             }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '2: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(id) => Arc::from(id),
-            },
         };
-
-        this.command = match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '3: 2', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '3: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(c) => Arc::from(c),
-            },
-        };
-
-        match Iterator::next(app) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get App: Expected '4: ARRAY', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get App: Expected '4: ARRAY', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(pids) => {
-                    for p in pids {
-                        if let Some(p) = p.as_u64() {
-                            this.pids.push(p as u32);
-                        }
-                    }
-                }
-            },
-        }
 
         this
     }
@@ -212,8 +135,6 @@ impl ReadAll for AppMap {
 
 impl<'a> Get<'a> for AppMap {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
-        use gtk::glib::g_critical;
-
         let mut this = HashMap::new();
 
         match Iterator::next(i) {
