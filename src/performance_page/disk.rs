@@ -178,6 +178,10 @@ mod imp {
         }
 
         pub(crate) fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
+            // todo do something else?
+            if result.success {
+                return;
+            }
             let details_dialog =
                 unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
             details_dialog.map(move |d| {
