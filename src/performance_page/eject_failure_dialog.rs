@@ -70,11 +70,7 @@ mod imp {
                     None => {&Arc::from("")}
                 };
 
-                println!("Creating app {}", &appname);
-
                 for process in processes {
-                    println!("Creating process {}", process.0);
-
                     if !process.1.is_empty() {
                         let new_root = EjectFailureRowBuilder::new()
                             .icon(iconname)
