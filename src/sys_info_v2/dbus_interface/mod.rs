@@ -201,6 +201,26 @@ fn deser_i64(
     deser(iter, context, &description, |arg| arg.as_i64())
 }
 
+fn deser_i32(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<i32> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'i' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_i64().map(|i| i as i32))
+}
+
+fn deser_i16(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<i16> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'n' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| arg.as_i64().map(|i| i as i16))
+}
+
 fn deser_bool(
     iter: &mut dyn Iterator<Item = &dyn RefArg>,
     context: &str,
@@ -216,16 +236,25 @@ fn deser_bool(
     })
 }
 
+fn deser_f64(
+    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    context: &str,
+    index: usize,
+) -> Option<f64> {
+    let mut description = ArrayString::<30>::new();
+    write!(&mut description, "'d' at index {}", index).expect("Failed to write to ArrayString");
+    deser(iter, context, &description, |arg| {
+        arg.as_f64()
+    })
+}
+
 fn deser_f32(
     iter: &mut dyn Iterator<Item = &dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<f32> {
-    let mut description = ArrayString::<30>::new();
-    write!(&mut description, "'d' at index {}", index).expect("Failed to write to ArrayString");
-    deser(iter, context, &description, |arg| {
-        arg.as_f64().map(|v| v as f32)
-    })
+    // they both use 'd' because reasons
+    deser_f64(iter, context, index).map(|v| v as f32)
 }
 
 fn deser_str(
@@ -711,189 +740,45 @@ impl From<&dyn RefArg> for SataSmartEntry {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '0: u8', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u8: Expected '0: u8', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.id = arr as u8
-                }
-            },
-        }
+        this.id = match deser_u8(dynamic_info, "GathererDBusProxy", 0) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '1: String', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get String: Expected '1: String', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.name = arr.to_string();
-                }
-            },
-        }
+        this.name = match deser_str(dynamic_info, "GathererDBusProxy", 1) {
+            Some(i) => i.into_string(),
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u16: Expected '2: u16', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u16: Expected '2: String', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.flags = arr as u16;
-                }
-            },
-        }
+        this.flags = match deser_u16(dynamic_info, "GathererDBusProxyFlags", 2) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '3: i32', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '3: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.value = arr as i32;
-                }
-            },
-        }
+        this.value = match deser_i32(dynamic_info, "GathererDBusProxyValue", 3) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '4: i32', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '4: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.worst = arr as i32;
-                }
-            },
-        }
+        this.worst = match deser_i32(dynamic_info, "GathererDBusProxyWork", 4) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '5: i32', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '5: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.threshold = arr as i32;
-                }
-            },
-        }
+        this.threshold = match deser_i32(dynamic_info, "GathererDBusProxyThreshold", 5) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i64: Expected '6: i64', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i64: Expected '6: i64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.pretty = arr;
-                }
-            },
-        }
+        this.pretty = match deser_i64(dynamic_info, "GathererDBusProxyPretty", 6) {
+            Some(i) => i,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '7: i32', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '7: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.pretty_unit = arr as i32;
-                }
-            },
-        }
+        this.pretty_unit = match deser_i32(dynamic_info, "GathererDBusProxyPrettyUnit", 7) {
+            Some(i) => i,
+            None => return this
+        };
 
         this
     }
@@ -1168,6 +1053,32 @@ impl From<String> for SmartTestResult {
     }
 }
 
+impl From<u64> for SmartTestResult {
+    fn from(value: u64) -> Self {
+        match value {
+            1 => SmartTestResult::Success,
+            2 => SmartTestResult::Aborted,
+            3 => SmartTestResult::FatalError,
+            4 => SmartTestResult::InProgress,
+            5 => SmartTestResult::Interrupted,
+            6 => SmartTestResult::ErrorUnknown,
+            7 => SmartTestResult::ErrorElectrical,
+            8 => SmartTestResult::ErrorServo,
+            9 => SmartTestResult::ErrorRead,
+            10 => SmartTestResult::ErrorHandling,
+            11 => SmartTestResult::CtrlReset,
+            12 => SmartTestResult::NsRemoved,
+            13 => SmartTestResult::AbortedFormat,
+            14 => SmartTestResult::UnknownSegmentFailed,
+            15 => SmartTestResult::KnownSegmentFailed,
+            16 => SmartTestResult::AbortedUnknown,
+            17 => SmartTestResult::AbortedSanitize,
+            _ => SmartTestResult::UNKNOWN_RESULT,
+        }
+    }
+}
+
+
 #[derive(Clone, Debug)]
 pub struct CommonSmartResult {
     pub success: bool,
@@ -1217,116 +1128,25 @@ impl From<&dyn RefArg> for CommonSmartResult {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '0: boolean', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get boolean: Expected '0: boolean', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.success = arr != 0
-                }
-            },
-        }
+        this.success = match deser_bool(dynamic_info, "GathererDBusProxy", 0) {
+            Some(s) => s,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '1: u64', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '1: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.powered_on_seconds = arr;
-                }
-            },
-        }
+        this.powered_on_seconds = match deser_u64(dynamic_info, "GathererDBusProxy", 1) {
+            Some(s) => s,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '2: u64', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '2: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.last_update_time = arr;
-                }
-            },
-        }
+        this.last_update_time = match deser_u64(dynamic_info, "GathererDBusProxy", 2) {
+            Some(s) => s,
+            None => return this
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '2: u64', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '2: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(arr) => {
-                    this.test_result = match arr {
-                        1 => SmartTestResult::Success,
-                        2 => SmartTestResult::Aborted,
-                        3 => SmartTestResult::FatalError,
-                        4 => SmartTestResult::InProgress,
-                        5 => SmartTestResult::Interrupted,
-                        6 => SmartTestResult::ErrorUnknown,
-                        7 => SmartTestResult::ErrorElectrical,
-                        8 => SmartTestResult::ErrorServo,
-                        9 => SmartTestResult::ErrorRead,
-                        10 => SmartTestResult::ErrorHandling,
-                        11 => SmartTestResult::CtrlReset,
-                        12 => SmartTestResult::NsRemoved,
-                        13 => SmartTestResult::AbortedFormat,
-                        14 => SmartTestResult::UnknownSegmentFailed,
-                        15 => SmartTestResult::KnownSegmentFailed,
-                        16 => SmartTestResult::AbortedUnknown,
-                        17 => SmartTestResult::AbortedSanitize,
-                        _ => SmartTestResult::UNKNOWN_RESULT,
-                    };
-                }
-            },
-        }
+        this.test_result = match deser_u64(dynamic_info, "GathererDBusProxy", 3) {
+            Some(s) => SmartTestResult::from(s),
+            None => return this
+        };
 
         this
     }
@@ -1417,31 +1237,15 @@ impl<'a> Get<'a> for SataSmartResult {
             }
         }
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '1: Vec<>', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Vec<Arc<str>>: Expected '1: Vec<>', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(block_list) => {
-                    for block in block_list {
-                        let entry = SataSmartEntry::from(block);
-                        this.blocking_processes.push(entry);
-                    }
+        match deser_array(dynamic_info, "GathererDBusProxy", 1) {
+            Some(arr) => {
+                for block in arr {
+                    let entry = SataSmartEntry::from(block);
+                    this.blocking_processes.push(entry);
                 }
             }
-        };
+            None => return None
+        }
 
         Some(this)
     }
@@ -1562,99 +1366,6 @@ impl<'a> Get<'a> for NVMeSmartResult {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-/*        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '0: boolean', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get boolean: Expected '0: boolean', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(mut arr) => {
-                    let dynamic_info = arr.as_mut();
-                    match Iterator::next(dynamic_info) {
-                        None => {
-                            g_critical!(
-                                "MissionCenter::GathererDBusProxy",
-                                "Failed to get boolean: Expected '0: boolean', got None",
-                            );
-                            return None;
-                        }
-                        Some(arg) => match arg.as_u64() {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get boolean: Expected '0: boolean', got {:?}",
-                                    arg.arg_type(),
-                                );
-                                return None;
-                            }
-                            Some(arr) => {
-                                this.common_smart_result.success = arr != 0
-                            }
-                        },
-                    }
-
-                    match Iterator::next(dynamic_info) {
-                        None => {
-                            g_critical!(
-                                "MissionCenter::GathererDBusProxy",
-                                "Failed to get u64: Expected '1: u64', got None",
-                            );
-                            return None;
-                        }
-                        Some(arg) => match arg.as_u64() {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get u64: Expected '1: u64', got {:?}",
-                                    arg.arg_type(),
-                                );
-                                return None;
-                            }
-                            Some(arr) => {
-                                this.common_smart_result.powered_on_seconds = arr;
-                            }
-                        },
-                    }
-
-                    match Iterator::next(dynamic_info) {
-                        None => {
-                            g_critical!(
-                                "MissionCenter::GathererDBusProxy",
-                                "Failed to get String: Expected '2: String', got None",
-                            );
-                            return None;
-                        }
-                        Some(arg) => match arg.as_str() {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get String: Expected '2: String', got {:?}",
-                                    arg.arg_type(),
-                                );
-                                return None;
-                            }
-                            Some(arr) => {
-                                this.common_smart_result.status = arr.to_string();
-                            }
-                        },
-                    }
-
-                    // this.common_smart_result = CommonSmartResult::from(arr.as_mut());
-                }
-            },
-        };
-*/
         match Iterator::next(dynamic_info) {
             None => {
                 g_critical!(
@@ -1668,355 +1379,83 @@ impl<'a> Get<'a> for NVMeSmartResult {
             }
         }
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u8: Expected '1: u8', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u8: Expected '1: u8', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.avail_spare = arr as u8
-                }
-            },
+        this.avail_spare = match deser_u8(dynamic_info, "GathererDBusProxy", 1) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u8: Expected '2: u8', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u8: Expected '2: u8', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.spare_thresh = arr as u8
-                }
-            },
+        this.spare_thresh = match deser_u8(dynamic_info, "GathererDBusProxy", 2) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u8: Expected '3: u8', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u8: Expected '3: u8', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.percent_used = arr as u8
-                }
-            },
+        this.percent_used = match deser_u8(dynamic_info, "GathererDBusProxy", 3) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '4: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '4: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.total_data_read = arr
-                }
-            },
+        this.total_data_read = match deser_u64(dynamic_info, "GathererDBusProxy", 4) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '5: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '5: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.total_data_written = arr
-                }
-            },
+        this.total_data_written = match deser_u64(dynamic_info, "GathererDBusProxy", 5) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '6: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '6: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.ctrl_busy_minutes = arr
-                }
-            },
+        this.ctrl_busy_minutes = match deser_u64(dynamic_info, "GathererDBusProxy", 6) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '7: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '7: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.power_cycles = arr
-                }
-            },
+        this.power_cycles = match deser_u64(dynamic_info, "GathererDBusProxy", 7) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '8: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '8: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.unsafe_shutdowns = arr
-                }
-            },
+        this.unsafe_shutdowns = match deser_u64(dynamic_info, "GathererDBusProxy", 8) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '9: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '9: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.media_errors = arr
-                }
-            },
+        this.media_errors = match deser_u64(dynamic_info, "GathererDBusProxy", 9) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u64: Expected '10: u64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u64: Expected '10: u64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.num_err_log_entries = arr
-                }
-            },
+        this.num_err_log_entries = match deser_u64(dynamic_info, "GathererDBusProxy", 10) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Arr: Expected '11: Arr', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Arr: Expected '11: Arr', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(mut arr) => {
-                    /*let arr = arr.as_mut();
-
-                    for j in 0..8 {
-                        this.temp_sensors.push(
-                            Iterator::next(arr).unwrap().as_u64().unwrap() as u16,
-                        )
-                    }*/
+        match deser_array(dynamic_info, "GathererDBusProxy", 11) {
+            Some(i) => {
+                for temp in i {
+                    this.temp_sensors.push(temp.as_u64().unwrap_or_default() as u16);
                 }
             },
+            None => return None
+        }
+
+        this.wctemp = match deser_u16(dynamic_info, "GathererDBusProxy", 12) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u16: Expected '12: u16', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u16: Expected '12: u16', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.wctemp = arr as u16
-                }
-            },
+        this.cctemp = match deser_u16(dynamic_info, "GathererDBusProxy", 13) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u16: Expected '13: u16', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u16: Expected '13: u16', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.cctemp = arr as u16
-                }
-            },
+        this.warning_temp_time = match deser_u32(dynamic_info, "GathererDBusProxy", 14) {
+            Some(i) => i,
+            None => return None
         };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u32: Expected '14: u32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u32: Expected '14: u32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.warning_temp_time = arr as u32
-                }
-            },
-        };
-
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u32: Expected '15: u32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u32: Expected '15: u32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.critical_temp_time = arr as u32
-                }
-            },
+        this.critical_temp_time = match deser_u32(dynamic_info, "GathererDBusProxy", 15) {
+            Some(i) => i,
+            None => return None
         };
 
         Some(this)

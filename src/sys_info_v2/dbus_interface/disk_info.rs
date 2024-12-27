@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_bool, deser_f32, deser_str, deser_u64, deser_u8};
+use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u64, deser_u8};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -208,7 +208,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.smart_interface = match deser_u8(disk_info) {
+                        this.smart_interface = match deser_u8(disk_info, "DiskInfo", 3) {
                             Some(i) => match i {
                                 1 => DiskSmartInterface::Ata,
                                 2 => DiskSmartInterface::NVMe,
@@ -217,94 +217,59 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue
                         };
 
-                        this.capacity = match deser_u64(disk_info, "DiskInfo", 3) {
+                        this.capacity = match deser_u64(disk_info, "DiskInfo", 4) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.formatted = match deser_u64(disk_info, "DiskInfo", 4) {
+                        this.formatted = match deser_u64(disk_info, "DiskInfo", 5) {
                             Some(f) => f,
                             None => continue,
                         };
 
-                        this.system_disk = match deser_bool(disk_info, "DiskInfo", 5) {
+                        this.system_disk = match deser_bool(disk_info, "DiskInfo", 6) {
                             Some(sd) => sd,
                             None => continue,
                         };
 
-                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", 6) {
+                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", 7) {
                             Some(u) => u,
                             None => continue,
                         };
 
-                        this.response_time_ms = match deser_f32(disk_info, "DiskInfo", 7) {
+                        this.response_time_ms = match deser_f32(disk_info, "DiskInfo", 8) {
                             Some(u) => u,
                             None => continue,
                         };
 
-                        this.read_speed = match deser_u64(disk_info, "DiskInfo", 8) {
+                        this.read_speed = match deser_u64(disk_info, "DiskInfo", 9) {
                             Some(rs) => rs,
                             None => continue,
                         };
 
-                        this.total_read = match deser_u64(disk_info, "DiskInfo", 9) {
+                        this.total_read = match deser_u64(disk_info, "DiskInfo", 10) {
                             Some(tr) => tr,
                             None => continue,
                         };
 
-                        this.write_speed = match deser_u64(disk_info, "DiskInfo", 10) {
+                        this.write_speed = match deser_u64(disk_info, "DiskInfo", 11) {
                             Some(ws) => ws,
                             None => continue,
                         };
 
-                        this.total_write = match deser_u64(disk_info, "DiskInfo", 11) {
+                        this.total_write = match deser_u64(disk_info, "DiskInfo", 12) {
                             Some(tw) => tw,
                             None => continue,
                         };
 
-                        this.ejectable = match Iterator::next(disk_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '13: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '13: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(ws) => match ws {
-                                    1 => true,
-                                    _ => false,
-                                },
-                            },
+                        this.ejectable = match deser_bool(disk_info, "DiskInfo", 13) {
+                            Some(sd) => sd,
+                            None => continue,
                         };
 
-                        this.drive_temperature = match Iterator::next(disk_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get DiskInfo: Expected '14: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get DiskInfo: Expected '14: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(ws) => ws
-                            },
+                        this.drive_temperature = match deser_f64(disk_info, "DiskInfo", 14) {
+                            Some(sd) => sd,
+                            None => continue,
                         };
 
                         result.push(this);
