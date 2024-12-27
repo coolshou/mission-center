@@ -116,7 +116,7 @@ mod imp {
                 let new_row = SmartDialogRowBuilder::new()
                     .id(parsed_result.id)
                     .attribute(parsed_result.name.as_str())
-                    .value(parsed_result.value)
+                    .value(parsed_result.value, parsed_result.pretty_unit)
                     .threshold(parsed_result.threshold)
                     .pretty(parsed_result.pretty)
                     .worst(parsed_result.worst)
