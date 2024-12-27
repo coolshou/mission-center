@@ -32,27 +32,49 @@ mod imp {
     use adw::gio::ListStore;
     use adw::glib::WeakRef;
     use adw::ResponseAppearance;
+    use gtk::gio;
     use crate::{glib_clone, i18n};
     use crate::performance_page::disk::PerformancePageDisk;
     use crate::performance_page::DiskPage;
     use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
-    use crate::performance_page::sata_smart_dialog_row::SmartDialogRowBuilder;
+    use crate::performance_page::sata_smart_dialog_row::{SmartDialogRow, SmartDialogRowBuilder};
     use crate::sys_info_v2::{App, CommonSmartResult, EjectResult, NVMeSmartResult, Process, SataSmartResult};
     use super::*;
 
-    #[derive(Properties)]
+    #[derive(Default, Properties)]
     #[properties(wrapper_type = super::SmartDataDialog)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_data_dialog.ui")]
     pub struct SmartDataDialog {
         #[template_child]
-        pub column_view: TemplateChild<gtk::ListBox>,
+        pub column_view: TemplateChild<gtk::ColumnView>,
+        #[template_child]
+        pub id_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub attribute_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub value_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub normalized_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub threshold_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub worst_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub type_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub updates_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        pub assessment_column: TemplateChild<gtk::ColumnViewColumn>,
+
         #[template_child]
         pub powered_on: TemplateChild<gtk::Label>,
         #[template_child]
         pub status: TemplateChild<gtk::Label>,
         #[template_child]
         pub sata_data: TemplateChild<gtk::ScrolledWindow>,
+        #[template_child]
+        pub nvme_data: TemplateChild<gtk::ScrolledWindow>,
 
         #[template_child]
         pub avail_spare: TemplateChild<gtk::Label>,
@@ -95,7 +117,6 @@ mod imp {
             self.powered_on.set_text(powered_on_nice.as_str());
             // self.status.set_text(result.status.to_string().as_str());
             self.status.set_text(format!("{:?}", result.test_result).as_str());
-            self.
         }
 
         // todo populate self
@@ -103,39 +124,219 @@ mod imp {
             self.apply_common_smart_result(result.common_smart_result);
 
             self.sata_data.set_visible(true);
-
-            let modelo = self.column_view.get();
+            self.nvme_data.set_visible(false);
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
 
-            modelo.remove_all();
+            let mut roze = Vec::new();
 
             for parsed_result in result.blocking_processes {
                 let new_row = SmartDialogRowBuilder::new()
                     .id(parsed_result.id)
-                    .attribute(parsed_result.name.as_str())
+                    .attribute(parsed_result.name)
                     .value(parsed_result.value, parsed_result.pretty_unit)
                     .threshold(parsed_result.threshold)
                     .pretty(parsed_result.pretty)
                     .worst(parsed_result.worst)
+                    .flags(parsed_result.flags)
                     .build();
 
-                modelo.append(
-                    new_row.imp().row_entry.get().expect("Missing row entry")
-                )
+                roze.push(new_row);
             }
+
+            let rows: gio::ListStore = roze.into_iter().collect();
+
+            let column_view: gtk::ColumnView = self.column_view.get();
+            let id_col: gtk::ColumnViewColumn = self.id_column.get();
+            let att_col: gtk::ColumnViewColumn = self.attribute_column.get();
+            let val_col: gtk::ColumnViewColumn = self.value_column.get();
+            let nor_col: gtk::ColumnViewColumn = self.normalized_column.get();
+            let thr_col: gtk::ColumnViewColumn = self.threshold_column.get();
+            let wor_col: gtk::ColumnViewColumn = self.worst_column.get();
+            let typ_col: gtk::ColumnViewColumn = self.type_column.get();
+            let upd_col: gtk::ColumnViewColumn = self.updates_column.get();
+            let ass_col: gtk::ColumnViewColumn = self.assessment_column.get();
+
+            let factory_id_col = gtk::SignalListItemFactory::new();
+            factory_id_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_id_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item
+                    .to_owned()
+                    .downcast::<gtk::ColumnViewCell>()
+                    .unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast_ref::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.smart_id().to_string());
+            });
+            id_col.set_factory(Some(&factory_id_col));
+
+            let factory_att_col = gtk::SignalListItemFactory::new();
+            factory_att_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_att_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.attribute());
+            });
+            att_col.set_factory(Some(&factory_att_col));
+
+            let factory_val_col = gtk::SignalListItemFactory::new();
+            factory_val_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_val_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.value());
+            });
+            val_col.set_factory(Some(&factory_val_col));
+
+            let factory_nor_col = gtk::SignalListItemFactory::new();
+            factory_nor_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_nor_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.normalized().to_string());
+            });
+            nor_col.set_factory(Some(&factory_nor_col));
+
+            let factory_thr_col = gtk::SignalListItemFactory::new();
+            factory_thr_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_thr_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.threshold().to_string());
+            });
+            thr_col.set_factory(Some(&factory_thr_col));
+
+            let factory_wor_col = gtk::SignalListItemFactory::new();
+            factory_wor_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_wor_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.worst().to_string());
+            });
+            wor_col.set_factory(Some(&factory_wor_col));
+
+            let factory_typ_col = gtk::SignalListItemFactory::new();
+            factory_typ_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_typ_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.typee());
+            });
+            typ_col.set_factory(Some(&factory_typ_col));
+
+            let factory_upd_col = gtk::SignalListItemFactory::new();
+            factory_upd_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_upd_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.updates());
+            });
+            upd_col.set_factory(Some(&factory_upd_col));
+
+            let factory_ass_col = gtk::SignalListItemFactory::new();
+            factory_ass_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(
+                    &gtk::Label::builder()
+                        .halign(gtk::Align::Start)
+                        .build(),
+                ));
+            });
+            factory_ass_col.connect_bind(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                let child = cell.child().unwrap();
+                let label = child.downcast::<gtk::Label>().unwrap();
+                let model_item = cell.item().to_owned().unwrap().downcast::<SmartDialogRow>().unwrap();
+                label.set_label(&model_item.assessment());
+            });
+            ass_col.set_factory(Some(&factory_ass_col));
+
+            let sort_model = gtk::SortListModel::builder()
+                .model(&rows)
+                .sorter(&column_view.sorter().unwrap())
+                .build();
+
+            column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
         }
 
         pub fn apply_nvme_smart_result(&self, result: NVMeSmartResult, parent: &PerformancePageDisk) {
             self.apply_common_smart_result(result.common_smart_result);
 
             self.sata_data.set_visible(false);
-
-            let modelo = self.column_view.get();
+            self.nvme_data.set_visible(false);
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
-
-            modelo.remove_all();
 
             self.percent_used.set_text(&format!("{}%", result.percent_used));
 
@@ -173,33 +374,6 @@ mod imp {
             self.power_cycles.set_text(result.power_cycles.to_string().as_str());
 
             self.ctrl_busy_minutes.set_text(result.ctrl_busy_minutes.to_string().as_str());
-        }
-    }
-
-    impl Default for SmartDataDialog {
-        fn default() -> Self {
-            Self {
-                column_view: Default::default(),
-                powered_on: Default::default(),
-                status: Default::default(),
-                sata_data: Default::default(),
-                avail_spare: Default::default(),
-                spare_thresh: Default::default(),
-                percent_used: Default::default(),
-                data_read: Default::default(),
-                data_written: Default::default(),
-                ctrl_busy_minutes: Default::default(),
-                power_cycles: Default::default(),
-                unsafe_shutdowns: Default::default(),
-                media_errors: Default::default(),
-                num_err_log_entries: Default::default(),
-                temp_sensors: Default::default(),
-                wctemp: Default::default(),
-                cctemp: Default::default(),
-                warning_temp_time: Default::default(),
-                critical_temp_time: Default::default(),
-                parent_page: Cell::new(None),
-            }
         }
     }
 

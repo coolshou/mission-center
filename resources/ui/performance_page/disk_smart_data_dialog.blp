@@ -412,45 +412,61 @@ template $SmartDataDialog: Adw.Dialog {
         hscrollbar-policy: never;
         propagate-natural-height: true;
 
-        Box {
-          orientation: vertical;
+        ColumnView column_view {
 
-          Box {
-            orientation: horizontal;
-            Label id {
-              label: _("ID");
-            }
 
-            Label attribute {
-              label: _("Attribute");
-            }
+          ColumnViewColumn id_column {
+            title: _("ID");
 
-            Label value {
-              label: _("Value");
-            }
-
-            Label normalized {
-              label: _("Normalized");
-            }
-
-            Label threshold {
-              label: _("Threshold");
-            }
-
-            Label worst {
-              label: _("Worst");
-            }
-
-            Label pretty {
-              label: _("Pretty Value");
-            }
+            factory: SignalListItemFactory {};
           }
 
-          ListBox column_view {
-            styles [
-              "rich-list",
-              "transparent"
-            ]
+          ColumnViewColumn attribute_column {
+            title: _("Attribute");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn value_column {
+            title: _("Value");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn normalized_column {
+            title: _("Normalized");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn threshold_column {
+            title: _("Threshold");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn worst_column {
+            title: _("Worst");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn type_column {
+            title: _("Type");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn updates_column {
+            title: _("Updates");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn assessment_column {
+            title: _("Assessment");
+
+            factory: SignalListItemFactory {};
           }
         }
       }
