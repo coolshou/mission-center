@@ -29,6 +29,7 @@ mod imp {
     use std::cell::OnceCell;
     use std::collections::HashMap;
     use std::sync::Arc;
+    use std::time::{SystemTime, UNIX_EPOCH};
     use adw::gio::ListStore;
     use adw::glib::WeakRef;
     use adw::ResponseAppearance;
@@ -71,6 +72,8 @@ mod imp {
         pub powered_on: TemplateChild<gtk::Label>,
         #[template_child]
         pub status: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub last_updated: TemplateChild<gtk::Label>,
         #[template_child]
         pub sata_data: TemplateChild<gtk::ScrolledWindow>,
         #[template_child]
@@ -115,6 +118,14 @@ mod imp {
         fn apply_common_smart_result(&self, result: CommonSmartResult) {
             let powered_on_nice = crate::to_human_readable_time(result.powered_on_seconds);
             self.powered_on.set_text(powered_on_nice.as_str());
+
+            let start = SystemTime::now();
+            let since_the_epoch = start
+                .duration_since(UNIX_EPOCH)
+                .expect("Time went backwards");
+            let last_updated_nice = crate::to_human_readable_time((since_the_epoch.as_millis() / 1000) as u64 - result.last_update_time);
+            self.last_updated.set_text(&i18n_f("{} ago", &[&last_updated_nice]));
+
             // self.status.set_text(result.status.to_string().as_str());
             self.status.set_text(format!("{:?}", result.test_result).as_str());
         }
@@ -334,7 +345,7 @@ mod imp {
             self.apply_common_smart_result(result.common_smart_result);
 
             self.sata_data.set_visible(false);
-            self.nvme_data.set_visible(false);
+            self.nvme_data.set_visible(true);
 
             self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
 
