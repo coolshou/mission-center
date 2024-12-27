@@ -166,17 +166,17 @@ impl<'a> Get<'a> for DiskInfoVec {
                         };
                         let disk_info = i.as_mut();
 
-                        this.id = match deser_str(disk_info, "DiskInfo", "'s' at index 0") {
+                        this.id = match deser_str(disk_info, "DiskInfo", 0) {
                             Some(n) => n,
                             None => continue,
                         };
 
-                        this.model = match deser_str(disk_info, "DiskInfo", "'s' at index 1") {
+                        this.model = match deser_str(disk_info, "DiskInfo", 1) {
                             Some(m) => m,
                             None => continue,
                         };
 
-                        this.r#type = match deser_u64(disk_info, "DiskInfo", "'t' at index 2") {
+                        this.r#type = match deser_u64(disk_info, "DiskInfo", 2) {
                             Some(t) => match t {
                                 1 => DiskType::HDD,
                                 2 => DiskType::SSD,
@@ -190,52 +190,47 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.capacity = match deser_u64(disk_info, "DiskInfo", "'t' at index 3") {
+                        this.capacity = match deser_u64(disk_info, "DiskInfo", 3) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.formatted = match deser_u64(disk_info, "DiskInfo", "'t' at index 4") {
+                        this.formatted = match deser_u64(disk_info, "DiskInfo", 4) {
                             Some(f) => f,
                             None => continue,
                         };
 
-                        this.system_disk = match deser_bool(disk_info, "DiskInfo", "'b' at index 5")
-                        {
+                        this.system_disk = match deser_bool(disk_info, "DiskInfo", 5) {
                             Some(sd) => sd,
                             None => continue,
                         };
 
-                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", "'d' at index 6")
-                        {
+                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", 6) {
                             Some(u) => u,
                             None => continue,
                         };
 
-                        this.response_time_ms =
-                            match deser_f32(disk_info, "DiskInfo", "'d' at index 7") {
-                                Some(u) => u,
-                                None => continue,
-                            };
+                        this.response_time_ms = match deser_f32(disk_info, "DiskInfo", 7) {
+                            Some(u) => u,
+                            None => continue,
+                        };
 
-                        this.read_speed = match deser_u64(disk_info, "DiskInfo", "'t' at index 8") {
+                        this.read_speed = match deser_u64(disk_info, "DiskInfo", 8) {
                             Some(rs) => rs,
                             None => continue,
                         };
 
-                        this.total_read = match deser_u64(disk_info, "DiskInfo", "'t' at index 9") {
+                        this.total_read = match deser_u64(disk_info, "DiskInfo", 9) {
                             Some(tr) => tr,
                             None => continue,
                         };
 
-                        this.write_speed = match deser_u64(disk_info, "DiskInfo", "'t' at index 10")
-                        {
+                        this.write_speed = match deser_u64(disk_info, "DiskInfo", 10) {
                             Some(ws) => ws,
                             None => continue,
                         };
 
-                        this.total_write = match deser_u64(disk_info, "DiskInfo", "'t' at index 11")
-                        {
+                        this.total_write = match deser_u64(disk_info, "DiskInfo", 11) {
                             Some(tw) => tw,
                             None => continue,
                         };

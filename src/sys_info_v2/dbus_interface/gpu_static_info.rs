@@ -18,14 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::fmt::Write;
 use std::sync::Arc;
 
-use arrayvec::ArrayString;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
-use super::{deser_iter, deser_str, deser_u16, deser_u64, deser_u8};
+use super::{deser_str, deser_struct, deser_u16, deser_u64, deser_u8};
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -169,46 +167,37 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         };
                         let static_info = static_info.as_mut();
 
-                        info.id = match deser_str(static_info, "GpuStaticInfo", "'s' at index 0") {
+                        info.id = match deser_str(static_info, "GpuStaticInfo", 0) {
                             Some(id) => id,
                             None => return None,
                         };
 
-                        info.device_name =
-                            match deser_str(static_info, "GpuStaticInfo", "'s' at index 1") {
-                                Some(name) => name,
-                                None => return None,
-                            };
+                        info.device_name = match deser_str(static_info, "GpuStaticInfo", 1) {
+                            Some(name) => name,
+                            None => return None,
+                        };
 
-                        info.vendor_id =
-                            match deser_u16(static_info, "GpuStaticInfo", "'q' at index 2") {
-                                Some(vendor_id) => vendor_id,
-                                None => return None,
-                            };
+                        info.vendor_id = match deser_u16(static_info, "GpuStaticInfo", 2) {
+                            Some(vendor_id) => vendor_id,
+                            None => return None,
+                        };
 
-                        info.device_id =
-                            match deser_u16(static_info, "GpuStaticInfo", "'3: q' at index 3") {
-                                Some(device_id) => device_id,
-                                None => return None,
-                            };
+                        info.device_id = match deser_u16(static_info, "GpuStaticInfo", 3) {
+                            Some(device_id) => device_id,
+                            None => return None,
+                        };
 
-                        info.total_memory =
-                            match deser_u64(static_info, "GpuStaticInfo", "'t' at index 4") {
-                                Some(total_memory) => total_memory,
-                                None => return None,
-                            };
+                        info.total_memory = match deser_u64(static_info, "GpuStaticInfo", 4) {
+                            Some(total_memory) => total_memory,
+                            None => return None,
+                        };
 
-                        info.total_gtt =
-                            match deser_u64(static_info, "GpuStaticInfo", "'t' at index 5") {
-                                Some(total_gtt) => total_gtt,
-                                None => return None,
-                            };
+                        info.total_gtt = match deser_u64(static_info, "GpuStaticInfo", 5) {
+                            Some(total_gtt) => total_gtt,
+                            None => return None,
+                        };
 
-                        info.opengl_version = match deser_iter(
-                            static_info,
-                            "GpuStaticInfo",
-                            "STRUCT at index 6",
-                        ) {
+                        info.opengl_version = match deser_struct(static_info, "GpuStaticInfo", 6) {
                             Some(mut it) => {
                                 let it = it.as_mut();
                                 let major = if let Some(major) = it.next() {
@@ -263,80 +252,57 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
 
                         let mut api_versions = [None; 3];
                         for i in 0..3 {
-                            let mut description = ArrayString::<18>::new();
-                            write!(&mut description, "STRUCT at index {}", i + 7).unwrap_or_else(|_| {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo(ApiVersion): Expected 'y at index {}', failed to write description",
-                                    i + 7,
-                                );
-                            });
+                            api_versions[i] =
+                                match deser_struct(static_info, "GpuStaticInfo", i + 7) {
+                                    Some(mut it) => {
+                                        let major = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 9,
+                                        )
+                                        .unwrap_or(0);
 
-                            api_versions[i] = match deser_iter(
-                                static_info,
-                                "GpuStaticInfo",
-                                &description,
-                            ) {
-                                Some(mut it) => {
-                                    description.clear();
-                                    write!(&mut description, "y at index {}", i + 7).unwrap_or_else(|_| {
-                                        g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(ApiVersion): Expected 'y at index {}', failed to write description",
-                                            i + 7,
-                                        );
-                                    });
+                                        let minor = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 10,
+                                        )
+                                        .unwrap_or(0);
 
-                                    let major = deser_u16(
-                                        it.as_mut(),
-                                        "GpuStaticInfo(ApiVersion)",
-                                        &description,
-                                    )
-                                    .unwrap_or(0);
+                                        let patch = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 11,
+                                        )
+                                        .unwrap_or(0);
 
-                                    let minor = deser_u16(
-                                        it.as_mut(),
-                                        "GpuStaticInfo(ApiVersion)",
-                                        &description,
-                                    )
-                                    .unwrap_or(0);
-
-                                    let patch = deser_u16(
-                                        it.as_mut(),
-                                        "GpuStaticInfo(ApiVersion)",
-                                        &description,
-                                    )
-                                    .unwrap_or(0);
-
-                                    if major == 0 {
-                                        None
-                                    } else {
-                                        Some(ApiVersion {
-                                            major,
-                                            minor,
-                                            patch,
-                                        })
+                                        if major == 0 {
+                                            None
+                                        } else {
+                                            Some(ApiVersion {
+                                                major,
+                                                minor,
+                                                patch,
+                                            })
+                                        }
                                     }
-                                }
-                                None => return None,
-                            };
+                                    None => return None,
+                                };
                         }
 
                         info.vulkan_version = api_versions[0];
                         info.metal_version = api_versions[1];
                         info.direct3d_version = api_versions[2];
 
-                        info.pcie_gen =
-                            match deser_u8(static_info, "GpuStaticInfo", "'y' at index 10") {
-                                Some(pcie_gen) => pcie_gen,
-                                None => return None,
-                            };
+                        info.pcie_gen = match deser_u8(static_info, "GpuStaticInfo", 10) {
+                            Some(pcie_gen) => pcie_gen,
+                            None => return None,
+                        };
 
-                        info.pcie_lanes =
-                            match deser_u8(static_info, "GpuStaticInfo", "'y' at index 11") {
-                                Some(pcie_lanes) => pcie_lanes,
-                                None => return None,
-                            };
+                        info.pcie_lanes = match deser_u8(static_info, "GpuStaticInfo", 11) {
+                            Some(pcie_lanes) => pcie_lanes,
+                            None => return None,
+                        };
 
                         result.push(info);
                     }
