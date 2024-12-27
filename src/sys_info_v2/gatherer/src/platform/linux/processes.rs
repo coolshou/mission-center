@@ -99,26 +99,6 @@ pub struct LinuxProcess {
     raw_stats: RawStats,
 }
 
-impl LinuxProcess {
-    pub(crate) fn blocking_dirs(&self) -> Vec<PathBuf> {
-        let mut out = vec![];
-        match std::fs::read_dir(format!("/proc/{}/fd", self.pid)) {
-            Ok(dirr) => {
-                for dir in dirr.filter_map(|d| d.ok()) {
-                    let Ok(lenk) = std::fs::read_link(dir.path()) else {
-                        continue;
-                    };
-
-                    out.push(lenk);
-                }
-            }
-            Err(_) => {}
-        }
-
-        out
-    }
-}
-
 impl Default for LinuxProcess {
     fn default() -> Self {
         Self {

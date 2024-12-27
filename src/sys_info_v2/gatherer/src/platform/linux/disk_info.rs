@@ -44,7 +44,9 @@ pub struct LinuxDiskInfo {
     pub busy_percent: f32,
     pub response_time_ms: f32,
     pub read_speed: u64,
+    pub total_read: u64,
     pub write_speed: u64,
+    pub total_write: u64,
     pub ejectable: bool,
     pub drive_temperature_k: f64,
 }
@@ -63,7 +65,9 @@ impl Default for LinuxDiskInfo {
             busy_percent: 0.,
             response_time_ms: 0.,
             read_speed: 0,
+            total_read: 0,
             write_speed: 0,
+            total_write: 0,
             ejectable: false,
 
             drive_temperature_k: 0.0,
@@ -134,8 +138,16 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.read_speed
     }
 
+    fn total_read(&self) -> u64 {
+        self.total_read
+    }
+
     fn write_speed(&self) -> u64 {
         self.write_speed
+    }
+
+    fn total_write(&self) -> u64 {
+        self.total_write
     }
 
     fn ejectable(&self) -> bool {
@@ -300,6 +312,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             }
 
             let Some(dir_name) = dir_name else {
+                critical!(
+                    "MissionCenter::DiskInfo",
+                    "Failed to find device name for: {:?}",
+                    raw_dir_name
+                );
                 continue;
             };
 
@@ -394,6 +411,18 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     0.0
                 }
             }};
+
+            // we check out here in case of media removal or similar
+            let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
+                root_block.size().block_on().unwrap_or(0)
+            } else {
+                blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
+            };
+
+            if capacity == 0 {
+                _ = prev_disk_index.map(|i| prev_disks.remove(i));
+                continue;
+            }
 
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
@@ -524,22 +553,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 info.busy_percent = busy_percent;
                 info.response_time_ms = response_time_ms;
                 info.read_speed = read_speed;
+                info.total_read = sectors_read * 512;
                 info.write_speed = write_speed;
+                info.total_write = sectors_written * 512;
 
                 info.drive_temperature_k = drive_temperature_k;
 
                 self.info.push((disk_stat, info));
             } else {
-                let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
-                    root_block.size().block_on().unwrap_or(0)
-                } else {
-                    blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
-                };
-
-                if capacity == 0 {
-                    continue;
-                }
-
                 let mut formatted = 0;
                 let mut has_root = false;
 
@@ -560,9 +581,13 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         if let Ok(mountpoints) = f.mount_points().block_on() {
                             let mountpoints = mountpoints.iter().map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
 
-                            println!("Checking for root partitions {:?}", mountpoints.clone().collect::<Vec<_>>());
-
                             has_root |= mountpoints.map(|it| it.trim_matches(char::from(0)) == "/").reduce(|out, curr| out || curr).unwrap_or(false);
+                        } else {
+                            critical!(
+                                "Gatherer::DiskInfo",
+                                "Failed to read partitions for: {}",
+                                dir_name
+                            );
                         }
                     }
                 }
@@ -633,7 +658,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         busy_percent: 0.,
                         response_time_ms: 0.,
                         read_speed: 0,
+                        total_read: 0,
                         write_speed: 0,
+                        total_write: 0,
                         ejectable: drive.ejectable().block_on().unwrap_or(false),
                         drive_temperature_k,
                     },
