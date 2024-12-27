@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_bool, deser_f32, deser_str, deser_u64};
+use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u64, deser_u8};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -37,11 +37,22 @@ pub enum DiskType {
     iSCSI,
     Optical,
 }
-
 impl Default for DiskType {
     fn default() -> Self {
         Self::Unknown
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskSmartInterface {
+    Dumb,
+    Ata,
+    NVMe,
+}
+
+impl Default for DiskSmartInterface {
+    fn default() -> Self { Self::Dumb }
 }
 
 #[derive(Debug, Clone)]
@@ -49,6 +60,7 @@ pub struct DiskInfo {
     pub id: Arc<str>,
     pub model: Arc<str>,
     pub r#type: DiskType,
+    pub smart_interface: DiskSmartInterface,
     pub capacity: u64,
     pub formatted: u64,
     pub system_disk: bool,
@@ -59,6 +71,8 @@ pub struct DiskInfo {
     pub total_read: u64,
     pub write_speed: u64,
     pub total_write: u64,
+    pub ejectable: bool,
+    pub drive_temperature: f64,
 }
 
 impl Default for DiskInfo {
@@ -67,6 +81,7 @@ impl Default for DiskInfo {
             id: Arc::from(""),
             model: Arc::from(""),
             r#type: DiskType::default(),
+            smart_interface: DiskSmartInterface::default(),
             capacity: 0,
             formatted: 0,
             system_disk: false,
@@ -77,6 +92,9 @@ impl Default for DiskInfo {
             total_read: 0,
             write_speed: 0,
             total_write: 0,
+            ejectable: false,
+
+            drive_temperature: 0.0,
         }
     }
 }
@@ -113,7 +131,7 @@ impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssyttbddtttt)")
+        Signature::from("a(ssyyttbddttttbd)")
     }
 }
 
@@ -190,48 +208,67 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.capacity = match deser_u64(disk_info, "DiskInfo", 3) {
+                        this.smart_interface = match deser_u8(disk_info, "DiskInfo", 3) {
+                            Some(i) => match i {
+                                1 => DiskSmartInterface::Ata,
+                                2 => DiskSmartInterface::NVMe,
+                                _ => DiskSmartInterface::Dumb,
+                            }
+                            None => continue
+                        };
+
+                        this.capacity = match deser_u64(disk_info, "DiskInfo", 4) {
                             Some(c) => c,
                             None => continue,
                         };
 
-                        this.formatted = match deser_u64(disk_info, "DiskInfo", 4) {
+                        this.formatted = match deser_u64(disk_info, "DiskInfo", 5) {
                             Some(f) => f,
                             None => continue,
                         };
 
-                        this.system_disk = match deser_bool(disk_info, "DiskInfo", 5) {
+                        this.system_disk = match deser_bool(disk_info, "DiskInfo", 6) {
                             Some(sd) => sd,
                             None => continue,
                         };
 
-                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", 6) {
+                        this.busy_percent = match deser_f32(disk_info, "DiskInfo", 7) {
                             Some(u) => u,
                             None => continue,
                         };
 
-                        this.response_time_ms = match deser_f32(disk_info, "DiskInfo", 7) {
+                        this.response_time_ms = match deser_f32(disk_info, "DiskInfo", 8) {
                             Some(u) => u,
                             None => continue,
                         };
 
-                        this.read_speed = match deser_u64(disk_info, "DiskInfo", 8) {
+                        this.read_speed = match deser_u64(disk_info, "DiskInfo", 9) {
                             Some(rs) => rs,
                             None => continue,
                         };
 
-                        this.total_read = match deser_u64(disk_info, "DiskInfo", 9) {
+                        this.total_read = match deser_u64(disk_info, "DiskInfo", 10) {
                             Some(tr) => tr,
                             None => continue,
                         };
 
-                        this.write_speed = match deser_u64(disk_info, "DiskInfo", 10) {
+                        this.write_speed = match deser_u64(disk_info, "DiskInfo", 11) {
                             Some(ws) => ws,
                             None => continue,
                         };
 
-                        this.total_write = match deser_u64(disk_info, "DiskInfo", 11) {
+                        this.total_write = match deser_u64(disk_info, "DiskInfo", 12) {
                             Some(tw) => tw,
+                            None => continue,
+                        };
+
+                        this.ejectable = match deser_bool(disk_info, "DiskInfo", 13) {
+                            Some(sd) => sd,
+                            None => continue,
+                        };
+
+                        this.drive_temperature = match deser_f64(disk_info, "DiskInfo", 14) {
+                            Some(sd) => sd,
                             None => continue,
                         };
 
