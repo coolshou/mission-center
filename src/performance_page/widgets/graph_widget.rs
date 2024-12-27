@@ -585,7 +585,7 @@ impl GraphWidget {
         self.imp().data_sets.set(data);
     }
 
-    pub fn try_increment_scroll(&self) {
+    fn try_increment_scroll(&self) {
         if !self.scroll() {
             return;
         }
@@ -597,6 +597,10 @@ impl GraphWidget {
 
     pub fn add_data_point(&self, index: usize, mut value: f32) {
         let mut data = self.imp().data_sets.take();
+
+        if index == 0 {
+            self.try_increment_scroll();
+        }
 
         if index >= data.len() {
             self.imp().data_sets.set(data);

@@ -501,10 +501,6 @@ mod imp {
             this.usage_graph_memory
                 .add_data_point(1, gpu.used_gtt as f32 * gtt_factor);
 
-            this.usage_graph_overall.try_increment_scroll();
-            this.usage_graph_encode_decode.try_increment_scroll();
-            this.usage_graph_memory.try_increment_scroll();
-
             let used_memory = crate::to_human_readable(gpu.used_memory as f32, 1024.);
             if let Some(memory_usage_current) = this.memory_usage_current.get() {
                 memory_usage_current.set_text(&format!(

@@ -411,7 +411,6 @@ mod imp {
 
             this.usage_graph.add_data_point(0, send_speed);
             this.usage_graph.add_data_point(1, rec_speed);
-            this.usage_graph.try_increment_scroll();
 
             if let Some(wireless_info) = &network_device.wireless_info {
                 if let Some(ssid) = this.ssid.get() {

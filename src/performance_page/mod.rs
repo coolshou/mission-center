@@ -1775,7 +1775,6 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
-                        graph_widget.try_increment_scroll();
 
                         summary.set_info1(format!(
                             "{}% {:.2} GHz",
@@ -1802,7 +1801,6 @@ mod imp {
                         graph_widget.set_smooth_graphs(smooth);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
-                        graph_widget.try_increment_scroll();
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
@@ -1853,7 +1851,6 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                graph_widget.try_increment_scroll();
                                 summary.set_info2(format!("{:.0}%", disk.busy_percent));
 
                                 result &= page.update_readings(
@@ -1967,7 +1964,6 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                graph_widget.try_increment_scroll();
                                 if gpu.temp_celsius > 20 {
                                     summary.set_info2(format!(
                                         "{}% ({} °C)",
@@ -1997,7 +1993,6 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                graph_widget.try_increment_scroll();
                                 summary.set_info1(format!("{} RPM", fan_info.rpm));
                                 if fan_info.temp_amount != i64::MIN {
                                     summary.set_info2(format!(

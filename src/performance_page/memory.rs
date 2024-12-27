@@ -368,9 +368,6 @@ mod imp {
                 let swap_used = mem_info.swap_total - mem_info.swap_free;
                 this.swap_usage_graph.add_data_point(0, swap_used as _);
 
-                this.usage_graph.try_increment_scroll();
-                this.swap_usage_graph.try_increment_scroll();
-
                 this.mem_composition.update_memory_information(mem_info);
 
                 let used = crate::to_human_readable(used as _, 1024.);
