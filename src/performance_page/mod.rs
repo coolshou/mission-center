@@ -1775,7 +1775,6 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
-
                         summary.set_info1(format!(
                             "{}% {:.2} GHz",
                             readings
