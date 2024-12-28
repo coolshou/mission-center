@@ -538,7 +538,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let mountpoints = fs.mount_points().block_on().unwrap_or(Vec::new());
 
                     if !mountpoints.is_empty() {
-                        match fs.unmount(options).block_on() {
+                        let last_err = some_err;
+                        match fs.unmount(options.clone()).block_on() {
                             Ok(_) => {}
                             Err(e) => {
                                 some_err = true;
@@ -600,12 +601,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 // return Some(ctx);
                             }
                         }
+
+                        // lets try again, juuuust in case it works
+                        match fs.unmount(options).block_on() {
+                            Ok(_) => {
+                                some_err = last_err;
+                            }
+                            Err(e) => {
+
+                            }
+                        }
                     } else {
                         debug!("Gatherer::Main", "{:?} does not have any mountpoints", filename)
                     }
                 }
 
-                // killing is not immediate since we are asking rather than murdering.
                 if killall || !some_path {
                     match object.filesystem().block_on() {
                         Ok(fs) => {
