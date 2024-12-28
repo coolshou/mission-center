@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-15 16:33+0000\n"
+"PO-Revision-Date: 2024-12-29 11:09+0000\n"
 "Last-Translator: Priit Jõerüüt <hwlate@joeruut.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -17,39 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-rc\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Juhtimiskeskus"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;tegumihaldur;mälu;mälukasutus;andmekandja;kõvaketas;protsessor;jõudlus;võrk;võrguühendus;kiirus"
+""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Juhtimiskeskuse (Mission Center) arendajad"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Jälgi oma arvuti või seadme ressursikasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
+"Jälgi protsessori, mälu, andmekandja, võrgu ja graafikaprotsessori kasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr ""
+msgstr "Funktsionaalsus:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Jälgi üldist või lõimekohast protsessorikasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
@@ -59,7 +63,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Jälgi mälu ja saaleala kasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
@@ -179,14 +183,16 @@ msgstr ""
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Näita rakenduste ja taustateenuste protsessorikasutust nii, et see arvestaks "
+"saadavalolevate tuumade arvuga"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Veeru tunnus, mille alusel rakenduste vaate leht on järjestatud"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Rakenduste vaate lehe järjestamise suund"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
@@ -454,11 +460,11 @@ msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr ""
+msgstr "Lugemiskiirus"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr ""
+msgstr "Kirjutamiskiirus"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
@@ -561,7 +567,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
 msgid "Memory"
-msgstr ""
+msgstr "Mälu"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
@@ -621,71 +627,71 @@ msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr ""
+msgstr "Vastuvõtmisel"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Recieved"
-msgstr ""
+msgstr "Kokku vastuvõetud"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr ""
+msgstr "Saatmisel"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Kokku saadetud"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
-msgstr ""
+msgstr "Võrguliidese nimi:"
 
 #: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
-msgstr ""
+msgstr "Ühenduse tüüp:"
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr ""
+msgstr "Võrgu SSID:"
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
-msgstr ""
+msgstr "Signaali tugevus:"
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
-msgstr ""
+msgstr "Maksimaalne bitikiirus:"
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
-msgstr ""
+msgstr "Sagedus:"
 
 #: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
-msgstr ""
+msgstr "Raudvara MAC-aadress:"
 
 #: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
-msgstr ""
+msgstr "IPv4 aadress:"
 
 #: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
-msgstr ""
+msgstr "IPv6 aadress:"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr ""
+msgstr "Üldised seadistused"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Uuendamise välp"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Andmekirjeid joonisel"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
-msgstr ""
+msgstr "Jõudluse leht"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -1082,31 +1088,31 @@ msgstr ""
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr ""
+msgstr "Töös on {} teenust"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{}/{} ebaõnnestunud teenust"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "Töös"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "Ebaõnnestunud"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Peatatud"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr ""
+msgstr "Priit Jõerüüt 2024"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr ""
+msgstr "_Välju"
