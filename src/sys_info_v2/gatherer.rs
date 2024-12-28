@@ -332,8 +332,8 @@ impl Gatherer {
         dbus_call!(self, get_disks_info, "GetDisksInfo");
     }
 
-    pub fn eject_disk(&self, disk_id: &str, force: bool, killall: bool, kill_pid: u32) -> EjectResult {
-        dbus_call!(self, eject_disk, "EjectDisk", disk_id, force, killall, kill_pid);
+    pub fn eject_disk(&self, disk_id: &str, killall: bool, kill_pid: u32) -> EjectResult {
+        dbus_call!(self, eject_disk, "EjectDisk", disk_id, killall, kill_pid);
     }
 
     pub fn sata_smart_info(&self, disk_id: &str) -> SataSmartResult {
