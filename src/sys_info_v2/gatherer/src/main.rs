@@ -547,10 +547,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     .iter()
                                     .map(|c| Path::new(std::str::from_utf8(c).unwrap_or("").trim_matches(char::from(0))))
                                     .collect::<std::collections::HashSet<_>>();
-                                let processes = SYSTEM_STATE
+                                let process = SYSTEM_STATE
                                     .processes
                                     .read()
-                                    .unwrap_or_else(PoisonError::into_inner)
+                                    .unwrap_or_else(PoisonError::into_inner);
+                                let processes = process
                                     .process_cache
                                     .clone();
 
@@ -585,12 +586,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                                     if paths.len() > 0 || cwds.len() > 0 {
                                         // if we are either not killing, or failed to kill, add to list
-                                        if !killall || execute_no_reply(
-                                                SYSTEM_STATE.processes.clone(),
-                                                move |processes| -> Result<(), u8> { Ok(processes.kill_process(*pid)) },
-                                                "terminating process",
-                                            ).is_err() {
+                                        if !killall {
                                             blocks.push((*pid, cwds, paths));
+                                        } else {
+                                            process.kill_process(*pid);
                                         }
                                     }
                                 }
@@ -606,7 +605,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
 
-                if !some_path {
+                // killing is not immediate since we are asking rather than murdering.
+                if killall || !some_path {
                     match object.filesystem().block_on() {
                         Ok(fs) => {
                             let mut options = HashMap::new();
