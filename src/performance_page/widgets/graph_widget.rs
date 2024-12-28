@@ -92,7 +92,7 @@ mod imp {
 
         pub data_sets: Cell<Vec<DataSetDescriptor>>,
 
-        pub scroll_offset: Cell<u32>,
+        scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
     }
 
@@ -242,6 +242,15 @@ mod imp {
                 self.smooth_graphs.set(smooth);
                 self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
             }
+        }
+
+        pub fn try_increment_scroll(&self) {
+            if !self.scroll.get() {
+                return;
+            }
+
+            self.scroll_offset
+                .set(self.scroll_offset.get().wrapping_add(1));
         }
     }
 
@@ -585,21 +594,11 @@ impl GraphWidget {
         self.imp().data_sets.set(data);
     }
 
-    fn try_increment_scroll(&self) {
-        if !self.scroll() {
-            return;
-        }
-
-        self.imp()
-            .scroll_offset
-            .set(self.imp().scroll_offset.get().wrapping_add(1));
-    }
-
     pub fn add_data_point(&self, index: usize, mut value: f32) {
         let mut data = self.imp().data_sets.take();
 
         if index == 0 {
-            self.try_increment_scroll();
+            self.imp().try_increment_scroll();
         }
 
         if index >= data.len() {
