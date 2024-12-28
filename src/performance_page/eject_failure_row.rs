@@ -232,15 +232,11 @@ impl EjectFailureRowBuilder {
 
             this.kill.get().expect("Damn").connect_clicked({
                 println!("klikt");
-                let this = self.downgrade();
+                let plid = self.pid;
                 move |_| {
-                    if let Some(this) = this.upgrade() {
-                        println!("killering {:?}", this.pid);
+                    println!("killering {:?}", plid);
 
-                        app!().sys_info().expect("Failed to get sys_info").kill_process(this.pid);
-                    } else {
-                        println!("failed to upgrade??");
-                    }
+                    app!().sys_info().expect("Failed to get sys_info").kill_process(plid);
                 }
             });
         }
