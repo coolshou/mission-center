@@ -24,6 +24,8 @@ use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
+use gtk::prelude::ButtonExt;
+use crate::app;
 
 mod imp {
     use std::cell::OnceCell;
@@ -140,23 +142,6 @@ mod imp {
 
             let kill_button = self.kill.get().unwrap();
             kill_button.add_css_class("destructive-action");
-
-            kill_button.connect_clicked({
-                println!("klikt");
-                let this = self.obj().downgrade();
-                move |_| {
-                    if let Some(that) = this.upgrade() {
-                        let this = that.imp();
-                //         let this = this.upgrade();
-
-                        println!("killering {:?}", this.raw_pid.get());
-
-                        app!().sys_info().expect("Failed to get sys_info").kill_process(this.raw_pid.get().expect("No pid???"));
-                    } else {
-                        println!("failed to upgrade??");
-                    }
-                }
-            });
         }
     }
 
@@ -244,6 +229,20 @@ impl EjectFailureRowBuilder {
             this.set_icon(self.icon.as_str());
 
             this.open_files.get().expect("Damn").set_label(self.files_open.join("\n").as_str());
+
+            this.kill.get().expect("Damn").connect_clicked({
+                println!("klikt");
+                let this = self.downgrade();
+                move |_| {
+                    if let Some(this) = this.upgrade() {
+                        println!("killering {:?}", this.pid);
+
+                        app!().sys_info().expect("Failed to get sys_info").kill_process(this.pid);
+                    } else {
+                        println!("failed to upgrade??");
+                    }
+                }
+            });
         }
 
         this
