@@ -231,7 +231,6 @@ impl EjectFailureRowBuilder {
             this.open_files.get().expect("Damn").set_label(self.files_open.join("\n").as_str());
 
             this.kill.get().expect("Damn").connect_clicked({
-                println!("klikt");
                 let plid = self.pid;
                 move |_| {
                     println!("killering {:?}", plid);

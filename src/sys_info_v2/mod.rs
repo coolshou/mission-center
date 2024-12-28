@@ -136,7 +136,7 @@ enum Message {
     EnableService(Arc<str>),
     DisableService(Arc<str>),
     GetServiceLogs(Arc<str>, Option<NonZeroU32>),
-    EjectDisk(Arc<str>, bool),
+    EjectDisk(Arc<str>, bool, bool, u32),
     SataSmartInfo(Arc<str>),
     NVMeSmartInfo(Arc<str>),
 }
@@ -445,10 +445,10 @@ impl SysInfoV2 {
         }
     }
 
-    pub fn eject_disk(&self, disk_id: &str, force: bool) -> EjectResult {
+    pub fn eject_disk(&self, disk_id: &str, force: bool, killall: bool, kill_pid: u32) -> EjectResult {
         match self
             .sender
-            .send(Message::EjectDisk(Arc::<str>::from(disk_id), force)) {
+            .send(Message::EjectDisk(Arc::<str>::from(disk_id), force, killall, kill_pid)) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -617,8 +617,8 @@ impl SysInfoV2 {
                         );
                     }
                 }
-                Message::EjectDisk(disk_id, use_force) => {
-                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id, use_force))) {
+                Message::EjectDisk(disk_id, force, killall, kill_pid) => {
+                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id, force, killall, kill_pid))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending EjectDisk response: {}",
