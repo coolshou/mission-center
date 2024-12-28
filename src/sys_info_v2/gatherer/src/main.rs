@@ -442,12 +442,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
+        // using `force` doesn't really do what we want. yes, the unmount happens but leases on the
+        // files that made us use force aren't killed. We just get zombies so lets instead just
+        // murder processes by hand to naturally allow unmounting + ejecting
         message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,bool,bool,u32), (EjectResult,), &str, _>(
+        builder.method_with_cr_custom::<(String,bool,u32), (EjectResult,), &str, _>(
             "EjectDisk",
-            ("eject_disk","use_force","kill_all","kill_pid"),
+            ("eject_disk","kill_all","kill_pid"),
             ("eject_result",),
-            move |mut ctx, _, (id,force,killall,kill_pid): (String,bool,bool,u32)| {
+            move |mut ctx, _, (id,killall,kill_pid): (String,bool,u32)| {
                 let mut rezult = EjectResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
@@ -531,7 +534,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     let mut options = HashMap::new();
                     options.insert("auth.no_user_interaction", Value::from(false));
-                    options.insert("force", Value::from(force));
 
                     let mountpoints = fs.mount_points().block_on().unwrap_or(Vec::new());
 
@@ -582,7 +584,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     }
 
                                     if paths.len() > 0 || cwds.len() > 0 {
-                                        blocks.push((*pid, cwds, paths))
+                                        // if we are either not killing, or failed to kill, add to list
+                                        if !killall || execute_no_reply(
+                                                SYSTEM_STATE.processes.clone(),
+                                                move |processes| -> Result<(), u8> { Ok(processes.kill_process(*pid)) },
+                                                "terminating process",
+                                            ).is_err() {
+                                            blocks.push((*pid, cwds, paths));
+                                        }
                                     }
                                 }
 
@@ -602,7 +611,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         Ok(fs) => {
                             let mut options = HashMap::new();
                             options.insert("auth.no_user_interaction", Value::from(false));
-                            options.insert("force", Value::from(force));
 
                             match fs.unmount(options).block_on() {
                                 Ok(_) => {}
