@@ -70,9 +70,12 @@ mod imp {
                     None => {&Arc::from("")}
                 };
 
+                let parent_id = &parent.imp().raw_disk_id.get().expect("Expected a raw disk id, got none");
+
                 for process in processes {
                     if !process.1.is_empty() {
                         let new_root = EjectFailureRowBuilder::new()
+                            .id(parent_id)
                             .icon(iconname)
                             .files_open(process.1.clone())
                             .pid(process.0)
@@ -84,6 +87,7 @@ mod imp {
 
                     if !process.2.is_empty() {
                         let new_root = EjectFailureRowBuilder::new()
+                            .id(parent_id)
                             .icon(iconname)
                             .files_open(process.2.clone())
                             .pid(process.0)
