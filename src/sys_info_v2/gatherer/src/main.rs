@@ -586,8 +586,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     }
 
                                     if paths.len() > 0 || cwds.len() > 0 {
-                                        // if we are either not killing, or failed to kill, add to list
-                                        if !killall {
+                                        // if we are not killing add to list
+                                        if !killall || (kill_pid != *pid) {
                                             blocks.push((*pid, cwds, paths));
                                         } else {
                                             process.kill_process(*pid);

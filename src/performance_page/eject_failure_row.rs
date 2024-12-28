@@ -166,7 +166,7 @@ pub struct EjectFailureRowBuilder {
     pid: u32,
     icon: glib::GString,
     name: glib::GString,
-    id: glib::GString,
+    id: String,
 
     content_type: ContentType,
     section_type: SectionType,
@@ -182,7 +182,7 @@ impl EjectFailureRowBuilder {
             pid: 0,
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
-            id: glib::GString::default(),
+            id: String::from(""),
 
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
@@ -235,7 +235,7 @@ impl EjectFailureRowBuilder {
                 move |_| {
                     println!("killering {:?}", plid);
 
-                    app!().sys_info().expect("Failed to get sys_info").kill_process(plid);
+                    app!().sys_info().expect("Failed to get sys_info").eject_disk(self.id.as_str(), false, plid);
                 }
             });
         }
