@@ -19,13 +19,14 @@
  */
 
 use std::cell::Cell;
-
+use adw::prelude::AdwDialogExt;
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
 use gtk::prelude::ButtonExt;
 use crate::app;
+use crate::performance_page::disk::PerformancePageDisk;
 
 mod imp {
     use std::cell::OnceCell;
@@ -173,6 +174,8 @@ pub struct EjectFailureRowBuilder {
     show_expander: Option<bool>,
     expanded: bool,
 
+    parent_page: Option<PerformancePageDisk>,
+
     files_open: Vec<String>,
 }
 
@@ -189,6 +192,7 @@ impl EjectFailureRowBuilder {
             show_expander: None,
             expanded: true,
 
+            parent_page: None,
             files_open: vec![],
         }
     }
@@ -218,6 +222,11 @@ impl EjectFailureRowBuilder {
         self
     }
 
+    pub fn parent_page(mut self, parent_page: PerformancePageDisk) -> Self {
+        self.parent_page = Some(parent_page);
+        self
+    }
+
     pub fn build(self) -> EjectFailureRow {
         let this = EjectFailureRow::new();
         {
@@ -231,11 +240,17 @@ impl EjectFailureRowBuilder {
             this.open_files.get().expect("Damn").set_label(self.files_open.join("\n").as_str());
 
             this.kill.get().expect("Damn").connect_clicked({
-                let plid = self.pid;
                 move |_| {
-                    println!("killering {:?}", plid);
+                    println!("killering {:?}", self.pid);
 
-                    app!().sys_info().expect("Failed to get sys_info").eject_disk(self.id.as_str(), false, plid);
+                    let back = app!().sys_info().expect("Failed to get sys_info").eject_disk(self.id.as_str(), false, self.pid);
+
+                        let parent = self.parent_page.as_ref().unwrap();
+                        let efd = parent.eject_failure_dialog().unwrap();
+                        efd.close();
+                        // efd.imp().apply_eject_result(back, parent);
+                    // todo this feels leaky
+                        parent.imp().show_eject_result(parent, back);
                 }
             });
         }

@@ -453,6 +453,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             move |mut ctx, _, (id,killall,kill_pid): (String,bool,u32)| {
                 let mut rezult = EjectResult::default();
 
+                println!("Ejecting {}, killing {}/{}", id, kill_pid, killall);
+
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
                     .read()
@@ -587,7 +589,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                                     if paths.len() > 0 || cwds.len() > 0 {
                                         // if we are not killing add to list
-                                        if !killall || (kill_pid != *pid) {
+                                        if !killall && (kill_pid != *pid) {
                                             blocks.push((*pid, cwds, paths));
                                         } else {
                                             process.kill_process(*pid);

@@ -80,6 +80,7 @@ mod imp {
                             .files_open(process.1.clone())
                             .pid(process.0)
                             .name(&appname)
+                            .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
                         modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
@@ -92,6 +93,7 @@ mod imp {
                             .files_open(process.2.clone())
                             .pid(process.0)
                             .name(&appname)
+                            .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
                         modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
