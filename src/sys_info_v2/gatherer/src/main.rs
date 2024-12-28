@@ -443,11 +443,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
 
         message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,bool), (EjectResult,), &str, _>(
+        builder.method_with_cr_custom::<(String,bool,bool,u32), (EjectResult,), &str, _>(
             "EjectDisk",
-            ("eject_disk","use_force"),
+            ("eject_disk","use_force","kill_all","kill_pid"),
             ("eject_result",),
-            move |mut ctx, _, (id,force): (String,bool)| {
+            move |mut ctx, _, (id,force,killall,kill_pid): (String,bool,bool,u32)| {
                 let mut rezult = EjectResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
@@ -460,8 +460,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
-
-                println!("{}", id);
 
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
@@ -533,6 +531,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     let mut options = HashMap::new();
                     options.insert("auth.no_user_interaction", Value::from(false));
+                    options.insert("force", Value::from(force));
 
                     let mountpoints = fs.mount_points().block_on().unwrap_or(Vec::new());
 
@@ -603,6 +602,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         Ok(fs) => {
                             let mut options = HashMap::new();
                             options.insert("auth.no_user_interaction", Value::from(false));
+                            options.insert("force", Value::from(force));
 
                             match fs.unmount(options).block_on() {
                                 Ok(_) => {}

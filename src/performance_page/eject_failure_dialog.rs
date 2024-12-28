@@ -168,7 +168,7 @@ mod imp {
                             match app!().sys_info().and_then(move |sys_info| {
                                 let padre = self.parent_page.take().expect("fuuuck");
 
-                                let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), false);
+                                let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), false, false, 0);
 
                                 padre.imp().show_eject_result(&padre, eject_result);
 
@@ -191,7 +191,7 @@ mod imp {
                     match app!().sys_info().and_then(move |sys_info| {
                         let padre = self.parent_page.take().expect("fuuuck");
 
-                        let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), true);
+                        let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), true, false, 0);
 
                         padre.imp().show_eject_result(&padre, eject_result);
 

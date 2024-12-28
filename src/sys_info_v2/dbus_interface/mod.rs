@@ -419,20 +419,11 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct EjectResult {
     pub success: bool,
 
     pub blocking_processes: Vec<(u32, Vec<String>, Vec<String>)>,
-}
-
-impl Default for EjectResult {
-    fn default() -> Self {
-        Self {
-            success: false,
-            blocking_processes: vec![],
-        }
-    }
 }
 
 impl Append for EjectResult {
@@ -491,28 +482,10 @@ impl<'a> Get<'a> for EjectResult {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '0: boolean', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get boolean: Expected '0: boolean', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.success = arr != 0
-                }
-            },
-        }
+        this.success = match deser_bool(dynamic_info, "GathererDBusProxy", 0) {
+            None => { return None }
+            Some(i) => {i}
+        };
 
         match Iterator::next(dynamic_info) {
             None => {
@@ -596,65 +569,7 @@ impl<'a> Get<'a> for EjectResult {
                             }
                         }
                     }
-/*                    for s in block_list {
-                        let s = match s.as_iter() {
-                            None => {continue;}
-                            Some(i) => i,
-                        };
-                        let mut s = s.as_mut();
-                        match Iterator::next(s) {
-                            None => {}
-                            Some(arg) => {
-                                println!("0 {:?}", arg);
-                            }
-                        }
-                        match Iterator::next(s) {
-                            None => {}
-                            Some(arg) => {
-                                println!("1 {:?}", arg);
-                            }
-                        }
-                        match Iterator::next(s) {
-                            None => {}
-                            Some(arg) => {
-                                println!("2 {:?}", arg);
-                            }
-                        }
-                        continue;
-/*                        let mut new_item = (u32::MAX, vec![], vec![]);
-                        if let Some(s) = s.as_u64() {
-                            new_item.0 = s as u32;
-                        } else {
-                            println!("WTF");
-                        }
-
-                        if let Some(s) = s.as_iter() {
-                            for s in s {
-                                if let Some(s) = s.as_str() {
-                                    new_item.1.push(s.to_string());
-                                } else {
-                                    println!("WTFF {:?}", s);
-                                }
-                            }
-                        } else {
-                            println!("WTFY");
-                        }
-
-                        if let Some(s) = s.as_iter() {
-                            for s in s {
-                                if let Some(s) = s.as_str() {
-                                    new_item.2.push(s.to_string());
-                                } else {
-                                    println!("WTFF");
-                                }
-                            }
-                        } else {
-                            println!("WTFY");
-                        }
-
-                        this.blocking_processes.push(new_item);*/
-                    }
-*/                }
+                }
             },
         }
 
