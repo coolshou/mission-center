@@ -638,7 +638,7 @@ mod imp {
 
                                     return Ok(());
                                 }
-                                Some(disk_id) => {sys_info.eject_disk(disk_id, false)}
+                                Some(disk_id) => {sys_info.eject_disk(disk_id, false, false, 0)}
                             };
 
                             this.show_eject_result(that, eject_result);
