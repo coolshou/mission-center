@@ -742,6 +742,7 @@ mod imp {
                 graph_widgets[graph_widget_index].set_data_points(data_points);
                 graph_widgets[graph_widget_index].set_smooth_graphs(smooth);
                 graph_widgets[graph_widget_index].set_data_set_count(2);
+                graph_widgets[graph_widget_index].set_scroll(true);
                 graph_widgets[graph_widget_index].set_filled(1, false);
                 graph_widgets[graph_widget_index].set_dashed(1, true);
                 graph_widgets[graph_widget_index].set_data_visible(1, show_kernel_times);
