@@ -24,14 +24,14 @@ use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, ParamSpec, Properties, Value};
 
 use crate::i18n::*;
+use crate::performance_page::disk::PerformancePageDisk;
+use crate::performance_page::sata_smart_dialog_row::SmartDialogRow;
+use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
+use gtk::gio;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 mod imp {
     use super::*;
-    use crate::performance_page::disk::PerformancePageDisk;
-    use crate::performance_page::sata_smart_dialog_row::{SmartDialogRow, SmartDialogRowBuilder};
-    use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
-    use gtk::gio;
-    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::SmartDataDialog)]
@@ -143,15 +143,24 @@ mod imp {
             let mut roze = Vec::new();
 
             for parsed_result in result.blocking_processes {
-                let new_row = SmartDialogRowBuilder::new()
-                    .id(parsed_result.id)
-                    .attribute(parsed_result.name)
-                    .value(parsed_result.value, parsed_result.pretty_unit)
-                    .threshold(parsed_result.threshold)
-                    .pretty(parsed_result.pretty)
-                    .worst(parsed_result.worst)
-                    .flags(parsed_result.flags)
-                    .build();
+                let new_row = SmartDialogRow::new(
+                    parsed_result.id,
+                    parsed_result.name,
+                    parsed_result.value,
+                    parsed_result.pretty,
+                    parsed_result.pretty_unit,
+                    parsed_result.threshold,
+                    parsed_result.worst,
+                    &match parsed_result.flags & 0b1 {
+                        1 => i18n("Pre-Fail"),
+                        _ => i18n("Old-Age"),
+                    },
+                    &match parsed_result.flags & 0b10 >> 1 {
+                        0 => i18n("Online"),
+                        _ => i18n("Offline"),
+                    },
+                    "IDK LMAO",
+                );
 
                 roze.push(new_row);
             }

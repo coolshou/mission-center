@@ -24,15 +24,15 @@ use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
 
 use crate::app;
+use crate::i18n;
+use crate::performance_page::disk::PerformancePageDisk;
+use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
+use crate::sys_info_v2::EjectResult;
+use adw::ResponseAppearance;
+use std::sync::Arc;
 
 mod imp {
     use super::*;
-    use crate::i18n;
-    use crate::performance_page::disk::PerformancePageDisk;
-    use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
-    use crate::sys_info_v2::EjectResult;
-    use adw::ResponseAppearance;
-    use std::sync::Arc;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureDialog)]
@@ -145,7 +145,6 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            // todo init here
             let close = "close";
             let retry = "retry";
             let kill = "kill";
@@ -220,9 +219,8 @@ mod imp {
                         _ => {}
                     }
                 }
-                _ => {
-                    // todo log
-                    println!("Unexpected response: {}", response);
+                e => {
+                    g_warning!("MissionCenter::DetailsDialog", "Unexpected response: {}", e);
                 }
             }
         }
@@ -231,18 +229,11 @@ mod imp {
     impl WidgetImpl for EjectFailureDialog {
         fn realize(&self) {
             self.parent_realize();
-
-            // todo init here
         }
     }
 
     impl AdwDialogImpl for EjectFailureDialog {
-        fn closed(&self) {
-            // let list_item = self.list_item();
-
-            // todo buttons here
-            println!("You cant say that!")
-        }
+        fn closed(&self) {}
     }
 }
 

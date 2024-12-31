@@ -45,7 +45,7 @@ impl Default for DiskType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskSmartInterface {
     Dumb = 0,

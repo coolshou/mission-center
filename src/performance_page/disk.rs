@@ -180,16 +180,18 @@ mod imp {
             this: &super::PerformancePageDisk,
             result: EjectResult,
         ) {
-            // todo do something else?
-            if result.success {
-                return;
-            }
             let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
-            details_dialog.map(move |d| {
-                self.eject_failure_dialog_visible.set(true);
-                d.imp().apply_eject_result(result, this);
 
-                d.present(Some(this));
+            details_dialog.map(move |d| {
+                if result.success {
+                    d.force_close();
+                    return;
+                } else {
+                    self.eject_failure_dialog_visible.set(true);
+                    d.imp().apply_eject_result(result, this);
+
+                    d.present(Some(this));
+                }
             });
         }
 
@@ -631,89 +633,86 @@ mod imp {
                     .expect("Could not find `smart` object in details pane"),
             );
 
-            self.eject.get().expect("Rip").connect_clicked({
-                let this = self.obj().downgrade();
-                move |_| {
-                    if let Some(that) = this.upgrade() {
-                        let this = that.imp();
-                        let that = &that;
+            self.eject
+                .get()
+                .expect("Eject button missing")
+                .connect_clicked({
+                    let this = self.obj().downgrade();
+                    move |_| {
+                        if let Some(that) = this.upgrade() {
+                            let this = that.imp();
+                            let that = &that;
 
-                        match app!().sys_info().and_then(move |sys_info| {
-                            let eject_result = match this.raw_disk_id.get() {
-                                None => {
-                                    //todo uh oh
+                            match app!().sys_info().and_then(move |sys_info| {
+                                let eject_result =
+                                    sys_info.eject_disk(this.raw_disk_id.get().unwrap(), false, 0);
 
-                                    return Ok(());
+                                this.show_eject_result(that, eject_result);
+
+                                Ok(())
+                            }) {
+                                Err(e) => {
+                                    g_warning!(
+                                        "MissionCenter::DetailsDialog",
+                                        "Failed to get `sys_info`: {}",
+                                        e
+                                    );
                                 }
-                                Some(disk_id) => sys_info.eject_disk(disk_id, false, 0),
-                            };
-
-                            this.show_eject_result(that, eject_result);
-
-                            Ok(())
-                        }) {
-                            Err(e) => {
-                                g_warning!(
-                                    "MissionCenter::DetailsDialog",
-                                    "Failed to get `sys_info`: {}",
-                                    e
-                                );
+                                _ => {}
                             }
-                            _ => {}
                         }
                     }
-                }
-            });
+                });
 
-            self.smart.get().expect("wtf").connect_clicked({
-                let this = self.obj().downgrade();
-                move |_| {
-                    if let Some(that) = this.upgrade() {
-                        let this = that.imp();
-                        let that = &that;
+            self.smart
+                .get()
+                .expect("Smart Button Missing")
+                .connect_clicked({
+                    let this = self.obj().downgrade();
+                    move |_| {
+                        if let Some(that) = this.upgrade() {
+                            let this = that.imp();
+                            let that = &that;
 
-                        match app!().sys_info().and_then(move |sys_info| {
-                            let disk_id = match this.raw_disk_id.get() {
-                                None => {
-                                    //todo uh oh
-                                    return Ok(());
+                            match app!().sys_info().and_then(move |sys_info| {
+                                let disk_id = this.raw_disk_id.get().unwrap();
+
+                                match this.raw_smart_interface.get() {
+                                    Some(DiskSmartInterface::NVMe) => {
+                                        let smart_info = sys_info.nvme_smart_info(disk_id);
+
+                                        // println!("Got back {:?}", smart_info);
+
+                                        this.show_nvme_smart_info(that, smart_info);
+                                    }
+                                    Some(DiskSmartInterface::Ata) => {
+                                        let smart_info = sys_info.sata_smart_info(disk_id);
+
+                                        this.show_sata_smart_info(that, smart_info);
+                                    }
+                                    e => {
+                                        g_warning!(
+                                            "MissionCenter::DetailsDialog",
+                                            "Unknown interface {:?}",
+                                            e
+                                        );
+                                    }
                                 }
-                                Some(d) => d,
-                            };
 
-                            match this.raw_smart_interface.get() {
-                                Some(DiskSmartInterface::NVMe) => {
-                                    let smart_info = sys_info.nvme_smart_info(disk_id);
-
-                                    // println!("Got back {:?}", smart_info);
-
-                                    this.show_nvme_smart_info(that, smart_info);
+                                Ok(())
+                            }) {
+                                Err(e) => {
+                                    g_warning!(
+                                        "MissionCenter::DetailsDialog",
+                                        "Failed to get `sys_info`: {}",
+                                        e
+                                    );
                                 }
-                                Some(DiskSmartInterface::Ata) => {
-                                    let smart_info = sys_info.sata_smart_info(disk_id);
-
-                                    this.show_sata_smart_info(that, smart_info);
-                                }
-                                e => {
-                                    println!("Unknown interface {:?}", e);
-                                    // todo panic!
-                                }
+                                _ => {}
                             }
-
-                            Ok(())
-                        }) {
-                            Err(e) => {
-                                g_warning!(
-                                    "MissionCenter::DetailsDialog",
-                                    "Failed to get `sys_info`: {}",
-                                    e
-                                );
-                            }
-                            _ => {}
                         }
                     }
-                }
-            });
+                });
         }
     }
 
