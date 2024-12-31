@@ -21,15 +21,15 @@
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::logging::{critical, warning};
 use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
+use crate::platform::DiskSmartInterface;
+use dbus::arg::RefArg;
 use glob::glob;
-use std::{sync::Arc, time::Instant};
+use pollster::FutureExt;
 use std::cmp::max;
 use std::collections::HashMap;
-use dbus::arg::RefArg;
-use pollster::FutureExt;
-use udisks2::{Client, Object};
+use std::{sync::Arc, time::Instant};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
-use crate::platform::DiskSmartInterface;
+use udisks2::{Client, Object};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -208,7 +208,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     "Could not get udisks dbus client: {}",
                     e
                 );
-                return
+                return;
             }
         };
 
@@ -220,7 +220,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     "Could not get udisks dbus client: {}",
                     e
                 );
-                return
+                return;
             }
         };
 
@@ -241,14 +241,17 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     let Ok(drive_path) = block.drive().block_on() else {
                         continue;
                     };
-                    drive_path_map.insert(drive_path.clone(), String::from_utf8(block.device().block_on().unwrap()).unwrap());
+                    drive_path_map.insert(
+                        drive_path.clone(),
+                        String::from_utf8(block.device().block_on().unwrap()).unwrap(),
+                    );
                     let drive = drive_path.to_string();
                     if drive == "/" {
                         continue;
                     }
                     drive_path
                 } else {
-                    continue
+                    continue;
                 };
 
                 if let Ok(encrypted) = object.encrypted().block_on() {
@@ -258,7 +261,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     };
 
                     object = match client.object(new_object_path.clone()) {
-                        Ok(o) => {o}
+                        Ok(o) => o,
                         Err(_) => {
                             continue;
                         }
@@ -292,7 +295,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
             let mut dir_name = None;
 
-            let Ok(raw_dir_name) = block.device().block_on().map(|it| String::from_utf8(it).unwrap()) else {
+            let Ok(raw_dir_name) = block
+                .device()
+                .block_on()
+                .map(|it| String::from_utf8(it).unwrap())
+            else {
                 continue;
             };
 
@@ -300,7 +307,10 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 continue;
             };
 
-            let Some(raw_dir_name) = std::path::Path::new(raw_dir_name).file_name().map(|it| it.to_str().unwrap().trim_matches(char::from(0))) else {
+            let Some(raw_dir_name) = std::path::Path::new(raw_dir_name)
+                .file_name()
+                .map(|it| it.to_str().unwrap().trim_matches(char::from(0)))
+            else {
                 continue;
             };
 
@@ -393,30 +403,39 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 }
             }
 
-            let temp_inputs = glob(format!("/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input", dir_name).as_str()).unwrap()
-                .filter_map(Result::ok)
-                .filter_map(|f| std::fs::read_to_string(f).ok())
-                .filter_map(|v| v.trim().parse::<f64>().ok())
-                .map(|i| i/1000.0 + 273.15)
-                .collect::<Vec<_>>();
+            let temp_inputs = glob(
+                format!(
+                    "/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input",
+                    dir_name
+                )
+                .as_str(),
+            )
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|f| std::fs::read_to_string(f).ok())
+            .filter_map(|v| v.trim().parse::<f64>().ok())
+            .map(|i| i / 1000.0 + 273.15)
+            .collect::<Vec<_>>();
 
-            let drive_temperature_k= if !temp_inputs.is_empty() {
+            let drive_temperature_k = if !temp_inputs.is_empty() {
                 temp_inputs[0]
             } else {
                 match &drive_ata {
-                Ok(drive_ata) => {
-                    drive_ata.smart_temperature().block_on().unwrap_or(0.0)
+                    Ok(drive_ata) => drive_ata.smart_temperature().block_on().unwrap_or(0.0),
+                    Err(_) => 0.0,
                 }
-                Err(_) => {
-                    0.0
-                }
-            }};
+            };
 
             // we check out here in case of media removal or similar
-            let capacity = if let Some((root_block, _, _)) = blocks.iter().find(|(_, partition, _)| partition.is_err()) {
+            let capacity = if let Some((root_block, _, _)) =
+                blocks.iter().find(|(_, partition, _)| partition.is_err())
+            {
                 root_block.size().block_on().unwrap_or(0)
             } else {
-                blocks.iter().filter_map(|(it, _, _)| it.size().block_on().ok()).sum()
+                blocks
+                    .iter()
+                    .filter_map(|(it, _, _)| it.size().block_on().ok())
+                    .sum()
             };
 
             if capacity == 0 {
@@ -566,8 +585,12 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 for (b, p, f) in blocks {
                     let mut thissize = max(
-                        p.clone().map(|it| it.size().block_on().unwrap_or_default()).unwrap_or_default(),
-                        f.clone().map(|it| it.size().block_on().unwrap_or_default()).unwrap_or_default(),
+                        p.clone()
+                            .map(|it| it.size().block_on().unwrap_or_default())
+                            .unwrap_or_default(),
+                        f.clone()
+                            .map(|it| it.size().block_on().unwrap_or_default())
+                            .unwrap_or_default(),
                     );
 
                     // if this is not a root partition (like nvme0n1, sometimes the partition or filesystem report wrong)
@@ -579,9 +602,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                     if let Ok(f) = f {
                         if let Ok(mountpoints) = f.mount_points().block_on() {
-                            let mountpoints = mountpoints.iter().map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
+                            let mountpoints = mountpoints
+                                .iter()
+                                .map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
 
-                            has_root |= mountpoints.map(|it| it.trim_matches(char::from(0)) == "/").reduce(|out, curr| out || curr).unwrap_or(false);
+                            has_root |= mountpoints
+                                .map(|it| it.trim_matches(char::from(0)) == "/")
+                                .reduce(|out, curr| out || curr)
+                                .unwrap_or(false);
                         } else {
                             critical!(
                                 "Gatherer::DiskInfo",
@@ -614,7 +642,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         } else {
                             DiskType::SSD
                         }
-                    } else { // it is rotating and not optical, as per above
+                    } else {
+                        // it is rotating and not optical, as per above
                         DiskType::HDD
                     }
                 };

@@ -18,25 +18,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use crate::app;
+use crate::performance_page::disk::PerformancePageDisk;
 use adw::prelude::AdwDialogExt;
+use gtk::prelude::ButtonExt;
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
-use gtk::prelude::ButtonExt;
-use crate::app;
-use crate::performance_page::disk::PerformancePageDisk;
+use std::cell::Cell;
 
 mod imp {
-    use std::cell::OnceCell;
+    use super::*;
+    use crate::app;
     use adw::gio::ListStore;
     use gtk::prelude::{ButtonExt, WidgetExt};
     use gtk::subclass::prelude::WidgetImpl;
-    use gtk::TemplateChild;
-    use super::*;
     use gtk::subclass::widget::WidgetClassExt;
-    use crate::app;
+    use gtk::TemplateChild;
+    use std::cell::OnceCell;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureRow)]
@@ -55,7 +55,10 @@ mod imp {
         pub fn set_icon(&self, icon: &str) {
             let icon_path = std::path::Path::new(icon);
             if icon_path.exists() {
-                self.icon.get().expect("Damn").set_from_file(Some(&icon_path));
+                self.icon
+                    .get()
+                    .expect("Damn")
+                    .set_from_file(Some(&icon_path));
                 return;
             }
 
@@ -65,7 +68,10 @@ mod imp {
             if icon_theme.has_icon(icon) {
                 self.icon.get().expect("Damn").set_icon_name(Some(icon));
             } else {
-                self.icon.get().expect("Damn").set_icon_name(Some("application-x-executable"));
+                self.icon
+                    .get()
+                    .expect("Damn")
+                    .set_icon_name(Some("application-x-executable"));
             }
         }
     }
@@ -233,24 +239,33 @@ impl EjectFailureRowBuilder {
             let this = this.imp();
 
             this.raw_pid.set(Some(self.pid));
-            this.pid.get().expect("Damn").set_label(format!("{}", self.pid).as_str());
+            this.pid
+                .get()
+                .expect("Damn")
+                .set_label(format!("{}", self.pid).as_str());
             this.name.get().expect("Damn").set_label(self.name.as_str());
             this.set_icon(self.icon.as_str());
 
-            this.open_files.get().expect("Damn").set_label(self.files_open.join("\n").as_str());
+            this.open_files
+                .get()
+                .expect("Damn")
+                .set_label(self.files_open.join("\n").as_str());
 
             this.kill.get().expect("Damn").connect_clicked({
                 move |_| {
                     println!("killering {:?}", self.pid);
 
-                    let back = app!().sys_info().expect("Failed to get sys_info").eject_disk(self.id.as_str(), false, self.pid);
+                    let back = app!()
+                        .sys_info()
+                        .expect("Failed to get sys_info")
+                        .eject_disk(self.id.as_str(), false, self.pid);
 
-                        let parent = self.parent_page.as_ref().unwrap();
-                        let efd = parent.eject_failure_dialog().unwrap();
-                        efd.close();
-                        // efd.imp().apply_eject_result(back, parent);
+                    let parent = self.parent_page.as_ref().unwrap();
+                    let efd = parent.eject_failure_dialog().unwrap();
+                    efd.close();
+                    // efd.imp().apply_eject_result(back, parent);
                     // todo this feels leaky
-                        parent.imp().show_eject_result(parent, back);
+                    parent.imp().show_eject_result(parent, back);
                 }
             });
         }

@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
+use lazy_static::lazy_static;
 use std::num::NonZeroU32;
 use std::sync::atomic::AtomicU64;
 use std::{
@@ -29,9 +31,11 @@ use std::{
     },
     time::Duration,
 };
-use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
-use lazy_static::lazy_static;
 
+use crate::sys_info_v2::Message::SataSmartInfo;
+use crate::sys_info_v2::Response::{
+    EjectResultResponse, NVMeSmartResultResponse, SataSmartResultResponse,
+};
 use crate::{
     app,
     application::{BASE_INTERVAL, INTERVAL_STEP},
@@ -39,11 +43,9 @@ use crate::{
 };
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, DiskSmartInterface, FanInfo, GpuDynamicInfo, GpuStaticInfo,
-    OpenGLApi, Process, ProcessUsageStats, Service,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskSmartInterface, DiskType, FanInfo,
+    GpuDynamicInfo, GpuStaticInfo, OpenGLApi, Process, ProcessUsageStats, Service,
 };
-use crate::sys_info_v2::Message::SataSmartInfo;
-use crate::sys_info_v2::Response::{EjectResultResponse, NVMeSmartResultResponse, SataSmartResultResponse};
 
 macro_rules! cmd {
     ($cmd: expr) => {{
@@ -446,9 +448,11 @@ impl SysInfoV2 {
     }
 
     pub fn eject_disk(&self, disk_id: &str, killall: bool, kill_pid: u32) -> EjectResult {
-        match self
-            .sender
-            .send(Message::EjectDisk(Arc::<str>::from(disk_id), killall, kill_pid)) {
+        match self.sender.send(Message::EjectDisk(
+            Arc::<str>::from(disk_id),
+            killall,
+            kill_pid,
+        )) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -457,15 +461,13 @@ impl SysInfoV2 {
                     e
                 );
 
-                return EjectResult::default()
+                return EjectResult::default();
             }
             _ => {}
         }
 
         match self.receiver.recv() {
-            Ok(Response::EjectResultResponse(logs)) => {
-                logs
-            }
+            Ok(Response::EjectResultResponse(logs)) => logs,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -480,7 +482,6 @@ impl SysInfoV2 {
                     "Error receiving EjectDisk response. Wrong type"
                 );
                 EjectResult::default()
-
             }
         }
     }
@@ -488,7 +489,8 @@ impl SysInfoV2 {
     pub fn sata_smart_info(&self, disk_id: &str) -> SataSmartResult {
         match self
             .sender
-            .send(Message::SataSmartInfo(Arc::<str>::from(disk_id))) {
+            .send(Message::SataSmartInfo(Arc::<str>::from(disk_id)))
+        {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -497,15 +499,13 @@ impl SysInfoV2 {
                     e
                 );
 
-                return SataSmartResult::default()
+                return SataSmartResult::default();
             }
             _ => {}
         }
 
         match self.receiver.recv() {
-            Ok(Response::SataSmartResultResponse(logs)) => {
-                logs
-            }
+            Ok(Response::SataSmartResultResponse(logs)) => logs,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -527,7 +527,8 @@ impl SysInfoV2 {
     pub fn nvme_smart_info(&self, disk_id: &str) -> NVMeSmartResult {
         match self
             .sender
-            .send(Message::NVMeSmartInfo(Arc::<str>::from(disk_id))) {
+            .send(Message::NVMeSmartInfo(Arc::<str>::from(disk_id)))
+        {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -536,15 +537,13 @@ impl SysInfoV2 {
                     e
                 );
 
-                return NVMeSmartResult::default()
+                return NVMeSmartResult::default();
             }
             _ => {}
         }
 
         match self.receiver.recv() {
-            Ok(Response::NVMeSmartResultResponse(logs)) => {
-                logs
-            }
+            Ok(Response::NVMeSmartResultResponse(logs)) => logs,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -561,7 +560,6 @@ impl SysInfoV2 {
                 NVMeSmartResult::default()
             }
         }
-
     }
 }
 
@@ -618,7 +616,9 @@ impl SysInfoV2 {
                     }
                 }
                 Message::EjectDisk(disk_id, killall, kill_pid) => {
-                    if let Err(e) = tx.send(EjectResultResponse(gatherer.eject_disk(&disk_id,  killall, kill_pid))) {
+                    if let Err(e) = tx.send(EjectResultResponse(
+                        gatherer.eject_disk(&disk_id, killall, kill_pid),
+                    )) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending EjectDisk response: {}",
@@ -627,7 +627,9 @@ impl SysInfoV2 {
                     }
                 }
                 Message::SataSmartInfo(disk_id) => {
-                    if let Err(e) = tx.send(SataSmartResultResponse(gatherer.sata_smart_info(&disk_id))) {
+                    if let Err(e) =
+                        tx.send(SataSmartResultResponse(gatherer.sata_smart_info(&disk_id)))
+                    {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending SataSmartInfo response: {}",
@@ -636,7 +638,9 @@ impl SysInfoV2 {
                     }
                 }
                 Message::NVMeSmartInfo(disk_id) => {
-                    if let Err(e) = tx.send(NVMeSmartResultResponse(gatherer.nvme_smart_info(&disk_id))) {
+                    if let Err(e) =
+                        tx.send(NVMeSmartResultResponse(gatherer.nvme_smart_info(&disk_id)))
+                    {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending NVMeSmartInfo response: {}",

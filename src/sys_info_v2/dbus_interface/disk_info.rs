@@ -52,7 +52,9 @@ pub enum DiskSmartInterface {
 }
 
 impl Default for DiskSmartInterface {
-    fn default() -> Self { Self::Dumb }
+    fn default() -> Self {
+        Self::Dumb
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -213,8 +215,8 @@ impl<'a> Get<'a> for DiskInfoVec {
                                 1 => DiskSmartInterface::Ata,
                                 2 => DiskSmartInterface::NVMe,
                                 _ => DiskSmartInterface::Dumb,
-                            }
-                            None => continue
+                            },
+                            None => continue,
                         };
 
                         this.capacity = match deser_u64(disk_info, "DiskInfo", 4) {

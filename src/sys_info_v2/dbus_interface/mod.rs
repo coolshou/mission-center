@@ -27,23 +27,27 @@ use std::{
     sync::Arc,
 };
 
-use dbus::{arg::ArgType, blocking::{LocalConnection, Proxy}, Signature};
-use dbus::arg::{Append, Arg, Get, Iter, IterAppend, ReadAll, RefArg};
 use adw::glib::g_critical;
 use arrayvec::ArrayString;
+use dbus::arg::{Append, Arg, Get, Iter, IterAppend, ReadAll, RefArg};
+use dbus::{
+    arg::ArgType,
+    blocking::{LocalConnection, Proxy},
+    Signature,
+};
 use static_assertions::const_assert;
 
+use crate::sys_info_v2::dbus_interface::processes::ProcessState;
 pub use apps::{App, AppMap};
 pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
 pub use cpu_static_info::CpuStaticInfo;
-pub use disk_info::{DiskInfo, DiskInfoVec, DiskType, DiskSmartInterface};
+pub use disk_info::{DiskInfo, DiskInfoVec, DiskSmartInterface, DiskType};
 pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
 pub use processes::{Process, ProcessMap, ProcessUsageStats};
 pub use service::{Service, ServiceMap};
-use crate::sys_info_v2::dbus_interface::processes::ProcessState;
 
 mod apps;
 mod arc_str_vec;
@@ -208,7 +212,9 @@ fn deser_i32(
 ) -> Option<i32> {
     let mut description = ArrayString::<30>::new();
     write!(&mut description, "'i' at index {}", index).expect("Failed to write to ArrayString");
-    deser(iter, context, &description, |arg| arg.as_i64().map(|i| i as i32))
+    deser(iter, context, &description, |arg| {
+        arg.as_i64().map(|i| i as i32)
+    })
 }
 
 fn deser_i16(
@@ -218,7 +224,9 @@ fn deser_i16(
 ) -> Option<i16> {
     let mut description = ArrayString::<30>::new();
     write!(&mut description, "'n' at index {}", index).expect("Failed to write to ArrayString");
-    deser(iter, context, &description, |arg| arg.as_i64().map(|i| i as i16))
+    deser(iter, context, &description, |arg| {
+        arg.as_i64().map(|i| i as i16)
+    })
 }
 
 fn deser_bool(
@@ -243,9 +251,7 @@ fn deser_f64(
 ) -> Option<f64> {
     let mut description = ArrayString::<30>::new();
     write!(&mut description, "'d' at index {}", index).expect("Failed to write to ArrayString");
-    deser(iter, context, &description, |arg| {
-        arg.as_f64()
-    })
+    deser(iter, context, &description, |arg| arg.as_f64())
 }
 
 fn deser_f32(
@@ -273,7 +279,12 @@ pub trait Gatherer {
     fn get_cpu_static_info(&self) -> Result<CpuStaticInfo, dbus::Error>;
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
-    fn eject_disk(&self, disk_id: &str, killall: bool, kill_pid: u32) -> Result<EjectResult, dbus::Error>;
+    fn eject_disk(
+        &self,
+        disk_id: &str,
+        killall: bool,
+        kill_pid: u32,
+    ) -> Result<EjectResult, dbus::Error>;
     fn sata_smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error>;
     fn nvme_smart_info(&self, disk_id: &str) -> Result<NVMeSmartResult, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
@@ -312,8 +323,17 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
         res.map(|v| v.into())
     }
 
-    fn eject_disk(&self, disk_id: &str, killall: bool, kill_pid: u32) -> Result<EjectResult, dbus::Error> {
-        self.method_call(MC_GATHERER_INTERFACE_NAME, "EjectDisk", (disk_id, killall, kill_pid))
+    fn eject_disk(
+        &self,
+        disk_id: &str,
+        killall: bool,
+        kill_pid: u32,
+    ) -> Result<EjectResult, dbus::Error> {
+        self.method_call(
+            MC_GATHERER_INTERFACE_NAME,
+            "EjectDisk",
+            (disk_id, killall, kill_pid),
+        )
     }
 
     fn sata_smart_info(&self, disk_id: &str) -> Result<SataSmartResult, dbus::Error> {
@@ -428,10 +448,7 @@ pub struct EjectResult {
 
 impl Append for EjectResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.success,
-            self.blocking_processes.clone(),
-        ));
+        ia.append((self.success, self.blocking_processes.clone()));
     }
 }
 
@@ -483,8 +500,8 @@ impl<'a> Get<'a> for EjectResult {
         let dynamic_info = dynamic_info.as_mut();
 
         this.success = match deser_bool(dynamic_info, "GathererDBusProxy", 0) {
-            None => { return None }
-            Some(i) => {i}
+            None => return None,
+            Some(i) => i,
         };
 
         match Iterator::next(dynamic_info) {
@@ -508,65 +525,75 @@ impl<'a> Get<'a> for EjectResult {
                     let mut block_list = block_list.as_mut();
                     while true {
                         match Iterator::next(block_list) {
-                            None => { break; }
-                            Some(block_tuple) => {
-                                match block_tuple.as_iter() {
-                                    None => {
-                                        println!("f");
-                                        return None;
-                                    }
-                                    Some(mut tuple_iter) => {
-                                        let mut new_item = (u32::MAX, vec![], vec![]);
-
-                                        let mut tuple_iter = tuple_iter.as_mut();
-                                        match Iterator::next(tuple_iter) {
-                                            None => {}
-                                            Some(arg) => {
-                                                match arg.as_u64() {
-                                                    None => {
-                                                        return None;
-                                                    }
-                                                    Some(arr) => {
-                                                        new_item.0 = arr as u32;
-                                                    }
-                                                };
-                                            }
-                                        }
-                                        match Iterator::next(tuple_iter) {
-                                            None => {}
-                                            Some(arg) => {
-                                                match arg.as_iter() {
-                                                    None => {
-                                                        return None;
-                                                    }
-                                                    Some(arr) => {
-                                                        for strink in arr {
-                                                            new_item.1.push(strink.as_str().unwrap_or("").to_string());
-                                                        }
-                                                    }
-                                                };
-                                            }
-                                        }
-                                        match Iterator::next(tuple_iter) {
-                                            None => {}
-                                            Some(arg) => {
-                                                match arg.as_iter() {
-                                                    None => {
-                                                        return None;
-                                                    }
-                                                    Some(arr) => {
-                                                        for strink in arr {
-                                                            new_item.2.push(strink.as_str().unwrap_or("").to_string());
-                                                        }
-                                                    }
-                                                };
-                                            }
-                                        }
-
-                                        this.blocking_processes.push(new_item);
-                                    }
-                                }
+                            None => {
+                                break;
                             }
+                            Some(block_tuple) => match block_tuple.as_iter() {
+                                None => {
+                                    println!("f");
+                                    return None;
+                                }
+                                Some(mut tuple_iter) => {
+                                    let mut new_item = (u32::MAX, vec![], vec![]);
+
+                                    let mut tuple_iter = tuple_iter.as_mut();
+                                    match Iterator::next(tuple_iter) {
+                                        None => {}
+                                        Some(arg) => {
+                                            match arg.as_u64() {
+                                                None => {
+                                                    return None;
+                                                }
+                                                Some(arr) => {
+                                                    new_item.0 = arr as u32;
+                                                }
+                                            };
+                                        }
+                                    }
+                                    match Iterator::next(tuple_iter) {
+                                        None => {}
+                                        Some(arg) => {
+                                            match arg.as_iter() {
+                                                None => {
+                                                    return None;
+                                                }
+                                                Some(arr) => {
+                                                    for strink in arr {
+                                                        new_item.1.push(
+                                                            strink
+                                                                .as_str()
+                                                                .unwrap_or("")
+                                                                .to_string(),
+                                                        );
+                                                    }
+                                                }
+                                            };
+                                        }
+                                    }
+                                    match Iterator::next(tuple_iter) {
+                                        None => {}
+                                        Some(arg) => {
+                                            match arg.as_iter() {
+                                                None => {
+                                                    return None;
+                                                }
+                                                Some(arr) => {
+                                                    for strink in arr {
+                                                        new_item.2.push(
+                                                            strink
+                                                                .as_str()
+                                                                .unwrap_or("")
+                                                                .to_string(),
+                                                        );
+                                                    }
+                                                }
+                                            };
+                                        }
+                                    }
+
+                                    this.blocking_processes.push(new_item);
+                                }
+                            },
                         }
                     }
                 }
@@ -657,42 +684,42 @@ impl From<&dyn RefArg> for SataSmartEntry {
 
         this.id = match deser_u8(dynamic_info, "GathererDBusProxy", 0) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.name = match deser_str(dynamic_info, "GathererDBusProxy", 1) {
             Some(i) => i.to_string(),
-            None => return this
+            None => return this,
         };
 
         this.flags = match deser_u16(dynamic_info, "GathererDBusProxyFlags", 2) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.value = match deser_i32(dynamic_info, "GathererDBusProxyValue", 3) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.worst = match deser_i32(dynamic_info, "GathererDBusProxyWork", 4) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.threshold = match deser_i32(dynamic_info, "GathererDBusProxyThreshold", 5) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.pretty = match deser_i64(dynamic_info, "GathererDBusProxyPretty", 6) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this.pretty_unit = match deser_i32(dynamic_info, "GathererDBusProxyPrettyUnit", 7) {
             Some(i) => i,
-            None => return this
+            None => return this,
         };
 
         this
@@ -745,9 +772,7 @@ impl<'a> Get<'a> for SataSmartEntry {
                     );
                     return None;
                 }
-                Some(arr) => {
-                    this.id = arr as u8
-                }
+                Some(arr) => this.id = arr as u8,
             },
         }
 
@@ -963,7 +988,7 @@ impl From<String> for SmartTestResult {
             "aborted_unknown" => SmartTestResult::AbortedUnknown,
             "aborted_sanitize" => SmartTestResult::AbortedSanitize,
 
-            _ => SmartTestResult::UNKNOWN_RESULT
+            _ => SmartTestResult::UNKNOWN_RESULT,
         }
     }
 }
@@ -992,7 +1017,6 @@ impl From<u64> for SmartTestResult {
         }
     }
 }
-
 
 #[derive(Clone, Debug)]
 pub struct CommonSmartResult {
@@ -1045,22 +1069,22 @@ impl From<&dyn RefArg> for CommonSmartResult {
 
         this.success = match deser_bool(dynamic_info, "GathererDBusProxy", 0) {
             Some(s) => s,
-            None => return this
+            None => return this,
         };
 
         this.powered_on_seconds = match deser_u64(dynamic_info, "GathererDBusProxy", 1) {
             Some(s) => s,
-            None => return this
+            None => return this,
         };
 
         this.last_update_time = match deser_u64(dynamic_info, "GathererDBusProxy", 2) {
             Some(s) => s,
-            None => return this
+            None => return this,
         };
 
         this.test_result = match deser_u64(dynamic_info, "GathererDBusProxy", 3) {
             Some(s) => SmartTestResult::from(s),
-            None => return this
+            None => return this,
         };
 
         this
@@ -1147,9 +1171,7 @@ impl<'a> Get<'a> for SataSmartResult {
                 );
                 return None;
             }
-            Some(arg) => {
-                this.common_smart_result = CommonSmartResult::from(arg)
-            }
+            Some(arg) => this.common_smart_result = CommonSmartResult::from(arg),
         }
 
         match deser_array(dynamic_info, "GathererDBusProxy", 1) {
@@ -1159,7 +1181,7 @@ impl<'a> Get<'a> for SataSmartResult {
                     this.blocking_processes.push(entry);
                 }
             }
-            None => return None
+            None => return None,
         }
 
         Some(this)
@@ -1289,88 +1311,87 @@ impl<'a> Get<'a> for NVMeSmartResult {
                 );
                 return None;
             }
-            Some(arg) => {
-                this.common_smart_result = CommonSmartResult::from(arg)
-            }
+            Some(arg) => this.common_smart_result = CommonSmartResult::from(arg),
         }
 
         this.avail_spare = match deser_u8(dynamic_info, "GathererDBusProxy", 1) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.spare_thresh = match deser_u8(dynamic_info, "GathererDBusProxy", 2) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.percent_used = match deser_u8(dynamic_info, "GathererDBusProxy", 3) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.total_data_read = match deser_u64(dynamic_info, "GathererDBusProxy", 4) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.total_data_written = match deser_u64(dynamic_info, "GathererDBusProxy", 5) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.ctrl_busy_minutes = match deser_u64(dynamic_info, "GathererDBusProxy", 6) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.power_cycles = match deser_u64(dynamic_info, "GathererDBusProxy", 7) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.unsafe_shutdowns = match deser_u64(dynamic_info, "GathererDBusProxy", 8) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.media_errors = match deser_u64(dynamic_info, "GathererDBusProxy", 9) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.num_err_log_entries = match deser_u64(dynamic_info, "GathererDBusProxy", 10) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         match deser_array(dynamic_info, "GathererDBusProxy", 11) {
             Some(i) => {
                 for temp in i {
-                    this.temp_sensors.push(temp.as_u64().unwrap_or_default() as u16);
+                    this.temp_sensors
+                        .push(temp.as_u64().unwrap_or_default() as u16);
                 }
-            },
-            None => return None
+            }
+            None => return None,
         }
 
         this.wctemp = match deser_u16(dynamic_info, "GathererDBusProxy", 12) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.cctemp = match deser_u16(dynamic_info, "GathererDBusProxy", 13) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.warning_temp_time = match deser_u32(dynamic_info, "GathererDBusProxy", 14) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         this.critical_temp_time = match deser_u32(dynamic_info, "GathererDBusProxy", 15) {
             Some(i) => i,
-            None => return None
+            None => return None,
         };
 
         Some(this)
