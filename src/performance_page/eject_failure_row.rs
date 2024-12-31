@@ -23,19 +23,15 @@ use crate::performance_page::disk::PerformancePageDisk;
 use adw::prelude::AdwDialogExt;
 use gtk::prelude::ButtonExt;
 use gtk::{
-    gio, glib,
+    glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
 use std::cell::Cell;
 
 mod imp {
     use super::*;
-    use crate::app;
-    use adw::gio::ListStore;
     use gtk::prelude::{ButtonExt, WidgetExt};
     use gtk::subclass::prelude::WidgetImpl;
-    use gtk::subclass::widget::WidgetClassExt;
-    use gtk::TemplateChild;
     use std::cell::OnceCell;
 
     #[derive(Properties)]

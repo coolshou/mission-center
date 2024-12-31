@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
@@ -27,7 +27,7 @@ use std::sync::{
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
 use dbus::arg::{Append, AppendAll, Arg, ArgType, IterAppend, RefArg};
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver, Signature};
-use dbus_crossroads::{Context, Crossroads};
+use dbus_crossroads::Crossroads;
 use glob::glob;
 use lazy_static::lazy_static;
 use logging::{critical, debug, error, message, warning};
@@ -394,10 +394,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .cpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .static_info(),)));
+                                  .cpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .static_info(),)));
 
                 Some(ctx)
             },
@@ -413,10 +413,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .cpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .dynamic_info(),)));
+                                  .cpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .dynamic_info(),)));
 
                 Some(ctx)
             },
@@ -432,11 +432,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .disk_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .info()
-                    .collect::<Vec<_>>(),)));
+                                  .disk_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .info()
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -668,7 +668,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "SataSmartInfo",
             ("smart_disk",),
             ("smart_info",),
-            move |mut ctx, _, (id,): (String,)| {
+            move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = SataSmartResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
@@ -766,7 +766,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "NVMeSmartInfo",
             ("smart_disk",),
             ("smart_info",),
-            move |mut ctx, _, (id,): (String,)| {
+            move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = NVMeSmartResult::default();
 
                 let Ok(client) = &SYSTEM_STATE
@@ -916,12 +916,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("gpu_list",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .gpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .enumerate()
-                    .map(|id| id.to_owned())
-                    .collect::<Vec<_>>(),)));
+                                  .gpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .enumerate()
+                                  .map(|id| id.to_owned())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -941,9 +941,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .read()
                     .unwrap_or_else(PoisonError::into_inner);
                 ctx.reply(Ok((gpu_info
-                    .enumerate()
-                    .map(|id| gpu_info.static_info(id).cloned().unwrap())
-                    .collect::<Vec<_>>(),)));
+                                  .enumerate()
+                                  .map(|id| gpu_info.static_info(id).cloned().unwrap())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -963,9 +963,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .read()
                     .unwrap_or_else(PoisonError::into_inner);
                 ctx.reply(Ok((gpu_info
-                    .enumerate()
-                    .map(|id| gpu_info.dynamic_info(id).cloned().unwrap())
-                    .collect::<Vec<_>>(),)));
+                                  .enumerate()
+                                  .map(|id| gpu_info.dynamic_info(id).cloned().unwrap())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -981,11 +981,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .fan_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .info()
-                    .collect::<Vec<_>>(),)));
+                                  .fan_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .info()
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -1016,10 +1016,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("app_list",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .apps
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .app_list(),)));
+                                  .apps
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .app_list(),)));
 
                 Some(ctx)
             },
@@ -1061,7 +1061,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "TerminateProcess",
             ("process_id",),
             (),
-            move |_, _: &mut (), (pid,): (u32,)| {
+            move |_, _: &mut (), (pid, ): (u32,)| {
                 execute_no_reply(
                     SYSTEM_STATE.processes.clone(),
                     move |processes| -> Result<(), u8> { Ok(processes.terminate_process(pid)) },
@@ -1078,7 +1078,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "KillProcess",
             ("process_id",),
             (),
-            move |_, _: &mut (), (pid,): (u32,)| {
+            move |_, _: &mut (), (pid, ): (u32,)| {
                 execute_no_reply(
                     SYSTEM_STATE.processes.clone(),
                     move |processes| -> Result<(), u8> { Ok(processes.kill_process(pid)) },
@@ -1095,7 +1095,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "EnableService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1118,7 +1118,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "DisableService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1141,7 +1141,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "StartService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1164,7 +1164,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "StopService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1187,7 +1187,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "RestartService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1245,7 +1245,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
             Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
-                .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
+                    .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
         });
 
         message!("Gatherer::Main", "Registering D-Bus method `Ping`...");

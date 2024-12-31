@@ -37,7 +37,6 @@ use dbus::{
 };
 use static_assertions::const_assert;
 
-use crate::sys_info_v2::dbus_interface::processes::ProcessState;
 pub use apps::{App, AppMap};
 pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
@@ -86,8 +85,9 @@ impl TypeMismatchError {
 const_assert!(size_of::<TypeMismatchError>() == size_of::<dbus::arg::TypeMismatchError>());
 const_assert!(align_of::<TypeMismatchError>() == align_of::<dbus::arg::TypeMismatchError>());
 
+#[allow(unused)]
 fn deser<'a, T, E>(
-    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&'a dyn RefArg>,
     context: &str,
     expected_desc: &str,
     extractor: E,
@@ -117,28 +117,31 @@ where
     }
 }
 
+#[allow(unused)]
 fn deser_struct<'a>(
-    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&'a dyn RefArg>,
     context: &str,
     index: usize,
-) -> Option<Box<dyn Iterator<Item = &'a dyn RefArg> + 'a>> {
+) -> Option<Box<dyn Iterator<Item=&'a dyn RefArg> + 'a>> {
     let mut description = ArrayString::<30>::new();
     write!(&mut description, "STRUCT at index {}", index).expect("Failed to write to ArrayString");
     deser(iter, context, &description, |arg| arg.as_iter())
 }
 
+#[allow(unused)]
 fn deser_array<'a>(
-    iter: &mut dyn Iterator<Item = &'a dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&'a dyn RefArg>,
     context: &str,
     index: usize,
-) -> Option<Box<dyn Iterator<Item = &'a dyn RefArg> + 'a>> {
+) -> Option<Box<dyn Iterator<Item=&'a dyn RefArg> + 'a>> {
     let mut description = ArrayString::<30>::new();
     write!(&mut description, "STRUCT at index {}", index).expect("Failed to write to ArrayString");
     deser(iter, context, &description, |arg| arg.as_iter())
 }
 
+#[allow(unused)]
 fn deser_u64(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<u64> {
@@ -147,8 +150,9 @@ fn deser_u64(
     deser(iter, context, &description, |arg| arg.as_u64())
 }
 
+#[allow(unused)]
 fn deser_u32(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<u32> {
@@ -159,8 +163,9 @@ fn deser_u32(
     })
 }
 
+#[allow(unused)]
 fn deser_u16(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<u16> {
@@ -171,8 +176,9 @@ fn deser_u16(
     })
 }
 
+#[allow(unused)]
 fn deser_u8(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<u8> {
@@ -183,8 +189,9 @@ fn deser_u8(
     })
 }
 
+#[allow(unused)]
 fn deser_usize(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<usize> {
@@ -195,8 +202,9 @@ fn deser_usize(
     })
 }
 
+#[allow(unused)]
 fn deser_i64(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<i64> {
@@ -205,8 +213,9 @@ fn deser_i64(
     deser(iter, context, &description, |arg| arg.as_i64())
 }
 
+#[allow(unused)]
 fn deser_i32(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<i32> {
@@ -217,8 +226,9 @@ fn deser_i32(
     })
 }
 
+#[allow(unused)]
 fn deser_i16(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<i16> {
@@ -229,8 +239,9 @@ fn deser_i16(
     })
 }
 
+#[allow(unused)]
 fn deser_bool(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<bool> {
@@ -244,8 +255,9 @@ fn deser_bool(
     })
 }
 
+#[allow(unused)]
 fn deser_f64(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<f64> {
@@ -254,8 +266,9 @@ fn deser_f64(
     deser(iter, context, &description, |arg| arg.as_f64())
 }
 
+#[allow(unused)]
 fn deser_f32(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<f32> {
@@ -263,8 +276,9 @@ fn deser_f32(
     deser_f64(iter, context, index).map(|v| v as f32)
 }
 
+#[allow(unused)]
 fn deser_str(
-    iter: &mut dyn Iterator<Item = &dyn RefArg>,
+    iter: &mut dyn Iterator<Item=&dyn RefArg>,
     context: &str,
     index: usize,
 ) -> Option<Arc<str>> {
@@ -522,8 +536,8 @@ impl<'a> Get<'a> for EjectResult {
                     return None;
                 }
                 Some(mut block_list) => {
-                    let mut block_list = block_list.as_mut();
-                    while true {
+                    let block_list = block_list.as_mut();
+                    loop {
                         match Iterator::next(block_list) {
                             None => {
                                 break;
@@ -536,7 +550,7 @@ impl<'a> Get<'a> for EjectResult {
                                 Some(mut tuple_iter) => {
                                     let mut new_item = (u32::MAX, vec![], vec![]);
 
-                                    let mut tuple_iter = tuple_iter.as_mut();
+                                    let tuple_iter = tuple_iter.as_mut();
                                     match Iterator::next(tuple_iter) {
                                         None => {}
                                         Some(arg) => {

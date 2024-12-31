@@ -22,18 +22,13 @@ use std::cell::Cell;
 
 use crate::i18n::{i18n, i18n_f};
 use gtk::{
-    gio, glib,
-    glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
+    glib,
+    glib::{prelude::*, subclass::prelude::*, Properties},
 };
 
 mod imp {
     use super::*;
-    use crate::app;
-    use adw::gio::ListStore;
-    use gtk::prelude::{ButtonExt, WidgetExt};
     use gtk::subclass::prelude::WidgetImpl;
-    use gtk::subclass::widget::WidgetClassExt;
-    use gtk::TemplateChild;
     use std::cell::OnceCell;
 
     #[derive(Default, Properties)]

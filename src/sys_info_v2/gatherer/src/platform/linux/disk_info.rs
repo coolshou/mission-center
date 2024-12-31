@@ -29,7 +29,7 @@ use std::cmp::max;
 use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
-use udisks2::{Client, Object};
+use udisks2::Client;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -76,7 +76,7 @@ impl Default for LinuxDiskInfo {
 }
 
 pub struct LinuxDiskInfoIter<'a>(
-    pub  std::iter::Map<
+    pub std::iter::Map<
         std::slice::Iter<'a, (DiskStats, LinuxDiskInfo)>,
         fn(&'a (DiskStats, LinuxDiskInfo)) -> &'a LinuxDiskInfo,
     >,
@@ -408,14 +408,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     "/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input",
                     dir_name
                 )
-                .as_str(),
+                    .as_str(),
             )
-            .unwrap()
-            .filter_map(Result::ok)
-            .filter_map(|f| std::fs::read_to_string(f).ok())
-            .filter_map(|v| v.trim().parse::<f64>().ok())
-            .map(|i| i / 1000.0 + 273.15)
-            .collect::<Vec<_>>();
+                .unwrap()
+                .filter_map(Result::ok)
+                .filter_map(|f| std::fs::read_to_string(f).ok())
+                .filter_map(|v| v.trim().parse::<f64>().ok())
+                .map(|i| i / 1000.0 + 273.15)
+                .collect::<Vec<_>>();
 
             let drive_temperature_k = if !temp_inputs.is_empty() {
                 temp_inputs[0]
