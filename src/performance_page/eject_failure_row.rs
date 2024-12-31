@@ -21,18 +21,18 @@
 use crate::app;
 use crate::performance_page::disk::PerformancePageDisk;
 use adw::prelude::AdwDialogExt;
-use gtk::prelude::ButtonExt;
 use gtk::{
     glib,
-    glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
+    glib::{subclass::prelude::*, ParamSpec, Properties, Value},
 };
 use std::cell::Cell;
 
+use gtk::prelude::{ButtonExt, WidgetExt};
+use gtk::subclass::prelude::WidgetImpl;
+use std::cell::OnceCell;
+
 mod imp {
     use super::*;
-    use gtk::prelude::{ButtonExt, WidgetExt};
-    use gtk::subclass::prelude::WidgetImpl;
-    use std::cell::OnceCell;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureRow)]
@@ -151,30 +151,11 @@ mod imp {
     impl WidgetImpl for EjectFailureRow {}
 }
 
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ContentType {
-    SectionHeader,
-    App,
-    Process,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum SectionType {
-    Apps,
-    Processes,
-}
-
 pub struct EjectFailureRowBuilder {
     pid: u32,
     icon: glib::GString,
     name: glib::GString,
     id: String,
-
-    content_type: ContentType,
-    section_type: SectionType,
-    show_expander: Option<bool>,
-    expanded: bool,
 
     parent_page: Option<PerformancePageDisk>,
 
@@ -188,11 +169,6 @@ impl EjectFailureRowBuilder {
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
             id: String::from(""),
-
-            content_type: ContentType::SectionHeader,
-            section_type: SectionType::Apps,
-            show_expander: None,
-            expanded: true,
 
             parent_page: None,
             files_open: vec![],
@@ -278,8 +254,6 @@ glib::wrapper! {
 
 impl EjectFailureRow {
     pub fn new() -> Self {
-        use gtk::prelude::*;
-
         let this: Self = glib::Object::builder().build();
 
         this

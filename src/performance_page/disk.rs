@@ -28,18 +28,14 @@ use super::{widgets::GraphWidget, PageExt};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
+use crate::app;
+use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
+use crate::performance_page::smart_dialog::SmartDataDialog;
+use crate::sys_info_v2::{DiskSmartInterface, EjectResult, NVMeSmartResult, SataSmartResult};
+use adw::glib::g_warning;
+
 mod imp {
     use super::*;
-    use crate::app;
-    use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
-    use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
-    use crate::performance_page::smart_dialog::SmartDataDialog;
-    use crate::sys_info_v2::{
-        DiskSmartInterface, DiskType, EjectResult, NVMeSmartResult, SataSmartResult,
-    };
-    use adw::glib::g_warning;
-    use adw::prelude::AlertDialogExtManual;
-    use std::future::IntoFuture;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]

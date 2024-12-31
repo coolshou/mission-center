@@ -871,7 +871,7 @@ impl SysInfoV2 {
             let mut wait_time = Duration::from_millis(
                 ((speed.load(atomic::Ordering::Relaxed) as f64 * INTERVAL_STEP) * 1000.) as u64,
             )
-                .saturating_sub(loop_start.elapsed());
+            .saturating_sub(loop_start.elapsed());
 
             const ITERATIONS_COUNT: u32 = 10;
 

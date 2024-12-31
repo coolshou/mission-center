@@ -25,7 +25,7 @@ use std::sync::{
 };
 
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
-use dbus::arg::{Append, AppendAll, Arg, ArgType, IterAppend, RefArg};
+use dbus::arg::{Append, Arg, ArgType, IterAppend, RefArg};
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver, Signature};
 use dbus_crossroads::Crossroads;
 use glob::glob;
@@ -562,9 +562,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     .unwrap_or_else(PoisonError::into_inner);
                                 let processes = process.process_cache.clone();
 
-                                let mut blocks = &mut rezult.blocking_processes;
+                                let blocks = &mut rezult.blocking_processes;
 
-                                for (pid, proc) in processes.iter() {
+                                for (pid, _) in processes.iter() {
                                     let mut cwds = Vec::new();
                                     let mut paths = Vec::new();
                                     if let Ok(cwd) = std::fs::read_link(format!("/proc/{pid}/cwd"))
@@ -726,7 +726,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rezult.common_data.test_result =
                         SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
 
-                    let mut options = HashMap::new();
+                    let options = HashMap::new();
 
                     let attributes = match ata.smart_get_attributes(options).block_on() {
                         Ok(res) => res,
@@ -818,7 +818,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 if let Ok(nvme) = drive_object.nvme_controller().block_on() {
-                    let mut options = HashMap::new();
+                    let options = HashMap::new();
 
                     let attributes = match nvme.smart_get_attributes(options).block_on() {
                         Ok(res) => res,

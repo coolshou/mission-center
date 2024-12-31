@@ -21,16 +21,16 @@
 use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
+use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
 
 use crate::app;
 
 mod imp {
     use super::*;
+    use crate::i18n;
     use crate::performance_page::disk::PerformancePageDisk;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
     use crate::sys_info_v2::EjectResult;
-    use crate::i18n;
     use adw::ResponseAppearance;
     use std::sync::Arc;
 
@@ -250,12 +250,4 @@ glib::wrapper! {
     pub struct EjectFailureDialog(ObjectSubclass<imp::EjectFailureDialog>)
         @extends adw::AlertDialog, adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-fn to_signal_id(id: u64) -> SignalHandlerId {
-    unsafe { std::mem::transmute(id) }
-}
-
-fn from_signal_id(id: SignalHandlerId) -> u64 {
-    unsafe { id.as_raw() }
 }

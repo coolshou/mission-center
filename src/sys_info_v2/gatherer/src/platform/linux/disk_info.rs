@@ -22,7 +22,6 @@ use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::logging::{critical, warning};
 use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
 use crate::platform::DiskSmartInterface;
-use dbus::arg::RefArg;
 use glob::glob;
 use pollster::FutureExt;
 use std::cmp::max;
@@ -76,7 +75,7 @@ impl Default for LinuxDiskInfo {
 }
 
 pub struct LinuxDiskInfoIter<'a>(
-    pub std::iter::Map<
+    pub  std::iter::Map<
         std::slice::Iter<'a, (DiskStats, LinuxDiskInfo)>,
         fn(&'a (DiskStats, LinuxDiskInfo)) -> &'a LinuxDiskInfo,
     >,
@@ -229,8 +228,9 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
         let mut drive_path_map = HashMap::new();
 
         for (object_path, _) in objects {
-            let Ok(mut object) = client.object(object_path.clone()) else {
-                continue;
+            let mut object = match client.object(object_path.clone()) {
+                Ok(o) => o,
+                Err(_) => continue,
             };
             if let Ok(drive) = object.drive().block_on() {
                 drive_block_map.insert(object_path, (drive, object, vec![]));
@@ -408,14 +408,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     "/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input",
                     dir_name
                 )
-                    .as_str(),
+                .as_str(),
             )
-                .unwrap()
-                .filter_map(Result::ok)
-                .filter_map(|f| std::fs::read_to_string(f).ok())
-                .filter_map(|v| v.trim().parse::<f64>().ok())
-                .map(|i| i / 1000.0 + 273.15)
-                .collect::<Vec<_>>();
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|f| std::fs::read_to_string(f).ok())
+            .filter_map(|v| v.trim().parse::<f64>().ok())
+            .map(|i| i / 1000.0 + 273.15)
+            .collect::<Vec<_>>();
 
             let drive_temperature_k = if !temp_inputs.is_empty() {
                 temp_inputs[0]
