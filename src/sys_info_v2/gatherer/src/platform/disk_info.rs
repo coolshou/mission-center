@@ -54,7 +54,9 @@ pub enum DiskSmartInterface {
 }
 
 impl Default for DiskSmartInterface {
-    fn default() -> Self { Self::Dumb }
+    fn default() -> Self {
+        Self::Dumb
+    }
 }
 
 /// Describes the static (unchanging) information about a physical disk

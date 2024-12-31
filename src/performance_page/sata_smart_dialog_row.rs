@@ -20,21 +20,21 @@
 
 use std::cell::Cell;
 
+use crate::i18n::{i18n, i18n_f};
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
 };
-use crate::i18n::{i18n, i18n_f};
 
 mod imp {
-    use std::cell::OnceCell;
+    use super::*;
+    use crate::app;
     use adw::gio::ListStore;
     use gtk::prelude::{ButtonExt, WidgetExt};
     use gtk::subclass::prelude::WidgetImpl;
-    use gtk::TemplateChild;
-    use super::*;
     use gtk::subclass::widget::WidgetClassExt;
-    use crate::app;
+    use gtk::TemplateChild;
+    use std::cell::OnceCell;
 
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::SmartDialogRow)]
@@ -59,8 +59,7 @@ mod imp {
         pub assessment: OnceCell<String>,
     }
 
-    impl SmartDialogRow {
-    }
+    impl SmartDialogRow {}
 
     #[glib::object_subclass]
     impl ObjectSubclass for SmartDialogRow {
@@ -142,7 +141,24 @@ impl SmartDialogRowBuilder {
     }
 
     pub fn build(self) -> SmartDialogRow {
-        SmartDialogRow::new(self.id, self.attribute, self.value, self.pretty, self.units, self.threshold, self.worst, &match self.flags & 0b1 { 1 => i18n("Pre-Fail"), _ => i18n("Old-Age")}, &match self.flags & 0b10 >> 1 { 0 => i18n("Online"), _ => i18n("Offline")}, "IDK LMAO")
+        SmartDialogRow::new(
+            self.id,
+            self.attribute,
+            self.value,
+            self.pretty,
+            self.units,
+            self.threshold,
+            self.worst,
+            &match self.flags & 0b1 {
+                1 => i18n("Pre-Fail"),
+                _ => i18n("Old-Age"),
+            },
+            &match self.flags & 0b10 >> 1 {
+                0 => i18n("Online"),
+                _ => i18n("Offline"),
+            },
+            "IDK LMAO",
+        )
     }
 }
 
@@ -153,17 +169,31 @@ glib::wrapper! {
 }
 
 impl SmartDialogRow {
-    pub fn new(id: u8, attribute: String, value: i32, pretty: i64, units: i32, threshold: i32, worst: i32, typee: &str, updates: &str, assessment: &str) -> Self {
+    pub fn new(
+        id: u8,
+        attribute: String,
+        value: i32,
+        pretty: i64,
+        units: i32,
+        threshold: i32,
+        worst: i32,
+        typee: &str,
+        updates: &str,
+        assessment: &str,
+    ) -> Self {
         glib::Object::builder()
             .property("smart_id", id)
             .property("attribute", attribute)
-            .property("value", &match units {
-                0 => i18n("N/A"),
-                2 => crate::to_human_readable_time(pretty as u64 / 1000),
-                3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
-                4 => i18n_f("{} °C", &[&format!("{}", (pretty - 273150) / 1000)]),
-                _ => format!("{}", pretty),
-            })
+            .property(
+                "value",
+                &match units {
+                    0 => i18n("N/A"),
+                    2 => crate::to_human_readable_time(pretty as u64 / 1000),
+                    3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
+                    4 => i18n_f("{} °C", &[&format!("{}", (pretty - 273150) / 1000)]),
+                    _ => format!("{}", pretty),
+                },
+            )
             .property("normalized", value)
             .property("threshold", threshold)
             .property("worst", worst)

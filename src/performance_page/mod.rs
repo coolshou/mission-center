@@ -42,16 +42,16 @@ use crate::{
 
 mod cpu;
 mod disk;
+mod eject_failure_dialog;
+mod eject_failure_row;
 mod fan;
 mod gpu;
 mod memory;
 mod network;
+mod sata_smart_dialog_row;
+mod smart_dialog;
 mod summary_graph;
 mod widgets;
-mod eject_failure_dialog;
-mod eject_failure_row;
-mod smart_dialog;
-mod sata_smart_dialog_row;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
@@ -1856,7 +1856,11 @@ mod imp {
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 // i dare you to have a 1K drive
                                 if disk.drive_temperature >= 1.0 {
-                                    summary.set_info2(format!("{:.0}% ({:.0} °C)", disk.busy_percent, disk.drive_temperature - 273.15));
+                                    summary.set_info2(format!(
+                                        "{:.0}% ({:.0} °C)",
+                                        disk.busy_percent,
+                                        disk.drive_temperature - 273.15
+                                    ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%", disk.busy_percent));
                                 }

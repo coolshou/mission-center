@@ -18,15 +18,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
-use std::collections::{HashMap, HashSet};
-use std::sync::Arc;
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::{gio, glib};
+use std::cell::Cell;
+use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
 
-use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
 use crate::sys_info_v2::{App, EjectResult};
+use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
 
 mod imp {
     use super::*;
@@ -796,7 +796,10 @@ impl MissionCenterWindow {
         result
     }
 
-    pub fn handle_eject_result(&self, result: EjectResult) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
+    pub fn handle_eject_result(
+        &self,
+        result: EjectResult,
+    ) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
         println!("Eject result: {:?}", result);
 
         if !result.blocking_processes.is_empty() {
@@ -804,33 +807,58 @@ impl MissionCenterWindow {
             let apps = self.imp().apps_page.get_app_tree();
             let apps = apps.values().map(|c| c.clone()).collect::<Vec<_>>();
 
-            let mut distinct_apps: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> = HashMap::new();
+            let mut distinct_apps: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> =
+                HashMap::new();
 
             for blocking_process in result.blocking_processes {
                 if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0)) {
                     if let Some(val) = distinct_apps.get_mut(black.name.to_string().as_str()) {
                         val.1.push(blocking_process);
                     } else {
-                        distinct_apps.insert(black.name.as_ref().parse().unwrap(), (black.clone(), vec![blocking_process]));
+                        distinct_apps.insert(
+                            black.name.as_ref().parse().unwrap(),
+                            (black.clone(), vec![blocking_process]),
+                        );
                     }
                 } else {
                     if let Some(val) = distinct_apps.get_mut("") {
                         val.1.push(blocking_process);
                     } else {
                         // todo use default?
-                        distinct_apps.insert("".parse().unwrap(), (App {
-                            name: Arc::from(""),
-                            icon: None,
-                            id: Arc::from(""),
-                            command: Arc::from(""),
-                            pids: vec![],
-                        }, vec![blocking_process]));
+                        distinct_apps.insert(
+                            "".parse().unwrap(),
+                            (
+                                App {
+                                    name: Arc::from(""),
+                                    icon: None,
+                                    id: Arc::from(""),
+                                    command: Arc::from(""),
+                                    pids: vec![],
+                                },
+                                vec![blocking_process],
+                            ),
+                        );
                     }
                 }
             }
 
             for distinct_app in &distinct_apps {
-                println!("App {} is holding open the files {:?} and cwd {:?}", distinct_app.0, distinct_app.1.1.iter().map(|b| b.2.join(",")).collect::<HashSet<_>>(), distinct_app.1.1.iter().map(|b| b.1.join(",")).collect::<HashSet<_>>());
+                println!(
+                    "App {} is holding open the files {:?} and cwd {:?}",
+                    distinct_app.0,
+                    distinct_app
+                        .1
+                         .1
+                        .iter()
+                        .map(|b| b.2.join(","))
+                        .collect::<HashSet<_>>(),
+                    distinct_app
+                        .1
+                         .1
+                        .iter()
+                        .map(|b| b.1.join(","))
+                        .collect::<HashSet<_>>()
+                );
             }
 
             return distinct_apps;

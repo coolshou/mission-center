@@ -446,11 +446,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // files that made us use force aren't killed. We just get zombies so lets instead just
         // murder processes by hand to naturally allow unmounting + ejecting
         message!("Gatherer::Main", "Registering D-Bus method `EjectDisk`...");
-        builder.method_with_cr_custom::<(String,bool,u32), (EjectResult,), &str, _>(
+        builder.method_with_cr_custom::<(String, bool, u32), (EjectResult,), &str, _>(
             "EjectDisk",
-            ("eject_disk","kill_all","kill_pid"),
+            ("eject_disk", "kill_all", "kill_pid"),
             ("eject_result",),
-            move |mut ctx, _, (id,killall,kill_pid): (String,bool,u32)| {
+            move |mut ctx, _, (id, killall, kill_pid): (String, bool, u32)| {
                 let mut rezult = EjectResult::default();
 
                 println!("Ejecting {}, killing {}/{}", id, kill_pid, killall);
@@ -548,15 +548,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 critical!("Gatherer::Main", "YIKES {}", e);
                                 let points = mountpoints
                                     .iter()
-                                    .map(|c| Path::new(std::str::from_utf8(c).unwrap_or("").trim_matches(char::from(0))))
+                                    .map(|c| {
+                                        Path::new(
+                                            std::str::from_utf8(c)
+                                                .unwrap_or("")
+                                                .trim_matches(char::from(0)),
+                                        )
+                                    })
                                     .collect::<std::collections::HashSet<_>>();
                                 let process = SYSTEM_STATE
                                     .processes
                                     .read()
                                     .unwrap_or_else(PoisonError::into_inner);
-                                let processes = process
-                                    .process_cache
-                                    .clone();
+                                let processes = process.process_cache.clone();
 
                                 let mut blocks = &mut rezult.blocking_processes;
 
@@ -609,12 +613,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             Ok(_) => {
                                 some_err = last_err;
                             }
-                            Err(e) => {
-
-                            }
+                            Err(e) => {}
                         }
                     } else {
-                        debug!("Gatherer::Main", "{:?} does not have any mountpoints", filename)
+                        debug!(
+                            "Gatherer::Main",
+                            "{:?} does not have any mountpoints", filename
+                        )
                     }
                 }
 
@@ -642,7 +647,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let result = drive.eject(options).block_on();
 
                     match result {
-                        Ok(_) => {rezult.success = true}
+                        Ok(_) => rezult.success = true,
                         Err(e) => {
                             critical!("Gatherer::Main", "Failed ej {}", e)
                         }
@@ -655,7 +660,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         );
 
-        message!("Gatherer::Main", "Registering D-Bus method `SataSmartInfo`...");
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `SataSmartInfo`..."
+        );
         builder.method_with_cr_custom::<(String,), (SataSmartResult,), &str, _>(
             "SataSmartInfo",
             ("smart_disk",),
@@ -712,9 +720,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 if let Ok(ata) = drive_object.drive_ata().block_on() {
-                    rezult.common_data.powered_on_seconds = ata.smart_power_on_seconds().block_on().unwrap();
+                    rezult.common_data.powered_on_seconds =
+                        ata.smart_power_on_seconds().block_on().unwrap();
                     rezult.common_data.last_update_time = ata.smart_updated().block_on().unwrap();
-                    rezult.common_data.test_result = SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
+                    rezult.common_data.test_result =
+                        SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
 
                     let mut options = HashMap::new();
 
@@ -745,10 +755,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 ctx.reply(Ok((rezult,)));
                 Some(ctx)
-            }
+            },
         );
 
-        message!("Gatherer::Main", "Registering D-Bus method `NVMeSmartInfo`...");
+        message!(
+            "Gatherer::Main",
+            "Registering D-Bus method `NVMeSmartInfo`..."
+        );
         builder.method_with_cr_custom::<(String,), (NVMeSmartResult,), &str, _>(
             "NVMeSmartInfo",
             ("smart_disk",),
@@ -817,11 +830,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     };
 
                     if let Some(num_err_log_entries) = attributes.get("num_err_log_entries") {
-                        rezult.num_err_log_entries = num_err_log_entries.try_into().unwrap_or_default();
+                        rezult.num_err_log_entries =
+                            num_err_log_entries.try_into().unwrap_or_default();
                     }
 
                     if let Some(critical_temp_time) = attributes.get("critical_temp_time") {
-                        rezult.critical_temp_time = critical_temp_time.try_into().unwrap_or_default();
+                        rezult.critical_temp_time =
+                            critical_temp_time.try_into().unwrap_or_default();
                     }
 
                     if let Some(wctemp) = attributes.get("wctemp") {
@@ -861,7 +876,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
 
                     if let Some(total_data_written) = attributes.get("total_data_written") {
-                        rezult.total_data_written = total_data_written.try_into().unwrap_or_default();
+                        rezult.total_data_written =
+                            total_data_written.try_into().unwrap_or_default();
                     }
 
                     // if let Some(temp_sensors) = attributes.get("temp_sensors") {
@@ -878,16 +894,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     rezult.common_smart_result.success = true;
 
-                    rezult.common_smart_result.powered_on_seconds = nvme.smart_power_on_hours().block_on().unwrap() * 3600;
-                    rezult.common_smart_result.test_result = SmartTestResult::from(nvme.smart_selftest_status().block_on().unwrap());
-                    rezult.common_smart_result.last_update_time = nvme.smart_updated().block_on().unwrap();
+                    rezult.common_smart_result.powered_on_seconds =
+                        nvme.smart_power_on_hours().block_on().unwrap() * 3600;
+                    rezult.common_smart_result.test_result =
+                        SmartTestResult::from(nvme.smart_selftest_status().block_on().unwrap());
+                    rezult.common_smart_result.last_update_time =
+                        nvme.smart_updated().block_on().unwrap();
                 } else {
                     println!("No NVME!");
                 }
 
                 ctx.reply(Ok((rezult,)));
                 Some(ctx)
-            }
+            },
         );
 
         message!("Gatherer::Main", "Registering D-Bus method `GetGPUList`...");
@@ -1305,10 +1324,7 @@ impl Default for EjectResult {
 
 impl Append for EjectResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.success,
-            self.blocking_processes.clone(),
-        ));
+        ia.append((self.success, self.blocking_processes.clone()));
     }
 }
 
@@ -1417,7 +1433,7 @@ impl From<String> for SmartTestResult {
             "aborted_unknown" => SmartTestResult::AbortedUnknown,
             "aborted_sanitize" => SmartTestResult::AbortedSanitize,
 
-            _ => SmartTestResult::UNKNOWN_RESULT
+            _ => SmartTestResult::UNKNOWN_RESULT,
         }
     }
 }
@@ -1453,7 +1469,6 @@ impl Append for CommonSmartResult {
     }
 }
 
-
 #[derive(Debug)]
 pub struct SataSmartResult {
     common_data: CommonSmartResult,
@@ -1472,10 +1487,7 @@ impl Default for SataSmartResult {
 
 impl Append for SataSmartResult {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.common_data.clone(),
-            self.data.clone(),
-        ));
+        ia.append((self.common_data.clone(), self.data.clone()));
     }
 }
 

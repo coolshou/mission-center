@@ -26,23 +26,27 @@ use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
 use crate::{app, i18n::*};
 
 mod imp {
-    use std::cell::OnceCell;
-    use std::collections::HashMap;
-    use std::sync::Arc;
+    use super::*;
+    use crate::performance_page::disk::PerformancePageDisk;
+    use crate::performance_page::eject_failure_row::{
+        ContentType, EjectFailureRow, EjectFailureRowBuilder,
+    };
+    use crate::performance_page::DiskPage;
+    use crate::sys_info_v2::{App, EjectResult, Process};
+    use crate::{glib_clone, i18n};
     use adw::gio::ListStore;
     use adw::glib::WeakRef;
     use adw::ResponseAppearance;
-    use crate::{glib_clone, i18n};
-    use crate::performance_page::disk::PerformancePageDisk;
-    use crate::performance_page::DiskPage;
-    use crate::performance_page::eject_failure_row::{ContentType, EjectFailureRowBuilder, EjectFailureRow};
-    use crate::sys_info_v2::{App, EjectResult, Process};
-    use super::*;
+    use std::cell::OnceCell;
+    use std::collections::HashMap;
+    use std::sync::Arc;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::EjectFailureDialog)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui")]
+    #[template(
+        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui"
+    )]
     pub struct EjectFailureDialog {
         #[template_child]
         pub column_view: TemplateChild<gtk::ListBox>,
@@ -57,7 +61,8 @@ mod imp {
 
             let modelo = self.column_view.get();
 
-            self.parent_page.set(Some(parent.downgrade().upgrade().unwrap()));
+            self.parent_page
+                .set(Some(parent.downgrade().upgrade().unwrap()));
 
             modelo.remove_all();
 
@@ -67,10 +72,14 @@ mod imp {
 
                 let iconname = match app_obj.icon.as_ref() {
                     Some(icon) => icon,
-                    None => {&Arc::from("")}
+                    None => &Arc::from(""),
                 };
 
-                let parent_id = &parent.imp().raw_disk_id.get().expect("Expected a raw disk id, got none");
+                let parent_id = &parent
+                    .imp()
+                    .raw_disk_id
+                    .get()
+                    .expect("Expected a raw disk id, got none");
 
                 for process in processes {
                     if !process.1.is_empty() {
@@ -151,9 +160,12 @@ mod imp {
             self.obj().add_response(retry, &i18n::i18n("Retry"));
             self.obj().add_response(kill, &i18n::i18n("Kill All"));
 
-            self.obj().set_response_appearance(close, ResponseAppearance::Default);
-            self.obj().set_response_appearance(retry, ResponseAppearance::Default);
-            self.obj().set_response_appearance(kill, ResponseAppearance::Destructive);
+            self.obj()
+                .set_response_appearance(close, ResponseAppearance::Default);
+            self.obj()
+                .set_response_appearance(retry, ResponseAppearance::Default);
+            self.obj()
+                .set_response_appearance(kill, ResponseAppearance::Destructive);
         }
     }
 
@@ -171,25 +183,26 @@ mod imp {
                     //     if let Some(that) = this.upgrade() {
                     //         let this = that.imp();
                     //         let that = &that;
-                            match app!().sys_info().and_then(move |sys_info| {
-                                let padre = self.parent_page.take().expect("fuuuck");
+                    match app!().sys_info().and_then(move |sys_info| {
+                        let padre = self.parent_page.take().expect("fuuuck");
 
-                                let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), false, 0);
+                        let eject_result =
+                            sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), false, 0);
 
-                                padre.imp().show_eject_result(&padre, eject_result);
+                        padre.imp().show_eject_result(&padre, eject_result);
 
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                            "MissionCenter::DetailsDialog",
-                                            "Failed to get `sys_info`: {}",
-                                            e
-                                        );
-                                }
-                                _ => {}
-                            }
-                        // }
+                        Ok(())
+                    }) {
+                        Err(e) => {
+                            g_warning!(
+                                "MissionCenter::DetailsDialog",
+                                "Failed to get `sys_info`: {}",
+                                e
+                            );
+                        }
+                        _ => {}
+                    }
+                    // }
                     // }
                 }
                 "kill" => {
@@ -197,7 +210,8 @@ mod imp {
                     match app!().sys_info().and_then(move |sys_info| {
                         let padre = self.parent_page.take().expect("fuuuck");
 
-                        let eject_result = sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), true, 0);
+                        let eject_result =
+                            sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), true, 0);
 
                         padre.imp().show_eject_result(&padre, eject_result);
 

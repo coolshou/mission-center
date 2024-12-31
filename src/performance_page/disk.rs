@@ -20,7 +20,7 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw::{self, subclass::prelude::*, prelude::AdwDialogExt};
+use adw::{self, prelude::AdwDialogExt, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
@@ -29,15 +29,17 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 mod imp {
-    use std::future::IntoFuture;
-    use adw::glib::g_warning;
-    use adw::prelude::AlertDialogExtManual;
+    use super::*;
     use crate::app;
     use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
     use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
     use crate::performance_page::smart_dialog::SmartDataDialog;
-    use crate::sys_info_v2::{DiskType, DiskSmartInterface, EjectResult, SataSmartResult, NVMeSmartResult};
-    use super::*;
+    use crate::sys_info_v2::{
+        DiskSmartInterface, DiskType, EjectResult, NVMeSmartResult, SataSmartResult,
+    };
+    use adw::glib::g_warning;
+    use adw::prelude::AlertDialogExtManual;
+    use std::future::IntoFuture;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -177,13 +179,16 @@ mod imp {
             self.smart_dialog.set(widget.cloned());
         }
 
-        pub(crate) fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
+        pub(crate) fn show_eject_result(
+            &self,
+            this: &super::PerformancePageDisk,
+            result: EjectResult,
+        ) {
             // todo do something else?
             if result.success {
                 return;
             }
-            let details_dialog =
-                unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
+            let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
             details_dialog.map(move |d| {
                 self.eject_failure_dialog_visible.set(true);
                 d.imp().apply_eject_result(result, this);
@@ -192,9 +197,12 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_nvme_smart_info(&self, this: &super::PerformancePageDisk, result: NVMeSmartResult) {
-            let nvme_smart_dialog =
-                unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
+        pub(crate) fn show_nvme_smart_info(
+            &self,
+            this: &super::PerformancePageDisk,
+            result: NVMeSmartResult,
+        ) {
+            let nvme_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
             nvme_smart_dialog.map(move |d| {
                 self.smart_dialog_visible.set(true);
                 d.imp().apply_nvme_smart_result(result, this);
@@ -203,9 +211,12 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_sata_smart_info(&self, this: &super::PerformancePageDisk, result: SataSmartResult) {
-            let sata_smart_dialog =
-                unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
+        pub(crate) fn show_sata_smart_info(
+            &self,
+            this: &super::PerformancePageDisk,
+            result: SataSmartResult,
+        ) {
+            let sata_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
             sata_smart_dialog.map(move |d| {
                 self.smart_dialog_visible.set(true);
                 d.imp().apply_sata_smart_result(result, this);
@@ -638,7 +649,7 @@ mod imp {
 
                                     return Ok(());
                                 }
-                                Some(disk_id) => {sys_info.eject_disk(disk_id, false, 0)}
+                                Some(disk_id) => sys_info.eject_disk(disk_id, false, 0),
                             };
 
                             this.show_eject_result(that, eject_result);
@@ -669,9 +680,9 @@ mod imp {
                             let disk_id = match this.raw_disk_id.get() {
                                 None => {
                                     //todo uh oh
-                                    return Ok(())
+                                    return Ok(());
                                 }
-                                Some(d) => {d}
+                                Some(d) => d,
                             };
 
                             match this.raw_smart_interface.get() {
