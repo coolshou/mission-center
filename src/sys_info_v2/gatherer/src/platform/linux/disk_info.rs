@@ -109,8 +109,7 @@ impl DiskInfoExt for LinuxDiskInfo {
     }
 
     fn smart_interface(&self) -> DiskSmartInterface {
-        // todo why?
-        self.smart_interface.clone()
+        self.smart_interface
     }
 
     fn capacity(&self) -> u64 {

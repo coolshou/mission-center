@@ -21,15 +21,15 @@
 use std::cell::Cell;
 
 use crate::i18n::{i18n, i18n_f};
+use gtk::subclass::prelude::WidgetImpl;
 use gtk::{
     glib,
     glib::{prelude::*, subclass::prelude::*, Properties},
 };
+use std::cell::OnceCell;
 
 mod imp {
     use super::*;
-    use gtk::subclass::prelude::WidgetImpl;
-    use std::cell::OnceCell;
 
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::SmartDialogRow)]
@@ -71,90 +71,6 @@ mod imp {
     }
 
     impl WidgetImpl for SmartDialogRow {}
-}
-
-pub struct SmartDialogRowBuilder {
-    id: u8,
-    attribute: String,
-    value: i32,
-    units: i32,
-    threshold: i32,
-    pretty: i64,
-    worst: i32,
-    flags: u16,
-}
-
-// todo remove the builder, this isnt java
-impl SmartDialogRowBuilder {
-    pub fn new() -> Self {
-        Self {
-            id: 0,
-            attribute: Default::default(),
-            value: 0,
-            units: 0,
-            threshold: 0,
-            pretty: 0,
-            worst: 0,
-            flags: 0,
-        }
-    }
-
-    pub fn id(mut self, id: u8) -> Self {
-        self.id = id;
-        self
-    }
-
-    pub fn attribute(mut self, attribute: String) -> Self {
-        self.attribute = attribute;
-        self
-    }
-
-    pub fn value(mut self, value: i32, units: i32) -> Self {
-        self.value = value;
-        self.units = units;
-        self
-    }
-
-    pub fn pretty(mut self, pretty: i64) -> Self {
-        self.pretty = pretty;
-        self
-    }
-
-    pub fn threshold(mut self, threshold: i32) -> Self {
-        self.threshold = threshold;
-        self
-    }
-
-    pub fn worst(mut self, worst: i32) -> Self {
-        self.worst = worst;
-        self
-    }
-
-    pub fn flags(mut self, flags: u16) -> Self {
-        self.flags = flags;
-        self
-    }
-
-    pub fn build(self) -> SmartDialogRow {
-        SmartDialogRow::new(
-            self.id,
-            self.attribute,
-            self.value,
-            self.pretty,
-            self.units,
-            self.threshold,
-            self.worst,
-            &match self.flags & 0b1 {
-                1 => i18n("Pre-Fail"),
-                _ => i18n("Old-Age"),
-            },
-            &match self.flags & 0b10 >> 1 {
-                0 => i18n("Online"),
-                _ => i18n("Offline"),
-            },
-            "IDK LMAO",
-        )
-    }
 }
 
 glib::wrapper! {
