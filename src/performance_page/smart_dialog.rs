@@ -126,7 +126,6 @@ mod imp {
                 .set_text(format!("{:?}", result.test_result).as_str());
         }
 
-        // todo populate self
         pub fn apply_sata_smart_result(
             &self,
             result: SataSmartResult,
@@ -480,8 +479,6 @@ mod imp {
     impl WidgetImpl for SmartDataDialog {
         fn realize(&self) {
             self.parent_realize();
-
-            // todo init here
         }
     }
 
