@@ -285,25 +285,24 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
         for (object_path, (drive, object, blocks)) in drive_block_map.iter() {
             let drive_ata = object.drive_ata().block_on();
 
-            let Some((block, _, _)) = blocks.get(0) else {
-                continue;
-            };
+            let dirs = std::fs::read_dir("/sys/block").unwrap();
 
-            let Ok(dirs) = std::fs::read_dir("/sys/block") else {
-                continue;
-            };
-
-            let mut dir_name = None;
-
-            let Ok(raw_dir_name) = block
+            // leaving this here just in case...
+/*            let Ok(raw_dir_name) = block
                 .device()
                 .block_on()
                 .map(|it| String::from_utf8(it).unwrap())
             else {
                 continue;
-            };
+            };*/
 
             let Some(raw_dir_name) = drive_path_map.get(object_path) else {
+                // should never happen
+                critical!(
+                    "Gatherer::DiskInfo",
+                    "Could not find drive entry: {}",
+                    object_path
+                );
                 continue;
             };
 
@@ -313,6 +312,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             else {
                 continue;
             };
+
+            let mut dir_name = None;
 
             for dir in dirs.filter_map(Result::ok) {
                 if raw_dir_name.starts_with(dir.file_name().to_str().unwrap()) {
@@ -427,6 +428,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             };
 
             // we check out here in case of media removal or similar
+            // todo should we handle empty drives in the UI?
             let capacity = if let Some((root_block, _, _)) =
                 blocks.iter().find(|(_, partition, _)| partition.is_err())
             {
@@ -648,12 +650,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     }
                 };
 
-                // let fs_info = Self::filesystem_info(&dir_name);
-                // let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
-
-                let system_disk = has_root;
-                let formatted = formatted;
-
                 let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
                 let model = drive.model().block_on().unwrap_or("".to_string());
@@ -682,7 +678,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         smart_interface,
                         capacity,
                         formatted,
-                        system_disk,
+                        system_disk: has_root,
 
                         busy_percent: 0.,
                         response_time_ms: 0.,

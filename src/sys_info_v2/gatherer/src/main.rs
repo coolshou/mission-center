@@ -453,7 +453,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             move |mut ctx, _, (id, killall, kill_pid): (String, bool, u32)| {
                 let mut rezult = EjectResult::default();
 
-                println!("Ejecting {}, killing {}/{}", id, kill_pid, killall);
+                debug!(
+                    "Gatherer::EjectDisk",
+                    "Ejecting {}, killing {}/{}",
+                    id,
+                    kill_pid,
+                    killall
+                );
 
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
@@ -461,7 +467,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::Main", "fale 0",);
+                    critical!("Gatherer::EjectDisk", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -469,8 +475,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
-                        Err(_) => {
-                            critical!("Gatherer::Main", "fale 1",);
+                        Err(e) => {
+                            critical!("Gatherer::EjectDisk", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -478,8 +484,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let block = match object.block().block_on() {
                     Ok(block) => block,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 2",);
+                    Err(e) => {
+                        critical!("Gatherer::EjectDisk", "Failed to find block {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -487,8 +493,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let drive = match client.drive_for_block(&block).block_on() {
                     Ok(drive) => drive,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 3",);
+                    Err(e) => {
+                        critical!("Gatherer::EjectDisk", "Failed to find drive {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -498,7 +504,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Ok(e) => e,
                     Err(e) => {
                         critical!(
-                            "Gatherer::DiskInfo",
+                            "Gatherer::EjectDisk",
                             "Failed to read filesystem information for '{}': {}",
                             id,
                             e
@@ -519,13 +525,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     some_path = true;
 
+                    let filename = filename.to_str().unwrap();
+
                     let fsobject = match client.object(format!(
                         "/org/freedesktop/UDisks2/block_devices/{}",
-                        filename.to_str().unwrap()
+                        filename
                     )) {
                         Ok(object) => object,
-                        Err(_) => {
-                            critical!("Gatherer::Main", "fale 1",);
+                        Err(e) => {
+                            critical!("Gatherer::EjectDisk", "Failed to find drive block {}: {}", filename, e);
                             continue;
                         }
                     };
@@ -545,7 +553,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             Ok(_) => {}
                             Err(e) => {
                                 some_err = true;
-                                critical!("Gatherer::Main", "YIKES {}", e);
+                                critical!("Gatherer::EjectDisk", "Failed to unmount filesystem {}: {}", filename, e);
                                 let points = mountpoints
                                     .iter()
                                     .map(|c| {
@@ -578,7 +586,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     if let Ok(readdir) =
                                         std::fs::read_dir(format!("/proc/{pid}/fd"))
                                     {
-                                        for fd in readdir.filter_map(|fd| fd.ok()) {
+                                        for fd in readdir.filter_map(Result::ok) {
                                             let real_path = match fd.path().read_link() {
                                                 Ok(path) => path,
                                                 Err(_) => continue,
@@ -600,11 +608,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         }
                                     }
                                 }
-
-                                println!("{:?}", blocks);
-
-                                // ctx.reply(Ok((blocks,)));
-                                // return Some(ctx);
                             }
                         }
 
@@ -617,13 +620,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     } else {
                         debug!(
-                            "Gatherer::Main",
-                            "{:?} does not have any mountpoints", filename
+                            "Gatherer::EjectDisk",
+                            "{:?} does not have any mountpoints",
+                            filename
                         )
                     }
                 }
 
-                if killall || !some_path {
+                // for optic
+                if !some_path {
                     match object.filesystem().block_on() {
                         Ok(fs) => {
                             let mut options = HashMap::new();
@@ -633,7 +638,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 Ok(_) => {}
                                 Err(e) => {
                                     some_err = true;
-                                    critical!("Gatherer::Main", "YIKES {}", e);
+                                    critical!("Gatherer::EjectDisk", "Failed to eject solo partition: {}", e);
                                 }
                             }
                         }
@@ -649,7 +654,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match result {
                         Ok(_) => rezult.success = true,
                         Err(e) => {
-                            critical!("Gatherer::Main", "Failed ej {}", e)
+                            critical!("Gatherer::EjectDisk", "Failed to eject disk {}", e)
                         }
                     }
                 }
@@ -671,13 +676,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = SataSmartResult::default();
 
+                debug!(
+                    "Gatherer::SataSmartInfo",
+                    "Getting Smart for {}",
+                    id,
+                );
+
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
                     .read()
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::Main", "fale 0",);
+                    critical!("Gatherer::SataSmartInfo", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -685,8 +696,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
-                        Err(_) => {
-                            critical!("Gatherer::Main", "fale 1",);
+                        Err(e) => {
+                            critical!("Gatherer::SataSmartInfo", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -694,8 +705,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let block = match object.block().block_on() {
                     Ok(block) => block,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 2",);
+                    Err(e) => {
+                        critical!("Gatherer::SataSmartInfo", "Failed to find block {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -703,8 +714,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let drive_path = match block.drive().block_on() {
                     Ok(drive) => drive,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 3",);
+                    Err(e) => {
+                        critical!("Gatherer::SataSmartInfo", "Failed to find drive for {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -712,45 +723,50 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let drive_object = match client.object(drive_path) {
                     Ok(drive_object) => drive_object,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 3",);
+                    Err(e) => {
+                        critical!("Gatherer::SataSmartInfo", "Failed to find drive object {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
                 };
 
-                if let Ok(ata) = drive_object.drive_ata().block_on() {
-                    rezult.common_data.powered_on_seconds =
-                        ata.smart_power_on_seconds().block_on().unwrap();
-                    rezult.common_data.last_update_time = ata.smart_updated().block_on().unwrap();
-                    rezult.common_data.test_result =
-                        SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
+                match drive_object.drive_ata().block_on() {
+                    Ok(ata) => {
+                        rezult.common_data.powered_on_seconds =
+                            ata.smart_power_on_seconds().block_on().unwrap();
+                        rezult.common_data.last_update_time = ata.smart_updated().block_on().unwrap();
+                        rezult.common_data.test_result =
+                            SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
 
-                    let options = HashMap::new();
+                        let options = HashMap::new();
 
-                    let attributes = match ata.smart_get_attributes(options).block_on() {
-                        Ok(res) => res,
-                        Err(_) => {
-                            println!("No ATA!!!");
-                            ctx.reply(Ok((rezult,)));
-                            return Some(ctx);
+                        let attributes = match ata.smart_get_attributes(options).block_on() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                critical!("Gatherer::SataSmartInfo", "Failed to find ata interface {}: {}", id, e);
+                                ctx.reply(Ok((rezult,)));
+                                return Some(ctx);
+                            }
+                        };
+
+                        for entry in attributes {
+                            rezult.data.push(SataSmartEntry {
+                                id: entry.0,
+                                name: entry.1,
+                                flags: entry.2,
+                                value: entry.3,
+                                worst: entry.4,
+                                threshold: entry.5,
+                                pretty: entry.6,
+                                pretty_unit: entry.7,
+                            });
                         }
-                    };
 
-                    for entry in attributes {
-                        rezult.data.push(SataSmartEntry {
-                            id: entry.0,
-                            name: entry.1,
-                            flags: entry.2,
-                            value: entry.3,
-                            worst: entry.4,
-                            threshold: entry.5,
-                            pretty: entry.6,
-                            pretty_unit: entry.7,
-                        });
+                        rezult.common_data.success = true;
                     }
-                } else {
-                    println!("No ATA!");
+                    Err(e) => {
+                        critical!("Gatherer::SataSmartInfo", "Failed to find ata interface {}: {}", id, e);
+                    }
                 }
 
                 ctx.reply(Ok((rezult,)));
@@ -769,13 +785,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = NVMeSmartResult::default();
 
+                debug!(
+                    "Gatherer::NVMeSmartInfo",
+                    "Getting Smart for {}",
+                    id,
+                );
+
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
                     .read()
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::Main", "fale 0",);
+                    critical!("Gatherer::NVMeSmartInfo", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -783,8 +805,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let object =
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
-                        Err(_) => {
-                            critical!("Gatherer::Main", "fale 1",);
+                        Err(e) => {
+                            critical!("Gatherer::NVMeSmartInfo", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -792,8 +814,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let block = match object.block().block_on() {
                     Ok(block) => block,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 2",);
+                    Err(e) => {
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find block {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -801,8 +823,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let drive_path = match block.drive().block_on() {
                     Ok(drive) => drive,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 3",);
+                    Err(e) => {
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find drive for {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -810,98 +832,102 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let drive_object = match client.object(drive_path) {
                     Ok(drive_object) => drive_object,
-                    Err(_) => {
-                        critical!("Gatherer::Main", "fale 3",);
+                    Err(e) => {
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find drive {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
                 };
 
-                if let Ok(nvme) = drive_object.nvme_controller().block_on() {
-                    let options = HashMap::new();
+                match drive_object.nvme_controller().block_on() {
+                    Ok(nvme) => {
+                        let options = HashMap::new();
 
-                    let attributes = match nvme.smart_get_attributes(options).block_on() {
-                        Ok(res) => res,
-                        Err(_) => {
-                            println!("No ATA!!!");
-                            ctx.reply(Ok((rezult,)));
-                            return Some(ctx);
+                        let attributes = match nvme.smart_get_attributes(options).block_on() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                critical!("Gatherer::NVMeSmartInfo", "Failed to get attributes for {}: {}", id, e);
+
+                                ctx.reply(Ok((rezult,)));
+                                return Some(ctx);
+                            }
+                        };
+
+                        if let Some(num_err_log_entries) = attributes.get("num_err_log_entries") {
+                            rezult.num_err_log_entries =
+                                num_err_log_entries.try_into().unwrap_or_default();
                         }
-                    };
 
-                    if let Some(num_err_log_entries) = attributes.get("num_err_log_entries") {
-                        rezult.num_err_log_entries =
-                            num_err_log_entries.try_into().unwrap_or_default();
+                        if let Some(critical_temp_time) = attributes.get("critical_temp_time") {
+                            rezult.critical_temp_time =
+                                critical_temp_time.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(wctemp) = attributes.get("wctemp") {
+                            rezult.wctemp = wctemp.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(ctrl_busy_time) = attributes.get("ctrl_busy_time") {
+                            rezult.ctrl_busy_minutes = ctrl_busy_time.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(media_errors) = attributes.get("media_errors") {
+                            rezult.media_errors = media_errors.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(warning_temp_time) = attributes.get("warning_temp_time") {
+                            rezult.warning_temp_time = warning_temp_time.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(avail_spare) = attributes.get("avail_spare") {
+                            rezult.avail_spare = avail_spare.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(power_cycles) = attributes.get("power_cycles") {
+                            rezult.power_cycles = power_cycles.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(cctemp) = attributes.get("cctemp") {
+                            rezult.cctemp = cctemp.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(unsafe_shutdowns) = attributes.get("unsafe_shutdowns") {
+                            rezult.unsafe_shutdowns = unsafe_shutdowns.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(spare_thresh) = attributes.get("spare_thresh") {
+                            rezult.spare_thresh = spare_thresh.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(total_data_written) = attributes.get("total_data_written") {
+                            rezult.total_data_written =
+                                total_data_written.try_into().unwrap_or_default();
+                        }
+
+                        // if let Some(temp_sensors) = attributes.get("temp_sensors") {
+                        //     rezult.temp_sensors = temp_sensors.try_into().unwrap_or_default();
+                        // }
+
+                        if let Some(total_data_read) = attributes.get("total_data_read") {
+                            rezult.total_data_read = total_data_read.try_into().unwrap_or_default();
+                        }
+
+                        if let Some(percent_used) = attributes.get("percent_used") {
+                            rezult.percent_used = percent_used.try_into().unwrap_or_default();
+                        }
+
+                        rezult.common_smart_result.success = true;
+
+                        rezult.common_smart_result.powered_on_seconds =
+                            nvme.smart_power_on_hours().block_on().unwrap() * 3600;
+                        rezult.common_smart_result.test_result =
+                            SmartTestResult::from(nvme.smart_selftest_status().block_on().unwrap());
+                        rezult.common_smart_result.last_update_time =
+                            nvme.smart_updated().block_on().unwrap();
                     }
-
-                    if let Some(critical_temp_time) = attributes.get("critical_temp_time") {
-                        rezult.critical_temp_time =
-                            critical_temp_time.try_into().unwrap_or_default();
+                    Err(e) => {
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to get nvme interface for {}: {}", id, e);
                     }
-
-                    if let Some(wctemp) = attributes.get("wctemp") {
-                        rezult.wctemp = wctemp.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(ctrl_busy_time) = attributes.get("ctrl_busy_time") {
-                        rezult.ctrl_busy_minutes = ctrl_busy_time.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(media_errors) = attributes.get("media_errors") {
-                        rezult.media_errors = media_errors.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(warning_temp_time) = attributes.get("warning_temp_time") {
-                        rezult.warning_temp_time = warning_temp_time.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(avail_spare) = attributes.get("avail_spare") {
-                        rezult.avail_spare = avail_spare.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(power_cycles) = attributes.get("power_cycles") {
-                        rezult.power_cycles = power_cycles.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(cctemp) = attributes.get("cctemp") {
-                        rezult.cctemp = cctemp.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(unsafe_shutdowns) = attributes.get("unsafe_shutdowns") {
-                        rezult.unsafe_shutdowns = unsafe_shutdowns.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(spare_thresh) = attributes.get("spare_thresh") {
-                        rezult.spare_thresh = spare_thresh.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(total_data_written) = attributes.get("total_data_written") {
-                        rezult.total_data_written =
-                            total_data_written.try_into().unwrap_or_default();
-                    }
-
-                    // if let Some(temp_sensors) = attributes.get("temp_sensors") {
-                    //     rezult.temp_sensors = temp_sensors.try_into().unwrap_or_default();
-                    // }
-
-                    if let Some(total_data_read) = attributes.get("total_data_read") {
-                        rezult.total_data_read = total_data_read.try_into().unwrap_or_default();
-                    }
-
-                    if let Some(percent_used) = attributes.get("percent_used") {
-                        rezult.percent_used = percent_used.try_into().unwrap_or_default();
-                    }
-
-                    rezult.common_smart_result.success = true;
-
-                    rezult.common_smart_result.powered_on_seconds =
-                        nvme.smart_power_on_hours().block_on().unwrap() * 3600;
-                    rezult.common_smart_result.test_result =
-                        SmartTestResult::from(nvme.smart_selftest_status().block_on().unwrap());
-                    rezult.common_smart_result.last_update_time =
-                        nvme.smart_updated().block_on().unwrap();
-                } else {
-                    println!("No NVME!");
                 }
 
                 ctx.reply(Ok((rezult,)));
