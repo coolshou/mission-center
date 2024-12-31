@@ -18,32 +18,21 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, num::NonZeroU32};
+use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
+use gtk::glib::{self, ParamSpec, Properties, Value};
 
-use crate::{app, i18n::*};
+use crate::i18n::*;
 
 mod imp {
     use super::*;
     use crate::performance_page::disk::PerformancePageDisk;
-    use crate::performance_page::eject_failure_row::{
-        ContentType, EjectFailureRow, EjectFailureRowBuilder,
-    };
     use crate::performance_page::sata_smart_dialog_row::{SmartDialogRow, SmartDialogRowBuilder};
-    use crate::performance_page::DiskPage;
     use crate::sys_info_v2::{
-        App, CommonSmartResult, EjectResult, NVMeSmartResult, Process, SataSmartResult,
+        CommonSmartResult, NVMeSmartResult, SataSmartResult,
     };
-    use crate::{glib_clone, i18n};
-    use adw::gio::ListStore;
-    use adw::glib::WeakRef;
-    use adw::ResponseAppearance;
     use gtk::gio;
-    use std::cell::OnceCell;
-    use std::collections::HashMap;
-    use std::sync::Arc;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     #[derive(Default, Properties)]
@@ -498,12 +487,4 @@ glib::wrapper! {
     pub struct SmartDataDialog(ObjectSubclass<imp::SmartDataDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-fn to_signal_id(id: u64) -> SignalHandlerId {
-    unsafe { std::mem::transmute(id) }
-}
-
-fn from_signal_id(id: SignalHandlerId) -> u64 {
-    unsafe { id.as_raw() }
 }

@@ -18,27 +18,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, num::NonZeroU32};
+use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
 
-use crate::{app, i18n::*};
+use crate::app;
 
 mod imp {
     use super::*;
     use crate::performance_page::disk::PerformancePageDisk;
-    use crate::performance_page::eject_failure_row::{
-        ContentType, EjectFailureRow, EjectFailureRowBuilder,
-    };
-    use crate::performance_page::DiskPage;
-    use crate::sys_info_v2::{App, EjectResult, Process};
-    use crate::{glib_clone, i18n};
-    use adw::gio::ListStore;
-    use adw::glib::WeakRef;
+    use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
+    use crate::sys_info_v2::EjectResult;
+    use crate::i18n;
     use adw::ResponseAppearance;
-    use std::cell::OnceCell;
-    use std::collections::HashMap;
     use std::sync::Arc;
 
     #[derive(Properties)]

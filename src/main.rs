@@ -135,11 +135,11 @@ pub fn seconds_to_string(time: u64) -> String {
 
 // tysm gdu
 pub fn to_human_readable_time(seconds: u64) -> String {
-    let USEC_PER_YEAR = 60 * 60 * 6 * 1461; // ((60 * 60 * 24) as f32 * 365.25);
-    let USEC_PER_MONTH = 60 * 30 * 1461; // ((60 * 60 * 24) as f32 * 365.25 / 12.0);
-    let USEC_PER_DAY = 60 * 60 * 24;
-    let USEC_PER_HOUR = 60 * 60;
-    let USEC_PER_MINUTE = 60;
+    const USEC_PER_YEAR: u64 = 60 * 60 * 6 * 1461; // ((60 * 60 * 24) as f32 * 365.25);
+    const USEC_PER_MONTH: u64 = 60 * 30 * 1461; // ((60 * 60 * 24) as f32 * 365.25 / 12.0);
+    const USEC_PER_DAY: u64 = 60 * 60 * 24;
+    const USEC_PER_HOUR: u64 = 60 * 60;
+    const USEC_PER_MINUTE: u64 = 60;
 
     let mut t = seconds;
     let years = t / USEC_PER_YEAR;
@@ -158,7 +158,6 @@ pub fn to_human_readable_time(seconds: u64) -> String {
     t -= minutes * USEC_PER_MINUTE;
 
     let seconds = t;
-    t -= seconds;
 
     let string3 = years_to_string(years);
     let years_str = string3.as_str();
