@@ -2,18 +2,9 @@ using Gtk 4.0;
 using Adw 1;
 
 template $EjectFailureDialog: Adw.AlertDialog {
+  heading: _("Failed To Eject");
+
   Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {
-      title-widget: Label {
-        styles [
-          "heading"
-        ]
-
-        label: _("Eject Disk Failed");
-      };
-    }
-
     Box {
       ScrolledWindow {
         hscrollbar-policy: never;
