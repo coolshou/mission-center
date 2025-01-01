@@ -137,6 +137,7 @@ mod imp {
         }
 
         fn set_details_dialog(&self, widget: Option<&DetailsDialog>) {
+            println!("SET REGULAR DIALOG");
             if let Some(widget) = widget {
                 widget.connect_closed({
                     let this = self.obj().downgrade();

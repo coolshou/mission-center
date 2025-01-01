@@ -45,6 +45,20 @@ impl Default for DiskType {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskSmartInterface {
+    Dumb = 0,
+    Ata,
+    NVMe,
+}
+
+impl Default for DiskSmartInterface {
+    fn default() -> Self {
+        Self::Dumb
+    }
+}
+
 /// Describes the static (unchanging) information about a physical disk
 pub trait DiskInfoExt: Default + Append + Arg {
     /// The disk's unique identifier
@@ -55,6 +69,8 @@ pub trait DiskInfoExt: Default + Append + Arg {
 
     /// The disk's type
     fn r#type(&self) -> DiskType;
+
+    fn smart_interface(&self) -> DiskSmartInterface;
 
     /// The disk's capacity in bytes
     fn capacity(&self) -> u64;
@@ -82,32 +98,40 @@ pub trait DiskInfoExt: Default + Append + Arg {
 
     /// The number of bytes written to this disk
     fn total_write(&self) -> u64;
+
+    /// The disk's write speed in bytes per second
+    fn ejectable(&self) -> bool;
+
+    fn drive_temperature(&self) -> f64;
 }
 
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyttbddtttt)")
+        Signature::from("(ssyyttbddttttbd)")
     }
 }
 
 impl Append for crate::platform::DiskInfo {
     fn append_by_ref(&self, ia: &mut IterAppend) {
-        ia.append((
-            self.id(),
-            self.model(),
-            self.r#type() as u8,
-            self.capacity(),
-            self.formatted(),
-            self.is_system_disk(),
-            self.busy_percent() as f64,
-            self.response_time_ms() as f64,
-            self.read_speed(),
-            self.total_read(),
-            self.write_speed(),
-            self.total_write(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.model());
+            ia.append(self.r#type() as u8);
+            ia.append(self.smart_interface() as u8);
+            ia.append(self.capacity());
+            ia.append(self.formatted());
+            ia.append(self.is_system_disk());
+            ia.append(self.busy_percent() as f64);
+            ia.append(self.response_time_ms() as f64);
+            ia.append(self.read_speed());
+            ia.append(self.total_read());
+            ia.append(self.write_speed());
+            ia.append(self.total_write());
+            ia.append(self.ejectable());
+            ia.append(self.drive_temperature());
+        });
     }
 }
 

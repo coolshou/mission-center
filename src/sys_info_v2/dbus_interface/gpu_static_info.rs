@@ -23,6 +23,8 @@ use std::sync::Arc;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
+use super::{deser_str, deser_struct, deser_u16, deser_u64, deser_u8};
+
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum OpenGLApi {
@@ -165,318 +167,141 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         };
                         let static_info = static_info.as_mut();
 
-                        info.id = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '0: s', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(id) => Arc::<str>::from(id),
-                            },
+                        info.id = match deser_str(static_info, "GpuStaticInfo", 0) {
+                            Some(id) => id,
+                            None => return None,
                         };
 
-                        info.device_name = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '1: s', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '1: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(id) => Arc::<str>::from(id),
-                            },
+                        info.device_name = match deser_str(static_info, "GpuStaticInfo", 1) {
+                            Some(name) => name,
+                            None => return None,
                         };
 
-                        info.vendor_id = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '2: q', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '2: q', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(vendor_id) => vendor_id as _,
-                            },
+                        info.vendor_id = match deser_u16(static_info, "GpuStaticInfo", 2) {
+                            Some(vendor_id) => vendor_id,
+                            None => return None,
                         };
 
-                        info.device_id = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '3: q', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '3: q', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(device_id) => device_id as _,
-                            },
+                        info.device_id = match deser_u16(static_info, "GpuStaticInfo", 3) {
+                            Some(device_id) => device_id,
+                            None => return None,
                         };
 
-                        info.total_memory = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '4: t', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '4: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(total_memory) => total_memory,
-                            },
+                        info.total_memory = match deser_u64(static_info, "GpuStaticInfo", 4) {
+                            Some(total_memory) => total_memory,
+                            None => return None,
                         };
 
-                        info.total_gtt = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '5: t', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '5: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(um) => um as _,
-                            },
+                        info.total_gtt = match deser_u64(static_info, "GpuStaticInfo", 5) {
+                            Some(total_gtt) => total_gtt,
+                            None => return None,
                         };
-                        info.opengl_version = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '6: STRUCT', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_iter() {
-                                None => {
+
+                        info.opengl_version = match deser_struct(static_info, "GpuStaticInfo", 6) {
+                            Some(mut it) => {
+                                let it = it.as_mut();
+                                let major = if let Some(major) = it.next() {
+                                    major.as_u64().unwrap_or(0)
+                                } else {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '6: STRUCT', got {:?}",
-                                        arg.arg_type(),
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
                                     );
-                                    return None;
-                                }
-                                Some(mut it) => {
-                                    let major = if let Some(major) = Iterator::next(it.as_mut()) {
-                                        major.as_u64().unwrap_or(0)
-                                    } else {
-                                        g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-0: y', got None",
-                                        );
 
-                                        0
-                                    };
+                                    0
+                                };
 
-                                    let minor = if let Some(minor) = Iterator::next(it.as_mut()) {
-                                        minor.as_u64().unwrap_or(0)
-                                    } else {
-                                        g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
-                                        );
+                                let minor = if let Some(minor) = it.next() {
+                                    minor.as_u64().unwrap_or(0)
+                                } else {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-1: y', got None",
+                                    );
 
-                                        0
-                                    };
+                                    0
+                                };
 
-                                    let gl_api = if let Some(minor) = Iterator::next(it.as_mut()) {
-                                        match minor.as_u64().unwrap_or(OpenGLApi::Invalid as u64) {
-                                            0 => OpenGLApi::OpenGL,
-                                            1 => OpenGLApi::OpenGLES,
-                                            _ => OpenGLApi::Invalid,
-                                        }
-                                    } else {
-                                        g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
-                                        );
-
-                                        OpenGLApi::Invalid
-                                    };
-
-                                    if major == 0 || minor == 0 || gl_api == OpenGLApi::Invalid {
-                                        None
-                                    } else {
-                                        Some(OpenGLApiVersion {
-                                            major: major as u8,
-                                            minor: minor as u8,
-                                            api: gl_api,
-                                        })
+                                let gl_api = if let Some(minor) = it.next() {
+                                    match minor.as_u64().unwrap_or(OpenGLApi::Invalid as u64) {
+                                        0 => OpenGLApi::OpenGL,
+                                        1 => OpenGLApi::OpenGLES,
+                                        _ => OpenGLApi::Invalid,
                                     }
+                                } else {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo(OpenGLVersion): Expected '6-2: y', got None",
+                                    );
+
+                                    OpenGLApi::Invalid
+                                };
+
+                                if major == 0 || minor == 0 || gl_api == OpenGLApi::Invalid {
+                                    None
+                                } else {
+                                    Some(OpenGLApiVersion {
+                                        major: major as u8,
+                                        minor: minor as u8,
+                                        api: gl_api,
+                                    })
                                 }
-                            },
+                            }
+                            None => return None,
                         };
 
                         let mut api_versions = [None; 3];
                         for i in 0..3 {
-                            api_versions[i] = match Iterator::next(static_info) {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '{}: STRUCT', got None",
-                                        i + 7,
-                                    );
-                                    return None;
-                                }
-                                Some(id) => match id.as_iter() {
-                                    None => {
-                                        g_critical!(
-                                            "MissionCenter::GathererDBusProxy",
-                                            "Failed to get GpuStaticInfo: Expected '{}: STRUCT', got {:?}",
-                                            i + 7,
-                                            id.arg_type(),
-                                        );
-                                        return None;
-                                    }
+                            api_versions[i] =
+                                match deser_struct(static_info, "GpuStaticInfo", i + 7) {
                                     Some(mut it) => {
-                                        let major = if let Some(major) = Iterator::next(it.as_mut())
-                                        {
-                                            major.as_u64().unwrap_or(0)
-                                        } else {
-                                            g_critical!(
-                                                "MissionCenter::GathererDBusProxy",
-                                                "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-0: y', got None",
-                                                i + 7
-                                            );
+                                        let major = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 9,
+                                        )
+                                        .unwrap_or(0);
 
-                                            0
-                                        };
+                                        let minor = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 10,
+                                        )
+                                        .unwrap_or(0);
 
-                                        let minor = if let Some(minor) = Iterator::next(it.as_mut())
-                                        {
-                                            minor.as_u64().unwrap_or(0)
-                                        } else {
-                                            g_critical!(
-                                                "MissionCenter::GathererDBusProxy",
-                                                "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-1: y', got None",
-                                                i + 7
-                                            );
-
-                                            0
-                                        };
-
-                                        let patch = if let Some(patch) = Iterator::next(it.as_mut())
-                                        {
-                                            patch.as_u64().unwrap_or(0)
-                                        } else {
-                                            g_critical!(
-                                                "MissionCenter::GathererDBusProxy",
-                                                "Failed to get GpuStaticInfo(ApiVersion): Expected '{}-1: y', got None",
-                                                i + 7
-                                            );
-
-                                            0
-                                        };
+                                        let patch = deser_u16(
+                                            it.as_mut(),
+                                            "GpuStaticInfo(ApiVersion)",
+                                            i + 11,
+                                        )
+                                        .unwrap_or(0);
 
                                         if major == 0 {
                                             None
                                         } else {
                                             Some(ApiVersion {
-                                                major: major as u16,
-                                                minor: minor as u16,
-                                                patch: patch as u16,
+                                                major,
+                                                minor,
+                                                patch,
                                             })
                                         }
                                     }
-                                },
-                            }
+                                    None => return None,
+                                };
                         }
 
                         info.vulkan_version = api_versions[0];
                         info.metal_version = api_versions[1];
                         info.direct3d_version = api_versions[2];
 
-                        info.pcie_gen = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '10: y', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '10: y', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pcie_gen) => pcie_gen as u8,
-                            },
+                        info.pcie_gen = match deser_u8(static_info, "GpuStaticInfo", 10) {
+                            Some(pcie_gen) => pcie_gen,
+                            None => return None,
                         };
 
-                        info.pcie_lanes = match Iterator::next(static_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuStaticInfo: Expected '11: y', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuStaticInfo: Expected '11: y', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pcie_lanes) => pcie_lanes as u8,
-                            },
+                        info.pcie_lanes = match deser_u8(static_info, "GpuStaticInfo", 11) {
+                            Some(pcie_lanes) => pcie_lanes,
+                            None => return None,
                         };
 
                         result.push(info);

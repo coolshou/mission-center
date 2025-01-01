@@ -1,0 +1,32 @@
+using Gtk 4.0;
+//using Adw 1;
+
+ListBoxRow root {
+  Box {
+    Image icon {
+    }
+
+    Label pid {
+      width-request: 50;
+      xalign: 0.0;
+    }
+
+    Label name {
+      width-request: 100;
+      halign: start;
+    }
+
+    Label open_files {
+      hexpand: true;
+      halign: start;
+    }
+
+    Button kill {
+      child: Box {
+        Label {
+          label: _("Kill");
+        }
+      };
+    }
+  }
+}

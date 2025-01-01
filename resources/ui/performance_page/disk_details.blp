@@ -337,5 +337,39 @@ Box root {
         row: '8';
       }
     }
+
+    Button eject {
+      layout {
+        column: '1';
+        row: '4';
+      }
+
+      child: Box {
+        spacing: 5;
+
+        halign: center;
+
+        Label eject_label {
+          label: _("Eject");
+        }
+      };
+    }
+
+    Button smart {
+      layout {
+        column: '1';
+        row: '5';
+      }
+
+      child: Box {
+        spacing: 5;
+
+        halign: center;
+
+        Label smart_label {
+          label: _("Smart");
+        }
+      };
+    }
   }
 }

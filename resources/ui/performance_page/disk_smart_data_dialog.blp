@@ -1,0 +1,495 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SmartDataDialog: Adw.Dialog {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      title-widget: Label {
+        styles [
+          "heading"
+        ]
+
+        label: _("Smart Dater");
+      };
+    }
+
+    Box {
+      margin-start: 15;
+      margin-end: 15;
+      margin-top: 15;
+      margin-bottom: 15;
+      spacing: 15;
+
+      orientation: vertical;
+
+      Grid common_data {
+        Label {
+          label: _("Last Updated");
+          halign: end;
+          margin-start: 15;
+          margin-end: 15;
+          margin-top: 5;
+          margin-bottom: 5;
+
+          layout {
+            column: '0';
+            row: '0';
+          }
+        }
+
+        Label last_updated {
+          hexpand: true;
+          halign: start;
+
+          layout {
+            column: '1';
+            row: '0';
+          }
+        }
+
+        Label {
+          label: _("Powered On");
+          halign: end;
+          margin-start: 15;
+          margin-end: 15;
+          margin-top: 5;
+          margin-bottom: 5;
+
+          layout {
+            column: '0';
+            row: '1';
+          }
+        }
+
+        Label powered_on {
+          hexpand: true;
+          halign: start;
+
+          layout {
+            column: '1';
+            row: '1';
+          }
+        }
+
+        Label {
+          label: _("Drive Health");
+          halign: end;
+          margin-start: 15;
+          margin-end: 15;
+          margin-top: 5;
+          margin-bottom: 5;
+
+          layout {
+            column: '2';
+            row: '0';
+          }
+        }
+
+        Label health {
+          hexpand: true;
+          halign: start;
+
+          layout {
+            column: '3';
+            row: '0';
+          }
+        }
+
+        Label {
+          label: _("SMART Test Status");
+          halign: end;
+          margin-start: 15;
+          margin-end: 15;
+          margin-top: 5;
+          margin-bottom: 5;
+
+          layout {
+            column: '2';
+            row: '1';
+          }
+        }
+
+        Label status {
+          hexpand: true;
+          halign: start;
+
+          layout {
+            column: '3';
+            row: '1';
+          }
+        }
+      }
+
+      ScrolledWindow nvme_data {
+        hscrollbar-policy: never;
+        propagate-natural-height: true;
+
+        Grid {
+          Label {
+            halign: start;
+
+            label: _("Available Spare");
+
+            layout {
+              column: '0';
+              row: '0';
+            }
+          }
+
+          Label avail_spare {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '0';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Spare Threshold");
+
+            layout {
+              column: '0';
+              row: '1';
+            }
+          }
+
+          Label spare_thresh {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '1';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Percent Used");
+
+            layout {
+              column: '0';
+              row: '2';
+            }
+          }
+
+          Label percent_used {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '2';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Total Data Read");
+
+            layout {
+              column: '0';
+              row: '3';
+            }
+          }
+
+          Label data_read {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '3';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Total Data Written");
+
+            layout {
+              column: '0';
+              row: '4';
+            }
+          }
+
+          Label data_written {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '4';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Control Busy Time");
+
+            layout {
+              column: '0';
+              row: '5';
+            }
+          }
+
+          Label ctrl_busy_minutes {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '5';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Power Cycles");
+
+            layout {
+              column: '0';
+              row: '6';
+            }
+          }
+
+          Label power_cycles {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '6';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Unsafe Shutdowns");
+
+            layout {
+              column: '0';
+              row: '7';
+            }
+          }
+
+          Label unsafe_shutdowns {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '7';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Media Errors");
+
+            layout {
+              column: '0';
+              row: '8';
+            }
+          }
+
+          Label media_errors {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '8';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Number Error Log Entries");
+
+            layout {
+              column: '0';
+              row: '9';
+            }
+          }
+
+          Label num_err_log_entries {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '9';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Temps");
+
+            layout {
+              column: '0';
+              row: '10';
+            }
+          }
+
+          Label temp_sensors {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '10';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("WC Temp");
+
+            layout {
+              column: '0';
+              row: '11';
+            }
+          }
+
+          Label wctemp {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '11';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("CC Temp");
+
+            layout {
+              column: '0';
+              row: '12';
+            }
+          }
+
+          Label cctemp {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '12';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Warning Temp Time");
+
+            layout {
+              column: '0';
+              row: '13';
+            }
+          }
+
+          Label warning_temp_time {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '13';
+            }
+          }
+
+          Label {
+            halign: start;
+
+            label: _("Critical Temp Time");
+
+            layout {
+              column: '0';
+              row: '14';
+            }
+          }
+
+          Label critical_temp_time {
+            halign: start;
+
+            layout {
+              column: '1';
+              row: '14';
+            }
+          }
+        }
+      }
+
+      ScrolledWindow sata_data {
+        hscrollbar-policy: never;
+        propagate-natural-height: true;
+
+        ColumnView column_view {
+
+
+          ColumnViewColumn id_column {
+            title: _("ID");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn attribute_column {
+            title: _("Attribute");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn value_column {
+            title: _("Value");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn normalized_column {
+            title: _("Normalized");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn threshold_column {
+            title: _("Threshold");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn worst_column {
+            title: _("Worst");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn type_column {
+            title: _("Type");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn updates_column {
+            title: _("Updates");
+
+            factory: SignalListItemFactory {};
+          }
+
+          ColumnViewColumn assessment_column {
+            title: _("Assessment");
+
+            factory: SignalListItemFactory {};
+          }
+        }
+      }
+    }
+  }
+}

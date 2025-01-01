@@ -21,27 +21,21 @@
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::logging::{critical, warning};
 use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
+use crate::platform::DiskSmartInterface;
 use glob::glob;
-use serde::Deserialize;
+use pollster::FutureExt;
+use std::cmp::max;
+use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
-
-#[derive(Debug, Default, Deserialize)]
-struct LSBLKBlockDevice {
-    name: String,
-    mountpoints: Vec<Option<String>>,
-    children: Option<Vec<Option<LSBLKBlockDevice>>>,
-}
-
-#[derive(Debug, Deserialize)]
-struct LSBLKOutput {
-    blockdevices: Vec<Option<LSBLKBlockDevice>>,
-}
+use udisks2::drive::RotationRate::{NonRotating, Unknown};
+use udisks2::Client;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
     pub id: Arc<str>,
     pub model: Arc<str>,
     pub r#type: DiskType,
+    pub smart_interface: DiskSmartInterface,
     pub capacity: u64,
     pub formatted: u64,
     pub system_disk: bool,
@@ -52,6 +46,8 @@ pub struct LinuxDiskInfo {
     pub total_read: u64,
     pub write_speed: u64,
     pub total_write: u64,
+    pub ejectable: bool,
+    pub drive_temperature_k: f64,
 }
 
 impl Default for LinuxDiskInfo {
@@ -60,6 +56,7 @@ impl Default for LinuxDiskInfo {
             id: Arc::from(""),
             model: Arc::from(""),
             r#type: DiskType::default(),
+            smart_interface: Default::default(),
             capacity: 0,
             formatted: 0,
             system_disk: false,
@@ -70,6 +67,9 @@ impl Default for LinuxDiskInfo {
             total_read: 0,
             write_speed: 0,
             total_write: 0,
+            ejectable: false,
+
+            drive_temperature_k: 0.0,
         }
     }
 }
@@ -108,6 +108,10 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.r#type
     }
 
+    fn smart_interface(&self) -> DiskSmartInterface {
+        self.smart_interface
+    }
+
     fn capacity(&self) -> u64 {
         self.capacity
     }
@@ -143,6 +147,14 @@ impl DiskInfoExt for LinuxDiskInfo {
     fn total_write(&self) -> u64 {
         self.total_write
     }
+
+    fn ejectable(&self) -> bool {
+        self.ejectable
+    }
+
+    fn drive_temperature(&self) -> f64 {
+        self.drive_temperature_k
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -165,6 +177,7 @@ pub struct DiskStats {
 }
 
 pub struct LinuxDisksInfo {
+    pub client: Result<Client, udisks2::Error>,
     info: Vec<(DiskStats, LinuxDiskInfo)>,
 
     refresh_timestamp: Instant,
@@ -185,63 +198,135 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
         let mut prev_disks = std::mem::take(&mut self.info);
 
-        let entries = match std::fs::read_dir("/sys/block") {
-            Ok(e) => e,
+        let client = match &self.client {
+            Ok(client) => client,
             Err(e) => {
                 critical!(
                     "Gatherer::DiskInfo",
-                    "Failed to refresh disk information, failed to read disk entries: {}",
+                    "Could not get udisks dbus client: {}",
                     e
                 );
                 return;
             }
         };
-        for entry in entries {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    warning!("Gatherer::DiskInfo", "Failed to read disk entry: {}", e);
-                    continue;
-                }
-            };
-            let file_type = match entry.file_type() {
-                Ok(ft) => ft,
-                Err(e) => {
-                    warning!(
-                        "Gatherer::DiskInfo",
-                        "Failed to read disk entry file type: {}",
-                        e
-                    );
-                    continue;
-                }
-            };
 
-            let dir_name = if file_type.is_symlink() {
-                let path = match entry.path().read_link() {
-                    Err(e) => {
-                        warning!(
-                            "Gatherer::DiskInfo",
-                            "Failed to read disk entry symlink: {}",
-                            e
-                        );
+        let objects = match client.object_manager().get_managed_objects().block_on() {
+            Ok(objects) => objects,
+            Err(e) => {
+                critical!(
+                    "Gatherer::DiskInfo",
+                    "Could not get udisks dbus client: {}",
+                    e
+                );
+                return;
+            }
+        };
+
+        let mut block_list = vec![];
+        let mut drive_block_map = HashMap::new();
+        let mut drive_path_map = HashMap::new();
+
+        for (object_path, _) in objects {
+            let mut object = match client.object(object_path.clone()) {
+                Ok(o) => o,
+                Err(_) => continue,
+            };
+            if let Ok(drive) = object.drive().block_on() {
+                drive_block_map.insert(object_path, (drive, object, vec![]));
+            } else {
+                let partition = object.partition().block_on();
+
+                let drive = if let Ok(block) = object.block().block_on() {
+                    let Ok(drive_path) = block.drive().block_on() else {
+                        continue;
+                    };
+                    drive_path_map.insert(
+                        drive_path.clone(),
+                        String::from_utf8(block.device().block_on().unwrap()).unwrap(),
+                    );
+                    let drive = drive_path.to_string();
+                    if drive == "/" {
                         continue;
                     }
-                    Ok(p) => {
-                        let path = std::path::Path::new("/sys/block").join(p);
-                        if !path.is_dir() {
-                            continue;
-                        }
-                        path
-                    }
+                    drive_path
+                } else {
+                    continue;
                 };
 
-                match path.file_name() {
-                    None => continue,
-                    Some(dir_name) => dir_name.to_string_lossy().into_owned(),
+                if let Ok(encrypted) = object.encrypted().block_on() {
+                    let Ok(new_object_path) = encrypted.cleartext_device().block_on() else {
+                        // todo how tf did i get here?
+                        continue;
+                    };
+
+                    object = match client.object(new_object_path.clone()) {
+                        Ok(o) => o,
+                        Err(_) => {
+                            continue;
+                        }
+                    };
                 }
-            } else if file_type.is_dir() {
-                entry.file_name().to_string_lossy().into_owned()
-            } else {
+
+                if let Ok(block) = object.block().block_on() {
+                    let fs = object.filesystem().block_on();
+
+                    block_list.push((block, partition, fs, drive));
+                }
+            }
+        }
+
+        for (block, partition, filesystem, parent) in block_list {
+            if let Some((_, _, ref mut block_list)) = drive_block_map.get_mut(&parent) {
+                block_list.push((block, partition, filesystem));
+            }
+        }
+
+        for (object_path, (drive, object, blocks)) in drive_block_map.iter() {
+            let drive_ata = object.drive_ata().block_on();
+
+            let dirs = std::fs::read_dir("/sys/block").unwrap();
+
+            // leaving this here just in case...
+/*            let Ok(raw_dir_name) = block
+                .device()
+                .block_on()
+                .map(|it| String::from_utf8(it).unwrap())
+            else {
+                continue;
+            };*/
+
+            let Some(raw_dir_name) = drive_path_map.get(object_path) else {
+                // should never happen
+                critical!(
+                    "Gatherer::DiskInfo",
+                    "Could not find drive entry: {}",
+                    object_path
+                );
+                continue;
+            };
+
+            let Some(raw_dir_name) = std::path::Path::new(raw_dir_name)
+                .file_name()
+                .map(|it| it.to_str().unwrap().trim_matches(char::from(0)))
+            else {
+                continue;
+            };
+
+            let mut dir_name = None;
+
+            for dir in dirs.filter_map(Result::ok) {
+                if raw_dir_name.starts_with(dir.file_name().to_str().unwrap()) {
+                    dir_name = Some(dir.file_name().into_string().unwrap());
+                    break;
+                }
+            }
+
+            let Some(dir_name) = dir_name else {
+                critical!(
+                    "MissionCenter::DiskInfo",
+                    "Failed to find device name for: {:?}",
+                    raw_dir_name
+                );
                 continue;
             };
 
@@ -316,6 +401,47 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     }
                     _ => (),
                 }
+            }
+
+            let temp_inputs = glob(
+                format!(
+                    "/sys/block/{}/device/hwmon[0-9]*/temp[0-9]*_input",
+                    dir_name
+                )
+                .as_str(),
+            )
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|f| std::fs::read_to_string(f).ok())
+            .filter_map(|v| v.trim().parse::<f64>().ok())
+            .map(|i| i / 1000.0 + 273.15)
+            .collect::<Vec<_>>();
+
+            let drive_temperature_k = if !temp_inputs.is_empty() {
+                temp_inputs[0]
+            } else {
+                match &drive_ata {
+                    Ok(drive_ata) => drive_ata.smart_temperature().block_on().unwrap_or(0.0),
+                    Err(_) => 0.0,
+                }
+            };
+
+            // we check out here in case of media removal or similar
+            // todo should we handle empty drives in the UI?
+            let capacity = if let Some((root_block, _, _)) =
+                blocks.iter().find(|(_, partition, _)| partition.is_err())
+            {
+                root_block.size().block_on().unwrap_or(0)
+            } else {
+                blocks
+                    .iter()
+                    .filter_map(|(it, _, _)| it.size().block_on().ok())
+                    .sum()
+            };
+
+            if capacity == 0 {
+                _ = prev_disk_index.map(|i| prev_disks.remove(i));
+                continue;
             }
 
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
@@ -451,24 +577,65 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 info.write_speed = write_speed;
                 info.total_write = sectors_written * 512;
 
+                info.drive_temperature_k = drive_temperature_k;
+
                 self.info.push((disk_stat, info));
             } else {
-                if dir_name.starts_with("loop")
-                    || dir_name.starts_with("ram")
-                    || dir_name.starts_with("zram")
-                    || dir_name.starts_with("fd")
-                    || dir_name.starts_with("md")
-                    || dir_name.starts_with("dm")
-                    || dir_name.starts_with("zd")
-                {
-                    continue;
+                let mut formatted = 0;
+                let mut has_root = false;
+
+                for (b, p, f) in blocks {
+                    let mut thissize = max(
+                        p.clone()
+                            .map(|it| it.size().block_on().unwrap_or_default())
+                            .unwrap_or_default(),
+                        f.clone()
+                            .map(|it| it.size().block_on().unwrap_or_default())
+                            .unwrap_or_default(),
+                    );
+
+                    // if this is not a root partition (like nvme0n1, sometimes the partition or filesystem report wrong)
+                    if p.is_ok() || f.is_ok() {
+                        thissize = max(thissize, b.size().block_on().unwrap_or_default());
+                    }
+
+                    formatted += thissize;
+
+                    if let Ok(f) = f {
+                        if let Ok(mountpoints) = f.mount_points().block_on() {
+                            let mountpoints = mountpoints
+                                .iter()
+                                .map(|p| String::from_utf8(p.clone()).unwrap_or("".to_string()));
+
+                            has_root |= mountpoints
+                                .map(|it| it.trim_matches(char::from(0)) == "/")
+                                .reduce(|out, curr| out || curr)
+                                .unwrap_or(false);
+                        } else {
+                            critical!(
+                                "Gatherer::DiskInfo",
+                                "Failed to read partitions for: {}",
+                                dir_name
+                            );
+                        }
+                    }
                 }
 
-                let r#type = if let Ok(v) =
-                    std::fs::read_to_string(format!("/sys/block/{}/queue/rotational", dir_name))
-                {
-                    let v = v.trim().parse::<u8>().ok().map_or(u8::MAX, |v| v);
-                    if v == 0 {
+                let result = object.nvme_controller().block_on();
+                let smart_interface = if drive_ata.is_ok() {
+                    DiskSmartInterface::Ata
+                } else if result.is_ok() {
+                    DiskSmartInterface::NVMe
+                } else {
+                    DiskSmartInterface::Dumb
+                };
+
+                // todo should we do this?
+                let r#type = if drive.optical().block_on().unwrap_or(false) {
+                    DiskType::Optical
+                } else {
+                    let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
+                    if rate == NonRotating || rate == Unknown {
                         if dir_name.starts_with("nvme") {
                             DiskType::NVMe
                         } else if dir_name.starts_with("mmc") {
@@ -477,39 +644,14 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                             DiskType::SSD
                         }
                     } else {
-                        if dir_name.starts_with("sr") {
-                            DiskType::Optical
-                        } else {
-                            match v {
-                                1 => DiskType::HDD,
-                                _ => DiskType::Unknown,
-                            }
-                        }
+                        // it is rotating and not optical, as per above
+                        DiskType::HDD
                     }
-                } else {
-                    DiskType::Unknown
                 };
 
-                let capacity = if let Ok(v) =
-                    std::fs::read_to_string(format!("/sys/block/{}/size", dir_name))
-                {
-                    v.trim().parse::<u64>().ok().map_or(u64::MAX, |v| v * 512)
-                } else {
-                    u64::MAX
-                };
+                let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
-                let fs_info = Self::filesystem_info(&dir_name);
-                let (system_disk, formatted) = if let Some(v) = fs_info { v } else { (false, 0) };
-
-                let vendor =
-                    std::fs::read_to_string(format!("/sys/block/{}/device/vendor", dir_name))
-                        .ok()
-                        .unwrap_or("".to_string());
-
-                let model =
-                    std::fs::read_to_string(format!("/sys/block/{}/device/model", dir_name))
-                        .ok()
-                        .unwrap_or("".to_string());
+                let model = drive.model().block_on().unwrap_or("".to_string());
 
                 let model = Arc::<str>::from(format!("{} {}", vendor.trim(), model.trim()));
 
@@ -532,9 +674,10 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         id: Arc::from(dir_name),
                         model,
                         r#type,
+                        smart_interface,
                         capacity,
                         formatted,
-                        system_disk,
+                        system_disk: has_root,
 
                         busy_percent: 0.,
                         response_time_ms: 0.,
@@ -542,6 +685,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         total_read: 0,
                         write_speed: 0,
                         total_write: 0,
+                        ejectable: drive.ejectable().block_on().unwrap_or(false),
+                        drive_temperature_k,
                     },
                 ));
             }
@@ -556,143 +701,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 impl LinuxDisksInfo {
     pub fn new() -> Self {
         Self {
+            client: Client::new().block_on(),
             info: vec![],
 
             refresh_timestamp: *INITIAL_REFRESH_TS,
         }
-    }
-
-    fn filesystem_info(device_name: &str) -> Option<(bool, u64)> {
-        use crate::{critical, warning};
-
-        let entries = match std::fs::read_dir(format!("/sys/block/{}", device_name)) {
-            Ok(e) => e,
-            Err(e) => {
-                critical!(
-                    "Gatherer::DiskInfo",
-                    "Failed to read filesystem information for '{}': {}",
-                    device_name,
-                    e
-                );
-
-                return None;
-            }
-        };
-
-        let is_root_device = Self::mount_points(&device_name)
-            .iter()
-            .map(|v| v.as_str())
-            .any(|v| v == "/");
-        let mut formatted_size = 0_u64;
-        for entry in entries {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    warning!(
-                        "Gatherer::DiskInfo",
-                        "Failed to read some filesystem information for '{}': {}",
-                        device_name,
-                        e
-                    );
-                    continue;
-                }
-            };
-
-            let part_name = entry.file_name();
-            let part_name = part_name.to_string_lossy();
-            if !part_name.starts_with(device_name) {
-                continue;
-            }
-            std::fs::read_to_string(format!("/sys/block/{}/{}/size", &device_name, part_name))
-                .ok()
-                .map(|v| v.trim().parse::<u64>().ok().map_or(0, |v| v * 512))
-                .map(|v| {
-                    formatted_size += v;
-                });
-        }
-
-        Some((is_root_device, formatted_size))
-    }
-
-    fn mount_points(device_name: &str) -> Vec<String> {
-        use crate::critical;
-
-        let mut cmd = std::process::Command::new("lsblk");
-        cmd.arg("-o").arg("NAME,MOUNTPOINTS").arg("--json");
-
-        let lsblk_out = if let Ok(output) = cmd.output() {
-            if output.stderr.len() > 0 {
-                critical!(
-                    "Gatherer::DiskInfo",
-                    "Failed to refresh block device information, host command execution failed: {}",
-                    std::str::from_utf8(output.stderr.as_slice()).unwrap_or("Unknown error")
-                );
-                return vec![];
-            }
-
-            output.stdout
-        } else {
-            critical!(
-                "Gatherer::DiskInfo",
-                "Failed to refresh block device information, host command execution failed"
-            );
-            return vec![];
-        };
-
-        let mut lsblk_out = match serde_json::from_slice::<LSBLKOutput>(lsblk_out.as_slice()) {
-            Ok(v) => v,
-            Err(e) => {
-                critical!(
-                    "MissionCenter::DiskInfo",
-                    "Failed to refresh block device information, host command execution failed: {}",
-                    e
-                );
-                return vec![];
-            }
-        };
-
-        let mut mount_points = vec![];
-        for block_device in lsblk_out
-            .blockdevices
-            .iter_mut()
-            .filter_map(|bd| bd.as_mut())
-        {
-            let block_device = core::mem::take(block_device);
-            if block_device.name != device_name {
-                continue;
-            }
-
-            let children = match block_device.children {
-                None => break,
-                Some(c) => c,
-            };
-
-            fn find_mount_points(
-                mut block_devices: Vec<Option<LSBLKBlockDevice>>,
-                mount_points: &mut Vec<String>,
-            ) {
-                for block_device in block_devices.iter_mut().filter_map(|bd| bd.as_mut()) {
-                    let mut block_device = core::mem::take(block_device);
-
-                    for mountpoint in block_device
-                        .mountpoints
-                        .iter_mut()
-                        .filter_map(|mp| mp.as_mut())
-                    {
-                        mount_points.push(core::mem::take(mountpoint));
-                    }
-
-                    if let Some(children) = block_device.children {
-                        find_mount_points(children, mount_points);
-                    }
-                }
-            }
-
-            find_mount_points(children, &mut mount_points);
-            break;
-        }
-
-        mount_points
     }
 
     fn get_mmc_type(dir_name: &String) -> DiskType {
