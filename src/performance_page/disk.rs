@@ -364,11 +364,11 @@ mod imp {
             }
 
             if let Some(eject_button) = this.eject.get() {
-                eject_button.set_visible(disk.ejectable);
+                eject_button.set_sensitive(disk.ejectable)
             }
 
             if let Some(smart_button) = this.smart.get() {
-                smart_button.set_visible(disk.smart_interface != DiskSmartInterface::Dumb);
+                smart_button.set_sensitive(disk.smart_interface != DiskSmartInterface::Dumb);
             }
 
             true
