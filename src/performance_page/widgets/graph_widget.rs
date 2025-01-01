@@ -185,12 +185,8 @@ mod imp {
                     self.data_sets.set(data_sets);
                 }
                 NORMALIZED_SCALING => {
-                    if !self.only_scale_down.get() || self.value_range_min.get() == Default::default() {
                         self.value_range_min.set(0.);
-                    }
-                    if !self.only_scale_down.get() || self.value_range_max.get() == Default::default() {
                         self.value_range_max.set(1.);
-                    }
                     self.scaling.set(NORMALIZED_SCALING);
                 }
                 _ => self.scaling.set(NO_SCALING),
@@ -358,12 +354,14 @@ mod imp {
                     .skip_while(|(_, y)| *y <= scale_factor)
                     .collect()
             } else {
-                let mut min = if self.only_scale_down.get() {
+                println!("Range is {}/{} ({:?})", val_min, val_max, data_points.data_set);
+
+                let mut min = if !self.only_scale_down.get() {
                     Some(val_min)
                 } else {
                     None
                 };
-                let mut max = if self.only_scale_down.get() {
+                let mut max = if !self.only_scale_up.get() {
                     Some(val_max)
                 } else {
                     None
@@ -398,7 +396,7 @@ mod imp {
                 }
 
                 if self.only_scale_up.get() {
-                    max = data_points.max_all_time;
+                    max = max.max(data_points.max_all_time);
                 }
 
                 if self.only_scale_down.get() {
@@ -406,7 +404,7 @@ mod imp {
                         data_points.min_all_time = min;
                     }
 
-                    min = data_points.min_all_time;
+                    min = min.min(data_points.min_all_time);
                 }
 
                 let out = (0..)
@@ -422,6 +420,8 @@ mod imp {
                         }
                     }))
                     .collect();
+
+                println!("Brange {}/{} ({:?})", min, max, out);
 
                 out
             };
