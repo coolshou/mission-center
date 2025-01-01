@@ -30,7 +30,7 @@ use crate::platform::fan_info::{FanInfoExt, FansInfoExt};
 pub struct LinuxFanInfo {
     pub fan_label: Arc<str>,
     pub temp_name: Arc<str>,
-    pub temp_amount: i64,
+    pub temp_amount: u32,
     pub rpm: u64,
     pub percent_vroomimg: f32,
 
@@ -84,7 +84,7 @@ impl FanInfoExt for LinuxFanInfo {
         &self.temp_name
     }
 
-    fn temp_amount(&self) -> i64 {
+    fn temp_amount(&self) -> u32 {
         self.temp_amount
     }
 
@@ -200,9 +200,9 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                                 "{}/temp{}_input",
                                 parent_dir_str, findex
                             )) {
-                                v.trim().parse::<i64>().ok().unwrap_or(i64::MIN)
+                                v.trim().parse::<i64>().ok().map(|i| (i + 273000) as u32).unwrap_or(0)
                             } else {
-                                i64::MIN
+                                0
                             };
 
                             let max_speed = if let Ok(v) = std::fs::read_to_string(format!(

@@ -59,6 +59,7 @@ mod imp {
         pub visible: bool,
 
         pub data_set: Vec<f32>,
+        pub min_all_time: f32,
         pub max_all_time: f32,
     }
 
@@ -77,6 +78,8 @@ mod imp {
         scaling: Cell<i32>,
         #[property(get, set)]
         only_scale_up: Cell<bool>,
+        #[property(get, set)]
+        only_scale_down: Cell<bool>,
         #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
@@ -110,6 +113,7 @@ mod imp {
                 value_range_max: Cell::new(100.),
                 scaling: Cell::new(NO_SCALING),
                 only_scale_up: Cell::new(false),
+                only_scale_down: Cell::new(false),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 smooth_graphs: Cell::new(false),
@@ -123,6 +127,7 @@ mod imp {
                     visible: true,
 
                     data_set,
+                    min_all_time: 0.,
                     max_all_time: 0.,
                 }]),
 
@@ -180,8 +185,12 @@ mod imp {
                     self.data_sets.set(data_sets);
                 }
                 NORMALIZED_SCALING => {
-                    self.value_range_min.set(0.);
-                    self.value_range_max.set(1.);
+                    if !self.only_scale_down.get() || self.value_range_min.get() == Default::default() {
+                        self.value_range_min.set(0.);
+                    }
+                    if !self.only_scale_down.get() || self.value_range_max.get() == Default::default() {
+                        self.value_range_max.set(1.);
+                    }
                     self.scaling.set(NORMALIZED_SCALING);
                 }
                 _ => self.scaling.set(NO_SCALING),
@@ -215,6 +224,7 @@ mod imp {
                     visible: true,
 
                     data_set: vec![0.; self.data_points.get() as _],
+                    min_all_time: 0.,
                     max_all_time: 0.,
                 },
             );
@@ -331,8 +341,8 @@ mod imp {
 
             let stroke = Stroke::new(1.);
 
-            let val_max = self.value_range_max.get() - self.value_range_min.get();
-            let val_min = 0.;
+            let val_max = self.value_range_max.get();
+            let val_min = self.value_range_min.get();
 
             let spacing_x = width / (data_points.data_set.len() - 1) as f32;
 
@@ -348,16 +358,42 @@ mod imp {
                     .skip_while(|(_, y)| *y <= scale_factor)
                     .collect()
             } else {
-                let mut min = self.value_range_min.get();
-                let mut max = self.value_range_max.get();
+                println!("Range is {}/{} ({:?})", val_min, val_max, data_points.data_set);
+
+                let mut min = if self.only_scale_down.get() {
+                    Some(val_min)
+                } else {
+                    None
+                };
+                let mut max = if self.only_scale_down.get() {
+                    Some(val_max)
+                } else {
+                    None
+                };
                 for value in data_points.data_set.iter() {
-                    if *value < min {
-                        min = *value;
+                    if *value == Default::default() && self.only_scale_down.get() {
+                        continue;
                     }
-                    if *value > max {
-                        max = *value;
+                    if let Some(minn) = min {
+                        if minn > *value {
+                            min = Some(*value);
+                        }
+                    } else {
+                        min = Some(*value);
+                    }
+                    if let Some(maxx) = max {
+                        if maxx < *value {
+                            max = Some(*value);
+                        }
+                    } else {
+                        max = Some(*value);
                     }
                 }
+
+                let (mut min, mut max) = match (min, max) {
+                    (Some(min), Some(max)) => {(min, max)}
+                    _ => return
+                };
 
                 if data_points.max_all_time < max {
                     data_points.max_all_time = max;
@@ -367,17 +403,31 @@ mod imp {
                     max = data_points.max_all_time;
                 }
 
-                (0..)
+                if self.only_scale_down.get() {
+                    if data_points.min_all_time > min || data_points.min_all_time == Default::default() {
+                        data_points.min_all_time = min;
+                    }
+
+                    min = data_points.min_all_time;
+                }
+
+                let out = (0..)
                     .map(|x| x as f32)
                     .zip(data_points.data_set.iter().map(|x| {
                         let downscale_factor = max - min;
                         if downscale_factor == 0. {
                             0.
+                        } else if *x == Default::default() {
+                            Default::default()
                         } else {
                             (*x - min) / downscale_factor
                         }
                     }))
-                    .collect()
+                    .collect();
+
+                println!("Brange {}/{} ({:?})", min, max, out);
+
+                out
             };
 
             for (x, y) in &mut points {
@@ -715,6 +765,22 @@ impl GraphWidget {
             n |= n >> 16;
 
             n + 1
+        }
+
+        if self.only_scale_down() {
+            let mut min_y = value;
+
+            for data_set in data.iter() {
+                for value in data_set.data_set.iter() {
+                    if min_y > *value {
+                        min_y = *value;
+                    }
+                }
+            }
+
+            if min_y < self.value_range_min() || self.value_range_min() == Default::default() {
+                self.set_value_range_min(min_y);
+            }
         }
 
         let min_value = self.value_range_min();

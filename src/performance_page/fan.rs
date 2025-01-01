@@ -249,7 +249,7 @@ mod imp {
                 }
             }
 
-            if fan.temp_amount == i64::MIN {
+            if fan.temp_amount == 0 {
                 this.temp_graph_box.set_visible(false);
 
                 if let Some(sidebar_temp_box) = this.temp_label_box.get() {
@@ -283,7 +283,7 @@ mod imp {
                 ));
             }
 
-            let fan_temp_c = fan.temp_amount as f32 / 1000.0;
+            let fan_temp_c = (fan.temp_amount as f32 - 273000.) / 1000.0;
             if let Some(temp) = this.temp.get() {
                 temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
             }
