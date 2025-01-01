@@ -1447,15 +1447,31 @@ mod imp {
 
             let event_controller = EventControllerKey::new();
 
-            event_controller.connect_key_pressed(|a, b, c, d| {
-                match b {
-                    gdk::Key::Control_L => {
-                        println!("Pressed {} with {:?} ({})", b, d, c);
-                        self.frozen.set(true);
-                        Propagation::Stop
+            let this = self.downgrade();
+            event_controller.connect_key_pressed(move |a, b, c, d| {
+                if let Some(this) = this.upgrade() {
+                    match b {
+                        gdk::Key::Control_L => {
+                            this.frozen.set(true);
+                            Propagation::Stop
+                        }
+                        _ => {
+                            Propagation::Proceed
+                        }
                     }
-                    _ => {
-                        Propagation::Proceed
+                } else {
+                    Propagation::Proceed
+                }
+            });
+            let this = self.downgrade();
+            event_controller.connect_key_released(move |a, b, c, d| {
+                if let Some(this) = this.upgrade() {
+                    match b {
+                        gdk::Key::Control_L => {
+                            this.frozen.set(false);
+                        }
+                        _ => {
+                        }
                     }
                 }
             });
