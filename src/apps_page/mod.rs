@@ -43,6 +43,10 @@ pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97
 pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 45, 0.3); }";
 
 mod imp {
+    use adw::gdk::ModifierType;
+    use adw::glib::g_critical;
+    use gtk::EventControllerKey;
+    use gtk::glib::Propagation;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -90,6 +94,7 @@ mod imp {
         pub process_tree: Cell<Process>,
 
         pub use_merge_stats: Cell<bool>,
+        pub frozen: Cell<bool>,
     }
 
     impl Default for AppsPage {
@@ -131,6 +136,7 @@ mod imp {
                 process_tree: Cell::new(Process::default()),
 
                 use_merge_stats: Cell::new(false),
+                frozen: Cell::new(false),
             }
         }
     }
@@ -1141,6 +1147,7 @@ mod imp {
             let tree_model = self.set_up_tree_model(root_model.into());
             let filter_model = self.set_up_filter_model(tree_model.into());
             let sort_model = self.set_up_sort_model(filter_model.into());
+            self.set_up_keyboard_listener();
 
             self.column_view
                 .set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
@@ -1428,6 +1435,33 @@ mod imp {
                 Self::update_process_model(this, child_model, child);
             }
         }
+
+        fn set_up_keyboard_listener(&self) {
+            let Some(window) = app!().window() else {
+                g_critical!(
+                    "MissionCenter::AppsPage",
+                    "Failed to get MissionCenterWindow instance; searching and filtering will not function"
+                );
+                return;
+            };
+
+            let event_controller = EventControllerKey::new();
+
+            event_controller.connect_key_pressed(|a, b, c, d| {
+                match b {
+                    gdk::Key::Control_L => {
+                        println!("Pressed {} with {:?} ({})", b, d, c);
+                        self.frozen.set(true);
+                        Propagation::Stop
+                    }
+                    _ => {
+                        Propagation::Proceed
+                    }
+                }
+            });
+
+            window.add_controller(event_controller);
+        }
     }
 
     #[glib::object_subclass]
@@ -1619,9 +1653,11 @@ impl AppsPage {
         std::mem::swap(&mut process_tree, &mut readings.process_tree);
         this.process_tree.set(process_tree);
 
-        this.update_processes_models();
-        this.update_app_model();
-        this.update_column_headers(readings);
+        if !this.frozen.get() {
+            this.update_processes_models();
+            this.update_app_model();
+            this.update_column_headers(readings);
+        }
 
         let sorter = this.tree_list_sorter.take();
         if let Some(sorter) = sorter.as_ref() {
