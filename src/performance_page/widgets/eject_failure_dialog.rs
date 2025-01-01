@@ -26,7 +26,7 @@ use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
-use crate::performance_page::eject_failure_row::EjectFailureRowBuilder;
+use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
 use adw::ResponseAppearance;
 use std::sync::Arc;
