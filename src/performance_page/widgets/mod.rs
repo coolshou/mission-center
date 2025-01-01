@@ -18,18 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-pub use eject_failure_dialog::EjectFailureDialog;
 pub use graph_widget::GraphWidget;
 pub use mem_composition_widget::MemoryCompositionWidget;
 pub use sidebar_drop_hint::SidebarDropHint;
-pub use smart_dialog::SmartDataDialog;
 
 const GRAPH_RADIUS: f32 = 7.;
 
-mod eject_failure_dialog;
-mod eject_failure_row;
 mod graph_widget;
 mod mem_composition_widget;
-mod sata_smart_dialog_row;
 mod sidebar_drop_hint;
-mod smart_dialog;
+pub mod eject_failure_dialog;
+mod eject_failure_row;
+mod sata_smart_dialog_row;
+pub mod smart_dialog;
