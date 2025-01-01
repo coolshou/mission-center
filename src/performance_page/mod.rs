@@ -42,14 +42,10 @@ use crate::{
 
 mod cpu;
 mod disk;
-mod eject_failure_dialog;
-mod eject_failure_row;
 mod fan;
 mod gpu;
 mod memory;
 mod network;
-mod sata_smart_dialog_row;
-mod smart_dialog;
 mod summary_graph;
 mod widgets;
 
@@ -1686,6 +1682,7 @@ mod imp {
                 page_stack: &gtk::Stack,
             ) {
                 for disk_page_name in pages_to_destroy {
+                    println!("Destroying {}", disk_page_name);
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
@@ -1699,6 +1696,17 @@ mod imp {
                                 continue;
                             }
                         };
+
+                        let selection = sidebar.selected_row().unwrap();
+
+                        println!("Selected {:?}", selection);
+                        println!("Rent {:?}", parent);
+
+                        if selection.eq(&parent) {
+                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        }
+
                         summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
                         page_stack.remove(&page);
@@ -1854,7 +1862,7 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                // i dare you to have a 1K drive
+                                // i dare you to have a 1K(elvin) drive
                                 if disk.drive_temperature >= 1.0 {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",

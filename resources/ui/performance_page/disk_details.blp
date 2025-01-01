@@ -337,39 +337,24 @@ Box root {
         row: '8';
       }
     }
+  }
+  Box {
+    orientation: horizontal;
+
+    styles [
+      "linked"
+    ]
+
+    homogeneous: true;
+
+    halign: start;
 
     Button eject {
-      layout {
-        column: '1';
-        row: '9';
-      }
-
-      child: Box {
-        spacing: 5;
-
-        halign: center;
-
-        Label eject_label {
-          label: _("Eject");
-        }
-      };
+      icon-name: 'media-eject-symbolic';
     }
 
     Button smart {
-      layout {
-        column: '1';
-        row: '10';
-      }
-
-      child: Box {
-        spacing: 5;
-
-        halign: center;
-
-        Label smart_label {
-          label: _("Smart");
-        }
-      };
+      icon-name: 'info-symbolic';
     }
   }
 }

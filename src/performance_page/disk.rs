@@ -29,8 +29,8 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 use crate::app;
-use crate::performance_page::eject_failure_dialog::EjectFailureDialog;
-use crate::performance_page::smart_dialog::SmartDataDialog;
+use crate::performance_page::widgets::eject_failure_dialog::EjectFailureDialog;
+use crate::performance_page::widgets::smart_dialog::SmartDataDialog;
 use crate::sys_info_v2::{DiskSmartInterface, EjectResult, NVMeSmartResult, SataSmartResult};
 use adw::glib::g_warning;
 
@@ -368,11 +368,11 @@ mod imp {
             }
 
             if let Some(eject_button) = this.eject.get() {
-                eject_button.set_visible(disk.ejectable);
+                eject_button.set_sensitive(disk.ejectable)
             }
 
             if let Some(smart_button) = this.smart.get() {
-                smart_button.set_visible(disk.smart_interface != DiskSmartInterface::Dumb);
+                smart_button.set_sensitive(disk.smart_interface != DiskSmartInterface::Dumb);
             }
 
             true
@@ -680,8 +680,6 @@ mod imp {
                                 match this.raw_smart_interface.get() {
                                     Some(DiskSmartInterface::NVMe) => {
                                         let smart_info = sys_info.nvme_smart_info(disk_id);
-
-                                        // println!("Got back {:?}", smart_info);
 
                                         this.show_nvme_smart_info(that, smart_info);
                                     }

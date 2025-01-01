@@ -25,7 +25,7 @@ use gtk::glib::{self, ParamSpec, Properties, Value};
 
 use crate::i18n::*;
 use crate::performance_page::disk::PerformancePageDisk;
-use crate::performance_page::sata_smart_dialog_row::SmartDialogRow;
+use crate::performance_page::widgets::sata_smart_dialog_row::SmartDialogRow;
 use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
 use gtk::gio;
 use std::time::{SystemTime, UNIX_EPOCH};

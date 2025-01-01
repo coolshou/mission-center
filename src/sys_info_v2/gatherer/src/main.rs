@@ -513,19 +513,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
-                };
+                }
+                    .filter_map(Result::ok);
+
+                let mut probable_entries = vec!(id);
+
+                for entry in entries {
+                    probable_entries.push(entry.file_name().unwrap().to_str().unwrap().to_string());
+                }
 
                 let mut some_path = false;
                 let mut some_err = false;
 
-                for entry in entries.filter_map(Result::ok) {
-                    let Some(filename) = entry.file_name() else {
-                        continue;
-                    };
+                for filename in probable_entries {
+                    // let Some(filename) = entry.file_name() else {
+                    //     continue;
+                    // };
 
                     some_path = true;
 
-                    let filename = filename.to_str().unwrap();
+                    // let filename = filename.to_str().unwrap();
 
                     let fsobject = match client.object(format!(
                         "/org/freedesktop/UDisks2/block_devices/{}",
