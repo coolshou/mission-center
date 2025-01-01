@@ -645,8 +645,6 @@ mod imp {
                                     Some(DiskSmartInterface::NVMe) => {
                                         let smart_info = sys_info.nvme_smart_info(disk_id);
 
-                                        // println!("Got back {:?}", smart_info);
-
                                         this.show_nvme_smart_info(that, smart_info);
                                     }
                                     Some(DiskSmartInterface::Ata) => {
