@@ -337,22 +337,19 @@ Box root {
         row: '8';
       }
     }
+  }
+  Box {
+    orientation: horizontal;
+
+    styles [
+      "linked"
+    ]
 
     Button eject {
-      layout {
-        column: '0';
-        row: '5';
-      }
-
       icon-name: 'media-eject-symbolic';
     }
 
     Button smart {
-      layout {
-        column: '1';
-        row: '5';
-      }
-
       icon-name: 'info-symbolic';
     }
   }
