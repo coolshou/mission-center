@@ -311,19 +311,11 @@ Box root {
 
     Button eject {
       layout {
-        column: '1';
-        row: '4';
+        column: '0';
+        row: '5';
       }
 
-      child: Box {
-        spacing: 5;
-
-        halign: center;
-
-        Label eject_label {
-          label: _("Eject");
-        }
-      };
+      icon-name: 'media-eject-symbolic';
     }
 
     Button smart {
@@ -332,15 +324,7 @@ Box root {
         row: '5';
       }
 
-      child: Box {
-        spacing: 5;
-
-        halign: center;
-
-        Label smart_label {
-          label: _("Smart");
-        }
-      };
+      icon-name: 'info-symbolic';
     }
   }
 }
