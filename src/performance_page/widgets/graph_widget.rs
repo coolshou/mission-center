@@ -358,8 +358,6 @@ mod imp {
                     .skip_while(|(_, y)| *y <= scale_factor)
                     .collect()
             } else {
-                println!("Range is {}/{} ({:?})", val_min, val_max, data_points.data_set);
-
                 let mut min = if self.only_scale_down.get() {
                     Some(val_min)
                 } else {
@@ -424,8 +422,6 @@ mod imp {
                         }
                     }))
                     .collect();
-
-                println!("Brange {}/{} ({:?})", min, max, out);
 
                 out
             };
