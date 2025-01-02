@@ -75,8 +75,6 @@ mod imp {
 
 glib::wrapper! {
     pub struct SmartDialogRow(ObjectSubclass<imp::SmartDialogRow>);
-        // @extends gtk::Box, gtk::Widget,
-        // @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
 impl SmartDialogRow {
