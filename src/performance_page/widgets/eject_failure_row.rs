@@ -248,9 +248,11 @@ impl EjectFailureRowBuilder {
                 Some(kill) => {
                     kill.connect_clicked({
                         move |_| {
-                            let sys_info = match app!()
+                            let eject_result = match app!()
                                 .sys_info() {
-                                Ok(sys_info) => sys_info,
+                                Ok(sys_info) => {
+                                    sys_info.eject_disk(self.id.as_str(), false, self.pid)
+                                },
                                 Err(err) => {
                                     g_critical!(
                                         "MissionCenter::EjectFailureRow",
@@ -260,9 +262,6 @@ impl EjectFailureRowBuilder {
                                     return;
                                 }
                             };
-
-                            let back = sys_info
-                                .eject_disk(self.id.as_str(), false, self.pid);
 
                             let Some(parent) = self.parent_page.as_ref() else {
                                 g_critical!(
@@ -282,7 +281,7 @@ impl EjectFailureRowBuilder {
                             efd.close();
                             // efd.imp().apply_eject_result(back, parent);
                             // todo this feels leaky
-                            parent.imp().show_eject_result(parent, back);
+                            parent.imp().show_eject_result(parent, eject_result);
                         }
                     });
                 },
