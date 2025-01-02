@@ -30,6 +30,7 @@ use std::cell::Cell;
 use gtk::prelude::{ButtonExt, WidgetExt};
 use gtk::subclass::prelude::WidgetImpl;
 use std::cell::OnceCell;
+use gtk::glib::g_critical;
 
 mod imp {
     use super::*;
@@ -211,35 +212,87 @@ impl EjectFailureRowBuilder {
             let this = this.imp();
 
             this.raw_pid.set(Some(self.pid));
-            this.pid
-                .get()
-                .expect("Damn")
-                .set_label(format!("{}", self.pid).as_str());
-            this.name.get().expect("Damn").set_label(self.name.as_str());
+            match this.pid.get() {
+                Some(pid) => pid.set_label(format!("{}", self.pid).as_str()),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::EjectFailureRow",
+                        "Failed to set pid label"
+                    );
+                }
+            };
+
+            match this.name.get() {
+                Some(name) => name.set_label(self.name.as_str()),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::EjectFailureRow",
+                        "Failed to set name label"
+                    );
+                }
+            };
+
             this.set_icon(self.icon.as_str());
 
-            this.open_files
-                .get()
-                .expect("Damn")
-                .set_label(self.files_open.join("\n").as_str());
-
-            this.kill.get().expect("Damn").connect_clicked({
-                move |_| {
-                    println!("killering {:?}", self.pid);
-
-                    let back = app!()
-                        .sys_info()
-                        .expect("Failed to get sys_info")
-                        .eject_disk(self.id.as_str(), false, self.pid);
-
-                    let parent = self.parent_page.as_ref().unwrap();
-                    let efd = parent.eject_failure_dialog().unwrap();
-                    efd.close();
-                    // efd.imp().apply_eject_result(back, parent);
-                    // todo this feels leaky
-                    parent.imp().show_eject_result(parent, back);
+            match this.open_files.get() {
+                Some(open_files) => open_files.set_label(self.files_open.join("\n").as_str()),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::EjectFailureRow",
+                        "Failed to set open files label"
+                    );
                 }
-            });
+            };
+
+            match this.kill.get() {
+                Some(kill) => {
+                    kill.connect_clicked({
+                        move |_| {
+                            let sys_info = match app!()
+                                .sys_info() {
+                                Ok(sys_info) => sys_info,
+                                Err(err) => {
+                                    g_critical!(
+                                        "MissionCenter::EjectFailureRow",
+                                        "Failed to get sys_info: {}",
+                                        err
+                                    );
+                                    return;
+                                }
+                            };
+
+                            let back = sys_info
+                                .eject_disk(self.id.as_str(), false, self.pid);
+
+                            let Some(parent) = self.parent_page.as_ref() else {
+                                g_critical!(
+                                    "MissionCenter::EjectFailureRow",
+                                    "Failed to get parent page",
+                                );
+                                return;
+                            };
+
+                            let Some(efd) = parent.eject_failure_dialog() else {
+                                g_critical!(
+                                    "MissionCenter::EjectFailureRow",
+                                    "Failed to get eject failure dialog",
+                                );
+                                return;
+                            };
+                            efd.close();
+                            // efd.imp().apply_eject_result(back, parent);
+                            // todo this feels leaky
+                            parent.imp().show_eject_result(parent, back);
+                        }
+                    });
+                },
+                _ => {
+                    g_critical!(
+                        "MissionCenter::EjectFailureRow",
+                        "Failed to set kill action"
+                    );
+                }
+            };
         }
 
         this
