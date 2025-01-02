@@ -1,6 +1,6 @@
 /* services_page/details_dialog.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2024 Mission Center Devs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@
 
 use std::cell::Cell;
 
+use adw::ResponseAppearance;
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
 
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
-use adw::ResponseAppearance;
+use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
 use std::sync::Arc;
 
 mod imp {
@@ -164,17 +164,7 @@ mod imp {
     impl AdwAlertDialogImpl for EjectFailureDialog {
         fn response(&self, response: &str) {
             match response {
-                "close" => {
-                    println!("Closing peacefully");
-                    //do nothing?
-                }
                 "retry" => {
-                    println!("Ejecting again");
-                    // let this = self.obj().downgrade();
-                    // move |_| {
-                    //     if let Some(that) = this.upgrade() {
-                    //         let this = that.imp();
-                    //         let that = &that;
                     match app!().sys_info().and_then(move |sys_info| {
                         let padre = self.parent_page.take().expect("fuuuck");
 
@@ -194,11 +184,8 @@ mod imp {
                         }
                         _ => {}
                     }
-                    // }
-                    // }
                 }
                 "kill" => {
-                    println!("Ejecting with great force!");
                     match app!().sys_info().and_then(move |sys_info| {
                         let padre = self.parent_page.take().expect("fuuuck");
 
@@ -219,6 +206,7 @@ mod imp {
                         _ => {}
                     }
                 }
+                "close" => {}
                 e => {
                     g_warning!("MissionCenter::DetailsDialog", "Unexpected response: {}", e);
                 }
