@@ -192,12 +192,31 @@ mod imp {
                 }
                 "kill" => {
                     match app!().sys_info().and_then(move |sys_info| {
-                        let padre = self.parent_page.take().expect("fuuuck");
+                        let parent = match self.parent_page.take() {
+                            Ok(parent) => parent,
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::DetailsDialog",
+                                    "`parent_page` was unexpectedly empty",
+                                );
+                                return;
+                            },
+                        };
 
+                        let disk_id = match parent.imp().raw_disk_id.get() {
+                            Some(id) => id,
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::DetailsDialog",
+                                    "`disk_id` was unexpectedly empty",
+                                );
+                                return;
+                            },
+                        };
                         let eject_result =
-                            sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), true, 0);
+                            sys_info.eject_disk(disk_id, true, 0);
 
-                        padre.imp().show_eject_result(&padre, eject_result);
+                        parent.imp().show_eject_result(&parent, eject_result);
 
                         Ok(())
                     }) {
