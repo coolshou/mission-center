@@ -153,13 +153,13 @@ mod imp {
                 "retry" => {
                     match app!().sys_info().and_then(move |sys_info| {
                         let parent = match self.parent_page.take() {
-                            Ok(parent) => parent,
+                            Some(parent) => parent,
                             None => {
                                 g_critical!(
                                     "MissionCenter::DetailsDialog",
                                     "`parent_page` was unexpectedly empty",
                                 );
-                                return;
+                                return Ok(());
                             },
                         };
 
@@ -170,7 +170,7 @@ mod imp {
                                     "MissionCenter::DetailsDialog",
                                     "`disk_id` was unexpectedly empty",
                                 );
-                                return;
+                                return Ok(());
                             },
                         };
                         let eject_result =
@@ -193,13 +193,13 @@ mod imp {
                 "kill" => {
                     match app!().sys_info().and_then(move |sys_info| {
                         let parent = match self.parent_page.take() {
-                            Ok(parent) => parent,
+                            Some(parent) => parent,
                             None => {
                                 g_critical!(
                                     "MissionCenter::DetailsDialog",
                                     "`parent_page` was unexpectedly empty",
                                 );
-                                return;
+                                return Ok(());
                             },
                         };
 
@@ -210,7 +210,7 @@ mod imp {
                                     "MissionCenter::DetailsDialog",
                                     "`disk_id` was unexpectedly empty",
                                 );
-                                return;
+                                return Ok(());
                             },
                         };
                         let eject_result =
