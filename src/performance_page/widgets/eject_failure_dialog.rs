@@ -33,8 +33,6 @@ use crate::sys_info_v2::EjectResult;
 mod imp {
     use super::*;
 
-    #[derive(Properties)]
-    #[properties(wrapper_type = super::EjectFailureDialog)]
     #[derive(gtk::CompositeTemplate)]
     #[template(
         resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui"
@@ -129,18 +127,6 @@ mod imp {
     }
 
     impl ObjectImpl for EjectFailureDialog {
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
-
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
 
