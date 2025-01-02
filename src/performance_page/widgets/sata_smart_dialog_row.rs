@@ -1,6 +1,6 @@
 /* apps_page/view_model.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2024 Mission Center Devs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

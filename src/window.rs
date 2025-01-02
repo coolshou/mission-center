@@ -804,7 +804,7 @@ impl MissionCenterWindow {
 
         if !result.blocking_processes.is_empty() {
             // let process_tree = self.imp().apps_page.get_process_tree();
-            let apps = self.imp().apps_page.get_app_tree();
+            let apps = self.imp().apps_page.get_running_apps();
             let apps = apps.values().map(|c| c.clone()).collect::<Vec<_>>();
 
             let mut distinct_apps: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> =

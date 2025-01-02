@@ -24,10 +24,10 @@ pub use sidebar_drop_hint::SidebarDropHint;
 
 const GRAPH_RADIUS: f32 = 7.;
 
-mod graph_widget;
-mod mem_composition_widget;
-mod sidebar_drop_hint;
 pub mod eject_failure_dialog;
 mod eject_failure_row;
+mod graph_widget;
+mod mem_composition_widget;
 mod sata_smart_dialog_row;
+mod sidebar_drop_hint;
 pub mod smart_dialog;
