@@ -31,6 +31,7 @@ use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
 
 mod imp {
+    use gtk::glib::g_critical;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -151,12 +152,31 @@ mod imp {
             match response {
                 "retry" => {
                     match app!().sys_info().and_then(move |sys_info| {
-                        let padre = self.parent_page.take().expect("fuuuck");
+                        let parent = match self.parent_page.take() {
+                            Ok(parent) => parent,
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::DetailsDialog",
+                                    "`parent_page` was unexpectedly empty",
+                                );
+                                return;
+                            },
+                        };
 
+                        let disk_id = match parent.imp().raw_disk_id.get() {
+                            Some(id) => id,
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::DetailsDialog",
+                                    "`disk_id` was unexpectedly empty",
+                                );
+                                return;
+                            },
+                        };
                         let eject_result =
-                            sys_info.eject_disk(padre.imp().raw_disk_id.get().expect(""), false, 0);
+                            sys_info.eject_disk(disk_id, false, 0);
 
-                        padre.imp().show_eject_result(&padre, eject_result);
+                        parent.imp().show_eject_result(&parent, eject_result);
 
                         Ok(())
                     }) {
