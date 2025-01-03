@@ -100,7 +100,7 @@ impl SmartDialogRow {
                     0 => i18n("N/A"),
                     2 => crate::to_human_readable_time(pretty as u64 / 1000),
                     3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
-                    4 => i18n_f("{} °C", &[&format!("{}", (pretty - MK_TO_0_C) / 1000)]),
+                    4 => i18n_f("{} °C", &[&format!("{}", (pretty as u32 - MK_TO_0_C) / 1000)]),
                     _ => format!("{}", pretty),
                 },
             )
