@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-20 22:03+0000\n"
-"Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
+"PO-Revision-Date: 2025-01-05 00:07+0000\n"
+"Last-Translator: Lauritz Tieste <lauritz6000000@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -279,7 +279,7 @@ msgstr "Auslagerungsdiagramm anzeigen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Anzeigen des GPU encode-decode Graphen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
@@ -391,7 +391,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Lüfter"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -543,7 +543,7 @@ msgstr "Speicherverbrauch über "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Encode-Decode Verwendung anzeigen"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
