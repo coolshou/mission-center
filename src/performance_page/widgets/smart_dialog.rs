@@ -31,6 +31,8 @@ use gtk::gio;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 mod imp {
+    use dbus::arg::RefArg;
+    use gtk::{Align, ColumnViewColumn};
     use super::*;
 
     #[derive(Default, Properties)]
@@ -43,23 +45,23 @@ mod imp {
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
-        pub id_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub id_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub attribute_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub attribute_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub value_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub value_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub normalized_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub normalized_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub threshold_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub threshold_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub worst_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub worst_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub type_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub type_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub updates_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub updates_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub assessment_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub assessment_column: TemplateChild<ColumnViewColumn>,
 
         #[template_child]
         pub powered_on: TemplateChild<gtk::Label>,
@@ -166,21 +168,42 @@ mod imp {
             let rows: gio::ListStore = roze.into_iter().collect();
 
             let column_view: gtk::ColumnView = self.column_view.get();
-            let id_col: gtk::ColumnViewColumn = self.id_column.get();
-            let att_col: gtk::ColumnViewColumn = self.attribute_column.get();
-            let val_col: gtk::ColumnViewColumn = self.value_column.get();
-            let nor_col: gtk::ColumnViewColumn = self.normalized_column.get();
-            let thr_col: gtk::ColumnViewColumn = self.threshold_column.get();
-            let wor_col: gtk::ColumnViewColumn = self.worst_column.get();
-            let typ_col: gtk::ColumnViewColumn = self.type_column.get();
-            let upd_col: gtk::ColumnViewColumn = self.updates_column.get();
-            let ass_col: gtk::ColumnViewColumn = self.assessment_column.get();
+            let id_col: ColumnViewColumn = self.id_column.get();
+            let att_col: ColumnViewColumn = self.attribute_column.get();
+            let val_col: ColumnViewColumn = self.value_column.get();
+            let nor_col: ColumnViewColumn = self.normalized_column.get();
+            let thr_col: ColumnViewColumn = self.threshold_column.get();
+            let wor_col: ColumnViewColumn = self.worst_column.get();
+            let typ_col: ColumnViewColumn = self.type_column.get();
+            let upd_col: ColumnViewColumn = self.updates_column.get();
+            let ass_col: ColumnViewColumn = self.assessment_column.get();
 
+            Self::setup_column_factory(id_col, Align::Start, |mi| mi.smart_id().to_string());
+            Self::setup_column_factory(att_col, Align::Start, |mi| mi.attribute().to_string());
+            Self::setup_column_factory(val_col, Align::Start, |mi| mi.value().to_string());
+            Self::setup_column_factory(nor_col, Align::Start, |mi| mi.normalized().to_string());
+            Self::setup_column_factory(thr_col, Align::Start, |mi| mi.threshold().to_string());
+            Self::setup_column_factory(wor_col, Align::Start, |mi| mi.worst().to_string());
+            Self::setup_column_factory(typ_col, Align::Start, |mi| mi.typee().to_string());
+            Self::setup_column_factory(upd_col, Align::Start, |mi| mi.updates().to_string());
+            Self::setup_column_factory(ass_col, Align::Start, |mi| mi.assessment().to_string());
+
+            let sort_model = gtk::SortListModel::builder()
+                .model(&rows)
+                .sorter(&column_view.sorter().unwrap())
+                .build();
+
+            column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
+        }
+
+        fn setup_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E) where
+            E: Fn(SmartDialogRow) -> String + 'static,
+        {
             let factory_id_col = gtk::SignalListItemFactory::new();
             factory_id_col.connect_setup(move |_factory, list_item| {
                 let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
                 cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
+                    &gtk::Label::builder().halign(alignment).build(),
                 ));
             });
             factory_id_col.connect_bind(move |_factory, list_item| {
@@ -189,191 +212,16 @@ mod imp {
                     .downcast::<gtk::ColumnViewCell>()
                     .unwrap();
                 let child = cell.child().unwrap();
-                let label = child.downcast_ref::<gtk::Label>().unwrap();
+                let label_object = child.downcast_ref::<gtk::Label>().unwrap();
                 let model_item = cell
                     .item()
                     .to_owned()
                     .unwrap()
                     .downcast::<SmartDialogRow>()
                     .unwrap();
-                label.set_label(&model_item.smart_id().to_string());
+                label_object.set_label(extract(model_item).as_str());
             });
             id_col.set_factory(Some(&factory_id_col));
-
-            let factory_att_col = gtk::SignalListItemFactory::new();
-            factory_att_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_att_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.attribute());
-            });
-            att_col.set_factory(Some(&factory_att_col));
-
-            let factory_val_col = gtk::SignalListItemFactory::new();
-            factory_val_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_val_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.value());
-            });
-            val_col.set_factory(Some(&factory_val_col));
-
-            let factory_nor_col = gtk::SignalListItemFactory::new();
-            factory_nor_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_nor_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.normalized().to_string());
-            });
-            nor_col.set_factory(Some(&factory_nor_col));
-
-            let factory_thr_col = gtk::SignalListItemFactory::new();
-            factory_thr_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_thr_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.threshold().to_string());
-            });
-            thr_col.set_factory(Some(&factory_thr_col));
-
-            let factory_wor_col = gtk::SignalListItemFactory::new();
-            factory_wor_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_wor_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.worst().to_string());
-            });
-            wor_col.set_factory(Some(&factory_wor_col));
-
-            let factory_typ_col = gtk::SignalListItemFactory::new();
-            factory_typ_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_typ_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.typee());
-            });
-            typ_col.set_factory(Some(&factory_typ_col));
-
-            let factory_upd_col = gtk::SignalListItemFactory::new();
-            factory_upd_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_upd_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.updates());
-            });
-            upd_col.set_factory(Some(&factory_upd_col));
-
-            let factory_ass_col = gtk::SignalListItemFactory::new();
-            factory_ass_col.connect_setup(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(gtk::Align::Start).build(),
-                ));
-            });
-            factory_ass_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                let child = cell.child().unwrap();
-                let label = child.downcast::<gtk::Label>().unwrap();
-                let model_item = cell
-                    .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label.set_label(&model_item.assessment());
-            });
-            ass_col.set_factory(Some(&factory_ass_col));
-
-            let sort_model = gtk::SortListModel::builder()
-                .model(&rows)
-                .sorter(&column_view.sorter().unwrap())
-                .build();
-
-            column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
         }
 
         pub fn apply_nvme_smart_result(
