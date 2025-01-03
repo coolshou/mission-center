@@ -102,14 +102,14 @@ pub trait DiskInfoExt: Default + Append + Arg {
     /// The disk's write speed in bytes per second
     fn ejectable(&self) -> bool;
 
-    fn drive_temperature(&self) -> f64;
+    fn drive_temperature(&self) -> u32;
 }
 
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyyttbddttttbd)")
+        Signature::from("(ssyyttbddttttbu)")
     }
 }
 

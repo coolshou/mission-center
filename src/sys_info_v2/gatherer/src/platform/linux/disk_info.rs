@@ -29,6 +29,7 @@ use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::Client;
+use crate::MK_TO_0_C;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -47,7 +48,7 @@ pub struct LinuxDiskInfo {
     pub write_speed: u64,
     pub total_write: u64,
     pub ejectable: bool,
-    pub drive_temperature_k: f64,
+    pub drive_temperature_k: u32,
 }
 
 impl Default for LinuxDiskInfo {
@@ -69,7 +70,7 @@ impl Default for LinuxDiskInfo {
             total_write: 0,
             ejectable: false,
 
-            drive_temperature_k: 0.0,
+            drive_temperature_k: 0,
         }
     }
 }
@@ -152,7 +153,7 @@ impl DiskInfoExt for LinuxDiskInfo {
         self.ejectable
     }
 
-    fn drive_temperature(&self) -> f64 {
+    fn drive_temperature(&self) -> u32 {
         self.drive_temperature_k
     }
 }
@@ -413,16 +414,16 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             .unwrap()
             .filter_map(Result::ok)
             .filter_map(|f| std::fs::read_to_string(f).ok())
-            .filter_map(|v| v.trim().parse::<f64>().ok())
-            .map(|i| i / 1000.0 + 273.15)
+            .filter_map(|v| v.trim().parse::<i64>().ok())
+            .map(|i| (i + MK_TO_0_C as i64) as u32)
             .collect::<Vec<_>>();
 
             let drive_temperature_k = if !temp_inputs.is_empty() {
                 temp_inputs[0]
             } else {
                 match &drive_ata {
-                    Ok(drive_ata) => drive_ata.smart_temperature().block_on().unwrap_or(0.0),
-                    Err(_) => 0.0,
+                    Ok(drive_ata) => drive_ata.smart_temperature().block_on().map(|f| (f * 1000.) as u32).unwrap_or(0),
+                    Err(_) => 0,
                 }
             };
 

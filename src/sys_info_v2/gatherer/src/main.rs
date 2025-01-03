@@ -45,6 +45,8 @@ mod logging;
 mod platform;
 mod utils;
 
+const MK_TO_0_C: u32 = 273150;
+
 const DBUS_OBJECT_PATH: &str = "/io/missioncenter/MissionCenter/Gatherer";
 
 lazy_static! {

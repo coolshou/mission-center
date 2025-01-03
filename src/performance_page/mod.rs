@@ -62,6 +62,8 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
+const MK_TO_0_C: u32 = 273150;
+
 mod imp {
     use super::*;
 
@@ -1858,12 +1860,12 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                // i dare you to have a 1K(elvin) drive
-                                if disk.drive_temperature >= 1.0 {
+                                // i dare you to have a 1mK(elvin) drive
+                                if disk.drive_temperature >= 1 {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",
                                         disk.busy_percent,
-                                        disk.drive_temperature - 273.15
+                                        (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%", disk.busy_percent));

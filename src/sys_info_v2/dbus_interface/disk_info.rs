@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u64, deser_u8};
+use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u32, deser_u64, deser_u8};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -74,7 +74,7 @@ pub struct DiskInfo {
     pub write_speed: u64,
     pub total_write: u64,
     pub ejectable: bool,
-    pub drive_temperature: f64,
+    pub drive_temperature: u32,
 }
 
 impl Default for DiskInfo {
@@ -96,7 +96,7 @@ impl Default for DiskInfo {
             total_write: 0,
             ejectable: false,
 
-            drive_temperature: 0.0,
+            drive_temperature: 0,
         }
     }
 }
@@ -133,7 +133,7 @@ impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssyyttbddttttbd)")
+        Signature::from("a(ssyyttbddttttbu)")
     }
 }
 
@@ -269,7 +269,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.drive_temperature = match deser_f64(disk_info, "DiskInfo", 14) {
+                        this.drive_temperature = match deser_u32(disk_info, "DiskInfo", 14) {
                             Some(sd) => sd,
                             None => continue,
                         };
