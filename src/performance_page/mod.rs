@@ -1863,7 +1863,7 @@ mod imp {
                                 graph_widget.add_data_point(0, disk.busy_percent);
 
                                 // i dare you to have a 1mK(elvin) drive
-                                if disk.smart_enabled && disk.drive_temperature >= 1 {
+                                if disk.drive_temperature >= 1 {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",
                                         disk.busy_percent,
