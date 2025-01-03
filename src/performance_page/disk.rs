@@ -175,7 +175,7 @@ mod imp {
             self.smart_dialog.set(widget.cloned());
         }
 
-        pub(crate) fn show_eject_result(
+        pub fn show_eject_result(
             &self,
             this: &super::PerformancePageDisk,
             result: EjectResult,
@@ -195,7 +195,7 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_nvme_smart_info(
+        pub fn show_nvme_smart_info(
             &self,
             this: &super::PerformancePageDisk,
             result: NVMeSmartResult,
@@ -209,7 +209,7 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_sata_smart_info(
+        pub fn show_sata_smart_info(
             &self,
             this: &super::PerformancePageDisk,
             result: SataSmartResult,
