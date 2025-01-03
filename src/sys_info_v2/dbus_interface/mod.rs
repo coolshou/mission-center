@@ -544,7 +544,6 @@ impl<'a> Get<'a> for EjectResult {
                             }
                             Some(block_tuple) => match block_tuple.as_iter() {
                                 None => {
-                                    println!("f");
                                     return None;
                                 }
                                 Some(mut tuple_iter) => {

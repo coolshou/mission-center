@@ -1684,7 +1684,6 @@ mod imp {
                 page_stack: &gtk::Stack,
             ) {
                 for disk_page_name in pages_to_destroy {
-                    println!("Destroying {}", disk_page_name);
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
@@ -1701,12 +1700,6 @@ mod imp {
 
                         let selection = sidebar.selected_row().unwrap();
 
-<<<<<<< HEAD
-=======
-                        println!("Selected {:?}", selection);
-                        println!("Rent {:?}", parent);
-
->>>>>>> a62e1ec (fixed blanking on ejection)
                         if selection.eq(&parent) {
                             let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
                             sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());

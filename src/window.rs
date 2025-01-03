@@ -800,8 +800,6 @@ impl MissionCenterWindow {
         &self,
         result: EjectResult,
     ) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
-        println!("Eject result: {:?}", result);
-
         if !result.blocking_processes.is_empty() {
             // let process_tree = self.imp().apps_page.get_process_tree();
             let apps = self.imp().apps_page.get_running_apps();
@@ -840,25 +838,6 @@ impl MissionCenterWindow {
                         );
                     }
                 }
-            }
-
-            for distinct_app in &distinct_apps {
-                println!(
-                    "App {} is holding open the files {:?} and cwd {:?}",
-                    distinct_app.0,
-                    distinct_app
-                        .1
-                         .1
-                        .iter()
-                        .map(|b| b.2.join(","))
-                        .collect::<HashSet<_>>(),
-                    distinct_app
-                        .1
-                         .1
-                        .iter()
-                        .map(|b| b.1.join(","))
-                        .collect::<HashSet<_>>()
-                );
             }
 
             return distinct_apps;
