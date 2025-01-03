@@ -24,13 +24,13 @@ use adw::{self, prelude::AdwDialogExt, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use super::{widgets::GraphWidget, PageExt};
+use super::{
+    widgets::{GraphWidget, EjectFailureDialog, SmartDataDialog}, PageExt
+};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 use crate::app;
-use crate::performance_page::widgets::eject_failure_dialog::EjectFailureDialog;
-use crate::performance_page::widgets::smart_dialog::SmartDataDialog;
 use crate::sys_info_v2::{DiskSmartInterface, EjectResult, NVMeSmartResult, SataSmartResult};
 use adw::glib::g_warning;
 
