@@ -157,7 +157,7 @@ mod imp {
                         0 => i18n("Online"),
                         _ => i18n("Offline"),
                     },
-                    "IDK LMAO",
+                    "UNKNOWN",
                 );
 
                 roze.push(new_row);
