@@ -121,7 +121,6 @@ mod imp {
             self.last_updated
                 .set_text(&i18n_f("{} ago", &[&last_updated_nice]));
 
-            // self.status.set_text(result.status.to_string().as_str());
             self.status
                 .set_text(format!("{:?}", result.test_result).as_str());
         }
