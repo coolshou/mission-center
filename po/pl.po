@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-08 09:45+0300\n"
-"PO-Revision-Date: 2024-11-19 15:00+0000\n"
+"PO-Revision-Date: 2025-01-03 10:07+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -166,7 +166,7 @@ msgstr "Która strona jest pokazywana po uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "NIEAKTUALNE! NIEUŻYWANE!"
+msgstr "PRZESTARZAŁE! JUŻ NIE W UŻYCIU!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
@@ -208,6 +208,7 @@ msgstr "Sortowanie kolumn jest zachowywane po ponownym uruchomieniu aplikacji"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Skaluje użycie procesora dla aplikacji i procesów do liczby dostępnych rdzeni"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
