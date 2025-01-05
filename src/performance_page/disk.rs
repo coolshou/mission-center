@@ -25,7 +25,8 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::{
-    widgets::{GraphWidget, EjectFailureDialog, SmartDataDialog}, PageExt
+    widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog},
+    PageExt,
 };
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
@@ -175,11 +176,7 @@ mod imp {
             self.smart_dialog.set(widget.cloned());
         }
 
-        pub fn show_eject_result(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: EjectResult,
-        ) {
+        pub fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
             let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
 
             details_dialog.map(move |d| {

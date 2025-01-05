@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u32, deser_u64, deser_u8};
+use super::{deser_bool, deser_f32, deser_str, deser_u32, deser_u64, deser_u8};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]

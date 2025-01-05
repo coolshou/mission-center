@@ -18,10 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pub use eject_failure_dialog::EjectFailureDialog;
 pub use graph_widget::GraphWidget;
 pub use mem_composition_widget::MemoryCompositionWidget;
 pub use sidebar_drop_hint::SidebarDropHint;
-pub use eject_failure_dialog::EjectFailureDialog;
 pub use smart_dialog::SmartDataDialog;
 
 const GRAPH_RADIUS: f32 = 7.;
