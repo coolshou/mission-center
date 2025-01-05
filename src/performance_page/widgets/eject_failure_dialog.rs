@@ -32,6 +32,8 @@ use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
 
 mod imp {
+    use std::collections::HashMap;
+    use crate::sys_info_v2::App;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -47,8 +49,7 @@ mod imp {
 
     impl EjectFailureDialog {
         pub fn apply_eject_result(&self, result: EjectResult, parent: &PerformancePageDisk) {
-            let app = app!();
-            let parsed_results = app.handle_eject_result(result);
+            let parsed_results = Self::parse_blocking_processes(result);
 
             let modelo = self.column_view.get();
 
@@ -100,6 +101,56 @@ mod imp {
                     }
                 }
             }
+        }
+
+        fn parse_blocking_processes(result: EjectResult) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
+            let mut parsed_results: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> =
+                HashMap::new();
+
+            if !result.success {
+                let Some(window) = app!().window() else {
+                    g_critical!(
+                        "MissionCenter::Application",
+                        "No active window, when trying to show eject dialog"
+                    );
+
+                    return parsed_results;
+                };
+
+                if result.blocking_processes.is_empty() {
+                    return parsed_results;
+                }
+
+                let apps = window.imp().apps_page.get_running_apps();
+                let apps = apps.values().map(|c| c.clone()).collect::<Vec<_>>();
+
+                for blocking_process in result.blocking_processes {
+                    if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0)) {
+                        if let Some(val) = parsed_results.get_mut(black.name.to_string().as_str()) {
+                            val.1.push(blocking_process);
+                        } else {
+                            parsed_results.insert(
+                                black.name.as_ref().parse().unwrap(),
+                                (black.clone(), vec![blocking_process]),
+                            );
+                        }
+                    } else {
+                        if let Some((_, blocking)) = parsed_results.get_mut("") {
+                            blocking.push(blocking_process);
+                        } else {
+                            parsed_results.insert(
+                                "".parse().unwrap(),
+                                (
+                                    Default::default(),
+                                    vec![blocking_process],
+                                ),
+                            );
+                        }
+                    }
+                }
+            }
+
+            parsed_results
         }
     }
 

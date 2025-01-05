@@ -25,7 +25,7 @@ use gtk::{
 };
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 use std::collections::HashMap;
-
+use std::sync::Arc;
 use crate::sys_info_v2::{App, EjectResult};
 use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
@@ -351,30 +351,5 @@ impl MissionCenterApplication {
         );
 
         about.present(Some(&window));
-    }
-
-    pub fn handle_eject_result(
-        &self,
-        result: EjectResult,
-    ) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
-        if !result.success {
-            let Some(window) = self.window() else {
-                g_critical!(
-                    "MissionCenter::Application",
-                    "No active window, when trying to show eject dialog"
-                );
-                return HashMap::new();
-            };
-
-            let back = window.handle_eject_result(result);
-            return back;
-            /*            let dialogue = adw::Dialog::builder()
-                .title("Eject failed".to_string())
-                .build();
-
-            dialogue.present(Some(&window));*/
-        }
-
-        HashMap::new()
     }
 }
