@@ -20,7 +20,8 @@
 
 use adw::ResponseAppearance;
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self, g_warning, ParamSpec, Properties, Value};
+use gtk::glib::g_critical;
+use gtk::glib::{self, g_warning};
 use std::cell::Cell;
 use std::sync::Arc;
 
@@ -31,7 +32,6 @@ use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
 
 mod imp {
-    use gtk::glib::g_critical;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -83,7 +83,7 @@ mod imp {
                             .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
-                        modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                        modelo.append(&new_root.imp().row_entry.get());
                     }
 
                     if !process.2.is_empty() {
@@ -96,7 +96,7 @@ mod imp {
                             .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
-                        modelo.append(new_root.imp().row_entry.get().expect("Missing row entry"));
+                        modelo.append(&new_root.imp().row_entry.get());
                     }
                 }
             }
@@ -160,7 +160,7 @@ mod imp {
                                     "`parent_page` was unexpectedly empty",
                                 );
                                 return Ok(());
-                            },
+                            }
                         };
 
                         let disk_id = match parent.imp().raw_disk_id.get() {
@@ -171,10 +171,9 @@ mod imp {
                                     "`disk_id` was unexpectedly empty",
                                 );
                                 return Ok(());
-                            },
+                            }
                         };
-                        let eject_result =
-                            sys_info.eject_disk(disk_id, false, 0);
+                        let eject_result = sys_info.eject_disk(disk_id, false, 0);
 
                         parent.imp().show_eject_result(&parent, eject_result);
 
@@ -200,7 +199,7 @@ mod imp {
                                     "`parent_page` was unexpectedly empty",
                                 );
                                 return Ok(());
-                            },
+                            }
                         };
 
                         let disk_id = match parent.imp().raw_disk_id.get() {
@@ -211,10 +210,9 @@ mod imp {
                                     "`disk_id` was unexpectedly empty",
                                 );
                                 return Ok(());
-                            },
+                            }
                         };
-                        let eject_result =
-                            sys_info.eject_disk(disk_id, true, 0);
+                        let eject_result = sys_info.eject_disk(disk_id, true, 0);
 
                         parent.imp().show_eject_result(&parent, eject_result);
 

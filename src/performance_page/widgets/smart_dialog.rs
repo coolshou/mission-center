@@ -31,9 +31,9 @@ use gtk::gio;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 mod imp {
+    use super::*;
     use dbus::arg::RefArg;
     use gtk::{Align, ColumnViewColumn};
-    use super::*;
 
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::SmartDataDialog)]
@@ -196,15 +196,14 @@ mod imp {
             column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
         }
 
-        fn setup_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E) where
+        fn setup_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E)
+        where
             E: Fn(SmartDialogRow) -> String + 'static,
         {
             let factory_id_col = gtk::SignalListItemFactory::new();
             factory_id_col.connect_setup(move |_factory, list_item| {
                 let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
-                cell.set_child(Some(
-                    &gtk::Label::builder().halign(alignment).build(),
-                ));
+                cell.set_child(Some(&gtk::Label::builder().halign(alignment).build()));
             });
             factory_id_col.connect_bind(move |_factory, list_item| {
                 let cell = list_item

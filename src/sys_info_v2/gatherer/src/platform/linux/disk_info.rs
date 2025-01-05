@@ -22,6 +22,7 @@ use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::logging::{critical, warning};
 use crate::platform::disk_info::{DiskInfoExt, DiskType, DisksInfoExt};
 use crate::platform::DiskSmartInterface;
+use crate::MK_TO_0_C;
 use glob::glob;
 use pollster::FutureExt;
 use std::cmp::max;
@@ -29,7 +30,6 @@ use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
 use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::Client;
-use crate::MK_TO_0_C;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -288,7 +288,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             let dirs = std::fs::read_dir("/sys/block").unwrap();
 
             // leaving this here just in case...
-/*            let Ok(raw_dir_name) = block
+            /*            let Ok(raw_dir_name) = block
                 .device()
                 .block_on()
                 .map(|it| String::from_utf8(it).unwrap())
@@ -422,7 +422,11 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 temp_inputs[0]
             } else {
                 match &drive_ata {
-                    Ok(drive_ata) => drive_ata.smart_temperature().block_on().map(|f| (f * 1000.) as u32).unwrap_or(0),
+                    Ok(drive_ata) => drive_ata
+                        .smart_temperature()
+                        .block_on()
+                        .map(|f| (f * 1000.) as u32)
+                        .unwrap_or(0),
                     Err(_) => 0,
                 }
             };

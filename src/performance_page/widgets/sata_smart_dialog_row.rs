@@ -21,13 +21,13 @@
 use std::cell::Cell;
 
 use crate::i18n::{i18n, i18n_f};
+use crate::performance_page::MK_TO_0_C;
 use gtk::subclass::prelude::WidgetImpl;
 use gtk::{
     glib,
     glib::{prelude::*, subclass::prelude::*, Properties},
 };
 use std::cell::OnceCell;
-use crate::performance_page::MK_TO_0_C;
 
 mod imp {
     use super::*;
@@ -100,7 +100,10 @@ impl SmartDialogRow {
                     0 => i18n("N/A"),
                     2 => crate::to_human_readable_time(pretty as u64 / 1000),
                     3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
-                    4 => i18n_f("{} °C", &[&format!("{}", (pretty as u32 - MK_TO_0_C) / 1000)]),
+                    4 => i18n_f(
+                        "{} °C",
+                        &[&format!("{}", (pretty as u32 - MK_TO_0_C) / 1000)],
+                    ),
                     _ => format!("{}", pretty),
                 },
             )
