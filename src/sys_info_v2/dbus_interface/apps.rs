@@ -25,7 +25,7 @@ use gtk::glib::g_critical;
 
 use super::{deser_array, deser_str};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct App {
     pub name: Arc<str>,
     pub icon: Option<Arc<str>>,
