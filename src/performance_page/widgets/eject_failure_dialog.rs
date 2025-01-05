@@ -126,8 +126,8 @@ mod imp {
 
                 for blocking_process in result.blocking_processes {
                     if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0)) {
-                        if let Some(val) = parsed_results.get_mut(black.name.to_string().as_str()) {
-                            val.1.push(blocking_process);
+                        if let Some((_, blocking)) = parsed_results.get_mut(black.name.to_string().as_str()) {
+                            blocking.push(blocking_process);
                         } else {
                             parsed_results.insert(
                                 black.name.as_ref().parse().unwrap(),
