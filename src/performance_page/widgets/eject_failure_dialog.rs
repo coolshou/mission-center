@@ -32,9 +32,9 @@ use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
 
 mod imp {
-    use std::collections::HashMap;
-    use crate::sys_info_v2::App;
     use super::*;
+    use crate::sys_info_v2::App;
+    use std::collections::HashMap;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
@@ -103,7 +103,9 @@ mod imp {
             }
         }
 
-        fn parse_blocking_processes(result: EjectResult) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
+        fn parse_blocking_processes(
+            result: EjectResult,
+        ) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
             let mut parsed_results: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> =
                 HashMap::new();
 
@@ -125,8 +127,11 @@ mod imp {
                 let apps = apps.values().map(|c| c.clone()).collect::<Vec<_>>();
 
                 for blocking_process in result.blocking_processes {
-                    if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0)) {
-                        if let Some((_, blocking)) = parsed_results.get_mut(black.name.to_string().as_str()) {
+                    if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0))
+                    {
+                        if let Some((_, blocking)) =
+                            parsed_results.get_mut(black.name.to_string().as_str())
+                        {
                             blocking.push(blocking_process);
                         } else {
                             parsed_results.insert(
@@ -140,10 +145,7 @@ mod imp {
                         } else {
                             parsed_results.insert(
                                 "".parse().unwrap(),
-                                (
-                                    Default::default(),
-                                    vec![blocking_process],
-                                ),
+                                (Default::default(), vec![blocking_process]),
                             );
                         }
                     }

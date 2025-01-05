@@ -21,23 +21,20 @@
 use std::cell::Cell;
 
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self, ParamSpec, Properties, Value};
+use gtk::glib::{self};
 
 use crate::i18n::*;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::sata_smart_dialog_row::SmartDialogRow;
 use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
 use gtk::gio;
+use gtk::{Align, ColumnViewColumn};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 mod imp {
     use super::*;
-    use dbus::arg::RefArg;
-    use gtk::{Align, ColumnViewColumn};
 
-    #[derive(Default, Properties)]
-    #[properties(wrapper_type = super::SmartDataDialog)]
-    #[derive(gtk::CompositeTemplate)]
+    #[derive(Default, gtk::CompositeTemplate)]
     #[template(
         resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_data_dialog.ui"
     )]
@@ -305,18 +302,6 @@ mod imp {
     }
 
     impl ObjectImpl for SmartDataDialog {
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
-
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
         }
