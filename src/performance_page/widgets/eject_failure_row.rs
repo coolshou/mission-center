@@ -205,7 +205,7 @@ impl EjectFailureRowBuilder {
                     };
                     efd.close();
                     // efd.imp().apply_eject_result(back, parent);
-                    // todo this feels leaky
+                    // TODO: this feels leaky
                     parent.imp().show_eject_result(parent, eject_result);
                 }
             });

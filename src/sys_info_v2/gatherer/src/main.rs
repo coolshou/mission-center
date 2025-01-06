@@ -602,7 +602,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             };
 
                                             if points.iter().any(|p| real_path.starts_with(p)) {
-                                                // todo kill this process and then retry if force
+                                                // TODO: kill this process and then retry if force
                                                 paths.push(real_path.display().to_string());
                                             }
                                         }

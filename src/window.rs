@@ -18,10 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::{gio, glib};
-use std::cell::Cell;
 
 use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
 
