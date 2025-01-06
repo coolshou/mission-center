@@ -51,17 +51,14 @@ mod imp {
         pub fn apply_eject_result(&self, result: EjectResult, parent: &PerformancePageDisk) {
             let parsed_results = Self::parse_blocking_processes(result);
 
-            let modelo = self.column_view.get();
+            let model = self.column_view.get();
 
             self.parent_page
                 .set(Some(parent.downgrade().upgrade().unwrap()));
 
-            modelo.remove_all();
+            model.remove_all();
 
-            for parsed_result in parsed_results {
-                let appname = parsed_result.0.to_string();
-                let (app_obj, processes) = parsed_result.1;
-
+            for (appname, (app_obj, processes)) in parsed_results {
                 let iconname = match app_obj.icon.as_ref() {
                     Some(icon) => icon,
                     None => &Arc::from(""),
@@ -73,31 +70,31 @@ mod imp {
                     .get()
                     .expect("Expected a raw disk id, got none");
 
-                for process in processes {
-                    if !process.1.is_empty() {
+                for (pid, files, dirs) in processes {
+                    if !files.is_empty() {
                         let new_root = EjectFailureRowBuilder::new()
                             .id(parent_id)
                             .icon(iconname)
-                            .files_open(process.1.clone())
-                            .pid(process.0)
+                            .files_open(files.clone())
+                            .pid(pid)
                             .name(&appname)
                             .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
-                        modelo.append(&new_root.imp().row_entry.get());
+                        model.append(&new_root.imp().row_entry.get());
                     }
 
-                    if !process.2.is_empty() {
+                    if !dirs.is_empty() {
                         let new_root = EjectFailureRowBuilder::new()
                             .id(parent_id)
                             .icon(iconname)
-                            .files_open(process.2.clone())
-                            .pid(process.0)
+                            .files_open(dirs.clone())
+                            .pid(pid)
                             .name(&appname)
                             .parent_page(parent.downgrade().upgrade().unwrap())
                             .build();
 
-                        modelo.append(&new_root.imp().row_entry.get());
+                        model.append(&new_root.imp().row_entry.get());
                     }
                 }
             }
