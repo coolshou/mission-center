@@ -380,6 +380,15 @@ Box root {
       }
       height-request: 10;
     }
+  }
+
+  Grid {
+    row-spacing: 5;
+    column-spacing: 0;
+
+    styles [
+      "layout-grid"
+    ]
 
     Label {
       styles [
@@ -390,8 +399,8 @@ Box root {
       label: _("IPv4 address:");
 
       layout {
-        column: '1';
-        row: '11';
+        column: '0';
+        row: '0';
       }
     }
 
@@ -406,8 +415,8 @@ Box root {
       ellipsize: middle;
 
       layout {
-        column: '1';
-        row: '12';
+        column: '0';
+        row: '1';
       }
     }
 
@@ -419,8 +428,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '11';
+        column: '1';
+        row: '0';
       }
     }
 
@@ -432,8 +441,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '12';
+        column: '1';
+        row: '1';
       }
     }
   }
