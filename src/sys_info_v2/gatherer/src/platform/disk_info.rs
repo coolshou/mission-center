@@ -35,6 +35,7 @@ pub enum DiskType {
     NVMe,
     eMMC,
     SD,
+    Floppy,
     Optical,
 }
 

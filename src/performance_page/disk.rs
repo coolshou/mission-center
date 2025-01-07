@@ -354,6 +354,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::SD => "SD",
+                    DiskType::Floppy => "Floppy",
                     DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
                 });
