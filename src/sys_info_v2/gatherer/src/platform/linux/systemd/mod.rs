@@ -249,13 +249,12 @@ impl<'a> ServiceManager<'a> {
 
         // take the filename from the second element in files.val
 
-        let foyles = files.val.iter().filter_map(|(service, _)| std::path::Path::new(service).file_name()).filter_map(|fname| fname.to_str()).map(|fname| fname.to_string().replace('@', ""));
-        let servicoss: Vec<String> = foyles.collect();
+        let services: Vec<String> = files.val.iter().filter_map(|(service, _)| std::path::Path::new(service).file_name()).filter_map(|fname| fname.to_str()).map(|fname| fname.to_string().replace('@', "")).collect();
         let (mut services,): (ServiceVec,) = dbus_call_wait_reply(
             &self.systemd1,
             "org.freedesktop.systemd1.Manager",
             "ListUnitsByNames",
-            (servicoss,),
+            (services,),
         )?;
 
         let mut services = services
