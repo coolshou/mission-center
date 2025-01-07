@@ -1129,6 +1129,7 @@ mod imp {
                 DiskType::NVMe => i18n("NVMe"),
                 DiskType::eMMC => i18n("eMMC"),
                 DiskType::SD => i18n("SD"),
+                DiskType::Floppy => i18n("Floppy"),
                 DiskType::Optical => i18n("Optical"),
                 DiskType::Unknown => i18n("Unknown"),
             });

@@ -35,6 +35,7 @@ pub enum DiskType {
     NVMe,
     eMMC,
     SD,
+    Floppy,
     Optical,
 }
 
@@ -49,7 +50,8 @@ impl TryFrom<u8> for DiskType {
             3 => Ok(DiskType::NVMe),
             4 => Ok(DiskType::eMMC),
             5 => Ok(DiskType::SD),
-            6 => Ok(DiskType::Optical),
+            6 => Ok(DiskType::Floppy),
+            7 => Ok(DiskType::Optical),
             _ => Err(format!("Unknown DiskType value: {}", value)),
         }
     }

@@ -640,8 +640,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 } else if dir_name.starts_with("mmc") {
                     Self::get_mmc_type(&dir_name)
                 } else if dir_name.starts_with("fd") {
-                    // fixme
-                    DiskType::Unknown
+                    DiskType::Floppy
                 } else if dir_name.starts_with("sr") {
                     // TODO: specify what type better
                     DiskType::Optical
@@ -650,7 +649,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         Ok(RotationRate::NonRotating) | Ok(RotationRate::Rotating(0)) => {
                             if drive.removable().block_on().unwrap_or(false) {
                                 // FIXME This was `Flash`, do we want that or something else?
-                                DiskType::Unknown
+                                DiskType::SSD
                             } else {
                                 DiskType::SSD
                             }
