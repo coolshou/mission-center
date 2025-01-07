@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package magpie.processes;
+
+import "common.proto";
+
+enum ProcessState {
+  Running = 0;
+  Sleeping = 1;
+  SleepingUninterruptible = 2;
+  Zombie = 3;
+  Stopped = 4;
+  Tracing = 5;
+  Dead = 6;
+  WakeKill = 7;
+  Waking = 8;
+  Parked = 9;
+  Unknown = 10;
+}
+
+message ProcessUsageStats {
+  float cpu_usage = 1;
+  float memory_usage = 2;
+  float disk_usage = 3;
+  float network_usage = 4;
+  float gpu_usage = 5;
+  float gpu_memory_usage = 6;
+}
+
+message Process {
+  string name = 1;
+  repeated string cmd = 2;
+  string exe = 3;
+  ProcessState state = 4;
+  uint32 pid = 5;
+  uint32 parent = 6;
+  ProcessUsageStats usage_stats = 7;
+  uint64 task_count = 8;
+  repeated uint32 children = 9;
+}
+
+message ProcessesRequest {}
+
+message ProcessesResponse {
+  message ProcessMap {
+    map<uint32, Process> processes = 1;
+  }
+
+  oneof response {
+    ProcessMap processes = 1;
+    ProcessesResponseError error = 2;
+  }
+}
+
+message ProcessesResponseError {}

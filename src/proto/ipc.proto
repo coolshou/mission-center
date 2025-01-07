@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "apps.proto";
+import "processes.proto";
+
+package magpie.ipc;
+
+message Request {
+    oneof body {
+        magpie.apps.AppsRequest get_apps = 1;
+        magpie.processes.ProcessesRequest get_processes = 2;
+    }
+}
+
+message Response {
+    message Error {
+        string message = 1;
+    }
+
+    oneof body {
+        magpie.apps.AppsResponse apps = 1;
+        magpie.processes.ProcessesResponse processes = 2;
+        Error error = 10;
+    }
+}

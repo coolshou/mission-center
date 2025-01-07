@@ -5,5 +5,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("cargo:rustc-link-arg=-lGL");
     }
 
+    prost_build::Config::new()
+        .compile_protos(
+            &[
+                "src/proto/apps.proto",
+                "src/proto/common.proto",
+                "src/proto/ipc.proto",
+                "src/proto/processes.proto",
+            ],
+            &["src/proto/"],
+        )
+        .unwrap();
+
     Ok(())
 }

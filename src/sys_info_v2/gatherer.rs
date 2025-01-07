@@ -18,79 +18,42 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::num::NonZeroU32;
-use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc, time::Duration};
-
-use dbus::blocking::{
-    stdintf::{org_freedesktop_dbus::Peer, org_freedesktop_dbus::Properties},
-    LocalConnection, Proxy,
-};
+use dbus::arg::RefArg;
+use dbus::blocking::stdintf::{org_freedesktop_dbus::Peer, org_freedesktop_dbus::Properties};
 use gtk::glib::g_critical;
+use prost::Message;
+use std::num::NonZeroU32;
+use std::{cell::RefCell, collections::HashMap, sync::Arc};
+use zeromq::prelude::*;
+use zeromq::ReqSocket;
 
 pub use super::dbus_interface::*;
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 use crate::show_error_dialog_and_exit;
+use ipc::{request, response, Request, Response};
+use processes::processes_response;
+use processes::ProcessesRequest;
 
-macro_rules! dbus_call {
-    ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
-        use gtk::glib::g_critical;
-        use super::dbus_interface::Gatherer;
-
-        const RETRY_COUNT: i32 = 10;
-
-        for i in 1..=RETRY_COUNT {
-            match $self.proxy.$method($($args,)*) {
-                Ok(reply) => {
-                    return reply;
-                }
-                Err(e) => {
-                    match $self.is_running() {
-                        Ok(()) => {
-                            if e.name() == Some("org.freedesktop.DBus.Error.NoReply") {
-                                g_critical!(
-                                    "MissionCenter::Gatherer",
-                                    "DBus call '{}' timed out, on try {}",
-                                    $dbus_method_name, i,
-                                );
-
-                                if i == RETRY_COUNT - 1 {
-                                    g_critical!("MissionCenter::Gatherer", "Restarting Gatherer...");
-                                    $self.stop();
-                                    $self.start();
-                                } else {
-                                    std::thread::sleep(Duration::from_millis(100));
-                                }
-                            } else {
-                                g_critical!(
-                                    "MissionCenter::Gatherer",
-                                    "DBus call '{}' failed on try {}: {}",
-                                    $dbus_method_name, i, e,
-                                );
-
-                                std::thread::sleep(Duration::from_millis(100));
-                            }
-                        }
-                        Err(exit_code) => {
-                            g_critical!(
-                                "MissionCenter::Gatherer",
-                                "Child failed, on try {}, with exit code {}. Restarting Gatherer...",
-                                i, exit_code,
-                            );
-                            $self.start();
-                        }
-                    }
-                }
-            }
-        }
-
-        show_error_dialog_and_exit(&format!("DBus call '{}' failed after {} retries 😟.\nThe app will now close.", $dbus_method_name, RETRY_COUNT));
-    }};
+mod apps {
+    include!(concat!(env!("OUT_DIR"), "/magpie.apps.rs"));
 }
 
+mod common {
+    include!(concat!(env!("OUT_DIR"), "/magpie.common.rs"));
+}
+
+mod ipc {
+    include!(concat!(env!("OUT_DIR"), "/magpie.ipc.rs"));
+}
+
+mod processes {
+    include!(concat!(env!("OUT_DIR"), "/magpie.processes.rs"));
+}
+
+
 pub(crate) struct Gatherer {
-    #[allow(dead_code)]
-    connection: Rc<LocalConnection>,
-    proxy: Proxy<'static, Rc<LocalConnection>>,
+    socket: RefCell<ReqSocket>,
+    tokio_runtime: tokio::runtime::Runtime,
 
     child: RefCell<Option<std::process::Child>>,
 }
@@ -103,145 +66,152 @@ impl Drop for Gatherer {
 
 impl Gatherer {
     pub fn new() -> Self {
-        let connection = Rc::new(LocalConnection::new_session().unwrap_or_else(|e| {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to connect to D-Bus: {}",
-                e
-            );
-            show_error_dialog_and_exit("Failed to connect to D-Bus 😟.\nThe app will now close.");
-        }));
-
-        let proxy = Proxy::new(
-            MC_GATHERER_INTERFACE_NAME,
-            MC_GATHERER_OBJECT_PATH,
-            Duration::from_millis(1000),
-            connection.clone(),
-        );
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .worker_threads(2)
+            .build()
+            .expect("Failed to create Tokio runtime");
 
         Self {
-            connection,
-            proxy,
+            socket: RefCell::new(ReqSocket::new()),
+            tokio_runtime: rt,
+
             child: RefCell::new(None),
         }
     }
 
     pub fn start(&self) {
-        let mut command = if *IS_FLATPAK {
-            const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+        // let mut command = if *IS_FLATPAK {
+        //     const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+        //
+        //     let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        //     cmd.env_remove("LD_PRELOAD");
+        //     cmd.arg("-v")
+        //         .arg("--watch-bus")
+        //         .arg("--host")
+        //         .arg(Self::executable());
+        //     cmd
+        // } else {
+        //     let mut cmd = std::process::Command::new(Self::executable());
+        //     cmd.env_remove("LD_PRELOAD");
+        //
+        //     if let Some(mut appdir) = std::env::var_os("APPDIR") {
+        //         appdir.push("/runtime/default");
+        //         cmd.current_dir(appdir);
+        //     }
+        //
+        //     cmd
+        // };
+        // command
+        //     .stdout(std::process::Stdio::inherit())
+        //     .stderr(std::process::Stdio::inherit());
+        //
+        // self.child.borrow_mut().replace(match command.spawn() {
+        //     Ok(c) => c,
+        //     Err(e) => {
+        //         g_critical!(
+        //             "MissionCenter::Gatherer",
+        //             "Failed to spawn Gatherer process: {}",
+        //             &e
+        //         );
+        //         show_error_dialog_and_exit(&format!("Failed to spawn Gatherer process: {}", e));
+        //     }
+        // });
 
-            let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
-            cmd.env_remove("LD_PRELOAD");
-            cmd.arg("-v")
-                .arg("--watch-bus")
-                .arg("--host")
-                .arg(Self::executable());
-            cmd
-        } else {
-            let mut cmd = std::process::Command::new(Self::executable());
-            cmd.env_remove("LD_PRELOAD");
+        // const START_WAIT_TIME_MS: u64 = 300;
+        // const RETRY_COUNT: i32 = 50;
+        //
+        // // Let the child process start up
+        // for i in 0..RETRY_COUNT {
+        //     std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+        //     match self.proxy.ping() {
+        //         Ok(()) => return,
+        //         Err(e) => {
+        //             g_critical!(
+        //                 "MissionCenter::Gatherer",
+        //                 "Call to Gatherer Ping method failed on try {}: {}",
+        //                 i,
+        //                 e,
+        //             );
+        //         }
+        //     }
+        //     std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+        // }
 
-            if let Some(mut appdir) = std::env::var_os("APPDIR") {
-                appdir.push("/runtime/default");
-                cmd.current_dir(appdir);
-            }
-
-            cmd
-        };
-        command
-            .stdout(std::process::Stdio::inherit())
-            .stderr(std::process::Stdio::inherit());
-
-        self.child.borrow_mut().replace(match command.spawn() {
-            Ok(c) => c,
+        match self.tokio_runtime.block_on(async {
+            self.socket.borrow_mut().connect("ipc:///tmp/magpie_test.ipc").await
+        }) {
+            Ok(_) => (),
             Err(e) => {
                 g_critical!(
                     "MissionCenter::Gatherer",
-                    "Failed to spawn Gatherer process: {}",
-                    &e
+                    "Failed to connect to Gatherer socket: {}",
+                    e
                 );
-                show_error_dialog_and_exit(&format!("Failed to spawn Gatherer process: {}", e));
+                show_error_dialog_and_exit(&format!(
+                    "Failed to connect to Gatherer socket: {}",
+                    e
+                ));
             }
-        });
-
-        const START_WAIT_TIME_MS: u64 = 300;
-        const RETRY_COUNT: i32 = 50;
-
-        // Let the child process start up
-        for i in 0..RETRY_COUNT {
-            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
-            match self.proxy.ping() {
-                Ok(()) => return,
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Call to Gatherer Ping method failed on try {}: {}",
-                        i,
-                        e,
-                    );
-                }
-            }
-            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
         }
-
-        show_error_dialog_and_exit("Failed to spawn Gatherer process: Did not respond to Ping");
     }
 
     pub fn stop(&self) {
-        let child = self.child.borrow_mut().take();
-        if let Some(mut child) = child {
-            // Try to get the child to wake up in case it's stuck
-            #[cfg(target_family = "unix")]
-            unsafe {
-                libc::kill(child.id() as _, libc::SIGCONT);
-            }
-
-            let _ = child.kill();
-            for _ in 0..2 {
-                match child.try_wait() {
-                    Ok(Some(_)) => return,
-                    Ok(None) => {
-                        // Wait a bit and try again, the child process might just be slow to stop
-                        std::thread::sleep(Duration::from_millis(20));
-                        continue;
-                    }
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::Gatherer",
-                            "Failed to wait for Gatherer process to stop: {}",
-                            &e
-                        );
-
-                        show_error_dialog_and_exit(&format!(
-                            "Failed to wait for Gatherer process to stop: {}",
-                            e
-                        ));
-                    }
-                }
-            }
-        }
+        // let child = self.child.borrow_mut().take();
+        // if let Some(mut child) = child {
+        //     // Try to get the child to wake up in case it's stuck
+        //     #[cfg(target_family = "unix")]
+        //     unsafe {
+        //         libc::kill(child.id() as _, libc::SIGCONT);
+        //     }
+        //
+        //     let _ = child.kill();
+        //     for _ in 0..2 {
+        //         match child.try_wait() {
+        //             Ok(Some(_)) => return,
+        //             Ok(None) => {
+        //                 // Wait a bit and try again, the child process might just be slow to stop
+        //                 std::thread::sleep(Duration::from_millis(20));
+        //                 continue;
+        //             }
+        //             Err(e) => {
+        //                 g_critical!(
+        //                     "MissionCenter::Gatherer",
+        //                     "Failed to wait for Gatherer process to stop: {}",
+        //                     &e
+        //                 );
+        //
+        //                 show_error_dialog_and_exit(&format!(
+        //                     "Failed to wait for Gatherer process to stop: {}",
+        //                     e
+        //                 ));
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     pub fn is_running(&self) -> Result<(), i32> {
-        let mut lock = self.child.borrow_mut();
-
-        let child = match lock.as_mut() {
-            Some(child) => child,
-            None => return Err(-1),
-        };
-
-        let status = match child.try_wait() {
-            Ok(None) => return Ok(()),
-            Ok(Some(status)) => status,
-            Err(_) => {
-                return Err(-1);
-            }
-        };
-
-        match status.code() {
-            Some(status_code) => Err(status_code),
-            None => Err(-1),
-        }
+        // let mut lock = self.child.borrow_mut();
+        //
+        // let child = match lock.as_mut() {
+        //     Some(child) => child,
+        //     None => return Err(-1),
+        // };
+        //
+        // let status = match child.try_wait() {
+        //     Ok(None) => return Ok(()),
+        //     Ok(Some(status)) => status,
+        //     Err(_) => {
+        //         return Err(-1);
+        //     }
+        // };
+        //
+        // match status.code() {
+        //     Some(status_code) => Err(status_code),
+        //     None => Err(-1),
+        // }
+        Ok(())
     }
 
     fn executable() -> String {
@@ -296,101 +266,166 @@ impl Gatherer {
 }
 
 impl Gatherer {
-    pub fn set_refresh_interval(&self, interval: u64) {
-        if let Err(e) = self
-            .proxy
-            .set(MC_GATHERER_INTERFACE_NAME, "RefreshInterval", interval)
-        {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to set RefreshInterval property: {e}"
-            );
-        }
+    pub fn set_refresh_interval(&self, _interval: u64) {
     }
 
-    pub fn set_core_count_affects_percentages(&self, v: bool) {
-        if let Err(e) = self
-            .proxy
-            .set(MC_GATHERER_INTERFACE_NAME, "CoreCountAffectsPercentages", v)
-        {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to set CoreCountAffectsPercentages property: {e}"
-            );
-        }
+    pub fn set_core_count_affects_percentages(&self, _v: bool) {
     }
 
     pub fn cpu_static_info(&self) -> CpuStaticInfo {
-        dbus_call!(self, get_cpu_static_info, "GetCPUStaticInfo");
+        CpuStaticInfo::default()
     }
 
     pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
-        dbus_call!(self, get_cpu_dynamic_info, "GetCPUDynamicInfo");
+        CpuDynamicInfo::default()
     }
 
     pub fn disks_info(&self) -> Vec<DiskInfo> {
-        dbus_call!(self, get_disks_info, "GetDisksInfo");
+        vec![]
     }
 
     pub fn fans_info(&self) -> Vec<FanInfo> {
-        dbus_call!(self, get_fans_info, "GetFansInfo");
+        vec![]
     }
 
     #[allow(unused)]
     pub fn gpu_list(&self) -> Vec<Arc<str>> {
-        dbus_call!(self, get_gpu_list, "GetGPUList");
+        vec![]
     }
 
     pub fn gpu_static_info(&self) -> Vec<GpuStaticInfo> {
-        dbus_call!(self, get_gpu_static_info, "GetGPUStaticInfo");
+        vec![]
     }
 
     pub fn gpu_dynamic_info(&self) -> Vec<GpuDynamicInfo> {
-        dbus_call!(self, get_gpu_dynamic_info, "GetGPUDynamicInfo");
+        vec![]
     }
 
     pub fn processes(&self) -> HashMap<u32, Process> {
-        dbus_call!(self, get_processes, "GetProcesses");
+        let mut request= Vec::new();
+
+        let encode_res = Request {
+            body: Some(request::Body::GetProcesses(ProcessesRequest::default()))
+        }.encode(&mut request);
+
+        if let Err(e) = encode_res {
+            g_critical!("MissionCenter::Gatherer", "Failed to encode request: {}", e);
+            return HashMap::new();
+        }
+
+        let mut socket = self.socket.borrow_mut();
+        let send_res = self.tokio_runtime.block_on(async {
+            socket.send(request.into()).await
+        });
+        match send_res {
+            Err(e) => {
+                g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
+                return HashMap::new();
+            }
+            _ => {}
+        }
+
+        let recv_res = self.tokio_runtime.block_on(async {
+            socket.recv().await
+        });
+        let response = match recv_res {
+            Ok(response) => response.into_vec(),
+            Err(e) => {
+                g_critical!("MissionCenter::Gatherer", "Failed to receive response: {}", e);
+                return HashMap::new();
+            }
+        };
+        if response.is_empty() {
+            g_critical!("MissionCenter::Gatherer", "Empty reply when getting processes");
+            return HashMap::new();
+        }
+        let decode_result = if response.len() > 1 {
+            Response::decode(response.concat().as_slice())
+        } else {
+            Response::decode(response[0].iter().as_slice())
+        };
+        let response = match decode_result {
+            Ok(r) => r,
+            Err(e) => {
+                g_critical!("MissionCenter::Gatherer", "Error while getting process list: {:?}", e);
+                return HashMap::new();
+            }
+        };
+
+        match response.body {
+            Some(response::Body::Processes(processes)) => {
+                match processes.response {
+                    Some(processes_response::Response::Processes(mut process_map)) => {
+                        process_map.processes.iter().map(|(pid, process)| {
+                            (*pid, Process {
+                                name: Arc::from(process.name.as_str()),
+                                cmd: process.cmd.iter().map(|s|Arc::from(s.as_str())).collect(),
+                                exe: Arc::from(process.exe.as_str()),
+                                state: unsafe { std::mem::transmute(process.state as u8) },
+                                pid: process.pid,
+                                parent: process.parent,
+                                usage_stats: process.usage_stats.as_ref().map(|usage_stats| ProcessUsageStats {
+                                    cpu_usage: usage_stats.cpu_usage,
+                                    memory_usage: usage_stats.memory_usage,
+                                    disk_usage: usage_stats.disk_usage,
+                                    network_usage: usage_stats.network_usage,
+                                    gpu_usage: usage_stats.gpu_usage,
+                                    gpu_memory_usage: usage_stats.gpu_memory_usage,
+                                }).unwrap_or_default(),
+                                merged_usage_stats: Default::default(),
+                                task_count: process.task_count as _,
+                                children: HashMap::new(),
+                            })
+                        }).collect()
+                    }
+                    Some(processes_response::Response::Error(e)) => {
+                        g_critical!("MissionCenter::Gatherer", "Error while getting process list: {:?}", e);
+                        HashMap::new()
+                    }
+                    _ => {
+                        g_critical!("MissionCenter::Gatherer", "Unexpected response: {:?}", processes.response);
+                        HashMap::new()
+                    }
+                }
+            }
+            _ => {
+                g_critical!("MissionCenter::Gatherer", "Unexpected response: {:?}", response);
+                HashMap::new()
+            }
+        }
     }
 
     pub fn apps(&self) -> HashMap<Arc<str>, App> {
-        dbus_call!(self, get_apps, "GetApps");
+        HashMap::new()
     }
 
     pub fn services(&self) -> HashMap<Arc<str>, Service> {
-        dbus_call!(self, get_services, "GetServices");
+        HashMap::new()
     }
 
-    pub fn terminate_process(&self, pid: u32) {
-        dbus_call!(self, terminate_process, "TerminateProcess", pid);
+    pub fn terminate_process(&self, _pid: u32) {
     }
 
-    pub fn kill_process(&self, pid: u32) {
-        dbus_call!(self, kill_process, "KillProcess", pid);
+    pub fn kill_process(&self, _pid: u32) {
     }
 
-    pub fn start_service(&self, service_name: &str) {
-        dbus_call!(self, start_service, "StartService", service_name);
+    pub fn start_service(&self, _service_name: &str) {
     }
 
-    pub fn stop_service(&self, service_name: &str) {
-        dbus_call!(self, stop_service, "StopService", service_name);
+    pub fn stop_service(&self, _service_name: &str) {
     }
 
-    pub fn restart_service(&self, service_name: &str) {
-        dbus_call!(self, restart_service, "RestartService", service_name);
+    pub fn restart_service(&self, _service_name: &str) {
     }
 
-    pub fn enable_service(&self, service_name: &str) {
-        dbus_call!(self, enable_service, "EnableService", service_name);
+    pub fn enable_service(&self, _service_name: &str) {
     }
 
-    pub fn disable_service(&self, service_name: &str) {
-        dbus_call!(self, disable_service, "DisableService", service_name);
+    pub fn disable_service(&self, _service_name: &str) {
     }
 
-    pub fn get_service_logs(&self, service_name: &str, pid: Option<NonZeroU32>) -> Arc<str> {
-        dbus_call!(self, get_service_logs, "GetServiceLogs", service_name, pid);
+    pub fn get_service_logs(&self, _service_name: &str, _pid: Option<NonZeroU32>) -> Arc<str> {
+        Arc::from("")
     }
 }
 
