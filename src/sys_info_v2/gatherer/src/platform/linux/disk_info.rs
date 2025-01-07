@@ -28,8 +28,8 @@ use pollster::FutureExt;
 use std::cmp::max;
 use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
-use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::Client;
+use udisks2::drive::RotationRate;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -635,8 +635,36 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     DiskSmartInterface::Dumb
                 };
 
+                let r#type = if dir_name.starts_with("nvme") {
+                    DiskType::NVMe
+                } else if dir_name.starts_with("mmc") {
+                    Self::get_mmc_type(&dir_name)
+                } else if dir_name.starts_with("fd") {
+                    // fixme
+                    DiskType::Unknown
+                } else if dir_name.starts_with("sr") {
+                    // TODO: specify what type better
+                    DiskType::Optical
+                } else {
+                    match drive.rotation_rate().block_on() {
+                        Ok(RotationRate::NonRotating) | Ok(RotationRate::Rotating(0)) => {
+                            if drive.removable().block_on().unwrap_or(false) {
+                                // FIXME This was `Flash`, do we want that or something else?
+                                DiskType::Unknown
+                            } else {
+                                DiskType::SSD
+                            }
+                        }
+                        Ok(RotationRate::Rotating(_)) => {
+                            DiskType::HDD
+                        }
+                        _ => {
+                            DiskType::Unknown
+                        }
+                    }
+                };
                 // TODO: should we do this?
-                let r#type = if drive.optical().block_on().unwrap_or(false) {
+/*                let r#type = if drive.optical().block_on().unwrap_or(false) {
                     DiskType::Optical
                 } else {
                     let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
@@ -653,7 +681,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         DiskType::HDD
                     }
                 };
-
+*/
                 let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
                 let model = drive.model().block_on().unwrap_or("".to_string());
