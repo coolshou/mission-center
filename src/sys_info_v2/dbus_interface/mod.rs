@@ -954,8 +954,10 @@ impl<'a> Get<'a> for SataSmartEntry {
     }
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[allow(non_camel_case_types)]
+#[derive(Default, Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SmartTestResult {
+    #[default]
     UNKNOWN_RESULT = 0,
     Success,
     Aborted,

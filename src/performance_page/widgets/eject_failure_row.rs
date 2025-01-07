@@ -204,7 +204,6 @@ impl EjectFailureRowBuilder {
                         return;
                     };
                     efd.close();
-                    // efd.imp().apply_eject_result(back, parent);
                     // TODO: this feels leaky
                     parent.imp().show_eject_result(parent, eject_result);
                 }

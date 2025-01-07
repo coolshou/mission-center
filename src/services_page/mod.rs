@@ -632,7 +632,8 @@ mod imp {
             {
                 let selected = selection_model.selected();
                 if selected != INVALID_LIST_POSITION {
-                    let selected_item = selection_model.selected_item()
+                    let selected_item = selection_model
+                        .selected_item()
                         .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned());
 
                     if selected_item.map(|it| it.running()).unwrap_or(false) {
