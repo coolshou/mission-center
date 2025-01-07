@@ -444,11 +444,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     .sum()
             };
 
-            if capacity == 0 {
-                _ = prev_disk_index.map(|i| prev_disks.remove(i));
-                continue;
-            }
-
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
                     if read_ticks_weighted_ms < disk_stat.read_ticks_weighted_ms {
@@ -574,6 +569,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                 disk_stat.sectors_written = sectors_written;
 
                 disk_stat.read_time_ms = Instant::now();
+
+                info.capacity = capacity;
 
                 info.busy_percent = busy_percent;
                 info.response_time_ms = response_time_ms;
