@@ -19,8 +19,8 @@
  */
 
 use std::cell::{BorrowError, Cell, Ref, RefCell};
-use adw::{prelude::*, subclass::prelude::*};
 
+use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
     glib::{self, g_critical, property::PropertySet},
