@@ -54,7 +54,7 @@ mod imp {
             let model = self.column_view.get();
 
             self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+                .set(Some(parent.clone()));
 
             model.remove_all();
 
@@ -78,7 +78,7 @@ mod imp {
                             .files_open(files.clone())
                             .pid(pid)
                             .name(&appname)
-                            .parent_page(parent.downgrade().upgrade().unwrap())
+                            .parent_page(parent.clone())
                             .build();
 
                         model.append(&new_root.imp().row_entry.get());
@@ -91,7 +91,7 @@ mod imp {
                             .files_open(dirs.clone())
                             .pid(pid)
                             .name(&appname)
-                            .parent_page(parent.downgrade().upgrade().unwrap())
+                            .parent_page(parent.clone())
                             .build();
 
                         model.append(&new_root.imp().row_entry.get());

@@ -135,7 +135,7 @@ mod imp {
             self.nvme_data.set_visible(false);
 
             self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+                .set(Some(parent.clone()));
 
             let mut roze = Vec::new();
 
@@ -231,7 +231,7 @@ mod imp {
             self.nvme_data.set_visible(true);
 
             self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+                .set(Some(parent.clone()));
 
             self.percent_used
                 .set_text(&format!("{}%", result.percent_used));
