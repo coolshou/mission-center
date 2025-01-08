@@ -249,7 +249,7 @@ mod imp {
                 }
             }
 
-            if fan.temp_amount == i64::MIN {
+            if fan.temp_amount < -270_000. {
                 this.temp_graph_box.set_visible(false);
 
                 if let Some(sidebar_temp_box) = this.temp_label_box.get() {
