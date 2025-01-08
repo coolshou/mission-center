@@ -34,7 +34,7 @@ mod imp {
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui"
     )]
     pub struct EjectFailureRow {
         #[template_child]
@@ -97,9 +97,6 @@ mod imp {
     impl ObjectImpl for EjectFailureRow {
         fn constructed(&self) {
             self.parent_constructed();
-
-            let kill_button = self.kill.get();
-            kill_button.add_css_class("destructive-action");
         }
     }
 
@@ -208,6 +205,8 @@ impl EjectFailureRowBuilder {
                     parent.imp().show_eject_result(parent, eject_result);
                 }
             });
+
+            this.kill.add_css_class("destructive-action");
         }
 
         this
