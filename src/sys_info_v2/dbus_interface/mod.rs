@@ -40,7 +40,7 @@ pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
 pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
-pub use processes::{Process, ProcessMap, ProcessUsageStats};
+pub use processes::{Process, ProcessUsageStats};
 pub use service::{Service, ServiceMap};
 
 mod apps;
@@ -150,9 +150,7 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
     }
 
     fn get_processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
-        let res: Result<ProcessMap, _> =
-            self.method_call(MC_GATHERER_INTERFACE_NAME, "GetProcesses", ());
-        res.map(|v| v.into())
+        Ok(HashMap::new())
     }
 
     fn get_services(&self) -> Result<HashMap<Arc<str>, Service>, dbus::Error> {

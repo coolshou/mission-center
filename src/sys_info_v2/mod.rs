@@ -36,7 +36,6 @@ use lazy_static::lazy_static;
 use crate::{
     app,
     application::{BASE_INTERVAL, INTERVAL_STEP},
-    sys_info_v2::proc_info::process_hierarchy,
 };
 use gatherer::Gatherer;
 pub use gatherer::{
@@ -84,7 +83,6 @@ mod dbus_interface;
 mod gatherer;
 mod mem_info;
 mod net_info;
-mod proc_info;
 
 pub type MemInfo = mem_info::MemInfo;
 #[allow(dead_code)]
@@ -148,7 +146,7 @@ pub struct Readings {
     pub fans_info: Vec<FanInfo>,
 
     pub running_apps: HashMap<Arc<str>, App>,
-    pub process_tree: Process,
+    pub running_processes: HashMap<u32, Process>,
 
     pub services: HashMap<Arc<str>, Service>,
 }
@@ -166,7 +164,7 @@ impl Readings {
             fans_info: vec![],
 
             running_apps: HashMap::new(),
-            process_tree: Process::default(),
+            running_processes: HashMap::new(),
 
             services: HashMap::new(),
         }
@@ -510,7 +508,7 @@ impl SysInfoV2 {
             },
             gpu_static_info: gatherer.gpu_static_info(),
             gpu_dynamic_info: gatherer.gpu_dynamic_info(),
-            process_tree: process_hierarchy(&gatherer.processes()).unwrap_or_default(),
+            running_processes: gatherer.processes(),
             running_apps: gatherer.apps(),
             services: gatherer.services(),
         };
@@ -539,7 +537,7 @@ impl SysInfoV2 {
                 gpu_static_info: readings.gpu_static_info.clone(),
                 gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),
                 running_apps: std::mem::take(&mut readings.running_apps),
-                process_tree: std::mem::take(&mut readings.process_tree),
+                running_processes: std::mem::take(&mut readings.running_processes),
                 services: std::mem::take(&mut readings.services),
             };
 
@@ -628,10 +626,10 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            readings.process_tree = process_hierarchy(&gatherer.processes()).unwrap_or_default();
+            readings.running_processes = gatherer.processes();
             g_debug!(
                 "MissionCenter::Perf",
-                "Process hierarchy load took: {:?}",
+                "Process load load took: {:?}",
                 timer.elapsed()
             );
 
@@ -673,7 +671,7 @@ impl SysInfoV2 {
                     gpu_static_info: readings.gpu_static_info.clone(),
                     gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),
                     running_apps: std::mem::take(&mut readings.running_apps),
-                    process_tree: std::mem::take(&mut readings.process_tree),
+                    running_processes: std::mem::take(&mut readings.running_processes),
                     services: std::mem::take(&mut readings.services),
                 };
 

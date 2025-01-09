@@ -21,16 +21,13 @@
 use std::{cell::Cell, collections::HashMap, sync::Arc};
 
 use gio::ListStore;
+use glib::g_critical;
 use glib::translate::from_glib_full;
 use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 
-use crate::{
-    app,
-    apps_page::{list_item::ListItem, row_model::ContentType},
-    i18n::*,
-    settings,
-    sys_info_v2::{App, Process},
-};
+use crate::apps_page::{list_item::ListItem, row_model::ContentType};
+use crate::sys_info_v2::{App, Process, ProcessUsageStats};
+use crate::{app, i18n::*, settings};
 
 mod column_header;
 mod list_item;
@@ -87,14 +84,13 @@ mod imp {
         pub max_gpu_memory_usage: Cell<f32>,
 
         pub apps: Cell<HashMap<Arc<str>, App>>,
-        pub process_tree: Cell<Process>,
+        pub processes: Cell<HashMap<u32, Process>>,
 
         pub use_merge_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
-            use crate::sys_info_v2::Process;
             use std::collections::HashMap;
 
             Self {
@@ -128,7 +124,7 @@ mod imp {
                 max_gpu_memory_usage: Cell::new(0.0),
 
                 apps: Cell::new(HashMap::new()),
-                process_tree: Cell::new(Process::default()),
+                processes: Cell::new(HashMap::new()),
 
                 use_merge_stats: Cell::new(false),
             }
@@ -136,26 +132,6 @@ mod imp {
     }
 
     impl AppsPage {
-        fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
-            if root_process.pid == pid {
-                return Some(root_process);
-            }
-
-            match root_process.children.get(&pid) {
-                Some(process) => return Some(process),
-                None => {}
-            }
-
-            for (_, process) in &root_process.children {
-                match Self::find_process(process, pid) {
-                    Some(process) => return Some(process),
-                    None => {}
-                }
-            }
-
-            None
-        }
-
         fn configure_actions(&self) {
             use crate::sys_info_v2::Process;
             use gtk::glib::*;
@@ -184,15 +160,26 @@ mod imp {
                 // just continue running which makes it confusing for the end-user. So go through
                 // the children of the bwrap process and find the first child that is not a bwrap
                 // and terminate that instead.
-                fn find_first_non_bwrap_child(root: &Process) -> Option<&Process> {
-                    for (_, child) in &root.children {
-                        if child.name.as_ref() != "bwrap" {
+                fn find_first_non_bwrap_child<'a>(
+                    root: &Process,
+                    processes: &'a HashMap<u32, Process>,
+                ) -> Option<&'a Process> {
+                    for pid in &root.children {
+                        let child = match processes.get(pid) {
+                            None => continue,
+                            Some(child) => child,
+                        };
+                        if child.name.as_str() != "bwrap" {
                             return Some(child);
                         }
                     }
 
-                    for (_, child) in &root.children {
-                        if let Some(child) = find_first_non_bwrap_child(child) {
+                    for pid in &root.children {
+                        let child = match processes.get(pid) {
+                            None => continue,
+                            Some(child) => child,
+                        };
+                        if let Some(child) = find_first_non_bwrap_child(child, processes) {
                             return Some(child);
                         }
                     }
@@ -200,15 +187,15 @@ mod imp {
                     None
                 }
                 if is_app {
-                    if let Some(process) =
-                        AppsPage::find_process(unsafe { &*this.imp().process_tree.as_ptr() }, pid)
-                    {
-                        if process.name.as_ref() == "bwrap" {
-                            if let Some(child) = find_first_non_bwrap_child(process) {
+                    let processes = this.imp().processes.take();
+                    if let Some(process) = processes.get(&pid) {
+                        if process.name.as_str() == "bwrap" {
+                            if let Some(child) = find_first_non_bwrap_child(process, &processes) {
                                 pid = child.pid;
                             }
                         }
                     }
+                    this.imp().processes.set(processes);
                 }
 
                 Some(pid)
@@ -471,7 +458,7 @@ mod imp {
 
             let model = glib_clone!(self.apps_model);
             let apps = self.apps.take();
-            let process_tree = self.process_tree.take();
+            let processes = self.processes.take();
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -511,7 +498,7 @@ mod imp {
                     let mut primary_process = None;
                     let mut primary_pid = 0;
                     for (index, pid) in app.pids.iter().enumerate() {
-                        if let Some(process) = Self::find_process(&process_tree, *pid) {
+                        if let Some(process) = processes.get(pid) {
                             if process.children.len() > 0 || index == app.pids.len() - 1 {
                                 primary_process = Some(process);
                                 primary_pid = process.pid;
@@ -523,7 +510,16 @@ mod imp {
                     (primary_process, primary_pid)
                 };
 
-                let pp = primary_process.cloned().unwrap_or_default();
+                let usage_stats = if let Some(pp) = primary_process {
+                    if self.use_merge_stats.get() {
+                        pp.merged_usage_stats(&processes)
+                    } else {
+                        pp.usage_stats.unwrap_or_default()
+                    }
+                } else {
+                    ProcessUsageStats::default()
+                };
+
                 let row_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
                         .name(app.name.as_ref())
@@ -537,12 +533,12 @@ mod imp {
                         .pid(primary_pid)
                         .content_type(ContentType::App)
                         .expanded(false)
-                        .cpu_usage(pp.merged_usage_stats.cpu_usage)
-                        .memory_usage(pp.merged_usage_stats.memory_usage)
-                        .disk_usage(pp.merged_usage_stats.disk_usage)
-                        .network_usage(pp.merged_usage_stats.network_usage)
-                        .gpu_usage(pp.merged_usage_stats.gpu_usage)
-                        .gpu_mem_usage(pp.merged_usage_stats.gpu_memory_usage)
+                        .cpu_usage(usage_stats.cpu_usage)
+                        .memory_usage(usage_stats.memory_usage)
+                        .disk_usage(usage_stats.disk_usage)
+                        .network_usage(usage_stats.network_usage)
+                        .gpu_usage(usage_stats.gpu_usage)
+                        .gpu_mem_usage(usage_stats.gpu_memory_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -560,12 +556,12 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     row_model.set_pid(primary_pid);
-                    row_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
-                    row_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
-                    row_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
-                    row_model.set_network_usage(pp.merged_usage_stats.network_usage);
-                    row_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
-                    row_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
+                    row_model.set_cpu_usage(usage_stats.cpu_usage);
+                    row_model.set_memory_usage(usage_stats.memory_usage);
+                    row_model.set_disk_usage(usage_stats.disk_usage);
+                    row_model.set_network_usage(usage_stats.network_usage);
+                    row_model.set_gpu_usage(usage_stats.gpu_usage);
+                    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
                     row_model
                 };
@@ -607,19 +603,22 @@ mod imp {
                 }
             }
 
-            self.process_tree.set(process_tree);
+            self.processes.set(processes);
             self.apps.set(apps);
         }
 
         pub fn update_processes_models(&self) {
             use crate::glib_clone;
 
-            let process_tree = self.process_tree.take();
+            let processes = self.processes.take();
             let processes_root_model = glib_clone!(self.processes_root_model);
 
-            Self::update_process_model(self, processes_root_model, &process_tree);
+            let init = processes.get(&1);
+            if let Some(init) = init {
+                Self::update_process_model(self, processes_root_model, &init, &processes);
+            }
 
-            self.process_tree.set(process_tree);
+            self.processes.set(processes);
         }
 
         pub fn column_compare_entries_by(
@@ -1282,7 +1281,7 @@ mod imp {
                 .set(column_header_gpu_mem);
         }
 
-        fn update_process_model(this: &AppsPage, model: ListStore, process: &Process) {
+        fn update_process_model(this: &AppsPage, model: ListStore, process: &Process, processes: &HashMap<u32, Process>) {
             use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
 
             let mut to_remove = Vec::new();
@@ -1293,7 +1292,7 @@ mod imp {
                 }
                 let current = current.unwrap();
 
-                if !process.children.contains_key(&(current.pid())) {
+                if !process.children.contains(&(current.pid())) {
                     to_remove.push(i);
                 }
             }
@@ -1303,7 +1302,7 @@ mod imp {
                 model.remove(to_remove_i);
             }
 
-            for (pid, child) in &process.children {
+            for pid in &process.children {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
                         let current = current.downcast_ref::<RowModel>();
@@ -1317,17 +1316,29 @@ mod imp {
                     None
                 };
 
-                let entry_name = if !child.exe.as_ref().is_empty() {
-                    let entry_name = std::path::Path::new(child.exe.as_ref())
+                let child = match processes.get(pid) {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to find process with PID '{}'",
+                            pid
+                        );
+                        continue;
+                    }
+                    Some(child) => child,
+                };
+
+                let entry_name = if !child.exe.as_str().is_empty() {
+                    let entry_name = std::path::Path::new(child.exe.as_str())
                         .file_name()
-                        .map(|name| name.to_str().unwrap_or(child.name.as_ref()))
-                        .unwrap_or(child.name.as_ref());
+                        .map(|name| name.to_str().unwrap_or(child.name.as_str()))
+                        .unwrap_or(child.name.as_str());
                     if entry_name.starts_with("wine") {
                         if child.cmd.is_empty() {
-                            child.name.as_ref()
+                            child.name.as_str()
                         } else {
                             child.cmd[0]
-                                .as_ref()
+                                .as_str()
                                 .split("\\")
                                 .last()
                                 .unwrap_or(child.name.as_ref())
@@ -1342,45 +1353,31 @@ mod imp {
                     child.name.as_ref()
                 };
 
-                let child_model = if pos.is_none() {
-                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
-                        if this.use_merge_stats.get() {
-                            (
-                                child.merged_usage_stats.cpu_usage,
-                                child.merged_usage_stats.memory_usage,
-                                child.merged_usage_stats.network_usage,
-                                child.merged_usage_stats.disk_usage,
-                                child.merged_usage_stats.gpu_usage,
-                                child.merged_usage_stats.gpu_memory_usage,
-                            )
-                        } else {
-                            (
-                                child.usage_stats.cpu_usage,
-                                child.usage_stats.memory_usage,
-                                child.usage_stats.network_usage,
-                                child.usage_stats.disk_usage,
-                                child.usage_stats.gpu_usage,
-                                child.usage_stats.gpu_memory_usage,
-                            )
-                        };
+                let merged_usage_stats = child.merged_usage_stats(&processes);
+                let usage_stats = if this.use_merge_stats.get() {
+                    &merged_usage_stats
+                } else {
+                    &child.usage_stats.unwrap_or_default()
+                };
 
+                let child_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
                         .icon("application-x-executable-symbolic")
                         .pid(*pid)
-                        .cpu_usage(cpu_usage)
-                        .memory_usage(mem_usage)
-                        .disk_usage(disk_usage)
-                        .network_usage(net_usage)
-                        .gpu_usage(gpu_usage)
-                        .gpu_mem_usage(gpu_mem_usage)
+                        .cpu_usage(usage_stats.cpu_usage)
+                        .memory_usage(usage_stats.memory_usage)
+                        .disk_usage(usage_stats.disk_usage)
+                        .network_usage(usage_stats.network_usage)
+                        .gpu_usage(usage_stats.gpu_usage)
+                        .gpu_mem_usage(usage_stats.gpu_memory_usage)
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
 
-                    row_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&merged_usage_stats);
 
                     model.append(&row_model);
                     row_model.children().clone()
@@ -1391,41 +1388,20 @@ mod imp {
                         .downcast::<RowModel>()
                         .unwrap();
 
-                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
-                        if this.use_merge_stats.get() {
-                            (
-                                child.merged_usage_stats.cpu_usage,
-                                child.merged_usage_stats.memory_usage,
-                                child.merged_usage_stats.network_usage,
-                                child.merged_usage_stats.disk_usage,
-                                child.merged_usage_stats.gpu_usage,
-                                child.merged_usage_stats.gpu_memory_usage,
-                            )
-                        } else {
-                            (
-                                child.usage_stats.cpu_usage,
-                                child.usage_stats.memory_usage,
-                                child.usage_stats.network_usage,
-                                child.usage_stats.disk_usage,
-                                child.usage_stats.gpu_usage,
-                                child.usage_stats.gpu_memory_usage,
-                            )
-                        };
-
                     row_model.set_icon("application-x-executable-symbolic");
-                    row_model.set_cpu_usage(cpu_usage);
-                    row_model.set_memory_usage(mem_usage);
-                    row_model.set_disk_usage(disk_usage);
-                    row_model.set_network_usage(net_usage);
-                    row_model.set_gpu_usage(gpu_usage);
-                    row_model.set_gpu_memory_usage(gpu_mem_usage);
+                    row_model.set_cpu_usage(usage_stats.cpu_usage);
+                    row_model.set_memory_usage(usage_stats.memory_usage);
+                    row_model.set_disk_usage(usage_stats.disk_usage);
+                    row_model.set_network_usage(usage_stats.network_usage);
+                    row_model.set_gpu_usage(usage_stats.gpu_usage);
+                    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
-                    row_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&merged_usage_stats);
 
                     row_model.children().clone()
                 };
 
-                Self::update_process_model(this, child_model, child);
+                Self::update_process_model(this, child_model, child, processes);
             }
         }
     }
@@ -1560,8 +1536,6 @@ glib::wrapper! {
 
 impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
-        use std::collections::HashMap;
-
         let this = self.imp();
 
         if readings.gpu_static_info.is_empty() {
@@ -1591,13 +1565,8 @@ impl AppsPage {
         this.max_memory_usage
             .set(readings.mem_info.mem_total as f32);
 
-        let mut apps = HashMap::new();
-        std::mem::swap(&mut apps, &mut readings.running_apps);
-        this.apps.set(apps);
-
-        let mut process_tree = Process::default();
-        std::mem::swap(&mut process_tree, &mut readings.process_tree);
-        this.process_tree.set(process_tree);
+        this.apps.set(std::mem::take(&mut readings.running_apps));
+        this.processes.set(std::mem::take(&mut readings.running_processes));
 
         this.set_up_model();
 
@@ -1611,13 +1580,8 @@ impl AppsPage {
     pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         let this = self.imp();
 
-        let mut apps = this.apps.take();
-        std::mem::swap(&mut apps, &mut readings.running_apps);
-        this.apps.set(apps);
-
-        let mut process_tree = this.process_tree.take();
-        std::mem::swap(&mut process_tree, &mut readings.process_tree);
-        this.process_tree.set(process_tree);
+        this.apps.set(std::mem::take(&mut readings.running_apps));
+        this.processes.set(std::mem::take(&mut readings.running_processes));
 
         this.update_processes_models();
         this.update_app_model();

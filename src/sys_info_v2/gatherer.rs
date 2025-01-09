@@ -18,12 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use dbus::arg::RefArg;
-use dbus::blocking::stdintf::{org_freedesktop_dbus::Peer, org_freedesktop_dbus::Properties};
-use gtk::glib::g_critical;
-use prost::Message;
 use std::num::NonZeroU32;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
+
+use gtk::glib::g_critical;
+use prost::Message;
 use zeromq::prelude::*;
 use zeromq::ReqSocket;
 
@@ -34,22 +33,21 @@ use ipc::{request, response, Request, Response};
 use processes::processes_response;
 use processes::ProcessesRequest;
 
-mod apps {
+pub mod apps {
     include!(concat!(env!("OUT_DIR"), "/magpie.apps.rs"));
 }
 
-mod common {
+pub mod common {
     include!(concat!(env!("OUT_DIR"), "/magpie.common.rs"));
 }
 
-mod ipc {
+pub mod ipc {
     include!(concat!(env!("OUT_DIR"), "/magpie.ipc.rs"));
 }
 
-mod processes {
+pub mod processes {
     include!(concat!(env!("OUT_DIR"), "/magpie.processes.rs"));
 }
-
 
 pub(crate) struct Gatherer {
     socket: RefCell<ReqSocket>,
@@ -139,7 +137,10 @@ impl Gatherer {
         // }
 
         match self.tokio_runtime.block_on(async {
-            self.socket.borrow_mut().connect("ipc:///tmp/magpie_test.ipc").await
+            self.socket
+                .borrow_mut()
+                .connect("ipc:///tmp/magpie_test.ipc")
+                .await
         }) {
             Ok(_) => (),
             Err(e) => {
@@ -148,10 +149,7 @@ impl Gatherer {
                     "Failed to connect to Gatherer socket: {}",
                     e
                 );
-                show_error_dialog_and_exit(&format!(
-                    "Failed to connect to Gatherer socket: {}",
-                    e
-                ));
+                show_error_dialog_and_exit(&format!("Failed to connect to Gatherer socket: {}", e));
             }
         }
     }
@@ -266,11 +264,9 @@ impl Gatherer {
 }
 
 impl Gatherer {
-    pub fn set_refresh_interval(&self, _interval: u64) {
-    }
+    pub fn set_refresh_interval(&self, _interval: u64) {}
 
-    pub fn set_core_count_affects_percentages(&self, _v: bool) {
-    }
+    pub fn set_core_count_affects_percentages(&self, _v: bool) {}
 
     pub fn cpu_static_info(&self) -> CpuStaticInfo {
         CpuStaticInfo::default()
@@ -302,11 +298,12 @@ impl Gatherer {
     }
 
     pub fn processes(&self) -> HashMap<u32, Process> {
-        let mut request= Vec::new();
+        let mut request = Vec::new();
 
         let encode_res = Request {
-            body: Some(request::Body::GetProcesses(ProcessesRequest::default()))
-        }.encode(&mut request);
+            body: Some(request::Body::GetProcesses(ProcessesRequest::default())),
+        }
+        .encode(&mut request);
 
         if let Err(e) = encode_res {
             g_critical!("MissionCenter::Gatherer", "Failed to encode request: {}", e);
@@ -314,9 +311,9 @@ impl Gatherer {
         }
 
         let mut socket = self.socket.borrow_mut();
-        let send_res = self.tokio_runtime.block_on(async {
-            socket.send(request.into()).await
-        });
+        let send_res = self
+            .tokio_runtime
+            .block_on(async { socket.send(request.into()).await });
         match send_res {
             Err(e) => {
                 g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
@@ -325,18 +322,23 @@ impl Gatherer {
             _ => {}
         }
 
-        let recv_res = self.tokio_runtime.block_on(async {
-            socket.recv().await
-        });
+        let recv_res = self.tokio_runtime.block_on(async { socket.recv().await });
         let response = match recv_res {
             Ok(response) => response.into_vec(),
             Err(e) => {
-                g_critical!("MissionCenter::Gatherer", "Failed to receive response: {}", e);
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to receive response: {}",
+                    e
+                );
                 return HashMap::new();
             }
         };
         if response.is_empty() {
-            g_critical!("MissionCenter::Gatherer", "Empty reply when getting processes");
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Empty reply when getting processes"
+            );
             return HashMap::new();
         }
         let decode_result = if response.len() > 1 {
@@ -347,49 +349,43 @@ impl Gatherer {
         let response = match decode_result {
             Ok(r) => r,
             Err(e) => {
-                g_critical!("MissionCenter::Gatherer", "Error while getting process list: {:?}", e);
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Error while getting process list: {:?}",
+                    e
+                );
                 return HashMap::new();
             }
         };
 
         match response.body {
-            Some(response::Body::Processes(processes)) => {
-                match processes.response {
-                    Some(processes_response::Response::Processes(mut process_map)) => {
-                        process_map.processes.iter().map(|(pid, process)| {
-                            (*pid, Process {
-                                name: Arc::from(process.name.as_str()),
-                                cmd: process.cmd.iter().map(|s|Arc::from(s.as_str())).collect(),
-                                exe: Arc::from(process.exe.as_str()),
-                                state: unsafe { std::mem::transmute(process.state as u8) },
-                                pid: process.pid,
-                                parent: process.parent,
-                                usage_stats: process.usage_stats.as_ref().map(|usage_stats| ProcessUsageStats {
-                                    cpu_usage: usage_stats.cpu_usage,
-                                    memory_usage: usage_stats.memory_usage,
-                                    disk_usage: usage_stats.disk_usage,
-                                    network_usage: usage_stats.network_usage,
-                                    gpu_usage: usage_stats.gpu_usage,
-                                    gpu_memory_usage: usage_stats.gpu_memory_usage,
-                                }).unwrap_or_default(),
-                                merged_usage_stats: Default::default(),
-                                task_count: process.task_count as _,
-                                children: HashMap::new(),
-                            })
-                        }).collect()
-                    }
-                    Some(processes_response::Response::Error(e)) => {
-                        g_critical!("MissionCenter::Gatherer", "Error while getting process list: {:?}", e);
-                        HashMap::new()
-                    }
-                    _ => {
-                        g_critical!("MissionCenter::Gatherer", "Unexpected response: {:?}", processes.response);
-                        HashMap::new()
-                    }
+            Some(response::Body::Processes(processes)) => match processes.response {
+                Some(processes_response::Response::Processes(mut process_map)) => {
+                    std::mem::take(&mut process_map.processes)
                 }
-            }
+                Some(processes_response::Response::Error(e)) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Error while getting process list: {:?}",
+                        e
+                    );
+                    HashMap::new()
+                }
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response: {:?}",
+                        processes.response
+                    );
+                    HashMap::new()
+                }
+            },
             _ => {
-                g_critical!("MissionCenter::Gatherer", "Unexpected response: {:?}", response);
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Unexpected response: {:?}",
+                    response
+                );
                 HashMap::new()
             }
         }
@@ -403,26 +399,19 @@ impl Gatherer {
         HashMap::new()
     }
 
-    pub fn terminate_process(&self, _pid: u32) {
-    }
+    pub fn terminate_process(&self, _pid: u32) {}
 
-    pub fn kill_process(&self, _pid: u32) {
-    }
+    pub fn kill_process(&self, _pid: u32) {}
 
-    pub fn start_service(&self, _service_name: &str) {
-    }
+    pub fn start_service(&self, _service_name: &str) {}
 
-    pub fn stop_service(&self, _service_name: &str) {
-    }
+    pub fn stop_service(&self, _service_name: &str) {}
 
-    pub fn restart_service(&self, _service_name: &str) {
-    }
+    pub fn restart_service(&self, _service_name: &str) {}
 
-    pub fn enable_service(&self, _service_name: &str) {
-    }
+    pub fn enable_service(&self, _service_name: &str) {}
 
-    pub fn disable_service(&self, _service_name: &str) {
-    }
+    pub fn disable_service(&self, _service_name: &str) {}
 
     pub fn get_service_logs(&self, _service_name: &str, _pid: Option<NonZeroU32>) -> Arc<str> {
         Arc::from("")

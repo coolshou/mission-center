@@ -7,6 +7,8 @@ project('missioncenter',
 i18n = import('i18n')
 gnome = import('gnome')
 
+proj_magpie = subproject('magpie')
+
 subdir('data')
 subdir('po')
 subdir('resources')

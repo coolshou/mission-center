@@ -8,12 +8,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     prost_build::Config::new()
         .compile_protos(
             &[
-                "src/proto/apps.proto",
-                "src/proto/common.proto",
-                "src/proto/ipc.proto",
-                "src/proto/processes.proto",
+                "subprojects/magpie/platform/src/proto/apps.proto",
+                "subprojects/magpie/platform/src/proto/common.proto",
+                "subprojects/magpie/platform/src/proto/ipc.proto",
+                "subprojects/magpie/platform/src/proto/processes.proto",
             ],
-            &["src/proto/"],
+            &["subprojects/magpie/platform/src/proto/"],
         )
         .unwrap();
 
