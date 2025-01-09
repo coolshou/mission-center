@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-Box root {
+template $GpuDetails: Box {
   margin-top: 65;
   margin-bottom: 10;
   orientation: vertical;
@@ -53,6 +53,8 @@ Box root {
     }
 
     Box {
+      visible: bind template.clock_speed_available;
+
       orientation: vertical;
       spacing: 3;
 
@@ -76,7 +78,7 @@ Box root {
           halign: start;
         }
 
-        Label {
+        Label clock_speed_separator{
           styles [
             "title-4",
           ]
@@ -98,6 +100,8 @@ Box root {
     }
 
     Box box_power_draw {
+      visible: bind template.power_draw_available;
+
       orientation: vertical;
       spacing: 3;
 
@@ -107,7 +111,7 @@ Box root {
         ]
 
         halign: start;
-        label: _("Power draw");
+        label: _("Power Draw");
       }
 
       Box {
@@ -119,6 +123,15 @@ Box root {
           ellipsize: middle;
 
           halign: start;
+        }
+
+        Label power_draw_separator{
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+          label: " / ";
         }
 
         Label power_draw_max {
@@ -134,10 +147,14 @@ Box root {
     }
 
     Box box_mem_usage {
+      visible: bind template.dedicated_memory_available;
+
       orientation: horizontal;
       spacing: 5;
 
       Picture legend_vram {
+        visible: bind template.shared_memory_available;
+
         can-shrink: false;
         content-fit: scale_down;
       }
@@ -145,17 +162,20 @@ Box root {
       Box {
         orientation: vertical;
         spacing: 3;
-        Label {
+
+        Label memory_usage_title {
           styles [
             "caption",
           ]
 
           halign: start;
-          label: _("Memory usage");
+          label: _("Memory Usage");
         }
 
         Box {
           Label memory_usage_current {
+            visible: bind template.used_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -166,6 +186,8 @@ Box root {
           }
 
           Label {
+            visible: bind template.show_dedicated_separator;
+
             styles [
               "title-4",
             ]
@@ -175,6 +197,8 @@ Box root {
           }
 
           Label memory_usage_max {
+            visible: bind template.total_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -188,10 +212,14 @@ Box root {
     }
 
     Box box_gtt_usage {
+      visible: bind template.shared_memory_available;
+
       orientation: horizontal;
       spacing: 5;
 
       Picture legend_gtt {
+        visible: bind template.dedicated_memory_available;
+
         can-shrink: false;
         content-fit: scale_down;
       }
@@ -199,17 +227,19 @@ Box root {
       Box {
         orientation: vertical;
         spacing: 3;
-        Label {
+        Label shared_memory_usage_title {
           styles [
             "caption",
           ]
 
           halign: start;
-          label: _("GTT usage");
+          label: _("Shared Memory Usage");
         }
 
         Box {
           Label gtt_usage_current {
+            visible: bind template.used_shared_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -220,6 +250,8 @@ Box root {
           }
 
           Label gtt_separator {
+            visible: bind template.show_shared_separator;
+
             styles [
               "title-4",
             ]
@@ -229,6 +261,8 @@ Box root {
           }
 
           Label gtt_usage_max {
+            visible: bind template.total_shared_memory_valid;
+
             styles [
               "title-4",
             ]
@@ -242,6 +276,8 @@ Box root {
     }
 
     Box box_mem_speed {
+      visible: bind template.memory_speed_available;
+
       orientation: vertical;
       spacing: 3;
 
@@ -251,7 +287,7 @@ Box root {
         ]
 
         halign: start;
-        label: _("Memory speed");
+        label: _("Memory Speed");
       }
 
       Box {
@@ -265,7 +301,7 @@ Box root {
           halign: start;
         }
 
-        Label {
+        Label memory_speed_separator {
           styles [
             "title-4",
           ]
@@ -290,13 +326,18 @@ Box root {
       orientation: horizontal;
       spacing: 20;
 
+      visible: bind template.encode_decode_available;
+
       Box {
         spacing: 5;
 
         Picture legend_encode {
+          visible: bind template.encode_decode_shared inverted;
+
           can-shrink: false;
           content-fit: scale_down;
         }
+
         Box {
           orientation: vertical;
           spacing: 3;
@@ -321,13 +362,17 @@ Box root {
           }
         }
       }
+
       Box box_decode {
         spacing: 5;
+
+        visible: bind template.encode_decode_shared inverted;
 
         Picture legend_decode {
           can-shrink: false;
           content-fit: scale_down;
         }
+
         Box {
           orientation: vertical;
           spacing: 3;
@@ -417,6 +462,8 @@ Box root {
     }
 
     Label pcie_speed_label {
+      visible: bind template.pcie_info_visible;
+
       styles [
         "caption",
       ]
@@ -475,6 +522,8 @@ Box root {
     }
 
     Label pcie_speed {
+      visible: bind template.pcie_info_visible;
+
       styles [
         "caption",
       ]

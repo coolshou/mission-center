@@ -44,6 +44,7 @@ mod cpu;
 mod disk;
 mod fan;
 mod gpu;
+mod gpu_details;
 mod memory;
 mod network;
 mod summary_graph;
@@ -55,6 +56,7 @@ type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
+type GpuDetails = gpu_details::GpuDetails;
 type FanPage = fan::PerformancePageFan;
 
 trait PageExt {
@@ -1338,7 +1340,8 @@ mod imp {
                 summary.set_info1(static_info.device_name.as_ref());
                 summary.set_info2(format!(
                     "{}% ({} °C)",
-                    dynamic_info.util_percent, dynamic_info.temp_celsius
+                    dynamic_info.util_percent.unwrap_or(0),
+                    dynamic_info.temp_celsius.unwrap_or(0)
                 ));
                 summary.set_base_color(gdk::RGBA::new(
                     GPU_BASE_COLOR[0] as f32 / 255.,
@@ -1955,32 +1958,30 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in &readings.gpu_dynamic_info {
+                        for (index, dynamic_info) in readings.gpu_dynamic_info.iter().enumerate() {
                             if let Some((summary, page)) =
-                                pages.get(&Self::gpu_page_name(gpu.id.as_ref()))
+                                pages.get(&Self::gpu_page_name(dynamic_info.id.as_ref()))
                             {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                if gpu.temp_celsius > 20 {
+
+                                let util_percent = dynamic_info.util_percent.unwrap_or(0);
+                                graph_widget.add_data_point(0, util_percent as f32);
+
+                                if let Some(temp_celsius) = dynamic_info.temp_celsius {
                                     summary.set_info2(format!(
                                         "{}% ({} °C)",
-                                        gpu.util_percent, gpu.temp_celsius
+                                        util_percent, temp_celsius
                                     ));
                                 } else {
-                                    summary.set_info2(format!("{}%", gpu.util_percent));
-                                }
-                                let id = gpu.id.clone();
-                                let mut gpu_static = None;
-                                for gpu_stat in &readings.gpu_static_info {
-                                    if id == gpu_stat.id {
-                                        gpu_static = Some(gpu_stat);
-                                        break;
-                                    }
+                                    summary.set_info2(format!("{}%", util_percent));
                                 }
 
-                                result &= page.update_readings(gpu, gpu_static.unwrap());
+                                result &= page.update_readings(
+                                    &readings.gpu_static_info[index],
+                                    dynamic_info,
+                                );
                             }
                         }
                     }

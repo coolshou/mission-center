@@ -560,6 +560,8 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
             process.exe = exe;
             process.state = stat_state(&stat_parsed);
             process.parent = stat_parent_pid(&stat_parsed);
+            process.usage_stats.gpu_usage = 0.;
+            process.usage_stats.gpu_memory_usage = 0.;
             process.usage_stats.memory_usage =
                 (statm_parsed[PROC_PID_STATM_RES] * (*PAGE_SIZE) as u64) as f32;
             process.task_count = task_count;

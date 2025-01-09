@@ -21,6 +21,8 @@
 use std::{
     collections::HashMap,
     fs,
+    num::NonZero,
+    ops::DerefMut,
     sync::{Arc, RwLock},
     time::Instant,
 };
@@ -29,10 +31,15 @@ use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::{
     gpu_info_valid,
     logging::{critical, debug, error, warning},
-    platform::platform_impl::gpu_info::nvtop::GPUInfoDynamicInfoValid,
     platform::{
-        platform_impl::run_forked, ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt,
-        OpenGLApiVersion, ProcessesExt,
+        platform_impl::{
+            gpu_info::nvtop::{
+                GpuInfoDynamicInfoValid, GpuInfoProcessInfoValid, GpuInfoStaticInfoValid,
+            },
+            run_forked,
+        },
+        ApiVersion, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, OpenGLApiVersion,
+        ProcessesExt,
     },
 };
 
@@ -43,15 +50,16 @@ mod vulkan_info;
 #[derive(Debug, Clone)]
 pub struct LinuxGpuStaticInfo {
     id: Arc<str>,
-    device_name: Arc<str>,
+    device_name: Option<Arc<str>>,
     vendor_id: u16,
     device_id: u16,
-    total_memory: u64,
-    total_gtt: u64,
+    total_memory: Option<NonZero<u64>>,
+    total_gtt: Option<NonZero<u64>>,
     opengl_version: Option<OpenGLApiVersion>,
     vulkan_version: Option<ApiVersion>,
-    pcie_gen: u8,
-    pcie_lanes: u8,
+    pcie_gen: Option<NonZero<u8>>,
+    pcie_lanes: Option<NonZero<u8>>,
+    encode_decode_shared: bool,
 }
 
 impl LinuxGpuStaticInfo {}
@@ -60,15 +68,16 @@ impl Default for LinuxGpuStaticInfo {
     fn default() -> Self {
         Self {
             id: Arc::from(""),
-            device_name: Arc::from(""),
+            device_name: None,
             vendor_id: 0,
             device_id: 0,
-            total_memory: 0,
-            total_gtt: 0,
+            total_memory: None,
+            total_gtt: None,
             opengl_version: None,
             vulkan_version: None,
-            pcie_gen: 0,
-            pcie_lanes: 0,
+            pcie_gen: None,
+            pcie_lanes: None,
+            encode_decode_shared: false,
         }
     }
 }
@@ -78,8 +87,8 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         self.id.as_ref()
     }
 
-    fn device_name(&self) -> &str {
-        self.device_name.as_ref()
+    fn device_name(&self) -> Option<&str> {
+        self.device_name.as_ref().map(|s| s.as_ref())
     }
 
     fn vendor_id(&self) -> u16 {
@@ -90,11 +99,11 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         self.device_id
     }
 
-    fn total_memory(&self) -> u64 {
+    fn total_memory(&self) -> Option<NonZero<u64>> {
         self.total_memory
     }
 
-    fn total_gtt(&self) -> u64 {
+    fn total_shared_memory(&self) -> Option<NonZero<u64>> {
         self.total_gtt
     }
 
@@ -114,52 +123,56 @@ impl GpuStaticInfoExt for LinuxGpuStaticInfo {
         None
     }
 
-    fn pcie_gen(&self) -> u8 {
+    fn pcie_gen(&self) -> Option<NonZero<u8>> {
         self.pcie_gen
     }
 
-    fn pcie_lanes(&self) -> u8 {
+    fn pcie_lanes(&self) -> Option<NonZero<u8>> {
         self.pcie_lanes
+    }
+
+    fn encode_decode_shared(&self) -> bool {
+        self.encode_decode_shared
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct LinuxGpuDynamicInfo {
     id: Arc<str>,
-    temp_celsius: u32,
-    fan_speed_percent: u32,
-    util_percent: u32,
-    power_draw_watts: f32,
-    power_draw_max_watts: f32,
-    clock_speed_mhz: u32,
-    clock_speed_max_mhz: u32,
-    mem_speed_mhz: u32,
-    mem_speed_max_mhz: u32,
-    free_memory: u64,
-    used_memory: u64,
-    used_gtt: u64,
-    encoder_percent: u32,
-    decoder_percent: u32,
+    temp_celsius: Option<u32>,
+    fan_speed_percent: Option<u32>,
+    util_percent: Option<u32>,
+    power_draw_watts: Option<f32>,
+    power_draw_max_watts: Option<f32>,
+    clock_speed_mhz: Option<u32>,
+    clock_speed_max_mhz: Option<NonZero<u32>>,
+    mem_speed_mhz: Option<u32>,
+    mem_speed_max_mhz: Option<NonZero<u32>>,
+    free_memory: Option<u64>,
+    used_memory: Option<u64>,
+    used_shared_memory: Option<u64>,
+    encoder_percent: Option<u32>,
+    decoder_percent: Option<u32>,
 }
 
 impl Default for LinuxGpuDynamicInfo {
     fn default() -> Self {
         Self {
             id: Arc::from(""),
-            temp_celsius: 0,
-            fan_speed_percent: 0,
-            util_percent: 0,
-            power_draw_watts: 0.0,
-            power_draw_max_watts: 0.0,
-            clock_speed_mhz: 0,
-            clock_speed_max_mhz: 0,
-            mem_speed_mhz: 0,
-            mem_speed_max_mhz: 0,
-            free_memory: 0,
-            used_memory: 0,
-            used_gtt: 0,
-            encoder_percent: 0,
-            decoder_percent: 0,
+            temp_celsius: None,
+            fan_speed_percent: None,
+            util_percent: None,
+            power_draw_watts: None,
+            power_draw_max_watts: None,
+            clock_speed_mhz: None,
+            clock_speed_max_mhz: None,
+            mem_speed_mhz: None,
+            mem_speed_max_mhz: None,
+            free_memory: None,
+            used_memory: None,
+            used_shared_memory: None,
+            encoder_percent: None,
+            decoder_percent: None,
         }
     }
 }
@@ -175,59 +188,59 @@ impl GpuDynamicInfoExt for LinuxGpuDynamicInfo {
         self.id.as_ref()
     }
 
-    fn temp_celsius(&self) -> u32 {
+    fn temp_celsius(&self) -> Option<u32> {
         self.temp_celsius
     }
 
-    fn fan_speed_percent(&self) -> u32 {
+    fn fan_speed_percent(&self) -> Option<u32> {
         self.fan_speed_percent
     }
 
-    fn util_percent(&self) -> u32 {
+    fn util_percent(&self) -> Option<u32> {
         self.util_percent
     }
 
-    fn power_draw_watts(&self) -> f32 {
+    fn power_draw_watts(&self) -> Option<f32> {
         self.power_draw_watts
     }
 
-    fn power_draw_max_watts(&self) -> f32 {
+    fn power_draw_max_watts(&self) -> Option<f32> {
         self.power_draw_max_watts
     }
 
-    fn clock_speed_mhz(&self) -> u32 {
+    fn clock_speed_mhz(&self) -> Option<u32> {
         self.clock_speed_mhz
     }
 
-    fn clock_speed_max_mhz(&self) -> u32 {
+    fn clock_speed_max_mhz(&self) -> Option<NonZero<u32>> {
         self.clock_speed_max_mhz
     }
 
-    fn mem_speed_mhz(&self) -> u32 {
+    fn mem_speed_mhz(&self) -> Option<u32> {
         self.mem_speed_mhz
     }
 
-    fn mem_speed_max_mhz(&self) -> u32 {
+    fn mem_speed_max_mhz(&self) -> Option<NonZero<u32>> {
         self.mem_speed_max_mhz
     }
 
-    fn free_memory(&self) -> u64 {
+    fn free_memory(&self) -> Option<u64> {
         self.free_memory
     }
 
-    fn used_memory(&self) -> u64 {
+    fn used_memory(&self) -> Option<u64> {
         self.used_memory
     }
 
-    fn used_gtt(&self) -> u64 {
-        self.used_gtt
+    fn used_shared_memory(&self) -> Option<u64> {
+        self.used_shared_memory
     }
 
-    fn encoder_percent(&self) -> u32 {
+    fn encoder_percent(&self) -> Option<u32> {
         self.encoder_percent
     }
 
-    fn decoder_percent(&self) -> u32 {
+    fn decoder_percent(&self) -> Option<u32> {
         self.decoder_percent
     }
 }
@@ -256,13 +269,19 @@ impl Drop for LinuxGpuInfo {
 
 impl LinuxGpuInfo {
     pub fn new() -> Self {
-        use std::ops::DerefMut;
-
-        unsafe {
-            nvtop::init_extract_gpuinfo_intel();
-            nvtop::init_extract_gpuinfo_amdgpu();
-            nvtop::init_extract_gpuinfo_nvidia();
+        fn init_extraction() {
+            static INIT: std::sync::Once = std::sync::Once::new();
+            INIT.call_once(|| unsafe {
+                nvtop::init_extract_gpuinfo_intel();
+                nvtop::init_extract_gpuinfo_amdgpu();
+                nvtop::init_extract_gpuinfo_nvidia();
+                nvtop::init_extract_gpuinfo_v3d();
+                nvtop::init_extract_gpuinfo_msm();
+                nvtop::init_extract_gpuinfo_panfrost();
+                nvtop::init_extract_gpuinfo_panthor();
+            });
         }
+        init_extraction();
 
         let gpu_list = Arc::new(RwLock::new(nvtop::ListHead {
             next: std::ptr::null_mut(),
@@ -543,7 +562,6 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         if self.gpu_list_refreshed {
             return;
         }
-
         self.gpu_list_refreshed = true;
 
         let mut gpu_list = self.gpu_list.write().unwrap();
@@ -588,7 +606,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
         while device != gpu_list {
             use std::fmt::Write;
 
-            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
+            let dev: &nvtop::GpuInfo = unsafe { core::mem::transmute(device) };
             device = unsafe { (*device).next };
 
             let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
@@ -617,15 +635,17 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
             }
 
             let device_name =
-                unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) };
-            let device_name = device_name.to_str().unwrap_or_else(|_| "Unknown");
+                if gpu_info_valid!(dev.static_info, GpuInfoStaticInfoValid::DeviceNameValid) {
+                    unsafe { std::ffi::CStr::from_ptr(dev.static_info.device_name.as_ptr()) }
+                        .to_str()
+                        .ok()
+                } else {
+                    None
+                };
 
             let mut uevent_path = ArrayString::<64>::new();
             let _ = write!(uevent_path, "/sys/bus/pci/devices/{}/uevent", pdev);
-            let uevent_file = match std::fs::OpenOptions::new()
-                .read(true)
-                .open(uevent_path.as_str())
-            {
+            let uevent_file = match fs::OpenOptions::new().read(true).open(uevent_path.as_str()) {
                 Ok(f) => Some(f),
                 Err(_) => {
                     uevent_path.clear();
@@ -634,10 +654,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                         "/sys/bus/pci/devices/{}/uevent",
                         pdev.to_lowercase()
                     );
-                    match std::fs::OpenOptions::new()
-                        .read(true)
-                        .open(uevent_path.as_str())
-                    {
+                    match fs::OpenOptions::new().read(true).open(uevent_path.as_str()) {
                         Ok(f) => Some(f),
                         Err(_) => {
                             warning!(
@@ -655,16 +672,10 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 "/sys/bus/pci/devices/{}/mem_info_gtt_total",
                 pdev.to_lowercase()
             )) {
-                Ok(x) => match x.trim().parse::<u64>() {
-                    Ok(x) => x,
-                    Err(x) => {
-                        debug!("Gatherer::GpuInfo", "Failed to parse total gtt: {}", x);
-                        0
-                    }
-                },
+                Ok(x) => x.trim().parse::<u64>().ok().and_then(|v| NonZero::new(v)),
                 Err(x) => {
                     debug!("Gatherer::GpuInfo", "Failed to read total gtt: {}", x);
-                    0
+                    None
                 }
             };
             let ven_dev_id = if let Some(mut f) = uevent_file {
@@ -706,15 +717,38 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
             let static_info = LinuxGpuStaticInfo {
                 id: Arc::from(pdev),
-                device_name: Arc::from(device_name),
+                device_name: device_name.map(|name| Arc::from(name)),
                 vendor_id: ven_dev_id.0,
                 device_id: ven_dev_id.1,
 
-                total_memory: dev.dynamic_info.total_memory,
+                total_memory: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GpuInfoDynamicInfoValid::TotalMemoryValid
+                ) {
+                    NonZero::new(dev.dynamic_info.total_memory)
+                } else {
+                    None
+                },
                 total_gtt,
 
-                pcie_gen: dev.dynamic_info.pcie_link_gen as _,
-                pcie_lanes: dev.dynamic_info.pcie_link_width as _,
+                pcie_gen: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GpuInfoDynamicInfoValid::PcieLinkGenValid
+                ) {
+                    NonZero::new(dev.dynamic_info.pcie_link_gen as _)
+                } else {
+                    None
+                },
+                pcie_lanes: if gpu_info_valid!(
+                    dev.dynamic_info,
+                    GpuInfoDynamicInfoValid::PcieLinkWidthValid
+                ) {
+                    NonZero::new(dev.dynamic_info.pcie_link_width as _)
+                } else {
+                    None
+                },
+
+                encode_decode_shared: dev.static_info.encode_decode_shared != 0,
 
                 // Leave the rest for when static info is actually requested
                 ..Default::default()
@@ -838,7 +872,7 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
 
         let mut device: *mut nvtop::ListHead = gpu_list.next;
         while device != gpu_list {
-            let dev: &nvtop::GPUInfo = unsafe { core::mem::transmute(device) };
+            let dev: &nvtop::GpuInfo = unsafe { core::mem::transmute(device) };
             device = unsafe { (*device).next };
 
             let pdev = unsafe { std::ffi::CStr::from_ptr(dev.pdev.as_ptr()) };
@@ -865,61 +899,163 @@ impl<'a> GpuInfoExt<'a> for LinuxGpuInfo {
                 }
             };
 
-            let used_gtt = match fs::read_to_string(format!(
+            let used_shared_memory = match fs::read_to_string(format!(
                 "/sys/bus/pci/devices/{}/mem_info_gtt_used",
                 pdev.to_lowercase()
             )) {
-                Ok(x) => match x.trim().parse::<u64>() {
-                    Ok(x) => x,
-                    Err(x) => {
+                Ok(x) => x
+                    .trim()
+                    .parse::<u64>()
+                    .map(|v| Some(v))
+                    .unwrap_or_else(|x| {
                         debug!("Gatherer::GpuInfo", "Failed to parse used gtt: {}", x);
-                        0
-                    }
-                },
+                        None
+                    }),
                 Err(x) => {
                     debug!("Gatherer::GpuInfo", "Failed to read used gtt: {}", x);
-                    0
+                    None
                 }
             };
 
-            let dynamic_info = self.dynamic_info.get_mut(&pci_id);
-            if dynamic_info.is_none() {
-                continue;
-            }
-            let dynamic_info = unsafe { dynamic_info.unwrap_unchecked() };
+            let dynamic_info = match self.dynamic_info.get_mut(&pci_id) {
+                Some(di) => di,
+                None => {
+                    warning!(
+                        "Gatherer::GpuInfo",
+                        "Unable to find dynamic info for device {}",
+                        pdev
+                    );
+                    continue;
+                }
+            };
+
             dynamic_info.id = Arc::from(pdev);
-            dynamic_info.temp_celsius = dev.dynamic_info.gpu_temp;
-            dynamic_info.fan_speed_percent = dev.dynamic_info.fan_speed;
-            dynamic_info.util_percent = dev.dynamic_info.gpu_util_rate;
-            dynamic_info.power_draw_watts = dev.dynamic_info.power_draw as f32 / 1000.;
-            dynamic_info.power_draw_max_watts = dev.dynamic_info.power_draw_max as f32 / 1000.;
-            dynamic_info.clock_speed_mhz = dev.dynamic_info.gpu_clock_speed;
-            dynamic_info.clock_speed_max_mhz = dev.dynamic_info.gpu_clock_speed_max;
-            dynamic_info.mem_speed_mhz = dev.dynamic_info.mem_clock_speed;
-            dynamic_info.mem_speed_max_mhz = dev.dynamic_info.mem_clock_speed_max;
-            dynamic_info.free_memory = dev.dynamic_info.free_memory;
-            dynamic_info.used_memory = dev.dynamic_info.used_memory;
-            dynamic_info.used_gtt = used_gtt;
-            dynamic_info.encoder_percent = {
-                if gpu_info_valid!(dev.dynamic_info, GPUInfoDynamicInfoValid::EncoderRateValid) {
-                    dev.dynamic_info.encoder_rate
+            dynamic_info.temp_celsius =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuTempValid) {
+                    Some(dev.dynamic_info.gpu_temp)
                 } else {
-                    0
+                    None
+                };
+            dynamic_info.fan_speed_percent =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::FanSpeedValid) {
+                    Some(dev.dynamic_info.fan_speed)
+                } else {
+                    None
+                };
+            dynamic_info.util_percent =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuUtilRateValid) {
+                    Some(dev.dynamic_info.gpu_util_rate)
+                } else {
+                    None
+                };
+            dynamic_info.power_draw_watts =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::PowerDrawValid) {
+                    Some(dev.dynamic_info.power_draw as f32 / 1000.)
+                } else {
+                    None
+                };
+            dynamic_info.power_draw_max_watts =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::PowerDrawMaxValid) {
+                    Some(dev.dynamic_info.power_draw_max as f32 / 1000.)
+                } else {
+                    None
+                };
+            dynamic_info.clock_speed_mhz = if gpu_info_valid!(
+                dev.dynamic_info,
+                GpuInfoDynamicInfoValid::GpuClockSpeedValid
+            ) {
+                Some(dev.dynamic_info.gpu_clock_speed)
+            } else {
+                None
+            };
+            dynamic_info.clock_speed_max_mhz = if gpu_info_valid!(
+                dev.dynamic_info,
+                GpuInfoDynamicInfoValid::GpuClockSpeedMaxValid
+            ) {
+                NonZero::new(dev.dynamic_info.gpu_clock_speed_max)
+            } else {
+                None
+            };
+            dynamic_info.mem_speed_mhz = if gpu_info_valid!(
+                dev.dynamic_info,
+                GpuInfoDynamicInfoValid::MemClockSpeedValid
+            ) {
+                Some(dev.dynamic_info.mem_clock_speed)
+            } else {
+                None
+            };
+            dynamic_info.mem_speed_max_mhz = if gpu_info_valid!(
+                dev.dynamic_info,
+                GpuInfoDynamicInfoValid::MemClockSpeedMaxValid
+            ) {
+                NonZero::new(dev.dynamic_info.mem_clock_speed_max)
+            } else {
+                None
+            };
+            dynamic_info.free_memory =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::FreeMemoryValid) {
+                    Some(dev.dynamic_info.free_memory)
+                } else {
+                    None
+                };
+            dynamic_info.used_memory =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::UsedMemoryValid) {
+                    Some(dev.dynamic_info.used_memory)
+                } else {
+                    None
+                };
+            dynamic_info.used_shared_memory = used_shared_memory;
+            dynamic_info.encoder_percent = {
+                // FIXME: Concession, if the value is 0, we assume it might be valid even if the
+                //        validity check fails.
+                //        This is needed because these values are not set to valid until the first
+                //        time the encoding function of the GPU is used
+
+                let valid =
+                    gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::EncoderRateValid);
+
+                if valid || dev.dynamic_info.encoder_rate == 0 {
+                    Some(dev.dynamic_info.encoder_rate)
+                } else {
+                    None
                 }
             };
             dynamic_info.decoder_percent = {
-                if gpu_info_valid!(dev.dynamic_info, GPUInfoDynamicInfoValid::DecoderRateValid) {
-                    dev.dynamic_info.decoder_rate
+                // FIXME: Concession, if the value is 0, we assume it might be valid even if the
+                //        validity check fails.
+                //        This is needed because these values are not set to valid until the first
+                //        time the decoding function of the GPU is used
+
+                let valid =
+                    gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::DecoderRateValid);
+
+                if valid || dev.dynamic_info.decoder_rate == 0 {
+                    Some(dev.dynamic_info.decoder_rate)
                 } else {
-                    0
+                    None
                 }
             };
+            dynamic_info.util_percent =
+                if gpu_info_valid!(dev.dynamic_info, GpuInfoDynamicInfoValid::GpuUtilRateValid) {
+                    Some(dev.dynamic_info.gpu_util_rate)
+                } else {
+                    None
+                };
 
             for i in 0..dev.processes_count as usize {
                 let process = unsafe { &*dev.processes.add(i) };
+                let gpu_usage_valid =
+                    gpu_info_valid!(process, GpuInfoProcessInfoValid::GpuUsageValid);
+                let gpu_memory_usage_valid =
+                    gpu_info_valid!(process, GpuInfoProcessInfoValid::GpuMemoryUsageValid);
                 if let Some(proc) = processes.get_mut(&(process.pid as u32)) {
-                    proc.usage_stats.gpu_usage = process.gpu_usage as f32;
-                    proc.usage_stats.gpu_memory_usage = process.gpu_memory_usage as f32;
+                    if gpu_usage_valid {
+                        proc.usage_stats.gpu_usage += process.gpu_usage as f32;
+                    }
+
+                    if gpu_memory_usage_valid {
+                        proc.usage_stats.gpu_memory_usage += process.gpu_memory_usage as f32;
+                    }
                 }
             }
         }

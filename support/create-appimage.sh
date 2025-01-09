@@ -50,7 +50,7 @@ patch -u /usr/local/lib/python3.8/dist-packages/appimagebuilder/modules/deploy/a
 
 # https://github.com/AppImageCrafters/appimage-builder/issues/357
 pip install --upgrade setuptools packaging packaging-legacy
-pip install --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest "lief>=0.16.0.dev0"
+pip install --ignore-installed --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest "lief>=0.16.0.dev0"
 find /usr/local/lib -name package.py | while read -r file; do sed -i -e "s/^from.packaging/&_legacy/" "${file}"; done
 
 cc -O2 -o $APPDIR_PATH/entrypoint $RECEIPE_PATH/../support/entrypoint.c

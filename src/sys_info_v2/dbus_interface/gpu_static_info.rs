@@ -17,9 +17,10 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
+use std::num::NonZero;
 use std::sync::Arc;
 
+use crate::i18n::i18n;
 use dbus::{arg::*, strings::*};
 use gtk::glib::g_critical;
 
@@ -51,14 +52,15 @@ pub struct GpuStaticInfo {
     pub device_name: Arc<str>,
     pub vendor_id: u16,
     pub device_id: u16,
-    pub total_memory: u64,
-    pub total_gtt: u64,
+    pub total_memory: Option<NonZero<u64>>,
+    pub total_shared_memory: Option<NonZero<u64>>,
     pub opengl_version: Option<OpenGLApiVersion>,
     pub vulkan_version: Option<ApiVersion>,
     pub metal_version: Option<ApiVersion>,
     pub direct3d_version: Option<ApiVersion>,
-    pub pcie_gen: u8,
-    pub pcie_lanes: u8,
+    pub pcie_gen: Option<NonZero<u8>>,
+    pub pcie_lanes: Option<NonZero<u8>>,
+    pub encode_decode_shared: bool,
 }
 
 impl Default for GpuStaticInfo {
@@ -69,14 +71,15 @@ impl Default for GpuStaticInfo {
             device_name: empty,
             vendor_id: 0,
             device_id: 0,
-            total_memory: 0,
-            total_gtt: 0,
+            total_memory: None,
+            total_shared_memory: None,
             opengl_version: None,
             vulkan_version: None,
             metal_version: None,
             direct3d_version: None,
-            pcie_gen: 0,
-            pcie_lanes: 0,
+            pcie_gen: None,
+            pcie_lanes: None,
+            encode_decode_shared: false,
         }
     }
 }
@@ -99,7 +102,7 @@ impl Arg for GpuStaticInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        dbus::Signature::from("a(ssqqt(yyy)(qqq)(qqq)(qqq)yy)")
+        dbus::Signature::from("a(ssqqtt(yyy)(qqq)(qqq)(qqq)yyb)")
     }
 }
 
@@ -123,7 +126,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                     "MissionCenter::GathererDBusProxy",
                     "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got None",
                 );
-                return None;
+                None
             }
             Some(arg) => match arg.as_iter() {
                 None => {
@@ -132,26 +135,11 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                         "Failed to get Vec<DiskInfo>: Expected '0: ARRAY', got {:?}",
                         arg.arg_type(),
                     );
-                    return None;
+                    None
                 }
                 Some(arr) => {
                     for static_info in arr {
-                        let empty_string = Arc::<str>::from("");
-
-                        let mut info = GpuStaticInfo {
-                            id: empty_string.clone(),
-                            device_name: empty_string,
-                            vendor_id: 0,
-                            device_id: 0,
-                            total_memory: 0,
-                            total_gtt: 0,
-                            opengl_version: None,
-                            vulkan_version: None,
-                            metal_version: None,
-                            direct3d_version: None,
-                            pcie_gen: 0,
-                            pcie_lanes: 0,
-                        };
+                        let mut info = GpuStaticInfo::default();
 
                         let mut static_info = match static_info.as_iter() {
                             None => {
@@ -203,7 +191,13 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(id) => Arc::<str>::from(id),
+                                Some(name) => {
+                                    if name.is_empty() {
+                                        Arc::<str>::from(i18n("Unknown"))
+                                    } else {
+                                        Arc::<str>::from(name)
+                                    }
+                                }
                             },
                         };
 
@@ -266,11 +260,11 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(total_memory) => total_memory,
+                                Some(total_memory) => NonZero::new(total_memory),
                             },
                         };
 
-                        info.total_gtt = match Iterator::next(static_info) {
+                        info.total_shared_memory = match Iterator::next(static_info) {
                             None => {
                                 g_critical!(
                                     "MissionCenter::GathererDBusProxy",
@@ -287,7 +281,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(um) => um as _,
+                                Some(um) => NonZero::new(um as _),
                             },
                         };
                         info.opengl_version = match Iterator::next(static_info) {
@@ -454,7 +448,7 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(pcie_gen) => pcie_gen as u8,
+                                Some(pcie_gen) => NonZero::new(pcie_gen as u8),
                             },
                         };
 
@@ -475,7 +469,28 @@ impl<'a> Get<'a> for GpuStaticInfoVec {
                                     );
                                     return None;
                                 }
-                                Some(pcie_lanes) => pcie_lanes as u8,
+                                Some(pcie_lanes) => NonZero::new(pcie_lanes as u8),
+                            },
+                        };
+
+                        info.encode_decode_shared = match Iterator::next(static_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuStaticInfo: Expected '12: b', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_i64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuStaticInfo: Expected '12: b', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(pcie_lanes) => pcie_lanes != 0,
                             },
                         };
 

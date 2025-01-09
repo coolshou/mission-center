@@ -42,7 +42,7 @@ unsafe impl Sync for ListHead {}
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct GPUVendor {
+pub struct GpuVendor {
     pub list: ListHead,
 
     pub init: Option<fn() -> u8>,
@@ -52,18 +52,18 @@ pub struct GPUVendor {
 
     pub get_device_handles: Option<extern "C" fn(devices: *mut ListHead, count: *mut u32) -> u8>,
 
-    pub populate_static_info: Option<extern "C" fn(gpu_info: *mut GPUInfo)>,
-    pub refresh_dynamic_info: Option<extern "C" fn(gpu_info: *mut GPUInfo)>,
-    pub refresh_utilisation_rate: Option<extern "C" fn(gpu_info: *mut GPUInfo)>,
+    pub populate_static_info: Option<extern "C" fn(gpu_info: *mut GpuInfo)>,
+    pub refresh_dynamic_info: Option<extern "C" fn(gpu_info: *mut GpuInfo)>,
+    pub refresh_utilisation_rate: Option<extern "C" fn(gpu_info: *mut GpuInfo)>,
 
-    pub refresh_running_processes: Option<extern "C" fn(gpu_info: *mut GPUInfo)>,
+    pub refresh_running_processes: Option<extern "C" fn(gpu_info: *mut GpuInfo)>,
 
     pub name: *mut i8,
 }
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub enum GPUInfoStaticInfoValid {
+pub enum GpuInfoStaticInfoValid {
     DeviceNameValid = 0,
     MaxPcieGenValid,
     MaxPcieLinkWidthValid,
@@ -75,11 +75,11 @@ pub enum GPUInfoStaticInfoValid {
     StaticInfoCount,
 }
 
-const GPU_INFO_STATIC_INFO_COUNT: usize = GPUInfoStaticInfoValid::StaticInfoCount as usize;
+const GPU_INFO_STATIC_INFO_COUNT: usize = GpuInfoStaticInfoValid::StaticInfoCount as usize;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct GPUInfoStaticInfo {
+pub struct GpuInfoStaticInfo {
     pub device_name: [libc::c_char; MAX_DEVICE_NAME],
     pub max_pcie_gen: u32,
     pub max_pcie_link_width: u32,
@@ -95,7 +95,7 @@ pub struct GPUInfoStaticInfo {
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub enum GPUInfoDynamicInfoValid {
+pub enum GpuInfoDynamicInfoValid {
     GpuClockSpeedValid = 0,
     GpuClockSpeedMaxValid,
     MemClockSpeedValid,
@@ -112,6 +112,7 @@ pub enum GPUInfoDynamicInfoValid {
     PcieRxValid,
     PcieTxValid,
     FanSpeedValid,
+    FanRpmValid,
     GpuTempValid,
     PowerDrawValid,
     PowerDrawMaxValid,
@@ -119,11 +120,11 @@ pub enum GPUInfoDynamicInfoValid {
     DynamicInfoCount,
 }
 
-const GPU_INFO_DYNAMIC_INFO_COUNT: usize = GPUInfoDynamicInfoValid::DynamicInfoCount as usize;
+const GPU_INFO_DYNAMIC_INFO_COUNT: usize = GpuInfoDynamicInfoValid::DynamicInfoCount as usize;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct GPUInfoDynamicInfo {
+pub struct GpuInfoDynamicInfo {
     pub gpu_clock_speed: u32,
     pub gpu_clock_speed_max: u32,
     pub mem_clock_speed: u32,
@@ -140,16 +141,17 @@ pub struct GPUInfoDynamicInfo {
     pub pcie_rx: u32,
     pub pcie_tx: u32,
     pub fan_speed: u32,
+    pub fan_rpm: u32,
     pub gpu_temp: u32,
     pub power_draw: u32,
     pub power_draw_max: u32,
-    pub multi_instance_mode: u8,
+    pub multi_instance_mode: bool,
     pub valid: [u8; (GPU_INFO_DYNAMIC_INFO_COUNT + 7) / 8],
 }
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub enum GPUProcessType {
+pub enum GpuProcessType {
     Unknown = 0,
     Graphical = 1,
     Compute = 2,
@@ -159,7 +161,7 @@ pub enum GPUProcessType {
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub enum GPUInfoProcessInfoValid {
+pub enum GpuInfoProcessInfoValid {
     CmdlineValid,
     UserNameValid,
     GfxEngineUsedValid,
@@ -180,12 +182,12 @@ pub enum GPUInfoProcessInfoValid {
 }
 
 const GPU_PROCESS_INFO_VALID_INFO_COUNT: usize =
-    GPUInfoProcessInfoValid::ProcessValidInfoCount as usize;
+    GpuInfoProcessInfoValid::ProcessValidInfoCount as usize;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct GPUProcess {
-    pub r#type: GPUProcessType,
+pub struct GpuProcess {
+    pub r#type: GpuProcessType,
     pub pid: i32,
     pub cmdline: *mut libc::c_char,
     pub user_name: *mut libc::c_char,
@@ -200,6 +202,7 @@ pub struct GPUProcess {
     pub decode_usage: u32,
     pub gpu_memory_usage: libc::c_ulonglong,
     pub gpu_memory_percentage: u32,
+
     pub cpu_usage: u32,
     pub cpu_memory_virt: libc::c_ulong,
     pub cpu_memory_res: libc::c_ulong,
@@ -208,13 +211,13 @@ pub struct GPUProcess {
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct GPUInfo {
+pub struct GpuInfo {
     pub list: ListHead,
-    pub vendor: *mut GPUVendor,
-    pub static_info: GPUInfoStaticInfo,
-    pub dynamic_info: GPUInfoDynamicInfo,
+    pub vendor: *mut GpuVendor,
+    pub static_info: GpuInfoStaticInfo,
+    pub dynamic_info: GpuInfoDynamicInfo,
     pub processes_count: u32,
-    pub processes: *mut GPUProcess,
+    pub processes: *mut GpuProcess,
     pub processes_array_size: u32,
     pub pdev: [libc::c_char; PDEV_LEN],
 }
@@ -231,6 +234,9 @@ extern "C" {
     pub fn init_extract_gpuinfo_intel();
     pub fn init_extract_gpuinfo_msm();
     pub fn init_extract_gpuinfo_nvidia();
+    pub fn init_extract_gpuinfo_panfrost();
+    pub fn init_extract_gpuinfo_panthor();
+    pub fn init_extract_gpuinfo_v3d();
 
     pub fn gpuinfo_populate_static_infos(devices: *mut ListHead) -> u8;
     pub fn gpuinfo_refresh_dynamic_info(devices: *mut ListHead) -> u8;

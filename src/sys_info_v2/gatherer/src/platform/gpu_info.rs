@@ -17,9 +17,9 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
 use dbus::arg::{Append, Arg};
 use serde::{Deserialize, Serialize};
+use std::num::NonZero;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
@@ -86,7 +86,7 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     fn id(&self) -> &str;
 
     /// The human-readable name of the GPU
-    fn device_name(&self) -> &str;
+    fn device_name(&self) -> Option<&str>;
 
     /// The PCI vendor identifier
     fn vendor_id(&self) -> u16;
@@ -97,10 +97,10 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     /// The total amount of GPU memory available to the device
     ///
     /// It is platform/driver specific if this value includes any memory shared with system RAM
-    fn total_memory(&self) -> u64;
+    fn total_memory(&self) -> Option<NonZero<u64>>;
 
-    /// The total amount of gtt/gart available
-    fn total_gtt(&self) -> u64;
+    /// The total amount of GTT/GART memory available
+    fn total_shared_memory(&self) -> Option<NonZero<u64>>;
 
     /// The version of OpenGL that the GPU supports
     ///
@@ -123,36 +123,44 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     fn direct3d_version(&self) -> Option<&ApiVersion>;
 
     /// The PCI express lane generation that the GPU is mounted on
-    fn pcie_gen(&self) -> u8;
+    fn pcie_gen(&self) -> Option<NonZero<u8>>;
 
     /// The number of PCI express lanes in use by the GPU
-    fn pcie_lanes(&self) -> u8;
+    fn pcie_lanes(&self) -> Option<NonZero<u8>>;
+
+    /// Returns true if the encode and decode pipelines share resources
+    fn encode_decode_shared(&self) -> bool;
 }
 
 impl Arg for crate::platform::GpuStaticInfo {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yy)")
+        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yyb)")
     }
 }
 
 impl Append for crate::platform::GpuStaticInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
-        ia.append((
-            self.id(),
-            self.device_name(),
-            self.vendor_id(),
-            self.device_id(),
-            self.total_memory(),
-            self.total_gtt(),
-            self.opengl_version().map(|v| *v).unwrap_or_default(),
-            self.vulkan_version().map(|v| *v).unwrap_or_default(),
-            self.metal_version().map(|v| *v).unwrap_or_default(),
-            self.direct3d_version().map(|v| *v).unwrap_or_default(),
-            self.pcie_gen(),
-            self.pcie_lanes(),
-        ));
+        ia.append_struct(|ia| {
+            ia.append(self.id());
+            ia.append(self.device_name().unwrap_or_default());
+            ia.append(self.vendor_id());
+            ia.append(self.device_id());
+            ia.append(self.total_memory().map(|v| v.get()).unwrap_or_default());
+            ia.append(
+                self.total_shared_memory()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.opengl_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.vulkan_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.metal_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.direct3d_version().map(|v| *v).unwrap_or_default());
+            ia.append(self.pcie_gen().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.pcie_lanes().map(|v| v.get()).unwrap_or_default());
+            ia.append(self.encode_decode_shared());
+        });
     }
 }
 
@@ -170,45 +178,46 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     ///
     /// While all modern chips report several temperatures from the GPU card, it is expected that
     /// implementations provide the most user relevant value here
-    fn temp_celsius(&self) -> u32;
+    fn temp_celsius(&self) -> Option<u32>;
 
-    /// The speed of the fan represented as a percentage from it's maximum speed
-    fn fan_speed_percent(&self) -> u32;
+    /// The speed of the fan represented as a percentage from its maximum speed
+    fn fan_speed_percent(&self) -> Option<u32>;
 
     /// Load of the graphics pipeline
-    fn util_percent(&self) -> u32;
+    fn util_percent(&self) -> Option<u32>;
 
     /// The power draw in watts
-    fn power_draw_watts(&self) -> f32;
+    fn power_draw_watts(&self) -> Option<f32>;
 
     /// The maximum power that the GPU is allowed to draw
-    fn power_draw_max_watts(&self) -> f32;
+    fn power_draw_max_watts(&self) -> Option<f32>;
 
     /// The current GPU core clock frequency
-    fn clock_speed_mhz(&self) -> u32;
+    fn clock_speed_mhz(&self) -> Option<u32>;
 
     /// The maximum allowed GPU core clock frequency
-    fn clock_speed_max_mhz(&self) -> u32;
+    fn clock_speed_max_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The current speed of the on-board memory
-    fn mem_speed_mhz(&self) -> u32;
+    fn mem_speed_mhz(&self) -> Option<u32>;
 
     /// The maximum speed of the on-board memory
-    fn mem_speed_max_mhz(&self) -> u32;
+    fn mem_speed_max_mhz(&self) -> Option<NonZero<u32>>;
 
     /// The amount of memory available
-    fn free_memory(&self) -> u64;
+    fn free_memory(&self) -> Option<u64>;
 
     /// The memory that is currently being used
-    fn used_memory(&self) -> u64;
+    fn used_memory(&self) -> Option<u64>;
 
-    /// The amount of gtt/gart available
-    fn used_gtt(&self) -> u64;
+    /// The amount of shared memory available
+    fn used_shared_memory(&self) -> Option<u64>;
+
     /// Utilization percent of the encoding pipeline of the GPU
-    fn encoder_percent(&self) -> u32;
+    fn encoder_percent(&self) -> Option<u32>;
 
     /// Utilization percent of the decoding pipeline of the GPU
-    fn decoder_percent(&self) -> u32;
+    fn decoder_percent(&self) -> Option<u32>;
 }
 
 impl Arg for crate::platform::GpuDynamicInfo {
@@ -223,20 +232,36 @@ impl Append for crate::platform::GpuDynamicInfo {
     fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
         ia.append_struct(|ia| {
             ia.append(self.id());
-            ia.append(self.temp_celsius());
-            ia.append(self.fan_speed_percent());
-            ia.append(self.util_percent());
-            ia.append(self.power_draw_watts() as f64);
-            ia.append(self.power_draw_max_watts() as f64);
-            ia.append(self.clock_speed_mhz());
-            ia.append(self.clock_speed_max_mhz());
-            ia.append(self.mem_speed_mhz());
-            ia.append(self.mem_speed_max_mhz());
-            ia.append(self.free_memory());
-            ia.append(self.used_memory());
-            ia.append(self.used_gtt());
-            ia.append(self.encoder_percent());
-            ia.append(self.decoder_percent());
+            ia.append(self.temp_celsius().unwrap_or(u32::MAX));
+            ia.append(self.fan_speed_percent().unwrap_or(u32::MAX));
+            ia.append(self.util_percent().unwrap_or(u32::MAX));
+            ia.append(
+                self.power_draw_watts()
+                    .map(|v| v as f64)
+                    .unwrap_or(f64::INFINITY),
+            );
+            ia.append(
+                self.power_draw_max_watts()
+                    .map(|v| v as f64)
+                    .unwrap_or(f64::INFINITY),
+            );
+            ia.append(self.clock_speed_mhz().unwrap_or(u32::MAX));
+            ia.append(
+                self.clock_speed_max_mhz()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.mem_speed_mhz().unwrap_or(u32::MAX));
+            ia.append(
+                self.mem_speed_max_mhz()
+                    .map(|v| v.get())
+                    .unwrap_or_default(),
+            );
+            ia.append(self.free_memory().unwrap_or(u64::MAX));
+            ia.append(self.used_memory().unwrap_or(u64::MAX));
+            ia.append(self.used_shared_memory().unwrap_or(u64::MAX));
+            ia.append(self.encoder_percent().unwrap_or(u32::MAX));
+            ia.append(self.decoder_percent().unwrap_or(u32::MAX));
         });
     }
 }
