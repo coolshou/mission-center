@@ -45,6 +45,7 @@ pub enum ProcessState {
 pub struct ProcessUsageStats {
     pub cpu_usage: f32,
     pub memory_usage: f32,
+    pub memory_shared: f32,
     pub disk_usage: f32,
     pub network_usage: f32,
     pub gpu_usage: f32,
@@ -155,7 +156,7 @@ impl From<&dyn RefArg> for Process {
 
         match deser_struct(process, "Process", 7) {
             Some(arg) => {
-                let mut values = [0_f32; 6];
+                let mut values = [0_f32; 7];
 
                 for (i, v) in arg.enumerate() {
                     values[i] = v.as_f64().unwrap_or(0.) as f32;

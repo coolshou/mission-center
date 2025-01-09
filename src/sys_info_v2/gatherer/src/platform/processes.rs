@@ -100,7 +100,7 @@ impl Arg for crate::platform::Processes {
     const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Array;
 
     fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("a(sassyuu(dddddd)t)")
+        dbus::Signature::from("a(sassyuu(ddddddd)t)")
     }
 }
 
