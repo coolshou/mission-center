@@ -61,6 +61,7 @@ template $AppsPage : Box {
 
                 cpu-usage-percent: bind (expander.item as <$RowModel>).cpu-usage-percent;
                 memory-usage-percent: bind (expander.item as <$RowModel>).memory-usage-percent;
+                memory-shared-percent: bind (expander.item as <$RowModel>).memory-shared-percent;
                 gpu-usage-percent: bind (expander.item as <$RowModel>).gpu-usage;
                 gpu-memory-usage-percent: bind (expander.item as <$RowModel>).gpu-memory-usage-percent;
               };
@@ -138,6 +139,32 @@ template $AppsPage : Box {
                 unit: "B";
                 value: bind (expander.item as <$RowModel>).memory-usage;
                 usage-percent: bind (expander.item as <$RowModel>).memory-usage-percent;
+                content-type: bind (expander.item as <$RowModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
+      ColumnViewColumn memory_column_shared {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "B";
+                value: bind (expander.item as <$RowModel>).memory-shared;
+                usage-percent: bind (expander.item as <$RowModel>).memory-shared-percent;
                 content-type: bind (expander.item as <$RowModel>).content-type;
               };
             };
