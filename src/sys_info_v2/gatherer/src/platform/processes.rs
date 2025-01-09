@@ -44,6 +44,7 @@ pub enum ProcessState {
 pub struct ProcessUsageStats {
     pub cpu_usage: f32,
     pub memory_usage: f32,
+    pub memory_shared: f32,
     pub disk_usage: f32,
     pub network_usage: f32,
     pub gpu_usage: f32,
@@ -119,6 +120,7 @@ impl Append for crate::platform::Processes {
                         (
                             p.usage_stats().cpu_usage as f64,
                             p.usage_stats().memory_usage as f64,
+                            p.usage_stats().memory_shared as f64,
                             p.usage_stats().disk_usage as f64,
                             p.usage_stats().network_usage as f64,
                             p.usage_stats().gpu_usage as f64,
