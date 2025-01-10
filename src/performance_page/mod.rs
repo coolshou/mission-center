@@ -1112,7 +1112,7 @@ mod imp {
                 DiskType::NVMe => i18n("NVMe"),
                 DiskType::eMMC => i18n("eMMC"),
                 DiskType::SD => i18n("SD"),
-                DiskType::iSCSI => i18n("iSCSI"),
+                DiskType::Floppy => i18n("Floppy"),
                 DiskType::Optical => i18n("Optical"),
                 DiskType::Unknown => i18n("Unknown"),
             };
@@ -1143,17 +1143,6 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            summary.set_info1(match disk_static_info.r#type {
-                DiskType::HDD => i18n("HDD"),
-                DiskType::SSD => i18n("SSD"),
-                DiskType::NVMe => i18n("NVMe"),
-                DiskType::eMMC => i18n("eMMC"),
-                DiskType::SD => i18n("SD"),
-                DiskType::Floppy => i18n("Floppy"),
-                DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Unknown"),
-            });
             self.update_disk_heading(&summary, &disk_static_info.r#type, disk_static_info.id.as_ref(), disk_id);
             summary.set_info1(disk_static_info.model.as_ref());
             summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
@@ -1893,7 +1882,14 @@ mod imp {
                                         (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
-                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                    summary.set_info2(format!("{:.0}%{}",
+                                        disk.busy_percent,
+                                        if disk.drive_temperature != 0 {
+                                            format!(" ({} °C)", disk.drive_temperature)
+                                        } else {
+                                            String::new()
+                                        }
+                                    ));
                                 }
 
                                 result &= page.update_readings(
