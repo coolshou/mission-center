@@ -40,7 +40,7 @@ pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
 pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
-pub use processes::{Process, ProcessUsageStats};
+use magpie_types::processes::Process;
 pub use service::{Service, ServiceMap};
 
 mod apps;
@@ -51,7 +51,6 @@ mod disk_info;
 mod fan_info;
 mod gpu_dynamic_info;
 mod gpu_static_info;
-mod processes;
 mod service;
 
 pub const MC_GATHERER_OBJECT_PATH: &str = "/io/missioncenter/MissionCenter/Gatherer";

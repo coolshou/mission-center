@@ -5,17 +5,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("cargo:rustc-link-arg=-lGL");
     }
 
-    prost_build::Config::new()
-        .compile_protos(
-            &[
-                "subprojects/magpie/platform/src/proto/apps.proto",
-                "subprojects/magpie/platform/src/proto/common.proto",
-                "subprojects/magpie/platform/src/proto/ipc.proto",
-                "subprojects/magpie/platform/src/proto/processes.proto",
-            ],
-            &["subprojects/magpie/platform/src/proto/"],
-        )
-        .unwrap();
-
     Ok(())
 }

@@ -22,32 +22,17 @@ use std::num::NonZeroU32;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use gtk::glib::g_critical;
-use prost::Message;
+use magpie_types::ipc::{request, response, Request, Response};
+use magpie_types::processes::{processes_response, ProcessesRequest};
+use magpie_types::prost::Message;
 use zeromq::prelude::*;
 use zeromq::ReqSocket;
+
+pub use magpie_types::processes::{Process, ProcessUsageStats};
 
 pub use super::dbus_interface::*;
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 use crate::show_error_dialog_and_exit;
-use ipc::{request, response, Request, Response};
-use processes::processes_response;
-use processes::ProcessesRequest;
-
-pub mod apps {
-    include!(concat!(env!("OUT_DIR"), "/magpie.apps.rs"));
-}
-
-pub mod common {
-    include!(concat!(env!("OUT_DIR"), "/magpie.common.rs"));
-}
-
-pub mod ipc {
-    include!(concat!(env!("OUT_DIR"), "/magpie.ipc.rs"));
-}
-
-pub mod processes {
-    include!(concat!(env!("OUT_DIR"), "/magpie.processes.rs"));
-}
 
 pub(crate) struct Gatherer {
     socket: RefCell<ReqSocket>,
