@@ -1114,12 +1114,12 @@ mod imp {
                 DiskType::SD => i18n("SD"),
                 DiskType::Floppy => i18n("Floppy"),
                 DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Unknown"),
+                DiskType::Unknown => i18n("Drive"),
             };
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "{type_str} {} ({})",
-                    &[&index.unwrap().to_string(), disk_id],
+                    "{} {} ({})",
+                    &[&type_str, &index.unwrap().to_string(), disk_id],
                 ));
             } else {
                 disk_graph.set_heading(type_str);
@@ -1875,17 +1875,16 @@ mod imp {
                                 graph_widget.add_data_point(0, disk.busy_percent);
 
                                 // i dare you to have a 1mK(elvin) drive
-                                if disk.drive_temperature >= 1 {
+                                if disk.drive_temperature == 0 {
                                     summary.set_info2(format!(
-                                        "{:.0}% ({:.0} °C)",
+                                        "{:.0}%",
                                         disk.busy_percent,
-                                        (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%{}",
                                         disk.busy_percent,
                                         if disk.drive_temperature != 0 {
-                                            format!(" ({} °C)", disk.drive_temperature)
+                                            format!(" ({} °C)", (disk.drive_temperature - MK_TO_0_C ) / 1000)
                                         } else {
                                             String::new()
                                         }
