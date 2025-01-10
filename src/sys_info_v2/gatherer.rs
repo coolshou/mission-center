@@ -19,20 +19,33 @@
  */
 
 use std::num::NonZeroU32;
+use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
+use arrayvec::ArrayString;
 use gtk::glib::g_critical;
 use magpie_types::ipc::{request, response, Request, Response};
 use magpie_types::processes::{processes_response, ProcessesRequest};
+pub use magpie_types::processes::{Process, ProcessUsageStats};
 use magpie_types::prost::Message;
 use zeromq::prelude::*;
 use zeromq::ReqSocket;
 
-pub use magpie_types::processes::{Process, ProcessUsageStats};
-
 pub use super::dbus_interface::*;
-use super::{FLATPAK_APP_PATH, IS_FLATPAK};
 use crate::show_error_dialog_and_exit;
+
+pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
+    let mut result = ArrayString::new();
+    for _ in 0..CAP {
+        if rand::random::<bool>() {
+            result.push(rand::random_range(b'a'..=b'z') as char);
+        } else {
+            result.push(rand::random_range(b'0'..=b'9') as char);
+        }
+    }
+
+    result
+}
 
 pub(crate) struct Gatherer {
     socket: RefCell<ReqSocket>,
@@ -64,174 +77,165 @@ impl Gatherer {
     }
 
     pub fn start(&self) {
-        // let mut command = if *IS_FLATPAK {
-        //     const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
-        //
-        //     let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
-        //     cmd.env_remove("LD_PRELOAD");
-        //     cmd.arg("-v")
-        //         .arg("--watch-bus")
-        //         .arg("--host")
-        //         .arg(Self::executable());
-        //     cmd
-        // } else {
-        //     let mut cmd = std::process::Command::new(Self::executable());
-        //     cmd.env_remove("LD_PRELOAD");
-        //
-        //     if let Some(mut appdir) = std::env::var_os("APPDIR") {
-        //         appdir.push("/runtime/default");
-        //         cmd.current_dir(appdir);
-        //     }
-        //
-        //     cmd
-        // };
-        // command
-        //     .stdout(std::process::Stdio::inherit())
-        //     .stderr(std::process::Stdio::inherit());
-        //
-        // self.child.borrow_mut().replace(match command.spawn() {
-        //     Ok(c) => c,
-        //     Err(e) => {
-        //         g_critical!(
-        //             "MissionCenter::Gatherer",
-        //             "Failed to spawn Gatherer process: {}",
-        //             &e
-        //         );
-        //         show_error_dialog_and_exit(&format!("Failed to spawn Gatherer process: {}", e));
-        //     }
-        // });
+        let socket_addr = format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>());
 
-        // const START_WAIT_TIME_MS: u64 = 300;
-        // const RETRY_COUNT: i32 = 50;
-        //
-        // // Let the child process start up
-        // for i in 0..RETRY_COUNT {
-        //     std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
-        //     match self.proxy.ping() {
-        //         Ok(()) => return,
-        //         Err(e) => {
-        //             g_critical!(
-        //                 "MissionCenter::Gatherer",
-        //                 "Call to Gatherer Ping method failed on try {}: {}",
-        //                 i,
-        //                 e,
-        //             );
-        //         }
-        //     }
-        //     std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
-        // }
+        let mut command = if crate::is_flatpak() {
+            const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
 
-        match self.tokio_runtime.block_on(async {
-            self.socket
-                .borrow_mut()
-                .connect("ipc:///tmp/magpie_test.ipc")
-                .await
-        }) {
-            Ok(_) => (),
+            let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+            cmd.arg("-v")
+                .arg("--watch-bus")
+                .arg("--host")
+                .arg(Self::executable());
+            cmd
+        } else {
+            let mut cmd = std::process::Command::new(Self::executable());
+
+            if let Some(mut appdir) = std::env::var_os("APPDIR") {
+                appdir.push("/runtime/default");
+                cmd.current_dir(appdir);
+            }
+
+            cmd
+        };
+        command
+            .env_remove("LD_PRELOAD")
+            .stdout(std::process::Stdio::inherit())
+            .stderr(std::process::Stdio::inherit())
+            .arg("--addr")
+            .arg(&socket_addr);
+
+        self.child.borrow_mut().replace(match command.spawn() {
+            Ok(c) => c,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::Gatherer",
-                    "Failed to connect to Gatherer socket: {}",
-                    e
+                    "Failed to spawn Magpie process: {}",
+                    &e
                 );
-                show_error_dialog_and_exit(&format!("Failed to connect to Gatherer socket: {}", e));
+                show_error_dialog_and_exit(&format!("Failed to spawn Magpie process: {}", e));
+            }
+        });
+
+        const START_WAIT_TIME_MS: u64 = 300;
+        const RETRY_COUNT: i32 = 50;
+
+        // Let the child process start up
+        for i in 0..RETRY_COUNT {
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+
+            match self
+                .tokio_runtime
+                .block_on(async { self.socket.borrow_mut().connect(&socket_addr).await })
+            {
+                Ok(_) => return,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to connect to Gatherer socket: {}",
+                        e
+                    );
+                }
+            }
+
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+        }
+
+        show_error_dialog_and_exit("Failed to connect to Gatherer socket");
+    }
+
+    pub fn stop(&self) {
+        let child = self.child.borrow_mut().take();
+        if let Some(mut child) = child {
+            // Try to get the child to wake up in case it's stuck
+            #[cfg(target_family = "unix")]
+            unsafe {
+                libc::kill(child.id() as _, libc::SIGCONT);
+            }
+
+            let _ = child.kill();
+            for _ in 0..2 {
+                match child.try_wait() {
+                    Ok(Some(_)) => return,
+                    Ok(None) => {
+                        // Wait a bit and try again, the child process might just be slow to stop
+                        std::thread::sleep(Duration::from_millis(20));
+                        continue;
+                    }
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::Gatherer",
+                            "Failed to wait for Gatherer process to stop: {}",
+                            &e
+                        );
+
+                        show_error_dialog_and_exit(&format!(
+                            "Failed to wait for Gatherer process to stop: {}",
+                            e
+                        ));
+                    }
+                }
             }
         }
     }
 
-    pub fn stop(&self) {
-        // let child = self.child.borrow_mut().take();
-        // if let Some(mut child) = child {
-        //     // Try to get the child to wake up in case it's stuck
-        //     #[cfg(target_family = "unix")]
-        //     unsafe {
-        //         libc::kill(child.id() as _, libc::SIGCONT);
-        //     }
-        //
-        //     let _ = child.kill();
-        //     for _ in 0..2 {
-        //         match child.try_wait() {
-        //             Ok(Some(_)) => return,
-        //             Ok(None) => {
-        //                 // Wait a bit and try again, the child process might just be slow to stop
-        //                 std::thread::sleep(Duration::from_millis(20));
-        //                 continue;
-        //             }
-        //             Err(e) => {
-        //                 g_critical!(
-        //                     "MissionCenter::Gatherer",
-        //                     "Failed to wait for Gatherer process to stop: {}",
-        //                     &e
-        //                 );
-        //
-        //                 show_error_dialog_and_exit(&format!(
-        //                     "Failed to wait for Gatherer process to stop: {}",
-        //                     e
-        //                 ));
-        //             }
-        //         }
-        //     }
-        // }
-    }
-
     pub fn is_running(&self) -> Result<(), i32> {
-        // let mut lock = self.child.borrow_mut();
-        //
-        // let child = match lock.as_mut() {
-        //     Some(child) => child,
-        //     None => return Err(-1),
-        // };
-        //
-        // let status = match child.try_wait() {
-        //     Ok(None) => return Ok(()),
-        //     Ok(Some(status)) => status,
-        //     Err(_) => {
-        //         return Err(-1);
-        //     }
-        // };
-        //
-        // match status.code() {
-        //     Some(status_code) => Err(status_code),
-        //     None => Err(-1),
-        // }
-        Ok(())
+        let mut lock = self.child.borrow_mut();
+
+        let child = match lock.as_mut() {
+            Some(child) => child,
+            None => return Err(-1),
+        };
+
+        let status = match child.try_wait() {
+            Ok(None) => return Ok(()),
+            Ok(Some(status)) => status,
+            Err(_) => {
+                return Err(-1);
+            }
+        };
+
+        match status.code() {
+            Some(status_code) => Err(status_code),
+            None => Err(-1),
+        }
     }
 
     fn executable() -> String {
         use gtk::glib::g_debug;
 
-        let exe_simple = "missioncenter-gatherer".to_owned();
+        let exe_simple = "missioncenter-magpie".to_owned();
 
-        if *IS_FLATPAK {
-            let flatpak_app_path = FLATPAK_APP_PATH.as_str();
+        if crate::is_flatpak() {
+            let flatpak_app_path = super::flatpak_app_path();
 
             let cmd_glibc_status = cmd_flatpak_host!(&format!(
-                "{}/bin/missioncenter-gatherer-glibc just-testing",
+                "{}/bin/missioncenter-magpie-glibc --test",
                 flatpak_app_path
             ))
             .status()
             .is_ok_and(|exit_status| exit_status.success());
             if cmd_glibc_status {
-                let exe_glibc = format!("{}/bin/missioncenter-gatherer-glibc", flatpak_app_path);
+                let exe_glibc = format!("{}/bin/missioncenter-magpie-glibc", flatpak_app_path);
                 g_debug!(
                     "MissionCenter::Gatherer",
-                    "Gatherer executable name: {}",
+                    "Magpie executable name: {}",
                     &exe_glibc
                 );
                 return exe_glibc;
             }
 
             let cmd_musl_status = cmd_flatpak_host!(&format!(
-                "{}/bin/missioncenter-gatherer-musl just-testing",
+                "{}/bin/missioncenter-magpie-musl --test",
                 flatpak_app_path
             ))
             .status()
             .is_ok_and(|exit_status| exit_status.success());
             if cmd_musl_status {
-                let exe_musl = format!("{}/bin/missioncenter-gatherer-musl", flatpak_app_path);
+                let exe_musl = format!("{}/bin/missioncenter-magpie-musl", flatpak_app_path);
                 g_debug!(
                     "MissionCenter::Gatherer",
-                    "Gatherer executable name: {}",
+                    "Magpie executable name: {}",
                     &exe_musl
                 );
                 return exe_musl;
@@ -240,7 +244,7 @@ impl Gatherer {
 
         g_debug!(
             "MissionCenter::Gatherer",
-            "Gatherer executable name: {}",
+            "Magpie executable name: {}",
             &exe_simple
         );
 

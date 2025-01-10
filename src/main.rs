@@ -78,6 +78,11 @@ fn user_home() -> &'static Path {
     .as_path()
 }
 
+pub fn is_flatpak() -> bool {
+    static IS_FLATPAK: OnceLock<bool> = OnceLock::new();
+    *IS_FLATPAK.get_or_init(|| Path::new("/.flatpak-info").exists())
+}
+
 pub fn to_human_readable_adv(
     value: f32,
     divisor: f32,

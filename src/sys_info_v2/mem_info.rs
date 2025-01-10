@@ -193,7 +193,7 @@ impl MemInfo {
         use gtk::glib::*;
         use std::process::*;
 
-        let is_flatpak = *super::IS_FLATPAK;
+        let is_flatpak = crate::is_flatpak();
         let mut cmd = if !is_flatpak {
             let mut cmd = Command::new("udevadm");
             cmd.arg("info")

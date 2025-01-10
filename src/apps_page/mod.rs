@@ -1281,7 +1281,12 @@ mod imp {
                 .set(column_header_gpu_mem);
         }
 
-        fn update_process_model(this: &AppsPage, model: ListStore, process: &Process, processes: &HashMap<u32, Process>) {
+        fn update_process_model(
+            this: &AppsPage,
+            model: ListStore,
+            process: &Process,
+            processes: &HashMap<u32, Process>,
+        ) {
             use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
 
             let mut to_remove = Vec::new();
@@ -1566,7 +1571,8 @@ impl AppsPage {
             .set(readings.mem_info.mem_total as f32);
 
         this.apps.set(std::mem::take(&mut readings.running_apps));
-        this.processes.set(std::mem::take(&mut readings.running_processes));
+        this.processes
+            .set(std::mem::take(&mut readings.running_processes));
 
         this.set_up_model();
 
@@ -1581,7 +1587,8 @@ impl AppsPage {
         let this = self.imp();
 
         this.apps.set(std::mem::take(&mut readings.running_apps));
-        this.processes.set(std::mem::take(&mut readings.running_processes));
+        this.processes
+            .set(std::mem::take(&mut readings.running_processes));
 
         this.update_processes_models();
         this.update_app_model();

@@ -18,8 +18,19 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use crate::{
+    app,
+    application::{BASE_INTERVAL, INTERVAL_STEP},
+};
+use gatherer::Gatherer;
+pub use gatherer::{
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
+    OpenGLApi, Process, ProcessUsageStats, Service,
+};
+use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use std::num::NonZeroU32;
 use std::sync::atomic::AtomicU64;
+use std::sync::OnceLock;
 use std::{
     collections::HashMap,
     sync::{
@@ -30,24 +41,11 @@ use std::{
     time::Duration,
 };
 
-use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
-use lazy_static::lazy_static;
-
-use crate::{
-    app,
-    application::{BASE_INTERVAL, INTERVAL_STEP},
-};
-use gatherer::Gatherer;
-pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
-    OpenGLApi, Process, ProcessUsageStats, Service,
-};
-
 macro_rules! cmd {
     ($cmd: expr) => {{
         use std::process::Command;
 
-        if *crate::sys_info_v2::IS_FLATPAK {
+        if crate::is_flatpak() {
             const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
 
             let mut cmd = Command::new(FLATPAK_SPAWN_CMD);
@@ -94,26 +92,29 @@ pub type NetDeviceType = net_info::NetDeviceType;
 
 pub type Pid = u32;
 
-lazy_static! {
-    static ref IS_FLATPAK: bool = std::path::Path::new("/.flatpak-info").exists();
-    static ref FLATPAK_APP_PATH: String = {
-        use ini::*;
+fn flatpak_app_path() -> &'static str {
+    static FLATPAK_APP_PATH: OnceLock<String> = OnceLock::new();
 
-        let ini = match Ini::load_from_file("/.flatpak-info") {
-            Err(_) => return "".to_owned(),
-            Ok(ini) => ini,
-        };
+    FLATPAK_APP_PATH
+        .get_or_init(|| {
+            let ini = match ini::Ini::load_from_file("/.flatpak-info") {
+                Err(_) => return "".to_owned(),
+                Ok(ini) => ini,
+            };
 
-        let section = match ini.section(Some("Instance")) {
-            None => panic!("Unable to find Instance section in /.flatpak-info"),
-            Some(section) => section,
-        };
+            let section = match ini.section(Some("Instance")) {
+                None => panic!("Unable to find Instance section in /.flatpak-info"),
+                Some(section) => section,
+            };
 
-        match section.get("app-path") {
-            None => panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info"),
-            Some(app_path) => app_path.to_owned(),
-        }
-    };
+            match section.get("app-path") {
+                None => {
+                    panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info")
+                }
+                Some(app_path) => app_path.to_owned(),
+            }
+        })
+        .as_str()
 }
 
 enum Message {
