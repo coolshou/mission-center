@@ -2060,8 +2060,8 @@ mod imp {
                                 } else {
                                     summary.set_info1(format!("{} RPM", fan_info.rpm));
                                     summary.set_info2(format!(
-                                        "{}%{}",
-                                        fan_info.percent_vroomimg,
+                                        "{:.0}%{}",
+                                        fan_info.percent_vroomimg * 100.,
                                         if fan_info.temp_amount != i64::MIN {
                                             format!(
                                                 " ({:.0} °C)",
