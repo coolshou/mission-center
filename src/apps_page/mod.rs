@@ -544,6 +544,7 @@ mod imp {
                         .expanded(false)
                         .cpu_usage(pp.merged_usage_stats.cpu_usage)
                         .memory_usage(pp.merged_usage_stats.memory_usage)
+                        .memory_shared(pp.merged_usage_stats.memory_shared)
                         .disk_usage(pp.merged_usage_stats.disk_usage)
                         .network_usage(pp.merged_usage_stats.network_usage)
                         .gpu_usage(pp.merged_usage_stats.gpu_usage)
@@ -567,6 +568,7 @@ mod imp {
                     row_model.set_pid(primary_pid);
                     row_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
                     row_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
+                    row_model.set_memory_shared(pp.merged_usage_stats.memory_shared);
                     row_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
                     row_model.set_network_usage(pp.merged_usage_stats.network_usage);
                     row_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
@@ -1112,6 +1114,7 @@ mod imp {
                             let pc = this.imp().pid_column.as_ptr() as usize;
                             let cc = this.imp().cpu_column.as_ptr() as usize;
                             let mc = this.imp().memory_column.as_ptr() as usize;
+                            let ms = this.imp().memory_column_shared.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
                             let gc = this.imp().gpu_usage_column.as_ptr() as usize;
                             let gm = this.imp().gpu_memory_column.as_ptr() as usize;
@@ -1124,12 +1127,14 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 2)
                             } else if sort_column == mc {
                                 settings.set_enum("apps-page-sorting-column", 3)
-                            } else if sort_column == dc {
+                            } else if sort_column == ms {
                                 settings.set_enum("apps-page-sorting-column", 4)
-                            } else if sort_column == gc {
+                            } else if sort_column == dc {
                                 settings.set_enum("apps-page-sorting-column", 5)
-                            } else if sort_column == gm {
+                            } else if sort_column == gc {
                                 settings.set_enum("apps-page-sorting-column", 6)
+                            } else if sort_column == gm {
+                                settings.set_enum("apps-page-sorting-column", 7)
                             } else {
                                 g_critical!(
                                     "MissionCenter::AppsPage",
@@ -1192,9 +1197,10 @@ mod imp {
                     1 => &self.pid_column,
                     2 => &self.cpu_column,
                     3 => &self.memory_column,
-                    4 => &self.disk_column,
-                    5 => &self.gpu_usage_column,
-                    6 => &self.gpu_memory_column,
+                    4 => &self.memory_column_shared,
+                    5 => &self.disk_column,
+                    6 => &self.gpu_usage_column,
+                    7 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
                         glib::g_critical!(

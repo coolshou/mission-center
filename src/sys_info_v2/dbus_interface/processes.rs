@@ -164,10 +164,11 @@ impl From<&dyn RefArg> for Process {
 
                 this.usage_stats.cpu_usage = values[0];
                 this.usage_stats.memory_usage = values[1];
-                this.usage_stats.disk_usage = values[2];
-                this.usage_stats.network_usage = values[3];
-                this.usage_stats.gpu_usage = values[4];
-                this.usage_stats.gpu_memory_usage = values[5];
+                this.usage_stats.memory_shared = values[2];
+                this.usage_stats.disk_usage = values[3];
+                this.usage_stats.network_usage = values[4];
+                this.usage_stats.gpu_usage = values[5];
+                this.usage_stats.gpu_memory_usage = values[6];
 
                 this.merged_usage_stats = this.usage_stats;
             }
