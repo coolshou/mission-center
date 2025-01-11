@@ -24,17 +24,17 @@ use gtk::glib::g_critical;
 use gtk::glib::{self, g_warning};
 use std::cell::Cell;
 use std::sync::Arc;
+use std::collections::HashMap;
 
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
+use crate::sys_info_v2::App;
 
 mod imp {
     use super::*;
-    use crate::sys_info_v2::App;
-    use std::collections::HashMap;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
@@ -81,7 +81,7 @@ mod imp {
                             .parent_page(parent.clone())
                             .build();
 
-                        model.append(&new_root.imp().row_entry.get());
+                        model.append(new_root.imp().row_entry.get().unwrap());
                     }
 
                     if !dirs.is_empty() {
@@ -94,7 +94,7 @@ mod imp {
                             .parent_page(parent.clone())
                             .build();
 
-                        model.append(&new_root.imp().row_entry.get());
+                        model.append(new_root.imp().row_entry.get().unwrap());
                     }
                 }
             }

@@ -1,4 +1,4 @@
-/* ui/performance_page/disk_eject_failure_entry.blp
+/* ui/performance_page/disk_eject_failure_row.blp
  *
  * Copyright 2025 Mission-Center-Devs
  *
@@ -41,6 +41,9 @@ ListBoxRow root {
     }
 
     Button kill {
+      styles [
+        "destructive-action"
+      ]
       child: Box {
         Label {
           label: _("Kill");
