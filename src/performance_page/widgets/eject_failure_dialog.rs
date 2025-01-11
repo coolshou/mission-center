@@ -71,30 +71,19 @@ mod imp {
                     .expect("Expected a raw disk id, got none");
 
                 for (pid, files, dirs) in processes {
-                    if !files.is_empty() {
-                        let new_root = EjectFailureRowBuilder::new()
-                            .id(parent_id)
-                            .icon(iconname)
-                            .files_open(files.clone())
-                            .pid(pid)
-                            .name(&appname)
-                            .parent_page(parent.clone())
-                            .build();
+                    let row_builder = EjectFailureRowBuilder::new()
+                        .id(parent_id)
+                        .icon(iconname)
+                        .pid(pid)
+                        .name(&appname)
+                        .parent_page(parent.clone());
 
-                        model.append(new_root.imp().row_entry.get().unwrap());
+                    if !files.is_empty() {
+                        model.append(&row_builder.clone().files_open(files.clone()).build());
                     }
 
                     if !dirs.is_empty() {
-                        let new_root = EjectFailureRowBuilder::new()
-                            .id(parent_id)
-                            .icon(iconname)
-                            .files_open(dirs.clone())
-                            .pid(pid)
-                            .name(&appname)
-                            .parent_page(parent.clone())
-                            .build();
-
-                        model.append(new_root.imp().row_entry.get().unwrap());
+                        model.append(&row_builder.files_open(dirs).build());
                     }
                 }
             }
