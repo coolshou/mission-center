@@ -87,39 +87,39 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let sidebar_content_builder = gtk::Builder::from_resource(
+            let row_builder = gtk::Builder::from_resource(
                 "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_row.ui",
             );
 
             let _ = self.row_entry.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::ListBoxRow>("root")
-                    .expect("Could not find `root` object in details pane"),
+                    .expect("Could not find `root` object in eject row"),
             );
             let _ = self.icon.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::Image>("icon")
-                    .expect("Could not find `icon` object in details pane"),
+                    .expect("Could not find `icon` object in eject row"),
             );
             let _ = self.pid.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::Label>("pid")
-                    .expect("Could not find `pid` object in details pane"),
+                    .expect("Could not find `pid` object in eject row"),
             );
             let _ = self.name.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::Label>("name")
-                    .expect("Could not find `name` object in details pane"),
+                    .expect("Could not find `name` object in eject row"),
             );
             let _ = self.open_files.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::Label>("open_files")
-                    .expect("Could not find `open_files` object in details pane"),
+                    .expect("Could not find `open_files` object in eject row"),
             );
             let _ = self.kill.set(
-                sidebar_content_builder
+                row_builder
                     .object::<gtk::Button>("kill")
-                    .expect("Could not find `kill` object in details pane"),
+                    .expect("Could not find `kill` object in eject row"),
             );
         }
     }
