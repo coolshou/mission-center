@@ -514,7 +514,7 @@ mod imp {
                     if self.use_merge_stats.get() {
                         pp.merged_usage_stats(&processes)
                     } else {
-                        pp.usage_stats.unwrap_or_default()
+                        pp.usage_stats
                     }
                 } else {
                     ProcessUsageStats::default()
@@ -1362,7 +1362,7 @@ mod imp {
                 let usage_stats = if this.use_merge_stats.get() {
                     &merged_usage_stats
                 } else {
-                    &child.usage_stats.unwrap_or_default()
+                    &child.usage_stats
                 };
 
                 let child_model = if pos.is_none() {
