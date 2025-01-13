@@ -124,7 +124,7 @@ pub fn to_human_readable_adv(
 }
 
 pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str, usize) {
-    return to_human_readable_adv(value, divisor, 1);
+    to_human_readable_adv(value, divisor, 1)
 }
 
 pub fn show_error_dialog_and_exit(message: &str) -> ! {

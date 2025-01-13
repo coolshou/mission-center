@@ -18,12 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, collections::HashMap, sync::Arc};
+use std::{cell::Cell, collections::HashMap};
 
 use gio::ListStore;
 use glib::g_critical;
 use glib::translate::from_glib_full;
 use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
+
+use magpie_types::apps::icon::Icon;
 
 use crate::apps_page::{list_item::ListItem, row_model::ContentType};
 use crate::sys_info_v2::{App, Process, ProcessUsageStats};
@@ -83,7 +85,7 @@ mod imp {
         pub max_disk_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<f32>,
 
-        pub apps: Cell<HashMap<Arc<str>, App>>,
+        pub apps: Cell<HashMap<String, App>>,
         pub processes: Cell<HashMap<u32, Process>>,
 
         pub use_merge_stats: Cell<bool>,
@@ -486,7 +488,7 @@ mod imp {
                         }
                         let current = current.unwrap();
 
-                        current.id().as_str() == app_id.as_ref()
+                        current.id().as_str() == app_id.as_str()
                     })
                 } else {
                     None
@@ -522,12 +524,18 @@ mod imp {
 
                 let row_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
-                        .name(app.name.as_ref())
-                        .id(app.id.as_ref())
+                        .name(app.name.as_str())
+                        .id(app.id.as_str())
                         .icon(
                             app.icon
                                 .as_ref()
-                                .map(|i| i.as_ref())
+                                .and_then(|i| i.icon.as_ref())
+                                .and_then(|i| match i {
+                                    Icon::Empty(_) => None,
+                                    Icon::Path(p) => Some(p.as_str()),
+                                    Icon::Id(id) => Some(id.as_str()),
+                                    Icon::Data(_) => None,
+                                })
                                 .unwrap_or("application-x-executable"),
                         )
                         .pid(primary_pid)
@@ -578,7 +586,13 @@ mod imp {
                         let icon = app
                             .icon
                             .as_ref()
-                            .map(|i| i.as_ref())
+                            .and_then(|i| i.icon.as_ref())
+                            .and_then(|i| match i {
+                                Icon::Empty(_) => None,
+                                Icon::Path(p) => Some(p.as_str()),
+                                Icon::Id(id) => Some(id.as_str()),
+                                Icon::Data(_) => None,
+                            })
                             .unwrap_or("application-x-executable-symbolic");
 
                         model.set_icon(icon);
@@ -589,7 +603,7 @@ mod imp {
                         g_critical!(
                             "MissionCenter::AppsPage",
                             "Failed to find process in process tree, for App {}",
-                            app.name.as_ref()
+                            &app.name
                         );
                     }
                 } else {
@@ -598,7 +612,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::AppsPage",
                         "Failed to find process in process tree, for App {}",
-                        app.name.as_ref()
+                        &app.name
                     );
                 }
             }
@@ -1161,7 +1175,7 @@ mod imp {
                     6 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
-                        glib::g_critical!(
+                        g_critical!(
                             "MissionCenter::AppsPage",
                             "Unknown column retrieved from settings, sorting by name as a fallback"
                         );
@@ -1174,7 +1188,7 @@ mod imp {
                     1 => gtk::SortType::Descending,
                     255 => return,
                     _ => {
-                        glib::g_critical!(
+                        g_critical!(
                             "MissionCenter::AppsPage",
                             "Unknown column sorting order retrieved from settings, sorting in ascending order as a fallback"
                         );
@@ -1418,7 +1432,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            list_item::ListItem::ensure_type();
+            ListItem::ensure_type();
 
             row_model::RowModel::ensure_type();
 

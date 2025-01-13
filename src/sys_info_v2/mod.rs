@@ -146,7 +146,7 @@ pub struct Readings {
     pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
     pub fans_info: Vec<FanInfo>,
 
-    pub running_apps: HashMap<Arc<str>, App>,
+    pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
 
     pub services: HashMap<Arc<str>, Service>,

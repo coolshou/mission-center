@@ -24,12 +24,14 @@ use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use arrayvec::ArrayString;
 use gtk::glib::g_critical;
-use magpie_types::ipc::{request, response, Request, Response};
-use magpie_types::processes::{processes_response, ProcessesRequest};
-pub use magpie_types::processes::{Process, ProcessUsageStats};
-use magpie_types::prost::Message;
 use zeromq::prelude::*;
 use zeromq::ReqSocket;
+
+pub use magpie_types::apps::{apps_response, App};
+use magpie_types::ipc::{response, Request, Response};
+use magpie_types::processes::processes_response;
+pub use magpie_types::processes::{Process, ProcessUsageStats};
+use magpie_types::prost::Message;
 
 pub use super::dbus_interface::*;
 use crate::show_error_dialog_and_exit;
@@ -45,6 +47,67 @@ pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
     }
 
     result
+}
+
+async fn zero_mq_request(request: Request, socket: &mut ReqSocket) -> Option<Response> {
+    let mut req_buf = Vec::new();
+
+    if let Err(e) = request.encode(&mut req_buf) {
+        g_critical!(
+            "MissionCenter::Gatherer",
+            "Failed to encode request {:?}: {}",
+            req_buf,
+            e
+        );
+        return None;
+    }
+
+    let send_res = socket.send(req_buf.into()).await;
+    match send_res {
+        Err(e) => {
+            g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
+            return None;
+        }
+        _ => {}
+    }
+
+    let recv_res = socket.recv().await;
+    let response = match recv_res {
+        Ok(response) => response.into_vec(),
+        Err(e) => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to receive response: {}",
+                e
+            );
+            return None;
+        }
+    };
+    if response.is_empty() {
+        g_critical!(
+            "MissionCenter::Gatherer",
+            "Empty reply when getting processes"
+        );
+        return None;
+    }
+    let decode_result = if response.len() > 1 {
+        Response::decode(response.concat().as_slice())
+    } else {
+        Response::decode(response[0].iter().as_slice())
+    };
+    let response = match decode_result {
+        Ok(r) => r,
+        Err(e) => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Error while getting process list: {:?}",
+                e
+            );
+            return None;
+        }
+    };
+
+    Some(response)
 }
 
 pub(crate) struct Gatherer {
@@ -121,7 +184,7 @@ impl Gatherer {
         const RETRY_COUNT: i32 = 50;
 
         // Let the child process start up
-        for i in 0..RETRY_COUNT {
+        for _ in 0..RETRY_COUNT {
             std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
 
             match self
@@ -287,67 +350,15 @@ impl Gatherer {
     }
 
     pub fn processes(&self) -> HashMap<u32, Process> {
-        let mut request = Vec::new();
-
-        let encode_res = Request {
-            body: Some(request::Body::GetProcesses(ProcessesRequest::default())),
-        }
-        .encode(&mut request);
-
-        if let Err(e) = encode_res {
-            g_critical!("MissionCenter::Gatherer", "Failed to encode request: {}", e);
-            return HashMap::new();
-        }
-
         let mut socket = self.socket.borrow_mut();
-        let send_res = self
+        let response = self
             .tokio_runtime
-            .block_on(async { socket.send(request.into()).await });
-        match send_res {
-            Err(e) => {
-                g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
-                return HashMap::new();
-            }
-            _ => {}
-        }
-
-        let recv_res = self.tokio_runtime.block_on(async { socket.recv().await });
-        let response = match recv_res {
-            Ok(response) => response.into_vec(),
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to receive response: {}",
-                    e
-                );
-                return HashMap::new();
-            }
-        };
-        if response.is_empty() {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Empty reply when getting processes"
-            );
-            return HashMap::new();
-        }
-        let decode_result = if response.len() > 1 {
-            Response::decode(response.concat().as_slice())
-        } else {
-            Response::decode(response[0].iter().as_slice())
-        };
-        let response = match decode_result {
-            Ok(r) => r,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Error while getting process list: {:?}",
-                    e
-                );
-                return HashMap::new();
-            }
-        };
-
-        match response.body {
+            .block_on(zero_mq_request(
+                magpie_types::ipc::req_get_processes(),
+                &mut socket,
+            ))
+            .and_then(|response| response.body);
+        match response {
             Some(response::Body::Processes(processes)) => match processes.response {
                 Some(processes_response::Response::Processes(mut process_map)) => {
                     std::mem::take(&mut process_map.processes)
@@ -380,8 +391,46 @@ impl Gatherer {
         }
     }
 
-    pub fn apps(&self) -> HashMap<Arc<str>, App> {
-        HashMap::new()
+    pub fn apps(&self) -> HashMap<String, App> {
+        let mut socket = self.socket.borrow_mut();
+        let response = self
+            .tokio_runtime
+            .block_on(zero_mq_request(
+                magpie_types::ipc::req_get_apps(),
+                &mut socket,
+            ))
+            .and_then(|response| response.body);
+        match response {
+            Some(response::Body::Apps(apps)) => match apps.response {
+                Some(apps_response::Response::Apps(mut apps_list)) => {
+                    apps_list.apps.drain(..).map(|app| (app.id.clone(), app)).collect::<HashMap<_,_>>()
+                }
+                Some(apps_response::Response::Error(e)) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Error while getting apps list: {:?}",
+                        e
+                    );
+                    HashMap::new()
+                }
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response: {:?}",
+                        apps.response
+                    );
+                    HashMap::new()
+                }
+            },
+            _ => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Unexpected response: {:?}",
+                    response
+                );
+                HashMap::new()
+            }
+        }
     }
 
     pub fn services(&self) -> HashMap<Arc<str>, Service> {

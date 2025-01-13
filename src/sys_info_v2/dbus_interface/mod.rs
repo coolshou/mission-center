@@ -32,7 +32,9 @@ use dbus::{
 };
 use static_assertions::const_assert;
 
-pub use apps::{App, AppMap};
+use magpie_types::apps::App;
+use magpie_types::processes::Process;
+
 pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
 pub use cpu_static_info::CpuStaticInfo;
@@ -40,10 +42,8 @@ pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
 pub use fan_info::{FanInfo, FanInfoVec};
 pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
 pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
-use magpie_types::processes::Process;
 pub use service::{Service, ServiceMap};
 
-mod apps;
 mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
@@ -144,8 +144,7 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
     }
 
     fn get_apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error> {
-        let res: Result<AppMap, _> = self.method_call(MC_GATHERER_INTERFACE_NAME, "GetApps", ());
-        res.map(|v| v.into())
+        Ok(HashMap::new())
     }
 
     fn get_processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
