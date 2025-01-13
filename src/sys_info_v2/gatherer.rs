@@ -27,14 +27,55 @@ use gtk::glib::g_critical;
 use zeromq::prelude::*;
 use zeromq::ReqSocket;
 
+use magpie_types::apps::apps_response::AppList;
 pub use magpie_types::apps::{apps_response, App};
-use magpie_types::ipc::{response, Request, Response};
+use magpie_types::ipc::{self, response};
 use magpie_types::processes::processes_response;
+use magpie_types::processes::processes_response::ProcessMap;
 pub use magpie_types::processes::{Process, ProcessUsageStats};
 use magpie_types::prost::Message;
 
 pub use super::dbus_interface::*;
 use crate::show_error_dialog_and_exit;
+
+type ResponseBody = response::Body;
+type ProcessesResponse = processes_response::Response;
+type AppsResponse = apps_response::Response;
+
+macro_rules! parse_response {
+    ($response: ident, $body_kind: path, $response_kind_ok: path, $response_kind_err: path, $do: expr) => {{
+        match $response {
+            Some($body_kind(response)) => match response.response {
+                Some($response_kind_ok(arg)) => $do(arg),
+                Some($response_kind_err(e)) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Error while getting {}: {:?}",
+                        stringify!($response_variant),
+                        e
+                    );
+                    Default::default()
+                }
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response: {:?}",
+                        response.response
+                    );
+                    Default::default()
+                }
+            },
+            _ => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Unexpected response: {:?}",
+                    $response
+                );
+                Default::default()
+            }
+        }
+    }};
+}
 
 pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
     let mut result = ArrayString::new();
@@ -49,7 +90,7 @@ pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
     result
 }
 
-async fn zero_mq_request(request: Request, socket: &mut ReqSocket) -> Option<Response> {
+async fn zero_mq_request(request: ipc::Request, socket: &mut ReqSocket) -> Option<ipc::Response> {
     let mut req_buf = Vec::new();
 
     if let Err(e) = request.encode(&mut req_buf) {
@@ -91,9 +132,9 @@ async fn zero_mq_request(request: Request, socket: &mut ReqSocket) -> Option<Res
         return None;
     }
     let decode_result = if response.len() > 1 {
-        Response::decode(response.concat().as_slice())
+        ipc::Response::decode(response.concat().as_slice())
     } else {
-        Response::decode(response[0].iter().as_slice())
+        ipc::Response::decode(response[0].iter().as_slice())
     };
     let response = match decode_result {
         Ok(r) => r,
@@ -110,7 +151,7 @@ async fn zero_mq_request(request: Request, socket: &mut ReqSocket) -> Option<Res
     Some(response)
 }
 
-pub(crate) struct Gatherer {
+pub struct Gatherer {
     socket: RefCell<ReqSocket>,
     tokio_runtime: tokio::runtime::Runtime,
 
@@ -351,86 +392,42 @@ impl Gatherer {
 
     pub fn processes(&self) -> HashMap<u32, Process> {
         let mut socket = self.socket.borrow_mut();
+
         let response = self
             .tokio_runtime
-            .block_on(zero_mq_request(
-                magpie_types::ipc::req_get_processes(),
-                &mut socket,
-            ))
+            .block_on(zero_mq_request(ipc::req_get_processes(), &mut socket))
             .and_then(|response| response.body);
-        match response {
-            Some(response::Body::Processes(processes)) => match processes.response {
-                Some(processes_response::Response::Processes(mut process_map)) => {
-                    std::mem::take(&mut process_map.processes)
-                }
-                Some(processes_response::Response::Error(e)) => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Error while getting process list: {:?}",
-                        e
-                    );
-                    HashMap::new()
-                }
-                _ => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Unexpected response: {:?}",
-                        processes.response
-                    );
-                    HashMap::new()
-                }
-            },
-            _ => {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Unexpected response: {:?}",
-                    response
-                );
-                HashMap::new()
-            }
-        }
+
+        parse_response!(
+            response,
+            ResponseBody::Processes,
+            ProcessesResponse::Processes,
+            ProcessesResponse::Error,
+            |mut processes: ProcessMap| { std::mem::take(&mut processes.processes) }
+        )
     }
 
     pub fn apps(&self) -> HashMap<String, App> {
         let mut socket = self.socket.borrow_mut();
+
         let response = self
             .tokio_runtime
-            .block_on(zero_mq_request(
-                magpie_types::ipc::req_get_apps(),
-                &mut socket,
-            ))
+            .block_on(zero_mq_request(ipc::req_get_apps(), &mut socket))
             .and_then(|response| response.body);
-        match response {
-            Some(response::Body::Apps(apps)) => match apps.response {
-                Some(apps_response::Response::Apps(mut apps_list)) => {
-                    apps_list.apps.drain(..).map(|app| (app.id.clone(), app)).collect::<HashMap<_,_>>()
-                }
-                Some(apps_response::Response::Error(e)) => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Error while getting apps list: {:?}",
-                        e
-                    );
-                    HashMap::new()
-                }
-                _ => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Unexpected response: {:?}",
-                        apps.response
-                    );
-                    HashMap::new()
-                }
-            },
-            _ => {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Unexpected response: {:?}",
-                    response
-                );
-                HashMap::new()
+
+        parse_response!(
+            response,
+            ResponseBody::Apps,
+            AppsResponse::Apps,
+            AppsResponse::Error,
+            |mut app_list: AppList| {
+                app_list
+                    .apps
+                    .drain(..)
+                    .map(|app| (app.id.clone(), app))
+                    .collect()
             }
-        }
+        )
     }
 
     pub fn services(&self) -> HashMap<Arc<str>, Service> {
