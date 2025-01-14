@@ -24,6 +24,7 @@ use std::{
 };
 
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
+use gtk::glib::ExitCode;
 use gtk::{gio, prelude::*};
 use lazy_static::lazy_static;
 
@@ -149,7 +150,7 @@ pub fn show_error_dialog_and_exit(message: &str) -> ! {
     loop {}
 }
 
-fn main() {
+fn main() -> ExitCode {
     let home = user_home().to_string_lossy().to_string();
     let mut xdg_data_dirs = env::var_os("XDG_DATA_DIRS")
         .map(|str| str.to_string_lossy().to_string())
@@ -178,6 +179,5 @@ fn main() {
     );
     gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
-    let exit_code = app.run();
-    std::process::exit(exit_code.into());
+    app.run()
 }

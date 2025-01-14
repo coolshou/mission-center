@@ -19,13 +19,14 @@
  */
 
 use std::num::NonZeroU32;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use arrayvec::ArrayString;
 use gtk::glib::g_critical;
 use zeromq::prelude::*;
-use zeromq::ReqSocket;
+use zeromq::{ReqSocket, ZmqError};
 
 use magpie_types::apps::apps_response::AppList;
 pub use magpie_types::apps::{apps_response, App};
@@ -77,7 +78,7 @@ macro_rules! parse_response {
     }};
 }
 
-pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
+fn random_string<const CAP: usize>() -> ArrayString<CAP> {
     let mut result = ArrayString::new();
     for _ in 0..CAP {
         if rand::random::<bool>() {
@@ -90,221 +91,7 @@ pub fn random_string<const CAP: usize>() -> ArrayString<CAP> {
     result
 }
 
-async fn zero_mq_request(request: ipc::Request, socket: &mut ReqSocket) -> Option<ipc::Response> {
-    let mut req_buf = Vec::new();
-
-    if let Err(e) = request.encode(&mut req_buf) {
-        g_critical!(
-            "MissionCenter::Gatherer",
-            "Failed to encode request {:?}: {}",
-            req_buf,
-            e
-        );
-        return None;
-    }
-
-    let send_res = socket.send(req_buf.into()).await;
-    match send_res {
-        Err(e) => {
-            g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
-            return None;
-        }
-        _ => {}
-    }
-
-    let recv_res = socket.recv().await;
-    let response = match recv_res {
-        Ok(response) => response.into_vec(),
-        Err(e) => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to receive response: {}",
-                e
-            );
-            return None;
-        }
-    };
-    if response.is_empty() {
-        g_critical!(
-            "MissionCenter::Gatherer",
-            "Empty reply when getting processes"
-        );
-        return None;
-    }
-    let decode_result = if response.len() > 1 {
-        ipc::Response::decode(response.concat().as_slice())
-    } else {
-        ipc::Response::decode(response[0].iter().as_slice())
-    };
-    let response = match decode_result {
-        Ok(r) => r,
-        Err(e) => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Error while getting process list: {:?}",
-                e
-            );
-            return None;
-        }
-    };
-
-    Some(response)
-}
-
-pub struct Gatherer {
-    socket: RefCell<ReqSocket>,
-    tokio_runtime: tokio::runtime::Runtime,
-
-    child: RefCell<Option<std::process::Child>>,
-}
-
-impl Drop for Gatherer {
-    fn drop(&mut self) {
-        self.stop();
-    }
-}
-
-impl Gatherer {
-    pub fn new() -> Self {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .worker_threads(2)
-            .build()
-            .expect("Failed to create Tokio runtime");
-
-        Self {
-            socket: RefCell::new(ReqSocket::new()),
-            tokio_runtime: rt,
-
-            child: RefCell::new(None),
-        }
-    }
-
-    pub fn start(&self) {
-        let socket_addr = format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>());
-
-        let mut command = if crate::is_flatpak() {
-            const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
-
-            let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
-            cmd.arg("-v")
-                .arg("--watch-bus")
-                .arg("--host")
-                .arg(Self::executable());
-            cmd
-        } else {
-            let mut cmd = std::process::Command::new(Self::executable());
-
-            if let Some(mut appdir) = std::env::var_os("APPDIR") {
-                appdir.push("/runtime/default");
-                cmd.current_dir(appdir);
-            }
-
-            cmd
-        };
-        command
-            .env_remove("LD_PRELOAD")
-            .stdout(std::process::Stdio::inherit())
-            .stderr(std::process::Stdio::inherit())
-            .arg("--addr")
-            .arg(&socket_addr);
-
-        self.child.borrow_mut().replace(match command.spawn() {
-            Ok(c) => c,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to spawn Magpie process: {}",
-                    &e
-                );
-                show_error_dialog_and_exit(&format!("Failed to spawn Magpie process: {}", e));
-            }
-        });
-
-        const START_WAIT_TIME_MS: u64 = 300;
-        const RETRY_COUNT: i32 = 50;
-
-        // Let the child process start up
-        for _ in 0..RETRY_COUNT {
-            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
-
-            match self
-                .tokio_runtime
-                .block_on(async { self.socket.borrow_mut().connect(&socket_addr).await })
-            {
-                Ok(_) => return,
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Failed to connect to Gatherer socket: {}",
-                        e
-                    );
-                }
-            }
-
-            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
-        }
-
-        show_error_dialog_and_exit("Failed to connect to Gatherer socket");
-    }
-
-    pub fn stop(&self) {
-        let child = self.child.borrow_mut().take();
-        if let Some(mut child) = child {
-            // Try to get the child to wake up in case it's stuck
-            #[cfg(target_family = "unix")]
-            unsafe {
-                libc::kill(child.id() as _, libc::SIGCONT);
-            }
-
-            let _ = child.kill();
-            for _ in 0..2 {
-                match child.try_wait() {
-                    Ok(Some(_)) => return,
-                    Ok(None) => {
-                        // Wait a bit and try again, the child process might just be slow to stop
-                        std::thread::sleep(Duration::from_millis(20));
-                        continue;
-                    }
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::Gatherer",
-                            "Failed to wait for Gatherer process to stop: {}",
-                            &e
-                        );
-
-                        show_error_dialog_and_exit(&format!(
-                            "Failed to wait for Gatherer process to stop: {}",
-                            e
-                        ));
-                    }
-                }
-            }
-        }
-    }
-
-    pub fn is_running(&self) -> Result<(), i32> {
-        let mut lock = self.child.borrow_mut();
-
-        let child = match lock.as_mut() {
-            Some(child) => child,
-            None => return Err(-1),
-        };
-
-        let status = match child.try_wait() {
-            Ok(None) => return Ok(()),
-            Ok(Some(status)) => status,
-            Err(_) => {
-                return Err(-1);
-            }
-        };
-
-        match status.code() {
-            Some(status_code) => Err(status_code),
-            None => Err(-1),
-        }
-    }
-
+fn magpie_command(socket_addr: &str) -> std::process::Command {
     fn executable() -> String {
         use gtk::glib::g_debug;
 
@@ -354,6 +141,255 @@ impl Gatherer {
 
         exe_simple
     }
+
+    let mut command = if crate::is_flatpak() {
+        const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+
+        let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        cmd.arg("-v")
+            .arg("--watch-bus")
+            .arg("--host")
+            .arg(executable());
+        cmd
+    } else {
+        let mut cmd = std::process::Command::new(executable());
+
+        if let Some(mut appdir) = std::env::var_os("APPDIR") {
+            appdir.push("/runtime/default");
+            cmd.current_dir(appdir);
+        }
+
+        cmd
+    };
+    command
+        .env_remove("LD_PRELOAD")
+        .stdout(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::inherit())
+        .arg("--addr")
+        .arg(socket_addr);
+
+    command
+}
+
+async fn zero_mq_request(
+    request: ipc::Request,
+    socket: &mut ReqSocket,
+    socket_addr: &str,
+) -> Option<ipc::Response> {
+    async fn try_reconnect(socket: &mut ReqSocket, socket_addr: &str) {
+        let _ = std::mem::replace(socket, ReqSocket::new());
+        for i in 0..=5 {
+            match socket.connect(socket_addr).await {
+                Err(e) => {
+                    let error_msg = format!("Failed to reconnect to Magpie socket in {i} tries: {e}");
+                    g_critical!("MissionCenter::Gatherer", "{}", &error_msg);
+                }
+                _ => {
+                    // We reconnected, try again next time
+                    return;
+                }
+            }
+        }
+        show_error_dialog_and_exit("Lost connection to Magpie and failed to reconnect after 5 tries. Giving up.");
+    }
+
+    let mut req_buf = Vec::new();
+
+    if let Err(e) = request.encode(&mut req_buf) {
+        g_critical!(
+            "MissionCenter::Gatherer",
+            "Failed to encode request {:?}: {}",
+            req_buf,
+            e
+        );
+        return None;
+    }
+
+    let send_res = socket.send(req_buf.into()).await;
+    match send_res {
+        Err(ZmqError::Codec(..)) => {
+            // Might mean that the socket was closed, try to reconnect
+            try_reconnect(socket, socket_addr).await;
+            return None;
+        }
+        Err(e) => {
+            g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
+            return None;
+        }
+        _ => {}
+    }
+
+    let recv_res = socket.recv().await;
+    let response = match recv_res {
+        Ok(response) => response.into_vec(),
+        Err(ZmqError::Codec(..)) => {
+            // Might mean that the socket was closed, try to reconnect
+            try_reconnect(socket, socket_addr).await;
+            return None;
+        }
+        Err(e) => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to receive response: {}",
+                e
+            );
+            return None;
+        }
+    };
+    if response.is_empty() {
+        g_critical!(
+            "MissionCenter::Gatherer",
+            "Empty reply when getting processes"
+        );
+        return None;
+    }
+    let decode_result = if response.len() > 1 {
+        ipc::Response::decode(response.concat().as_slice())
+    } else {
+        ipc::Response::decode(response[0].iter().as_slice())
+    };
+    let response = match decode_result {
+        Ok(r) => r,
+        Err(e) => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Error while getting process list: {:?}",
+                e
+            );
+            return None;
+        }
+    };
+
+    Some(response)
+}
+
+pub struct Gatherer {
+    socket: RefCell<ReqSocket>,
+    tokio_runtime: tokio::runtime::Runtime,
+
+    socket_addr: Arc<str>,
+    child_thread: RefCell<std::thread::JoinHandle<()>>,
+    stop_requested: Arc<AtomicBool>,
+}
+
+impl Drop for Gatherer {
+    fn drop(&mut self) {
+        self.stop();
+    }
+}
+
+impl Gatherer {
+    pub fn new() -> Self {
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("Failed to create Tokio runtime");
+
+        Self {
+            socket: RefCell::new(ReqSocket::new()),
+            tokio_runtime: rt,
+
+            socket_addr: Arc::from(format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>())),
+            child_thread: RefCell::new(std::thread::spawn(|| {})),
+            stop_requested: Arc::new(AtomicBool::new(false)),
+        }
+    }
+
+    pub fn start(&self) {
+        *self.child_thread.borrow_mut() = std::thread::spawn({
+            let socket_addr = self.socket_addr.clone();
+            let stop_requested = self.stop_requested.clone();
+            move || {
+                fn spawn_child(socket_addr: &str) -> std::process::Child {
+                    match magpie_command(&socket_addr).spawn() {
+                        Ok(child) => child,
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "Failed to spawn Magpie process: {}",
+                                &e
+                            );
+                            show_error_dialog_and_exit(&format!(
+                                "Failed to spawn Magpie process: {}",
+                                e
+                            ));
+                        }
+                    }
+                }
+
+                let mut child = spawn_child(&socket_addr);
+
+                while !stop_requested.load(Ordering::Relaxed) {
+                    match child.try_wait() {
+                        Ok(Some(exit_status)) => {
+                            let _ = std::fs::remove_file(&socket_addr[6..]);
+
+                            if !stop_requested.load(Ordering::Relaxed) {
+                                g_critical!(
+                                    "MissionCenter::Gatherer",
+                                    "Magpie process exited unexpectedly: {}. Restarting...",
+                                    exit_status
+                                );
+                                std::mem::swap(&mut child, &mut spawn_child(&socket_addr));
+                            }
+                        }
+                        Ok(None) => {
+                            std::thread::sleep(Duration::from_millis(100));
+                            continue;
+                        }
+                        Err(e) => {
+                            g_critical!(
+                                "MissionCenter::Gatherer",
+                                "Failed to wait for Gatherer process to stop: {}",
+                                &e
+                            );
+                            show_error_dialog_and_exit(&format!(
+                                "Failed to wait for Gatherer process to stop: {}",
+                                e
+                            ));
+                        }
+                    }
+                }
+
+                let _ = std::fs::remove_file(&socket_addr[6..]);
+                let _ = child.kill();
+            }
+        });
+
+        const START_WAIT_TIME_MS: u64 = 300;
+        const RETRY_COUNT: i32 = 50;
+
+        // Let the child process start up
+        for _ in 0..RETRY_COUNT {
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+
+            match self.tokio_runtime.block_on(async {
+                self.socket
+                    .borrow_mut()
+                    .connect(self.socket_addr.as_ref())
+                    .await
+            }) {
+                Ok(_) => return,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to connect to Gatherer socket: {}",
+                        e
+                    );
+                }
+            }
+
+            std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
+        }
+
+        show_error_dialog_and_exit("Failed to connect to Gatherer socket");
+    }
+
+    pub fn stop(&self) {
+        self.stop_requested.store(true, Ordering::Relaxed);
+        let child_thread = std::mem::replace(&mut *self.child_thread.borrow_mut(), std::thread::spawn(|| {}));
+        let _ = child_thread.join();
+    }
 }
 
 impl Gatherer {
@@ -395,7 +431,11 @@ impl Gatherer {
 
         let response = self
             .tokio_runtime
-            .block_on(zero_mq_request(ipc::req_get_processes(), &mut socket))
+            .block_on(zero_mq_request(
+                ipc::req_get_processes(),
+                &mut socket,
+                self.socket_addr.as_ref(),
+            ))
             .and_then(|response| response.body);
 
         parse_response!(
@@ -412,7 +452,11 @@ impl Gatherer {
 
         let response = self
             .tokio_runtime
-            .block_on(zero_mq_request(ipc::req_get_apps(), &mut socket))
+            .block_on(zero_mq_request(
+                ipc::req_get_apps(),
+                &mut socket,
+                self.socket_addr.as_ref(),
+            ))
             .and_then(|response| response.body);
 
         parse_response!(
@@ -450,30 +494,5 @@ impl Gatherer {
 
     pub fn get_service_logs(&self, _service_name: &str, _pid: Option<NonZeroU32>) -> Arc<str> {
         Arc::from("")
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_gatherer_new() {
-        let gatherer = Gatherer::new();
-        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_none());
-    }
-
-    #[test]
-    fn test_gatherer_start() {
-        let gatherer = Gatherer::new();
-        let _ = gatherer.start();
-        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_some());
-    }
-
-    #[test]
-    fn test_gatherer_stop() {
-        let gatherer = Gatherer::new();
-        let _ = gatherer.start();
-        gatherer.stop();
     }
 }
