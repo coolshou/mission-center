@@ -74,7 +74,7 @@ mod imp {
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
-        pub column_header_memory_shared: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_shared_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_usage: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_memory_usage: Cell<Option<column_header::ColumnHeader>>,
@@ -117,7 +117,7 @@ mod imp {
                 column_header_pid: Cell::new(None),
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
-                column_header_memory_shared: Cell::new(None),
+                column_header_shared_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
                 column_header_gpu_usage: Cell::new(None),
                 column_header_gpu_memory_usage: Cell::new(None),
@@ -1271,6 +1271,15 @@ mod imp {
             }
             self.column_header_memory.set(column_header_memory);
 
+            let column_header_shared_memory = self.column_header_shared_memory.take();
+            if let Some(column_header_shared_memory) = &column_header_shared_memory {
+                column_header_shared_memory.set_heading(format!(
+                    "{}%",
+                    ((readings.mem_info.sh_mem * 100) as f32 / readings.mem_info.mem_total as f32).round()
+                ));
+            }
+            self.column_header_shared_memory.set(column_header_shared_memory);
+
             let column_header_disk = self.column_header_disk.take();
             if let Some(column_header_disk) = &column_header_disk {
                 let total_busy_percent = readings
@@ -1561,7 +1570,7 @@ mod imp {
             let (column_view_title, column_header_memory_shared) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("Shared Memory"),
-                "",
+                "0%",
                 gtk::Align::End,
             );
             let (column_view_title, column_header_disk) = self.configure_column_header(
@@ -1575,7 +1584,7 @@ mod imp {
             self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
-            self.column_header_memory_shared.set(Some(column_header_memory_shared));
+            self.column_header_shared_memory.set(Some(column_header_memory_shared));
             self.column_header_disk.set(Some(column_header_disk));
 
             if let Some(column_view_title) = column_view_title {
