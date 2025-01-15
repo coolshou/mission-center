@@ -770,42 +770,42 @@ impl<'a> Get<'a> for SataSmartEntry {
 
         this.id = match deser_u8(dynamic_info, "SataSmartEntry", 0) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.name = match deser_str(dynamic_info, "SataSmartEntry", 1) {
             Some(v) => v.to_string(),
-            None => return None,
+            None => return None
         };
 
         this.flags = match deser_u16(dynamic_info, "SataSmartEntry", 2) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.value = match deser_i32(dynamic_info, "SataSmartEntry", 3) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.worst = match deser_i32(dynamic_info, "SataSmartEntry", 4) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.threshold = match deser_i32(dynamic_info, "SataSmartEntry", 5) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.pretty = match deser_i64(dynamic_info, "SataSmartEntry", 6) {
             Some(v) => v,
-            None => return None,
+            None => return None
         };
 
         this.pretty_unit = match deser_i32(dynamic_info, "SataSmartEntry", 7) {
             Some(i) => i,
-            None => return None,
+            None => return None
         };
 
         Some(this)

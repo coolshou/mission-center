@@ -396,10 +396,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .cpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .static_info(),)));
+                                  .cpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .static_info(),)));
 
                 Some(ctx)
             },
@@ -415,10 +415,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .cpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .dynamic_info(),)));
+                                  .cpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .dynamic_info(),)));
 
                 Some(ctx)
             },
@@ -434,11 +434,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .disk_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .info()
-                    .collect::<Vec<_>>(),)));
+                                  .disk_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .info()
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -457,7 +457,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 debug!(
                     "Gatherer::EjectDisk",
-                    "Ejecting {}, killing {}/{}", id, kill_pid, killall
+                    "Ejecting {}, killing {}/{}",
+                    id,
+                    kill_pid,
+                    killall
                 );
 
                 let Ok(client) = &SYSTEM_STATE
@@ -466,7 +469,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::EjectDisk", "Failed to get dbus client",);
+                    critical!("Gatherer::EjectDisk", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -475,12 +478,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
                         Err(e) => {
-                            critical!(
-                                "Gatherer::EjectDisk",
-                                "Failed to find block object {}: {}",
-                                id,
-                                e
-                            );
+                            critical!("Gatherer::EjectDisk", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -518,9 +516,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         return Some(ctx);
                     }
                 }
-                .filter_map(Result::ok);
+                    .filter_map(Result::ok);
 
-                let mut probable_entries = vec![id];
+                let mut probable_entries = vec!(id);
 
                 for entry in entries {
                     probable_entries.push(entry.file_name().unwrap().to_str().unwrap().to_string());
@@ -544,12 +542,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     )) {
                         Ok(object) => object,
                         Err(e) => {
-                            critical!(
-                                "Gatherer::EjectDisk",
-                                "Failed to find drive block {}: {}",
-                                filename,
-                                e
-                            );
+                            critical!("Gatherer::EjectDisk", "Failed to find drive block {}: {}", filename, e);
                             continue;
                         }
                     };
@@ -569,12 +562,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             Ok(_) => {}
                             Err(e) => {
                                 some_err = true;
-                                critical!(
-                                    "Gatherer::EjectDisk",
-                                    "Failed to unmount filesystem {}: {}",
-                                    filename,
-                                    e
-                                );
+                                critical!("Gatherer::EjectDisk", "Failed to unmount filesystem {}: {}", filename, e);
                                 let points = mountpoints
                                     .iter()
                                     .map(|c| {
@@ -642,7 +630,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     } else {
                         debug!(
                             "Gatherer::EjectDisk",
-                            "{:?} does not have any mountpoints", filename
+                            "{:?} does not have any mountpoints",
+                            filename
                         )
                     }
                 }
@@ -658,11 +647,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 Ok(_) => {}
                                 Err(e) => {
                                     some_err = true;
-                                    critical!(
-                                        "Gatherer::EjectDisk",
-                                        "Failed to eject solo partition: {}",
-                                        e
-                                    );
+                                    critical!("Gatherer::EjectDisk", "Failed to eject solo partition: {}", e);
                                 }
                             }
                         }
@@ -697,10 +682,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "SataSmartInfo",
             ("smart_disk",),
             ("smart_info",),
-            move |mut ctx, _, (id,): (String,)| {
+            move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = SataSmartResult::default();
 
-                debug!("Gatherer::SataSmartInfo", "Getting Smart for {}", id,);
+                debug!(
+                    "Gatherer::SataSmartInfo",
+                    "Getting Smart for {}",
+                    id,
+                );
 
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
@@ -708,7 +697,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::SataSmartInfo", "Failed to get dbus client",);
+                    critical!("Gatherer::SataSmartInfo", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -717,12 +706,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
                         Err(e) => {
-                            critical!(
-                                "Gatherer::SataSmartInfo",
-                                "Failed to find block object {}: {}",
-                                id,
-                                e
-                            );
+                            critical!("Gatherer::SataSmartInfo", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -731,12 +715,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let block = match object.block().block_on() {
                     Ok(block) => block,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::SataSmartInfo",
-                            "Failed to find block {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::SataSmartInfo", "Failed to find block {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -745,12 +724,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let drive_path = match block.drive().block_on() {
                     Ok(drive) => drive,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::SataSmartInfo",
-                            "Failed to find drive for {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::SataSmartInfo", "Failed to find drive for {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -759,12 +733,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let drive_object = match client.object(drive_path) {
                     Ok(drive_object) => drive_object,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::SataSmartInfo",
-                            "Failed to find drive object {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::SataSmartInfo", "Failed to find drive object {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -774,8 +743,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Ok(ata) => {
                         rezult.common_data.powered_on_seconds =
                             ata.smart_power_on_seconds().block_on().unwrap();
-                        rezult.common_data.last_update_time =
-                            ata.smart_updated().block_on().unwrap();
+                        rezult.common_data.last_update_time = ata.smart_updated().block_on().unwrap();
                         rezult.common_data.test_result =
                             SmartTestResult::from(ata.smart_selftest_status().block_on().unwrap());
 
@@ -784,12 +752,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let attributes = match ata.smart_get_attributes(options).block_on() {
                             Ok(res) => res,
                             Err(e) => {
-                                critical!(
-                                    "Gatherer::SataSmartInfo",
-                                    "Failed to find ata interface {}: {}",
-                                    id,
-                                    e
-                                );
+                                critical!("Gatherer::SataSmartInfo", "Failed to find ata interface {}: {}", id, e);
                                 ctx.reply(Ok((rezult,)));
                                 return Some(ctx);
                             }
@@ -811,12 +774,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         rezult.common_data.success = true;
                     }
                     Err(e) => {
-                        critical!(
-                            "Gatherer::SataSmartInfo",
-                            "Failed to find ata interface {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::SataSmartInfo", "Failed to find ata interface {}: {}", id, e);
                     }
                 }
 
@@ -833,10 +791,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "NVMeSmartInfo",
             ("smart_disk",),
             ("smart_info",),
-            move |mut ctx, _, (id,): (String,)| {
+            move |mut ctx, _, (id, ): (String,)| {
                 let mut rezult = NVMeSmartResult::default();
 
-                debug!("Gatherer::NVMeSmartInfo", "Getting Smart for {}", id,);
+                debug!(
+                    "Gatherer::NVMeSmartInfo",
+                    "Getting Smart for {}",
+                    id,
+                );
 
                 let Ok(client) = &SYSTEM_STATE
                     .disk_info
@@ -844,7 +806,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .unwrap_or_else(PoisonError::into_inner)
                     .client
                 else {
-                    critical!("Gatherer::NVMeSmartInfo", "Failed to get dbus client",);
+                    critical!("Gatherer::NVMeSmartInfo", "Failed to get dbus client", );
                     ctx.reply(Ok((rezult,)));
                     return Some(ctx);
                 };
@@ -853,12 +815,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match client.object(format!("/org/freedesktop/UDisks2/block_devices/{}", id)) {
                         Ok(object) => object,
                         Err(e) => {
-                            critical!(
-                                "Gatherer::NVMeSmartInfo",
-                                "Failed to find block object {}: {}",
-                                id,
-                                e
-                            );
+                            critical!("Gatherer::NVMeSmartInfo", "Failed to find block object {}: {}", id, e);
                             ctx.reply(Ok((rezult,)));
                             return Some(ctx);
                         }
@@ -867,12 +824,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let block = match object.block().block_on() {
                     Ok(block) => block,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::NVMeSmartInfo",
-                            "Failed to find block {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find block {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -881,12 +833,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let drive_path = match block.drive().block_on() {
                     Ok(drive) => drive,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::NVMeSmartInfo",
-                            "Failed to find drive for {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find drive for {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -895,12 +842,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let drive_object = match client.object(drive_path) {
                     Ok(drive_object) => drive_object,
                     Err(e) => {
-                        critical!(
-                            "Gatherer::NVMeSmartInfo",
-                            "Failed to find drive {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to find drive {}: {}", id, e);
                         ctx.reply(Ok((rezult,)));
                         return Some(ctx);
                     }
@@ -913,12 +855,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let attributes = match nvme.smart_get_attributes(options).block_on() {
                             Ok(res) => res,
                             Err(e) => {
-                                critical!(
-                                    "Gatherer::NVMeSmartInfo",
-                                    "Failed to get attributes for {}: {}",
-                                    id,
-                                    e
-                                );
+                                critical!("Gatherer::NVMeSmartInfo", "Failed to get attributes for {}: {}", id, e);
 
                                 ctx.reply(Ok((rezult,)));
                                 return Some(ctx);
@@ -940,8 +877,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
 
                         if let Some(ctrl_busy_time) = attributes.get("ctrl_busy_time") {
-                            rezult.ctrl_busy_minutes =
-                                ctrl_busy_time.try_into().unwrap_or_default();
+                            rezult.ctrl_busy_minutes = ctrl_busy_time.try_into().unwrap_or_default();
                         }
 
                         if let Some(media_errors) = attributes.get("media_errors") {
@@ -949,8 +885,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
 
                         if let Some(warning_temp_time) = attributes.get("warning_temp_time") {
-                            rezult.warning_temp_time =
-                                warning_temp_time.try_into().unwrap_or_default();
+                            rezult.warning_temp_time = warning_temp_time.try_into().unwrap_or_default();
                         }
 
                         if let Some(avail_spare) = attributes.get("avail_spare") {
@@ -966,8 +901,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
 
                         if let Some(unsafe_shutdowns) = attributes.get("unsafe_shutdowns") {
-                            rezult.unsafe_shutdowns =
-                                unsafe_shutdowns.try_into().unwrap_or_default();
+                            rezult.unsafe_shutdowns = unsafe_shutdowns.try_into().unwrap_or_default();
                         }
 
                         if let Some(spare_thresh) = attributes.get("spare_thresh") {
@@ -1001,12 +935,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             nvme.smart_updated().block_on().unwrap();
                     }
                     Err(e) => {
-                        critical!(
-                            "Gatherer::NVMeSmartInfo",
-                            "Failed to get nvme interface for {}: {}",
-                            id,
-                            e
-                        );
+                        critical!("Gatherer::NVMeSmartInfo", "Failed to get nvme interface for {}: {}", id, e);
                     }
                 }
 
@@ -1022,12 +951,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("gpu_list",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .gpu_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .enumerate()
-                    .map(|id| id.to_owned())
-                    .collect::<Vec<_>>(),)));
+                                  .gpu_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .enumerate()
+                                  .map(|id| id.to_owned())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -1047,9 +976,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .read()
                     .unwrap_or_else(PoisonError::into_inner);
                 ctx.reply(Ok((gpu_info
-                    .enumerate()
-                    .map(|id| gpu_info.static_info(id).cloned().unwrap())
-                    .collect::<Vec<_>>(),)));
+                                  .enumerate()
+                                  .map(|id| gpu_info.static_info(id).cloned().unwrap())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -1069,9 +998,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .read()
                     .unwrap_or_else(PoisonError::into_inner);
                 ctx.reply(Ok((gpu_info
-                    .enumerate()
-                    .map(|id| gpu_info.dynamic_info(id).cloned().unwrap())
-                    .collect::<Vec<_>>(),)));
+                                  .enumerate()
+                                  .map(|id| gpu_info.dynamic_info(id).cloned().unwrap())
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -1087,11 +1016,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("info",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .fan_info
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .info()
-                    .collect::<Vec<_>>(),)));
+                                  .fan_info
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .info()
+                                  .collect::<Vec<_>>(),)));
 
                 Some(ctx)
             },
@@ -1122,10 +1051,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ("app_list",),
             move |mut ctx, _, (): ()| {
                 ctx.reply(Ok((SYSTEM_STATE
-                    .apps
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .app_list(),)));
+                                  .apps
+                                  .read()
+                                  .unwrap_or_else(PoisonError::into_inner)
+                                  .app_list(),)));
 
                 Some(ctx)
             },
@@ -1167,7 +1096,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "TerminateProcess",
             ("process_id",),
             (),
-            move |_, _: &mut (), (pid,): (u32,)| {
+            move |_, _: &mut (), (pid, ): (u32,)| {
                 execute_no_reply(
                     SYSTEM_STATE.processes.clone(),
                     move |processes| -> Result<(), u8> { Ok(processes.terminate_process(pid)) },
@@ -1184,7 +1113,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "KillProcess",
             ("process_id",),
             (),
-            move |_, _: &mut (), (pid,): (u32,)| {
+            move |_, _: &mut (), (pid, ): (u32,)| {
                 execute_no_reply(
                     SYSTEM_STATE.processes.clone(),
                     move |processes| -> Result<(), u8> { Ok(processes.kill_process(pid)) },
@@ -1201,7 +1130,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "EnableService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1224,7 +1153,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "DisableService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1247,7 +1176,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "StartService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1270,7 +1199,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "StopService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1293,7 +1222,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "RestartService",
             ("service_name",),
             (),
-            move |_, _: &mut (), (service,): (String,)| {
+            move |_, _: &mut (), (service, ): (String,)| {
                 execute_no_reply(
                     SYSTEM_STATE.service_controller.clone(),
                     move |sc| {
@@ -1351,7 +1280,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         builder.method("GetMachineId", (), ("machine_uuid",), |_, _, (): ()| {
             Ok((std::fs::read_to_string("/var/lib/dbus/machine-id")
-                .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
+                    .map_or("UNKNOWN".into(), |s| s.trim().to_owned()),))
         });
 
         message!("Gatherer::Main", "Registering D-Bus method `Ping`...");

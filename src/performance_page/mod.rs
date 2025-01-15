@@ -1702,8 +1702,7 @@ mod imp {
                             };
 
                             if selection.eq(&parent) {
-                                let option =
-                                    &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                                let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
                                 sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
                             }
 
@@ -1723,8 +1722,8 @@ mod imp {
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
                             if !readings.disks_info.iter().any(|device| {
-                                device.capacity > 0
-                                    && &Self::disk_page_name(device.id.as_ref()) == disk_page_name
+                                device.capacity > 0 &&
+                                &Self::disk_page_name(device.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
                             }
@@ -1886,7 +1885,7 @@ mod imp {
 
                         for new_device_index in new_devices {
                             if readings.disks_info[new_device_index].capacity == 0 {
-                                continue;
+                                continue
                             }
                             let (disk_id, page) = this.imp().create_disk_page(
                                 readings,

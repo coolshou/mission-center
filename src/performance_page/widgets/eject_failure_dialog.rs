@@ -53,7 +53,8 @@ mod imp {
 
             let model = self.column_view.get();
 
-            self.parent_page.set(Some(parent.clone()));
+            self.parent_page
+                .set(Some(parent.clone()));
 
             model.remove_all();
 
