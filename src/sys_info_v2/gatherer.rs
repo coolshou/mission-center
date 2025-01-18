@@ -20,6 +20,7 @@
 
 use std::num::NonZeroU32;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread::JoinHandle;
 use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
@@ -28,8 +29,12 @@ use gtk::glib::g_critical;
 use zeromq::prelude::*;
 use zeromq::{ReqSocket, ZmqError};
 
+use magpie_types::apps::apps_response;
 use magpie_types::apps::apps_response::AppList;
-pub use magpie_types::apps::{apps_response, App};
+pub use magpie_types::apps::App;
+use magpie_types::gpus::gpus_response;
+use magpie_types::gpus::gpus_response::GpuMap;
+pub use magpie_types::gpus::Gpu;
 use magpie_types::ipc::{self, response};
 use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
@@ -42,6 +47,9 @@ use crate::show_error_dialog_and_exit;
 type ResponseBody = response::Body;
 type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
+type GpusResponse = gpus_response::Response;
+
+const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
 
 macro_rules! parse_response {
     ($response: ident, $body_kind: path, $response_kind_ok: path, $response_kind_err: path, $do: expr) => {{
@@ -285,76 +293,86 @@ impl Gatherer {
             .build()
             .expect("Failed to create Tokio runtime");
 
+        let socket_addr = if let Ok(existing_sock) = std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK) {
+            Arc::from(existing_sock)
+        } else {
+            Arc::from(format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>()))
+        };
+
         Self {
             socket: RefCell::new(ReqSocket::new()),
             tokio_runtime: rt,
 
-            socket_addr: Arc::from(format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>())),
+            socket_addr,
             child_thread: RefCell::new(std::thread::spawn(|| {})),
             stop_requested: Arc::new(AtomicBool::new(false)),
         }
     }
 
     pub fn start(&self) {
-        *self.child_thread.borrow_mut() = std::thread::spawn({
-            let socket_addr = self.socket_addr.clone();
-            let stop_requested = self.stop_requested.clone();
-            move || {
-                fn spawn_child(socket_addr: &str) -> std::process::Child {
-                    match magpie_command(&socket_addr).spawn() {
-                        Ok(child) => child,
-                        Err(e) => {
-                            g_critical!(
+        fn start_magpie_process_thread(socket_addr: Arc<str>, stop_requested: Arc<AtomicBool>) -> JoinHandle<()> {
+            std::thread::spawn(
+                move || {
+                    fn spawn_child(socket_addr: &str) -> std::process::Child {
+                        match magpie_command(&socket_addr).spawn() {
+                            Ok(child) => child,
+                            Err(e) => {
+                                g_critical!(
                                 "MissionCenter::Gatherer",
                                 "Failed to spawn Magpie process: {}",
                                 &e
                             );
-                            show_error_dialog_and_exit(&format!(
-                                "Failed to spawn Magpie process: {}",
-                                e
-                            ));
+                                show_error_dialog_and_exit(&format!(
+                                    "Failed to spawn Magpie process: {}",
+                                    e
+                                ));
+                            }
                         }
                     }
-                }
 
-                let mut child = spawn_child(&socket_addr);
+                    let mut child = spawn_child(&socket_addr);
 
-                while !stop_requested.load(Ordering::Relaxed) {
-                    match child.try_wait() {
-                        Ok(Some(exit_status)) => {
-                            let _ = std::fs::remove_file(&socket_addr[6..]);
+                    while !stop_requested.load(Ordering::Relaxed) {
+                        match child.try_wait() {
+                            Ok(Some(exit_status)) => {
+                                let _ = std::fs::remove_file(&socket_addr[6..]);
 
-                            if !stop_requested.load(Ordering::Relaxed) {
-                                g_critical!(
+                                if !stop_requested.load(Ordering::Relaxed) {
+                                    g_critical!(
                                     "MissionCenter::Gatherer",
                                     "Magpie process exited unexpectedly: {}. Restarting...",
                                     exit_status
                                 );
-                                std::mem::swap(&mut child, &mut spawn_child(&socket_addr));
+                                    std::mem::swap(&mut child, &mut spawn_child(&socket_addr));
+                                }
                             }
-                        }
-                        Ok(None) => {
-                            std::thread::sleep(Duration::from_millis(100));
-                            continue;
-                        }
-                        Err(e) => {
-                            g_critical!(
+                            Ok(None) => {
+                                std::thread::sleep(Duration::from_millis(100));
+                                continue;
+                            }
+                            Err(e) => {
+                                g_critical!(
                                 "MissionCenter::Gatherer",
                                 "Failed to wait for Gatherer process to stop: {}",
                                 &e
                             );
-                            show_error_dialog_and_exit(&format!(
-                                "Failed to wait for Gatherer process to stop: {}",
-                                e
-                            ));
+                                show_error_dialog_and_exit(&format!(
+                                    "Failed to wait for Gatherer process to stop: {}",
+                                    e
+                                ));
+                            }
                         }
                     }
-                }
 
-                let _ = std::fs::remove_file(&socket_addr[6..]);
-                let _ = child.kill();
-            }
-        });
+                    let _ = std::fs::remove_file(&socket_addr[6..]);
+                    let _ = child.kill();
+                }
+            )
+        }
+
+        if !std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK).is_ok() {
+            *self.child_thread.borrow_mut() = start_magpie_process_thread(self.socket_addr.clone(), self.stop_requested.clone());
+        }
 
         const START_WAIT_TIME_MS: u64 = 300;
         const RETRY_COUNT: i32 = 50;
@@ -413,17 +431,25 @@ impl Gatherer {
         vec![]
     }
 
-    #[allow(unused)]
-    pub fn gpu_list(&self) -> Vec<Arc<str>> {
-        vec![]
-    }
+    pub fn gpus(&self) -> HashMap<String, Gpu> {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn gpu_static_info(&self) -> Vec<GpuStaticInfo> {
-        vec![]
-    }
+        let response = self
+            .tokio_runtime
+            .block_on(zero_mq_request(
+                ipc::req_get_gpus(),
+                &mut socket,
+                self.socket_addr.as_ref(),
+            ))
+            .and_then(|response| response.body);
 
-    pub fn gpu_dynamic_info(&self) -> Vec<GpuDynamicInfo> {
-        vec![]
+        parse_response!(
+            response,
+            ResponseBody::Gpus,
+            GpusResponse::Gpus,
+            GpusResponse::Error,
+            |mut gpus: GpuMap| { std::mem::take(&mut gpus.gpus) }
+        )
     }
 
     pub fn processes(&self) -> HashMap<u32, Process> {

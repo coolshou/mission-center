@@ -32,25 +32,16 @@ use dbus::{
 };
 use static_assertions::const_assert;
 
-use magpie_types::apps::App;
-use magpie_types::processes::Process;
-
-pub use arc_str_vec::ArcStrVec;
 pub use cpu_dynamic_info::CpuDynamicInfo;
 pub use cpu_static_info::CpuStaticInfo;
 pub use disk_info::{DiskInfo, DiskInfoVec, DiskType};
 pub use fan_info::{FanInfo, FanInfoVec};
-pub use gpu_dynamic_info::{GpuDynamicInfo, GpuDynamicInfoVec};
-pub use gpu_static_info::{GpuStaticInfo, GpuStaticInfoVec, OpenGLApi};
 pub use service::{Service, ServiceMap};
 
-mod arc_str_vec;
 mod cpu_dynamic_info;
 mod cpu_static_info;
 mod disk_info;
 mod fan_info;
-mod gpu_dynamic_info;
-mod gpu_static_info;
 mod service;
 
 pub const MC_GATHERER_OBJECT_PATH: &str = "/io/missioncenter/MissionCenter/Gatherer";
@@ -84,11 +75,6 @@ pub trait Gatherer {
     fn get_cpu_dynamic_info(&self) -> Result<CpuDynamicInfo, dbus::Error>;
     fn get_disks_info(&self) -> Result<Vec<DiskInfo>, dbus::Error>;
     fn get_fans_info(&self) -> Result<Vec<FanInfo>, dbus::Error>;
-    fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error>;
-    fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error>;
-    fn get_gpu_dynamic_info(&self) -> Result<Vec<GpuDynamicInfo>, dbus::Error>;
-    fn get_apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error>;
-    fn get_processes(&self) -> Result<HashMap<u32, Process>, dbus::Error>;
     fn get_services(&self) -> Result<HashMap<Arc<str>, Service>, dbus::Error>;
     fn terminate_process(&self, process_id: u32) -> Result<(), dbus::Error>;
     fn kill_process(&self, process_id: u32) -> Result<(), dbus::Error>;
@@ -123,32 +109,6 @@ impl<'a> Gatherer for Proxy<'a, Rc<LocalConnection>> {
         let res: Result<FanInfoVec, _> =
             self.method_call(MC_GATHERER_INTERFACE_NAME, "GetFansInfo", ());
         res.map(|v| v.into())
-    }
-
-    fn get_gpu_list(&self) -> Result<Vec<Arc<str>>, dbus::Error> {
-        let res: Result<ArcStrVec, _> =
-            self.method_call(MC_GATHERER_INTERFACE_NAME, "GetGPUList", ());
-        res.map(|v| v.into())
-    }
-
-    fn get_gpu_static_info(&self) -> Result<Vec<GpuStaticInfo>, dbus::Error> {
-        let res: Result<GpuStaticInfoVec, _> =
-            self.method_call(MC_GATHERER_INTERFACE_NAME, "GetGPUStaticInfo", ());
-        res.map(|v| v.into())
-    }
-
-    fn get_gpu_dynamic_info(&self) -> Result<Vec<GpuDynamicInfo>, dbus::Error> {
-        let res: Result<GpuDynamicInfoVec, _> =
-            self.method_call(MC_GATHERER_INTERFACE_NAME, "GetGPUDynamicInfo", ());
-        res.map(|v| v.into())
-    }
-
-    fn get_apps(&self) -> Result<HashMap<Arc<str>, App>, dbus::Error> {
-        Ok(HashMap::new())
-    }
-
-    fn get_processes(&self) -> Result<HashMap<u32, Process>, dbus::Error> {
-        Ok(HashMap::new())
     }
 
     fn get_services(&self) -> Result<HashMap<Arc<str>, Service>, dbus::Error> {

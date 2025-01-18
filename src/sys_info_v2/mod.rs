@@ -24,8 +24,7 @@ use crate::{
 };
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, GpuDynamicInfo, GpuStaticInfo,
-    OpenGLApi, Process, ProcessUsageStats, Service,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Process, ProcessUsageStats, Service,
 };
 use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use std::num::NonZeroU32;
@@ -142,8 +141,7 @@ pub struct Readings {
     pub mem_info: MemInfo,
     pub disks_info: Vec<DiskInfo>,
     pub network_devices: Vec<NetworkDevice>,
-    pub gpu_static_info: Vec<GpuStaticInfo>,
-    pub gpu_dynamic_info: Vec<GpuDynamicInfo>,
+    pub gpus: HashMap<String, Gpu>,
     pub fans_info: Vec<FanInfo>,
 
     pub running_apps: HashMap<String, App>,
@@ -160,8 +158,7 @@ impl Readings {
             mem_info: MemInfo::default(),
             disks_info: vec![],
             network_devices: vec![],
-            gpu_static_info: vec![],
-            gpu_dynamic_info: vec![],
+            gpus: HashMap::new(),
             fans_info: vec![],
 
             running_apps: HashMap::new(),
@@ -507,8 +504,7 @@ impl SysInfoV2 {
             } else {
                 vec![]
             },
-            gpu_static_info: gatherer.gpu_static_info(),
-            gpu_dynamic_info: gatherer.gpu_dynamic_info(),
+            gpus: gatherer.gpus(),
             running_processes: gatherer.processes(),
             running_apps: gatherer.apps(),
             services: gatherer.services(),
@@ -535,8 +531,7 @@ impl SysInfoV2 {
                 disks_info: std::mem::take(&mut readings.disks_info),
                 fans_info: std::mem::take(&mut readings.fans_info),
                 network_devices: std::mem::take(&mut readings.network_devices),
-                gpu_static_info: readings.gpu_static_info.clone(),
-                gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),
+                gpus: std::mem::take(&mut readings.gpus),
                 running_apps: std::mem::take(&mut readings.running_apps),
                 running_processes: std::mem::take(&mut readings.running_processes),
                 services: std::mem::take(&mut readings.services),
@@ -611,10 +606,10 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            readings.gpu_dynamic_info = gatherer.gpu_dynamic_info();
+            readings.gpus = gatherer.gpus();
             g_debug!(
                 "MissionCenter::Perf",
-                "GPU dynamic info load took: {:?}",
+                "GPU info load took: {:?}",
                 timer.elapsed()
             );
 
@@ -669,8 +664,7 @@ impl SysInfoV2 {
                     disks_info: std::mem::take(&mut readings.disks_info),
                     fans_info: std::mem::take(&mut readings.fans_info),
                     network_devices: std::mem::take(&mut readings.network_devices),
-                    gpu_static_info: readings.gpu_static_info.clone(),
-                    gpu_dynamic_info: std::mem::take(&mut readings.gpu_dynamic_info),
+                    gpus: std::mem::take(&mut readings.gpus),
                     running_apps: std::mem::take(&mut readings.running_apps),
                     running_processes: std::mem::take(&mut readings.running_processes),
                     services: std::mem::take(&mut readings.services),

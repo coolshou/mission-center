@@ -19,12 +19,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::fmt::Write;
 use std::{
     cell::Cell,
     collections::{HashMap, HashSet},
 };
 
 use adw::{prelude::*, subclass::prelude::*};
+use arrayvec::ArrayString;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{
     gdk, gio,
@@ -48,6 +50,7 @@ mod memory;
 mod network;
 mod summary_graph;
 mod widgets;
+mod gpu_details;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
@@ -55,6 +58,7 @@ type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
+type GpuDetails = gpu_details::GpuDetails;
 type FanPage = fan::PerformancePageFan;
 
 trait PageExt {
@@ -1309,11 +1313,9 @@ mod imp {
         ) {
             let mut gpus = HashMap::new();
 
-            let hide_index = readings.gpu_static_info.len() == 1;
-            for (index, static_info) in readings.gpu_static_info.iter().enumerate() {
-                let dynamic_info = &readings.gpu_dynamic_info[index];
-
-                let page_name = Self::gpu_page_name(static_info.id.as_ref());
+            let hide_index = readings.gpus.len() == 1;
+            for (index, gpu) in readings.gpus.values().enumerate() {
+                let page_name = Self::gpu_page_name(&gpu.id);
 
                 let summary = SummaryGraph::new();
                 summary.set_widget_name(&page_name);
@@ -1328,18 +1330,24 @@ mod imp {
                     .graph_widget()
                     .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-                let page = GpuPage::new(&static_info.device_name, &settings);
+                let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
 
                 if !hide_index {
                     summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
                 } else {
                     summary.set_heading(i18n_f("GPU", &[]));
                 }
-                summary.set_info1(static_info.device_name.as_ref());
-                summary.set_info2(format!(
-                    "{}% ({} °C)",
-                    dynamic_info.util_percent, dynamic_info.temp_celsius
-                ));
+                summary.set_info1(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")).as_str());
+
+                let mut info2 = ArrayString::<256>::new();
+                if let Some(v) = gpu.utilization_percent {
+                    let _ = write!(&mut info2, "{v}%");
+                }
+                if let Some(v) = gpu.temperature_c {
+                    let _ = write!(&mut info2, " ({v:.2}°C)");
+                }
+                summary.set_info2(info2.as_str());
+
                 summary.set_base_color(gdk::RGBA::new(
                     GPU_BASE_COLOR[0] as f32 / 255.,
                     GPU_BASE_COLOR[1] as f32 / 255.,
@@ -1355,7 +1363,7 @@ mod imp {
                 ));
                 page.set_static_information(
                     if !hide_index { Some(index) } else { None },
-                    static_info,
+                    gpu,
                 );
 
                 self.configure_page(&page);
@@ -1368,8 +1376,8 @@ mod imp {
                     None => {
                         g_critical!(
                             "MissionCenter::PerformancePage",
-                            "Failed to wire up GPU action for {}, logic bug?",
-                            &static_info.device_name
+                            "Failed to wire up GPU action for {:?}, logic bug?",
+                            &gpu.device_name
                         );
                     }
                     Some(action) => {
@@ -1955,32 +1963,25 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in &readings.gpu_dynamic_info {
+                        for gpu in readings.gpus.values() {
                             if let Some((summary, page)) =
-                                pages.get(&Self::gpu_page_name(gpu.id.as_ref()))
+                                pages.get(&Self::gpu_page_name(&gpu.id))
                             {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                if gpu.temp_celsius > 20 {
-                                    summary.set_info2(format!(
-                                        "{}% ({} °C)",
-                                        gpu.util_percent, gpu.temp_celsius
-                                    ));
-                                } else {
-                                    summary.set_info2(format!("{}%", gpu.util_percent));
-                                }
-                                let id = gpu.id.clone();
-                                let mut gpu_static = None;
-                                for gpu_stat in &readings.gpu_static_info {
-                                    if id == gpu_stat.id {
-                                        gpu_static = Some(gpu_stat);
-                                        break;
-                                    }
-                                }
 
-                                result &= page.update_readings(gpu, gpu_static.unwrap());
+                                let mut info2 = ArrayString::<256>::new();
+                                if let Some(v) = gpu.utilization_percent {
+                                    graph_widget.add_data_point(0, v);
+                                    let _ = write!(&mut info2, "{v}%");
+                                }
+                                if let Some(v) = gpu.temperature_c {
+                                    let _ = write!(&mut info2, " ({v:.2}°C)");
+                                }
+                                summary.set_info2(info2.as_str());
+
+                                result &= page.update_readings(gpu);
                             }
                         }
                     }

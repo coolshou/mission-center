@@ -1265,11 +1265,11 @@ mod imp {
             let column_header_gpu = self.column_header_gpu_usage.take();
             if let Some(column_header_gpu) = &column_header_gpu {
                 let avg = readings
-                    .gpu_dynamic_info
-                    .iter()
-                    .map(|g| g.util_percent)
-                    .sum::<u32>() as f32
-                    / readings.gpu_dynamic_info.len() as f32;
+                    .gpus
+                    .values()
+                    .map(|g| g.utilization_percent.unwrap_or(0.))
+                    .sum::<f32>()
+                    / readings.gpus.len() as f32;
                 column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
             }
             self.column_header_gpu_usage.set(column_header_gpu);
@@ -1277,18 +1277,17 @@ mod imp {
             let column_header_gpu_mem = self.column_header_gpu_memory_usage.take();
             if let Some(column_header_gpu_mem) = &column_header_gpu_mem {
                 let avg = readings
-                    .gpu_dynamic_info
-                    .iter()
-                    .enumerate()
-                    .map(|(i, g)| {
-                        let total_memory = readings.gpu_static_info[i].total_memory;
-                        if total_memory == 0 {
-                            return 0;
+                    .gpus
+                    .values()
+                    .map(|gpu| {
+                        if let Some(total_memory) = gpu.total_memory {
+                            (gpu.used_memory.unwrap_or(0) * 100) / total_memory
+                        } else {
+                            0
                         }
-                        (g.used_memory * 100) / total_memory
                     })
                     .sum::<u64>() as f32
-                    / readings.gpu_dynamic_info.len() as f32;
+                    / readings.gpus.len() as f32;
                 column_header_gpu_mem.set_heading(format!("{:.0}%", avg.round()));
             }
             self.column_header_gpu_memory_usage
@@ -1557,25 +1556,16 @@ impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
         let this = self.imp();
 
-        if readings.gpu_static_info.is_empty() {
+        if readings.gpus.is_empty() {
             this.column_view.remove_column(&this.gpu_usage_column);
             this.column_view.remove_column(&this.gpu_memory_column);
         } else {
-            // Intel GPUs don't have memory information
-            if readings
-                .gpu_static_info
-                .iter()
-                .all(|g| g.vendor_id == 0x8086)
-            {
+            let total_gpu_memory = readings.gpus.values().map(|g|g.total_memory.unwrap_or(0)).sum::<u64>();
+            if total_gpu_memory == 0 {
                 this.column_view.remove_column(&this.gpu_memory_column);
+                this.max_gpu_memory_usage.set(1.);
             } else {
-                this.max_gpu_memory_usage.set(
-                    readings
-                        .gpu_static_info
-                        .iter()
-                        .map(|g| g.total_memory as f32)
-                        .sum(),
-                );
+                this.max_gpu_memory_usage.set(total_gpu_memory as f32);
             }
         }
 
