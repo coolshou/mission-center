@@ -30,7 +30,6 @@ pub struct GpuDynamicInfo {
     pub fan_speed_percent: u32,
     pub util_percent: u32,
     pub power_draw_watts: f32,
-    pub power_draw_max_watts: f32,
     pub clock_speed_mhz: u32,
     pub clock_speed_max_mhz: u32,
     pub mem_speed_mhz: u32,
@@ -38,6 +37,8 @@ pub struct GpuDynamicInfo {
     pub free_memory: u64,
     pub used_memory: u64,
     pub used_gtt: u64,
+    pub fan_rpm: u64,
+    pub fan_pwm: u64,
     pub encoder_percent: u32,
     pub decoder_percent: u32,
 }
@@ -50,7 +51,6 @@ impl Default for GpuDynamicInfo {
             fan_speed_percent: 0,
             util_percent: 0,
             power_draw_watts: 0.0,
-            power_draw_max_watts: 0.0,
             clock_speed_mhz: 0,
             clock_speed_max_mhz: 0,
             mem_speed_mhz: 0,
@@ -58,6 +58,8 @@ impl Default for GpuDynamicInfo {
             free_memory: 0,
             used_memory: 0,
             used_gtt: 0,
+            fan_rpm: 0,
+            fan_pwm: 0,
             encoder_percent: 0,
             decoder_percent: 0,
         }
@@ -125,7 +127,6 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             fan_speed_percent: 0,
                             util_percent: 0,
                             power_draw_watts: 0.0,
-                            power_draw_max_watts: 0.0,
                             clock_speed_mhz: 0,
                             clock_speed_max_mhz: 0,
                             mem_speed_mhz: 0,
@@ -133,6 +134,8 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                             free_memory: 0,
                             used_memory: 0,
                             used_gtt: 0,
+                            fan_rpm: 0,
+                            fan_pwm: 0,
                             encoder_percent: 0,
                             decoder_percent: 0,
                         };
@@ -251,27 +254,6 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     return None;
                                 }
                                 Some(pd) => pd as _,
-                            },
-                        };
-
-                        this.power_draw_max_watts = match Iterator::next(dynamic_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get GpuDynamicInfo: Expected '5: d', got None",
-                                );
-                                return None;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get GpuDynamicInfo: Expected '5: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    return None;
-                                }
-                                Some(pdm) => pdm as _,
                             },
                         };
 
@@ -414,6 +396,48 @@ impl<'a> Get<'a> for GpuDynamicInfoVec {
                                     g_critical!(
                                         "MissionCenter::GathererDBusProxy",
                                         "Failed to get GpuDynamicInfo: Expected '12: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fm) => fm as _,
+                            },
+                        };
+
+                        this.fan_rpm = match Iterator::next(dynamic_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '13: t', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '13: t', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    return None;
+                                }
+                                Some(fm) => fm as _,
+                            },
+                        };
+
+                        this.fan_pwm = match Iterator::next(dynamic_info) {
+                            None => {
+                                g_critical!(
+                                    "MissionCenter::GathererDBusProxy",
+                                    "Failed to get GpuDynamicInfo: Expected '13: t', got None",
+                                );
+                                return None;
+                            }
+                            Some(arg) => match arg.as_u64() {
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::GathererDBusProxy",
+                                        "Failed to get GpuDynamicInfo: Expected '13: t', got {:?}",
                                         arg.arg_type(),
                                     );
                                     return None;

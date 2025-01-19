@@ -462,6 +462,20 @@ mod imp {
                 vulkan_version.set_text(&vk_version);
             }
 
+            let power_limit = if gpu.power_draw_max_watts != 0.0 {
+                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
+            } else {
+                None
+            };
+            if let Some(power_draw_max) = this.power_draw_max.get() {
+                if let Some(power_limit) = power_limit {
+                    power_draw_max.set_text(&format!(
+                        " / {0:.2$} {1}W",
+                        power_limit.0, power_limit.1, power_limit.2
+                    ));
+                }
+            }
+
             if let Some(pcie_speed) = this.pcie_speed.get() {
                 pcie_speed.set_text(&format!("PCIe Gen {} x{} ", gpu.pcie_gen, gpu.pcie_lanes));
             }
@@ -551,24 +565,11 @@ mod imp {
             }
 
             let power_draw = crate::to_human_readable(gpu.power_draw_watts, 1000.);
-            let power_limit = if gpu.power_draw_max_watts != 0.0 {
-                Some(crate::to_human_readable(gpu.power_draw_max_watts, 1000.))
-            } else {
-                None
-            };
             if let Some(power_draw_current) = this.power_draw_current.get() {
                 power_draw_current.set_text(&format!(
                     "{0:.2$} {1}W",
                     power_draw.0, power_draw.1, power_draw.2
                 ));
-            }
-            if let Some(power_draw_max) = this.power_draw_max.get() {
-                if let Some(power_limit) = power_limit {
-                    power_draw_max.set_text(&format!(
-                        " / {0:.2$} {1}W",
-                        power_limit.0, power_limit.1, power_limit.2
-                    ));
-                }
             }
             if let Some(encode_percent) = this.encode_percent.get() {
                 encode_percent.set_text(&format!("{}%", gpu.encoder_percent));
