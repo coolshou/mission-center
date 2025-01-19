@@ -20,14 +20,11 @@
 
 use std::num::NonZeroU32;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread::JoinHandle;
 use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
 use arrayvec::ArrayString;
-use gtk::glib::g_critical;
-use zeromq::prelude::*;
-use zeromq::{ReqSocket, ZmqError};
+use gtk::glib::{g_critical, g_debug};
 
 use magpie_types::apps::apps_response;
 use magpie_types::apps::apps_response::AppList;
@@ -43,6 +40,11 @@ use magpie_types::prost::Message;
 
 pub use super::dbus_interface::*;
 use crate::show_error_dialog_and_exit;
+
+mod nng {
+    pub use nng_c_sys::nng_errno_enum::*;
+    pub use nng_c_sys::*;
+}
 
 type ResponseBody = response::Body;
 type ProcessesResponse = processes_response::Response;
@@ -179,26 +181,144 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
     command
 }
 
-async fn zero_mq_request(
-    request: ipc::Request,
-    socket: &mut ReqSocket,
-    socket_addr: &str,
-) -> Option<ipc::Response> {
-    async fn try_reconnect(socket: &mut ReqSocket, socket_addr: &str) {
-        let _ = std::mem::replace(socket, ReqSocket::new());
-        for i in 0..=5 {
-            match socket.connect(socket_addr).await {
-                Err(e) => {
-                    let error_msg = format!("Failed to reconnect to Magpie socket in {i} tries: {e}");
-                    g_critical!("MissionCenter::Gatherer", "{}", &error_msg);
-                }
-                _ => {
-                    // We reconnected, try again next time
-                    return;
-                }
+fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
+    let _ = unsafe { nng::nng_close(*socket) };
+    socket.id = 0;
+
+    let res = unsafe { nng::nng_req0_open(socket) };
+    match res {
+        nng::NNG_ENOMEM => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to open socket: Out of memory"
+            );
+            return false;
+        }
+        nng::NNG_ENOTSUP => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to open socket: Protocol not supported"
+            );
+            return false;
+        }
+        _ => {
+            if res != 0 {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to open socket: Unknown error: {}",
+                    res
+                );
+                return false;
             }
         }
-        show_error_dialog_and_exit("Lost connection to Magpie and failed to reconnect after 5 tries. Giving up.");
+    }
+
+    let res = unsafe { nng::nng_dial(*socket, socket_addr.as_ptr() as _, std::ptr::null_mut(), 0) };
+    match res {
+        nng::NNG_EADDRINVAL => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: An invalid url was specified"
+            );
+            return false;
+        }
+        nng::NNG_ECLOSED => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: The socket is not open"
+            );
+            return false;
+        }
+        nng::NNG_ECONNREFUSED => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: The remote peer refused the connection"
+            );
+            return false;
+        }
+        nng::NNG_ECONNRESET => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: The remote peer reset the connection"
+            );
+            return false;
+        }
+        nng::NNG_EINVAL => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: An invalid set of flags or an invalid url was specified"
+            );
+            return false;
+        }
+        nng::NNG_ENOMEM => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: Insufficient memory is available"
+            );
+            return false;
+        }
+        nng::NNG_EPEERAUTH => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: Authentication or authorization failure"
+            );
+            return false;
+        }
+        nng::NNG_EPROTO => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: A protocol error occurred"
+            );
+            return false;
+        }
+        nng::NNG_EUNREACHABLE => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: The remote address is not reachable"
+            );
+            return false;
+        }
+        _ => {
+            if res != 0 {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to dial socket: Unknown error: {}",
+                    res
+                );
+                return false;
+            }
+        }
+    }
+
+    true
+}
+
+fn make_request(
+    request: ipc::Request,
+    socket: &mut nng::nng_socket,
+    socket_addr: &str,
+) -> Option<ipc::Response> {
+    fn try_reconnect(socket: &mut nng::nng_socket, socket_addr: &str) {
+        unsafe { nng::nng_close(*socket) };
+        socket.id = 0;
+
+        for i in 0..=5 {
+            if !connect_socket(socket, socket_addr) {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to reconnect to Magpie. Retrying in 100ms (try {}/5)",
+                    i + 1
+                );
+                std::thread::sleep(Duration::from_millis(100));
+                continue;
+            }
+
+            return;
+        }
+
+        show_error_dialog_and_exit(
+            "Lost connection to Magpie and failed to reconnect after 5 tries. Giving up.",
+        );
     }
 
     let mut req_buf = Vec::new();
@@ -213,67 +333,184 @@ async fn zero_mq_request(
         return None;
     }
 
-    let send_res = socket.send(req_buf.into()).await;
-    match send_res {
-        Err(ZmqError::Codec(..)) => {
-            // Might mean that the socket was closed, try to reconnect
-            try_reconnect(socket, socket_addr).await;
+    let res = unsafe { nng::nng_send(*socket, req_buf.as_ptr() as *mut _, req_buf.len(), 0) };
+    match res {
+        nng::NNG_EAGAIN => {
+            g_critical!("MissionCenter::Gatherer","Failed to send request: The operation would block, but NNG_FLAG_NONBLOCK was specified");
             return None;
         }
-        Err(e) => {
-            g_critical!("MissionCenter::Gatherer", "Failed to send request: {}", e);
-            return None;
-        }
-        _ => {}
-    }
-
-    let recv_res = socket.recv().await;
-    let response = match recv_res {
-        Ok(response) => response.into_vec(),
-        Err(ZmqError::Codec(..)) => {
-            // Might mean that the socket was closed, try to reconnect
-            try_reconnect(socket, socket_addr).await;
-            return None;
-        }
-        Err(e) => {
+        nng::NNG_ECLOSED => {
             g_critical!(
                 "MissionCenter::Gatherer",
-                "Failed to receive response: {}",
-                e
+                "Failed to send request: The socket is not open"
+            );
+            try_reconnect(socket, socket_addr);
+            return None;
+        }
+        nng::NNG_EINVAL => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: An invalid set of flags was specified"
             );
             return None;
         }
+        nng::NNG_EMSGSIZE => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: The value of size is too large"
+            );
+            return None;
+        }
+        nng::NNG_ENOMEM => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: Insufficient memory is available"
+            );
+            return None;
+        }
+        nng::NNG_ENOTSUP => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: The protocol for socket does not support sending"
+            );
+            return None;
+        }
+        nng::NNG_ESTATE => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: The socket cannot send data in this state"
+            );
+            return None;
+        }
+        nng::NNG_ETIMEDOUT => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: The operation timed out"
+            );
+            return None;
+        }
+        _ => {
+            if res != 0 {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: Unknown error: {}",
+                    res
+                );
+                return None;
+            }
+        }
+    }
+
+    let mut message_buffer: *mut libc::c_void = std::ptr::null_mut();
+    let mut message_len: libc::size_t = 0;
+
+    let res = unsafe {
+        nng::nng_recv(
+            *socket,
+            (&mut message_buffer) as *mut *mut _ as *mut _,
+            &mut message_len,
+            nng::NNG_FLAG_ALLOC,
+        )
     };
-    if response.is_empty() {
+    match res {
+        nng::NNG_EAGAIN => {
+            g_critical!("MissionCenter::Gatherer","Failed to read message: The operation would block, but NNG_FLAG_NONBLOCK was specified");
+            return None;
+        }
+        nng::NNG_ECLOSED => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: The socket is not open"
+            );
+            try_reconnect(socket, socket_addr);
+            return None;
+        }
+        nng::NNG_EINVAL => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: An invalid set of flags was specified"
+            );
+            return None;
+        }
+        nng::NNG_EMSGSIZE => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: The received message did not fit in the size provided"
+            );
+            return None;
+        }
+        nng::NNG_ENOMEM => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: Insufficient memory is available"
+            );
+            return None;
+        }
+        nng::NNG_ENOTSUP => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: The protocol for socket does not support receiving"
+            );
+            return None;
+        }
+        nng::NNG_ESTATE => {
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: The socket cannot receive data in this state"
+            );
+            return None;
+        }
+        nng::NNG_ETIMEDOUT => {
+            g_debug!(
+                "MissionCenter::Gatherer",
+                "No message received for 64ms, waiting and trying again..."
+            );
+            std::thread::sleep(Duration::from_millis(10));
+            return None;
+        }
+        _ => {
+            if res != 0 {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to read message: Unknown error: {}",
+                    res
+                );
+                return None;
+            }
+        }
+    }
+
+    if message_len == 0 || message_buffer.is_null() {
         g_critical!(
             "MissionCenter::Gatherer",
-            "Empty reply when getting processes"
+            "Failed to read response: Empty message"
         );
         return None;
     }
-    let decode_result = if response.len() > 1 {
-        ipc::Response::decode(response.concat().as_slice())
-    } else {
-        ipc::Response::decode(response[0].iter().as_slice())
-    };
-    let response = match decode_result {
+
+    let response_buffer =
+        unsafe { core::slice::from_raw_parts(message_buffer as *const u8, message_len) };
+
+    let response = match ipc::Response::decode(response_buffer) {
         Ok(r) => r,
         Err(e) => {
             g_critical!(
                 "MissionCenter::Gatherer",
-                "Error while getting process list: {:?}",
+                "Error while decoding response: {:?}",
                 e
             );
+            unsafe { nng::nng_free(message_buffer, message_len) };
             return None;
         }
     };
+
+    unsafe { nng::nng_free(message_buffer, message_len) };
 
     Some(response)
 }
 
 pub struct Gatherer {
-    socket: RefCell<ReqSocket>,
-    tokio_runtime: tokio::runtime::Runtime,
+    socket: RefCell<nng::nng_socket>,
 
     socket_addr: Arc<str>,
     child_thread: RefCell<std::thread::JoinHandle<()>>,
@@ -288,20 +525,16 @@ impl Drop for Gatherer {
 
 impl Gatherer {
     pub fn new() -> Self {
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .expect("Failed to create Tokio runtime");
-
-        let socket_addr = if let Ok(existing_sock) = std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK) {
-            Arc::from(existing_sock)
-        } else {
-            Arc::from(format!("ipc:///tmp/magpie_{}.ipc", random_string::<8>()))
-        };
+        let socket_addr =
+            if let Ok(mut existing_sock) = std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK) {
+                existing_sock.push('\0');
+                Arc::from(existing_sock)
+            } else {
+                Arc::from(format!("ipc:///tmp/magpie_{}.ipc\0", random_string::<8>()))
+            };
 
         Self {
-            socket: RefCell::new(ReqSocket::new()),
-            tokio_runtime: rt,
+            socket: RefCell::new(nng::nng_socket { id: 0 }),
 
             socket_addr,
             child_thread: RefCell::new(std::thread::spawn(|| {})),
@@ -310,68 +543,70 @@ impl Gatherer {
     }
 
     pub fn start(&self) {
-        fn start_magpie_process_thread(socket_addr: Arc<str>, stop_requested: Arc<AtomicBool>) -> JoinHandle<()> {
-            std::thread::spawn(
-                move || {
-                    fn spawn_child(socket_addr: &str) -> std::process::Child {
-                        match magpie_command(&socket_addr).spawn() {
-                            Ok(child) => child,
-                            Err(e) => {
-                                g_critical!(
+        fn start_magpie_process_thread(
+            socket_addr: Arc<str>,
+            stop_requested: Arc<AtomicBool>,
+        ) -> std::thread::JoinHandle<()> {
+            std::thread::spawn(move || {
+                fn spawn_child(socket_addr: &str) -> std::process::Child {
+                    match magpie_command(&socket_addr).spawn() {
+                        Ok(child) => child,
+                        Err(e) => {
+                            g_critical!(
                                 "MissionCenter::Gatherer",
                                 "Failed to spawn Magpie process: {}",
                                 &e
                             );
-                                show_error_dialog_and_exit(&format!(
-                                    "Failed to spawn Magpie process: {}",
-                                    e
-                                ));
-                            }
+                            show_error_dialog_and_exit(&format!(
+                                "Failed to spawn Magpie process: {}",
+                                e
+                            ));
                         }
                     }
+                }
 
-                    let mut child = spawn_child(&socket_addr);
+                let mut child = spawn_child(&socket_addr);
 
-                    while !stop_requested.load(Ordering::Relaxed) {
-                        match child.try_wait() {
-                            Ok(Some(exit_status)) => {
-                                let _ = std::fs::remove_file(&socket_addr[6..]);
+                while !stop_requested.load(Ordering::Relaxed) {
+                    match child.try_wait() {
+                        Ok(Some(exit_status)) => {
+                            let _ = std::fs::remove_file(&socket_addr[6..]);
 
-                                if !stop_requested.load(Ordering::Relaxed) {
-                                    g_critical!(
+                            if !stop_requested.load(Ordering::Relaxed) {
+                                g_critical!(
                                     "MissionCenter::Gatherer",
                                     "Magpie process exited unexpectedly: {}. Restarting...",
                                     exit_status
                                 );
-                                    std::mem::swap(&mut child, &mut spawn_child(&socket_addr));
-                                }
+                                std::mem::swap(&mut child, &mut spawn_child(&socket_addr));
                             }
-                            Ok(None) => {
-                                std::thread::sleep(Duration::from_millis(100));
-                                continue;
-                            }
-                            Err(e) => {
-                                g_critical!(
+                        }
+                        Ok(None) => {
+                            std::thread::sleep(Duration::from_millis(100));
+                            continue;
+                        }
+                        Err(e) => {
+                            g_critical!(
                                 "MissionCenter::Gatherer",
                                 "Failed to wait for Gatherer process to stop: {}",
                                 &e
                             );
-                                show_error_dialog_and_exit(&format!(
-                                    "Failed to wait for Gatherer process to stop: {}",
-                                    e
-                                ));
-                            }
+                            show_error_dialog_and_exit(&format!(
+                                "Failed to wait for Gatherer process to stop: {}",
+                                e
+                            ));
                         }
                     }
-
-                    let _ = std::fs::remove_file(&socket_addr[6..]);
-                    let _ = child.kill();
                 }
-            )
+
+                let _ = std::fs::remove_file(&socket_addr[6..]);
+                let _ = child.kill();
+            })
         }
 
         if !std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK).is_ok() {
-            *self.child_thread.borrow_mut() = start_magpie_process_thread(self.socket_addr.clone(), self.stop_requested.clone());
+            *self.child_thread.borrow_mut() =
+                start_magpie_process_thread(self.socket_addr.clone(), self.stop_requested.clone());
         }
 
         const START_WAIT_TIME_MS: u64 = 300;
@@ -381,20 +616,8 @@ impl Gatherer {
         for _ in 0..RETRY_COUNT {
             std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
 
-            match self.tokio_runtime.block_on(async {
-                self.socket
-                    .borrow_mut()
-                    .connect(self.socket_addr.as_ref())
-                    .await
-            }) {
-                Ok(_) => return,
-                Err(e) => {
-                    g_critical!(
-                        "MissionCenter::Gatherer",
-                        "Failed to connect to Gatherer socket: {}",
-                        e
-                    );
-                }
+            if connect_socket(&mut *self.socket.borrow_mut(), &self.socket_addr) {
+                return;
             }
 
             std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
@@ -405,7 +628,10 @@ impl Gatherer {
 
     pub fn stop(&self) {
         self.stop_requested.store(true, Ordering::Relaxed);
-        let child_thread = std::mem::replace(&mut *self.child_thread.borrow_mut(), std::thread::spawn(|| {}));
+        let child_thread = std::mem::replace(
+            &mut *self.child_thread.borrow_mut(),
+            std::thread::spawn(|| {}),
+        );
         let _ = child_thread.join();
     }
 }
@@ -434,13 +660,7 @@ impl Gatherer {
     pub fn gpus(&self) -> HashMap<String, Gpu> {
         let mut socket = self.socket.borrow_mut();
 
-        let response = self
-            .tokio_runtime
-            .block_on(zero_mq_request(
-                ipc::req_get_gpus(),
-                &mut socket,
-                self.socket_addr.as_ref(),
-            ))
+        let response = make_request(ipc::req_get_gpus(), &mut socket, self.socket_addr.as_ref())
             .and_then(|response| response.body);
 
         parse_response!(
@@ -455,14 +675,12 @@ impl Gatherer {
     pub fn processes(&self) -> HashMap<u32, Process> {
         let mut socket = self.socket.borrow_mut();
 
-        let response = self
-            .tokio_runtime
-            .block_on(zero_mq_request(
-                ipc::req_get_processes(),
-                &mut socket,
-                self.socket_addr.as_ref(),
-            ))
-            .and_then(|response| response.body);
+        let response = make_request(
+            ipc::req_get_processes(),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
 
         parse_response!(
             response,
@@ -476,13 +694,7 @@ impl Gatherer {
     pub fn apps(&self) -> HashMap<String, App> {
         let mut socket = self.socket.borrow_mut();
 
-        let response = self
-            .tokio_runtime
-            .block_on(zero_mq_request(
-                ipc::req_get_apps(),
-                &mut socket,
-                self.socket_addr.as_ref(),
-            ))
+        let response = make_request(ipc::req_get_apps(), &mut socket, self.socket_addr.as_ref())
             .and_then(|response| response.body);
 
         parse_response!(

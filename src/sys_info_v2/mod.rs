@@ -24,7 +24,8 @@ use crate::{
 };
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Process, ProcessUsageStats, Service,
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Process,
+    ProcessUsageStats, Service,
 };
 use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use std::num::NonZeroU32;

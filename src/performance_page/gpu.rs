@@ -29,11 +29,7 @@ use gtk::{gio, glib, prelude::*};
 use magpie_types::gpus::Gpu;
 
 use super::{widgets::GraphWidget, GpuDetails, PageExt};
-use crate::{
-    application::INTERVAL_STEP,
-    i18n::*,
-    settings,
-};
+use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
     use super::*;
@@ -248,7 +244,8 @@ mod imp {
                 this.gpu_id.set_text("GPU");
             }
 
-            this.device_name.set_text(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
+            this.device_name
+                .set_text(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
 
             let settings = settings!();
             let show_enc_dec_usage =
@@ -307,21 +304,24 @@ mod imp {
                 ogl_version.push_str(&i18n("Unknown"));
             }
 
-            this.infobar_content.opengl_version().set_text(ogl_version.as_str());
+            this.infobar_content
+                .opengl_version()
+                .set_text(ogl_version.as_str());
 
             let vk_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
                 format!(
                     "{}.{}.{}",
-                    vulkan_version.major, vulkan_version.minor, vulkan_version.patch.unwrap_or(0)
+                    vulkan_version.major,
+                    vulkan_version.minor,
+                    vulkan_version.patch.unwrap_or(0)
                 )
             } else {
                 i18n("Unsupported")
             };
             this.infobar_content.vulkan_version().set_text(&vk_version);
 
-            this.infobar_content.set_pcie_info_visible(
-                gpu.pcie_gen.is_some() && gpu.pcie_lanes.is_some(),
-            );
+            this.infobar_content
+                .set_pcie_info_visible(gpu.pcie_gen.is_some() && gpu.pcie_lanes.is_some());
             if this.infobar_content.pcie_info_visible() {
                 this.infobar_content.pcie_speed().set_text(&format!(
                     "PCIe Gen {} x{} ",
@@ -331,17 +331,12 @@ mod imp {
                 ));
             }
 
-            this.infobar_content
-                .pci_addr()
-                .set_text(gpu.id.as_ref());
+            this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
 
             true
         }
 
-        pub(crate) fn update_readings(
-            this: &super::PerformancePageGpu,
-            gpu: &Gpu,
-        ) -> bool {
+        pub(crate) fn update_readings(this: &super::PerformancePageGpu, gpu: &Gpu) -> bool {
             let this = this.imp();
 
             this.update_utilization(gpu);
@@ -414,8 +409,7 @@ mod imp {
                 0.
             });
 
-            self.graph_utilization
-                .add_data_point(0, overall_usage);
+            self.graph_utilization.add_data_point(0, overall_usage);
             self.infobar_content
                 .utilization()
                 .set_text(&format!("{}%", overall_usage));
@@ -430,8 +424,7 @@ mod imp {
                     .set_visible(true);
                 self.infobar_content.clock_speed_max().set_visible(true);
 
-                let cs_max =
-                    crate::to_human_readable(max_clock_speed as f32 * 1_000_000., 1000.);
+                let cs_max = crate::to_human_readable(max_clock_speed as f32 * 1_000_000., 1000.);
 
                 self.infobar_content
                     .clock_speed_max()
@@ -543,10 +536,8 @@ mod imp {
                     this.usage_graph_memory
                         .add_data_point(0, used_memory as f32);
 
-                    let used_memory = crate::to_human_readable(
-                        gpu.used_memory.unwrap_or(0) as f32,
-                        1024.,
-                    );
+                    let used_memory =
+                        crate::to_human_readable(gpu.used_memory.unwrap_or(0) as f32, 1024.);
                     this.infobar_content
                         .memory_usage_current()
                         .set_text(&format!(
@@ -576,8 +567,7 @@ mod imp {
                 has_memory_info: &mut bool,
             ) {
                 if let Some(total_shared_memory) = gpu.total_shared_memory {
-                    let total_gtt =
-                        crate::to_human_readable(total_shared_memory as f32, 1024.);
+                    let total_gtt = crate::to_human_readable(total_shared_memory as f32, 1024.);
                     let total_gtt = format!(
                         "{0:.2$} {1}{3}B",
                         total_gtt.0,
@@ -654,8 +644,7 @@ mod imp {
 
             let mut has_memory_info = false;
 
-            let total_memory_str =
-                update_dedicated_memory(self, gpu, &mut has_memory_info);
+            let total_memory_str = update_dedicated_memory(self, gpu, &mut has_memory_info);
 
             update_shared_memory(
                 self,
@@ -683,8 +672,7 @@ mod imp {
                     .set_visible(true);
                 self.infobar_content.memory_speed_max().set_visible(true);
 
-                let ms_max =
-                    crate::to_human_readable(max_memory_speed as f32 * 1_000_000., 1000.);
+                let ms_max = crate::to_human_readable(max_memory_speed as f32 * 1_000_000., 1000.);
                 self.infobar_content
                     .memory_speed_max()
                     .set_text(&format!("{0:.2$} {1}Hz", ms_max.0, ms_max.1, ms_max.2));
@@ -712,10 +700,7 @@ mod imp {
                 .set_memory_speed_available(memory_speed_available);
         }
 
-        fn update_video_encode_decode(
-            &self,
-            gpu: &Gpu,
-        ) {
+        fn update_video_encode_decode(&self, gpu: &Gpu) {
             let mut encode_decode_info_available = false;
 
             if let Some(encoder_percent) = gpu.encoder_percent {
@@ -747,10 +732,10 @@ mod imp {
             self.obj().set_encode_decode_available(
                 encode_decode_info_available
                     && self
-                    .show_enc_dec_action
-                    .state()
-                    .and_then(|v| v.get::<bool>())
-                    .unwrap_or(false),
+                        .show_enc_dec_action
+                        .state()
+                        .and_then(|v| v.get::<bool>())
+                        .unwrap_or(false),
             );
         }
 
@@ -923,18 +908,11 @@ impl PerformancePageGpu {
         this
     }
 
-    pub fn set_static_information(
-        &self,
-        index: Option<usize>,
-        gpu: &Gpu,
-    ) -> bool {
+    pub fn set_static_information(&self, index: Option<usize>, gpu: &Gpu) -> bool {
         imp::PerformancePageGpu::set_static_information(self, index, gpu)
     }
 
-    pub fn update_readings(
-        &self,
-        gpu: &Gpu,
-    ) -> bool {
+    pub fn update_readings(&self, gpu: &Gpu) -> bool {
         imp::PerformancePageGpu::update_readings(self, gpu)
     }
 }

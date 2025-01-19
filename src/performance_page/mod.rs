@@ -46,11 +46,11 @@ mod cpu;
 mod disk;
 mod fan;
 mod gpu;
+mod gpu_details;
 mod memory;
 mod network;
 mod summary_graph;
 mod widgets;
-mod gpu_details;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type CpuPage = cpu::PerformancePageCpu;
@@ -1337,7 +1337,12 @@ mod imp {
                 } else {
                     summary.set_heading(i18n_f("GPU", &[]));
                 }
-                summary.set_info1(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")).as_str());
+                summary.set_info1(
+                    gpu.device_name
+                        .as_ref()
+                        .unwrap_or(&i18n("Unknown"))
+                        .as_str(),
+                );
 
                 let mut info2 = ArrayString::<256>::new();
                 if let Some(v) = gpu.utilization_percent {
@@ -1361,10 +1366,7 @@ mod imp {
                     GPU_BASE_COLOR[2] as f32 / 255.,
                     1.,
                 ));
-                page.set_static_information(
-                    if !hide_index { Some(index) } else { None },
-                    gpu,
-                );
+                page.set_static_information(if !hide_index { Some(index) } else { None }, gpu);
 
                 self.configure_page(&page);
 
@@ -1964,8 +1966,7 @@ mod imp {
                     }
                     Pages::Gpu(pages) => {
                         for gpu in readings.gpus.values() {
-                            if let Some((summary, page)) =
-                                pages.get(&Self::gpu_page_name(&gpu.id))
+                            if let Some((summary, page)) = pages.get(&Self::gpu_page_name(&gpu.id))
                             {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);

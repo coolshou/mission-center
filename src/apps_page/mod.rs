@@ -1560,7 +1560,11 @@ impl AppsPage {
             this.column_view.remove_column(&this.gpu_usage_column);
             this.column_view.remove_column(&this.gpu_memory_column);
         } else {
-            let total_gpu_memory = readings.gpus.values().map(|g|g.total_memory.unwrap_or(0)).sum::<u64>();
+            let total_gpu_memory = readings
+                .gpus
+                .values()
+                .map(|g| g.total_memory.unwrap_or(0))
+                .sum::<u64>();
             if total_gpu_memory == 0 {
                 this.column_view.remove_column(&this.gpu_memory_column);
                 this.max_gpu_memory_usage.set(1.);
