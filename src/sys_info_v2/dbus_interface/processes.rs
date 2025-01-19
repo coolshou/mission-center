@@ -21,6 +21,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use dbus::{arg::*, strings::*};
+use gtk::glib::g_critical;
+
+use super::{deser_array, deser_str, deser_struct, deser_u32, deser_u64, deser_usize};
 
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
@@ -94,215 +97,85 @@ impl Default for Process {
 
 impl From<&dyn RefArg> for Process {
     fn from(value: &dyn RefArg) -> Self {
-        use gtk::glib::g_critical;
-
         let mut this = Self::default();
 
         let mut process = match value.as_iter() {
             None => {
                 g_critical!(
                     "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '0: STRUCT', got None, failed to iterate over fields",
+                    "Failed to get Process: Expected 'STRUCT', got None, failed to iterate over fields",
                 );
                 return this;
             }
             Some(i) => i,
         };
+
         let process = process.as_mut();
 
-        this.name = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '0: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '0: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(n) => Arc::from(n),
-            },
+        this.name = match deser_str(process, "Process", 0) {
+            Some(name) => name,
+            None => return this,
         };
 
-        match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '1: ARRAY', got None",
-                );
-                return this;
+        if let Some(cmds) = deser_array(process, "Process", 1) {
+            for c in cmds {
+                if let Some(c) = c.as_str() {
+                    this.cmd.push(Arc::from(c));
+                }
             }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '1: ARRAY', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(cmds) => {
-                    for c in cmds {
-                        if let Some(c) = c.as_str() {
-                            this.cmd.push(Arc::from(c));
-                        }
-                    }
-                }
-            },
+        } else {
+            return this;
         }
 
-        this.exe = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '3: s', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '3: s', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(e) => Arc::from(e),
-            },
+        this.exe = match deser_str(process, "Process", 3) {
+            Some(exe) => exe,
+            None => return this,
         };
 
-        this.state = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '4: y', got None",
-                );
-                return this;
+        this.state = match deser_u64(process, "Process", 4) {
+            Some(u) => {
+                if u < ProcessState::Unknown as u64 {
+                    unsafe { core::mem::transmute(u as u8) }
+                } else {
+                    ProcessState::Unknown
+                }
             }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '4: y', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(u) => {
-                    if u < ProcessState::Unknown as u64 {
-                        unsafe { core::mem::transmute(u as u8) }
-                    } else {
-                        ProcessState::Unknown
-                    }
-                }
-            },
+            None => return this,
         };
 
-        this.pid = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '5: u', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '5: u', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(p) => p as _,
-            },
+        this.pid = match deser_u32(process, "Process", 5) {
+            Some(p) => p,
+            None => return this,
         };
 
-        this.parent = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '6: u', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '6: u', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(p) => p as _,
-            },
+        this.parent = match deser_u32(process, "Process", 6) {
+            Some(p) => p,
+            None => return this,
         };
 
-        match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '7: STRUCT', got None",
-                );
-                return this;
+        match deser_struct(process, "Process", 7) {
+            Some(arg) => {
+                let mut values = [0_f32; 6];
+
+                for (i, v) in arg.enumerate() {
+                    values[i] = v.as_f64().unwrap_or(0.) as f32;
+                }
+
+                this.usage_stats.cpu_usage = values[0];
+                this.usage_stats.memory_usage = values[1];
+                this.usage_stats.disk_usage = values[2];
+                this.usage_stats.network_usage = values[3];
+                this.usage_stats.gpu_usage = values[4];
+                this.usage_stats.gpu_memory_usage = values[5];
+
+                this.merged_usage_stats = this.usage_stats;
             }
-            Some(arg) => match arg.as_iter() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '7: STRUCT', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(stats) => {
-                    let mut values = [0_f32; 6];
-
-                    for (i, v) in stats.enumerate() {
-                        values[i] = v.as_f64().unwrap_or(0.) as f32;
-                    }
-
-                    this.usage_stats.cpu_usage = values[0];
-                    this.usage_stats.memory_usage = values[1];
-                    this.usage_stats.disk_usage = values[2];
-                    this.usage_stats.network_usage = values[3];
-                    this.usage_stats.gpu_usage = values[4];
-                    this.usage_stats.gpu_memory_usage = values[5];
-
-                    this.merged_usage_stats = this.usage_stats;
-                }
-            },
+            None => return this,
         };
 
-        this.task_count = match Iterator::next(process) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get Process: Expected '14: t', got None",
-                );
-                return this;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get Process: Expected '14: t', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return this;
-                }
-                Some(tc) => tc as _,
-            },
+        this.task_count = match deser_usize(process, "Process", 14) {
+            Some(tc) => tc,
+            None => return this,
         };
 
         this

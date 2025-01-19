@@ -1631,4 +1631,13 @@ impl AppsPage {
 
         true
     }
+
+    pub fn get_running_apps(&self) -> HashMap<Arc<str>, App> {
+        let this = self.imp();
+
+        let out = this.apps.take();
+        this.apps.set(out.clone());
+
+        out
+    }
 }

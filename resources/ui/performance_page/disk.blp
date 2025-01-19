@@ -138,6 +138,14 @@ template $PerformancePageDisk: Box {
     has-arrow: false;
     menu-model: context_menu_model;
   }
+
+  eject_failure_dialog: $EjectFailureDialog {
+    follows-content-size: true;
+  };
+
+  smart_dialog: $SmartDataDialog {
+    follows-content-size: true;
+  };
 }
 
 menu context_menu_model {
