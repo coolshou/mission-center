@@ -597,7 +597,6 @@ impl Gatherer {
                     }
                 }
 
-                let _ = std::fs::remove_file(&socket_addr[6..]);
                 let _ = child.kill();
             })
         }
