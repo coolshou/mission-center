@@ -44,6 +44,8 @@ use crate::show_error_dialog_and_exit;
 mod nng {
     pub use nng_c_sys::nng_errno_enum::*;
     pub use nng_c_sys::*;
+
+    pub const NNG_OK: i32 = 0;
 }
 
 type ResponseBody = response::Body;
@@ -187,6 +189,7 @@ fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
 
     let res = unsafe { nng::nng_req0_open(socket) };
     match res {
+        nng::NNG_OK => {},
         nng::NNG_ENOMEM => {
             g_critical!(
                 "MissionCenter::Gatherer",
@@ -202,19 +205,18 @@ fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
             return false;
         }
         _ => {
-            if res != 0 {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to open socket: Unknown error: {}",
-                    res
-                );
-                return false;
-            }
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to open socket: Unknown error: {}",
+                res
+            );
+            return false;
         }
     }
 
     let res = unsafe { nng::nng_dial(*socket, socket_addr.as_ptr() as _, std::ptr::null_mut(), 0) };
     match res {
+        nng::NNG_OK => {},
         nng::NNG_EADDRINVAL => {
             g_critical!(
                 "MissionCenter::Gatherer",
@@ -279,14 +281,12 @@ fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
             return false;
         }
         _ => {
-            if res != 0 {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to dial socket: Unknown error: {}",
-                    res
-                );
-                return false;
-            }
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to dial socket: Unknown error: {}",
+                res
+            );
+            return false;
         }
     }
 
@@ -335,6 +335,7 @@ fn make_request(
 
     let res = unsafe { nng::nng_send(*socket, req_buf.as_ptr() as *mut _, req_buf.len(), 0) };
     match res {
+        nng::NNG_OK => {},
         nng::NNG_EAGAIN => {
             g_critical!("MissionCenter::Gatherer","Failed to send request: The operation would block, but NNG_FLAG_NONBLOCK was specified");
             return None;
@@ -390,14 +391,12 @@ fn make_request(
             return None;
         }
         _ => {
-            if res != 0 {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to send request: Unknown error: {}",
-                    res
-                );
-                return None;
-            }
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to send request: Unknown error: {}",
+                res
+            );
+            return None;
         }
     }
 
@@ -413,6 +412,7 @@ fn make_request(
         )
     };
     match res {
+        nng::NNG_OK => {},
         nng::NNG_EAGAIN => {
             g_critical!("MissionCenter::Gatherer","Failed to read message: The operation would block, but NNG_FLAG_NONBLOCK was specified");
             return None;
@@ -469,14 +469,12 @@ fn make_request(
             return None;
         }
         _ => {
-            if res != 0 {
-                g_critical!(
-                    "MissionCenter::Gatherer",
-                    "Failed to read message: Unknown error: {}",
-                    res
-                );
-                return None;
-            }
+            g_critical!(
+                "MissionCenter::Gatherer",
+                "Failed to read message: Unknown error: {}",
+                res
+            );
+            return None;
         }
     }
 
@@ -549,7 +547,7 @@ impl Gatherer {
         ) -> std::thread::JoinHandle<()> {
             std::thread::spawn(move || {
                 fn spawn_child(socket_addr: &str) -> std::process::Child {
-                    match magpie_command(&socket_addr).spawn() {
+                    match magpie_command(socket_addr.trim_end_matches('\0')).spawn() {
                         Ok(child) => child,
                         Err(e) => {
                             g_critical!(

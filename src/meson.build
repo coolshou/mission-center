@@ -1,9 +1,5 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 
-if get_option('flatpak') == false  
-  subdir('sys_info_v2/gatherer')
-endif
-
 gnome = import('gnome')
 libudev = dependency('libudev', required: true)
 
