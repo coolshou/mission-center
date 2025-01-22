@@ -18,16 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use crate::{
-    app,
-    application::{BASE_INTERVAL, INTERVAL_STEP},
-};
-use gatherer::Gatherer;
-pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Process,
-    ProcessUsageStats, Service,
-};
-use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 use std::num::NonZeroU32;
 use std::sync::atomic::AtomicU64;
 use std::sync::OnceLock;
@@ -39,6 +29,19 @@ use std::{
         Arc,
     },
     time::Duration,
+};
+
+use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
+
+use gatherer::Gatherer;
+pub use gatherer::{
+    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Memory, MemoryDevice,
+    Process, ProcessUsageStats, Service,
+};
+
+use crate::{
+    app,
+    application::{BASE_INTERVAL, INTERVAL_STEP},
 };
 
 macro_rules! cmd {
@@ -79,12 +82,7 @@ macro_rules! cmd_flatpak_host {
 
 mod dbus_interface;
 mod gatherer;
-mod mem_info;
 mod net_info;
-
-pub type MemInfo = mem_info::MemInfo;
-#[allow(dead_code)]
-pub type MemoryDevice = mem_info::MemoryDevice;
 
 pub type NetInfo = net_info::NetInfo;
 pub type NetworkDevice = net_info::NetworkDevice;
@@ -139,7 +137,8 @@ enum Response {
 pub struct Readings {
     pub cpu_static_info: CpuStaticInfo,
     pub cpu_dynamic_info: CpuDynamicInfo,
-    pub mem_info: MemInfo,
+    pub mem_info: Memory,
+    pub mem_devices: Vec<MemoryDevice>,
     pub disks_info: Vec<DiskInfo>,
     pub network_devices: Vec<NetworkDevice>,
     pub gpus: HashMap<String, Gpu>,
@@ -156,7 +155,8 @@ impl Readings {
         Self {
             cpu_static_info: Default::default(),
             cpu_dynamic_info: Default::default(),
-            mem_info: MemInfo::default(),
+            mem_info: Memory::default(),
+            mem_devices: vec![],
             disks_info: vec![],
             network_devices: vec![],
             gpus: HashMap::new(),
@@ -494,10 +494,13 @@ impl SysInfoV2 {
 
         let mut net_info = NetInfo::new();
 
+        let (mem_info, memory_devices) = gatherer.memory();
+
         let mut readings = Readings {
             cpu_static_info: gatherer.cpu_static_info(),
             cpu_dynamic_info: gatherer.cpu_dynamic_info(),
-            mem_info: MemInfo::load().unwrap_or_default(),
+            mem_info,
+            mem_devices: memory_devices,
             disks_info: gatherer.disks_info(),
             fans_info: gatherer.fans_info(),
             network_devices: if let Some(net_info) = net_info.as_mut() {
@@ -529,6 +532,7 @@ impl SysInfoV2 {
                 cpu_static_info: readings.cpu_static_info.clone(),
                 cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
                 mem_info: readings.mem_info.clone(),
+                mem_devices: readings.mem_devices.clone(),
                 disks_info: std::mem::take(&mut readings.disks_info),
                 fans_info: std::mem::take(&mut readings.fans_info),
                 network_devices: std::mem::take(&mut readings.network_devices),
@@ -579,7 +583,9 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            readings.mem_info = MemInfo::load().unwrap_or_default();
+            let (mem_info, mem_devices) = gatherer.memory();
+            readings.mem_info = mem_info;
+            readings.mem_devices = mem_devices;
             g_debug!(
                 "MissionCenter::Perf",
                 "Memory info load took: {:?}",
@@ -662,6 +668,7 @@ impl SysInfoV2 {
                     cpu_static_info: readings.cpu_static_info.clone(),
                     cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
                     mem_info: readings.mem_info.clone(),
+                    mem_devices: readings.mem_devices.clone(),
                     disks_info: std::mem::take(&mut readings.disks_info),
                     fans_info: std::mem::take(&mut readings.fans_info),
                     network_devices: std::mem::take(&mut readings.network_devices),

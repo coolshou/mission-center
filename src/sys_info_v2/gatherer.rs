@@ -33,6 +33,9 @@ use magpie_types::gpus::gpus_response;
 use magpie_types::gpus::gpus_response::GpuMap;
 pub use magpie_types::gpus::Gpu;
 use magpie_types::ipc::{self, response};
+use magpie_types::memory::memory_response;
+use magpie_types::memory::memory_response::MemoryInfo;
+pub use magpie_types::memory::{Memory, MemoryDevice};
 use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
 pub use magpie_types::processes::{Process, ProcessUsageStats};
@@ -52,6 +55,7 @@ type ResponseBody = response::Body;
 type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
 type GpusResponse = gpus_response::Response;
+type MemoryResponse = memory_response::Response;
 
 const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
 
@@ -189,7 +193,7 @@ fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
 
     let res = unsafe { nng::nng_req0_open(socket) };
     match res {
-        nng::NNG_OK => {},
+        nng::NNG_OK => {}
         nng::NNG_ENOMEM => {
             g_critical!(
                 "MissionCenter::Gatherer",
@@ -216,7 +220,7 @@ fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
 
     let res = unsafe { nng::nng_dial(*socket, socket_addr.as_ptr() as _, std::ptr::null_mut(), 0) };
     match res {
-        nng::NNG_OK => {},
+        nng::NNG_OK => {}
         nng::NNG_EADDRINVAL => {
             g_critical!(
                 "MissionCenter::Gatherer",
@@ -335,7 +339,7 @@ fn make_request(
 
     let res = unsafe { nng::nng_send(*socket, req_buf.as_ptr() as *mut _, req_buf.len(), 0) };
     match res {
-        nng::NNG_OK => {},
+        nng::NNG_OK => {}
         nng::NNG_EAGAIN => {
             g_critical!("MissionCenter::Gatherer","Failed to send request: The operation would block, but NNG_FLAG_NONBLOCK was specified");
             return None;
@@ -412,7 +416,7 @@ fn make_request(
         )
     };
     match res {
-        nng::NNG_OK => {},
+        nng::NNG_OK => {}
         nng::NNG_EAGAIN => {
             g_critical!("MissionCenter::Gatherer","Failed to read message: The operation would block, but NNG_FLAG_NONBLOCK was specified");
             return None;
@@ -644,6 +648,25 @@ impl Gatherer {
 
     pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
         CpuDynamicInfo::default()
+    }
+
+    pub fn memory(&self) -> (Memory, Vec<MemoryDevice>) {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_memory(),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Memory,
+            MemoryResponse::MemoryInfo,
+            MemoryResponse::Error,
+            |mut memory: MemoryInfo| { (memory.memory, std::mem::take(&mut memory.devices)) }
+        )
     }
 
     pub fn disks_info(&self) -> Vec<DiskInfo> {

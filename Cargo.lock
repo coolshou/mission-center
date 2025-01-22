@@ -647,12 +647,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "itoa"
-version = "1.0.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
-
-[[package]]
 name = "js-sys"
 version = "0.3.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -813,8 +807,6 @@ dependencies = [
  "regex",
  "rusqlite",
  "rust-ini",
- "serde",
- "serde_json",
  "static_assertions",
  "textdistance",
 ]
@@ -827,9 +819,9 @@ checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
 
 [[package]]
 name = "nng-c-sys"
-version = "1.9.0-beta.1"
+version = "1.9.0-beta.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a81a681fae98c57402237790583f2484fc50b0a2a9ce0ee13b4d0d9f0b59a6da"
+checksum = "aea512cf89fa285dec820c7446017b1792e984514ca547f1a8b1b785a913d57f"
 dependencies = [
  "cmake",
 ]
@@ -1143,12 +1135,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4"
 
 [[package]]
-name = "ryu"
-version = "1.0.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
-
-[[package]]
 name = "semver"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1172,18 +1158,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "serde_json"
-version = "1.0.133"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
-dependencies = [
- "itoa",
- "memchr",
- "ryu",
- "serde",
 ]
 
 [[package]]
