@@ -44,28 +44,6 @@ use crate::{
     application::{BASE_INTERVAL, INTERVAL_STEP},
 };
 
-macro_rules! cmd {
-    ($cmd: expr) => {{
-        use std::process::Command;
-
-        if crate::is_flatpak() {
-            const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
-
-            let mut cmd = Command::new(FLATPAK_SPAWN_CMD);
-            cmd.arg("--host").arg("sh").arg("-c");
-            cmd.arg($cmd);
-
-            cmd
-        } else {
-            let mut cmd = Command::new("sh");
-            cmd.arg("-c");
-            cmd.arg($cmd);
-
-            cmd
-        }
-    }};
-}
-
 macro_rules! cmd_flatpak_host {
     ($cmd: expr) => {{
         use std::process::Command;
@@ -494,13 +472,11 @@ impl SysInfoV2 {
 
         let mut net_info = NetInfo::new();
 
-        let (mem_info, memory_devices) = gatherer.memory();
-
         let mut readings = Readings {
             cpu_static_info: gatherer.cpu_static_info(),
             cpu_dynamic_info: gatherer.cpu_dynamic_info(),
-            mem_info,
-            mem_devices: memory_devices,
+            mem_info: gatherer.memory(),
+            mem_devices: gatherer.memory_devices(),
             disks_info: gatherer.disks_info(),
             fans_info: gatherer.fans_info(),
             network_devices: if let Some(net_info) = net_info.as_mut() {
@@ -532,7 +508,7 @@ impl SysInfoV2 {
                 cpu_static_info: readings.cpu_static_info.clone(),
                 cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
                 mem_info: readings.mem_info.clone(),
-                mem_devices: readings.mem_devices.clone(),
+                mem_devices: std::mem::take(&mut readings.mem_devices),
                 disks_info: std::mem::take(&mut readings.disks_info),
                 fans_info: std::mem::take(&mut readings.fans_info),
                 network_devices: std::mem::take(&mut readings.network_devices),
@@ -583,9 +559,7 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            let (mem_info, mem_devices) = gatherer.memory();
-            readings.mem_info = mem_info;
-            readings.mem_devices = mem_devices;
+            readings.mem_info = gatherer.memory();
             g_debug!(
                 "MissionCenter::Perf",
                 "Memory info load took: {:?}",

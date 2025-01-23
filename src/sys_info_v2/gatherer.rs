@@ -33,8 +33,8 @@ use magpie_types::gpus::gpus_response;
 use magpie_types::gpus::gpus_response::GpuMap;
 pub use magpie_types::gpus::Gpu;
 use magpie_types::ipc::{self, response};
-use magpie_types::memory::memory_response;
 use magpie_types::memory::memory_response::MemoryInfo;
+use magpie_types::memory::{memory_request, memory_response};
 pub use magpie_types::memory::{Memory, MemoryDevice};
 use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
@@ -650,11 +650,11 @@ impl Gatherer {
         CpuDynamicInfo::default()
     }
 
-    pub fn memory(&self) -> (Memory, Vec<MemoryDevice>) {
+    pub fn memory(&self) -> Memory {
         let mut socket = self.socket.borrow_mut();
 
         let response = make_request(
-            ipc::req_get_memory(),
+            ipc::req_get_memory(memory_request::Kind::Memory),
             &mut socket,
             self.socket_addr.as_ref(),
         )
@@ -665,7 +665,49 @@ impl Gatherer {
             ResponseBody::Memory,
             MemoryResponse::MemoryInfo,
             MemoryResponse::Error,
-            |mut memory: MemoryInfo| { (memory.memory, std::mem::take(&mut memory.devices)) }
+            |memory: MemoryInfo| {
+                let Some(memory_response::memory_info::Response::Memory(memory)) = memory.response
+                else {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response when getting memory",
+                    );
+                    return Default::default();
+                };
+
+                memory
+            }
+        )
+    }
+
+    pub fn memory_devices(&self) -> Vec<MemoryDevice> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_memory(memory_request::Kind::MemoryDevices),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Memory,
+            MemoryResponse::MemoryInfo,
+            MemoryResponse::Error,
+            |memory: MemoryInfo| {
+                let Some(memory_response::memory_info::Response::MemoryDevices(mut devices)) =
+                    memory.response
+                else {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response when getting memory devices",
+                    );
+                    return vec![];
+                };
+
+                std::mem::take(&mut devices.devices)
+            }
         )
     }
 
