@@ -6,6 +6,7 @@ build = "build.rs"
 
 [dependencies]
 adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
+arrayvec = { version = "0.7" }
 dbus = { version = "0.9" }
 errno-sys = { version = "0.2.0" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }

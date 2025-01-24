@@ -17,7 +17,6 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -153,7 +152,7 @@ impl<'a> ProcessExt<'a> for LinuxProcess {
 }
 
 pub struct LinuxProcesses {
-    process_cache: std::collections::HashMap<u32, LinuxProcess>,
+    pub process_cache: std::collections::HashMap<u32, LinuxProcess>,
     refresh_timestamp: Instant,
 }
 

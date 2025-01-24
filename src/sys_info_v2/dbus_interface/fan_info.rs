@@ -17,9 +17,13 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+use std::sync::Arc;
+
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
 use dbus::Signature;
-use std::sync::Arc;
+
+use super::{deser_f32, deser_i64, deser_str, deser_u64};
 
 #[derive(Debug, Clone)]
 pub struct FanInfo {
@@ -145,172 +149,44 @@ impl<'a> Get<'a> for FanInfoVec {
                         };
                         let fan_info = i.as_mut();
 
-                        this.fan_label = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '0: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(n) => Arc::<str>::from(n),
-                            },
+                        this.fan_label = match deser_str(fan_info, "FanInfo", 0) {
+                            Some(n) => n,
+                            None => continue,
                         };
 
-                        this.temp_name = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '1: s', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '1: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(m) => Arc::<str>::from(m),
-                            },
+                        this.temp_name = match deser_str(fan_info, "FanInfo", 1) {
+                            Some(n) => n,
+                            None => continue,
                         };
 
-                        this.temp_amount = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '2: y', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '2: y', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(s) => s,
-                            },
+                        this.temp_amount = match deser_i64(fan_info, "FanInfo", 2) {
+                            Some(s) => s,
+                            None => continue,
                         };
 
-                        this.rpm = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '3: t', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '3: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(c) => c,
-                            },
+                        this.rpm = match deser_u64(fan_info, "FanInfo", 3) {
+                            Some(c) => c,
+                            None => continue,
                         };
 
-                        this.percent_vroomimg = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '4: t', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_f64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '4: t', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(f) => f as f32,
-                            },
+                        this.percent_vroomimg = match deser_f32(fan_info, "FanInfo", 4) {
+                            Some(c) => c,
+                            None => continue,
                         };
 
-                        this.fan_index = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '5: b', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '5: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(i) => i,
-                            },
+                        this.fan_index = match deser_u64(fan_info, "FanInfo", 5) {
+                            Some(c) => c,
+                            None => continue,
                         };
 
-                        this.hwmon_index = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '6: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '6: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(bp) => bp,
-                            },
+                        this.hwmon_index = match deser_u64(fan_info, "FanInfo", 6) {
+                            Some(c) => c,
+                            None => continue,
                         };
 
-                        this.max_speed = match Iterator::next(fan_info) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get FanInfo: Expected '7: d', got None",
-                                );
-                                continue;
-                            }
-                            Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get FanInfo: Expected '7: d', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(bp) => bp,
-                            },
+                        this.max_speed = match deser_u64(fan_info, "FanInfo", 7) {
+                            Some(c) => c,
+                            None => continue,
                         };
 
                         result.push(this);
