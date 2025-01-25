@@ -33,14 +33,12 @@ use gtk::{
     glib::{self, g_critical},
 };
 
-use widgets::{GraphWidget, SidebarDropHint};
+use magpie_types::network::{Connection, ConnectionKind};
 
 use crate::sys_info_v2::FanInfo;
-use crate::{
-    i18n::*,
-    settings,
-    sys_info_v2::{DiskType, NetworkDevice},
-};
+use crate::{i18n::*, settings, sys_info_v2::DiskType};
+
+use widgets::{GraphWidget, SidebarDropHint};
 
 mod cpu;
 mod disk;
@@ -1191,8 +1189,8 @@ mod imp {
             readings: &crate::sys_info_v2::Readings,
         ) {
             let mut networks = HashMap::new();
-            for network_device in &readings.network_devices {
-                let mut ret = self.create_network_page(network_device, None);
+            for connection in &readings.network_connections {
+                let mut ret = self.create_network_page(connection, None);
                 networks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
@@ -1205,16 +1203,18 @@ mod imp {
 
         fn create_network_page(
             &self,
-            network_device: &NetworkDevice,
+            connection: &Connection,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, NetworkPage)) {
-            let if_name = network_device.descriptor.if_name.as_str();
+            let if_name = connection.id.as_str();
             let page_name = Self::network_page_name(if_name);
 
-            let conn_type = network_device.descriptor.kind.to_string();
+            let conn_type: ConnectionKind = unsafe { std::mem::transmute(connection.kind) };
+            let conn_type = conn_type.as_str_name();
+
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
-            summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
+            summary.set_heading(format!("{} ({})", conn_type, if_name));
             {
                 let graph_widget = summary.graph_widget();
                 graph_widget.set_data_set_count(2);
@@ -1238,16 +1238,13 @@ mod imp {
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-            if network_device.max_speed > 0 {
+            if let Some(max_speed) = connection.max_speed.map(|ms| ms * 8) {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
                     summary
                         .graph_widget()
                         .set_scaling(GraphWidget::no_scaling());
-                    summary
-                        .graph_widget()
-                        .set_value_range_max((network_device.max_speed * 8) as f32);
+                    summary.graph_widget().set_value_range_max(max_speed as f32);
                 }
-                let max_speed = network_device.max_speed * 8;
                 settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
                     let graph = summary.graph_widget().downgrade();
                     move |settings, _| {
@@ -1269,7 +1266,7 @@ mod imp {
                 });
             }
 
-            let page = NetworkPage::new(if_name, network_device.descriptor.kind, &settings);
+            let page = NetworkPage::new(if_name, connection.kind, &settings);
             page.set_base_color(gdk::RGBA::new(
                 NETWORK_BASE_COLOR[0] as f32 / 255.,
                 NETWORK_BASE_COLOR[1] as f32 / 255.,
@@ -1277,7 +1274,7 @@ mod imp {
                 1.,
             ));
 
-            page.set_static_information(network_device);
+            page.set_static_information(connection);
             self.configure_page(&page);
 
             self.page_stack.add_named(&page, Some(&page_name));
@@ -1741,10 +1738,11 @@ mod imp {
                     }
                     Pages::Network(net_pages) => {
                         for net_page_name in net_pages.keys() {
-                            if !readings.network_devices.iter().any(|device| {
-                                &Self::network_page_name(&device.descriptor.if_name)
-                                    == net_page_name
-                            }) {
+                            if !readings
+                                .network_connections
+                                .iter()
+                                .any(|device| &Self::network_page_name(&device.id) == net_page_name)
+                            {
                                 pages_to_destroy.push(net_page_name.clone());
                             }
                         }
@@ -1894,15 +1892,17 @@ mod imp {
                         let mut consecutive_dev_count = 0;
 
                         let mut new_devices = Vec::new();
-                        for (index, network_device) in readings.network_devices.iter().enumerate() {
-                            if let Some((summary, page)) = pages
-                                .get(&Self::network_page_name(&network_device.descriptor.if_name))
+                        for (index, network_device) in
+                            readings.network_connections.iter().enumerate()
+                        {
+                            if let Some((summary, page)) =
+                                pages.get(&Self::network_page_name(&network_device.id))
                             {
                                 let data_per_time = page.unit_per_second_label();
                                 let byte_coeff = page.byte_conversion_factor();
 
-                                let send_speed = network_device.send_bps * byte_coeff;
-                                let rec_speed = network_device.recv_bps * byte_coeff;
+                                let send_speed = network_device.tx_rate_bps * byte_coeff;
+                                let rec_speed = network_device.rx_rate_bps * byte_coeff;
 
                                 // Search for a group of existing network devices and try to add new entries at that position
                                 summary
@@ -1953,7 +1953,7 @@ mod imp {
 
                         for new_device_index in new_devices {
                             let (net_if_id, page) = this.imp().create_network_page(
-                                &readings.network_devices[new_device_index],
+                                &readings.network_connections[new_device_index],
                                 if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
                                     last_sidebar_pos += 1;
                                     Some(last_sidebar_pos)

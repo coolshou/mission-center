@@ -36,6 +36,9 @@ use magpie_types::ipc::{self, response};
 use magpie_types::memory::memory_response::MemoryInfo;
 use magpie_types::memory::{memory_request, memory_response};
 pub use magpie_types::memory::{Memory, MemoryDevice};
+use magpie_types::network::connections_response;
+use magpie_types::network::connections_response::ConnectionList;
+pub use magpie_types::network::Connection;
 use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
 pub use magpie_types::processes::{Process, ProcessUsageStats};
@@ -56,6 +59,7 @@ type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
 type GpusResponse = gpus_response::Response;
 type MemoryResponse = memory_response::Response;
+type ConnectionsResponse = connections_response::Response;
 
 const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
 
@@ -717,6 +721,25 @@ impl Gatherer {
 
     pub fn fans_info(&self) -> Vec<FanInfo> {
         vec![]
+    }
+
+    pub fn network_connections(&self) -> Vec<Connection> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_connections(),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Connections,
+            ConnectionsResponse::Connections,
+            ConnectionsResponse::Error,
+            |mut connections: ConnectionList| { std::mem::take(&mut connections.connections) }
+        )
     }
 
     pub fn gpus(&self) -> HashMap<String, Gpu> {

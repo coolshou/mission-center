@@ -31,13 +31,12 @@ use std::{
     time::Duration,
 };
 
-use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
-
 use gatherer::Gatherer;
 pub use gatherer::{
-    App, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Memory, MemoryDevice,
-    Process, ProcessUsageStats, Service,
+    App, Connection, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Memory,
+    MemoryDevice, Process, ProcessUsageStats, Service,
 };
+use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 
 use crate::{
     app,
@@ -60,11 +59,6 @@ macro_rules! cmd_flatpak_host {
 
 mod dbus_interface;
 mod gatherer;
-mod net_info;
-
-pub type NetInfo = net_info::NetInfo;
-pub type NetworkDevice = net_info::NetworkDevice;
-pub type NetDeviceType = net_info::NetDeviceType;
 
 pub type Pid = u32;
 
@@ -118,7 +112,7 @@ pub struct Readings {
     pub mem_info: Memory,
     pub mem_devices: Vec<MemoryDevice>,
     pub disks_info: Vec<DiskInfo>,
-    pub network_devices: Vec<NetworkDevice>,
+    pub network_connections: Vec<Connection>,
     pub gpus: HashMap<String, Gpu>,
     pub fans_info: Vec<FanInfo>,
 
@@ -136,7 +130,7 @@ impl Readings {
             mem_info: Memory::default(),
             mem_devices: vec![],
             disks_info: vec![],
-            network_devices: vec![],
+            network_connections: vec![],
             gpus: HashMap::new(),
             fans_info: vec![],
 
@@ -470,8 +464,6 @@ impl SysInfoV2 {
         let gatherer = Gatherer::new();
         gatherer.start();
 
-        let mut net_info = NetInfo::new();
-
         let mut readings = Readings {
             cpu_static_info: gatherer.cpu_static_info(),
             cpu_dynamic_info: gatherer.cpu_dynamic_info(),
@@ -479,11 +471,7 @@ impl SysInfoV2 {
             mem_devices: gatherer.memory_devices(),
             disks_info: gatherer.disks_info(),
             fans_info: gatherer.fans_info(),
-            network_devices: if let Some(net_info) = net_info.as_mut() {
-                net_info.load_devices()
-            } else {
-                vec![]
-            },
+            network_connections: gatherer.network_connections(),
             gpus: gatherer.gpus(),
             running_processes: gatherer.processes(),
             running_apps: gatherer.apps(),
@@ -500,8 +488,8 @@ impl SysInfoV2 {
 
         readings.disks_info.sort_unstable();
         readings
-            .network_devices
-            .sort_unstable_by(|n1, n2| n1.descriptor.if_name.cmp(&n2.descriptor.if_name));
+            .network_connections
+            .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));
 
         idle_add_once({
             let initial_readings = Readings {
@@ -511,7 +499,7 @@ impl SysInfoV2 {
                 mem_devices: std::mem::take(&mut readings.mem_devices),
                 disks_info: std::mem::take(&mut readings.disks_info),
                 fans_info: std::mem::take(&mut readings.fans_info),
-                network_devices: std::mem::take(&mut readings.network_devices),
+                network_connections: std::mem::take(&mut readings.network_connections),
                 gpus: std::mem::take(&mut readings.gpus),
                 running_apps: std::mem::take(&mut readings.running_apps),
                 running_processes: std::mem::take(&mut readings.running_processes),
@@ -575,11 +563,7 @@ impl SysInfoV2 {
             );
 
             let timer = std::time::Instant::now();
-            readings.network_devices = if let Some(net_info) = net_info.as_mut() {
-                net_info.load_devices()
-            } else {
-                vec![]
-            };
+            readings.network_connections = gatherer.network_connections();
             g_debug!(
                 "MissionCenter::Perf",
                 "Network devices info load took: {:?}",
@@ -630,8 +614,8 @@ impl SysInfoV2 {
 
             readings.disks_info.sort_unstable();
             readings
-                .network_devices
-                .sort_unstable_by(|n1, n2| n1.descriptor.if_name.cmp(&n2.descriptor.if_name));
+                .network_connections
+                .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));
 
             if !running.load(atomic::Ordering::Acquire) {
                 break 'read_loop;
@@ -645,7 +629,7 @@ impl SysInfoV2 {
                     mem_devices: readings.mem_devices.clone(),
                     disks_info: std::mem::take(&mut readings.disks_info),
                     fans_info: std::mem::take(&mut readings.fans_info),
-                    network_devices: std::mem::take(&mut readings.network_devices),
+                    network_connections: std::mem::take(&mut readings.network_connections),
                     gpus: std::mem::take(&mut readings.gpus),
                     running_apps: std::mem::take(&mut readings.running_apps),
                     running_processes: std::mem::take(&mut readings.running_processes),
