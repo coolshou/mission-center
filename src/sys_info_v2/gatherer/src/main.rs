@@ -45,6 +45,8 @@ mod logging;
 mod platform;
 mod utils;
 
+const MK_TO_0_C: u32 = 273150;
+
 const DBUS_OBJECT_PATH: &str = "/io/missioncenter/MissionCenter/Gatherer";
 
 lazy_static! {
@@ -600,7 +602,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             };
 
                                             if points.iter().any(|p| real_path.starts_with(p)) {
-                                                // todo kill this process and then retry if force
+                                                // TODO: kill this process and then retry if force
                                                 paths.push(real_path.display().to_string());
                                             }
                                         }
@@ -623,7 +625,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             Ok(_) => {
                                 some_err = last_err;
                             }
-                            Err(e) => {}
+                            Err(_) => {}
                         }
                     } else {
                         debug!(
@@ -1419,8 +1421,10 @@ impl Arg for SataSmartEntry {
     }
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[allow(non_camel_case_types)]
+#[derive(Default, Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SmartTestResult {
+    #[default]
     UNKNOWN_RESULT = 0,
     Success,
     Aborted,

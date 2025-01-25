@@ -24,13 +24,14 @@ use adw::{self, prelude::AdwDialogExt, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use super::{widgets::GraphWidget, PageExt};
+use super::{
+    widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog},
+    PageExt,
+};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
 use crate::app;
-use crate::performance_page::widgets::eject_failure_dialog::EjectFailureDialog;
-use crate::performance_page::widgets::smart_dialog::SmartDataDialog;
 use crate::sys_info_v2::{DiskSmartInterface, EjectResult, NVMeSmartResult, SataSmartResult};
 use adw::glib::g_warning;
 
@@ -175,11 +176,7 @@ mod imp {
             self.smart_dialog.set(widget.cloned());
         }
 
-        pub(crate) fn show_eject_result(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: EjectResult,
-        ) {
+        pub fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
             let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
 
             details_dialog.map(move |d| {
@@ -195,7 +192,7 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_nvme_smart_info(
+        pub fn show_nvme_smart_info(
             &self,
             this: &super::PerformancePageDisk,
             result: NVMeSmartResult,
@@ -209,7 +206,7 @@ mod imp {
             });
         }
 
-        pub(crate) fn show_sata_smart_info(
+        pub fn show_sata_smart_info(
             &self,
             this: &super::PerformancePageDisk,
             result: SataSmartResult,
@@ -361,7 +358,7 @@ mod imp {
                     DiskType::NVMe => "NVMe",
                     DiskType::eMMC => "eMMC",
                     DiskType::SD => "SD",
-                    DiskType::iSCSI => "iSCSI",
+                    DiskType::Floppy => "Floppy",
                     DiskType::Optical => "Optical",
                     DiskType::Unknown => "Unknown",
                 });

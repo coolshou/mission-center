@@ -1,4 +1,4 @@
-/* sys_info_v2/dbus_interface/disk_static_info.rs
+/* sys_info_v2/dbus_interface/disk_info.rs
  *
  * Copyright 2024 Romeo Calota
  *
@@ -22,38 +22,59 @@ use std::sync::Arc;
 
 use dbus::{arg::*, strings::*};
 
-use super::{deser_bool, deser_f32, deser_f64, deser_str, deser_u64, deser_u8};
+use super::{deser_bool, deser_f32, deser_str, deser_u32, deser_u64, deser_u8};
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskType {
+    #[default]
     Unknown = 0,
     HDD,
     SSD,
     NVMe,
     eMMC,
     SD,
-    iSCSI,
+    Floppy,
     Optical,
 }
-impl Default for DiskType {
-    fn default() -> Self {
-        Self::Unknown
+
+impl TryFrom<u8> for DiskType {
+    type Error = String;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(DiskType::Unknown),
+            1 => Ok(DiskType::HDD),
+            2 => Ok(DiskType::SSD),
+            3 => Ok(DiskType::NVMe),
+            4 => Ok(DiskType::eMMC),
+            5 => Ok(DiskType::SD),
+            6 => Ok(DiskType::Floppy),
+            7 => Ok(DiskType::Optical),
+            _ => Err(format!("Unknown DiskType value: {}", value)),
+        }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskSmartInterface {
-    Dumb,
+    #[default]
+    Dumb = 0,
     Ata,
     NVMe,
 }
 
-impl Default for DiskSmartInterface {
-    fn default() -> Self {
-        Self::Dumb
+impl TryFrom<u8> for DiskSmartInterface {
+    type Error = String;
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(DiskSmartInterface::Dumb),
+            1 => Ok(DiskSmartInterface::Ata),
+            2 => Ok(DiskSmartInterface::NVMe),
+            _ => Err(format!("Unknown Smart Interface value: {}", value)),
+        }
     }
 }
 
@@ -74,7 +95,7 @@ pub struct DiskInfo {
     pub write_speed: u64,
     pub total_write: u64,
     pub ejectable: bool,
-    pub drive_temperature: f64,
+    pub drive_temperature: u32,
 }
 
 impl Default for DiskInfo {
@@ -96,7 +117,7 @@ impl Default for DiskInfo {
             total_write: 0,
             ejectable: false,
 
-            drive_temperature: 0.0,
+            drive_temperature: 0,
         }
     }
 }
@@ -133,7 +154,7 @@ impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssyyttbddttttbd)")
+        Signature::from("a(ssyyttbddttttbu)")
     }
 }
 
@@ -196,26 +217,13 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.r#type = match deser_u64(disk_info, "DiskInfo", 2) {
-                            Some(t) => match t {
-                                1 => DiskType::HDD,
-                                2 => DiskType::SSD,
-                                3 => DiskType::NVMe,
-                                4 => DiskType::eMMC,
-                                5 => DiskType::SD,
-                                6 => DiskType::iSCSI,
-                                7 => DiskType::Optical,
-                                _ => DiskType::Unknown,
-                            },
+                        this.r#type = match deser_u8(disk_info, "DiskInfo", 2) {
+                            Some(v) => v.try_into().unwrap_or_default(),
                             None => continue,
                         };
 
                         this.smart_interface = match deser_u8(disk_info, "DiskInfo", 3) {
-                            Some(i) => match i {
-                                1 => DiskSmartInterface::Ata,
-                                2 => DiskSmartInterface::NVMe,
-                                _ => DiskSmartInterface::Dumb,
-                            },
+                            Some(i) => i.try_into().unwrap_or_default(),
                             None => continue,
                         };
 
@@ -269,7 +277,7 @@ impl<'a> Get<'a> for DiskInfoVec {
                             None => continue,
                         };
 
-                        this.drive_temperature = match deser_f64(disk_info, "DiskInfo", 14) {
+                        this.drive_temperature = match deser_u32(disk_info, "DiskInfo", 14) {
                             Some(sd) => sd,
                             None => continue,
                         };

@@ -1632,19 +1632,12 @@ impl AppsPage {
         true
     }
 
-    pub fn get_process_tree(&self) -> Process {
-        use std::borrow::Borrow;
-
+    pub fn get_running_apps(&self) -> HashMap<Arc<str>, App> {
         let this = self.imp();
 
-        this.process_tree.borrow().take()
-    }
+        let out = this.apps.take();
+        this.apps.set(out.clone());
 
-    pub fn get_app_tree(&self) -> HashMap<Arc<str>, App> {
-        use std::borrow::Borrow;
-
-        let this = self.imp();
-
-        this.apps.borrow().take()
+        out
     }
 }

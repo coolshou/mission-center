@@ -1,6 +1,6 @@
 /* apps_page/view_model.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2024 Mission Center Devs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 use std::cell::Cell;
 
 use crate::i18n::{i18n, i18n_f};
+use crate::performance_page::MK_TO_0_C;
 use gtk::subclass::prelude::WidgetImpl;
 use gtk::{
     glib,
@@ -75,8 +76,6 @@ mod imp {
 
 glib::wrapper! {
     pub struct SmartDialogRow(ObjectSubclass<imp::SmartDialogRow>);
-        // @extends gtk::Box, gtk::Widget,
-        // @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
 impl SmartDialogRow {
@@ -101,7 +100,10 @@ impl SmartDialogRow {
                     0 => i18n("N/A"),
                     2 => crate::to_human_readable_time(pretty as u64 / 1000),
                     3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
-                    4 => i18n_f("{} °C", &[&format!("{}", (pretty - 273150) / 1000)]),
+                    4 => i18n_f(
+                        "{} °C",
+                        &[&format!("{}", (pretty as u32 - MK_TO_0_C) / 1000)],
+                    ),
                     _ => format!("{}", pretty),
                 },
             )

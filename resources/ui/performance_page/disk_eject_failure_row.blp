@@ -1,4 +1,4 @@
-/* ui/performance_page/disk_eject_failure_dialog.blp
+/* ui/performance_page/disk_eject_failure_row.blp
  *
  * Copyright 2025 Mission-Center-Devs
  *
@@ -18,24 +18,39 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
- using Gtk 4.0;
+using Gtk 4.0;
 using Adw 1;
 
-template $EjectFailureDialog: Adw.AlertDialog {
-  heading: _("Failed To Eject");
-
-  Adw.ToolbarView {
+template $EjectFailureRow : Adw.Bin {
+  ListBoxRow {
     Box {
-      ScrolledWindow {
-        hscrollbar-policy: never;
-        propagate-natural-height: true;
+      Image icon {
+      }
 
-        ListBox column_view {
-          styles [
-            "rich-list",
-            "transparent"
-          ]
-        }
+      Label pid {
+        width-request: 50;
+        xalign: 0.0;
+      }
+
+      Label name {
+        width-request: 100;
+        halign: start;
+      }
+
+      Label open_files {
+        hexpand: true;
+        halign: start;
+      }
+
+      Button kill {
+        styles [
+          "destructive-action"
+        ]
+        child: Box {
+          Label {
+            label: _("Kill");
+          }
+        };
       }
     }
   }
