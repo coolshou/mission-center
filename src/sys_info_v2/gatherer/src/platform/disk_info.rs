@@ -25,24 +25,27 @@ use dbus::{
 };
 
 #[allow(non_camel_case_types)]
-#[allow(dead_code)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskType {
+    #[default]
     Unknown = 0,
     HDD,
     SSD,
     NVMe,
     eMMC,
     SD,
-    iSCSI,
+    Floppy,
     Optical,
 }
 
-impl Default for DiskType {
-    fn default() -> Self {
-        Self::Unknown
-    }
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskSmartInterface {
+    #[default]
+    Dumb = 0,
+    Ata,
+    NVMe,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

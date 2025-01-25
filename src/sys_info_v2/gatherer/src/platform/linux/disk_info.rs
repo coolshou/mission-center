@@ -28,8 +28,8 @@ use pollster::FutureExt;
 use std::cmp::max;
 use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
-use udisks2::drive::RotationRate::{NonRotating, Unknown};
 use udisks2::Client;
+use udisks2::drive::RotationRate;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -256,7 +256,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 if let Ok(encrypted) = object.encrypted().block_on() {
                     let Ok(new_object_path) = encrypted.cleartext_device().block_on() else {
-                        // todo how tf did i get here?
+                        // TODO: how tf did i get here?
                         continue;
                     };
 
@@ -432,7 +432,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
             };
 
             // we check out here in case of media removal or similar
-            // todo should we handle empty drives in the UI?
+            // TODO: should we handle empty drives in the UI?
             let capacity = if let Some((root_block, _, _)) =
                 blocks.iter().find(|(_, partition, _)| partition.is_err())
             {
@@ -443,11 +443,6 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     .filter_map(|(it, _, _)| it.size().block_on().ok())
                     .sum()
             };
-
-            if capacity == 0 {
-                _ = prev_disk_index.map(|i| prev_disks.remove(i));
-                continue;
-            }
 
             if let Some((mut disk_stat, mut info)) = prev_disk_index.map(|i| prev_disks.remove(i)) {
                 let read_ticks_weighted_ms_prev =
@@ -575,6 +570,8 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 disk_stat.read_time_ms = Instant::now();
 
+                info.capacity = capacity;
+
                 info.busy_percent = busy_percent;
                 info.response_time_ms = response_time_ms;
                 info.read_speed = read_speed;
@@ -635,8 +632,35 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                     DiskSmartInterface::Dumb
                 };
 
-                // todo should we do this?
-                let r#type = if drive.optical().block_on().unwrap_or(false) {
+                let r#type = if dir_name.starts_with("nvme") {
+                    DiskType::NVMe
+                } else if dir_name.starts_with("mmc") {
+                    Self::get_mmc_type(&dir_name)
+                } else if dir_name.starts_with("fd") {
+                    DiskType::Floppy
+                } else if dir_name.starts_with("sr") {
+                    // TODO: specify what type better
+                    DiskType::Optical
+                } else {
+                    match drive.rotation_rate().block_on() {
+                        Ok(RotationRate::NonRotating) | Ok(RotationRate::Rotating(0)) => {
+                            if drive.removable().block_on().unwrap_or(false) {
+                                // FIXME This was `Flash`, do we want that or something else?
+                                DiskType::SSD
+                            } else {
+                                DiskType::SSD
+                            }
+                        }
+                        Ok(RotationRate::Rotating(_)) => {
+                            DiskType::HDD
+                        }
+                        _ => {
+                            DiskType::Unknown
+                        }
+                    }
+                };
+                // TODO: should we do this?
+/*                let r#type = if drive.optical().block_on().unwrap_or(false) {
                     DiskType::Optical
                 } else {
                     let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
@@ -653,7 +677,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                         DiskType::HDD
                     }
                 };
-
+*/
                 let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
                 let model = drive.model().block_on().unwrap_or("".to_string());

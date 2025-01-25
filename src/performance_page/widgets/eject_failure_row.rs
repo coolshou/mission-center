@@ -18,23 +18,22 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
+
+use adw::prelude::*;
+use adw::subclass::prelude::*;
+use gtk::glib::{self, g_critical};
+
 use crate::app;
 use crate::performance_page::disk::PerformancePageDisk;
-use adw::prelude::AdwDialogExt;
-use gtk::glib::g_critical;
-use gtk::prelude::{ButtonExt, WidgetExt};
-use gtk::subclass::prelude::WidgetImpl;
-use gtk::subclass::widget::WidgetClassExt;
-use gtk::TemplateChild;
-use gtk::{glib, glib::subclass::prelude::*};
-use std::cell::Cell;
 
 mod imp {
     use super::*;
+    use gtk::subclass::prelude::{CompositeTemplateClass, CompositeTemplateInitializingExt};
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_dialog.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui"
     )]
     pub struct EjectFailureRow {
         #[template_child]
@@ -47,8 +46,6 @@ mod imp {
         pub open_files: TemplateChild<gtk::Label>,
         #[template_child]
         pub kill: TemplateChild<gtk::Button>,
-        #[template_child]
-        pub row_entry: TemplateChild<gtk::ListBoxRow>,
 
         pub raw_pid: Cell<Option<u32>>,
     }
@@ -82,7 +79,6 @@ mod imp {
                 pid: Default::default(),
                 open_files: Default::default(),
                 kill: Default::default(),
-                row_entry: Default::default(),
                 raw_pid: Default::default(),
             }
         }
@@ -92,20 +88,29 @@ mod imp {
     impl ObjectSubclass for EjectFailureRow {
         const NAME: &'static str = "EjectFailureRow";
         type Type = super::EjectFailureRow;
+        type ParentType = adw::Bin;
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
     }
 
     impl ObjectImpl for EjectFailureRow {
         fn constructed(&self) {
             self.parent_constructed();
-
-            let kill_button = self.kill.get();
-            kill_button.add_css_class("destructive-action");
         }
     }
 
     impl WidgetImpl for EjectFailureRow {}
+
+    impl BinImpl for EjectFailureRow {}
 }
 
+#[derive(Clone)]
 pub struct EjectFailureRowBuilder {
     pid: u32,
     icon: glib::GString,
@@ -165,12 +170,9 @@ impl EjectFailureRowBuilder {
         {
             let this = this.imp();
 
-            this.pid.set_label(format!("{}", self.pid).as_str());
-
-            this.name.set_label(self.name.as_str());
-
             this.set_icon(self.icon.as_str());
-
+            this.pid.set_label(format!("{}", self.pid).as_str());
+            this.name.set_label(self.name.as_str());
             this.open_files
                 .set_label(self.files_open.join("\n").as_str());
 
@@ -204,8 +206,7 @@ impl EjectFailureRowBuilder {
                         return;
                     };
                     efd.close();
-                    // efd.imp().apply_eject_result(back, parent);
-                    // todo this feels leaky
+                    // TODO: this feels leaky
                     parent.imp().show_eject_result(parent, eject_result);
                 }
             });
@@ -217,7 +218,7 @@ impl EjectFailureRowBuilder {
 
 glib::wrapper! {
     pub struct EjectFailureRow(ObjectSubclass<imp::EjectFailureRow>)
-        @extends gtk::Box, gtk::Widget,
+        @extends adw::Bin, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 

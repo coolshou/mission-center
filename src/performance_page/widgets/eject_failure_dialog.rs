@@ -24,17 +24,17 @@ use gtk::glib::g_critical;
 use gtk::glib::{self, g_warning};
 use std::cell::Cell;
 use std::sync::Arc;
+use std::collections::HashMap;
 
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
+use crate::sys_info_v2::App;
 
 mod imp {
     use super::*;
-    use crate::sys_info_v2::App;
-    use std::collections::HashMap;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
@@ -51,17 +51,14 @@ mod imp {
         pub fn apply_eject_result(&self, result: EjectResult, parent: &PerformancePageDisk) {
             let parsed_results = Self::parse_blocking_processes(result);
 
-            let modelo = self.column_view.get();
+            let model = self.column_view.get();
 
             self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+                .set(Some(parent.clone()));
 
-            modelo.remove_all();
+            model.remove_all();
 
-            for parsed_result in parsed_results {
-                let appname = parsed_result.0.to_string();
-                let (app_obj, processes) = parsed_result.1;
-
+            for (appname, (app_obj, processes)) in parsed_results {
                 let iconname = match app_obj.icon.as_ref() {
                     Some(icon) => icon,
                     None => &Arc::from(""),
@@ -73,31 +70,20 @@ mod imp {
                     .get()
                     .expect("Expected a raw disk id, got none");
 
-                for process in processes {
-                    if !process.1.is_empty() {
-                        let new_root = EjectFailureRowBuilder::new()
-                            .id(parent_id)
-                            .icon(iconname)
-                            .files_open(process.1.clone())
-                            .pid(process.0)
-                            .name(&appname)
-                            .parent_page(parent.downgrade().upgrade().unwrap())
-                            .build();
+                for (pid, files, dirs) in processes {
+                    let row_builder = EjectFailureRowBuilder::new()
+                        .id(parent_id)
+                        .icon(iconname)
+                        .pid(pid)
+                        .name(&appname)
+                        .parent_page(parent.clone());
 
-                        modelo.append(&new_root.imp().row_entry.get());
+                    if !files.is_empty() {
+                        model.append(&row_builder.clone().files_open(files.clone()).build());
                     }
 
-                    if !process.2.is_empty() {
-                        let new_root = EjectFailureRowBuilder::new()
-                            .id(parent_id)
-                            .icon(iconname)
-                            .files_open(process.2.clone())
-                            .pid(process.0)
-                            .name(&appname)
-                            .parent_page(parent.downgrade().upgrade().unwrap())
-                            .build();
-
-                        modelo.append(&new_root.imp().row_entry.get());
+                    if !dirs.is_empty() {
+                        model.append(&row_builder.files_open(dirs).build());
                     }
                 }
             }

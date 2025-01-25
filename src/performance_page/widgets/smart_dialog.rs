@@ -19,17 +19,17 @@
  */
 
 use std::cell::Cell;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::{self};
+use gtk::gio;
+use gtk::glib::{self, g_critical};
+use gtk::{Align, ColumnViewColumn};
 
 use crate::i18n::*;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::sata_smart_dialog_row::SmartDialogRow;
 use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
-use gtk::gio;
-use gtk::{Align, ColumnViewColumn};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 mod imp {
     use super::*;
@@ -134,8 +134,7 @@ mod imp {
             self.sata_data.set_visible(true);
             self.nvme_data.set_visible(false);
 
-            self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+            self.parent_page.set(Some(parent.clone()));
 
             let mut roze = Vec::new();
 
@@ -203,19 +202,44 @@ mod imp {
                 cell.set_child(Some(&gtk::Label::builder().halign(alignment).build()));
             });
             factory_id_col.connect_bind(move |_factory, list_item| {
-                let cell = list_item
-                    .to_owned()
-                    .downcast::<gtk::ColumnViewCell>()
-                    .unwrap();
-                let child = cell.child().unwrap();
-                let label_object = child.downcast_ref::<gtk::Label>().unwrap();
-                let model_item = cell
+                let cell = match list_item.downcast_ref::<gtk::ColumnViewCell>() {
+                    Some(cell) => cell,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain GtkColumnViewCell from list item"
+                        );
+                        return;
+                    }
+                };
+
+                let model_item = match cell
                     .item()
-                    .to_owned()
-                    .unwrap()
-                    .downcast::<SmartDialogRow>()
-                    .unwrap();
-                label_object.set_label(extract(model_item).as_str());
+                    .and_then(|i| i.downcast::<SmartDialogRow>().ok())
+                {
+                    Some(model_item) => model_item,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain SmartDialogRow item from GtkColumnViewCell"
+                        );
+                        return;
+                    }
+                };
+
+                let label_object = match cell.child().and_then(|c| c.downcast::<gtk::Label>().ok())
+                {
+                    Some(label) => label,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain child GtkLabel from GtkColumnViewCell"
+                        );
+                        return;
+                    }
+                };
+
+                label_object.set_label(&extract(model_item));
             });
             id_col.set_factory(Some(&factory_id_col));
         }
@@ -230,8 +254,7 @@ mod imp {
             self.sata_data.set_visible(false);
             self.nvme_data.set_visible(true);
 
-            self.parent_page
-                .set(Some(parent.downgrade().upgrade().unwrap()));
+            self.parent_page.set(Some(parent.clone()));
 
             self.percent_used
                 .set_text(&format!("{}%", result.percent_used));
