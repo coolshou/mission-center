@@ -433,3 +433,119 @@ impl<'a> Get<'a> for ServiceVec {
         Some(ServiceVec(result))
     }
 }
+
+#[derive(Debug)]
+pub struct ServiceFilesVec {
+    pub val: Vec<(String, String)>
+}
+
+impl From<ServiceFilesVec> for Vec<(String, String)> {
+    fn from(v: ServiceFilesVec) -> Self {
+        v.val
+    }
+}
+
+impl Arg for ServiceFilesVec {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+
+    fn signature() -> Signature<'static> {
+        Signature::from("a(ss)")
+    }
+}
+
+impl<'a> Get<'a> for ServiceFilesVec {
+    fn get(i: &mut Iter<'a>) -> Option<Self> {
+        use crate::critical;
+
+        let mut result = vec![];
+
+        match Iterator::next(i) {
+            None => {
+                critical!(
+                    "Gatherer::SystemDServices",
+                    "Failed to get Vec<SystemD Unit>: Expected '0: ARRAY', got None",
+                );
+                return None;
+            }
+            Some(arg) => match arg.as_iter() {
+                None => {
+                    critical!(
+                        "Gatherer::SystemDServices",
+                        "Failed to get Vec<SystemD Unit>: Expected '0: ARRAY', got {:?}",
+                        arg.arg_type(),
+                    );
+                    return None;
+                }
+                Some(arr) => {
+                    for i in arr {
+                        let mut i = match i.as_iter() {
+                            None => {
+                                critical!(
+                                    "Gatherer::SystemDServices",
+                                    "Failed to get SystemD Unit: Expected '0: STRUCT', got None",
+                                );
+                                continue;
+                            }
+                            Some(i) => i,
+                        };
+                        let unit = i.as_mut();
+
+                        let service = match Iterator::next(unit) {
+                            None => {
+                                critical!(
+                                    "Gatherer::SystemDServices",
+                                    "Failed to get SystemD Unit: Expected '0: s', got None",
+                                );
+                                continue;
+                            }
+                            Some(arg) => match arg.as_str() {
+                                None => {
+                                    critical!(
+                                        "Gatherer::SystemDServices",
+                                        "Failed to get SystemD Unit: Expected '0: s', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    continue;
+                                }
+                                Some(n) => {
+                                    if !n.ends_with(".service") {
+                                        continue;
+                                    }
+
+                                    String::from(n)
+                                }
+                            },
+                        };
+
+                        let status = match Iterator::next(unit) {
+                            None => {
+                                critical!(
+                                    "Gatherer::SystemDServices",
+                                    "Failed to get SystemD Unit: Expected '1: s', got None",
+                                );
+                                continue;
+                            }
+                            Some(arg) => match arg.as_str() {
+                                None => {
+                                    critical!(
+                                        "Gatherer::SystemDServices",
+                                        "Failed to get SystemD Unit: Expected '1: s', got {:?}",
+                                        arg.arg_type(),
+                                    );
+                                    continue;
+                                }
+                                Some(d) => String::from(d),
+                            },
+                        };
+
+                        result.push((service, status));
+                    }
+                }
+            },
+        }
+
+        Some(ServiceFilesVec {
+            val: result
+        })
+    }
+}
