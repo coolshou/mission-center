@@ -1705,12 +1705,19 @@ mod imp {
                                 let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
                                 sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
                             }
+                        };
 
-                            summary_graphs.remove(&graph);
-                            sidebar.remove(&parent);
-                            page_stack.remove(&page);
-                            pages.remove(disk_page_name);
+                        let selection = sidebar.selected_row().unwrap();
+
+                        if selection.eq(&parent) {
+                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
                         }
+
+                        summary_graphs.remove(&graph);
+                        sidebar.remove(&parent);
+                        page_stack.remove(&page);
+                        pages.remove(disk_page_name);
                     }
                 }
             }
@@ -1938,6 +1945,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, send_speed);
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 

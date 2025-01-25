@@ -1,4 +1,4 @@
-/* sys_info_v2/dbus_interface/disk_static_info.rs
+/* sys_info_v2/dbus_interface/disk_info.rs
  *
  * Copyright 2024 Romeo Calota
  *
