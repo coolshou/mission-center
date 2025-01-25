@@ -48,20 +48,6 @@ pub enum DiskSmartInterface {
     NVMe,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)]
-pub enum DiskSmartInterface {
-    Dumb = 0,
-    Ata,
-    NVMe,
-}
-
-impl Default for DiskSmartInterface {
-    fn default() -> Self {
-        Self::Dumb
-    }
-}
-
 /// Describes the static (unchanging) information about a physical disk
 pub trait DiskInfoExt: Default + Append + Arg {
     /// The disk's unique identifier

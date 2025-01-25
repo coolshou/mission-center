@@ -18,13 +18,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
+use std::cell::{BorrowError, Cell, Ref, RefCell};
+
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
     glib::{self, g_critical, property::PropertySet},
 };
-use std::cell::{BorrowError, Cell, Ref, RefCell};
+
+use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
