@@ -1936,6 +1936,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, send_speed);
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
