@@ -1238,7 +1238,7 @@ mod imp {
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
 
-            if let Some(max_speed) = connection.max_speed.map(|ms| ms * 8) {
+            if let Some(max_speed) = connection.max_speed_bytes_ps {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
                     summary
                         .graph_widget()
@@ -1892,18 +1892,12 @@ mod imp {
                         let mut consecutive_dev_count = 0;
 
                         let mut new_devices = Vec::new();
-                        for (index, network_device) in
+                        for (index, network_connection) in
                             readings.network_connections.iter().enumerate()
                         {
                             if let Some((summary, page)) =
-                                pages.get(&Self::network_page_name(&network_device.id))
+                                pages.get(&Self::network_page_name(&network_connection.id))
                             {
-                                let data_per_time = page.unit_per_second_label();
-                                let byte_coeff = page.byte_conversion_factor();
-
-                                let send_speed = network_device.tx_rate_bps * byte_coeff;
-                                let rec_speed = network_device.rx_rate_bps * byte_coeff;
-
                                 // Search for a group of existing network devices and try to add new entries at that position
                                 summary
                                     .parent()
@@ -1923,6 +1917,15 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
+                                graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
+
+                                let data_per_time = page.unit_per_second_label();
+                                let byte_coeff = page.byte_conversion_factor();
+
+                                let send_speed = network_connection.tx_rate_bytes_ps * byte_coeff;
+                                let rec_speed = network_connection.rx_rate_bytes_ps * byte_coeff;
+
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
@@ -1945,7 +1948,7 @@ mod imp {
                                     ],
                                 ));
 
-                                result &= page.update_readings(network_device);
+                                result &= page.update_readings(network_connection);
                             } else {
                                 new_devices.push(index);
                             }

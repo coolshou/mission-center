@@ -359,7 +359,9 @@ mod imp {
             };
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
-                if connection_type == ConnectionKind::Wireless || connection.max_speed.is_some() {
+                if connection_type == ConnectionKind::Wireless
+                    || connection.max_speed_bytes_ps.is_some()
+                {
                     max_bitrate.set_visible(true);
                 }
             }
@@ -384,11 +386,10 @@ mod imp {
             this.usage_graph.set_filled(0, false);
             this.usage_graph.set_dashed(0, true);
 
-            this.max_speed.set(connection.max_speed);
+            this.max_speed.set(connection.max_speed_bytes_ps);
 
-            if let Some(max_speed) = connection.max_speed {
-                this.usage_graph
-                    .set_value_range_max(max_speed as f32 * this.obj().byte_conversion_factor());
+            if let Some(max_speed) = connection.max_speed_bytes_ps {
+                this.usage_graph.set_value_range_max(max_speed as f32);
             } else {
                 this.usage_graph
                     .set_scaling(GraphWidget::auto_pow2_scaling());
@@ -399,21 +400,22 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageNetwork,
-            network_device: &Connection,
+            connection: &Connection,
         ) -> bool {
             let this = this.imp();
 
-            let use_bytes = this.use_bytes.get();
-            let data_per_time = if use_bytes { i18n("B/s") } else { i18n("bps") };
-            let byte_coeff = if use_bytes { 1f32 } else { 8f32 };
+            this.usage_graph
+                .add_data_point(0, connection.tx_rate_bytes_ps);
+            this.usage_graph
+                .add_data_point(1, connection.rx_rate_bytes_ps);
 
-            let send_speed = network_device.tx_rate_bps * byte_coeff;
-            let rec_speed = network_device.rx_rate_bps * byte_coeff;
+            let data_per_time = this.obj().unit_per_second_label();
+            let byte_coeff = this.obj().byte_conversion_factor();
 
-            this.usage_graph.add_data_point(0, send_speed);
-            this.usage_graph.add_data_point(1, rec_speed);
+            let send_speed = connection.tx_rate_bytes_ps * byte_coeff;
+            let rec_speed = connection.rx_rate_bytes_ps * byte_coeff;
 
-            if let Some(wireless_info) = &network_device.wireless_connection {
+            if let Some(wireless_info) = &connection.wireless_connection {
                 if let Some(ssid) = this.ssid.get() {
                     ssid.set_text(
                         &wireless_info
@@ -458,9 +460,9 @@ mod imp {
             }
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
-                if let Some(max_speed) = network_device.max_speed {
+                if let Some(max_speed) = connection.max_speed_bytes_ps {
                     let (val, unit, dec_to_display) =
-                        crate::to_human_readable(max_speed as f32 * byte_coeff, 1024.);
+                        crate::to_human_readable(max_speed as f32, 1024.);
 
                     max_bitrate.set_text(
                         format!(
@@ -504,7 +506,7 @@ mod imp {
                 ));
             }
 
-            let sent = crate::to_human_readable(network_device.tx_total_bytes as f32, 1024.);
+            let sent = crate::to_human_readable(connection.tx_total_bytes as f32, 1024.);
             if let Some(total_sent) = this.total_sent.get() {
                 total_sent.set_text(&i18n_f(
                     "{} {}{}B",
@@ -515,7 +517,7 @@ mod imp {
                     ],
                 ));
             }
-            let received = crate::to_human_readable(network_device.rx_total_bytes as f32, 1024.);
+            let received = crate::to_human_readable(connection.rx_total_bytes as f32, 1024.);
             if let Some(total_recv) = this.total_recv.get() {
                 total_recv.set_text(&i18n_f(
                     "{} {}{}B",
@@ -528,15 +530,15 @@ mod imp {
             }
 
             if let Some(hw_address) = this.hw_address.get() {
-                hw_address.set_text(&network_device.hw_address)
+                hw_address.set_text(&connection.hw_address)
             }
 
             if let Some(ipv4_address) = this.ipv4_address.get() {
-                ipv4_address.set_text(network_device.ipv4_address.as_ref().unwrap_or(&i18n("N/A")));
+                ipv4_address.set_text(connection.ipv4_address.as_ref().unwrap_or(&i18n("N/A")));
             }
 
             if let Some(ipv6_address) = this.ipv6_address.get() {
-                ipv6_address.set_text(network_device.ipv6_address.as_ref().unwrap_or(&i18n("N/A")));
+                ipv6_address.set_text(connection.ipv6_address.as_ref().unwrap_or(&i18n("N/A")));
             }
 
             true
@@ -821,8 +823,7 @@ impl PerformancePageNetwork {
             .use_bytes
             .set(settings.boolean("performance-page-network-use-bytes"));
 
-        let max_speed = this.imp().max_speed.get().unwrap_or(0);
-        if max_speed > 0 {
+        if let Some(max_speed) = this.imp().max_speed.get() {
             let dynamic_scaling = settings.boolean("performance-page-network-dynamic-scaling");
 
             if dynamic_scaling {
@@ -834,8 +835,7 @@ impl PerformancePageNetwork {
                     .usage_graph
                     .set_scaling(GraphWidget::no_scaling());
 
-                let max = (max_speed / if this.imp().use_bytes.get() { 8 } else { 1 }) as f32;
-                this.imp().usage_graph.set_value_range_max(max);
+                this.imp().usage_graph.set_value_range_max(max_speed as f32);
             }
         }
 
@@ -843,23 +843,20 @@ impl PerformancePageNetwork {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
-                    if let Some(speed) = this.imp().max_speed.get() {
-                        if speed > 0 {
-                            let dynamic_scaling =
-                                settings.boolean("performance-page-network-dynamic-scaling");
+                    if let Some(max_speed) = this.imp().max_speed.get() {
+                        let dynamic_scaling =
+                            settings.boolean("performance-page-network-dynamic-scaling");
 
-                            if dynamic_scaling {
-                                this.imp()
-                                    .usage_graph
-                                    .set_scaling(GraphWidget::auto_pow2_scaling());
-                            } else {
-                                this.imp()
-                                    .usage_graph
-                                    .set_scaling(GraphWidget::no_scaling());
+                        if dynamic_scaling {
+                            this.imp()
+                                .usage_graph
+                                .set_scaling(GraphWidget::auto_pow2_scaling());
+                        } else {
+                            this.imp()
+                                .usage_graph
+                                .set_scaling(GraphWidget::no_scaling());
 
-                                let max = speed as f32 * this.byte_conversion_factor();
-                                this.imp().usage_graph.set_value_range_max(max);
-                            }
+                            this.imp().usage_graph.set_value_range_max(max_speed as f32);
                         }
                     }
                 }
@@ -895,12 +892,8 @@ impl PerformancePageNetwork {
                                 .collect(),
                         );
 
-                        if let Some(speed) = this.imp().max_speed.get() {
-                            if speed > 0 {
-                                this.imp().usage_graph.set_value_range_max(
-                                    speed as f32 * this.byte_conversion_factor(),
-                                );
-                            }
+                        if let Some(max_speed) = this.imp().max_speed.get() {
+                            this.imp().usage_graph.set_value_range_max(max_speed as f32);
                         }
                     }
                     this.imp().use_bytes.set(new_units);
@@ -942,8 +935,8 @@ impl PerformancePageNetwork {
         imp::PerformancePageNetwork::set_static_information(self, connection)
     }
 
-    pub fn update_readings(&self, network_device: &Connection) -> bool {
-        imp::PerformancePageNetwork::update_readings(self, network_device)
+    pub fn update_readings(&self, connection: &Connection) -> bool {
+        imp::PerformancePageNetwork::update_readings(self, connection)
     }
 
     pub fn infobar_collapsed(&self) {
