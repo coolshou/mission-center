@@ -26,7 +26,6 @@ use std::{
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::glib::ExitCode;
 use gtk::{gio, prelude::*};
-use lazy_static::lazy_static;
 
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
@@ -51,16 +50,6 @@ macro_rules! glib_clone {
 
 mod config {
     include!(concat!(env!("BUILD_ROOT"), "/src/config.rs"));
-}
-
-lazy_static! {
-    pub static ref HW_DB_DIR: String = {
-        if let Ok(path) = std::env::var("HW_DB_DIR") {
-            path
-        } else {
-            PKGDATADIR.to_owned()
-        }
-    };
 }
 
 fn user_home() -> &'static Path {
