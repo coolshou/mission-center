@@ -552,7 +552,13 @@ mod imp {
                 let item = model.item(i).unwrap();
                 if let Some(item) = item.downcast_ref::<ServicesListItem>() {
                     if let Some(service) = readings.services.remove(item.name().as_str()) {
-                        item.set_description(service.description.as_ref());
+                        item.set_description(
+                            service
+                                .description
+                                .as_ref()
+                                .map(|s| s.as_str())
+                                .unwrap_or_default(),
+                        );
                         item.set_enabled(service.enabled);
                         item.set_running(service.running);
                         item.set_failed(service.failed);
@@ -583,14 +589,18 @@ mod imp {
 
             for (_, service) in &readings.services {
                 let mut model_item_builder = ServicesListItemBuilder::new()
-                    .name(&service.name)
-                    .description(&service.description)
+                    .name(&service.id)
+                    .description(
+                        service
+                            .description
+                            .as_ref()
+                            .map(|s| s.as_str())
+                            .unwrap_or_default(),
+                    )
                     .enabled(service.enabled)
                     .running(service.running)
-                    .failed(service.failed);
-                if let Some(pid) = service.pid {
-                    model_item_builder = model_item_builder.pid(pid);
-                }
+                    .failed(service.failed)
+                    .pid(service.pid);
                 if let Some(user) = &service.user {
                     model_item_builder = model_item_builder.user(user);
                 }

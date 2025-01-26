@@ -18,29 +18,26 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::collections::HashMap;
 use std::num::NonZeroU32;
-use std::sync::atomic::AtomicU64;
-use std::sync::OnceLock;
-use std::{
-    collections::HashMap,
-    sync::{
-        atomic::{self, AtomicBool},
-        mpsc::{self, Receiver, Sender},
-        Arc,
-    },
-    time::Duration,
+use std::sync::atomic;
+use std::sync::atomic::{AtomicBool, AtomicU64};
+use std::sync::mpsc;
+use std::sync::mpsc::{Receiver, Sender};
+use std::sync::{Arc, OnceLock};
+use std::time::Duration;
+
+use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
+
+use crate::{
+    app,
+    application::{BASE_INTERVAL, INTERVAL_STEP},
 };
 
 use gatherer::Gatherer;
 pub use gatherer::{
     App, Connection, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Memory,
     MemoryDevice, Process, ProcessUsageStats, Service,
-};
-use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
-
-use crate::{
-    app,
-    application::{BASE_INTERVAL, INTERVAL_STEP},
 };
 
 macro_rules! cmd_flatpak_host {
@@ -57,7 +54,6 @@ macro_rules! cmd_flatpak_host {
     }};
 }
 
-mod dbus_interface;
 mod gatherer;
 
 pub type Pid = u32;
@@ -119,7 +115,7 @@ pub struct Readings {
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
 
-    pub services: HashMap<Arc<str>, Service>,
+    pub services: HashMap<String, Service>,
 }
 
 impl Readings {

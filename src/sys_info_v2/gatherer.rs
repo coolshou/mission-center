@@ -43,8 +43,10 @@ use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
 pub use magpie_types::processes::{Process, ProcessUsageStats};
 use magpie_types::prost::Message;
+use magpie_types::services::services_response;
+use magpie_types::services::services_response::ServiceList;
+pub use magpie_types::services::Service;
 
-pub use super::dbus_interface::*;
 use crate::show_error_dialog_and_exit;
 
 mod nng {
@@ -54,12 +56,197 @@ mod nng {
     pub const NNG_OK: i32 = 0;
 }
 
+#[derive(Debug, Default, Clone)]
+pub struct CpuDynamicInfo {
+    pub overall_utilization_percent: f32,
+    pub overall_kernel_utilization_percent: f32,
+    pub per_logical_cpu_utilization_percent: Vec<f32>,
+    pub per_logical_cpu_kernel_utilization_percent: Vec<f32>,
+    pub current_frequency_mhz: u64,
+    pub temperature: Option<f32>,
+    pub process_count: u64,
+    pub thread_count: u64,
+    pub handle_count: u64,
+    pub uptime_seconds: u64,
+    pub cpufreq_driver: Option<Arc<str>>,
+    pub cpufreq_governor: Option<Arc<str>>,
+    pub energy_performance_preference: Option<Arc<str>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct CpuStaticInfo {
+    pub name: Arc<str>,
+    pub logical_cpu_count: u32,
+    pub socket_count: Option<u8>,
+    pub base_frequency_khz: Option<u64>,
+    pub virtualization_technology: Option<Arc<str>>,
+    pub is_virtual_machine: Option<bool>,
+    pub l1_combined_cache: Option<u64>,
+    pub l2_cache: Option<u64>,
+    pub l3_cache: Option<u64>,
+    pub l4_cache: Option<u64>,
+}
+
+impl Default for CpuStaticInfo {
+    fn default() -> Self {
+        Self {
+            name: Arc::from(""),
+            logical_cpu_count: 0,
+            socket_count: None,
+            base_frequency_khz: None,
+            virtualization_technology: None,
+            is_virtual_machine: None,
+            l1_combined_cache: None,
+            l2_cache: None,
+            l3_cache: None,
+            l4_cache: None,
+        }
+    }
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DiskType {
+    Unknown = 0,
+    HDD,
+    SSD,
+    NVMe,
+    eMMC,
+    SD,
+    iSCSI,
+    Optical,
+}
+
+impl Default for DiskType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DiskInfo {
+    pub id: Arc<str>,
+    pub model: Arc<str>,
+    pub r#type: DiskType,
+    pub capacity: u64,
+    pub formatted: u64,
+    pub system_disk: bool,
+
+    pub busy_percent: f32,
+    pub response_time_ms: f32,
+    pub read_speed: u64,
+    pub total_read: u64,
+    pub write_speed: u64,
+    pub total_write: u64,
+}
+
+impl Default for DiskInfo {
+    fn default() -> Self {
+        Self {
+            id: Arc::from(""),
+            model: Arc::from(""),
+            r#type: DiskType::default(),
+            capacity: 0,
+            formatted: 0,
+            system_disk: false,
+
+            busy_percent: 0.,
+            response_time_ms: 0.,
+            read_speed: 0,
+            total_read: 0,
+            write_speed: 0,
+            total_write: 0,
+        }
+    }
+}
+
+impl Eq for DiskInfo {}
+
+impl PartialEq<Self> for DiskInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.id.as_ref() == other.id.as_ref()
+    }
+}
+
+impl PartialOrd<Self> for DiskInfo {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.id.as_ref().cmp(other.id.as_ref()))
+    }
+}
+
+impl Ord for DiskInfo {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.id.as_ref().cmp(other.id.as_ref())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct FanInfo {
+    pub fan_label: Arc<str>,
+    pub temp_name: Arc<str>,
+    pub temp_amount: i64,
+    pub rpm: u64,
+    pub percent_vroomimg: f32,
+
+    pub fan_index: u64,
+    pub hwmon_index: u64,
+
+    pub max_speed: u64,
+}
+
+impl Default for FanInfo {
+    fn default() -> Self {
+        Self {
+            fan_label: Arc::from(""),
+            temp_name: Arc::from(""),
+            temp_amount: 0,
+            rpm: 0,
+            percent_vroomimg: 0.0,
+
+            fan_index: 0,
+            hwmon_index: 0,
+
+            max_speed: 0,
+        }
+    }
+}
+
+impl Eq for FanInfo {}
+
+impl PartialEq<Self> for FanInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.fan_index == other.fan_index && self.hwmon_index == other.hwmon_index
+    }
+}
+
+impl PartialOrd<Self> for FanInfo {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(if self.hwmon_index == other.hwmon_index {
+            self.fan_index.cmp(&other.fan_index)
+        } else {
+            self.hwmon_index.cmp(&other.hwmon_index)
+        })
+    }
+}
+
+impl Ord for FanInfo {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        if self.hwmon_index == other.hwmon_index {
+            self.fan_index.cmp(&other.fan_index)
+        } else {
+            self.hwmon_index.cmp(&other.hwmon_index)
+        }
+    }
+}
+
 type ResponseBody = response::Body;
 type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
 type GpusResponse = gpus_response::Response;
 type MemoryResponse = memory_response::Response;
 type ConnectionsResponse = connections_response::Response;
+type ServicesResponse = services_response::Response;
 
 const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
 
@@ -797,8 +984,29 @@ impl Gatherer {
         )
     }
 
-    pub fn services(&self) -> HashMap<Arc<str>, Service> {
-        HashMap::new()
+    pub fn services(&self) -> HashMap<String, Service> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_services(),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Services,
+            ServicesResponse::Error,
+            |mut service_list: ServiceList| {
+                service_list
+                    .services
+                    .drain(..)
+                    .map(|service| (service.id.clone(), service))
+                    .collect()
+            }
+        )
     }
 
     pub fn terminate_process(&self, _pid: u32) {}
