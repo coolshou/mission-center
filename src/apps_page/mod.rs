@@ -28,7 +28,7 @@ use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 use magpie_types::apps::icon::Icon;
 
 use crate::apps_page::{list_item::ListItem, row_model::ContentType};
-use crate::sys_info_v2::{App, Process, ProcessUsageStats};
+use crate::magpie_client::{App, Process, ProcessUsageStats};
 use crate::{app, i18n::*, settings};
 
 mod column_header;
@@ -135,7 +135,7 @@ mod imp {
 
     impl AppsPage {
         fn configure_actions(&self) {
-            use crate::sys_info_v2::Process;
+            use crate::magpie_client::Process;
             use gtk::glib::*;
 
             fn find_pid(
@@ -1220,7 +1220,7 @@ mod imp {
             (column_header.next_sibling(), header)
         }
 
-        pub fn update_column_headers(&self, readings: &crate::sys_info_v2::Readings) {
+        pub fn update_column_headers(&self, readings: &crate::magpie_client::Readings) {
             let column_header_cpu = self.column_header_cpu.take();
             if let Some(column_header_cpu) = &column_header_cpu {
                 column_header_cpu.set_heading(format!(
@@ -1553,7 +1553,7 @@ glib::wrapper! {
 }
 
 impl AppsPage {
-    pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let this = self.imp();
 
         if readings.gpus.is_empty() {
@@ -1591,7 +1591,7 @@ impl AppsPage {
         true
     }
 
-    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let this = self.imp();
 
         this.apps.set(std::mem::take(&mut readings.running_apps));

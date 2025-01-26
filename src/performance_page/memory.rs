@@ -273,7 +273,7 @@ mod imp {
     impl PerformancePageMemory {
         pub fn set_static_information(
             this: &super::PerformancePageMemory,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
@@ -376,7 +376,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageMemory,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
             let mem_info = &readings.mem_info;
@@ -900,11 +900,11 @@ impl PerformancePageMemory {
         this
     }
 
-    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_static_information(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageMemory::set_static_information(self, readings)
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageMemory::update_readings(self, readings)
     }
 }

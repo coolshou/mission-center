@@ -24,7 +24,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::{gio, glib};
 
-use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
+use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
 
 mod imp {
     use super::*;
@@ -684,7 +684,7 @@ impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(
         application: &P,
         settings: &gio::Settings,
-        sys_info: &crate::sys_info_v2::SysInfoV2,
+        sys_info: &crate::magpie_client::MagpieClient,
     ) -> Self {
         use gtk::glib::*;
 

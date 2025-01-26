@@ -1,6 +1,6 @@
-/* sys_info_v2/mod.rs
+/* magpie_client/mod.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,12 @@ use std::time::Duration;
 
 use gtk::glib::{g_critical, g_debug, g_warning, idle_add_once};
 
-use crate::{
-    app,
-    application::{BASE_INTERVAL, INTERVAL_STEP},
-};
+use crate::app;
+use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
-use gatherer::Gatherer;
-pub use gatherer::{
-    App, Connection, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu, Memory,
-    MemoryDevice, Process, ProcessUsageStats, Service,
+pub use client::{
+    App, Client, Connection, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu,
+    Memory, MemoryDevice, Process, ProcessUsageStats, Service,
 };
 
 macro_rules! cmd_flatpak_host {
@@ -54,7 +51,7 @@ macro_rules! cmd_flatpak_host {
     }};
 }
 
-mod gatherer;
+mod client;
 
 pub type Pid = u32;
 
@@ -69,13 +66,13 @@ fn flatpak_app_path() -> &'static str {
             };
 
             let section = match ini.section(Some("Instance")) {
-                None => panic!("Unable to find Instance section in /.flatpak-info"),
+                None => panic!("Unable to find `Instance` section in `/.flatpak-info`"),
                 Some(section) => section,
             };
 
             match section.get("app-path") {
                 None => {
-                    panic!("Unable to find 'app-path' key in Instance section in /.flatpak-info")
+                    panic!("Unable to find `app-path` key in section `Instance` missing from `/.flatpak-info`")
                 }
                 Some(app_path) => app_path.to_owned(),
             }
@@ -138,7 +135,7 @@ impl Readings {
     }
 }
 
-pub struct SysInfoV2 {
+pub struct MagpieClient {
     speed: Arc<AtomicU64>,
 
     refresh_thread: Option<std::thread::JoinHandle<()>>,
@@ -148,7 +145,7 @@ pub struct SysInfoV2 {
     receiver: Receiver<Response>,
 }
 
-impl Drop for SysInfoV2 {
+impl Drop for MagpieClient {
     fn drop(&mut self) {
         self.refresh_thread_running
             .store(false, atomic::Ordering::Release);
@@ -161,7 +158,7 @@ impl Drop for SysInfoV2 {
     }
 }
 
-impl Default for SysInfoV2 {
+impl Default for MagpieClient {
     fn default() -> Self {
         let (tx, _) = mpsc::channel::<Message>();
         let (_, resp_rx) = mpsc::channel::<Response>();
@@ -178,7 +175,7 @@ impl Default for SysInfoV2 {
     }
 }
 
-impl SysInfoV2 {
+impl MagpieClient {
     pub fn new() -> Self {
         let speed = Arc::new(AtomicU64::new(
             (BASE_INTERVAL / INTERVAL_STEP).round() as u64
@@ -392,9 +389,9 @@ impl SysInfoV2 {
     }
 }
 
-impl SysInfoV2 {
+impl MagpieClient {
     fn handle_incoming_message(
-        gatherer: &Gatherer,
+        gatherer: &Client,
         rx: &mut Receiver<Message>,
         tx: &mut Sender<Response>,
         timeout: Duration,
@@ -457,7 +454,7 @@ impl SysInfoV2 {
         running: Arc<AtomicBool>,
         speed: Arc<AtomicU64>,
     ) {
-        let gatherer = Gatherer::new();
+        let gatherer = Client::new();
         gatherer.start();
 
         let mut readings = Readings {

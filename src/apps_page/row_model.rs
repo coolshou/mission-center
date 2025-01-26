@@ -74,7 +74,7 @@ mod imp {
         pub max_memory_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<f32>,
 
-        pub merged_stats: Cell<Option<crate::sys_info_v2::ProcessUsageStats>>,
+        pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -471,11 +471,11 @@ impl RowModel {
         this
     }
 
-    pub fn merged_stats(&self) -> &Option<crate::sys_info_v2::ProcessUsageStats> {
+    pub fn merged_stats(&self) -> &Option<crate::magpie_client::ProcessUsageStats> {
         unsafe { &*self.imp().merged_stats.as_ptr() }
     }
 
-    pub fn set_merged_stats(&self, stats: &crate::sys_info_v2::ProcessUsageStats) {
+    pub fn set_merged_stats(&self, stats: &crate::magpie_client::ProcessUsageStats) {
         self.imp().merged_stats.set(Some(*stats));
     }
 

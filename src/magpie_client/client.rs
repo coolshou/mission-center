@@ -1,6 +1,6 @@
-/* sys_info_v2/gatherer.rs
+/* magpie_client/client.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Romeo Calota
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -357,6 +357,10 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
             .arg("--watch-bus")
             .arg("--host")
             .arg(executable());
+        cmd.env(
+            "MC_MAGPIE_HW_DB",
+            format!("{}/share/missioncenter/hw.db", super::flatpak_app_path()),
+        );
         cmd
     } else {
         let mut cmd = std::process::Command::new(executable());
@@ -702,7 +706,7 @@ fn make_request(
     Some(response)
 }
 
-pub struct Gatherer {
+pub struct Client {
     socket: RefCell<nng::nng_socket>,
 
     socket_addr: Arc<str>,
@@ -710,13 +714,13 @@ pub struct Gatherer {
     stop_requested: Arc<AtomicBool>,
 }
 
-impl Drop for Gatherer {
+impl Drop for Client {
     fn drop(&mut self) {
         self.stop();
     }
 }
 
-impl Gatherer {
+impl Client {
     pub fn new() -> Self {
         let socket_addr =
             if let Ok(mut existing_sock) = std::env::var(ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK) {
@@ -828,7 +832,7 @@ impl Gatherer {
     }
 }
 
-impl Gatherer {
+impl Client {
     pub fn set_refresh_interval(&self, _interval: u64) {}
 
     pub fn set_core_count_affects_percentages(&self, _v: bool) {}

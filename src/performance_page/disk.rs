@@ -174,9 +174,9 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: Option<i32>,
-            disk: &crate::sys_info_v2::DiskInfo,
+            disk: &crate::magpie_client::DiskInfo,
         ) -> bool {
-            use crate::sys_info_v2::DiskType;
+            use crate::magpie_client::DiskType;
 
             let t = this.clone();
             this.imp()
@@ -274,7 +274,7 @@ mod imp {
         pub fn update_readings(
             this: &super::PerformancePageDisk,
             index: Option<usize>,
-            disk: &crate::sys_info_v2::DiskInfo,
+            disk: &crate::magpie_client::DiskInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -624,7 +624,7 @@ impl PerformancePageDisk {
     pub fn set_static_information(
         &self,
         index: Option<i32>,
-        disk: &crate::sys_info_v2::DiskInfo,
+        disk: &crate::magpie_client::DiskInfo,
     ) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
@@ -632,7 +632,7 @@ impl PerformancePageDisk {
     pub fn update_readings(
         &self,
         index: Option<usize>,
-        disk: &crate::sys_info_v2::DiskInfo,
+        disk: &crate::magpie_client::DiskInfo,
     ) -> bool {
         imp::PerformancePageDisk::update_readings(self, index, disk)
     }

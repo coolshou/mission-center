@@ -180,7 +180,7 @@ mod imp {
     impl PerformancePageFan {
         pub fn set_static_information(
             this: &super::PerformancePageFan,
-            fan: &crate::sys_info_v2::FanInfo,
+            fan: &crate::magpie_client::FanInfo,
         ) -> bool {
             let t = this.clone();
 
@@ -265,7 +265,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageFan,
-            fan: &crate::sys_info_v2::FanInfo,
+            fan: &crate::magpie_client::FanInfo,
         ) -> bool {
             let this = this.imp();
 
@@ -546,11 +546,11 @@ impl PerformancePageFan {
         this
     }
 
-    pub fn set_static_information(&self, fan_info: &crate::sys_info_v2::FanInfo) -> bool {
+    pub fn set_static_information(&self, fan_info: &crate::magpie_client::FanInfo) -> bool {
         imp::PerformancePageFan::set_static_information(self, fan_info)
     }
 
-    pub fn update_readings(&self, fan_info: &crate::sys_info_v2::FanInfo) -> bool {
+    pub fn update_readings(&self, fan_info: &crate::magpie_client::FanInfo) -> bool {
         imp::PerformancePageFan::update_readings(self, fan_info)
     }
 }

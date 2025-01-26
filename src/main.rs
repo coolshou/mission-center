@@ -34,10 +34,10 @@ use window::MissionCenterWindow;
 mod application;
 mod apps_page;
 mod i18n;
+mod magpie_client;
 mod performance_page;
 mod preferences;
 mod services_page;
-mod sys_info_v2;
 mod theme_selector;
 mod window;
 

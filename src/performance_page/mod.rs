@@ -35,8 +35,8 @@ use gtk::{
 
 use magpie_types::network::{Connection, ConnectionKind};
 
-use crate::sys_info_v2::FanInfo;
-use crate::{i18n::*, settings, sys_info_v2::DiskType};
+use crate::magpie_client::FanInfo;
+use crate::{i18n::*, magpie_client::DiskType, settings};
 
 use widgets::{GraphWidget, SidebarDropHint};
 
@@ -965,7 +965,11 @@ mod imp {
             }
         }
 
-        fn set_up_cpu_page(&self, pages: &mut Vec<Pages>, readings: &crate::sys_info_v2::Readings) {
+        fn set_up_cpu_page(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::magpie_client::Readings,
+        ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("cpu");
 
@@ -1012,7 +1016,7 @@ mod imp {
         fn set_up_memory_page(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
@@ -1072,7 +1076,7 @@ mod imp {
         fn set_up_disk_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut disks = HashMap::new();
             let len = readings.disks_info.len();
@@ -1111,7 +1115,7 @@ mod imp {
 
         pub fn create_disk_page(
             &self,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
             disk_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, DiskPage)) {
@@ -1186,7 +1190,7 @@ mod imp {
         fn set_up_network_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut networks = HashMap::new();
             for connection in &readings.network_connections {
@@ -1306,7 +1310,7 @@ mod imp {
         fn set_up_gpu_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut gpus = HashMap::new();
 
@@ -1394,7 +1398,7 @@ mod imp {
         fn set_up_fan_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut fans = HashMap::new();
             let len = readings.fans_info.len();
@@ -1417,7 +1421,7 @@ mod imp {
 
         pub fn create_fan_page(
             &self,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
             fan_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, FanPage)) {
@@ -1566,7 +1570,7 @@ mod imp {
     impl PerformancePage {
         pub fn set_up_pages(
             this: &super::PerformancePage,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
@@ -1673,7 +1677,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePage,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             use glib::g_warning;
 
@@ -2168,12 +2172,12 @@ glib::wrapper! {
 }
 
 impl PerformancePage {
-    pub fn set_initial_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         let ok = imp::PerformancePage::set_up_pages(self, readings);
         imp::PerformancePage::update_readings(self, readings) && ok
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePage::update_readings(self, readings)
     }
 

@@ -305,7 +305,7 @@ mod imp {
     impl PerformancePageCpu {
         pub fn set_static_information(
             this: &super::PerformancePageCpu,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
@@ -420,7 +420,7 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageCpu,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let mut graph_widgets = this.imp().graph_widgets.take();
             let this = this.imp();
@@ -1039,11 +1039,11 @@ impl PerformancePageCpu {
         this
     }
 
-    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_static_information(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageCpu::set_static_information(self, readings)
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageCpu::update_readings(self, readings)
     }
 }

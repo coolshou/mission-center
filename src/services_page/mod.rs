@@ -43,7 +43,7 @@ use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 use crate::{
     app,
     i18n::*,
-    sys_info_v2::{Readings, SysInfoV2},
+    magpie_client::{MagpieClient, Readings},
 };
 
 mod context_menu_button;
@@ -374,7 +374,7 @@ mod imp {
 
             fn make_gatherer_request(
                 this: WeakRef<super::ServicesPage>,
-                request: fn(&SysInfoV2, &str),
+                request: fn(&MagpieClient, &str),
             ) {
                 let app = app!();
 
