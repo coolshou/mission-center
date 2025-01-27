@@ -1013,21 +1013,76 @@ impl Client {
         )
     }
 
+    pub fn service_logs(&self, service_id: String, pid: Option<NonZeroU32>) -> String {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_logs(service_id, pid),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Logs,
+            ServicesResponse::Error,
+            |logs| logs
+        )
+    }
+
     pub fn terminate_process(&self, _pid: u32) {}
 
     pub fn kill_process(&self, _pid: u32) {}
 
-    pub fn start_service(&self, _service_name: &str) {}
+    pub fn start_service(&self, service_id: String) {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn stop_service(&self, _service_name: &str) {}
+        let _ = make_request(
+            ipc::req_start_service(service_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        );
+    }
 
-    pub fn restart_service(&self, _service_name: &str) {}
+    pub fn stop_service(&self, service_id: String) {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn enable_service(&self, _service_name: &str) {}
+        let _ = make_request(
+            ipc::req_stop_service(service_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        );
+    }
 
-    pub fn disable_service(&self, _service_name: &str) {}
+    pub fn restart_service(&self, service_id: String) {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn get_service_logs(&self, _service_name: &str, _pid: Option<NonZeroU32>) -> Arc<str> {
-        Arc::from("")
+        let _ = make_request(
+            ipc::req_restart_service(service_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        );
+    }
+
+    pub fn enable_service(&self, service_id: String) {
+        let mut socket = self.socket.borrow_mut();
+
+        let _ = make_request(
+            ipc::req_enable_service(service_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        );
+    }
+
+    pub fn disable_service(&self, service_id: String) {
+        let mut socket = self.socket.borrow_mut();
+
+        let _ = make_request(
+            ipc::req_disable_service(service_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        );
     }
 }

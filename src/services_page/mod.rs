@@ -407,7 +407,7 @@ mod imp {
                 let this = this.downgrade();
                 move |_action, _| {
                     make_gatherer_request(this.clone(), |sys_info, service_name| {
-                        sys_info.start_service(service_name);
+                        sys_info.start_service(service_name.to_owned());
                     });
                 }
             });
@@ -416,7 +416,7 @@ mod imp {
                 let this = this.downgrade();
                 move |_action, _| {
                     make_gatherer_request(this.clone(), |sys_info, service_name| {
-                        sys_info.stop_service(service_name);
+                        sys_info.stop_service(service_name.to_owned());
                     });
                 }
             });
@@ -425,7 +425,7 @@ mod imp {
                 let this = this.downgrade();
                 move |_action, _| {
                     make_gatherer_request(this.clone(), |sys_info, service_name| {
-                        sys_info.restart_service(service_name);
+                        sys_info.restart_service(service_name.to_owned());
                     });
                 }
             });

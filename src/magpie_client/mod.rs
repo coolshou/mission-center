@@ -86,16 +86,16 @@ enum Message {
     UpdateCoreCountAffectsPercentages(bool),
     TerminateProcess(Pid),
     KillProcess(Pid),
-    StartService(Arc<str>),
-    StopService(Arc<str>),
-    RestartService(Arc<str>),
-    EnableService(Arc<str>),
-    DisableService(Arc<str>),
-    GetServiceLogs(Arc<str>, Option<NonZeroU32>),
+    GetServiceLogs(String, Option<NonZeroU32>),
+    StartService(String),
+    StopService(String),
+    RestartService(String),
+    EnableService(String),
+    DisableService(String),
 }
 
 enum Response {
-    String(Arc<str>),
+    String(String),
 }
 
 #[derive(Debug)]
@@ -272,105 +272,16 @@ impl MagpieClient {
         }
     }
 
-    pub fn start_service(&self, name: &str) {
-        match self
-            .sender
-            .send(Message::StartService(Arc::<str>::from(name)))
-        {
+    pub fn service_logs(&self, service_id: String, pid: Option<NonZeroU32>) -> String {
+        let sid = service_id.clone();
+        match self.sender.send(Message::GetServiceLogs(service_id, pid)) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
-                    "Error sending StartService({}) to gatherer: {}",
-                    name,
-                    e
-                );
-            }
-            _ => {}
-        }
-    }
-
-    pub fn stop_service(&self, name: &str) {
-        match self
-            .sender
-            .send(Message::StopService(Arc::<str>::from(name)))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending StopService({}) to gatherer: {}",
-                    name,
-                    e
-                );
-            }
-            _ => {}
-        }
-    }
-
-    pub fn restart_service(&self, name: &str) {
-        match self
-            .sender
-            .send(Message::RestartService(Arc::<str>::from(name)))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending RestartService({}) to gatherer: {}",
-                    name,
-                    e
-                );
-            }
-            _ => {}
-        }
-    }
-
-    pub fn enable_service(&self, name: &str) {
-        match self
-            .sender
-            .send(Message::EnableService(Arc::<str>::from(name)))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending EnableService({}) to gatherer: {}",
-                    name,
-                    e
-                );
-            }
-            _ => {}
-        }
-    }
-
-    pub fn disable_service(&self, name: &str) {
-        match self
-            .sender
-            .send(Message::DisableService(Arc::<str>::from(name)))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending DisableService({}) to gatherer: {}",
-                    name,
-                    e
-                );
-            }
-            _ => {}
-        }
-    }
-
-    pub fn service_logs(&self, name: &str, pid: Option<NonZeroU32>) -> Arc<str> {
-        match self
-            .sender
-            .send(Message::GetServiceLogs(Arc::<str>::from(name), pid))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending GetServiceLogs({}) to gatherer: {}",
-                    name,
-                    e
+                    "Error sending GetServiceLogs({sid}) to gatherer: {e}",
                 );
 
-                return Arc::from("");
+                return String::new();
             }
             _ => {}
         }
@@ -383,8 +294,73 @@ impl MagpieClient {
                     "Error receiving GetServiceLogs response: {}",
                     e
                 );
-                Arc::from("")
+                String::new()
             }
+        }
+    }
+
+    pub fn start_service(&self, service_id: String) {
+        let sid = service_id.clone();
+        match self.sender.send(Message::StartService(service_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending StartService({sid}) to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    pub fn stop_service(&self, service_id: String) {
+        let sid = service_id.clone();
+        match self.sender.send(Message::StopService(service_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending StopService({sid}) to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    pub fn restart_service(&self, service_id: String) {
+        let sid = service_id.clone();
+        match self.sender.send(Message::RestartService(service_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending RestartService({sid}) to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    pub fn enable_service(&self, service_id: String) {
+        let sid = service_id.clone();
+        match self.sender.send(Message::EnableService(service_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending EnableService({sid}) to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    pub fn disable_service(&self, service_id: String) {
+        let sid = service_id.clone();
+        match self.sender.send(Message::DisableService(service_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending DisableService({sid}) to gatherer: {e}",
+                );
+            }
+            _ => {}
         }
     }
 }
@@ -417,22 +393,22 @@ impl MagpieClient {
                     gatherer.kill_process(pid);
                 }
                 Message::StartService(name) => {
-                    gatherer.start_service(&name);
+                    gatherer.start_service(name);
                 }
                 Message::StopService(name) => {
-                    gatherer.stop_service(&name);
+                    gatherer.stop_service(name);
                 }
                 Message::RestartService(name) => {
-                    gatherer.restart_service(&name);
+                    gatherer.restart_service(name);
                 }
                 Message::EnableService(name) => {
-                    gatherer.enable_service(&name);
+                    gatherer.enable_service(name);
                 }
                 Message::DisableService(name) => {
-                    gatherer.disable_service(&name);
+                    gatherer.disable_service(name);
                 }
                 Message::GetServiceLogs(name, pid) => {
-                    let resp = gatherer.get_service_logs(&name, pid);
+                    let resp = gatherer.service_logs(name, pid);
                     if let Err(e) = tx.send(Response::String(resp)) {
                         g_critical!(
                             "MissionCenter::SysInfo",
