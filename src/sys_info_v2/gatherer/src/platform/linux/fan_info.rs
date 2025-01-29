@@ -25,12 +25,13 @@ use glob::glob;
 
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::platform::fan_info::{FanInfoExt, FansInfoExt};
+use crate::MK_TO_0_C;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxFanInfo {
     pub fan_label: Arc<str>,
     pub temp_name: Arc<str>,
-    pub temp_amount: i64,
+    pub temp_amount: u32,
     pub rpm: u64,
     pub percent_vroomimg: f32,
 
@@ -84,7 +85,7 @@ impl FanInfoExt for LinuxFanInfo {
         &self.temp_name
     }
 
-    fn temp_amount(&self) -> i64 {
+    fn temp_amount(&self) -> u32 {
         self.temp_amount
     }
 
@@ -200,9 +201,13 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                                 "{}/temp{}_input",
                                 parent_dir_str, findex
                             )) {
-                                v.trim().parse::<i64>().ok().unwrap_or(i64::MIN)
+                                if let Ok(v) = v.trim().parse::<i32>() {
+                                    ( v + MK_TO_0_C as i32).try_into().unwrap_or(0)
+                                } else {
+                                    0
+                                }
                             } else {
-                                i64::MIN
+                                0
                             };
 
                             let max_speed = if let Ok(v) = std::fs::read_to_string(format!(
