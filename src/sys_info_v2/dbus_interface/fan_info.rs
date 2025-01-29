@@ -23,13 +23,13 @@ use std::sync::Arc;
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
 use dbus::Signature;
 
-use super::{deser_f32, deser_i64, deser_str, deser_u64};
+use super::{deser_f32, deser_str, deser_u64, deser_u32};
 
 #[derive(Debug, Clone)]
 pub struct FanInfo {
     pub fan_label: Arc<str>,
     pub temp_name: Arc<str>,
-    pub temp_amount: i64,
+    pub temp_amount: u32,
     pub rpm: u64,
     pub percent_vroomimg: f32,
 
@@ -96,7 +96,7 @@ impl Arg for FanInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssxtdttt)")
+        Signature::from("a(ssttdttt)")
     }
 }
 
@@ -159,7 +159,7 @@ impl<'a> Get<'a> for FanInfoVec {
                             None => continue,
                         };
 
-                        this.temp_amount = match deser_i64(fan_info, "FanInfo", 2) {
+                        this.temp_amount = match deser_u32(fan_info, "FanInfo", 2) {
                             Some(s) => s,
                             None => continue,
                         };

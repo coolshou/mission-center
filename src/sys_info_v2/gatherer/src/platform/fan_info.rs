@@ -32,8 +32,8 @@ pub trait FanInfoExt: Default + Append + Arg {
     /// The temp that the fan is meant to combat
     fn temp_name(&self) -> &str;
 
-    /// The fan's temperature in mC (milli celcius)
-    fn temp_amount(&self) -> i64;
+    /// The fan's temperature in mK (milli Kelvin)
+    fn temp_amount(&self) -> u32;
 
     /// The fan's sped in rpm
     fn rpm(&self) -> u64;
@@ -55,7 +55,7 @@ impl Arg for crate::platform::FanInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssxtdttt)")
+        Signature::from("(ssutdttt)")
     }
 }
 
