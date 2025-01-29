@@ -974,15 +974,16 @@ mod imp {
             let temp = readings.cpu_dynamic_info.temperature;
             let util = readings.cpu_dynamic_info.overall_utilization_percent;
 
-            summary.set_info2(format!(
-                "{}%{}",
-                util,
-                if let Some(temp) = temp {
-                    format!(" ({} °C)", temp)
-                } else {
-                    String::new()
-                }
-            ));
+            summary.set_info2(
+                format!("{}%{}",
+                    util,
+                    if let Some(temp) = temp {
+                        format!(" ({} °C)", temp)
+                    } else {
+                        String::new()
+                    }
+                )
+            );
 
             summary.set_base_color(gdk::RGBA::new(
                 CPU_BASE_COLOR[0] as f32 / 255.,
@@ -1144,12 +1145,7 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(
-                &summary,
-                &disk_static_info.r#type,
-                disk_static_info.id.as_ref(),
-                disk_id,
-            );
+            self.update_disk_heading(&summary, &disk_static_info.r#type, disk_static_info.id.as_ref(), disk_id);
             summary.set_info1(disk_static_info.model.as_ref());
             summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
             summary.set_base_color(gdk::RGBA::new(
@@ -1738,8 +1734,8 @@ mod imp {
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
                             if !readings.disks_info.iter().any(|device| {
-                                device.capacity > 0
-                                    && &Self::disk_page_name(device.id.as_ref()) == disk_page_name
+                                device.capacity > 0 &&
+                                &Self::disk_page_name(device.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
                             }
@@ -1804,8 +1800,7 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
-                        summary.set_info2(format!(
-                            "{}%{}",
+                        summary.set_info2(format!("{}%{}",
                             readings
                                 .cpu_dynamic_info
                                 .overall_utilization_percent
@@ -1883,16 +1878,15 @@ mod imp {
 
                                 // i dare you to have a 1mK(elvin) drive
                                 if disk.drive_temperature == 0 {
-                                    summary.set_info2(format!("{:.0}%", disk.busy_percent,));
-                                } else {
                                     summary.set_info2(format!(
-                                        "{:.0}%{}",
+                                        "{:.0}%",
+                                        disk.busy_percent,
+                                    ));
+                                } else {
+                                    summary.set_info2(format!("{:.0}%{}",
                                         disk.busy_percent,
                                         if disk.drive_temperature != 0 {
-                                            format!(
-                                                " ({} °C)",
-                                                (disk.drive_temperature - MK_TO_0_C) / 1000
-                                            )
+                                            format!(" ({} °C)", (disk.drive_temperature - MK_TO_0_C ) / 1000)
                                         } else {
                                             String::new()
                                         }
@@ -1910,7 +1904,7 @@ mod imp {
 
                         for new_device_index in new_devices {
                             if readings.disks_info[new_device_index].capacity == 0 {
-                                continue;
+                                continue
                             }
                             let (disk_id, page) = this.imp().create_disk_page(
                                 readings,
@@ -2044,8 +2038,7 @@ mod imp {
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
                                 if fan_info.percent_vroomimg < 0. {
-                                    summary.set_info1(format!(
-                                        "{} RPM{}",
+                                    summary.set_info1(format!("{} RPM{}",
                                         fan_info.rpm,
                                         if fan_info.temp_amount != i64::MIN {
                                             format!(
