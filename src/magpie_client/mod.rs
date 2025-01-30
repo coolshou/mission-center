@@ -33,8 +33,8 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, CpuDynamicInfo, CpuStaticInfo, DiskInfo, DiskType, FanInfo, Gpu,
-    Memory, MemoryDevice, Process, ProcessUsageStats, Service,
+    App, Client, Connection, Cpu, DiskInfo, DiskType, FanInfo, Gpu, Memory, MemoryDevice, Process,
+    ProcessUsageStats, Service,
 };
 
 macro_rules! cmd_flatpak_host {
@@ -100,8 +100,7 @@ enum Response {
 
 #[derive(Debug)]
 pub struct Readings {
-    pub cpu_static_info: CpuStaticInfo,
-    pub cpu_dynamic_info: CpuDynamicInfo,
+    pub cpu: Cpu,
     pub mem_info: Memory,
     pub mem_devices: Vec<MemoryDevice>,
     pub disks_info: Vec<DiskInfo>,
@@ -118,8 +117,7 @@ pub struct Readings {
 impl Readings {
     pub fn new() -> Self {
         Self {
-            cpu_static_info: Default::default(),
-            cpu_dynamic_info: Default::default(),
+            cpu: Default::default(),
             mem_info: Memory::default(),
             mem_devices: vec![],
             disks_info: vec![],
@@ -434,8 +432,7 @@ impl MagpieClient {
         gatherer.start();
 
         let mut readings = Readings {
-            cpu_static_info: gatherer.cpu_static_info(),
-            cpu_dynamic_info: gatherer.cpu_dynamic_info(),
+            cpu: gatherer.cpu(),
             mem_info: gatherer.memory(),
             mem_devices: gatherer.memory_devices(),
             disks_info: gatherer.disks_info(),
@@ -462,8 +459,7 @@ impl MagpieClient {
 
         idle_add_once({
             let initial_readings = Readings {
-                cpu_static_info: readings.cpu_static_info.clone(),
-                cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
+                cpu: readings.cpu.clone(),
                 mem_info: readings.mem_info.clone(),
                 mem_devices: std::mem::take(&mut readings.mem_devices),
                 disks_info: std::mem::take(&mut readings.disks_info),
@@ -508,10 +504,10 @@ impl MagpieClient {
             let loop_start = std::time::Instant::now();
 
             let timer = std::time::Instant::now();
-            readings.cpu_dynamic_info = gatherer.cpu_dynamic_info();
+            readings.cpu = gatherer.cpu();
             g_debug!(
                 "MissionCenter::Perf",
-                "CPU dynamic info load took: {:?}",
+                "CPU info load took: {:?}",
                 timer.elapsed()
             );
 
@@ -592,8 +588,7 @@ impl MagpieClient {
 
             idle_add_once({
                 let mut new_readings = Readings {
-                    cpu_static_info: readings.cpu_static_info.clone(),
-                    cpu_dynamic_info: std::mem::take(&mut readings.cpu_dynamic_info),
+                    cpu: readings.cpu.clone(),
                     mem_info: readings.mem_info.clone(),
                     mem_devices: readings.mem_devices.clone(),
                     disks_info: std::mem::take(&mut readings.disks_info),

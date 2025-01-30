@@ -975,7 +975,7 @@ mod imp {
 
             summary.set_heading(i18n("CPU"));
             summary.set_info1("0% 0.00 GHz");
-            match readings.cpu_dynamic_info.temperature.as_ref() {
+            match readings.cpu.temperature_celsius.as_ref() {
                 Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                 _ => {}
             }
@@ -1783,19 +1783,13 @@ mod imp {
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
 
-                        graph_widget.add_data_point(
-                            0,
-                            readings.cpu_dynamic_info.overall_utilization_percent,
-                        );
+                        graph_widget.add_data_point(0, readings.cpu.total_usage_percent);
                         summary.set_info1(format!(
                             "{}% {:.2} GHz",
-                            readings
-                                .cpu_dynamic_info
-                                .overall_utilization_percent
-                                .round(),
-                            readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
+                            readings.cpu.total_usage_percent.round(),
+                            readings.cpu.current_frequency_mhz as f32 / 1024.
                         ));
-                        match readings.cpu_dynamic_info.temperature.as_ref() {
+                        match readings.cpu.temperature_celsius.as_ref() {
                             Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                             _ => {}
                         }

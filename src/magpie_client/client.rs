@@ -29,6 +29,8 @@ use gtk::glib::{g_critical, g_debug};
 use magpie_types::apps::apps_response;
 use magpie_types::apps::apps_response::AppList;
 pub use magpie_types::apps::App;
+use magpie_types::cpu::cpu_response;
+pub use magpie_types::cpu::Cpu;
 use magpie_types::gpus::gpus_response;
 use magpie_types::gpus::gpus_response::GpuMap;
 pub use magpie_types::gpus::Gpu;
@@ -54,54 +56,6 @@ mod nng {
     pub use nng_c_sys::*;
 
     pub const NNG_OK: i32 = 0;
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct CpuDynamicInfo {
-    pub overall_utilization_percent: f32,
-    pub overall_kernel_utilization_percent: f32,
-    pub per_logical_cpu_utilization_percent: Vec<f32>,
-    pub per_logical_cpu_kernel_utilization_percent: Vec<f32>,
-    pub current_frequency_mhz: u64,
-    pub temperature: Option<f32>,
-    pub process_count: u64,
-    pub thread_count: u64,
-    pub handle_count: u64,
-    pub uptime_seconds: u64,
-    pub cpufreq_driver: Option<Arc<str>>,
-    pub cpufreq_governor: Option<Arc<str>>,
-    pub energy_performance_preference: Option<Arc<str>>,
-}
-
-#[derive(Debug, Clone)]
-pub struct CpuStaticInfo {
-    pub name: Arc<str>,
-    pub logical_cpu_count: u32,
-    pub socket_count: Option<u8>,
-    pub base_frequency_khz: Option<u64>,
-    pub virtualization_technology: Option<Arc<str>>,
-    pub is_virtual_machine: Option<bool>,
-    pub l1_combined_cache: Option<u64>,
-    pub l2_cache: Option<u64>,
-    pub l3_cache: Option<u64>,
-    pub l4_cache: Option<u64>,
-}
-
-impl Default for CpuStaticInfo {
-    fn default() -> Self {
-        Self {
-            name: Arc::from(""),
-            logical_cpu_count: 0,
-            socket_count: None,
-            base_frequency_khz: None,
-            virtualization_technology: None,
-            is_virtual_machine: None,
-            l1_combined_cache: None,
-            l2_cache: None,
-            l3_cache: None,
-            l4_cache: None,
-        }
-    }
 }
 
 #[allow(non_camel_case_types)]
@@ -243,6 +197,7 @@ impl Ord for FanInfo {
 type ResponseBody = response::Body;
 type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
+type CpuResponse = cpu_response::Response;
 type GpusResponse = gpus_response::Response;
 type MemoryResponse = memory_response::Response;
 type ConnectionsResponse = connections_response::Response;
@@ -252,6 +207,7 @@ const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
 
 macro_rules! parse_response {
     ($response: ident, $body_kind: path, $response_kind_ok: path, $response_kind_err: path, $do: expr) => {{
+        let expected_type = stringify!($response_kind_ok);
         match $response {
             Some($body_kind(response)) => match response.response {
                 Some($response_kind_ok(arg)) => $do(arg),
@@ -259,7 +215,7 @@ macro_rules! parse_response {
                     g_critical!(
                         "MissionCenter::Gatherer",
                         "Error while getting {}: {:?}",
-                        stringify!($response_variant),
+                        expected_type,
                         e
                     );
                     Default::default()
@@ -837,12 +793,19 @@ impl Client {
 
     pub fn set_core_count_affects_percentages(&self, _v: bool) {}
 
-    pub fn cpu_static_info(&self) -> CpuStaticInfo {
-        CpuStaticInfo::default()
-    }
+    pub fn cpu(&self) -> Cpu {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
-        CpuDynamicInfo::default()
+        let response = make_request(ipc::req_get_cpu(), &mut socket, self.socket_addr.as_ref())
+            .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Cpu,
+            CpuResponse::Cpu,
+            CpuResponse::Error,
+            |cpu: Cpu| cpu
+        )
     }
 
     pub fn memory(&self) -> Memory {
@@ -1039,50 +1002,95 @@ impl Client {
     pub fn start_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();
 
-        let _ = make_request(
+        let response = make_request(
             ipc::req_start_service(service_id),
             &mut socket,
             self.socket_addr.as_ref(),
-        );
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Empty,
+            ServicesResponse::Error,
+            |_| {}
+        )
     }
 
     pub fn stop_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();
 
-        let _ = make_request(
+        let response = make_request(
             ipc::req_stop_service(service_id),
             &mut socket,
             self.socket_addr.as_ref(),
-        );
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Empty,
+            ServicesResponse::Error,
+            |_| {}
+        )
     }
 
     pub fn restart_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();
 
-        let _ = make_request(
+        let response = make_request(
             ipc::req_restart_service(service_id),
             &mut socket,
             self.socket_addr.as_ref(),
-        );
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Empty,
+            ServicesResponse::Error,
+            |_| {}
+        )
     }
 
     pub fn enable_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();
 
-        let _ = make_request(
+        let response = make_request(
             ipc::req_enable_service(service_id),
             &mut socket,
             self.socket_addr.as_ref(),
-        );
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Empty,
+            ServicesResponse::Error,
+            |_| {}
+        )
     }
 
     pub fn disable_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();
 
-        let _ = make_request(
+        let response = make_request(
             ipc::req_disable_service(service_id),
             &mut socket,
             self.socket_addr.as_ref(),
-        );
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Services,
+            ServicesResponse::Empty,
+            ServicesResponse::Error,
+            |_| {}
+        )
     }
 }

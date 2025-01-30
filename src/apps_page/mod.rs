@@ -1223,13 +1223,8 @@ mod imp {
         pub fn update_column_headers(&self, readings: &crate::magpie_client::Readings) {
             let column_header_cpu = self.column_header_cpu.take();
             if let Some(column_header_cpu) = &column_header_cpu {
-                column_header_cpu.set_heading(format!(
-                    "{}%",
-                    readings
-                        .cpu_dynamic_info
-                        .overall_utilization_percent
-                        .round()
-                ));
+                column_header_cpu
+                    .set_heading(format!("{}%", readings.cpu.total_usage_percent.round()));
             }
             self.column_header_cpu.set(column_header_cpu);
 
@@ -1574,7 +1569,7 @@ impl AppsPage {
         }
 
         this.max_cpu_usage
-            .set(readings.cpu_static_info.logical_cpu_count as f32 * 100.0);
+            .set(readings.cpu.core_usage_percent.len() as f32 * 100.0);
         this.max_memory_usage
             .set(readings.mem_info.mem_total as f32);
 
