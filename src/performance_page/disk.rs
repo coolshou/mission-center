@@ -232,24 +232,36 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
             }
 
-            let cap = crate::to_human_readable(disk.capacity_bytes as f32, 1024.);
             if let Some(capacity) = this.capacity.get() {
-                capacity.set_text(&format!(
-                    "{:.2} {}{}B",
-                    cap.0,
-                    cap.1,
-                    if cap.1.is_empty() { "" } else { "i" }
-                ));
+                if let Some(cap) = disk
+                    .capacity_bytes
+                    .map(|c| crate::to_human_readable(c as f32, 1024.))
+                {
+                    capacity.set_text(&format!(
+                        "{:.2} {}{}B",
+                        cap.0,
+                        cap.1,
+                        if cap.1.is_empty() { "" } else { "i" }
+                    ));
+                } else {
+                    capacity.set_text(&i18n("Unknown"));
+                }
             }
 
-            let fmt = crate::to_human_readable(disk.formatted_bytes as f32, 1024.);
             if let Some(formatted) = this.formatted.get() {
-                formatted.set_text(&format!(
-                    "{:.2} {}{}B",
-                    fmt.0,
-                    fmt.1,
-                    if fmt.1.is_empty() { "" } else { "i" }
-                ));
+                if let Some(fmt) = disk
+                    .capacity_bytes
+                    .map(|c| crate::to_human_readable(c as f32, 1024.))
+                {
+                    formatted.set_text(&format!(
+                        "{:.2} {}{}B",
+                        fmt.0,
+                        fmt.1,
+                        if fmt.1.is_empty() { "" } else { "i" }
+                    ));
+                } else {
+                    formatted.set_text(&i18n("Unknown"));
+                }
             }
 
             let is_system_disk = if disk.is_system {
