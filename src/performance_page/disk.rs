@@ -24,6 +24,8 @@ use adw::{self, subclass::prelude::*};
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use magpie_types::disks::{Disk, DiskKind};
+
 use super::{widgets::GraphWidget, PageExt};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
@@ -174,10 +176,8 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: Option<i32>,
-            disk: &crate::magpie_client::DiskInfo,
+            disk: &Disk,
         ) -> bool {
-            use crate::magpie_client::DiskType;
-
             let t = this.clone();
             this.imp()
                 .usage_graph
@@ -213,7 +213,12 @@ mod imp {
             } else {
                 this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
-            this.model.set_text(&disk.model);
+
+            if let Some(disk_model) = disk.model.as_ref() {
+                this.model.set_text(disk_model);
+            } else {
+                this.model.set_text(&i18n("Unknown"));
+            }
 
             this.disk_transfer_rate_graph.set_dashed(1, true);
             this.disk_transfer_rate_graph.set_filled(1, false);
@@ -227,7 +232,7 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
             }
 
-            let cap = crate::to_human_readable(disk.capacity as f32, 1024.);
+            let cap = crate::to_human_readable(disk.capacity_bytes as f32, 1024.);
             if let Some(capacity) = this.capacity.get() {
                 capacity.set_text(&format!(
                     "{:.2} {}{}B",
@@ -237,7 +242,7 @@ mod imp {
                 ));
             }
 
-            let fmt = crate::to_human_readable(disk.formatted as f32, 1024.);
+            let fmt = crate::to_human_readable(disk.formatted_bytes as f32, 1024.);
             if let Some(formatted) = this.formatted.get() {
                 formatted.set_text(&format!(
                     "{:.2} {}{}B",
@@ -247,7 +252,7 @@ mod imp {
                 ));
             }
 
-            let is_system_disk = if disk.system_disk {
+            let is_system_disk = if disk.is_system {
                 i18n("Yes")
             } else {
                 i18n("No")
@@ -257,16 +262,21 @@ mod imp {
             }
 
             if let Some(disk_type) = this.disk_type.get() {
-                disk_type.set_text(match disk.r#type {
-                    DiskType::HDD => "HDD",
-                    DiskType::SSD => "SSD",
-                    DiskType::NVMe => "NVMe",
-                    DiskType::eMMC => "eMMC",
-                    DiskType::SD => "SD",
-                    DiskType::iSCSI => "iSCSI",
-                    DiskType::Optical => "Optical",
-                    DiskType::Unknown => "Unknown",
-                });
+                if let Some(disk_kind) = disk.kind.and_then(|k| k.try_into().ok()) {
+                    let disk_type_str = match disk_kind {
+                        DiskKind::Hdd => i18n("HDD"),
+                        DiskKind::Ssd => i18n("SSD"),
+                        DiskKind::NvMe => i18n("NVMe"),
+                        DiskKind::EMmc => i18n("eMMC"),
+                        DiskKind::Sd => i18n("SD"),
+                        DiskKind::IScsi => i18n("iSCSI"),
+                        DiskKind::Optical => i18n("Optical"),
+                        DiskKind::Floppy => i18n("Floppy"),
+                    };
+                    disk_type.set_text(&disk_type_str);
+                } else {
+                    disk_type.set_text(&i18n("Unknown"));
+                };
             }
             true
         }
@@ -274,7 +284,7 @@ mod imp {
         pub fn update_readings(
             this: &super::PerformancePageDisk,
             index: Option<usize>,
-            disk: &crate::magpie_client::DiskInfo,
+            disk: &Disk,
         ) -> bool {
             let this = this.imp();
 
@@ -310,28 +320,28 @@ mod imp {
             }
 
             this.disk_transfer_rate_graph
-                .add_data_point(0, disk.read_speed as f32);
-            let rsp = crate::to_human_readable(disk.read_speed as f32, 1024.);
+                .add_data_point(0, disk.rx_speed_bytes_ps as f32);
+            let rsp = crate::to_human_readable(disk.rx_speed_bytes_ps as f32, 1024.);
             let i = if rsp.1.is_empty() { "" } else { "i" };
             if let Some(read_speed) = this.read_speed.get() {
                 read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
             }
 
-            let trd = crate::to_human_readable(disk.total_read as f32, 1024.);
+            let trd = crate::to_human_readable(disk.rx_bytes_total as f32, 1024.);
             let i = if trd.1.is_empty() { "" } else { "i" };
             if let Some(total_read) = this.total_read.get() {
                 total_read.set_text(&format!("{0:.2$} {1}{3}B", trd.0, trd.1, trd.2, i,));
             }
 
             this.disk_transfer_rate_graph
-                .add_data_point(1, disk.write_speed as f32);
-            let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
+                .add_data_point(1, disk.tx_speed_bytes_ps as f32);
+            let wsp = crate::to_human_readable(disk.tx_speed_bytes_ps as f32, 1024.);
             let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
                 write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
             }
 
-            let twt = crate::to_human_readable(disk.total_write as f32, 1024.);
+            let twt = crate::to_human_readable(disk.tx_bytes_total as f32, 1024.);
             let i = if twt.1.is_empty() { "" } else { "i" };
             if let Some(total_write) = this.total_write.get() {
                 total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
@@ -621,19 +631,11 @@ impl PerformancePageDisk {
         this
     }
 
-    pub fn set_static_information(
-        &self,
-        index: Option<i32>,
-        disk: &crate::magpie_client::DiskInfo,
-    ) -> bool {
+    pub fn set_static_information(&self, index: Option<i32>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(
-        &self,
-        index: Option<usize>,
-        disk: &crate::magpie_client::DiskInfo,
-    ) -> bool {
+    pub fn update_readings(&self, index: Option<usize>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::update_readings(self, index, disk)
     }
 }

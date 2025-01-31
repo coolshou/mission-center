@@ -33,7 +33,7 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, Cpu, DiskInfo, DiskType, FanInfo, Gpu, Memory, MemoryDevice, Process,
+    App, Client, Connection, Cpu, Disk, DiskKind, FanInfo, Gpu, Memory, MemoryDevice, Process,
     ProcessUsageStats, Service,
 };
 
@@ -103,7 +103,7 @@ pub struct Readings {
     pub cpu: Cpu,
     pub mem_info: Memory,
     pub mem_devices: Vec<MemoryDevice>,
-    pub disks_info: Vec<DiskInfo>,
+    pub disks_info: Vec<Disk>,
     pub network_connections: Vec<Connection>,
     pub gpus: HashMap<String, Gpu>,
     pub fans_info: Vec<FanInfo>,
@@ -452,7 +452,9 @@ impl MagpieClient {
             );
         }
 
-        readings.disks_info.sort_unstable();
+        readings
+            .disks_info
+            .sort_unstable_by(|d1, d2| d1.id.cmp(&d2.id));
         readings
             .network_connections
             .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));
@@ -577,7 +579,9 @@ impl MagpieClient {
                 );
             }
 
-            readings.disks_info.sort_unstable();
+            readings
+                .disks_info
+                .sort_unstable_by(|d1, d2| d1.id.cmp(&d2.id));
             readings
                 .network_connections
                 .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));

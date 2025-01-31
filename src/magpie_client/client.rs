@@ -31,6 +31,9 @@ use magpie_types::apps::apps_response::AppList;
 pub use magpie_types::apps::App;
 use magpie_types::cpu::cpu_response;
 pub use magpie_types::cpu::Cpu;
+use magpie_types::disks::disks_response;
+use magpie_types::disks::disks_response::DiskList;
+pub use magpie_types::disks::{Disk, DiskKind};
 use magpie_types::gpus::gpus_response;
 use magpie_types::gpus::gpus_response::GpuMap;
 pub use magpie_types::gpus::Gpu;
@@ -56,83 +59,6 @@ mod nng {
     pub use nng_c_sys::*;
 
     pub const NNG_OK: i32 = 0;
-}
-
-#[allow(non_camel_case_types)]
-#[derive(Debug, Clone, PartialEq, Eq)]
-#[repr(u8)]
-pub enum DiskType {
-    Unknown = 0,
-    HDD,
-    SSD,
-    NVMe,
-    eMMC,
-    SD,
-    iSCSI,
-    Optical,
-}
-
-impl Default for DiskType {
-    fn default() -> Self {
-        Self::Unknown
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct DiskInfo {
-    pub id: Arc<str>,
-    pub model: Arc<str>,
-    pub r#type: DiskType,
-    pub capacity: u64,
-    pub formatted: u64,
-    pub system_disk: bool,
-
-    pub busy_percent: f32,
-    pub response_time_ms: f32,
-    pub read_speed: u64,
-    pub total_read: u64,
-    pub write_speed: u64,
-    pub total_write: u64,
-}
-
-impl Default for DiskInfo {
-    fn default() -> Self {
-        Self {
-            id: Arc::from(""),
-            model: Arc::from(""),
-            r#type: DiskType::default(),
-            capacity: 0,
-            formatted: 0,
-            system_disk: false,
-
-            busy_percent: 0.,
-            response_time_ms: 0.,
-            read_speed: 0,
-            total_read: 0,
-            write_speed: 0,
-            total_write: 0,
-        }
-    }
-}
-
-impl Eq for DiskInfo {}
-
-impl PartialEq<Self> for DiskInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.id.as_ref() == other.id.as_ref()
-    }
-}
-
-impl PartialOrd<Self> for DiskInfo {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.id.as_ref().cmp(other.id.as_ref()))
-    }
-}
-
-impl Ord for DiskInfo {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.id.as_ref().cmp(other.id.as_ref())
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -195,12 +121,13 @@ impl Ord for FanInfo {
 }
 
 type ResponseBody = response::Body;
-type ProcessesResponse = processes_response::Response;
 type AppsResponse = apps_response::Response;
 type CpuResponse = cpu_response::Response;
+type DisksResponse = disks_response::Response;
 type GpusResponse = gpus_response::Response;
 type MemoryResponse = memory_response::Response;
 type ConnectionsResponse = connections_response::Response;
+type ProcessesResponse = processes_response::Response;
 type ServicesResponse = services_response::Response;
 
 const ENV_MC_DEBUG_MAGPIE_PROCESS_SOCK: &str = "MC_DEBUG_MAGPIE_PROCESS_SOCK";
@@ -869,8 +796,19 @@ impl Client {
         )
     }
 
-    pub fn disks_info(&self) -> Vec<DiskInfo> {
-        vec![]
+    pub fn disks_info(&self) -> Vec<Disk> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(ipc::req_get_disks(), &mut socket, self.socket_addr.as_ref())
+            .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Disks,
+            DisksResponse::Disks,
+            DisksResponse::Error,
+            |mut disks: DiskList| { std::mem::take(&mut disks.disks) }
+        )
     }
 
     pub fn fans_info(&self) -> Vec<FanInfo> {

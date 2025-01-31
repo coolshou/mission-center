@@ -36,7 +36,7 @@ use gtk::{
 use magpie_types::network::{Connection, ConnectionKind};
 
 use crate::magpie_client::FanInfo;
-use crate::{i18n::*, magpie_client::DiskType, settings};
+use crate::{i18n::*, magpie_client::DiskKind, settings};
 
 use widgets::{GraphWidget, SidebarDropHint};
 
@@ -1127,16 +1127,21 @@ mod imp {
             summary.set_widget_name(&page_name);
 
             self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            summary.set_info1(match disk_static_info.r#type {
-                DiskType::HDD => i18n("HDD"),
-                DiskType::SSD => i18n("SSD"),
-                DiskType::NVMe => i18n("NVMe"),
-                DiskType::eMMC => i18n("eMMC"),
-                DiskType::SD => i18n("SD"),
-                DiskType::iSCSI => i18n("iSCSI"),
-                DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Unknown"),
-            });
+            if let Some(disk_kind) = disk_static_info.kind.and_then(|k| k.try_into().ok()) {
+                summary.set_info1(match disk_kind {
+                    DiskKind::Hdd => i18n("HDD"),
+                    DiskKind::Ssd => i18n("SSD"),
+                    DiskKind::NvMe => i18n("NVMe"),
+                    DiskKind::EMmc => i18n("eMMC"),
+                    DiskKind::Sd => i18n("SD"),
+                    DiskKind::IScsi => i18n("iSCSI"),
+                    DiskKind::Optical => i18n("Optical"),
+                    DiskKind::Floppy => i18n("Floppy"),
+                });
+            } else {
+                summary.set_info1(i18n("Unknown"));
+            };
+
             summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
