@@ -156,6 +156,18 @@ mod imp {
             self.value_range_max.set(max);
         }
 
+        pub fn set_dateset_min(&self, min: f32) {
+            let mut set = self.data_sets.take();
+            set[0].min_all_time = min;
+            self.data_sets.set(set);
+        }
+
+        pub fn set_dateset_max(&self, max: f32) {
+            let mut set = self.data_sets.take();
+            set[0].max_all_time = max;
+            self.data_sets.set(set);
+        }
+
         fn set_scaling(&self, scaling: i32) {
             match scaling {
                 NO_SCALING => {
@@ -354,8 +366,6 @@ mod imp {
                     .skip_while(|(_, y)| *y <= scale_factor)
                     .collect()
             } else {
-                println!("Range is {}/{} ({:?})", val_min, val_max, data_points.data_set);
-
                 let mut min = if !self.only_scale_down.get() {
                     Some(val_min)
                 } else {
@@ -420,8 +430,6 @@ mod imp {
                         }
                     }))
                     .collect();
-
-                println!("Brange {}/{} ({:?})", min, max, out);
 
                 out
             };
