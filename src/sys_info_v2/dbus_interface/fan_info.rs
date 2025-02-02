@@ -23,7 +23,7 @@ use std::sync::Arc;
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
 use dbus::Signature;
 
-use super::{deser_f32, deser_i64, deser_str, deser_u32, deser_u64};
+use super::{deser_f32, deser_str, deser_u64, deser_u32};
 
 #[derive(Debug, Clone)]
 pub struct FanInfo {
@@ -96,7 +96,7 @@ impl Arg for FanInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("a(ssutdttt)")
+        Signature::from("a(ssttdttt)")
     }
 }
 

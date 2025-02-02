@@ -1,6 +1,6 @@
 /* apps_page/view_model.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2024 Mission Center Devs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,34 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use crate::app;
-use crate::performance_page::disk::PerformancePageDisk;
-use adw::prelude::AdwDialogExt;
-use gtk::{
-    glib,
-    glib::{subclass::prelude::*, ParamSpec, Properties, Value},
-};
 use std::cell::Cell;
 
-use gtk::prelude::{ButtonExt, WidgetExt};
-use gtk::subclass::prelude::WidgetImpl;
-use std::cell::OnceCell;
+use adw::prelude::*;
+use adw::subclass::prelude::*;
+use gtk::glib::{self, g_critical};
+
+use crate::app;
+use crate::performance_page::disk::PerformancePageDisk;
 
 mod imp {
     use super::*;
+    use gtk::subclass::prelude::{CompositeTemplateClass, CompositeTemplateInitializingExt};
 
-    #[derive(Properties)]
-    #[properties(wrapper_type = super::EjectFailureRow)]
+    #[derive(gtk::CompositeTemplate)]
+    #[template(
+        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui"
+    )]
     pub struct EjectFailureRow {
-        pub icon: OnceCell<gtk::Image>,
-        pub pid: OnceCell<gtk::Label>,
-        pub name: OnceCell<gtk::Label>,
-        pub open_files: OnceCell<gtk::Label>,
-        pub kill: OnceCell<gtk::Button>,
-        pub row_entry: OnceCell<gtk::ListBoxRow>,
+        #[template_child]
+        pub icon: TemplateChild<gtk::Image>,
+        #[template_child]
+        pub pid: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub name: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub open_files: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub kill: TemplateChild<gtk::Button>,
 
         pub raw_pid: Cell<Option<u32>>,
     }
@@ -51,10 +54,7 @@ mod imp {
         pub fn set_icon(&self, icon: &str) {
             let icon_path = std::path::Path::new(icon);
             if icon_path.exists() {
-                self.icon
-                    .get()
-                    .expect("Damn")
-                    .set_from_file(Some(&icon_path));
+                self.icon.get().set_from_file(Some(&icon_path));
                 return;
             }
 
@@ -62,11 +62,10 @@ mod imp {
             let icon_theme = gtk::IconTheme::for_display(&display);
 
             if icon_theme.has_icon(icon) {
-                self.icon.get().expect("Damn").set_icon_name(Some(icon));
+                self.icon.get().set_icon_name(Some(icon));
             } else {
                 self.icon
                     .get()
-                    .expect("Damn")
                     .set_icon_name(Some("application-x-executable"));
             }
         }
@@ -80,7 +79,6 @@ mod imp {
                 pid: Default::default(),
                 open_files: Default::default(),
                 kill: Default::default(),
-                row_entry: Default::default(),
                 raw_pid: Default::default(),
             }
         }
@@ -90,67 +88,29 @@ mod imp {
     impl ObjectSubclass for EjectFailureRow {
         const NAME: &'static str = "EjectFailureRow";
         type Type = super::EjectFailureRow;
+        type ParentType = adw::Bin;
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
     }
 
     impl ObjectImpl for EjectFailureRow {
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
-
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
-
-            let sidebar_content_builder = gtk::Builder::from_resource(
-                "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui",
-            );
-
-            let _ = self.row_entry.set(
-                sidebar_content_builder
-                    .object::<gtk::ListBoxRow>("root")
-                    .expect("Could not find `root` object in details pane"),
-            );
-            let _ = self.icon.set(
-                sidebar_content_builder
-                    .object::<gtk::Image>("icon")
-                    .expect("Could not find `icon` object in details pane"),
-            );
-            let _ = self.pid.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("pid")
-                    .expect("Could not find `pid` object in details pane"),
-            );
-            let _ = self.name.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("name")
-                    .expect("Could not find `name` object in details pane"),
-            );
-            let _ = self.open_files.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("open_files")
-                    .expect("Could not find `open_files` object in details pane"),
-            );
-            let _ = self.kill.set(
-                sidebar_content_builder
-                    .object::<gtk::Button>("kill")
-                    .expect("Could not find `kill` object in details pane"),
-            );
-
-            let kill_button = self.kill.get().unwrap();
-            kill_button.add_css_class("destructive-action");
         }
     }
 
     impl WidgetImpl for EjectFailureRow {}
+
+    impl BinImpl for EjectFailureRow {}
 }
 
+#[derive(Clone)]
 pub struct EjectFailureRowBuilder {
     pid: u32,
     icon: glib::GString,
@@ -210,34 +170,44 @@ impl EjectFailureRowBuilder {
         {
             let this = this.imp();
 
-            this.raw_pid.set(Some(self.pid));
-            this.pid
-                .get()
-                .expect("Damn")
-                .set_label(format!("{}", self.pid).as_str());
-            this.name.get().expect("Damn").set_label(self.name.as_str());
             this.set_icon(self.icon.as_str());
-
+            this.pid.set_label(format!("{}", self.pid).as_str());
+            this.name.set_label(self.name.as_str());
             this.open_files
-                .get()
-                .expect("Damn")
                 .set_label(self.files_open.join("\n").as_str());
 
-            this.kill.get().expect("Damn").connect_clicked({
+            this.kill.connect_clicked({
                 move |_| {
-                    println!("killering {:?}", self.pid);
+                    let eject_result = match app!().sys_info() {
+                        Ok(sys_info) => sys_info.eject_disk(self.id.as_str(), false, self.pid),
+                        Err(err) => {
+                            g_critical!(
+                                "MissionCenter::EjectFailureRow",
+                                "Failed to get sys_info: {}",
+                                err
+                            );
+                            return;
+                        }
+                    };
 
-                    let back = app!()
-                        .sys_info()
-                        .expect("Failed to get sys_info")
-                        .eject_disk(self.id.as_str(), false, self.pid);
+                    let Some(parent) = self.parent_page.as_ref() else {
+                        g_critical!(
+                            "MissionCenter::EjectFailureRow",
+                            "Failed to get parent page",
+                        );
+                        return;
+                    };
 
-                    let parent = self.parent_page.as_ref().unwrap();
-                    let efd = parent.eject_failure_dialog().unwrap();
+                    let Some(efd) = parent.eject_failure_dialog() else {
+                        g_critical!(
+                            "MissionCenter::EjectFailureRow",
+                            "Failed to get eject failure dialog",
+                        );
+                        return;
+                    };
                     efd.close();
-                    // efd.imp().apply_eject_result(back, parent);
-                    // todo this feels leaky
-                    parent.imp().show_eject_result(parent, back);
+                    // TODO: this feels leaky
+                    parent.imp().show_eject_result(parent, eject_result);
                 }
             });
         }
@@ -248,7 +218,7 @@ impl EjectFailureRowBuilder {
 
 glib::wrapper! {
     pub struct EjectFailureRow(ObjectSubclass<imp::EjectFailureRow>)
-        @extends gtk::Box, gtk::Widget,
+        @extends adw::Bin, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 

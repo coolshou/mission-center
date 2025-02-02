@@ -62,6 +62,8 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
+const MK_TO_0_C: u32 = 273150;
+
 mod imp {
     use super::*;
 
@@ -1127,7 +1129,7 @@ mod imp {
                 DiskType::NVMe => i18n("NVMe"),
                 DiskType::eMMC => i18n("eMMC"),
                 DiskType::SD => i18n("SD"),
-                DiskType::iSCSI => i18n("iSCSI"),
+                DiskType::Floppy => i18n("Floppy"),
                 DiskType::Optical => i18n("Optical"),
                 DiskType::Unknown => i18n("Unknown"),
             });
@@ -1682,7 +1684,6 @@ mod imp {
                 page_stack: &gtk::Stack,
             ) {
                 for disk_page_name in pages_to_destroy {
-                    println!("Destroying {}", disk_page_name);
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
@@ -1698,9 +1699,6 @@ mod imp {
                         };
 
                         let selection = sidebar.selected_row().unwrap();
-
-                        println!("Selected {:?}", selection);
-                        println!("Rent {:?}", parent);
 
                         if selection.eq(&parent) {
                             let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
@@ -1722,6 +1720,7 @@ mod imp {
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
                             if !readings.disks_info.iter().any(|device| {
+                                device.capacity > 0 &&
                                 &Self::disk_page_name(device.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
@@ -1862,12 +1861,12 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                // i dare you to have a 1K(elvin) drive
-                                if disk.drive_temperature >= 1.0 {
+                                // i dare you to have a 1mK(elvin) drive
+                                if disk.drive_temperature >= 1 {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",
                                         disk.busy_percent,
-                                        disk.drive_temperature - 273.15
+                                        (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%", disk.busy_percent));
@@ -1883,6 +1882,9 @@ mod imp {
                         }
 
                         for new_device_index in new_devices {
+                            if readings.disks_info[new_device_index].capacity == 0 {
+                                continue
+                            }
                             let (disk_id, page) = this.imp().create_disk_page(
                                 readings,
                                 if hide_index {
@@ -1934,6 +1936,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, send_speed);
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
@@ -2017,7 +2020,7 @@ mod imp {
                                 if fan_info.temp_amount != 0 {
                                     summary.set_info2(format!(
                                         "{:.0} °C",
-                                        (fan_info.temp_amount as f32 - 273000.) / 1000.0
+                                        (fan_info.temp_amount - MK_TO_0_C) as f32 / 1000.0
                                     ));
                                 } else {
                                     summary.set_info2("");

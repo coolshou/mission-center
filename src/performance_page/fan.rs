@@ -26,6 +26,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::widgets::GraphWidget;
+use super::MK_TO_0_C;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::PageExt;
@@ -283,7 +284,7 @@ mod imp {
                 ));
             }
 
-            let fan_temp_c = (fan.temp_amount as f32 - 273000.) / 1000.0;
+            let fan_temp_c = (fan.temp_amount + MK_TO_0_C) as f32 / 1000.0;
             if let Some(temp) = this.temp.get() {
                 temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
             }

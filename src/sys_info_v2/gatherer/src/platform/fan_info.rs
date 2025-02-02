@@ -32,7 +32,7 @@ pub trait FanInfoExt: Default + Append + Arg {
     /// The temp that the fan is meant to combat
     fn temp_name(&self) -> &str;
 
-    /// The fan's temperature in mK (milli kelvin)
+    /// The fan's temperature in mK (milli Kelvin)
     fn temp_amount(&self) -> u32;
 
     /// The fan's sped in rpm

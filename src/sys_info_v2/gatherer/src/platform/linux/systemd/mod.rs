@@ -240,11 +240,21 @@ impl<'a> ServiceManager<'a> {
     }
 
     pub fn list_services(&self) -> Result<Vec<Service>, SystemDError> {
+        let (files,): (ServiceFilesVec,) = dbus_call_wait_reply(
+            &self.systemd1,
+            "org.freedesktop.systemd1.Manager",
+            "ListUnitFiles",
+            (),
+        )?;
+
+        // take the filename from the second element in files.val
+
+        let services: Vec<String> = files.val.iter().filter_map(|(service, _)| std::path::Path::new(service).file_name()).filter_map(|fname| fname.to_str()).map(|fname| fname.to_string().replace('@', "")).collect();
         let (mut services,): (ServiceVec,) = dbus_call_wait_reply(
             &self.systemd1,
             "org.freedesktop.systemd1.Manager",
-            "ListUnits",
-            (),
+            "ListUnitsByNames",
+            (services,),
         )?;
 
         let mut services = services

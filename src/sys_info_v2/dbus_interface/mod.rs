@@ -544,7 +544,6 @@ impl<'a> Get<'a> for EjectResult {
                             }
                             Some(block_tuple) => match block_tuple.as_iter() {
                                 None => {
-                                    println!("f");
                                     return None;
                                 }
                                 Some(mut tuple_iter) => {
@@ -769,194 +768,54 @@ impl<'a> Get<'a> for SataSmartEntry {
         };
         let dynamic_info = dynamic_info.as_mut();
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '0: u8', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u8: Expected '0: u8', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => this.id = arr as u8,
-            },
-        }
+        this.id = match deser_u8(dynamic_info, "SataSmartEntry", 0) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get boolean: Expected '1: String', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_str() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get String: Expected '1: String', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.name = arr.to_string();
-                }
-            },
-        }
+        this.name = match deser_str(dynamic_info, "SataSmartEntry", 1) {
+            Some(v) => v.to_string(),
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get u16: Expected '2: u16', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_u64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get u16: Expected '2: String', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.flags = arr as u16;
-                }
-            },
-        }
+        this.flags = match deser_u16(dynamic_info, "SataSmartEntry", 2) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '3: i32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '3: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.value = arr as i32;
-                }
-            },
-        }
+        this.value = match deser_i32(dynamic_info, "SataSmartEntry", 3) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '4: i32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '4: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.worst = arr as i32;
-                }
-            },
-        }
+        this.worst = match deser_i32(dynamic_info, "SataSmartEntry", 4) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '5: i32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '5: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.threshold = arr as i32;
-                }
-            },
-        }
+        this.threshold = match deser_i32(dynamic_info, "SataSmartEntry", 5) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i64: Expected '6: i64', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i64: Expected '6: i64', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.pretty = arr;
-                }
-            },
-        }
+        this.pretty = match deser_i64(dynamic_info, "SataSmartEntry", 6) {
+            Some(v) => v,
+            None => return None
+        };
 
-        match Iterator::next(dynamic_info) {
-            None => {
-                g_critical!(
-                    "MissionCenter::GathererDBusProxy",
-                    "Failed to get i32: Expected '7: i32', got None",
-                );
-                return None;
-            }
-            Some(arg) => match arg.as_i64() {
-                None => {
-                    g_critical!(
-                        "MissionCenter::GathererDBusProxy",
-                        "Failed to get i32: Expected '7: i32', got {:?}",
-                        arg.arg_type(),
-                    );
-                    return None;
-                }
-                Some(arr) => {
-                    this.pretty_unit = arr as i32;
-                }
-            },
-        }
+        this.pretty_unit = match deser_i32(dynamic_info, "SataSmartEntry", 7) {
+            Some(i) => i,
+            None => return None
+        };
 
         Some(this)
     }
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[allow(non_camel_case_types)]
+#[derive(Default, Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SmartTestResult {
+    #[default]
     UNKNOWN_RESULT = 0,
     Success,
     Aborted,

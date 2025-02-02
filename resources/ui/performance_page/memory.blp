@@ -101,6 +101,10 @@ template $PerformancePageMemory: Box {
           data-set-count: 3;
           scroll: true;
         }
+        PopoverMenu context_menu {
+          has-arrow: false;
+          menu-model: context_menu_model;
+        }
       }
       Box {
         orientation: vertical;
@@ -171,11 +175,6 @@ template $PerformancePageMemory: Box {
         }
       }
     };
-  }
-
-  PopoverMenu context_menu {
-    has-arrow: false;
-    menu-model: context_menu_model;
   }
 }
 

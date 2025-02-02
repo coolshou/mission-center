@@ -25,6 +25,7 @@ use glob::glob;
 
 use super::{INITIAL_REFRESH_TS, MIN_DELTA_REFRESH};
 use crate::platform::fan_info::{FanInfoExt, FansInfoExt};
+use crate::MK_TO_0_C;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxFanInfo {
@@ -200,7 +201,11 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                                 "{}/temp{}_input",
                                 parent_dir_str, findex
                             )) {
-                                v.trim().parse::<i64>().ok().map(|i| (i + 273000) as u32).unwrap_or(0)
+                                if let Ok(v) = v.trim().parse::<i32>() {
+                                    ( v + MK_TO_0_C as i32).try_into().unwrap_or(0)
+                                } else {
+                                    0
+                                }
                             } else {
                                 0
                             };

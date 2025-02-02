@@ -25,38 +25,27 @@ use dbus::{
 };
 
 #[allow(non_camel_case_types)]
-#[allow(dead_code)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskType {
+    #[default]
     Unknown = 0,
     HDD,
     SSD,
     NVMe,
     eMMC,
     SD,
-    iSCSI,
+    Floppy,
     Optical,
 }
 
-impl Default for DiskType {
-    fn default() -> Self {
-        Self::Unknown
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DiskSmartInterface {
+    #[default]
     Dumb = 0,
     Ata,
     NVMe,
-}
-
-impl Default for DiskSmartInterface {
-    fn default() -> Self {
-        Self::Dumb
-    }
 }
 
 /// Describes the static (unchanging) information about a physical disk
@@ -102,14 +91,14 @@ pub trait DiskInfoExt: Default + Append + Arg {
     /// The disk's write speed in bytes per second
     fn ejectable(&self) -> bool;
 
-    fn drive_temperature(&self) -> f64;
+    fn drive_temperature(&self) -> u32;
 }
 
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
     fn signature() -> Signature<'static> {
-        Signature::from("(ssyyttbddttttbd)")
+        Signature::from("(ssyyttbddttttbu)")
     }
 }
 
