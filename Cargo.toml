@@ -3,6 +3,9 @@ name = "missioncenter"
 version = "0.6.2"
 edition = "2021"
 
+[features]
+skip-codegen = ["magpie-types/skip-codegen"]
+
 [dependencies]
 arrayvec = "0.7"
 adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
@@ -20,7 +23,7 @@ textdistance = { version = "1.0" }
 path = "subprojects/magpie/types"
 
 [dependencies.nng-c-sys]
-version = "1.9.0-beta.2"
+version = "1.10"
 default-features = false
 
 [profile.release]

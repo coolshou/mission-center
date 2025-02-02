@@ -7,7 +7,9 @@ project('missioncenter',
 i18n = import('i18n')
 gnome = import('gnome')
 
-proj_magpie = subproject('magpie')
+if get_option('flatpak') == false
+    proj_magpie = subproject('magpie')
+endif
 
 subdir('data')
 subdir('po')

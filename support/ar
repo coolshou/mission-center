@@ -1,4 +1,3 @@
 #!/bin/bash
 
 exec /app/zig/zig ar "$@"
-

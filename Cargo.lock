@@ -748,9 +748,9 @@ checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
 
 [[package]]
 name = "nng-c-sys"
-version = "1.9.0-beta.2"
+version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aea512cf89fa285dec820c7446017b1792e984514ca547f1a8b1b785a913d57f"
+checksum = "a6fcb5094be4f9db63e8220e242c45c77d72b86c13df49b3abcf37ed342dd95f"
 dependencies = [
  "cmake",
 ]
