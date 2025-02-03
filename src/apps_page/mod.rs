@@ -438,32 +438,31 @@ mod imp {
 
         pub fn update_app_model(&self) {
             use crate::glib_clone;
-            // use gtk::glib::g_critical;
+            use gtk::glib::g_critical;
             use row_model::{ContentType, RowModel, RowModelBuilder};
             use std::collections::BTreeSet;
 
-            fn find_pid_in_process_tree(_model: ListStore, _pid: u32) -> Option<RowModel> {
-//                 fn fpipt_impl(model: ListStore, pid: u32, result: &mut Option<RowModel>) {
-//                     let len = model.n_items();
-//                     for i in 0..len {
-//                         let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
-//                         if current.pid() == pid {
-//                             *result = Some(current);
-//                             return;
-//                         }
-//                     }
-// 
-//                     for i in 0..len {
-//                         let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
-//                         fpipt_impl(current.children().clone(), pid, result);
-//                     }
-//                 }
-// 
-//                 let mut result = None;
-//                 fpipt_impl(model, pid, &mut result);
-// 
-//                 result
-				None
+            fn find_pid_in_process_tree(model: ListStore, pid: u32) -> Option<RowModel> {
+                fn fpipt_impl(model: ListStore, pid: u32, result: &mut Option<RowModel>) {
+                    let len = model.n_items();
+                    for i in 0..len {
+                        let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
+                        if current.pid() == pid {
+                            *result = Some(current);
+                            return;
+                        }
+                    }
+
+                    for i in 0..len {
+                        let current = model.item(i).unwrap().downcast::<RowModel>().unwrap();
+                        fpipt_impl(current.children().clone(), pid, result);
+                    }
+                }
+
+                let mut result = None;
+                fpipt_impl(model, pid, &mut result);
+
+                result
             }
 
             fn update_icons(model: ListStore, icon: &str) {
@@ -598,20 +597,20 @@ mod imp {
                     } else {
                         children.remove_all();
 
-                        // g_critical!(
-                        //     "MissionCenter::AppsPage",
-                        //     "Failed to find process in process tree, for App {}",
-                        //     app.name.as_ref()
-                        // );
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to find process in process tree, for App {}",
+                            app.name.as_ref()
+                        );
                     }
                 } else {
                     children.remove_all();
 
-                    // g_critical!(
-                    //     "MissionCenter::AppsPage",
-                    //     "Failed to find process in process tree, for App {}",
-                    //     app.name.as_ref()
-                    // );
+                    g_critical!(
+                        "MissionCenter::AppsPage",
+                        "Failed to find process in process tree, for App {}",
+                        app.name.as_ref()
+                    );
                 }
             }
 
