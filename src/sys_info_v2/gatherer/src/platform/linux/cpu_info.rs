@@ -645,15 +645,22 @@ impl LinuxCpuInfo {
     }
 
     fn base_frequency_khz() -> Option<u64> {
-        fn read_from_sys_base_frequency() -> Option<u64> {
-            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/base_frequency") {
+        let possible_path = [
+            "/sys/devices/system/cpu/cpu0/cpufreq/base_frequency",
+            "/sys/devices/system/cpu/cpu0/cpufreq/bios_limit",
+            "/sys/devices/system/cpu/cpu0/acpi_cppc/nominal_freq",
+        ];
+
+        fn read_from_sys_base_frequency(path: &str) -> Option<u64> {
+            match std::fs::read(path) {
                 Ok(content) => {
                     let content = match std::str::from_utf8(&content) {
                         Ok(content) => content,
                         Err(e) => {
                             critical!(
                                 "Gatherer::CPU",
-                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
+                                "Could not read base frequency from '{}': {}",
+                                path,
                                 e
                             );
                             return None;
@@ -661,11 +668,18 @@ impl LinuxCpuInfo {
                     };
 
                     match content.trim().parse() {
-                        Ok(freq) => Some(freq),
+                        Ok(freq) => {
+                            let mut freq = freq;
+                            if path.ends_with("nominal_freq") {
+                                freq = freq * 1000;
+                            }
+                            Some(freq)
+                        }
                         Err(e) => {
                             critical!(
                                 "Gatherer::CPU",
-                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
+                                "Could not read base frequency from '{}': {}",
+                                path,
                                 e
                             );
                             None
@@ -675,8 +689,7 @@ impl LinuxCpuInfo {
                 Err(e) => {
                     debug!(
                         "Gatherer::CPU",
-                        "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/base_frequency': {}",
-                        e
+                        "Could not read base frequency from '{}': {}", path, e
                     );
 
                     None
@@ -684,50 +697,8 @@ impl LinuxCpuInfo {
             }
         }
 
-        fn read_from_sys_bios_limit() -> Option<u64> {
-            match std::fs::read("/sys/devices/system/cpu/cpu0/cpufreq/bios_limit") {
-                Ok(content) => {
-                    let content = match std::str::from_utf8(&content) {
-                        Ok(content) => content,
-                        Err(e) => {
-                            critical!(
-                                "Gatherer::CPU",
-                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
-                                e
-                            );
-                            return None;
-                        }
-                    };
-
-                    match content.trim().parse() {
-                        Ok(freq) => Some(freq),
-                        Err(e) => {
-                            critical!(
-                                "Gatherer::CPU",
-                                "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
-                                e
-                            );
-                            None
-                        }
-                    }
-                }
-                Err(e) => {
-                    debug!(
-                        "Gatherer::CPU",
-                        "Could not read base frequency from '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit': {}",
-                        e
-                    );
-
-                    None
-                }
-            }
-        }
-
-        const FNS: &[fn() -> Option<u64>] =
-            &[read_from_sys_base_frequency, read_from_sys_bios_limit];
-
-        for f in FNS {
-            if let Some(freq) = f() {
+        for f in possible_path {
+            if let Some(freq) = read_from_sys_base_frequency(f) {
                 return Some(freq);
             }
         }
