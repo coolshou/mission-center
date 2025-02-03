@@ -39,6 +39,7 @@ const PROC_PID_STAT_STIME: usize = 14;
 #[allow(dead_code)]
 const PROC_PID_STATM_VIRT: usize = 0;
 const PROC_PID_STATM_RES: usize = 1;
+const PROC_PID_STATM_SHARED: usize = 2;
 
 const PROC_PID_IO_READ_BYTES: usize = 4;
 const PROC_PID_IO_WRITE_BYTES: usize = 5;
@@ -561,6 +562,8 @@ impl<'a> ProcessesExt<'a> for LinuxProcesses {
             process.parent = stat_parent_pid(&stat_parsed);
             process.usage_stats.memory_usage =
                 (statm_parsed[PROC_PID_STATM_RES] * (*PAGE_SIZE) as u64) as f32;
+            process.usage_stats.memory_shared =
+                (statm_parsed[PROC_PID_STATM_SHARED] * (*PAGE_SIZE) as u64) as f32;
             process.task_count = task_count;
             process.raw_stats.user_jiffies = utime;
             process.raw_stats.kernel_jiffies = stime;
