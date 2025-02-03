@@ -1705,19 +1705,11 @@ mod imp {
                                 let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
                                 sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
                             }
+                            summary_graphs.remove(&graph);
+                            sidebar.remove(&parent);
+                            page_stack.remove(&page);
+                            pages.remove(disk_page_name);
                         };
-
-                        let selection = sidebar.selected_row().unwrap();
-
-                        if selection.eq(&parent) {
-                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
-                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
-                        }
-
-                        summary_graphs.remove(&graph);
-                        sidebar.remove(&parent);
-                        page_stack.remove(&page);
-                        pages.remove(disk_page_name);
                     }
                 }
             }
