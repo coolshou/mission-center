@@ -24,17 +24,17 @@ use gtk::glib::g_critical;
 use gtk::glib::{self, g_warning};
 use std::cell::Cell;
 use std::sync::Arc;
-use std::collections::HashMap;
 
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
 use crate::sys_info_v2::EjectResult;
-use crate::sys_info_v2::App;
 
 mod imp {
     use super::*;
+    use crate::sys_info_v2::App;
+    use std::collections::HashMap;
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
@@ -71,19 +71,30 @@ mod imp {
                     .expect("Expected a raw disk id, got none");
 
                 for (pid, files, dirs) in processes {
-                    let row_builder = EjectFailureRowBuilder::new()
-                        .id(parent_id)
-                        .icon(iconname)
-                        .pid(pid)
-                        .name(&appname)
-                        .parent_page(parent.clone());
-
                     if !files.is_empty() {
-                        model.append(&row_builder.clone().files_open(files.clone()).build());
+                        let new_root = EjectFailureRowBuilder::new()
+                            .id(parent_id)
+                            .icon(iconname)
+                            .files_open(files.clone())
+                            .pid(pid)
+                            .name(&appname)
+                            .parent_page(parent.clone())
+                            .build();
+
+                        model.append(&new_root.imp().row_entry.get());
                     }
 
                     if !dirs.is_empty() {
-                        model.append(&row_builder.files_open(dirs).build());
+                        let new_root = EjectFailureRowBuilder::new()
+                            .id(parent_id)
+                            .icon(iconname)
+                            .files_open(dirs.clone())
+                            .pid(pid)
+                            .name(&appname)
+                            .parent_page(parent.clone())
+                            .build();
+
+                        model.append(&new_root.imp().row_entry.get());
                     }
                 }
             }

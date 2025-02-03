@@ -26,208 +26,188 @@ Box root {
   orientation: vertical;
   spacing: 20;
 
-  Grid {
+  Box dynamic_data {
+    orientation: vertical;
+    spacing: 10;
+
+    Box top_row {
+      spacing: 15;
+
+      Box {
+        orientation: horizontal;
+        spacing: 5;
+
+        width-request: 100;
+
+        Picture legend_used {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+
+        Box {
+          orientation: vertical;
+            spacing: 3;
+
+            Label {
+            styles [
+            "caption",
+            ]
+
+            halign: start;
+            label: _("In use");
+          }
+
+          Label in_use {
+          styles [
+          "title-4",
+          ]
+
+          halign: start;
+          }
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Available");
+        }
+
+        Label available {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box mid_row {
+      spacing: 15;
+
+      Box {
+        orientation: horizontal;
+        spacing: 5;
+
+        width-request: 100;
+
+        Picture legend_commited {
+          can-shrink: false;
+          content-fit: scale_down;
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+          Label {
+
+            styles [
+              "caption",
+            ]
+
+            halign: start;
+            label: _("Committed");
+          }
+
+          Label committed {
+            styles [
+              "title-4",
+            ]
+
+          halign: start;
+          }
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Cached");
+        }
+
+        Label cached {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+
+    Box bottom_row {
+      spacing: 15;
+
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Swap used");
+        }
+
+        Label swap_used {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        width-request: 100;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          halign: start;
+          label: _("Swap available");
+        }
+
+        Label swap_available {
+          styles [
+            "title-4",
+          ]
+
+          halign: start;
+        }
+      }
+    }
+  }
+
+  Grid system_info {
     row-spacing: 5;
-    column-spacing: 0;
-
-    styles [
-      "layout-grid"
-    ]
-
-    Picture legend_used {
-      layout {
-        column: '0';
-        row: '0';
-      }
-
-      can-shrink: false;
-      content-fit: scale_down;
-    }
-
-    Box {
-      layout {
-        column: '1';
-        row: '0';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("In use");
-      }
-
-      Label in_use {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
-    Box {
-      layout {
-        column: '3';
-        row: '0';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-
-      width-request: 100;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Available");
-      }
-
-      Label available {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
-    Picture legend_commited {
-      layout {
-        column: '0';
-        row: '1';
-      }
-
-      can-shrink: false;
-      content-fit: scale_down;
-    }
-
-    Box {
-      layout {
-        column: '1';
-        row: '1';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-      Label {
-
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Committed");
-      }
-
-      Label committed {
-        styles [
-          "title-4",
-        ]
-
-      halign: start;
-      }
-    }
-
-    Box {
-      layout {
-        column: '3';
-        row: '1';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-      width-request: 100;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Cached");
-      }
-
-      Label cached {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
-    Box {
-      layout {
-        column: '1';
-        row: '2';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-      width-request: 100;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Swap used");
-      }
-
-      Label swap_used {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
-    Box {
-      layout {
-        column: '3';
-        row: '2';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-      width-request: 100;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Swap available");
-      }
-
-      Label swap_available {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
-    Box {
-      layout {
-        column: '0';
-        row: '3';
-      }
-      height-request: 10;
-    }
+    column-spacing: 10;
 
     Label {
       styles [
@@ -238,8 +218,8 @@ Box root {
       label: _("Speed:");
 
       layout {
-        column: '1';
-        row: '4';
+        column: '0';
+        row: '0';
       }
     }
 
@@ -252,8 +232,8 @@ Box root {
       label: _("Slots used:");
 
       layout {
-        column: '1';
-        row: '5';
+        column: '0';
+        row: '1';
       }
     }
 
@@ -266,8 +246,8 @@ Box root {
       label: _("Form factor:");
 
       layout {
-        column: '1';
-        row: '6';
+        column: '0';
+        row: '2';
       }
     }
 
@@ -280,8 +260,8 @@ Box root {
       label: _("Type:");
 
       layout {
-        column: '1';
-        row: '7';
+        column: '0';
+        row: '3';
       }
     }
 
@@ -293,8 +273,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '4';
+        column: '1';
+        row: '0';
       }
     }
 
@@ -306,8 +286,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '5';
+        column: '1';
+        row: '1';
       }
     }
 
@@ -319,8 +299,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '6';
+        column: '1';
+        row: '2';
       }
     }
 
@@ -332,8 +312,8 @@ Box root {
       halign: start;
 
       layout {
-        column: '3';
-        row: '7';
+        column: '1';
+        row: '3';
       }
     }
   }

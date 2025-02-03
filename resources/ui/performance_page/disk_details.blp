@@ -359,4 +359,25 @@ Box root {
       tooltip-text: _("Show SMART Data");
     }
   }
+  Box {
+    styles [
+      "linked"
+    ]
+
+    orientation: horizontal;
+    homogeneous: true;
+    halign: start;
+
+    Button eject {
+      icon-name: 'media-eject-symbolic';
+
+      tooltip-text: _("Eject Disk");
+    }
+
+    Button smart {
+      icon-name: 'info-symbolic';
+
+      tooltip-text: _("Show SMART Data");
+    }
+  }
 }

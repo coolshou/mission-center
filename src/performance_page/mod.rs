@@ -970,11 +970,20 @@ mod imp {
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
-            summary.set_info1("0% 0.00 GHz");
-            match readings.cpu_dynamic_info.temperature.as_ref() {
-                Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
-                _ => {}
-            }
+            summary.set_info1(readings.cpu_static_info.name.as_ref());
+            let temp = readings.cpu_dynamic_info.temperature;
+            let util = readings.cpu_dynamic_info.overall_utilization_percent;
+
+            summary.set_info2(
+                format!("{}%{}",
+                    util,
+                    if let Some(temp) = temp {
+                        format!(" ({} °C)", temp)
+                    } else {
+                        String::new()
+                    }
+                )
+            );
 
             summary.set_base_color(gdk::RGBA::new(
                 CPU_BASE_COLOR[0] as f32 / 255.,
@@ -1027,7 +1036,8 @@ mod imp {
             }
 
             summary.set_heading(i18n("Memory"));
-            summary.set_info1("0/0 GiB (100%)");
+            summary.set_info1("0 GiB/0 GiB");
+            summary.set_info2("100%");
 
             summary.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
@@ -1092,16 +1102,27 @@ mod imp {
         pub fn update_disk_heading(
             &self,
             disk_graph: &SummaryGraph,
+            r#type: &DiskType,
             disk_id: &str,
             index: Option<i32>,
         ) {
+            let type_str = match r#type {
+                DiskType::HDD => i18n("HDD"),
+                DiskType::SSD => i18n("SSD"),
+                DiskType::NVMe => i18n("NVMe"),
+                DiskType::eMMC => i18n("eMMC"),
+                DiskType::SD => i18n("SD"),
+                DiskType::Floppy => i18n("Floppy"),
+                DiskType::Optical => i18n("Optical"),
+                DiskType::Unknown => i18n("Drive"),
+            };
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "Drive {} ({})",
-                    &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                    "{} {} ({})",
+                    &[&type_str, &index.unwrap().to_string(), disk_id],
                 ));
             } else {
-                disk_graph.set_heading(i18n("Drive"));
+                disk_graph.set_heading(type_str);
             }
         }
 
@@ -1122,17 +1143,8 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            summary.set_info1(match disk_static_info.r#type {
-                DiskType::HDD => i18n("HDD"),
-                DiskType::SSD => i18n("SSD"),
-                DiskType::NVMe => i18n("NVMe"),
-                DiskType::eMMC => i18n("eMMC"),
-                DiskType::SD => i18n("SD"),
-                DiskType::Floppy => i18n("Floppy"),
-                DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Unknown"),
-            });
+            self.update_disk_heading(&summary, &disk_static_info.r#type, disk_static_info.id.as_ref(), disk_id);
+            summary.set_info1(disk_static_info.model.as_ref());
             summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
@@ -1786,18 +1798,17 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
-                        summary.set_info1(format!(
-                            "{}% {:.2} GHz",
+                        summary.set_info2(format!("{}%{}",
                             readings
                                 .cpu_dynamic_info
                                 .overall_utilization_percent
                                 .round(),
-                            readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
+                            if let Some(temp) = readings.cpu_dynamic_info.temperature.as_ref() {
+                                format!(" ({:.0} °C)", temp)
+                            } else {
+                                String::new()
+                            }
                         ));
-                        match readings.cpu_dynamic_info.temperature.as_ref() {
-                            Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
-                            _ => {}
-                        }
 
                         result &= page.update_readings(readings);
                     }
@@ -1814,13 +1825,13 @@ mod imp {
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
-                            "{}%",
-                            ((used_raw as f32 / total_raw as f32) * 100.).round()
+                            "{0:.2$} {1}iB/{3:.5$} {4}iB",
+                            used.0, used.1, used.2, total.0, total.1, total.2
                         ));
 
                         summary.set_info2(format!(
-                            "{0:.2$} {1}iB/{3:.5$} {4}iB",
-                            used.0, used.1, used.2, total.0, total.1, total.2
+                            "{}%",
+                            ((used_raw as f32 / total_raw as f32) * 100.).round()
                         ));
 
                         result &= page.update_readings(readings);
@@ -1837,6 +1848,7 @@ mod imp {
                             {
                                 this.imp().update_disk_heading(
                                     summary,
+                                    &disk.r#type,
                                     disk.id.as_ref(),
                                     if hide_index { None } else { Some(index as i32) },
                                 );
@@ -1861,15 +1873,22 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
+
                                 // i dare you to have a 1mK(elvin) drive
-                                if disk.drive_temperature >= 1 {
+                                if disk.drive_temperature == 0 {
                                     summary.set_info2(format!(
-                                        "{:.0}% ({:.0} °C)",
+                                        "{:.0}%",
                                         disk.busy_percent,
-                                        (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
-                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                    summary.set_info2(format!("{:.0}%{}",
+                                        disk.busy_percent,
+                                        if disk.drive_temperature != 0 {
+                                            format!(" ({} °C)", (disk.drive_temperature - MK_TO_0_C ) / 1000)
+                                        } else {
+                                            String::new()
+                                        }
+                                    ));
                                 }
 
                                 result &= page.update_readings(
@@ -2016,15 +2035,35 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(format!("{} RPM", fan_info.rpm));
-                                if fan_info.temp_amount != 0 {
-                                    summary.set_info2(format!(
-                                        "{:.0} °C",
-                                        (fan_info.temp_amount - MK_TO_0_C) as f32 / 1000.0
+                                if fan_info.percent_vroomimg < 0. {
+                                    summary.set_info1(format!("{} RPM{}",
+                                        fan_info.rpm,
+                                        if fan_info.temp_amount != i64::MIN {
+                                            format!(
+                                                " ({:.0} °C)",
+                                                fan_info.temp_amount as f32 / 1000.0
+                                            )
+                                        } else {
+                                            String::new()
+                                        }
                                     ));
-                                } else {
                                     summary.set_info2("");
+                                } else {
+                                    summary.set_info1(format!("{} RPM", fan_info.rpm));
+                                    summary.set_info2(format!(
+                                        "{:.0}%{}",
+                                        fan_info.percent_vroomimg * 100.,
+                                        if fan_info.temp_amount != i64::MIN {
+                                            format!(
+                                                " ({:.0} °C)",
+                                                fan_info.temp_amount as f32 / 1000.0
+                                            )
+                                        } else {
+                                            String::new()
+                                        }
+                                    ));
                                 }
+
                                 result &= page.update_readings(fan_info);
                             }
                         }
