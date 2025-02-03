@@ -938,14 +938,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/nng-c-sys/nng-c-sys-1.9.0-beta.2.crate",
-    "sha256": "aea512cf89fa285dec820c7446017b1792e984514ca547f1a8b1b785a913d57f",
-    "dest": "cargo/vendor/nng-c-sys-1.9.0-beta.2"
+    "url": "https://static.crates.io/crates/nng-c-sys/nng-c-sys-1.10.1.crate",
+    "sha256": "a6fcb5094be4f9db63e8220e242c45c77d72b86c13df49b3abcf37ed342dd95f",
+    "dest": "cargo/vendor/nng-c-sys-1.10.1"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"aea512cf89fa285dec820c7446017b1792e984514ca547f1a8b1b785a913d57f\", \"files\": {}}",
-    "dest": "cargo/vendor/nng-c-sys-1.9.0-beta.2",
+    "contents": "{\"package\": \"a6fcb5094be4f9db63e8220e242c45c77d72b86c13df49b3abcf37ed342dd95f\", \"files\": {}}",
+    "dest": "cargo/vendor/nng-c-sys-1.10.1",
     "dest-filename": ".cargo-checksum.json"
   },
   {

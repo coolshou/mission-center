@@ -53,10 +53,15 @@
       "buildsystem": "simple",
       "build-commands": [
         "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
-        "cp -a clang rootfs-glibc/usr/bin",
-        "cp -a ar rootfs-glibc/usr/bin",
+        "ln -sf /opt/gcc/bin/gcc rootfs-glibc/usr/bin/cc",
         "",
-        "mkdir rootfs-musl&& cd rootfs-musl && tar xf ../alpine-3.9-*.tar.zst && rm ../alpine-3.9-*.tar.zst",
+        "cp gcc-glibc/binutils/bin/as rootfs-glibc/usr/bin/",
+        "cp gcc-glibc/binutils/lib/x86_64-linux-gnu/libbfd-2.43.1.so rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "cp -L gcc-glibc/binutils/lib/x86_64-linux-gnu/libsframe.so.1 rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "",
+        "ln -sf /opt/gcc/mold/usr/bin/mold rootfs-glibc/usr/bin/ld",
+        "",
+        "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-3.9-*.tar.zst && rm ../alpine-3.9-*.tar.zst",
         "cp -a clang rootfs-musl/usr/bin",
         "cp -a ar rootfs-musl/usr/bin",
         "ln -sf libgbm.so.1 rootfs-musl/usr/lib/libgcc_s.so",
@@ -100,9 +105,9 @@
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/download/0.12.1/zig-linux-x86_64-0.12.1.tar.xz",
-          "dest": "zig",
-          "sha256": "8860fc9725c2d9297a63008f853e9b11e3c5a2441217f99c1e3104cc6fa4a443",
+          "url": "https://missioncenter.io/build-tools/gcc-10-glibc-x86_64.tar.zst",
+          "dest": "gcc-glibc",
+          "sha256": "361d50c89cf2440baf203da3e263536b51730b0d22a1eaae95e13944c82aa303",
           "only-arches": [
             "x86_64"
           ]
@@ -143,20 +148,12 @@
         },
         {
           "type": "archive",
-          "url": "https://ziglang.org/download/0.12.1/zig-linux-aarch64-0.12.1.tar.xz",
+          "url": "https://ziglang.org/download/0.13.0/zig-linux-aarch64-0.13.0.tar.xz",
           "dest": "zig",
-          "sha256": "27d4fef393e8d8b5f3b1d19f4dd43bfdb469b4ed17bbc4c2283c1b1fe650ef7f",
+          "sha256": "041ac42323837eb5624068acd8b00cd5777dac4cf91179e8dad7a7e90dd0c556",
           "only-arches": [
             "aarch64"
           ]
-        },
-        {
-          "type": "file",
-          "path": "../support/clang"
-        },
-        {
-          "type": "file",
-          "path": "../support/ar"
         }
       ],
       "cleanup": [
@@ -204,23 +201,13 @@
         {
           "name": "magpie",
           "buildsystem": "simple",
-          "build-options": {
-            "env": {
-              "PROOT_NO_SECCOMP": "1",
-              "CARGO_HOME": "/run/build/magpie/cargo",
-              "CC": "clang"
-            }
-          },
           "build-commands": [
             "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
-            "/app/bin/proot -b /app/rust-toolchain-glibc:/app/rust-toolchain-glibc -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/app/rust-toolchain-glibc/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-glibc/rustup cargo build --offline --release --features=skip-codegen'",
-            "install -v -p -m 755 subprojects/magpie/target/release/gatherer /app/bin/missioncenter-gatherer-glibc",
+            "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/gcc-glibc:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'as --version && ld --version && cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
+            "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-glibc",
             "",
             "rm -rf subprojects/magpie/target",
-            "",
-            "mkdir -p subprojects/magpie/target/release/build/native && mv nvtop-* subprojects/magpie/target/release/build/native/",
-            "/app/bin/proot -b /app/rust-toolchain-musl:/app/rust-toolchain-musl -b /app/zig:/app/zig -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/app/rust-toolchain-musl/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/app/rust-toolchain-musl/rustup cargo build --offline --release --features=skip-codegen''",
-            "install -v -p -m 755 subprojects/magpie/target/release/gatherer /app/bin/missioncenter-gatherer-musl"
+            ""
           ],
           "sources": [
             {
