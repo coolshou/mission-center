@@ -1016,18 +1016,20 @@ mod imp {
         ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
+            let mem_info = readings.mem_info;
 
             {
                 let graph_widget = summary.graph_widget();
 
-                graph_widget.set_value_range_max(readings.mem_info.mem_total as f32);
+                graph_widget.set_value_range_max(mem_info.mem_total as f32);
                 graph_widget.set_data_set_count(2);
                 graph_widget.set_filled(0, false);
                 graph_widget.set_dashed(0, true);
             }
 
             summary.set_heading(i18n("Memory"));
-            summary.set_info1("0/0 GiB (100%)");
+            summary.set_info1("0/0 GiB");
+            summary.set_info2("0%");
 
             summary.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
@@ -1092,16 +1094,28 @@ mod imp {
         pub fn update_disk_heading(
             &self,
             disk_graph: &SummaryGraph,
+            r#type: DiskType,
             disk_id: &str,
             index: Option<i32>,
         ) {
+            let r#type = match r#type {
+                DiskType::HDD => i18n("HDD"),
+                DiskType::SSD => i18n("SSD"),
+                DiskType::NVMe => i18n("NVMe"),
+                DiskType::eMMC => i18n("eMMC"),
+                DiskType::SD => i18n("SD"),
+                DiskType::Floppy => i18n("Floppy"),
+                DiskType::Optical => i18n("Optical"),
+                DiskType::Unknown => i18n("Drive"),
+            };
+
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "Drive {} ({})",
-                    &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                    "{} {} ({})",
+                    &[&format!("{}", r#type) ,&format!("{}", index.unwrap()), &format!("{}", disk_id)],
                 ));
             } else {
-                disk_graph.set_heading(i18n("Drive"));
+                disk_graph.set_heading(r#type);
             }
         }
 
@@ -1122,18 +1136,16 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            summary.set_info1(match disk_static_info.r#type {
-                DiskType::HDD => i18n("HDD"),
-                DiskType::SSD => i18n("SSD"),
-                DiskType::NVMe => i18n("NVMe"),
-                DiskType::eMMC => i18n("eMMC"),
-                DiskType::SD => i18n("SD"),
-                DiskType::Floppy => i18n("Floppy"),
-                DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Unknown"),
-            });
-            summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
+            self.update_disk_heading(&summary, disk_static_info.r#type, disk_static_info.id.as_ref(), disk_id);
+            summary.set_info1(format!("{}", disk_static_info.model));
+            summary.set_info2(format!("{:.0}%{}",
+                disk_static_info.busy_percent,
+                if disk_static_info.drive_temperature >= 1 {
+                    format!(" ({:.0} °C)", (disk_static_info.drive_temperature - MK_TO_0_C) as f64 / 1000.)
+                } else {
+                    String::new()
+                }
+            ));
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -1786,15 +1798,27 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
+
                         summary.set_info1(format!(
-                            "{}% {:.2} GHz",
+                            "{}%",
                             readings
                                 .cpu_dynamic_info
                                 .overall_utilization_percent
                                 .round(),
                             readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
-                        match readings.cpu_dynamic_info.temperature.as_ref() {
+                        summary.set_info2(format!(
+                            "{}%{}",
+                            readings
+                                .cpu_dynamic_info
+                                .overall_utilization_percent
+                                .round(),
+                            readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.,
+                            if let Some(temp) = readings.cpu_dynamic_info.temperature.as_ref() {
+                                format!(" ({:.0} °C)", )
+                            }
+                        ));
+                        match  {
                             Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                             _ => {}
                         }
@@ -1814,13 +1838,12 @@ mod imp {
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
-                            "{}%",
-                            ((used_raw as f32 / total_raw as f32) * 100.).round()
-                        ));
-
-                        summary.set_info2(format!(
                             "{0:.2$} {1}iB/{3:.5$} {4}iB",
                             used.0, used.1, used.2, total.0, total.1, total.2
+                        ));
+                        summary.set_info2(format!(
+                            "{}%",
+                            ((used_raw as f32 / total_raw as f32) * 100.).round()
                         ));
 
                         result &= page.update_readings(readings);
@@ -1837,6 +1860,7 @@ mod imp {
                             {
                                 this.imp().update_disk_heading(
                                     summary,
+                                    disk.r#type,
                                     disk.id.as_ref(),
                                     if hide_index { None } else { Some(index as i32) },
                                 );
