@@ -62,7 +62,7 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
-const MK_TO_0_C: u32 = 273150;
+const MK_TO_0_C: i32 = 273150;
 
 mod imp {
     use super::*;
@@ -1143,7 +1143,7 @@ mod imp {
             summary.set_info2(format!("{:.0}%{}",
                 disk_static_info.busy_percent,
                 if disk_static_info.drive_temperature >= 1 {
-                    format!(" ({:.0} °C)", (disk_static_info.drive_temperature - MK_TO_0_C) as f64 / 1000.)
+                    format!(" ({:.0} °C)", (disk_static_info.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.)
                 } else {
                     String::new()
                 }
@@ -1882,7 +1882,7 @@ mod imp {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",
                                         disk.busy_percent,
-                                        (disk.drive_temperature - MK_TO_0_C) as f64 / 1000.
+                                        (disk.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%", disk.busy_percent));
@@ -2035,7 +2035,7 @@ mod imp {
                                 summary.set_info1(fan_info.temp_name.as_ref());
 
                                 let temp_str = if fan_info.temp_amount != 0 {
-                                    format!(" ({:.0} °C)", (fan_info.temp_amount - MK_TO_0_C) as f32 / 1000.0)
+                                    format!(" ({:.0} °C)", (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0)
                                 } else {
                                     String::new()
                                 };
