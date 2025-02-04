@@ -6,12 +6,12 @@ Subject: style: Add wartybrown accent support
  src/adw-accent-color.c                 | 13 +++++++++++--
  src/adw-accent-color.h                 |  2 ++
  src/adw-inspector-page.c               |  2 ++
- src/adw-settings.c                     |  6 +++++-
+ src/adw-settings.c                     |  8 +++++++-
  src/stylesheet/_colors.scss            |  1 +
- src/stylesheet/meson.build             |  2 +-
- src/stylesheet/yaru_accent_colors.scss |  3 +++
+ src/stylesheet/meson.build             |  1 +
+ src/stylesheet/yaru_accent_colors.scss |  5 +++++
  tests/test-accent-color.c              | 20 ++++++++++----------
- 8 files changed, 35 insertions(+), 14 deletions(-)
+ 8 files changed, 39 insertions(+), 13 deletions(-)
 
 diff --git a/src/adw-accent-color.c b/src/adw-accent-color.c
 index 89abce0..d41a597 100644
@@ -92,7 +92,7 @@ index 43b450f..c90b408 100644
      g_assert_not_reached ();
    }
 diff --git a/src/adw-settings.c b/src/adw-settings.c
-index 774c7fa..5962af1 100644
+index dd59c33..5962af1 100644
 --- a/src/adw-settings.c
 +++ b/src/adw-settings.c
 @@ -165,9 +165,11 @@ init_debug (AdwSettings *self,
@@ -108,7 +108,16 @@ index 774c7fa..5962af1 100644
      }
    }
  }
-@@ -315,6 +317,8 @@ compute_yaru_accent_from_system_accent (AdwSettings *self)
+@@ -239,6 +241,8 @@ yaru_accent_to_accent_color (const char     *yaru_accent,
+     rgba_hex = 0xda3450;
+   else if (g_str_equal (yaru_accent, "yellow"))
+     rgba_hex = 0xc88800;
++  else if (g_str_equal (yaru_accent, "wartybrown"))
++    rgba_hex = 0xb39169;
+ 
+   if (G_UNLIKELY (rgba_hex == 0))
+     {
+@@ -313,6 +317,8 @@ compute_yaru_accent_from_system_accent (AdwSettings *self)
        return "purple";
      case ADW_ACCENT_COLOR_SLATE:
        return "sage";
@@ -130,23 +139,31 @@ index 4accb71..594e28a 100644
    --accent-bg-color: @accent_bg_color;
    --accent-fg-color: @accent_fg_color;
 diff --git a/src/stylesheet/meson.build b/src/stylesheet/meson.build
-index 41e60f6..f657683 100644
+index 41e60f6..2ed2a50 100644
 --- a/src/stylesheet/meson.build
 +++ b/src/stylesheet/meson.build
-@@ -14,7 +14,7 @@ if get_option('yaru-accent-colors')
-       'purple',
+@@ -15,6 +15,7 @@ if get_option('yaru-accent-colors')
        'magenta',
        'red',
--      'yellow',
+       'yellow',
 +      'wartybrown',
    ]
  
    yaru_accent_colors_sassc += configure_file(
 diff --git a/src/stylesheet/yaru_accent_colors.scss b/src/stylesheet/yaru_accent_colors.scss
-index 715d0ab..941b227 100644
+index 74f2e02..941b227 100644
 --- a/src/stylesheet/yaru_accent_colors.scss
 +++ b/src/stylesheet/yaru_accent_colors.scss
-@@ -54,6 +54,9 @@ $accent-fg-color: white;
+@@ -21,6 +21,8 @@
+         $color: #DA3450;
+     } @else if $accent_color == 'yellow' {
+         $color: #C88800;
++    } @else if $accent_color == 'wartybrown' {
++        $color: #B39169;
+     } @else {
+         @error('No known accent color defined!');
+     }
+@@ -52,6 +54,9 @@ $accent-fg-color: white;
      @define-color accent_color #{$accent_color};
      $window-bg-color: if($variant == 'light', #FAFAFA, lighten($jet, 8%));
      $window-fg-color: if($variant == 'light', $inkstone, $porcelain);
