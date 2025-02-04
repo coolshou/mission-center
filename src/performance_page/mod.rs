@@ -1799,29 +1799,19 @@ mod imp {
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
 
-                        summary.set_info1(format!(
-                            "{}%",
-                            readings
-                                .cpu_dynamic_info
-                                .overall_utilization_percent
-                                .round(),
-                            readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
-                        ));
+                        summary.set_info1("");
                         summary.set_info2(format!(
                             "{}%{}",
                             readings
                                 .cpu_dynamic_info
                                 .overall_utilization_percent
                                 .round(),
-                            readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.,
                             if let Some(temp) = readings.cpu_dynamic_info.temperature.as_ref() {
-                                format!(" ({:.0} °C)", )
+                                format!(" ({:.0} °C)", temp)
+                            } else {
+                                String::new()
                             }
                         ));
-                        match  {
-                            Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
-                            _ => {}
-                        }
 
                         result &= page.update_readings(readings);
                     }
