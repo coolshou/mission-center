@@ -150,8 +150,8 @@
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/alpine-3.9-aarch64_r2.tar.zst",
-          "sha256": "7ffcb3f640359a106c8dbefb1a3866440fdc92fb6d0104dc096566a302cf0d34",
+          "url": "https://missioncenter.io/build-tools/alpine-3.11-aarch64_r1.tar.zst",
+          "sha256": "226e0fca6edd5b50340907c2c34b40a660e91848e640d6633de1774ef478792b",
           "only-arches": [
             "aarch64"
           ]
@@ -170,6 +170,24 @@
           "url": "https://missioncenter.io/build-tools/rust-toolchain-musl-1.84.1-aarch64.tar.zst",
           "dest": "rust-toolchain-musl",
           "sha256": "d985d1f077fcdd41a636a0f143725a0ba52b95e7ad70f7e53fe5c46fb69082f5",
+          "only-arches": [
+            "aarch64"
+          ]
+        },
+        {
+          "type": "archive",
+          "url": "https://missioncenter.io/build-tools/gcc-10-glibc-aarch64.tar.zst",
+          "dest": "gcc-glibc",
+          "sha256": "478f3f2c04c6153d5fae08ad4724fe7e3f0dcb3b3611504109e55b91f34d3b59",
+          "only-arches": [
+            "aarch64"
+          ]
+        },
+        {
+          "type": "archive",
+          "url": "https://missioncenter.io/build-tools/gcc-10-musl-aarch64.tar.zst",
+          "dest": "gcc-musl",
+          "sha256": "6948951f7551c133a7289c7ea1119054487d7f6859e13a902bbf1b924810bc60",
           "only-arches": [
             "aarch64"
           ]
