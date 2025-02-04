@@ -60,12 +60,24 @@ fn user_home() -> &'static Path {
             .or(env::var_os("USERPROFILE"))
             .map(|v| PathBuf::from(v))
             .unwrap_or(if cfg!(windows) {
-                "C:/".into()
+                "C:\\Windows\\Temp".into()
             } else {
                 "/tmp".into()
             })
     })
     .as_path()
+}
+
+fn flatpak_data_dir() -> &'static Path {
+    static DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+    DATA_DIR
+        .get_or_init(|| {
+            let path = user_home().join(".var/app/io.missioncenter.MissionCenter/data");
+            std::fs::create_dir_all(&path).expect("Failed to create flatpak data directory");
+            path
+        })
+        .as_path()
 }
 
 pub fn is_flatpak() -> bool {

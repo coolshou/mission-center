@@ -52,7 +52,7 @@ use magpie_types::services::services_response;
 use magpie_types::services::services_response::ServiceList;
 pub use magpie_types::services::Service;
 
-use crate::show_error_dialog_and_exit;
+use crate::{flatpak_data_dir, is_flatpak, show_error_dialog_and_exit};
 
 mod nng {
     pub use nng_c_sys::nng_errno_enum::*;
@@ -187,7 +187,7 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
 
         let exe_simple = "missioncenter-magpie".to_owned();
 
-        if crate::is_flatpak() {
+        if is_flatpak() {
             let flatpak_app_path = super::flatpak_app_path();
 
             let cmd_glibc_status = cmd_flatpak_host!(&format!(
@@ -232,7 +232,7 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
         exe_simple
     }
 
-    let mut command = if crate::is_flatpak() {
+    let mut command = if is_flatpak() {
         const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
 
         let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
@@ -610,7 +610,14 @@ impl Client {
                 existing_sock.push('\0');
                 Arc::from(existing_sock)
             } else {
-                Arc::from(format!("ipc:///tmp/magpie_{}.ipc\0", random_string::<8>()))
+                if is_flatpak() {
+                    Arc::from(format!(
+                        "ipc://{}/magpie.ipc\0",
+                        flatpak_data_dir().display()
+                    ))
+                } else {
+                    Arc::from(format!("ipc:///tmp/magpie_{}.ipc\0", random_string::<8>()))
+                }
             };
 
         Self {
