@@ -55,32 +55,51 @@
         "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
         "ln -sf /opt/gcc/bin/gcc rootfs-glibc/usr/bin/cc",
         "",
-        "cp gcc-glibc/binutils/bin/as rootfs-glibc/usr/bin/",
-        "cp gcc-glibc/binutils/lib/x86_64-linux-gnu/libbfd-2.43.1.so rootfs-glibc/usr/lib/x86_64-linux-gnu/",
-        "cp -L gcc-glibc/binutils/lib/x86_64-linux-gnu/libsframe.so.1 rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "mv gcc-glibc/binutils/bin/as rootfs-glibc/usr/bin/",
+        "mv gcc-glibc/binutils/lib/libbfd-2.43.1.so rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "mv gcc-glibc/binutils/lib/libsframe.so.1 rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "rm -rf gcc-glibc/binutils",
+        "",
+        "rm rootfs-glibc/usr/share/vim/vimfiles",
+        "cp -ar gcc-glibc/cmake/usr rootfs-glibc/",
+        "cp -ar gcc-glibc/cmake/usr/* /app/",
+        "rm -rf gcc-glibc/cmake",
         "",
         "ln -sf /opt/gcc/mold/usr/bin/mold rootfs-glibc/usr/bin/ld",
         "",
-        "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-3.9-*.tar.zst && rm ../alpine-3.9-*.tar.zst",
-        "cp -a clang rootfs-musl/usr/bin",
-        "cp -a ar rootfs-musl/usr/bin",
+        "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-*.tar.zst && rm ../alpine-*.tar.zst",
+        "ln -sf /opt/gcc/bin/gcc rootfs-musl/usr/bin/cc",
+        "",
+        "mv rootfs-musl/usr/bin/ar rootfs-musl/usr/bin/ar.orig",
+        "mv musl-ar rootfs-musl/usr/bin/ar",
+        "rm rootfs-musl/usr/bin/ld && mv musl-ld rootfs-musl/usr/bin/ld",
+        "",
+        "mv gcc-musl/binutils/bin/as rootfs-musl/usr/bin/",
+        "mv gcc-musl/binutils/lib/libbfd-2.43.1.so rootfs-musl/usr/lib/",
+        "mv gcc-musl/binutils/lib/libsframe.so.1 rootfs-musl/usr/lib/",
+        "rm -rf gcc-musl/binutils",
+        "",
+        "cp -ar gcc-musl/cmake/usr rootfs-musl/ && rm -rf gcc-musl/cmake",
+        "",
+        "",
         "ln -sf libgbm.so.1 rootfs-musl/usr/lib/libgcc_s.so",
+        "ln -sf /usr/lib/libgbm.so.1 gcc-musl/lib64/libgcc_s.so",
         "",
         "mv * /app/"
       ],
       "sources": [
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-x86_64_r5.tar.zst",
-          "sha256": "224334263fdd101ef1435ef3a33889160184fa10493e65f7ec1f97ba0632949f",
+          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-x86_64_r4.tar.zst",
+          "sha256": "fe6621b3d7c29ecf410df0e31a0184fb7653ca6e35fb8c9fe1edeb1d804eb585",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/alpine-3.9-x86_64_r3.tar.zst",
-          "sha256": "05dc16d84833bdedd8df3dc6d395c2b0510161087ddae614f9a4d8a315bf36ae",
+          "url": "https://missioncenter.io/build-tools/alpine-3.11-x86_64_r1.tar.zst",
+          "sha256": "02c49c10bf53365f026fb8764f9f1d1ed6aa8bac75ea5f089de833bc1da41569",
           "only-arches": [
             "x86_64"
           ]
@@ -107,23 +126,32 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/gcc-10-glibc-x86_64.tar.zst",
           "dest": "gcc-glibc",
-          "sha256": "361d50c89cf2440baf203da3e263536b51730b0d22a1eaae95e13944c82aa303",
+          "sha256": "1a21103c0cfeb891fe9aae688b5e039f2016c4425917af1129b4317cebcc6b1c",
+          "only-arches": [
+            "x86_64"
+          ]
+        },
+        {
+          "type": "archive",
+          "url": "https://missioncenter.io/build-tools/gcc-10-musl-x86_64.tar.zst",
+          "dest": "gcc-musl",
+          "sha256": "19f68cb76025cf0d1147c5240a6999bc34e0ec50af3248950e335da403657748",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-aarch64_r5.tar.zst",
-          "sha256": "68dbbf9ba6f1e4ce3781082f798ca075900899097ef0d1b2e5571a9e509c62f8",
+          "url": "https://missioncenter.io/build-tools/ubuntu-14.04-aarch64_r4.tar.zst",
+          "sha256": "78ae2fbc2e9d4f78287748e4183111f98c11a2ab2f0665f187702395fe29039d",
           "only-arches": [
             "aarch64"
           ]
         },
         {
           "type": "file",
-          "url": "https://missioncenter.io/build-tools/alpine-3.9-aarch64_r3.tar.zst",
-          "sha256": "8160382fed9d22e468a618f82537b1a1aab5ce5005121f660012e66e70e98f2d",
+          "url": "https://missioncenter.io/build-tools/alpine-3.9-aarch64_r2.tar.zst",
+          "sha256": "7ffcb3f640359a106c8dbefb1a3866440fdc92fb6d0104dc096566a302cf0d34",
           "only-arches": [
             "aarch64"
           ]
@@ -147,13 +175,12 @@
           ]
         },
         {
-          "type": "archive",
-          "url": "https://ziglang.org/download/0.13.0/zig-linux-aarch64-0.13.0.tar.xz",
-          "dest": "zig",
-          "sha256": "041ac42323837eb5624068acd8b00cd5777dac4cf91179e8dad7a7e90dd0c556",
-          "only-arches": [
-            "aarch64"
-          ]
+          "type": "file",
+          "path": "../support/musl-ar"
+        },
+        {
+          "type": "file",
+          "path": "../support/musl-ld"
         }
       ],
       "cleanup": [
@@ -202,12 +229,15 @@
           "name": "magpie",
           "buildsystem": "simple",
           "build-commands": [
+            "rm -rf subprojects/magpie/target",
             "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
-            "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/gcc-glibc:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'as --version && ld --version && cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
+            "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/gcc-glibc:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-glibc",
             "",
             "rm -rf subprojects/magpie/target",
-            ""
+            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
+            "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/gcc-musl:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
+            "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl"
           ],
           "sources": [
             {
@@ -228,7 +258,7 @@
             },
             {
               "type": "inline",
-              "contents": "[source.vendored-sources]\ndirectory = \"../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-lunwind' ]\n\n[target.aarch64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-lunwind' ]\n",
+              "contents": "[source.vendored-sources]\ndirectory = \"../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-L/opt/gcc/lib/gcc/x86_64-unknown-linux-musl/10.5.0 -lgcc -lgcc_eh' ]\n\n[target.aarch64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-L/opt/gcc/lib/gcc/aarch64-unknown-linux-musl/10.5.0 -lgcc -lgcc_eh' ]\n",
               "dest": "subprojects/magpie/.cargo",
               "dest-filename": "config.toml"
             },
