@@ -56,8 +56,9 @@
         "ln -sf /opt/gcc/bin/gcc rootfs-glibc/usr/bin/cc",
         "",
         "mv gcc-glibc/binutils/bin/as rootfs-glibc/usr/bin/",
-        "mv gcc-glibc/binutils/lib/libbfd-2.43.1.so rootfs-glibc/usr/lib/x86_64-linux-gnu/",
-        "mv gcc-glibc/binutils/lib/libsframe.so.1 rootfs-glibc/usr/lib/x86_64-linux-gnu/",
+        "mv gcc-glibc/binutils/lib/libbfd-2.43.1.so rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
+        "mv gcc-glibc/binutils/lib/libopcodes-2.43.1.so rootfs-glibc/usr/lib/$(arch)-linux-gnu || true",
+        "mv gcc-glibc/binutils/lib/libsframe.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
         "rm -rf gcc-glibc/binutils",
         "",
         "rm rootfs-glibc/usr/share/vim/vimfiles",
@@ -76,11 +77,11 @@
         "",
         "mv gcc-musl/binutils/bin/as rootfs-musl/usr/bin/",
         "mv gcc-musl/binutils/lib/libbfd-2.43.1.so rootfs-musl/usr/lib/",
+        "mv gcc-musl/binutils/lib/libopcodes-2.43.1.so rootfs-musl/usr/lib/ || true",
         "mv gcc-musl/binutils/lib/libsframe.so.1 rootfs-musl/usr/lib/",
         "rm -rf gcc-musl/binutils",
         "",
         "cp -ar gcc-musl/cmake/usr rootfs-musl/ && rm -rf gcc-musl/cmake",
-        "",
         "",
         "ln -sf libgbm.so.1 rootfs-musl/usr/lib/libgcc_s.so",
         "ln -sf /usr/lib/libgbm.so.1 gcc-musl/lib64/libgcc_s.so",
@@ -151,7 +152,7 @@
         {
           "type": "file",
           "url": "https://missioncenter.io/build-tools/alpine-3.11-aarch64_r1.tar.zst",
-          "sha256": "226e0fca6edd5b50340907c2c34b40a660e91848e640d6633de1774ef478792b",
+          "sha256": "558d87fefd65175d50dccfd2f79ce583a232297822809dd0bee92925e875efa4",
           "only-arches": [
             "aarch64"
           ]
@@ -178,7 +179,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/gcc-10-glibc-aarch64.tar.zst",
           "dest": "gcc-glibc",
-          "sha256": "478f3f2c04c6153d5fae08ad4724fe7e3f0dcb3b3611504109e55b91f34d3b59",
+          "sha256": "53b37fb98c6fcd576bc058b6f93cc89364456099479e8a9d5af6ffd34ebb3aea",
           "only-arches": [
             "aarch64"
           ]
@@ -187,7 +188,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/gcc-10-musl-aarch64.tar.zst",
           "dest": "gcc-musl",
-          "sha256": "6948951f7551c133a7289c7ea1119054487d7f6859e13a902bbf1b924810bc60",
+          "sha256": "53ebfe827209387261d7e94661e0129abe17cffd877c712b100fb36ef40bf551",
           "only-arches": [
             "aarch64"
           ]

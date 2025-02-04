@@ -12,13 +12,4 @@ for o in "$@"; do
     finalargs+=("$o")
 done
 
-if [ "$(arch)" = "x86_64" ]; then
-    MARCH="-march=x86_64"
-elif [ "$(arch)" = "aarch64" ]; then
-    # MARCH="-march=armv8-a"
-    MARCH=""
-else
-    MARCH=""
-fi
-
 exec /opt/gcc/mold/usr/bin/mold "${finalargs[@]}"
