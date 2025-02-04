@@ -286,7 +286,7 @@ mod imp {
 
             let fan_temp_c = (fan.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0;
             if let Some(temp) = this.temp.get() {
-                temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
+                temp.set_text(&i18n_f("{} °C", &[&format!("{:.0}", fan_temp_c)]));
             }
 
             this.speed_graph.add_data_point(0, fan.rpm as f32);
