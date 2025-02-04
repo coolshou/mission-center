@@ -24,6 +24,10 @@ else
     cargo_opt  = [ '--features=skip-codegen' ]
 endif
 
+if get_option('skip-codegen')
+    cargo_opt += [ '--features=skip-codegen' ]
+endif
+
 cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
 cargo_opt += [ '--target-dir', meson.project_build_root()  / 'src' ]
 cargo_env += [ 'BUILD_ROOT=' + meson.project_build_root() ]

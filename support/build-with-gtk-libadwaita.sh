@@ -419,9 +419,9 @@ tar xvf libadwaita-$LIBADW_VER.tar.xz
 cd libadwaita-$LIBADW_VER
 # Patch for Yaru support
 # Skip patches for now since they're not compatible with the latest version of libadwaita
-# for f in $SRC_PATH/support/patches/libadwaita/*.patch; do
-#   patch -p1 < $f
-# done
+#for f in $SRC_PATH/support/patches/libadwaita/*.patch; do
+#  patch -p1 < $f
+#done
 mkdir build && cd build
 meson setup ..          \
     --prefix=/usr                      \
@@ -462,7 +462,7 @@ cargo install toml2json
 
 cd $SRC_PATH
 BUILD_DIR=_build-$(arch)
-rm -rf $BUILD_DIR && meson setup $BUILD_DIR -Dbuildtype=release -Dprefix=/usr
+rm -rf $BUILD_DIR && meson setup $BUILD_DIR -Dbuildtype=release -Dprefix=/usr -Dskip-codegen=true
 ninja -C $BUILD_DIR && env DESTDIR=$OUT_PATH ninja -C $BUILD_DIR install
 
 glib-compile-schemas $OUT_PATH/usr/share/glib-2.0/schemas/
