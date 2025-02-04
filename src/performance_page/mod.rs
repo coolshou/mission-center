@@ -1801,7 +1801,7 @@ mod imp {
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
 
-                        summary.set_info1("");
+                        summary.set_info1(readings.cpu_static_info.name.as_ref());
                         summary.set_info2(format!(
                             "{}%{}",
                             readings
@@ -2032,15 +2032,21 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(format!("{} RPM", fan_info.rpm));
-                                if fan_info.temp_amount != 0 {
-                                    summary.set_info2(format!(
-                                        "{:.0} °C",
-                                        (fan_info.temp_amount - MK_TO_0_C) as f32 / 1000.0
-                                    ));
+                                summary.set_info1(fan_info.temp_name.as_ref());
+
+                                let temp_str = if fan_info.temp_amount != 0 {
+                                    format!(" ({:.0} °C)", (fan_info.temp_amount - MK_TO_0_C) as f32 / 1000.0)
                                 } else {
-                                    summary.set_info2("");
-                                }
+                                    String::new()
+                                };
+                                summary.set_info2(
+                                    if fan_info.percent_vroomimg < 0. {
+                                        format!("{} RPM{}", fan_info.rpm, temp_str)
+                                    } else {
+                                        format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
+                                    },
+
+                                );
                                 result &= page.update_readings(fan_info);
                             }
                         }
