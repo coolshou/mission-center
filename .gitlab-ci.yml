@@ -14,14 +14,14 @@ build-job-x86:
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - ./support/check-cargo-fmt.sh
-
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
     - ln -sf /usr/bin/python3 /usr/local/bin/python
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
+
+    - ./support/check-cargo-fmt.sh
 
     - pip install meson ninja --break-system-packages
 
@@ -41,14 +41,14 @@ build-job-arm:
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
-    - ./support/check-cargo-fmt.sh
-
     - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
     - ln -sf /usr/bin/python3 /usr/local/bin/python
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
+
+    - ./support/check-cargo-fmt.sh
 
     - pip install meson ninja --break-system-packages
 
