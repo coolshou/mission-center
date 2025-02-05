@@ -435,7 +435,7 @@ cd $OUT_PATH
 
 # Blueprint Compiler
 # -------------------------------------------------------------------
-BP_CMP_VER=a42ec3a9450d865b9856d7ad3128edadd9a5fe1b
+BP_CMP_VER=v0.16.0
 # -------------------------------------------------------------------
 curl -LO https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/$BP_CMP_VER/blueprint-compiler-$BP_CMP_VER.tar.bz2
 tar xvf blueprint-compiler-*.tar.bz2 && rm blueprint-compiler-*.tar.bz2
@@ -451,6 +451,17 @@ cd ../../ && rm -rf blueprint-compiler-*
 #sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/gir.py
 #sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/ast_utils.py
 #sed -i '1s/^/from __future__ import annotations\n/' /usr/lib/python3/dist-packages/blueprintcompiler/decompiler.py
+cd $OUT_PATH
+
+# Mold Linker
+# -------------------------------------------------------------------
+MOLD_VER=2.35.1
+# -------------------------------------------------------------------
+curl -LO https://github.com/rui314/mold/releases/download/v$MOLD_VER/mold-$MOLD_VER-$(arch)-linux.tar.gz
+tar xvf mold-$MOLD_VER-*.tar.gz
+rm /usr/bin/ld && mv mold-$MOLD_VER-$(arch)-linux/bin/mold /usr/bin/ld
+rm -rf mold-$MOLD_VER-*
+cd $OUT_PATH
 
 cd $OUT_PATH/usr
 mv bin bin.old && mkdir bin
