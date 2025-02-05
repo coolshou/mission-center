@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-01 12:01+0000\n"
+"PO-Revision-Date: 2025-02-06 04:27+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
@@ -183,11 +183,14 @@ msgstr "Hoeveel punten moeten er elke grafiek worden weergegeven?"
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Of het grafiek­maximum moet worden ingesteld op het interface­maximum (false)"
+" of op het waargenomen maximum (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -509,14 +512,12 @@ msgid "Type:"
 msgstr "Type:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Swapgebruik gedurende "
+msgstr "Ventilator­snelheid tegen "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatuur"
+msgstr "Temperatuur tegen "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -741,6 +742,8 @@ msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Stel de netwerk­grafiek zo in dat deze dynamisch schaalt met het werkelĳke "
+"gebruik of met de maximale kanaal­snelheid"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
@@ -1062,7 +1065,7 @@ msgstr "Ventilator"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 msgid "{}: {} {}{}"
-msgstr ""
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
