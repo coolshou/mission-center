@@ -208,6 +208,8 @@ mod imp {
                 {
                     let width = this.temp_graph.width() as f32;
                     let height = this.temp_graph.height() as f32;
+                    this.temp_graph.imp().set_dateset_max(50.);
+                    this.temp_graph.imp().set_dateset_min(50.);
 
                     let mut a = width;
                     let mut b = height;
@@ -284,7 +286,7 @@ mod imp {
                 ));
             }
 
-            let fan_temp_c = (fan.temp_amount + MK_TO_0_C) as f32 / 1000.0;
+            let fan_temp_c = (fan.temp_amount - MK_TO_0_C) as f32 / 1000.0;
             if let Some(temp) = this.temp.get() {
                 temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
             }
