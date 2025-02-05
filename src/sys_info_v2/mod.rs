@@ -49,9 +49,11 @@ pub use gatherer::{
 macro_rules! cmd {
     ($cmd: expr) => {{
         use std::process::Command;
+        use std::env;
 
         if *crate::sys_info_v2::IS_FLATPAK {
             const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
+            env::set_var("IS_FLATPAK_MISSIONCENTER", "1");
 
             let mut cmd = Command::new(FLATPAK_SPAWN_CMD);
             cmd.arg("--host").arg("sh").arg("-c");
@@ -59,6 +61,7 @@ macro_rules! cmd {
 
             cmd
         } else {
+            env::set_var("IS_FLATPAK_MISSIONCENTER", "0");
             let mut cmd = Command::new("sh");
             cmd.arg("-c");
             cmd.arg($cmd);

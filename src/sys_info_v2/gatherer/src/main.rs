@@ -1689,12 +1689,12 @@ fn config_base_path() -> Option<Box<Path>> {
     let is_flatpak = {
         if let Ok(v) = env::var("IS_FLATPAK_MISSIONCENTER") {
             if v.trim() == "1" {
-                false
-            } else {
                 true
+            } else {
+                false
             }
         } else {
-            true
+            false
         }
     };
     let config_base_path = {
