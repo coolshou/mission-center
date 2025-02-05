@@ -139,7 +139,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                     for entry in globs {
                         match entry {
                             Ok(path) => {
-                                self.get_fan_info(&path)
+                                self.fan_info(&path)
                             }
                             Err(e) => {
                                 warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
@@ -157,7 +157,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                     for entry in globs {
                         match entry {
                             Ok(path) => {
-                                self.get_fan_info(&path)
+                                self.fan_info(&path)
                             }
                             Err(e) => {
                                 warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
@@ -188,7 +188,7 @@ impl LinuxFansInfo {
             config_dir,
         }
     }
-    fn get_fan_info(&mut self, path: &Path) {
+    fn fan_info(&mut self, path: &Path) {
         // read the first glob result for hwmon location
         let parent_dir = path.parent().unwrap();
         let parent_dir_str = path.parent().unwrap().to_str().unwrap();

@@ -247,7 +247,7 @@ impl SystemState<'_> {
 
 impl<'a> SystemState<'a> {
     pub fn new() -> Self {
-        let config_dir = Arc::new(get_config_base_path());
+        let config_dir = Arc::new(config_base_path());
         Self {
             cpu_info: Arc::new(RwLock::new(CpuInfo::new())),
             disk_info: Arc::new(RwLock::new(DisksInfo::new())),
@@ -1685,7 +1685,7 @@ impl Arg for NVMeSmartResult {
     }
 }
 
-fn get_config_base_path() -> Box<Path> {
+fn config_base_path() -> Box<Path> {
     if let Ok(value) = env::var("MISSIONCENTER_CONFIG") {
         return Path::new(&value).into()
     }
