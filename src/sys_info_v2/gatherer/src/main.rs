@@ -19,10 +19,10 @@
  */
 use std::collections::HashMap;
 use std::path::Path;
+use std::env;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
-    env,
 };
 
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
@@ -131,6 +131,7 @@ struct SystemState<'a> {
 
     refresh_interval: Arc<AtomicU64>,
     core_count_affects_percentages: Arc<AtomicBool>,
+    config_dir: Arc<Box<Path>>,
 }
 
 impl SystemState<'_> {
@@ -259,6 +260,7 @@ impl<'a> SystemState<'a> {
 
             refresh_interval: Arc::new(AtomicU64::new(1000)),
             core_count_affects_percentages: Arc::new(AtomicBool::new(true)),
+            config_dir: Arc::new(get_config_base_path()),
         }
     }
 }
@@ -272,6 +274,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::process::exit(0);
         }
     }
+
 
     #[cfg(target_os = "linux")]
     unsafe {
@@ -1683,14 +1686,15 @@ impl Arg for NVMeSmartResult {
     }
 }
 
-fn get_config_base_path() -> Option<Path> {
-    if let Some(value) = env::var("MISSIONCENTER_CONFIG") {
-        return Some(Path::new(value))
+fn get_config_base_path() -> Box<Path> {
+    if let Ok(value) = env::var("MISSIONCENTER_CONFIG") {
+        return Path::new(&value).into()
     }
-    if let Some(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
-        return Some(Path::new(xdg_config_dir + "/missioncenter"))
+    if let Ok(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
+        return Path::new(&(xdg_config_dir + "/missioncenter")).into()
     }
-    if let Some(home) = env::var("HOME") {
-        Somme(Path::new(home + "/home/missioncenter"))
+    if let Ok(home) = env::var("HOME") {
+        return Path::new(&(home + "/home/missioncenter")).into()
     }
+    Path::new("").into()
 }
