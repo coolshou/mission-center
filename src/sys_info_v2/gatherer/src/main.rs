@@ -18,8 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 use std::collections::HashMap;
-use std::path::Path;
 use std::env;
+use std::path::Path;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
@@ -273,7 +273,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::process::exit(0);
         }
     }
-
 
     #[cfg(target_os = "linux")]
     unsafe {

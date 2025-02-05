@@ -48,8 +48,8 @@ pub use gatherer::{
 
 macro_rules! cmd {
     ($cmd: expr) => {{
-        use std::process::Command;
         use std::env;
+        use std::process::Command;
 
         if *crate::sys_info_v2::IS_FLATPAK {
             const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
