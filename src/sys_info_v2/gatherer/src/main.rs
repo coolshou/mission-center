@@ -131,7 +131,6 @@ struct SystemState<'a> {
 
     refresh_interval: Arc<AtomicU64>,
     core_count_affects_percentages: Arc<AtomicBool>,
-    config_dir: Arc<Box<Path>>,
 }
 
 impl SystemState<'_> {
@@ -248,11 +247,12 @@ impl SystemState<'_> {
 
 impl<'a> SystemState<'a> {
     pub fn new() -> Self {
+        let config_dir = Arc::new(get_config_base_path());
         Self {
             cpu_info: Arc::new(RwLock::new(CpuInfo::new())),
             disk_info: Arc::new(RwLock::new(DisksInfo::new())),
             gpu_info: Arc::new(RwLock::new(GpuInfo::new())),
-            fan_info: Arc::new(RwLock::new(FansInfo::new())),
+            fan_info: Arc::new(RwLock::new(FansInfo::new(config_dir.clone()))),
             services: Arc::new(RwLock::new(Services::new())),
             service_controller: Arc::new(RwLock::new(None)),
             processes: Arc::new(RwLock::new(Processes::new())),
@@ -260,7 +260,6 @@ impl<'a> SystemState<'a> {
 
             refresh_interval: Arc::new(AtomicU64::new(1000)),
             core_count_affects_percentages: Arc::new(AtomicBool::new(true)),
-            config_dir: Arc::new(get_config_base_path()),
         }
     }
 }
