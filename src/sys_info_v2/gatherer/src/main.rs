@@ -1710,7 +1710,7 @@ fn config_base_path() -> Option<Box<Path>> {
             } else if let Ok(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
                 Some(xdg_config_dir + "/missioncenter")
             } else if let Ok(home) = env::var("HOME") {
-                Some(home + "/home/missioncenter")
+                Some(home + "/.config/missioncenter")
             } else {
                 None
             }
