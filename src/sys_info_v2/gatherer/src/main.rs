@@ -1700,7 +1700,7 @@ fn config_base_path() -> Option<Box<Path>> {
     let config_base_path = {
         if is_flatpak {
             if let Ok(home) = env::var("HOME") {
-                Some(home + "/.var/app/io.missioncenter.MissionCenter")
+                Some(home + "/.var/app/io.missioncenter.MissionCenter/config")
             } else {
                 None
             }
