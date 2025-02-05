@@ -1685,15 +1685,40 @@ impl Arg for NVMeSmartResult {
     }
 }
 
-fn config_base_path() -> Box<Path> {
-    if let Ok(value) = env::var("MISSIONCENTER_CONFIG") {
-        return Path::new(&value).into()
+fn config_base_path() -> Option<Box<Path>> {
+    let is_flatpak = {
+        if let Ok(v) = env::var("IS_FLATPAK_MISSIONCENTER") {
+            if v.trim() == "1" {
+                false
+            } else {
+                true
+            }
+        } else {
+            true
+        }
+    };
+    let config_base_path = {
+        if is_flatpak {
+            if let Ok(home) = env::var("HOME") {
+                Some(home + "/.var/app/io.missioncenter.MissionCenter")
+            } else {
+                None
+            }
+        } else {
+            if let Ok(value) = env::var("MISSIONCENTER_CONFIG") {
+                Some(value)
+            } else if let Ok(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
+                Some(xdg_config_dir + "/missioncenter")
+            } else if let Ok(home) = env::var("HOME") {
+                Some(home + "/home/missioncenter")
+            } else {
+                None
+            }
+        }
+    };
+    if let Some(path) = config_base_path {
+        Some(Path::new(&path).into())
+    } else {
+        None
     }
-    if let Ok(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
-        return Path::new(&(xdg_config_dir + "/missioncenter")).into()
-    }
-    if let Ok(home) = env::var("HOME") {
-        return Path::new(&(home + "/home/missioncenter")).into()
-    }
-    Path::new("").into()
 }

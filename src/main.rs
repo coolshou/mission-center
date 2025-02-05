@@ -266,6 +266,7 @@ fn main() {
         .unwrap_or("/usr/share:/usr/local/share".into());
     xdg_data_dirs.push_str(&format!(":{home}/.local/share"));
     env::set_var("XDG_DATA_DIRS", xdg_data_dirs.replace('~', &home));
+    env::set_var("IS_FLATPAK_MISSIONCENTER", "1");
 
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8")

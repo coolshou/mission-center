@@ -115,7 +115,7 @@ pub struct LinuxFansInfo {
     info: Vec<LinuxFanInfo>,
 
     refresh_timestamp: Instant,
-    config_dir: Box<Path>,
+    config_dir: Option<Box<Path>>,
 }
 
 impl<'a> FansInfoExt<'a> for LinuxFansInfo {
@@ -133,8 +133,8 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
 
         self.info.clear();
 
-        if self.config_dir.exists() {
-            match glob(&format!("{}/fan[0-9]*_input", self.config_dir.display())) {
+        if let Some(config_dir) = &self.config_dir {
+            match glob(&format!("{}/fan[0-9]*_input", config_dir.display())) {
                 Ok(globs) => {
                     for entry in globs {
                         match entry {
@@ -178,9 +178,19 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
 }
 
 impl LinuxFansInfo {
-    pub fn new(config_dir: Arc<Box<Path>>) -> Self {
+    pub fn new(config_dir: Arc<Option<Box<Path>>>) -> Self {
         let config_dir = (*config_dir).clone();
-        let config_dir = config_dir.join("hwmon0").as_path().into();
+        let config_dir = if let Some(config_dir) = config_dir {
+            let config_dir: Box<Path> = config_dir.join("hwmon0").as_path().into();
+            if config_dir.exists() {
+                Some(config_dir)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         Self {
             info: vec![],
 
