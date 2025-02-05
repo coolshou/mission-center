@@ -202,7 +202,7 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
                                 parent_dir_str, findex
                             )) {
                                 if let Ok(v) = v.trim().parse::<i32>() {
-                                    ( v + MK_TO_0_C as i32).try_into().unwrap_or(0)
+                                    (v + MK_TO_0_C as i32).try_into().unwrap_or(0)
                                 } else {
                                     0
                                 }

@@ -1275,10 +1275,12 @@ mod imp {
             if let Some(column_header_shared_memory) = &column_header_shared_memory {
                 column_header_shared_memory.set_heading(format!(
                     "{}%",
-                    ((readings.mem_info.sh_mem * 100) as f32 / readings.mem_info.mem_total as f32).round()
+                    ((readings.mem_info.sh_mem * 100) as f32 / readings.mem_info.mem_total as f32)
+                        .round()
                 ));
             }
-            self.column_header_shared_memory.set(column_header_shared_memory);
+            self.column_header_shared_memory
+                .set(column_header_shared_memory);
 
             let column_header_disk = self.column_header_disk.take();
             if let Some(column_header_disk) = &column_header_disk {
@@ -1393,28 +1395,35 @@ mod imp {
                 };
 
                 let child_model = if pos.is_none() {
-                    let (cpu_usage, mem_usage, mem_shared, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
-                        if this.use_merge_stats.get() {
-                            (
-                                child.merged_usage_stats.cpu_usage,
-                                child.merged_usage_stats.memory_usage,
-                                child.merged_usage_stats.memory_shared,
-                                child.merged_usage_stats.network_usage,
-                                child.merged_usage_stats.disk_usage,
-                                child.merged_usage_stats.gpu_usage,
-                                child.merged_usage_stats.gpu_memory_usage,
-                            )
-                        } else {
-                            (
-                                child.usage_stats.cpu_usage,
-                                child.usage_stats.memory_usage,
-                                child.usage_stats.memory_shared,
-                                child.usage_stats.network_usage,
-                                child.usage_stats.disk_usage,
-                                child.usage_stats.gpu_usage,
-                                child.usage_stats.gpu_memory_usage,
-                            )
-                        };
+                    let (
+                        cpu_usage,
+                        mem_usage,
+                        mem_shared,
+                        net_usage,
+                        disk_usage,
+                        gpu_usage,
+                        gpu_mem_usage,
+                    ) = if this.use_merge_stats.get() {
+                        (
+                            child.merged_usage_stats.cpu_usage,
+                            child.merged_usage_stats.memory_usage,
+                            child.merged_usage_stats.memory_shared,
+                            child.merged_usage_stats.network_usage,
+                            child.merged_usage_stats.disk_usage,
+                            child.merged_usage_stats.gpu_usage,
+                            child.merged_usage_stats.gpu_memory_usage,
+                        )
+                    } else {
+                        (
+                            child.usage_stats.cpu_usage,
+                            child.usage_stats.memory_usage,
+                            child.usage_stats.memory_shared,
+                            child.usage_stats.network_usage,
+                            child.usage_stats.disk_usage,
+                            child.usage_stats.gpu_usage,
+                            child.usage_stats.gpu_memory_usage,
+                        )
+                    };
 
                     let row_model = RowModelBuilder::new()
                         .name(entry_name)
@@ -1444,28 +1453,35 @@ mod imp {
                         .downcast::<RowModel>()
                         .unwrap();
 
-                    let (cpu_usage, mem_usage, mem_shared, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
-                        if this.use_merge_stats.get() {
-                            (
-                                child.merged_usage_stats.cpu_usage,
-                                child.merged_usage_stats.memory_usage,
-                                child.merged_usage_stats.memory_shared,
-                                child.merged_usage_stats.network_usage,
-                                child.merged_usage_stats.disk_usage,
-                                child.merged_usage_stats.gpu_usage,
-                                child.merged_usage_stats.gpu_memory_usage,
-                            )
-                        } else {
-                            (
-                                child.usage_stats.cpu_usage,
-                                child.usage_stats.memory_usage,
-                                child.usage_stats.memory_shared,
-                                child.usage_stats.network_usage,
-                                child.usage_stats.disk_usage,
-                                child.usage_stats.gpu_usage,
-                                child.usage_stats.gpu_memory_usage,
-                            )
-                        };
+                    let (
+                        cpu_usage,
+                        mem_usage,
+                        mem_shared,
+                        net_usage,
+                        disk_usage,
+                        gpu_usage,
+                        gpu_mem_usage,
+                    ) = if this.use_merge_stats.get() {
+                        (
+                            child.merged_usage_stats.cpu_usage,
+                            child.merged_usage_stats.memory_usage,
+                            child.merged_usage_stats.memory_shared,
+                            child.merged_usage_stats.network_usage,
+                            child.merged_usage_stats.disk_usage,
+                            child.merged_usage_stats.gpu_usage,
+                            child.merged_usage_stats.gpu_memory_usage,
+                        )
+                    } else {
+                        (
+                            child.usage_stats.cpu_usage,
+                            child.usage_stats.memory_usage,
+                            child.usage_stats.memory_shared,
+                            child.usage_stats.network_usage,
+                            child.usage_stats.disk_usage,
+                            child.usage_stats.gpu_usage,
+                            child.usage_stats.gpu_memory_usage,
+                        )
+                    };
 
                     row_model.set_icon("application-x-executable-symbolic");
                     row_model.set_cpu_usage(cpu_usage);
@@ -1584,7 +1600,8 @@ mod imp {
             self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
-            self.column_header_shared_memory.set(Some(column_header_memory_shared));
+            self.column_header_shared_memory
+                .set(Some(column_header_memory_shared));
             self.column_header_disk.set(Some(column_header_disk));
 
             if let Some(column_view_title) = column_view_title {

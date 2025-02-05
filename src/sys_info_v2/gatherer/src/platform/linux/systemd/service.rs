@@ -436,7 +436,7 @@ impl<'a> Get<'a> for ServiceVec {
 
 #[derive(Debug)]
 pub struct ServiceFilesVec {
-    pub val: Vec<(String, String)>
+    pub val: Vec<(String, String)>,
 }
 
 impl From<ServiceFilesVec> for Vec<(String, String)> {
@@ -544,8 +544,6 @@ impl<'a> Get<'a> for ServiceFilesVec {
             },
         }
 
-        Some(ServiceFilesVec {
-            val: result
-        })
+        Some(ServiceFilesVec { val: result })
     }
 }
