@@ -1080,14 +1080,12 @@ mod imp {
             let len = readings.disks_info.len();
             let hide_index = len == 1;
             for i in 0..len {
-                if readings.disks_info[i].capacity > 0 {
-                    let mut ret = self.create_disk_page(
-                        readings,
-                        if hide_index { None } else { Some(i as i32) },
-                        None,
-                    );
-                    disks.insert(std::mem::take(&mut ret.0), ret.1);
-                }
+                let mut ret = self.create_disk_page(
+                    readings,
+                    if hide_index { None } else { Some(i as i32) },
+                    None,
+                );
+                disks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
             pages.push(Pages::Disk(disks));
@@ -1701,28 +1699,28 @@ mod imp {
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
-                        if let Some(selection) = sidebar.selected_row() {
-                            let parent = match graph.parent() {
-                                Some(parent) => parent,
-                                None => {
-                                    g_warning!(
-                                        "MissionCenter::PerformancePage",
-                                        "Failed to get parent of graph widget"
-                                    );
-                                    continue;
-                                }
-                            };
-
-                            if selection.eq(&parent) {
-                                let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
-                                sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        let parent = match graph.parent() {
+                            Some(parent) => parent,
+                            None => {
+                                g_warning!(
+                                    "MissionCenter::PerformancePage",
+                                    "Failed to get parent of graph widget"
+                                );
+                                continue;
                             }
+                        };
 
-                            summary_graphs.remove(&graph);
-                            sidebar.remove(&parent);
-                            page_stack.remove(&page);
-                            pages.remove(disk_page_name);
+                        let selection = sidebar.selected_row().unwrap();
+
+                        if selection.eq(&parent) {
+                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
                         }
+
+                        summary_graphs.remove(&graph);
+                        sidebar.remove(&parent);
+                        page_stack.remove(&page);
+                        pages.remove(disk_page_name);
                     }
                 }
             }
