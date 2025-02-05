@@ -59,6 +59,8 @@ mod imp {
         #[template_child]
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
+        pub memory_column_shared: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -72,6 +74,7 @@ mod imp {
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_cpu: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_shared_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_usage: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_memory_usage: Cell<Option<column_header::ColumnHeader>>,
@@ -103,6 +106,7 @@ mod imp {
                 pid_column: TemplateChild::default(),
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
+                memory_column_shared: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
@@ -113,6 +117,7 @@ mod imp {
                 column_header_pid: Cell::new(None),
                 column_header_cpu: Cell::new(None),
                 column_header_memory: Cell::new(None),
+                column_header_shared_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
                 column_header_gpu_usage: Cell::new(None),
                 column_header_gpu_memory_usage: Cell::new(None),
@@ -539,6 +544,7 @@ mod imp {
                         .expanded(false)
                         .cpu_usage(pp.merged_usage_stats.cpu_usage)
                         .memory_usage(pp.merged_usage_stats.memory_usage)
+                        .memory_shared(pp.merged_usage_stats.memory_shared)
                         .disk_usage(pp.merged_usage_stats.disk_usage)
                         .network_usage(pp.merged_usage_stats.network_usage)
                         .gpu_usage(pp.merged_usage_stats.gpu_usage)
@@ -562,6 +568,7 @@ mod imp {
                     row_model.set_pid(primary_pid);
                     row_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
                     row_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
+                    row_model.set_memory_shared(pp.merged_usage_stats.memory_shared);
                     row_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
                     row_model.set_network_usage(pp.merged_usage_stats.network_usage);
                     row_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
@@ -975,6 +982,36 @@ mod imp {
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
                         let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.memory_shared
+                        } else {
+                            lhs.memory_shared()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.memory_shared
+                        } else {
+                            rhs.memory_shared()
+                        };
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.memory_column_shared.set_sorter(Some(&sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
                             merged_stats.disk_usage
                         } else {
                             lhs.disk_usage()
@@ -1077,6 +1114,7 @@ mod imp {
                             let pc = this.imp().pid_column.as_ptr() as usize;
                             let cc = this.imp().cpu_column.as_ptr() as usize;
                             let mc = this.imp().memory_column.as_ptr() as usize;
+                            let ms = this.imp().memory_column_shared.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
                             let gc = this.imp().gpu_usage_column.as_ptr() as usize;
                             let gm = this.imp().gpu_memory_column.as_ptr() as usize;
@@ -1089,12 +1127,14 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 2)
                             } else if sort_column == mc {
                                 settings.set_enum("apps-page-sorting-column", 3)
-                            } else if sort_column == dc {
+                            } else if sort_column == ms {
                                 settings.set_enum("apps-page-sorting-column", 4)
-                            } else if sort_column == gc {
+                            } else if sort_column == dc {
                                 settings.set_enum("apps-page-sorting-column", 5)
-                            } else if sort_column == gm {
+                            } else if sort_column == gc {
                                 settings.set_enum("apps-page-sorting-column", 6)
+                            } else if sort_column == gm {
+                                settings.set_enum("apps-page-sorting-column", 7)
                             } else {
                                 g_critical!(
                                     "MissionCenter::AppsPage",
@@ -1157,9 +1197,10 @@ mod imp {
                     1 => &self.pid_column,
                     2 => &self.cpu_column,
                     3 => &self.memory_column,
-                    4 => &self.disk_column,
-                    5 => &self.gpu_usage_column,
-                    6 => &self.gpu_memory_column,
+                    4 => &self.memory_column_shared,
+                    5 => &self.disk_column,
+                    6 => &self.gpu_usage_column,
+                    7 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
                         glib::g_critical!(
@@ -1229,6 +1270,15 @@ mod imp {
                 ));
             }
             self.column_header_memory.set(column_header_memory);
+
+            let column_header_shared_memory = self.column_header_shared_memory.take();
+            if let Some(column_header_shared_memory) = &column_header_shared_memory {
+                column_header_shared_memory.set_heading(format!(
+                    "{}%",
+                    ((readings.mem_info.sh_mem * 100) as f32 / readings.mem_info.mem_total as f32).round()
+                ));
+            }
+            self.column_header_shared_memory.set(column_header_shared_memory);
 
             let column_header_disk = self.column_header_disk.take();
             if let Some(column_header_disk) = &column_header_disk {
@@ -1343,11 +1393,12 @@ mod imp {
                 };
 
                 let child_model = if pos.is_none() {
-                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
+                    let (cpu_usage, mem_usage, mem_shared, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
                         if this.use_merge_stats.get() {
                             (
                                 child.merged_usage_stats.cpu_usage,
                                 child.merged_usage_stats.memory_usage,
+                                child.merged_usage_stats.memory_shared,
                                 child.merged_usage_stats.network_usage,
                                 child.merged_usage_stats.disk_usage,
                                 child.merged_usage_stats.gpu_usage,
@@ -1357,6 +1408,7 @@ mod imp {
                             (
                                 child.usage_stats.cpu_usage,
                                 child.usage_stats.memory_usage,
+                                child.usage_stats.memory_shared,
                                 child.usage_stats.network_usage,
                                 child.usage_stats.disk_usage,
                                 child.usage_stats.gpu_usage,
@@ -1371,6 +1423,7 @@ mod imp {
                         .pid(*pid)
                         .cpu_usage(cpu_usage)
                         .memory_usage(mem_usage)
+                        .memory_shared(mem_shared)
                         .disk_usage(disk_usage)
                         .network_usage(net_usage)
                         .gpu_usage(gpu_usage)
@@ -1391,11 +1444,12 @@ mod imp {
                         .downcast::<RowModel>()
                         .unwrap();
 
-                    let (cpu_usage, mem_usage, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
+                    let (cpu_usage, mem_usage, mem_shared, net_usage, disk_usage, gpu_usage, gpu_mem_usage) =
                         if this.use_merge_stats.get() {
                             (
                                 child.merged_usage_stats.cpu_usage,
                                 child.merged_usage_stats.memory_usage,
+                                child.merged_usage_stats.memory_shared,
                                 child.merged_usage_stats.network_usage,
                                 child.merged_usage_stats.disk_usage,
                                 child.merged_usage_stats.gpu_usage,
@@ -1405,6 +1459,7 @@ mod imp {
                             (
                                 child.usage_stats.cpu_usage,
                                 child.usage_stats.memory_usage,
+                                child.usage_stats.memory_shared,
                                 child.usage_stats.network_usage,
                                 child.usage_stats.disk_usage,
                                 child.usage_stats.gpu_usage,
@@ -1415,6 +1470,7 @@ mod imp {
                     row_model.set_icon("application-x-executable-symbolic");
                     row_model.set_cpu_usage(cpu_usage);
                     row_model.set_memory_usage(mem_usage);
+                    row_model.set_memory_shared(mem_shared);
                     row_model.set_disk_usage(disk_usage);
                     row_model.set_network_usage(net_usage);
                     row_model.set_gpu_usage(gpu_usage);
@@ -1511,6 +1567,12 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
+            let (column_view_title, column_header_memory_shared) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("Shared Memory"),
+                "0%",
+                gtk::Align::End,
+            );
             let (column_view_title, column_header_disk) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("Drive"),
@@ -1522,6 +1584,7 @@ mod imp {
             self.column_header_pid.set(Some(column_header_pid));
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
+            self.column_header_shared_memory.set(Some(column_header_memory_shared));
             self.column_header_disk.set(Some(column_header_disk));
 
             if let Some(column_view_title) = column_view_title {
