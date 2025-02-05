@@ -22,6 +22,7 @@ use std::path::Path;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
     Arc, Mutex, PoisonError, RwLock,
+    env,
 };
 
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
@@ -1679,5 +1680,17 @@ impl Arg for NVMeSmartResult {
 
     fn signature() -> Signature<'static> {
         Signature::from("((bts)yyyttttttta(q)qquu)")
+    }
+}
+
+fn get_config_base_path() -> Option<Path> {
+    if let Some(value) = env::var("MISSIONCENTER_CONFIG") {
+        return Some(Path::new(value))
+    }
+    if let Some(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
+        return Some(Path::new(xdg_config_dir + "/missioncenter"))
+    }
+    if let Some(home) = env::var("HOME") {
+        Somme(Path::new(home + "/home/missioncenter"))
     }
 }
