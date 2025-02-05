@@ -630,7 +630,7 @@ msgid "Receive"
 msgstr "Vastuvõtmisel"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Kokku vastuvõetud"
 
 #: resources/ui/performance_page/network_details.blp:114
