@@ -23,15 +23,15 @@ use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::g_critical;
 use gtk::glib::{self, g_warning};
 use std::cell::Cell;
-use std::sync::Arc;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use crate::app;
 use crate::i18n;
 use crate::performance_page::disk::PerformancePageDisk;
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
-use crate::sys_info_v2::EjectResult;
 use crate::sys_info_v2::App;
+use crate::sys_info_v2::EjectResult;
 
 mod imp {
     use super::*;
@@ -53,8 +53,7 @@ mod imp {
 
             let model = self.column_view.get();
 
-            self.parent_page
-                .set(Some(parent.clone()));
+            self.parent_page.set(Some(parent.clone()));
 
             model.remove_all();
 

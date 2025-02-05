@@ -28,8 +28,8 @@ use pollster::FutureExt;
 use std::cmp::max;
 use std::collections::HashMap;
 use std::{sync::Arc, time::Instant};
-use udisks2::Client;
 use udisks2::drive::RotationRate;
+use udisks2::Client;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinuxDiskInfo {
@@ -651,33 +651,29 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
                                 DiskType::SSD
                             }
                         }
-                        Ok(RotationRate::Rotating(_)) => {
-                            DiskType::HDD
-                        }
-                        _ => {
-                            DiskType::Unknown
-                        }
+                        Ok(RotationRate::Rotating(_)) => DiskType::HDD,
+                        _ => DiskType::Unknown,
                     }
                 };
                 // TODO: should we do this?
-/*                let r#type = if drive.optical().block_on().unwrap_or(false) {
-                    DiskType::Optical
-                } else {
-                    let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
-                    if rate == NonRotating || rate == Unknown {
-                        if dir_name.starts_with("nvme") {
-                            DiskType::NVMe
-                        } else if dir_name.starts_with("mmc") {
-                            Self::get_mmc_type(&dir_name)
-                        } else {
-                            DiskType::SSD
-                        }
-                    } else {
-                        // it is rotating and not optical, as per above
-                        DiskType::HDD
-                    }
-                };
-*/
+                /*                let r#type = if drive.optical().block_on().unwrap_or(false) {
+                                    DiskType::Optical
+                                } else {
+                                    let rate = drive.rotation_rate().block_on().unwrap_or(Unknown);
+                                    if rate == NonRotating || rate == Unknown {
+                                        if dir_name.starts_with("nvme") {
+                                            DiskType::NVMe
+                                        } else if dir_name.starts_with("mmc") {
+                                            Self::get_mmc_type(&dir_name)
+                                        } else {
+                                            DiskType::SSD
+                                        }
+                                    } else {
+                                        // it is rotating and not optical, as per above
+                                        DiskType::HDD
+                                    }
+                                };
+                */
                 let vendor = drive.vendor().block_on().unwrap_or("".to_string());
 
                 let model = drive.model().block_on().unwrap_or("".to_string());
