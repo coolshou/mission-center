@@ -205,7 +205,7 @@ impl Logger {
     pub fn log_info(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
             && (!G_MESSAGES_DEBUG.contains(&domain.into())
-            && !G_MESSAGES_DEBUG.contains(&"all".into()))
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }
@@ -232,7 +232,7 @@ impl Logger {
     pub fn log_debug(domain: &str, args: std::fmt::Arguments<'_>) {
         if !G_MESSAGES_DEBUG.is_empty()
             && (!G_MESSAGES_DEBUG.contains(&domain.into())
-            && !G_MESSAGES_DEBUG.contains(&"all".into()))
+                && !G_MESSAGES_DEBUG.contains(&"all".into()))
         {
             return;
         }
