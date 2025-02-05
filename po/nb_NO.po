@@ -650,7 +650,7 @@ msgid "Receive"
 msgstr "Mottak"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Totalt mottatt"
 
 #: resources/ui/performance_page/network_details.blp:114

@@ -655,7 +655,7 @@ msgid "Receive"
 msgstr "Ricezione"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Totale ricevuto"
 
 #: resources/ui/performance_page/network_details.blp:114
