@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-01-07 16:03+0000\n"
+"PO-Revision-Date: 2025-02-07 15:02+0000\n"
 "Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/it/>\n"
@@ -1130,7 +1130,7 @@ msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} Servizi in esecuzione"
+msgstr "{} servizi in esecuzione"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
