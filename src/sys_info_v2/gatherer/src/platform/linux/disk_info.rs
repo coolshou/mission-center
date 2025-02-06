@@ -678,7 +678,7 @@ impl<'a> DisksInfoExt<'a> for LinuxDisksInfo {
 
                 let model = drive.model().block_on().unwrap_or("".to_string());
 
-                let model = Arc::<str>::from(format!("{} {}", vendor.trim(), model.trim()));
+                let model = Arc::<str>::from(format!("{} {}", vendor.trim(), model.trim()).trim());
 
                 self.info.push((
                     DiskStats {
