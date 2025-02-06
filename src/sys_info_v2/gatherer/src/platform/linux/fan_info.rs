@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+use std::path::Path;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -114,6 +115,7 @@ pub struct LinuxFansInfo {
     info: Vec<LinuxFanInfo>,
 
     refresh_timestamp: Instant,
+    config_dir: Option<Box<Path>>,
 }
 
 impl<'a> FansInfoExt<'a> for LinuxFansInfo {
@@ -131,116 +133,38 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
 
         self.info.clear();
 
-        match glob("/sys/class/hwmon/hwmon[0-9]*/fan[0-9]*_input") {
-            Ok(globs) => {
-                for entry in globs {
-                    match entry {
-                        Ok(path) => {
-                            // read the first glob result for hwmon location
-                            let parent_dir = path.parent().unwrap();
-                            let parent_dir_str = path.parent().unwrap().to_str().unwrap();
-                            let hwmon_idx =
-                                if let Some(hwmon_dir) = parent_dir.file_name().unwrap().to_str() {
-                                    hwmon_dir[5..].parse::<u64>().ok().unwrap_or(u64::MAX)
-                                } else {
-                                    continue;
-                                };
-
-                            // read the second glob result for fan index
-                            let findex = if let Some(hwmon_instance_dir) =
-                                path.file_name().unwrap().to_str()
-                            {
-                                hwmon_instance_dir[3..(hwmon_instance_dir.len() - "_input".len())]
-                                    .parse::<u64>()
-                                    .ok()
-                                    .unwrap_or(u64::MAX)
-                            } else {
-                                continue;
-                            };
-
-                            let fan_label = if let Ok(label) = std::fs::read_to_string(format!(
-                                "{}/fan{}_label",
-                                parent_dir_str, findex
-                            )) {
-                                Arc::from(label.trim().to_case(Case::Title))
-                            } else {
-                                Arc::from("")
-                            };
-
-                            let temp_label = if let Ok(label) = std::fs::read_to_string(format!(
-                                "{}/temp{}_label",
-                                parent_dir_str, findex
-                            )) {
-                                Arc::from(label.trim().to_case(Case::Title))
-                            } else {
-                                // report no label as empty string
-                                Arc::from("")
-                            };
-
-                            let percent_vrooming = if let Ok(v) =
-                                std::fs::read_to_string(format!("{}/pwm{}", parent_dir_str, findex))
-                            {
-                                v.trim()
-                                    .parse::<u64>()
-                                    .ok()
-                                    .map_or(-1.0, |v| v as f32 / 255.)
-                            } else {
-                                -1.0
-                            };
-
-                            let rpm = if let Ok(v) = std::fs::read_to_string(format!(
-                                "{}/fan{}_input",
-                                parent_dir_str, findex
-                            )) {
-                                v.trim().parse::<u64>().ok().unwrap_or(u64::MAX)
-                            } else {
-                                u64::MAX
-                            };
-
-                            let temp = if let Ok(v) = std::fs::read_to_string(format!(
-                                "{}/temp{}_input",
-                                parent_dir_str, findex
-                            )) {
-                                if let Ok(v) = v.trim().parse::<i32>() {
-                                    (v + MK_TO_0_C as i32).try_into().unwrap_or(0)
-                                } else {
-                                    0
-                                }
-                            } else {
-                                0
-                            };
-
-                            let max_speed = if let Ok(v) = std::fs::read_to_string(format!(
-                                "{}/fan{}_max",
-                                parent_dir_str, findex
-                            )) {
-                                v.trim().parse::<u64>().ok().unwrap_or(0)
-                            } else {
-                                0
-                            };
-
-                            self.info.push(LinuxFanInfo {
-                                fan_label,
-                                temp_name: temp_label,
-                                temp_amount: temp,
-                                rpm,
-                                percent_vroomimg: percent_vrooming,
-
-                                fan_index: findex,
-                                hwmon_index: hwmon_idx,
-
-                                max_speed,
-                            })
-                        }
-                        Err(e) => {
-                            warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
+        if let Some(config_dir) = &self.config_dir {
+            match glob(&format!("{}/fan[0-9]*_input", config_dir.display())) {
+                Ok(globs) => {
+                    for entry in globs {
+                        match entry {
+                            Ok(path) => self.fan_info(&path),
+                            Err(e) => {
+                                warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
+                            }
                         }
                     }
                 }
-            }
-            Err(e) => {
-                warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
-            }
+                Err(e) => {
+                    warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
+                }
+            };
+        } else {
+            match glob("/sys/class/hwmon/hwmon[0-9]*/fan[0-9]*_input") {
+                Ok(globs) => {
+                    for entry in globs {
+                        match entry {
+                            Ok(path) => self.fan_info(&path),
+                            Err(e) => {
+                                warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
+                            }
+                        }
+                    }
+                }
+                Err(e) => {
+                    warning!("Gatherer::FanInfo", "Failed to read hwmon entry: {}", e);
+                }
+            };
         };
     }
 
@@ -250,11 +174,112 @@ impl<'a> FansInfoExt<'a> for LinuxFansInfo {
 }
 
 impl LinuxFansInfo {
-    pub fn new() -> Self {
+    pub fn new(config_dir: Arc<Option<Box<Path>>>) -> Self {
+        let config_dir = (*config_dir).clone();
+        let config_dir = if let Some(config_dir) = config_dir {
+            let config_dir: Box<Path> = config_dir.join("hwmon0").as_path().into();
+            if config_dir.exists() {
+                Some(config_dir)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         Self {
             info: vec![],
 
             refresh_timestamp: *INITIAL_REFRESH_TS,
+            config_dir,
         }
+    }
+    fn fan_info(&mut self, path: &Path) {
+        // read the first glob result for hwmon location
+        let parent_dir = path.parent().unwrap();
+        let parent_dir_str = path.parent().unwrap().to_str().unwrap();
+        let hwmon_idx = if let Some(hwmon_dir) = parent_dir.file_name().unwrap().to_str() {
+            hwmon_dir[5..].parse::<u64>().ok().unwrap_or(u64::MAX)
+        } else {
+            return;
+        };
+
+        // read the second glob result for fan index
+        let findex = if let Some(hwmon_instance_dir) = path.file_name().unwrap().to_str() {
+            hwmon_instance_dir[3..(hwmon_instance_dir.len() - "_input".len())]
+                .parse::<u64>()
+                .ok()
+                .unwrap_or(u64::MAX)
+        } else {
+            return;
+        };
+
+        let fan_label = if let Ok(label) =
+            std::fs::read_to_string(format!("{}/fan{}_label", parent_dir_str, findex))
+        {
+            Arc::from(label.trim().to_case(Case::Title))
+        } else {
+            Arc::from("")
+        };
+
+        let temp_label = if let Ok(label) =
+            std::fs::read_to_string(format!("{}/temp{}_label", parent_dir_str, findex))
+        {
+            Arc::from(label.trim().to_case(Case::Title))
+        } else {
+            // report no label as empty string
+            Arc::from("")
+        };
+
+        let percent_vrooming =
+            if let Ok(v) = std::fs::read_to_string(format!("{}/pwm{}", parent_dir_str, findex)) {
+                v.trim()
+                    .parse::<u64>()
+                    .ok()
+                    .map_or(-1.0, |v| v as f32 / 255.)
+            } else {
+                -1.0
+            };
+
+        let rpm = if let Ok(v) =
+            std::fs::read_to_string(format!("{}/fan{}_input", parent_dir_str, findex))
+        {
+            v.trim().parse::<u64>().ok().unwrap_or(u64::MAX)
+        } else {
+            u64::MAX
+        };
+
+        let temp = if let Ok(v) =
+            std::fs::read_to_string(format!("{}/temp{}_input", parent_dir_str, findex))
+        {
+            if let Ok(v) = v.trim().parse::<i32>() {
+                (v + MK_TO_0_C as i32).try_into().unwrap_or(0)
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+
+        let max_speed = if let Ok(v) =
+            std::fs::read_to_string(format!("{}/fan{}_max", parent_dir_str, findex))
+        {
+            v.trim().parse::<u64>().ok().unwrap_or(0)
+        } else {
+            0
+        };
+
+        self.info.push(LinuxFanInfo {
+            fan_label,
+            temp_name: temp_label,
+            temp_amount: temp,
+            rpm,
+            percent_vroomimg: percent_vrooming,
+
+            fan_index: findex,
+            hwmon_index: hwmon_idx,
+
+            max_speed,
+        });
     }
 }
