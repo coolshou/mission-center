@@ -19,6 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use regex::Regex;
 use std::{
     cell::Cell,
     collections::{HashMap, HashSet},
@@ -1799,7 +1800,11 @@ mod imp {
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
 
-                        summary.set_info1(readings.cpu_static_info.name.as_ref());
+                        let cpu_name = String::from(readings.cpu_static_info.name.as_ref());
+                        let pattern = Regex::new(r" \S-Core Processor").unwrap();
+                        let short_cpu_name = pattern.replace_all(&cpu_name, "").to_string();
+                        summary.set_info1(short_cpu_name);
+
                         summary.set_info2(format!(
                             "{}%{}",
                             readings
