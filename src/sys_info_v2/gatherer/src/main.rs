@@ -18,6 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 use std::collections::HashMap;
+use std::env;
 use std::path::Path;
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
@@ -246,11 +247,12 @@ impl SystemState<'_> {
 
 impl<'a> SystemState<'a> {
     pub fn new() -> Self {
+        let config_dir = Arc::new(config_base_path());
         Self {
             cpu_info: Arc::new(RwLock::new(CpuInfo::new())),
             disk_info: Arc::new(RwLock::new(DisksInfo::new())),
             gpu_info: Arc::new(RwLock::new(GpuInfo::new())),
-            fan_info: Arc::new(RwLock::new(FansInfo::new())),
+            fan_info: Arc::new(RwLock::new(FansInfo::new(config_dir.clone()))),
             services: Arc::new(RwLock::new(Services::new())),
             service_controller: Arc::new(RwLock::new(None)),
             processes: Arc::new(RwLock::new(Processes::new())),
@@ -1679,5 +1681,43 @@ impl Arg for NVMeSmartResult {
 
     fn signature() -> Signature<'static> {
         Signature::from("((bts)yyyttttttta(q)qquu)")
+    }
+}
+
+fn config_base_path() -> Option<Box<Path>> {
+    let is_flatpak = {
+        if let Ok(v) = env::var("IS_FLATPAK_MISSIONCENTER") {
+            if v.trim() == "1" {
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    };
+    let config_base_path = {
+        if is_flatpak {
+            if let Ok(home) = env::var("HOME") {
+                Some(home + "/.var/app/io.missioncenter.MissionCenter/config")
+            } else {
+                None
+            }
+        } else {
+            if let Ok(value) = env::var("MISSIONCENTER_CONFIG") {
+                Some(value)
+            } else if let Ok(xdg_config_dir) = env::var("XDG_CONFIG_HOME") {
+                Some(xdg_config_dir + "/missioncenter")
+            } else if let Ok(home) = env::var("HOME") {
+                Some(home + "/.config/missioncenter")
+            } else {
+                None
+            }
+        }
+    };
+    if let Some(path) = config_base_path {
+        Some(Path::new(&path).into())
+    } else {
+        None
     }
 }
