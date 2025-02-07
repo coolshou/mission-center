@@ -548,7 +548,7 @@ mod imp {
                         .expanded(false)
                         .cpu_usage(usage_stats.cpu_usage)
                         .memory_usage(usage_stats.memory_usage)
-                        .memory_shared(usage_stats.memory_shared)
+                        // .memory_shared(usage_stats.memory_shared)
                         .disk_usage(usage_stats.disk_usage)
                         .network_usage(usage_stats.network_usage)
                         .gpu_usage(usage_stats.gpu_usage)
@@ -572,7 +572,7 @@ mod imp {
                     row_model.set_pid(primary_pid);
                     row_model.set_cpu_usage(usage_stats.cpu_usage);
                     row_model.set_memory_usage(usage_stats.memory_usage);
-                    row_model.set_memory_shared(usage_stats.memory_shared);
+                    // row_model.set_memory_shared(usage_stats.memory_shared);
                     row_model.set_disk_usage(usage_stats.disk_usage);
                     row_model.set_network_usage(usage_stats.network_usage);
                     row_model.set_gpu_usage(usage_stats.gpu_usage);
@@ -994,14 +994,16 @@ mod imp {
 
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
-                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
-                            merged_stats.memory_shared
+                        let lhs = if let Some(_merged_stats) = lhs.merged_stats() {
+                            // merged_stats.memory_shared
+                            0.0
                         } else {
                             lhs.memory_shared()
                         };
 
-                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
-                            merged_stats.memory_shared
+                        let rhs = if let Some(_merged_stats) = rhs.merged_stats() {
+                            // merged_stats.memory_shared
+                            0.0
                         } else {
                             rhs.memory_shared()
                         };
@@ -1433,7 +1435,7 @@ mod imp {
                         .pid(*pid)
                         .cpu_usage(usage_stats.cpu_usage)
                         .memory_usage(usage_stats.memory_usage)
-                        .memory_shared(usage_stats.memory_shared)
+                        // .memory_shared(usage_stats.memory_shared)
                         .disk_usage(usage_stats.disk_usage)
                         .network_usage(usage_stats.network_usage)
                         .gpu_usage(usage_stats.gpu_usage)
@@ -1457,7 +1459,7 @@ mod imp {
                     row_model.set_icon("application-x-executable-symbolic");
                     row_model.set_cpu_usage(usage_stats.cpu_usage);
                     row_model.set_memory_usage(usage_stats.memory_usage);
-                    row_model.set_memory_shared(usage_stats.memory_shared);
+                    // row_model.set_memory_shared(usage_stats.memory_shared);
                     row_model.set_disk_usage(usage_stats.disk_usage);
                     row_model.set_network_usage(usage_stats.network_usage);
                     row_model.set_gpu_usage(usage_stats.gpu_usage);
@@ -1668,7 +1670,7 @@ impl AppsPage {
         true
     }
 
-    pub fn get_running_apps(&self) -> HashMap<Arc<str>, App> {
+    pub fn get_running_apps(&self) -> HashMap<String, App> {
         let this = self.imp();
 
         let out = this.apps.take();

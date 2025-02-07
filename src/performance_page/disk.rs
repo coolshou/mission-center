@@ -20,9 +20,8 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw::{self, prelude::AdwDialogExt, subclass::prelude::*};
-use glib::{ParamSpec, Properties, Value};
-use gtk::glib::g_warning;
+use adw::{prelude::AdwDialogExt, subclass::prelude::*};
+use glib::{g_warning, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use magpie_types::disks::{Disk, DiskKind};
@@ -64,7 +63,7 @@ mod imp {
         #[property(get, set)]
         summary_mode: Cell<bool>,
 
-        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        #[property(get = Self::infobar_content, type = Option<gtk::Widget>)]
         pub infobar_content: OnceCell<gtk::Box>,
 
         pub active_time: OnceCell<gtk::Label>,
@@ -83,17 +82,6 @@ mod imp {
         pub smart: OnceCell<gtk::Button>,
 
         pub raw_disk_id: OnceCell<String>,
-        pub raw_smart_interface: OnceCell<DiskSmartInterface>,
-
-        #[property(name = "eject-failure-dialog", get = Self::eject_failure_dialog, set = Self::set_eject_failure_dialog, type = Option<EjectFailureDialog>
-        )]
-        eject_failure_dialog: Cell<Option<EjectFailureDialog>>,
-        pub eject_failure_dialog_visible: Cell<bool>,
-
-        #[property(name = "smart-dialog", get = Self::smart_dialog, set = Self::set_smart_dialog, type = Option<SmartDataDialog>
-        )]
-        smart_dialog: Cell<Option<SmartDataDialog>>,
-        pub smart_dialog_visible: Cell<bool>,
     }
 
     impl Default for PerformancePageDisk {
@@ -129,12 +117,6 @@ mod imp {
                 smart: Default::default(),
 
                 raw_disk_id: Default::default(),
-                raw_smart_interface: Default::default(),
-
-                eject_failure_dialog: Cell::new(None),
-                eject_failure_dialog_visible: Cell::new(false),
-                smart_dialog: Cell::new(None),
-                smart_dialog_visible: Cell::new(false),
             }
         }
     }
@@ -157,66 +139,6 @@ mod imp {
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
             self.infobar_content.get().map(|ic| ic.clone().into())
-        }
-
-        fn eject_failure_dialog(&self) -> Option<EjectFailureDialog> {
-            unsafe { &*self.eject_failure_dialog.as_ptr() }.clone()
-        }
-
-        fn set_eject_failure_dialog(&self, widget: Option<&EjectFailureDialog>) {
-            self.eject_failure_dialog.set(widget.cloned());
-        }
-
-        fn smart_dialog(&self) -> Option<SmartDataDialog> {
-            unsafe { &*self.smart_dialog.as_ptr() }.clone()
-        }
-
-        fn set_smart_dialog(&self, widget: Option<&SmartDataDialog>) {
-            self.smart_dialog.set(widget.cloned());
-        }
-
-        pub fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
-            let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
-
-            details_dialog.map(move |d| {
-                if result.success {
-                    d.force_close();
-                    return;
-                } else {
-                    self.eject_failure_dialog_visible.set(true);
-                    d.imp().apply_eject_result(result, this);
-
-                    d.present(Some(this));
-                }
-            });
-        }
-
-        pub fn show_nvme_smart_info(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: NVMeSmartResult,
-        ) {
-            let nvme_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
-            nvme_smart_dialog.map(move |d| {
-                self.smart_dialog_visible.set(true);
-                d.imp().apply_nvme_smart_result(result, this);
-
-                d.present(Some(this));
-            });
-        }
-
-        pub fn show_sata_smart_info(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: SataSmartResult,
-        ) {
-            let sata_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
-            sata_smart_dialog.map(move |d| {
-                self.smart_dialog_visible.set(true);
-                d.imp().apply_sata_smart_result(result, this);
-
-                d.present(Some(this));
-            });
         }
     }
 
@@ -294,8 +216,7 @@ mod imp {
 
             let this = this.imp();
 
-            let _ = this.raw_disk_id.set(disk.id.to_string());
-            let _ = this.raw_smart_interface.set(disk.smart_interface.clone());
+            let _ = this.raw_disk_id.set(disk.id.clone());
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
@@ -325,10 +246,9 @@ mod imp {
             }
 
             if let Some(capacity) = this.capacity.get() {
-                if let Some(cap) = disk
-                    .capacity_bytes
-                    .map(|c| crate::to_human_readable(c as f32, 1024.))
-                {
+                let cap = disk.capacity_bytes;
+                if cap > 0 {
+                    let cap = crate::to_human_readable(cap as f32, 1024.);
                     capacity.set_text(&format!(
                         "{:.2} {}{}B",
                         cap.0,
@@ -341,15 +261,14 @@ mod imp {
             }
 
             if let Some(formatted) = this.formatted.get() {
-                if let Some(fmt) = disk
-                    .capacity_bytes
-                    .map(|c| crate::to_human_readable(c as f32, 1024.))
-                {
+                let capacity = disk.capacity_bytes;
+                if capacity > 0 {
+                    let capacity = crate::to_human_readable(capacity as f32, 1024.);
                     formatted.set_text(&format!(
                         "{:.2} {}{}B",
-                        fmt.0,
-                        fmt.1,
-                        if fmt.1.is_empty() { "" } else { "i" }
+                        capacity.0,
+                        capacity.1,
+                        if capacity.1.is_empty() { "" } else { "i" }
                     ));
                 } else {
                     formatted.set_text(&i18n("Unknown"));
@@ -388,7 +307,7 @@ mod imp {
             }
 
             if let Some(smart_button) = this.smart.get() {
-                smart_button.set_sensitive(disk.smart_interface != DiskSmartInterface::Dumb);
+                smart_button.set_sensitive(disk.smart_interface.is_some());
             }
 
             true
@@ -536,8 +455,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            EjectFailureDialog::ensure_type();
-
             klass.bind_template();
         }
 
@@ -638,95 +555,71 @@ mod imp {
                     .object::<gtk::Label>("disk_type")
                     .expect("Could not find `disk_type` object in details pane"),
             );
-            let _ = self.eject.set(
-                sidebar_content_builder
-                    .object::<gtk::Button>("eject")
-                    .expect("Could not find `eject` object in details pane"),
-            );
-            let _ = self.smart.set(
-                sidebar_content_builder
-                    .object::<gtk::Button>("smart")
-                    .expect("Could not find `smart` object in details pane"),
-            );
+            let eject = sidebar_content_builder
+                .object::<gtk::Button>("eject")
+                .expect("Could not find `eject` object in details pane");
+            let _ = self.eject.set(eject.clone());
+            let smart = sidebar_content_builder
+                .object::<gtk::Button>("smart")
+                .expect("Could not find `smart` object in details pane");
+            let _ = self.smart.set(smart.clone());
 
-            self.eject
-                .get()
-                .expect("Eject button missing")
-                .connect_clicked({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(that) = this.upgrade() {
-                            let this = that.imp();
-                            let that = &that;
+            eject.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
 
-                            match app!().sys_info().and_then(move |sys_info| {
-                                let eject_result =
-                                    sys_info.eject_disk(this.raw_disk_id.get().unwrap(), false, 0);
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get disk_id for eject");
+                        return;
+                    };
 
-                                this.show_eject_result(that, eject_result);
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
 
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                        "MissionCenter::DetailsDialog",
-                                        "Failed to get `sys_info`: {}",
-                                        e
-                                    );
-                                }
-                                _ => {}
-                            }
+                    match magpie.eject_disk(disk_id) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            let dialog = EjectFailureDialog::new(disk_id.clone(), e);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         }
                     }
-                });
+                }
+            });
 
-            self.smart
-                .get()
-                .expect("Smart Button Missing")
-                .connect_clicked({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(that) = this.upgrade() {
-                            let this = that.imp();
-                            let that = &that;
+            smart.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
 
-                            match app!().sys_info().and_then(move |sys_info| {
-                                let disk_id = this.raw_disk_id.get().unwrap();
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "`disk_id` was not set");
+                        return;
+                    };
 
-                                match this.raw_smart_interface.get() {
-                                    Some(DiskSmartInterface::NVMe) => {
-                                        let smart_info = sys_info.nvme_smart_info(disk_id);
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
 
-                                        this.show_nvme_smart_info(that, smart_info);
-                                    }
-                                    Some(DiskSmartInterface::Ata) => {
-                                        let smart_info = sys_info.sata_smart_info(disk_id);
+                    let Some(smart_data) = magpie.smart_data(disk_id.clone()) else {
+                        return;
+                    };
 
-                                        this.show_sata_smart_info(that, smart_info);
-                                    }
-                                    e => {
-                                        g_warning!(
-                                            "MissionCenter::DetailsDialog",
-                                            "Unknown interface {:?}",
-                                            e
-                                        );
-                                    }
-                                }
-
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                        "MissionCenter::DetailsDialog",
-                                        "Failed to get `sys_info`: {}",
-                                        e
-                                    );
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                });
+                    let dialog = SmartDataDialog::new(smart_data);
+                    dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                }
+            });
         }
     }
 

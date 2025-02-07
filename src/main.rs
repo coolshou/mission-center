@@ -66,7 +66,7 @@ fn user_home() -> &'static Path {
                 "/tmp".into()
             })
     })
-        .as_path()
+    .as_path()
 }
 
 fn flatpak_data_dir() -> &'static Path {

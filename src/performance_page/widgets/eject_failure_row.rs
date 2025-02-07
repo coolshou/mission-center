@@ -20,24 +20,24 @@
 
 use std::cell::Cell;
 
+use adw::glib::g_warning;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
-use gtk::glib::{self, g_critical};
+use gtk::glib::{self, g_critical, WeakRef};
 
 use crate::app;
-use crate::performance_page::disk::PerformancePageDisk;
+use crate::performance_page::widgets::EjectFailureDialog;
 
 mod imp {
     use super::*;
-    use gtk::subclass::prelude::{CompositeTemplateClass, CompositeTemplateInitializingExt};
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_entry.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_eject_failure_row.ui"
     )]
     pub struct EjectFailureRow {
         #[template_child]
-        pub icon: TemplateChild<gtk::Image>,
+        icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub pid: TemplateChild<gtk::Label>,
         #[template_child]
@@ -47,7 +47,8 @@ mod imp {
         #[template_child]
         pub kill: TemplateChild<gtk::Button>,
 
-        pub raw_pid: Cell<Option<u32>>,
+        pub raw_pid: Cell<u32>,
+        pub dialog: WeakRef<EjectFailureDialog>,
     }
 
     impl EjectFailureRow {
@@ -79,7 +80,9 @@ mod imp {
                 pid: Default::default(),
                 open_files: Default::default(),
                 kill: Default::default(),
-                raw_pid: Default::default(),
+
+                raw_pid: Cell::new(0),
+                dialog: Default::default(),
             }
         }
     }
@@ -117,9 +120,9 @@ pub struct EjectFailureRowBuilder {
     name: glib::GString,
     id: String,
 
-    parent_page: Option<PerformancePageDisk>,
-
     files_open: Vec<String>,
+
+    dialog: WeakRef<EjectFailureDialog>,
 }
 
 impl EjectFailureRowBuilder {
@@ -130,8 +133,9 @@ impl EjectFailureRowBuilder {
             name: glib::GString::default(),
             id: String::from(""),
 
-            parent_page: None,
             files_open: vec![],
+
+            dialog: WeakRef::default(),
         }
     }
 
@@ -160,8 +164,8 @@ impl EjectFailureRowBuilder {
         self
     }
 
-    pub fn parent_page(mut self, parent_page: PerformancePageDisk) -> Self {
-        self.parent_page = Some(parent_page);
+    pub fn dialog(mut self, dialog: &EjectFailureDialog) -> Self {
+        self.dialog = dialog.downgrade();
         self
     }
 
@@ -171,43 +175,45 @@ impl EjectFailureRowBuilder {
             let this = this.imp();
 
             this.set_icon(self.icon.as_str());
-            this.pid.set_label(format!("{}", self.pid).as_str());
+            this.pid.set_label(&self.pid.to_string());
             this.name.set_label(self.name.as_str());
             this.open_files
                 .set_label(self.files_open.join("\n").as_str());
 
             this.kill.connect_clicked({
+                let this = this.obj().downgrade();
                 move |_| {
-                    let eject_result = match app!().sys_info() {
-                        Ok(sys_info) => sys_info.eject_disk(self.id.as_str(), false, self.pid),
-                        Err(err) => {
-                            g_critical!(
-                                "MissionCenter::EjectFailureRow",
-                                "Failed to get sys_info: {}",
-                                err
-                            );
-                            return;
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let Some(dialog) = this.dialog.upgrade() else {
+                        g_critical!(
+                            "MissionCenter::EjectFailureRow",
+                            "Failed to get parent dialog",
+                        );
+                        return;
+                    };
+
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!(
+                            "MissionCenter::EjectFailureDialog",
+                            "Failed to get magpie client"
+                        );
+                        return;
+                    };
+
+                    magpie.kill_process(this.raw_pid.get());
+                    match magpie.eject_disk(&dialog.disk_id()) {
+                        Ok(_) => {
+                            dialog.close();
                         }
-                    };
-
-                    let Some(parent) = self.parent_page.as_ref() else {
-                        g_critical!(
-                            "MissionCenter::EjectFailureRow",
-                            "Failed to get parent page",
-                        );
-                        return;
-                    };
-
-                    let Some(efd) = parent.eject_failure_dialog() else {
-                        g_critical!(
-                            "MissionCenter::EjectFailureRow",
-                            "Failed to get eject failure dialog",
-                        );
-                        return;
-                    };
-                    efd.close();
-                    // TODO: this feels leaky
-                    parent.imp().show_eject_result(parent, eject_result);
+                        Err(e) => {
+                            dialog.update_model(e);
+                        }
+                    }
                 }
             });
         }

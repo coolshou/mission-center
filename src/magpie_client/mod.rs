@@ -33,8 +33,8 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, Cpu, Disk, DiskKind, FanInfo, Gpu, Memory, MemoryDevice, Process,
-    ProcessUsageStats, Service,
+    App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, FanInfo, Gpu, Memory,
+    MemoryDevice, Process, ProcessUsageStats, Service, SmartData,
 };
 
 macro_rules! cmd_flatpak_host {
@@ -52,11 +52,6 @@ macro_rules! cmd_flatpak_host {
 }
 
 mod client;
-
-pub type EjectResult = dbus_interface::EjectResult;
-pub type CommonSmartResult = dbus_interface::CommonSmartResult;
-pub type SataSmartResult = dbus_interface::SataSmartResult;
-pub type NVMeSmartResult = dbus_interface::NVMeSmartResult;
 
 pub type Pid = u32;
 
@@ -91,22 +86,21 @@ enum Message {
     UpdateCoreCountAffectsPercentages(bool),
     TerminateProcess(Pid),
     KillProcess(Pid),
+    KillProcesses(Vec<Pid>),
     GetServiceLogs(String, Option<NonZeroU32>),
     StartService(String),
     StopService(String),
     RestartService(String),
     EnableService(String),
     DisableService(String),
-    EjectDisk(String, bool, u32),
-    SataSmartInfo(String),
-    NVMeSmartInfo(String),
+    EjectDisk(String),
+    SmartData(String),
 }
 
 enum Response {
     String(String),
-    EjectResultResponse(EjectResult),
-    SataSmartResultResponse(SataSmartResult),
-    NVMeSmartResultResponse(NVMeSmartResult),
+    EjectResult(Result<(), ErrorEjectFailed>),
+    SmartData(Option<SmartData>),
 }
 
 #[derive(Debug)]
@@ -281,6 +275,18 @@ impl MagpieClient {
         }
     }
 
+    pub fn kill_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::KillProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending KillProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
     pub fn service_logs(&self, service_id: String, pid: Option<NonZeroU32>) -> String {
         let sid = service_id.clone();
         match self.sender.send(Message::GetServiceLogs(service_id, pid)) {
@@ -303,6 +309,14 @@ impl MagpieClient {
                     "Error receiving GetServiceLogs response: {}",
                     e
                 );
+                String::new()
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving GetServiceLogs response. Wrong type"
+                );
+
                 String::new()
             }
         }
@@ -373,12 +387,8 @@ impl MagpieClient {
         }
     }
 
-    pub fn eject_disk(&self, disk_id: &str, killall: bool, kill_pid: u32) -> EjectResult {
-        match self.sender.send(Message::EjectDisk(
-            Arc::<str>::from(disk_id),
-            killall,
-            kill_pid,
-        )) {
+    pub fn eject_disk(&self, disk_id: &str) -> Result<(), ErrorEjectFailed> {
+        match self.sender.send(Message::EjectDisk(disk_id.to_owned())) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
@@ -387,103 +397,60 @@ impl MagpieClient {
                     e
                 );
 
-                return EjectResult::default();
+                return Ok(());
             }
             _ => {}
         }
 
         match self.receiver.recv() {
-            Ok(Response::EjectResultResponse(logs)) => logs,
+            Ok(Response::EjectResult(res)) => res,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error receiving EjectDisk response: {}",
                     e
                 );
-                EjectResult::default()
+                Ok(())
             }
             _ => {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error receiving EjectDisk response. Wrong type"
                 );
-                EjectResult::default()
+                Ok(())
             }
         }
     }
 
-    pub fn sata_smart_info(&self, disk_id: &str) -> SataSmartResult {
-        match self
-            .sender
-            .send(Message::SataSmartInfo(Arc::<str>::from(disk_id)))
-        {
+    pub fn smart_data(&self, disk_id: String) -> Option<SmartData> {
+        let did = disk_id.clone();
+        match self.sender.send(Message::SmartData(disk_id)) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
-                    "Error sending SataSmartInfo({}) to gatherer: {}",
-                    disk_id,
-                    e
+                    "Error sending SataSmartInfo({did}) to gatherer: {e}",
                 );
 
-                return SataSmartResult::default();
+                return None;
             }
             _ => {}
         }
 
         match self.receiver.recv() {
-            Ok(Response::SataSmartResultResponse(logs)) => logs,
+            Ok(Response::SmartData(sd)) => sd,
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
-                    "Error receiving SataSmartResult response: {}",
-                    e
+                    "Error receiving SataSmartResult response: {e}",
                 );
-                SataSmartResult::default()
+                None
             }
             _ => {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error receiving SataSmartResult response. Wrong type"
                 );
-                SataSmartResult::default()
-            }
-        }
-    }
-
-    pub fn nvme_smart_info(&self, disk_id: &str) -> NVMeSmartResult {
-        match self
-            .sender
-            .send(Message::NVMeSmartInfo(Arc::<str>::from(disk_id)))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending NVMeSmartInfo({}) to gatherer: {}",
-                    disk_id,
-                    e
-                );
-
-                return NVMeSmartResult::default();
-            }
-            _ => {}
-        }
-
-        match self.receiver.recv() {
-            Ok(Response::NVMeSmartResultResponse(logs)) => logs,
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error receiving SataSmartResult response: {}",
-                    e
-                );
-                NVMeSmartResult::default()
-            }
-            _ => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error receiving NVMeSmartResult response. Wrong type"
-                );
-                NVMeSmartResult::default()
+                None
             }
         }
     }
@@ -516,6 +483,9 @@ impl MagpieClient {
                 Message::KillProcess(pid) => {
                     gatherer.kill_process(pid);
                 }
+                Message::KillProcesses(pids) => {
+                    gatherer.kill_processes(pids);
+                }
                 Message::StartService(name) => {
                     gatherer.start_service(name);
                 }
@@ -541,35 +511,19 @@ impl MagpieClient {
                         );
                     }
                 }
-                Message::EjectDisk(disk_id, killall, kill_pid) => {
-                    if let Err(e) = tx.send(EjectResultResponse(
-                        gatherer.eject_disk(&disk_id, killall, kill_pid),
-                    )) {
+                Message::EjectDisk(disk_id) => {
+                    if let Err(e) = tx.send(Response::EjectResult(gatherer.eject_disk(disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
-                            "Error sending EjectDisk response: {}",
-                            e
+                            "Error sending EjectDisk response: {e}",
                         );
                     }
                 }
-                Message::SataSmartInfo(disk_id) => {
-                    if let Err(e) =
-                        tx.send(SataSmartResultResponse(gatherer.sata_smart_info(&disk_id)))
-                    {
+                Message::SmartData(disk_id) => {
+                    if let Err(e) = tx.send(Response::SmartData(gatherer.smart_data(disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending SataSmartInfo response: {}",
-                            e
-                        );
-                    }
-                }
-                Message::NVMeSmartInfo(disk_id) => {
-                    if let Err(e) =
-                        tx.send(NVMeSmartResultResponse(gatherer.nvme_smart_info(&disk_id)))
-                    {
-                        g_critical!(
-                            "MissionCenter::SysInfo",
-                            "Error sending NVMeSmartInfo response: {}",
                             e
                         );
                     }

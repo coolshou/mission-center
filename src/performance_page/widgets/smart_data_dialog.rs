@@ -18,7 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use adw::{prelude::*, subclass::prelude::*};
@@ -26,10 +25,12 @@ use gtk::gio;
 use gtk::glib::{self, g_critical};
 use gtk::{Align, ColumnViewColumn};
 
+use magpie_types::disks::smart_data::{Ata, Nvme};
+use magpie_types::disks::{smart_data, SmartData};
+
 use crate::i18n::*;
-use crate::performance_page::disk::PerformancePageDisk;
-use crate::performance_page::widgets::sata_smart_dialog_row::SmartDialogRow;
-use crate::sys_info_v2::{CommonSmartResult, NVMeSmartResult, SataSmartResult};
+
+use super::SmartDialogRow;
 
 mod imp {
     use super::*;
@@ -101,46 +102,46 @@ mod imp {
         pub warning_temp_time: TemplateChild<gtk::Label>,
         #[template_child]
         pub critical_temp_time: TemplateChild<gtk::Label>,
-
-        pub parent_page: Cell<Option<PerformancePageDisk>>,
     }
 
     impl SmartDataDialog {
-        fn apply_common_smart_result(&self, result: CommonSmartResult) {
-            let powered_on_nice = crate::to_human_readable_time(result.powered_on_seconds);
-            self.powered_on.set_text(powered_on_nice.as_str());
+        pub fn update_model(&self, data: SmartData) {
+            let powered_on_nice = crate::to_human_readable_time(data.powered_on_seconds);
+            self.powered_on.set_text(&powered_on_nice);
 
-            let start = SystemTime::now();
-            let since_the_epoch = start
-                .duration_since(UNIX_EPOCH)
-                .expect("Time went backwards");
-            let last_updated_nice = crate::to_human_readable_time(
-                (since_the_epoch.as_millis() / 1000) as u64 - result.last_update_time,
-            );
-            self.last_updated
-                .set_text(&i18n_f("{} ago", &[&last_updated_nice]));
+            if let Ok(since_the_epoch) = SystemTime::now().duration_since(UNIX_EPOCH) {
+                let last_updated_nice = crate::to_human_readable_time(
+                    since_the_epoch.as_secs_f32() as u64 - data.last_update_time,
+                );
+                self.last_updated
+                    .set_text(&i18n_f("{} ago", &[&last_updated_nice]));
+            } else {
+                g_critical!("MissionCenter::SMARTDialog", "Time somehow went backwards");
+                self.last_updated.set_text(&i18n("Unknown"));
+            }
 
             self.status
-                .set_text(format!("{:?}", result.test_result).as_str());
+                .set_text(format!("{:?}", data.test_result()).as_str());
+
+            match data.data {
+                Some(smart_data::Data::Ata(ata)) => self.apply_ata_smart_data(ata),
+                Some(smart_data::Data::Nvme(nvme)) => self.apply_nvme_smart_data(nvme),
+                None => {
+                    self.sata_data.set_visible(false);
+                    self.nvme_data.set_visible(false);
+                }
+            }
         }
 
-        pub fn apply_sata_smart_result(
-            &self,
-            result: SataSmartResult,
-            parent: &PerformancePageDisk,
-        ) {
-            self.apply_common_smart_result(result.common_smart_result);
-
+        fn apply_ata_smart_data(&self, ata_smart_data: Ata) {
             self.sata_data.set_visible(true);
             self.nvme_data.set_visible(false);
 
-            self.parent_page.set(Some(parent.clone()));
+            let mut rows = Vec::new();
 
-            let mut roze = Vec::new();
-
-            for parsed_result in result.blocking_processes {
+            for parsed_result in ata_smart_data.attributes {
                 let new_row = SmartDialogRow::new(
-                    parsed_result.id,
+                    parsed_result.id as u8,
                     parsed_result.name,
                     parsed_result.value,
                     parsed_result.pretty,
@@ -155,13 +156,13 @@ mod imp {
                         0 => i18n("Online"),
                         _ => i18n("Offline"),
                     },
-                    "UNKNOWN",
+                    &i18n("Unknown"),
                 );
 
-                roze.push(new_row);
+                rows.push(new_row);
             }
 
-            let rows: gio::ListStore = roze.into_iter().collect();
+            let rows: gio::ListStore = rows.into_iter().collect();
 
             let column_view: gtk::ColumnView = self.column_view.get();
             let id_col: ColumnViewColumn = self.id_column.get();
@@ -190,6 +191,126 @@ mod imp {
                 .build();
 
             column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
+        }
+
+        fn apply_nvme_smart_data(&self, result: Nvme) {
+            self.sata_data.set_visible(false);
+            self.nvme_data.set_visible(true);
+
+            if let Some(percent_used) = result.percent_used {
+                self.percent_used.set_text(&format!("{}%", percent_used));
+            } else {
+                self.percent_used.set_text(&i18n("N/A"));
+            }
+
+            if let Some(avail_spare) = result.avail_spare {
+                self.avail_spare.set_text(&avail_spare.to_string());
+            } else {
+                self.avail_spare.set_text(&i18n("N/A"));
+            }
+
+            if let Some(spare_thresh) = result.spare_thresh {
+                self.spare_thresh.set_text(&spare_thresh.to_string());
+            } else {
+                self.spare_thresh.set_text(&i18n("N/A"));
+            }
+
+            if let Some(total_data_read) = result.total_data_read {
+                let data_read = crate::to_human_readable(total_data_read as f32, 1024.);
+                self.data_read.set_text(&format!(
+                    "{0:.2$} {1}{3}B",
+                    data_read.0,
+                    data_read.1,
+                    data_read.2,
+                    if data_read.1.is_empty() { "" } else { "i" },
+                ));
+            } else {
+                self.data_read.set_text(&i18n("N/A"));
+            }
+
+            if let Some(total_data_written) = result.total_data_written {
+                let data_written = crate::to_human_readable(total_data_written as f32, 1024.);
+                self.data_written.set_text(&format!(
+                    "{0:.2$} {1}{3}B",
+                    data_written.0,
+                    data_written.1,
+                    data_written.2,
+                    if data_written.1.is_empty() { "" } else { "i" },
+                ));
+            } else {
+                self.data_written.set_text(&i18n("N/A"));
+            }
+
+            if let Some(warning_temp_time) = result.warn_composite_temp_time {
+                self.warning_temp_time
+                    .set_text(crate::to_human_readable_time(warning_temp_time as u64).as_str());
+            } else {
+                self.warning_temp_time.set_text(&i18n("N/A"));
+            }
+
+            if let Some(critical_temp_time) = result.crit_composite_temp_time {
+                self.critical_temp_time
+                    .set_text(crate::to_human_readable_time(critical_temp_time as u64).as_str());
+            } else {
+                self.critical_temp_time.set_text(&i18n("N/A"));
+            }
+
+            if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                self.ctrl_busy_minutes
+                    .set_text(crate::to_human_readable_time(ctrl_busy_minutes).as_str());
+            } else {
+                self.ctrl_busy_minutes.set_text(&i18n("N/A"));
+            }
+
+            if let Some(wctemp) = result.warn_composite_temp_thresh {
+                self.wctemp
+                    .set_text(&i18n_f("{} °C", &[&format!("{}", wctemp - 273)]));
+            } else {
+                self.wctemp.set_text(&i18n("N/A"));
+            }
+
+            if let Some(cctemp) = result.crit_composite_temp_thresh {
+                self.cctemp
+                    .set_text(&i18n_f("{} °C", &[&format!("{}", cctemp - 273)]));
+            } else {
+                self.cctemp.set_text(&i18n("N/A"));
+            }
+
+            self.temp_sensors
+                .set_text(&format!("{:?}", result.temp_sensors));
+
+            if let Some(unsafe_shutdowns) = result.unsafe_shutdowns {
+                self.unsafe_shutdowns
+                    .set_text(&unsafe_shutdowns.to_string());
+            } else {
+                self.unsafe_shutdowns.set_text(&i18n("N/A"));
+            }
+
+            if let Some(media_errors) = result.media_errors {
+                self.media_errors.set_text(&media_errors.to_string());
+            } else {
+                self.media_errors.set_text(&i18n("N/A"));
+            }
+
+            if let Some(num_err_log_entries) = result.num_err_log_entries {
+                self.num_err_log_entries
+                    .set_text(&num_err_log_entries.to_string());
+            } else {
+                self.num_err_log_entries.set_text(&i18n("N/A"));
+            }
+
+            if let Some(power_cycles) = result.power_cycles {
+                self.power_cycles.set_text(&power_cycles.to_string());
+            } else {
+                self.power_cycles.set_text(&i18n("N/A"));
+            }
+
+            if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                self.ctrl_busy_minutes
+                    .set_text(&ctrl_busy_minutes.to_string());
+            } else {
+                self.ctrl_busy_minutes.set_text(&i18n("N/A"));
+            }
         }
 
         fn setup_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E)
@@ -241,71 +362,8 @@ mod imp {
 
                 label_object.set_label(&extract(model_item));
             });
+
             id_col.set_factory(Some(&factory_id_col));
-        }
-
-        pub fn apply_nvme_smart_result(
-            &self,
-            result: NVMeSmartResult,
-            parent: &PerformancePageDisk,
-        ) {
-            self.apply_common_smart_result(result.common_smart_result);
-
-            self.sata_data.set_visible(false);
-            self.nvme_data.set_visible(true);
-
-            self.parent_page.set(Some(parent.clone()));
-
-            self.percent_used
-                .set_text(&format!("{}%", result.percent_used));
-
-            self.avail_spare
-                .set_text(result.avail_spare.to_string().as_str());
-            self.spare_thresh
-                .set_text(result.spare_thresh.to_string().as_str());
-
-            let used_memory = crate::to_human_readable(result.total_data_read as f32, 1024.);
-            self.data_read.set_text(&format!(
-                "{0:.2$} {1}{3}B",
-                used_memory.0,
-                used_memory.1,
-                used_memory.2,
-                if used_memory.1.is_empty() { "" } else { "i" },
-            ));
-            let used_memory = crate::to_human_readable(result.total_data_written as f32, 1024.);
-            self.data_written.set_text(&format!(
-                "{0:.2$} {1}{3}B",
-                used_memory.0,
-                used_memory.1,
-                used_memory.2,
-                if used_memory.1.is_empty() { "" } else { "i" },
-            ));
-
-            self.warning_temp_time
-                .set_text(crate::to_human_readable_time(result.warning_temp_time as u64).as_str());
-            self.critical_temp_time
-                .set_text(crate::to_human_readable_time(result.critical_temp_time as u64).as_str());
-            self.ctrl_busy_minutes
-                .set_text(crate::to_human_readable_time(result.ctrl_busy_minutes * 60).as_str());
-
-            self.wctemp
-                .set_text(&i18n_f("{} °C", &[&format!("{}", result.wctemp - 273)]));
-            self.cctemp
-                .set_text(&i18n_f("{} °C", &[&format!("{}", result.cctemp - 273)]));
-
-            self.temp_sensors
-                .set_text(&format!("{:?}", result.temp_sensors));
-            self.unsafe_shutdowns
-                .set_text(result.unsafe_shutdowns.to_string().as_str());
-            self.media_errors
-                .set_text(result.media_errors.to_string().as_str());
-            self.num_err_log_entries
-                .set_text(result.num_err_log_entries.to_string().as_str());
-            self.power_cycles
-                .set_text(result.power_cycles.to_string().as_str());
-
-            self.ctrl_busy_minutes
-                .set_text(result.ctrl_busy_minutes.to_string().as_str());
         }
     }
 
@@ -345,4 +403,18 @@ glib::wrapper! {
     pub struct SmartDataDialog(ObjectSubclass<imp::SmartDataDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl SmartDataDialog {
+    pub fn new(smart_data: SmartData) -> Self {
+        let this: Self = glib::Object::builder()
+            .property("follows-content-size", true)
+            .build();
+        {
+            let this = this.imp();
+            this.update_model(smart_data);
+        }
+
+        this
+    }
 }
