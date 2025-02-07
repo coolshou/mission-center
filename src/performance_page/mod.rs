@@ -64,6 +64,8 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
+const MK_TO_0_C: i32 = 273150;
+
 mod imp {
     use super::*;
 
@@ -1020,18 +1022,20 @@ mod imp {
         ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
+            let mem_info = readings.mem_info;
 
             {
                 let graph_widget = summary.graph_widget();
 
-                graph_widget.set_value_range_max(readings.mem_info.mem_total as f32);
+                graph_widget.set_value_range_max(mem_info.mem_total as f32);
                 graph_widget.set_data_set_count(2);
                 graph_widget.set_filled(0, false);
                 graph_widget.set_dashed(0, true);
             }
 
             summary.set_heading(i18n("Memory"));
-            summary.set_info1("0/0 GiB (100%)");
+            summary.set_info1("0/0 GiB");
+            summary.set_info2("0%");
 
             summary.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
@@ -1096,16 +1100,29 @@ mod imp {
         pub fn update_disk_heading(
             &self,
             disk_graph: &SummaryGraph,
+            kind: Option<DiskKind>,
             disk_id: &str,
             index: Option<i32>,
         ) {
+            let r#type = match kind {
+                Some(DiskKind::Hdd) => i18n("HDD"),
+                Some(DiskKind::Ssd) => i18n("SSD"),
+                Some(DiskKind::NvMe) => i18n("NVMe"),
+                Some(DiskKind::EMmc) => i18n("eMMC"),
+                Some(DiskKind::Sd) => i18n("SD"),
+                Some(DiskKind::IScsi) => i18n("iSCSI"),
+                Some(DiskKind::Optical) => i18n("Optical"),
+                Some(DiskKind::Floppy) => i18n("Floppy"),
+                None => i18n("Unknown"),
+            };
+
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "Drive {} ({})",
-                    &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                    "{} {} ({})",
+                    &[&format!("{}", r#type) ,&format!("{}", index.unwrap()), &format!("{}", disk_id)],
                 ));
             } else {
-                disk_graph.set_heading(i18n("Drive"));
+                disk_graph.set_heading(r#type);
             }
         }
 
@@ -1126,23 +1143,18 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            if let Some(disk_kind) = disk_static_info.kind.and_then(|k| k.try_into().ok()) {
-                summary.set_info1(match disk_kind {
-                    DiskKind::Hdd => i18n("HDD"),
-                    DiskKind::Ssd => i18n("SSD"),
-                    DiskKind::NvMe => i18n("NVMe"),
-                    DiskKind::EMmc => i18n("eMMC"),
-                    DiskKind::Sd => i18n("SD"),
-                    DiskKind::IScsi => i18n("iSCSI"),
-                    DiskKind::Optical => i18n("Optical"),
-                    DiskKind::Floppy => i18n("Floppy"),
-                });
-            } else {
-                summary.set_info1(i18n("Unknown"));
-            };
 
-            summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
+            self.update_disk_heading(&summary, disk_static_info.kind.try_into().ok(), &disk_static_info.id, disk_id);
+            summary.set_info1(format!("{}", disk_static_info.model));
+            summary.set_info2(format!("{:.0}%{}",
+                disk_static_info.busy_percent,
+                if disk_static_info.drive_temperature >= 1 {
+                    format!(" ({:.0} °C)", (disk_static_info.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.)
+                } else {
+                    String::new()
+                }
+            ));
+
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -1711,6 +1723,14 @@ mod imp {
                                 continue;
                             }
                         };
+
+                        let selection = sidebar.selected_row().unwrap();
+
+                        if selection.eq(&parent) {
+                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        }
+
                         summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
                         page_stack.remove(&page);
@@ -1726,7 +1746,8 @@ mod imp {
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
                             if !readings.disks_info.iter().any(|device| {
-                                &Self::disk_page_name(device.id.as_ref()) == disk_page_name
+                                device.capacity > 0
+                                    && &Self::disk_page_name(device.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
                             }
@@ -1814,13 +1835,12 @@ mod imp {
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
-                            "{}%",
-                            ((used_raw as f32 / total_raw as f32) * 100.).round()
-                        ));
-
-                        summary.set_info2(format!(
                             "{0:.2$} {1}iB/{3:.5$} {4}iB",
                             used.0, used.1, used.2, total.0, total.1, total.2
+                        ));
+                        summary.set_info2(format!(
+                            "{}%",
+                            ((used_raw as f32 / total_raw as f32) * 100.).round()
                         ));
 
                         result &= page.update_readings(readings);
@@ -1837,6 +1857,7 @@ mod imp {
                             {
                                 this.imp().update_disk_heading(
                                     summary,
+                                    disk.r#type,
                                     disk.id.as_ref(),
                                     if hide_index { None } else { Some(index as i32) },
                                 );
@@ -1861,7 +1882,16 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                // i dare you to have a 1mK(elvin) drive
+                                if disk.drive_temperature >= 1 {
+                                    summary.set_info2(format!(
+                                        "{:.0}% ({:.0} °C)",
+                                        disk.busy_percent,
+                                        (disk.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.
+                                    ));
+                                } else {
+                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                }
 
                                 result &= page.update_readings(
                                     if hide_index { None } else { Some(index) },
@@ -1873,6 +1903,9 @@ mod imp {
                         }
 
                         for new_device_index in new_devices {
+                            if readings.disks_info[new_device_index].capacity == 0 {
+                                continue;
+                            }
                             let (disk_id, page) = this.imp().create_disk_page(
                                 readings,
                                 if hide_index {
@@ -1920,6 +1953,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+
                                 graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
                                 graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
 
@@ -2000,15 +2034,21 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(format!("{} RPM", fan_info.rpm));
-                                if fan_info.temp_amount != i64::MIN {
-                                    summary.set_info2(format!(
-                                        "{:.0} °C",
-                                        fan_info.temp_amount as f32 / 1000.0
-                                    ));
+                                summary.set_info1(fan_info.temp_name.as_ref());
+
+                                let temp_str = if fan_info.temp_amount != 0 {
+                                    format!(" ({:.0} °C)", (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0)
                                 } else {
-                                    summary.set_info2("");
-                                }
+                                    String::new()
+                                };
+                                summary.set_info2(
+                                    if fan_info.percent_vroomimg < 0. {
+                                        format!("{} RPM{}", fan_info.rpm, temp_str)
+                                    } else {
+                                        format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
+                                    },
+
+                                );
                                 result &= page.update_readings(fan_info);
                             }
                         }

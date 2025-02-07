@@ -9,6 +9,7 @@ skip-codegen = ["magpie-types/skip-codegen"]
 [dependencies]
 arrayvec = "0.7"
 adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
+arrayvec = { version = "0.7" }
 dbus = { version = "0.9" }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gtk = { package = "gtk4", version = "0.9", features = ["gnome_47"] }

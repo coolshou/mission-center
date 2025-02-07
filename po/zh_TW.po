@@ -635,7 +635,7 @@ msgid "Receive"
 msgstr "接收"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "總接收"
 
 #: resources/ui/performance_page/network_details.blp:114
