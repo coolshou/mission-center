@@ -35,7 +35,6 @@ use gtk::{
 
 use magpie_types::network::{Connection, ConnectionKind};
 
-use crate::magpie_client::FanInfo;
 use crate::{i18n::*, magpie_client::DiskKind, settings};
 
 use widgets::{GraphWidget, SidebarDropHint};
@@ -65,6 +64,7 @@ trait PageExt {
 }
 
 mod imp {
+    use magpie_types::fan::Fan;
     use super::*;
 
     // GNOME color palette: Blue 4
@@ -1420,7 +1420,7 @@ mod imp {
             pages.push(Pages::Fan(fans));
         }
 
-        fn fan_page_name(fan_info: &FanInfo) -> String {
+        fn fan_page_name(fan_info: &Fan) -> String {
             format!("fan-{}-{}", fan_info.hwmon_index, fan_info.fan_index)
         }
 
@@ -1483,7 +1483,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up fan action for {}, logic bug?",
-                        &fan_static_info.fan_label
+                        &fan_static_info.fan_label.clone().unwrap_or("".to_string())
                     );
                 }
                 Some(action) => {
@@ -2001,10 +2001,10 @@ mod imp {
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
                                 summary.set_info1(format!("{} RPM", fan_info.rpm));
-                                if fan_info.temp_amount != i64::MIN {
+                                if let Some(temp) = fan_info.temp_amount {
                                     summary.set_info2(format!(
                                         "{:.0} °C",
-                                        fan_info.temp_amount as f32 / 1000.0
+                                        temp as f32 / 1000.0
                                     ));
                                 } else {
                                     summary.set_info2("");

@@ -34,6 +34,9 @@ pub use magpie_types::cpu::Cpu;
 use magpie_types::disks::disks_response;
 use magpie_types::disks::disks_response::DiskList;
 pub use magpie_types::disks::{Disk, DiskKind};
+use magpie_types::fan::fans_response;
+use magpie_types::fan::fans_response::FanList;
+pub use magpie_types::fan::Fan;
 use magpie_types::gpus::gpus_response;
 use magpie_types::gpus::gpus_response::GpuMap;
 pub use magpie_types::gpus::Gpu;
@@ -61,69 +64,11 @@ mod nng {
     pub const NNG_OK: i32 = 0;
 }
 
-#[derive(Debug, Clone)]
-pub struct FanInfo {
-    pub fan_label: Arc<str>,
-    pub temp_name: Arc<str>,
-    pub temp_amount: i64,
-    pub rpm: u64,
-    pub percent_vroomimg: f32,
-
-    pub fan_index: u64,
-    pub hwmon_index: u64,
-
-    pub max_speed: u64,
-}
-
-impl Default for FanInfo {
-    fn default() -> Self {
-        Self {
-            fan_label: Arc::from(""),
-            temp_name: Arc::from(""),
-            temp_amount: 0,
-            rpm: 0,
-            percent_vroomimg: 0.0,
-
-            fan_index: 0,
-            hwmon_index: 0,
-
-            max_speed: 0,
-        }
-    }
-}
-
-impl Eq for FanInfo {}
-
-impl PartialEq<Self> for FanInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.fan_index == other.fan_index && self.hwmon_index == other.hwmon_index
-    }
-}
-
-impl PartialOrd<Self> for FanInfo {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(if self.hwmon_index == other.hwmon_index {
-            self.fan_index.cmp(&other.fan_index)
-        } else {
-            self.hwmon_index.cmp(&other.hwmon_index)
-        })
-    }
-}
-
-impl Ord for FanInfo {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        if self.hwmon_index == other.hwmon_index {
-            self.fan_index.cmp(&other.fan_index)
-        } else {
-            self.hwmon_index.cmp(&other.hwmon_index)
-        }
-    }
-}
-
 type ResponseBody = response::Body;
 type AppsResponse = apps_response::Response;
 type CpuResponse = cpu_response::Response;
 type DisksResponse = disks_response::Response;
+type FansResponse = fans_response::Response;
 type GpusResponse = gpus_response::Response;
 type MemoryResponse = memory_response::Response;
 type ConnectionsResponse = connections_response::Response;
@@ -818,8 +763,19 @@ impl Client {
         )
     }
 
-    pub fn fans_info(&self) -> Vec<FanInfo> {
-        vec![]
+    pub fn fans_info(&self) -> Vec<Fan> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(ipc::req_get_fans(), &mut socket, self.socket_addr.as_ref())
+            .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Fans,
+            FansResponse::Fans,
+            FansResponse::Error,
+            |mut fans: FanList| { std::mem::take(&mut fans.fans) }
+        )
     }
 
     pub fn network_connections(&self) -> Vec<Connection> {
