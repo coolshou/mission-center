@@ -15,8 +15,10 @@ dbus = { version = "0.9", features = ["vendored"] }
 dbus-crossroads = { version = "0.5" }
 glob = { version = "0.3.1" }
 drm = { version = "0.14.0" }
-egl = { version = "0.2" }
-gbm = { version = "0.16.0", default-features = false, features = ["drm-support"] }
+egl = { version = "6", package = "khronos-egl", features = ["dynamic"] }
+gbm = { version = "0.16.0", default-features = false, features = [
+  "drm-support",
+] }
 lazy_static = { version = "1.4" }
 libc = { version = "0.2" }
 libloading = { version = "0.8" }
