@@ -31,6 +31,7 @@ use crate::i18n::*;
 use crate::performance_page::PageExt;
 
 mod imp {
+    use crate::performance_page::MK_TO_0_C;
     use super::*;
 
     #[derive(Properties)]
@@ -239,7 +240,7 @@ mod imp {
             this.speed_graph.set_filled(1, false);
             this.speed_graph.set_dashed(1, true);
 
-            if fan.pwm_percent.is_some() {
+            if fan.pwm_percent.is_none() {
                 if let Some(pwm_legend_box) = this.pwm_legend_box.get() {
                     pwm_legend_box.set_visible(false);
                 }
@@ -249,7 +250,7 @@ mod imp {
                 }
             }
 
-            if fan.temp_amount.is_some() {
+            if fan.temp_amount.is_none() {
                 this.temp_graph_box.set_visible(false);
 
                 if let Some(sidebar_temp_box) = this.temp_label_box.get() {
@@ -283,8 +284,8 @@ mod imp {
                 ));
             }
 
-            if let Some(fan_temp_mc) = fan.temp_amount {
-                let fan_temp_c = fan_temp_mc as f32 / 1000.;
+            if let Some(fan_temp_mk) = fan.temp_amount {
+                let fan_temp_c = (fan_temp_mk as i32 + MK_TO_0_C) as f32 / 1000.;
                 if let Some(temp) = this.temp.get() {
                     temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
                 }

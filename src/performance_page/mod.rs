@@ -63,6 +63,8 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
+const MK_TO_0_C: i32 = -273150;
+
 mod imp {
     use magpie_types::fan::Fan;
     use super::*;
@@ -2004,7 +2006,7 @@ mod imp {
                                 if let Some(temp) = fan_info.temp_amount {
                                     summary.set_info2(format!(
                                         "{:.0} °C",
-                                        temp as f32 / 1000.0
+                                        (temp as i32 + MK_TO_0_C) as f32 / 1000.0
                                     ));
                                 } else {
                                     summary.set_info2("");
