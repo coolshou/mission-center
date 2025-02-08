@@ -341,62 +341,96 @@ impl LinuxGpuInfo {
             Ok(gbm_device) => gbm_device,
         };
 
-        const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::EGLint = 0x3098;
-        const EGL_CONTEXT_MINOR_VERSION_KHR: egl::EGLint = 0x30FB;
-        const EGL_PLATFORM_GBM_KHR: egl::EGLenum = 0x31D7;
-        const EGL_OPENGL_ES3_BIT: egl::EGLint = 0x0040;
+        const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::Int = 0x3098;
+        const EGL_CONTEXT_MINOR_VERSION_KHR: egl::Int = 0x30FB;
+        const EGL_PLATFORM_GBM_KHR: egl::Enum = 0x31D7;
+        const EGL_OPENGL_ES3_BIT: egl::Int = 0x0040;
 
-        let eglGetPlatformDisplayEXT =
-            egl::get_proc_address("eglGetPlatformDisplayEXT") as *const Void;
-        let egl_display = if !eglGetPlatformDisplayEXT.is_null() {
+        let lib = match libloading::Library::new("libEGL.so.1") {
+            Ok(lib) => lib,
+            Err(e) => {
+                error!("Gatherer::GpuInfo", "Failed to load libEGL.so.1: {}", e);
+                return None;
+            }
+        };
+
+        let e = match egl::DynamicInstance::<egl::EGL1_2>::load_required_from(lib) {
+            Ok(e) => e,
+            Err(e) => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to load symbols from libEGL.so.1: {}", e
+                );
+                return None;
+            }
+        };
+
+        let eglGetPlatformDisplayEXT = e.get_proc_address("eglGetPlatformDisplayEXT");
+        let egl_display = if let Some(eglGetPlatformDisplayEXT) = eglGetPlatformDisplayEXT {
             let eglGetPlatformDisplayEXT: extern "C" fn(
-                egl::EGLenum,
+                egl::Enum,
                 *mut Void,
-                *const egl::EGLint,
+                *const egl::Int,
             ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplayEXT);
-            eglGetPlatformDisplayEXT(
+            let display_ptr = eglGetPlatformDisplayEXT(
                 EGL_PLATFORM_GBM_KHR,
                 gbm_device.as_raw() as *mut Void,
                 std::ptr::null(),
-            )
+            );
+            if display_ptr.is_null() {
+                None
+            } else {
+                Some(egl::Display::from_ptr(display_ptr))
+            }
         } else {
-            let eglGetPlatformDisplay =
-                egl::get_proc_address("eglGetPlatformDisplay") as *const Void;
-            if !eglGetPlatformDisplay.is_null() {
+            let eglGetPlatformDisplay = e.get_proc_address("eglGetPlatformDisplay");
+            if let Some(eglGetPlatformDisplay) = eglGetPlatformDisplay {
                 let eglGetPlatformDisplay: extern "C" fn(
-                    egl::EGLenum,
+                    egl::Enum,
                     *mut Void,
-                    *const egl::EGLint,
+                    *const egl::Int,
                 ) -> egl::EGLDisplay = std::mem::transmute(eglGetPlatformDisplay);
-                eglGetPlatformDisplay(
+                let display_ptr = eglGetPlatformDisplay(
                     EGL_PLATFORM_GBM_KHR,
                     gbm_device.as_raw() as *mut Void,
                     std::ptr::null(),
-                )
+                );
+                if display_ptr.is_null() {
+                    None
+                } else {
+                    Some(egl::Display::from_ptr(display_ptr))
+                }
             } else {
-                egl::get_display(gbm_device.as_raw() as *mut Void)
-                    .map_or(std::ptr::null_mut(), |d| d)
+                e.get_display(gbm_device.as_raw() as *mut Void)
             }
         };
-        if egl_display.is_null() {
-            error!(
-                "Gatherer::GpuInfo",
-                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
-                egl::get_error()
-            );
-            return None;
-        }
 
-        let mut egl_major = 0;
-        let mut egl_minor = 0;
-        if !egl::initialize(egl_display, &mut egl_major, &mut egl_minor) {
-            error!(
-                "Gathereer::GpuInfo",
-                "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
-                egl::get_error()
-            );
+        let Some(egl_display) = egl_display else {
+            match e.get_error() {
+                Some(error) => error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                    error.native()
+                ),
+                None => error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to initialize an EGL display (no error code)",
+                ),
+            }
             return None;
-        }
+        };
+
+        let (egl_major, egl_minor) = match e.initialize(egl_display) {
+            Ok(result) => result,
+            Err(error) => {
+                error!(
+                    "Gathereer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to initialize an EGL display ({:X})",
+                    error.native()
+                );
+                return None;
+            }
+        };
 
         if egl_major < 1 || (egl_major == 1 && egl_minor < 4) {
             error!(
@@ -406,89 +440,82 @@ impl LinuxGpuInfo {
             return None;
         }
 
-        let mut gl_api = egl::EGL_OPENGL_API;
-        if !egl::bind_api(gl_api) {
-            gl_api = egl::EGL_OPENGL_ES_API;
-            if !egl::bind_api(gl_api) {
+        let mut gl_api = egl::OPENGL_API;
+        if e.bind_api(gl_api).is_err() {
+            gl_api = egl::OPENGL_ES_API;
+            if let Err(error) = e.bind_api(gl_api) {
                 error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to bind an EGL API ({:X})",
-                    egl::get_error()
+                    error.native()
                 );
                 return None;
             }
         }
 
-        let egl_config = if gl_api == egl::EGL_OPENGL_ES_API {
-            let mut config_attribs = [
-                egl::EGL_SURFACE_TYPE,
-                egl::EGL_WINDOW_BIT,
-                egl::EGL_RENDERABLE_TYPE,
-                EGL_OPENGL_ES3_BIT,
-                egl::EGL_NONE,
-            ];
-
-            let mut egl_config = egl::choose_config(egl_display, &config_attribs, 1);
-            if egl_config.is_some() {
-                egl_config
-            } else {
-                config_attribs[3] = egl::EGL_OPENGL_ES2_BIT;
-                egl_config = egl::choose_config(egl_display, &config_attribs, 1);
-                if egl_config.is_some() {
-                    egl_config
-                } else {
-                    config_attribs[3] = egl::EGL_OPENGL_ES_BIT;
-                    egl::choose_config(egl_display, &config_attribs, 1)
+        let mut egl_configs = Vec::with_capacity(1);
+        let error = if gl_api == egl::OPENGL_ES_API {
+            let mut error = None;
+            for es_bit in [EGL_OPENGL_ES3_BIT, egl::OPENGL_ES2_BIT, egl::OPENGL_ES_BIT] {
+                let attrs = [
+                    egl::SURFACE_TYPE,
+                    egl::WINDOW_BIT,
+                    egl::RENDERABLE_TYPE,
+                    es_bit,
+                    egl::NONE,
+                ];
+                match e.choose_config(egl_display, &attrs, &mut egl_configs) {
+                    Ok(()) => break,
+                    Err(e) => error = Some(e),
                 }
             }
+            error
         } else {
-            let config_attribs = [
-                egl::EGL_SURFACE_TYPE,
-                egl::EGL_WINDOW_BIT,
-                egl::EGL_RENDERABLE_TYPE,
-                egl::EGL_OPENGL_BIT,
-                egl::EGL_NONE,
+            let attrs = [
+                egl::SURFACE_TYPE,
+                egl::WINDOW_BIT,
+                egl::RENDERABLE_TYPE,
+                egl::OPENGL_BIT,
+                egl::NONE,
             ];
-
-            egl::choose_config(egl_display, &config_attribs, 1)
+            e.choose_config(egl_display, &attrs, &mut egl_configs).err()
         };
 
-        if egl_config.is_none() {
-            return None;
-        }
-        let egl_config = match egl_config {
-            Some(ec) => ec,
-            None => {
+        let egl_config = match (egl_configs.into_iter().next(), error) {
+            (Some(egl_config), _) => egl_config,
+            (None, Some(error)) => {
                 error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to choose an EGL config ({:X})",
-                    egl::get_error()
+                    error.native()
+                );
+                return None;
+            }
+            (None, None) => {
+                error!(
+                    "Gatherer::GpuInfo",
+                    "Failed to get OpenGL information: Failed to choose an EGL config (no error code)",
                 );
                 return None;
             }
         };
 
-        let mut ver_major = if gl_api == egl::EGL_OPENGL_API { 4 } else { 3 };
-        let mut ver_minor = if gl_api == egl::EGL_OPENGL_API { 6 } else { 0 };
+        let mut ver_major = if gl_api == egl::OPENGL_API { 4 } else { 3 };
+        let mut ver_minor = if gl_api == egl::OPENGL_API { 6 } else { 0 };
 
         let mut context_attribs = [
             EGL_CONTEXT_MAJOR_VERSION_KHR,
             ver_major,
             EGL_CONTEXT_MINOR_VERSION_KHR,
             ver_minor,
-            egl::EGL_NONE,
+            egl::NONE,
         ];
 
         let mut egl_context;
         loop {
-            egl_context = egl::create_context(
-                egl_display,
-                egl_config,
-                egl::EGL_NO_CONTEXT,
-                &context_attribs,
-            );
+            egl_context = e.create_context(egl_display, egl_config, None, &context_attribs);
 
-            if egl_context.is_some() || (ver_major == 1 && ver_minor == 0) {
+            if egl_context.is_ok() || (ver_major == 1 && ver_minor == 0) {
                 break;
             }
 
@@ -504,12 +531,12 @@ impl LinuxGpuInfo {
         }
 
         match egl_context {
-            Some(ec) => egl::destroy_context(egl_display, ec),
-            None => {
+            Ok(ec) => _ = e.destroy_context(egl_display, ec),
+            Err(error) => {
                 error!(
                     "Gatherer::GpuInfo",
                     "Failed to get OpenGL information: Failed to create an EGL context ({:X})",
-                    egl::get_error()
+                    error.native()
                 );
                 return None;
             }
@@ -518,7 +545,7 @@ impl LinuxGpuInfo {
         Some(OpenGLApiVersion {
             major: ver_major as u8,
             minor: ver_minor as u8,
-            api: if gl_api != egl::EGL_OPENGL_API {
+            api: if gl_api != egl::OPENGL_API {
                 OpenGLApi::OpenGLES
             } else {
                 OpenGLApi::OpenGL
