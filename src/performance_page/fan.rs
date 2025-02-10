@@ -25,10 +25,13 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use super::widgets::GraphWidget;
+use magpie_types::fan::Fan;
+
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-use crate::performance_page::PageExt;
+use crate::performance_page::{PageExt, MK_TO_0_C};
+
+use super::widgets::GraphWidget;
 
 mod imp {
     use super::*;
@@ -178,10 +181,7 @@ mod imp {
     }
 
     impl PerformancePageFan {
-        pub fn set_static_information(
-            this: &super::PerformancePageFan,
-            fan: &crate::magpie_client::FanInfo,
-        ) -> bool {
+        pub fn set_static_information(this: &super::PerformancePageFan, fan: &Fan) -> bool {
             let t = this.clone();
 
             let this = this.imp();
@@ -222,7 +222,9 @@ mod imp {
                 None
             });
 
-            this.title_fan_name.set_text(&*fan.fan_label);
+            if let Some(fan_label) = &fan.fan_label {
+                this.title_fan_name.set_text(fan_label);
+            }
 
             if let Some(legend_send) = this.legend_speed.get() {
                 legend_send
@@ -234,12 +236,14 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
             }
 
-            this.title_temp_name.set_text(&fan.temp_name);
+            if let Some(temp_name) = &fan.temp_name {
+                this.title_temp_name.set_text(temp_name);
+            }
 
             this.speed_graph.set_filled(1, false);
             this.speed_graph.set_dashed(1, true);
 
-            if fan.percent_vroomimg < 0. {
+            if fan.pwm_percent.is_none() {
                 if let Some(pwm_legend_box) = this.pwm_legend_box.get() {
                     pwm_legend_box.set_visible(false);
                 }
@@ -249,7 +253,7 @@ mod imp {
                 }
             }
 
-            if fan.temp_amount == i64::MIN {
+            if fan.temp_amount.is_none() {
                 this.temp_graph_box.set_visible(false);
 
                 if let Some(sidebar_temp_box) = this.temp_label_box.get() {
@@ -257,20 +261,19 @@ mod imp {
                 }
             }
 
-            if fan.max_speed > 0 {
-                this.speed_max_y.set_text(&format!("{}", fan.max_speed));
+            if let Some(max_rpm) = fan.max_rpm {
+                this.speed_max_y.set_text(&format!("{}", max_rpm));
             }
             true
         }
 
-        pub fn update_readings(
-            this: &super::PerformancePageFan,
-            fan: &crate::magpie_client::FanInfo,
-        ) -> bool {
+        pub fn update_readings(this: &super::PerformancePageFan, fan: &Fan) -> bool {
             let this = this.imp();
 
-            this.title_fan_name
-                .set_text(&i18n_f("{}", &[&fan.fan_label]));
+            this.title_fan_name.set_text(&i18n_f(
+                "{}",
+                &[&fan.fan_label.clone().unwrap_or("".to_string())],
+            ));
 
             if let Some(speed_send) = this.speed.get() {
                 speed_send.set_text(&i18n_f("{} RPM", &[&format!("{}", fan.rpm)]));
@@ -279,22 +282,34 @@ mod imp {
             if let Some(pwm) = this.pwm.get() {
                 pwm.set_text(&i18n_f(
                     "{}%",
-                    &[&format!("{:.0}", fan.percent_vroomimg * 100.0)],
+                    &[&format!(
+                        "{:.0}",
+                        fan.pwm_percent.clone().unwrap_or(0.) * 100.0
+                    )],
                 ));
             }
 
-            let fan_temp_c = fan.temp_amount as f32 / 1000.0;
-            if let Some(temp) = this.temp.get() {
-                temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
+            if let Some(fan_temp_mk) = fan.temp_amount {
+                let fan_temp_c = (fan_temp_mk as i32 + MK_TO_0_C) as f32 / 1000.;
+                if let Some(temp) = this.temp.get() {
+                    temp.set_text(&i18n_f("{} °C", &[&format!("{:.1}", fan_temp_c)]));
+                }
+
+                this.temp_graph.add_data_point(0, fan_temp_c);
+                this.temp_max_y.set_text(&format!(
+                    "{} °C",
+                    this.temp_graph
+                        .max_all_time(0)
+                        .unwrap_or(fan_temp_c.round())
+                ));
             }
 
             this.speed_graph.add_data_point(0, fan.rpm as f32);
-            if fan.percent_vroomimg >= 0. {
-                this.speed_graph
-                    .add_data_point(1, fan.percent_vroomimg * 100.);
+            if let Some(pwm_percent) = fan.pwm_percent {
+                this.speed_graph.add_data_point(1, pwm_percent * 100.);
             }
 
-            if fan.max_speed <= 0 {
+            if fan.max_rpm.is_none() {
                 this.speed_max_y.set_text(&i18n_f(
                     "{} RPM",
                     &[&this
@@ -304,14 +319,6 @@ mod imp {
                         .to_string()],
                 ));
             }
-
-            this.temp_graph.add_data_point(0, fan_temp_c);
-            this.temp_max_y.set_text(&format!(
-                "{} °C",
-                this.temp_graph
-                    .max_all_time(0)
-                    .unwrap_or(fan_temp_c.round())
-            ));
 
             true
         }
@@ -546,11 +553,11 @@ impl PerformancePageFan {
         this
     }
 
-    pub fn set_static_information(&self, fan_info: &crate::magpie_client::FanInfo) -> bool {
+    pub fn set_static_information(&self, fan_info: &Fan) -> bool {
         imp::PerformancePageFan::set_static_information(self, fan_info)
     }
 
-    pub fn update_readings(&self, fan_info: &crate::magpie_client::FanInfo) -> bool {
+    pub fn update_readings(&self, fan_info: &Fan) -> bool {
         imp::PerformancePageFan::update_readings(self, fan_info)
     }
 }
