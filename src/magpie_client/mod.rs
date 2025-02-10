@@ -33,7 +33,7 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, Cpu, Disk, DiskKind, FanInfo, Gpu, Memory, MemoryDevice, Process,
+    App, Client, Connection, Cpu, Disk, DiskKind, Fan, Gpu, Memory, MemoryDevice, Process,
     ProcessUsageStats, Service,
 };
 
@@ -106,7 +106,7 @@ pub struct Readings {
     pub disks_info: Vec<Disk>,
     pub network_connections: Vec<Connection>,
     pub gpus: HashMap<String, Gpu>,
-    pub fans_info: Vec<FanInfo>,
+    pub fans_info: Vec<Fan>,
 
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
