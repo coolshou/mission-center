@@ -66,8 +66,8 @@ trait PageExt {
 const MK_TO_0_C: i32 = -273150;
 
 mod imp {
-    use magpie_types::fan::Fan;
     use super::*;
+    use magpie_types::fan::Fan;
 
     // GNOME color palette: Blue 4
     const CPU_BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
@@ -1432,10 +1432,9 @@ mod imp {
             fan_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, FanPage)) {
-            let fan_static_info =
-                &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
+            let fan = &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
 
-            let page_name = Self::fan_page_name(fan_static_info);
+            let page_name = Self::fan_page_name(fan);
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
@@ -1472,7 +1471,7 @@ mod imp {
                 FAN_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            page.set_static_information(fan_static_info);
+            page.set_static_information(fan);
 
             self.configure_page(&page);
 
@@ -1485,7 +1484,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up fan action for {}, logic bug?",
-                        &fan_static_info.fan_label.clone().unwrap_or("".to_string())
+                        fan.fan_label.as_ref().map(|l| l.as_str()).unwrap_or("")
                     );
                 }
                 Some(action) => {

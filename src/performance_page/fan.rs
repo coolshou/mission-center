@@ -24,14 +24,16 @@ use adw;
 use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
+
 use magpie_types::fan::Fan;
-use super::widgets::GraphWidget;
+
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-use crate::performance_page::PageExt;
+use crate::performance_page::{PageExt, MK_TO_0_C};
+
+use super::widgets::GraphWidget;
 
 mod imp {
-    use crate::performance_page::MK_TO_0_C;
     use super::*;
 
     #[derive(Properties)]
@@ -179,10 +181,7 @@ mod imp {
     }
 
     impl PerformancePageFan {
-        pub fn set_static_information(
-            this: &super::PerformancePageFan,
-            fan: &Fan,
-        ) -> bool {
+        pub fn set_static_information(this: &super::PerformancePageFan, fan: &Fan) -> bool {
             let t = this.clone();
 
             let this = this.imp();
@@ -223,7 +222,9 @@ mod imp {
                 None
             });
 
-            this.title_fan_name.set_text(&*fan.fan_label.clone().unwrap_or("".to_string()));
+            if let Some(fan_label) = &fan.fan_label {
+                this.title_fan_name.set_text(fan_label);
+            }
 
             if let Some(legend_send) = this.legend_speed.get() {
                 legend_send
@@ -235,7 +236,9 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-net.svg"));
             }
 
-            this.title_temp_name.set_text(&*fan.temp_name.clone().unwrap_or("".to_string()));
+            if let Some(temp_name) = &fan.temp_name {
+                this.title_temp_name.set_text(temp_name);
+            }
 
             this.speed_graph.set_filled(1, false);
             this.speed_graph.set_dashed(1, true);
@@ -264,14 +267,13 @@ mod imp {
             true
         }
 
-        pub fn update_readings(
-            this: &super::PerformancePageFan,
-            fan: &Fan,
-        ) -> bool {
+        pub fn update_readings(this: &super::PerformancePageFan, fan: &Fan) -> bool {
             let this = this.imp();
 
-            this.title_fan_name
-                .set_text(&i18n_f("{}", &[&fan.fan_label.clone().unwrap_or("".to_string())]));
+            this.title_fan_name.set_text(&i18n_f(
+                "{}",
+                &[&fan.fan_label.clone().unwrap_or("".to_string())],
+            ));
 
             if let Some(speed_send) = this.speed.get() {
                 speed_send.set_text(&i18n_f("{} RPM", &[&format!("{}", fan.rpm)]));
@@ -280,7 +282,10 @@ mod imp {
             if let Some(pwm) = this.pwm.get() {
                 pwm.set_text(&i18n_f(
                     "{}%",
-                    &[&format!("{:.0}", fan.pwm_percent.clone().unwrap_or(0.) * 100.0)],
+                    &[&format!(
+                        "{:.0}",
+                        fan.pwm_percent.clone().unwrap_or(0.) * 100.0
+                    )],
                 ));
             }
 
@@ -301,8 +306,7 @@ mod imp {
 
             this.speed_graph.add_data_point(0, fan.rpm as f32);
             if let Some(pwm_percent) = fan.pwm_percent {
-                this.speed_graph
-                    .add_data_point(1, pwm_percent * 100.);
+                this.speed_graph.add_data_point(1, pwm_percent * 100.);
             }
 
             if fan.max_rpm.is_none() {
