@@ -33,9 +33,9 @@ use gtk::{
     glib::{self, g_critical},
 };
 
+use magpie_types::fan::Fan;
 use magpie_types::network::{Connection, ConnectionKind};
 
-use crate::magpie_client::FanInfo;
 use crate::{i18n::*, magpie_client::DiskKind, settings};
 
 use widgets::{GraphWidget, SidebarDropHint};
@@ -64,7 +64,7 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
-const MK_TO_0_C: i32 = 273150;
+const MK_TO_0_C: i32 = -273150;
 
 mod imp {
     use super::*;
@@ -1104,7 +1104,7 @@ mod imp {
             disk_id: &str,
             index: Option<i32>,
         ) {
-            let r#type = match kind {
+            let kind = match kind {
                 Some(DiskKind::Hdd) => i18n("HDD"),
                 Some(DiskKind::Ssd) => i18n("SSD"),
                 Some(DiskKind::NvMe) => i18n("NVMe"),
@@ -1120,13 +1120,13 @@ mod imp {
                 disk_graph.set_heading(i18n_f(
                     "{} {} ({})",
                     &[
-                        &format!("{}", r#type),
+                        &format!("{}", kind),
                         &format!("{}", index.unwrap()),
                         &format!("{}", disk_id),
                     ],
                 ));
             } else {
-                disk_graph.set_heading(r#type);
+                disk_graph.set_heading(kind);
             }
         }
 
@@ -1443,7 +1443,7 @@ mod imp {
             pages.push(Pages::Fan(fans));
         }
 
-        fn fan_page_name(fan_info: &FanInfo) -> String {
+        fn fan_page_name(fan_info: &Fan) -> String {
             format!("fan-{}-{}", fan_info.hwmon_index, fan_info.fan_index)
         }
 
@@ -1506,7 +1506,11 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up fan action for {}, logic bug?",
-                        &fan_static_info.fan_label
+                        fan_static_info
+                            .fan_label
+                            .as_ref()
+                            .map(|s| s.as_str())
+                            .unwrap_or("Unknown")
                     );
                 }
                 Some(action) => {
@@ -2044,21 +2048,26 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(fan_info.temp_name.as_ref());
+                                if let Some(temp_name) = &fan_info.temp_name {
+                                    summary.set_info1(temp_name.as_str());
+                                }
 
-                                let temp_str = if fan_info.temp_amount != 0 {
+                                let temp_str = if let Some(temp_amount) = fan_info.temp_amount {
                                     format!(
                                         " ({:.0} °C)",
-                                        (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0
+                                        (temp_amount as i32 + MK_TO_0_C) as f32 / 1000.0
                                     )
                                 } else {
                                     String::new()
                                 };
-                                summary.set_info2(if fan_info.percent_vroomimg < 0. {
-                                    format!("{} RPM{}", fan_info.rpm, temp_str)
-                                } else {
-                                    format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
-                                });
+
+                                summary.set_info2(
+                                    if let Some(pwm_percent) = fan_info.pwm_percent {
+                                        format!("{:.0}%{}", pwm_percent * 100., temp_str)
+                                    } else {
+                                        format!("{} RPM{}", fan_info.rpm, temp_str)
+                                    },
+                                );
                                 result &= page.update_readings(fan_info);
                             }
                         }

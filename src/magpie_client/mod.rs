@@ -33,8 +33,8 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, FanInfo, Gpu, Memory,
-    MemoryDevice, Process, ProcessUsageStats, Service, SmartData,
+    App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, Fan, Gpu, Memory, MemoryDevice,
+    Process, ProcessUsageStats, Service, SmartData,
 };
 
 macro_rules! cmd_flatpak_host {
@@ -111,7 +111,7 @@ pub struct Readings {
     pub disks_info: Vec<Disk>,
     pub network_connections: Vec<Connection>,
     pub gpus: HashMap<String, Gpu>,
-    pub fans_info: Vec<FanInfo>,
+    pub fans_info: Vec<Fan>,
 
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,

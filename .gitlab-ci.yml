@@ -15,8 +15,9 @@ build-job-x86:
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
     - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - ln -sf /usr/bin/mold /usr/bin/ld
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
@@ -25,7 +26,7 @@ build-job-x86:
 
     - pip install meson ninja --break-system-packages
 
-    - meson setup _build -Dbuildtype=release
+    - meson setup _build -Dbuildtype=release -Dskip-codegen=true
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
@@ -42,8 +43,9 @@ build-job-arm:
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
 
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
     - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - ln -sf /usr/bin/mold /usr/bin/ld
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
@@ -52,7 +54,7 @@ build-job-arm:
 
     - pip install meson ninja --break-system-packages
 
-    - meson setup _build -Dbuildtype=release
+    - meson setup _build -Dbuildtype=release -Dskip-codegen=true
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
