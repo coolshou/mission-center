@@ -2784,6 +2784,19 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/trim-in-place/trim-in-place-0.1.7.crate",
+    "sha256": "343e926fc669bc8cde4fa3129ab681c63671bae288b1f1081ceee6d9d37904fc",
+    "dest": "cargo/vendor/trim-in-place-0.1.7"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"343e926fc669bc8cde4fa3129ab681c63671bae288b1f1081ceee6d9d37904fc\", \"files\": {}}",
+    "dest": "cargo/vendor/trim-in-place-0.1.7",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/typenum/typenum-1.17.0.crate",
     "sha256": "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825",
     "dest": "cargo/vendor/typenum-1.17.0"
