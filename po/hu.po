@@ -670,7 +670,7 @@ msgid "Receive"
 msgstr "Fogadott adat"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:114

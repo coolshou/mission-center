@@ -27,6 +27,7 @@ use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::glib::ExitCode;
 use gtk::{gio, prelude::*};
 
+use crate::i18n::{i18n, i18n_f};
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use window::MissionCenterWindow;
@@ -83,6 +84,120 @@ fn flatpak_data_dir() -> &'static Path {
 pub fn is_flatpak() -> bool {
     static IS_FLATPAK: OnceLock<bool> = OnceLock::new();
     *IS_FLATPAK.get_or_init(|| Path::new("/.flatpak-info").exists())
+}
+
+// tysm gdu
+pub fn to_human_readable_time(seconds: u64) -> String {
+    const USEC_PER_YEAR: u64 = 60 * 60 * 6 * 1461; // ((60 * 60 * 24) as f32 * 365.25);
+    const USEC_PER_MONTH: u64 = 60 * 30 * 1461; // ((60 * 60 * 24) as f32 * 365.25 / 12.0);
+    const USEC_PER_DAY: u64 = 60 * 60 * 24;
+    const USEC_PER_HOUR: u64 = 60 * 60;
+    const USEC_PER_MINUTE: u64 = 60;
+
+    pub fn years_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} year", &[&timestr])
+        } else {
+            i18n_f("{} years", &[&timestr])
+        }
+    }
+
+    pub fn months_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} month", &[&timestr])
+        } else {
+            i18n_f("{} months", &[&timestr])
+        }
+    }
+
+    pub fn days_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} day", &[&timestr])
+        } else {
+            i18n_f("{} days", &[&timestr])
+        }
+    }
+
+    pub fn hours_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} hour", &[&timestr])
+        } else {
+            i18n_f("{} hours", &[&timestr])
+        }
+    }
+
+    pub fn minutes_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} minute", &[&timestr])
+        } else {
+            i18n_f("{} minutes", &[&timestr])
+        }
+    }
+
+    pub fn seconds_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} second", &[&timestr])
+        } else {
+            i18n_f("{} seconds", &[&timestr])
+        }
+    }
+
+    let mut t = seconds;
+    let years = t / USEC_PER_YEAR;
+    t -= years * USEC_PER_YEAR;
+
+    let months = t / USEC_PER_MONTH;
+    t -= months * USEC_PER_MONTH;
+
+    let days = t / USEC_PER_DAY;
+    t -= days * USEC_PER_DAY;
+
+    let hours = t / USEC_PER_HOUR;
+    t -= hours * USEC_PER_HOUR;
+
+    let minutes = t / USEC_PER_MINUTE;
+    t -= minutes * USEC_PER_MINUTE;
+
+    let seconds = t;
+
+    let string3 = years_to_string(years);
+    let years_str = string3.as_str();
+    let string2 = months_to_string(months);
+    let months_str = string2.as_str();
+    let string1 = days_to_string(days);
+    let days_str = string1.as_str();
+    let string = hours_to_string(hours);
+    let hours_str = string.as_str();
+    let string4 = minutes_to_string(minutes);
+    let minutes_str = string4.as_str();
+    let string5 = seconds_to_string(seconds);
+    let seconds_str = string5.as_str();
+
+    if years > 0 {
+        /* Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days */
+        i18n_f("{}, {} and {}", &[years_str, months_str, days_str])
+    } else if months > 0 {
+        /* Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days */
+        i18n_f("{} and {}", &[months_str, days_str])
+    } else if days > 0 {
+        /* Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours */
+        i18n_f("{} and {}", &[days_str, hours_str])
+    } else if hours > 0 {
+        /* Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes */
+        i18n_f("{} and {}", &[hours_str, minutes_str])
+    } else if minutes > 0 {
+        String::from(minutes_str)
+    } else if seconds == 0 {
+        seconds_str.to_string()
+    } else {
+        i18n("Less than a minute")
+    }
 }
 
 pub fn to_human_readable_adv(

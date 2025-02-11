@@ -33,8 +33,8 @@ use crate::app;
 use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
-    App, Client, Connection, Cpu, Disk, DiskKind, Fan, Gpu, Memory, MemoryDevice, Process,
-    ProcessUsageStats, Service,
+    App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, Fan, Gpu, Memory, MemoryDevice,
+    Process, ProcessUsageStats, Service, SmartData,
 };
 
 macro_rules! cmd_flatpak_host {
@@ -86,16 +86,21 @@ enum Message {
     UpdateCoreCountAffectsPercentages(bool),
     TerminateProcess(Pid),
     KillProcess(Pid),
+    KillProcesses(Vec<Pid>),
     GetServiceLogs(String, Option<NonZeroU32>),
     StartService(String),
     StopService(String),
     RestartService(String),
     EnableService(String),
     DisableService(String),
+    EjectDisk(String),
+    SmartData(String),
 }
 
 enum Response {
     String(String),
+    EjectResult(Result<(), ErrorEjectFailed>),
+    SmartData(Option<SmartData>),
 }
 
 #[derive(Debug)]
@@ -270,6 +275,18 @@ impl MagpieClient {
         }
     }
 
+    pub fn kill_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::KillProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending KillProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
     pub fn service_logs(&self, service_id: String, pid: Option<NonZeroU32>) -> String {
         let sid = service_id.clone();
         match self.sender.send(Message::GetServiceLogs(service_id, pid)) {
@@ -292,6 +309,14 @@ impl MagpieClient {
                     "Error receiving GetServiceLogs response: {}",
                     e
                 );
+                String::new()
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving GetServiceLogs response. Wrong type"
+                );
+
                 String::new()
             }
         }
@@ -361,6 +386,74 @@ impl MagpieClient {
             _ => {}
         }
     }
+
+    pub fn eject_disk(&self, disk_id: &str) -> Result<(), ErrorEjectFailed> {
+        match self.sender.send(Message::EjectDisk(disk_id.to_owned())) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending EjectDisk({}) to gatherer: {}",
+                    disk_id,
+                    e
+                );
+
+                return Ok(());
+            }
+            _ => {}
+        }
+
+        match self.receiver.recv() {
+            Ok(Response::EjectResult(res)) => res,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving EjectDisk response: {}",
+                    e
+                );
+                Ok(())
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving EjectDisk response. Wrong type"
+                );
+                Ok(())
+            }
+        }
+    }
+
+    pub fn smart_data(&self, disk_id: String) -> Option<SmartData> {
+        let did = disk_id.clone();
+        match self.sender.send(Message::SmartData(disk_id)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending SataSmartInfo({did}) to gatherer: {e}",
+                );
+
+                return None;
+            }
+            _ => {}
+        }
+
+        match self.receiver.recv() {
+            Ok(Response::SmartData(sd)) => sd,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving SataSmartResult response: {e}",
+                );
+                None
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error receiving SataSmartResult response. Wrong type"
+                );
+                None
+            }
+        }
+    }
 }
 
 impl MagpieClient {
@@ -390,6 +483,9 @@ impl MagpieClient {
                 Message::KillProcess(pid) => {
                     gatherer.kill_process(pid);
                 }
+                Message::KillProcesses(pids) => {
+                    gatherer.kill_processes(pids);
+                }
                 Message::StartService(name) => {
                     gatherer.start_service(name);
                 }
@@ -411,6 +507,23 @@ impl MagpieClient {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending GetServiceLogs response: {}",
+                            e
+                        );
+                    }
+                }
+                Message::EjectDisk(disk_id) => {
+                    if let Err(e) = tx.send(Response::EjectResult(gatherer.eject_disk(disk_id))) {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending EjectDisk response: {e}",
+                        );
+                    }
+                }
+                Message::SmartData(disk_id) => {
+                    if let Err(e) = tx.send(Response::SmartData(gatherer.smart_data(disk_id))) {
+                        g_critical!(
+                            "MissionCenter::SysInfo",
+                            "Error sending SataSmartInfo response: {}",
                             e
                         );
                     }
