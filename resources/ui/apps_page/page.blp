@@ -145,6 +145,31 @@ template $AppsPage : Box {
         };
       }
 
+      ColumnViewColumn memory_column_shared {
+        resizable: true;
+        fixed-width: 118;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "B";
+                value: bind (expander.item as <$RowModel>).memory-shared;
+                content-type: bind (expander.item as <$RowModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
       ColumnViewColumn disk_column {
         resizable: true;
         fixed-width: 90;

@@ -22,6 +22,8 @@ build-job-x86:
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
 
+    - ./support/check-cargo-fmt.sh
+
     - pip install meson ninja --break-system-packages
 
     - meson setup _build -Dbuildtype=release -Dskip-codegen=true
@@ -47,6 +49,8 @@ build-job-arm:
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
+
+    - ./support/check-cargo-fmt.sh
 
     - pip install meson ninja --break-system-packages
 
@@ -216,7 +220,7 @@ appimage-job-x86:
 
   artifacts:
     paths:
-      - 'MissionCenter-x86_64.AppImage'
+      - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null
 
@@ -240,6 +244,6 @@ appimage-job-arm:
 
   artifacts:
     paths:
-      - 'MissionCenter-aarch64.AppImage'
+      - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null

@@ -8,16 +8,26 @@ skip-codegen = ["magpie-types/skip-codegen"]
 
 [dependencies]
 arrayvec = "0.7"
-adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
-dbus = { version = "0.9" }
-gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gtk = { package = "gtk4", version = "0.9", features = ["gnome_47"] }
-libc = { version = "0.2" }
+libc = "0.2"
 rand = "0.9.0-beta.1"
-regex = { version = "1.10" }
-rust-ini = { version = "0.21" }
-static_assertions = { version = "1.1" }
-textdistance = { version = "1.0" }
+regex = "1.10"
+rust-ini = "0.21"
+static_assertions = "1.1"
+textdistance = "1.0"
+
+[dependencies.adw]
+package = "libadwaita"
+version = "0.7"
+features = ["v1_6"]
+
+[dependencies.gettext-rs]
+version = "0.7"
+features = ["gettext-system"]
+
+[dependencies.gtk]
+package = "gtk4"
+version = "0.9"
+features = ["gnome_47"]
 
 [dependencies.magpie-types]
 path = "subprojects/magpie/types"

@@ -657,7 +657,7 @@ msgid "Receive"
 msgstr "Faigh"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Iomlán a Fhaightear"
 
 #: resources/ui/performance_page/network_details.blp:114
