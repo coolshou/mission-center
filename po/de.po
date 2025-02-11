@@ -659,7 +659,7 @@ msgid "Receive"
 msgstr "Empfangen"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Insgesamt empfangen"
 
 #: resources/ui/performance_page/network_details.blp:114

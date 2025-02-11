@@ -666,7 +666,7 @@ msgstr "Terima"
 
 #: resources/ui/performance_page/network_details.blp:78
 #, fuzzy
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Total diterima"
 
 #: resources/ui/performance_page/network_details.blp:114

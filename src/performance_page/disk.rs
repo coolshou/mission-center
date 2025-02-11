@@ -20,15 +20,18 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw::{self, subclass::prelude::*};
-use glib::{ParamSpec, Properties, Value};
+use adw::{prelude::AdwDialogExt, subclass::prelude::*};
+use glib::{g_warning, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use magpie_types::disks::{Disk, DiskKind};
 
-use super::{widgets::GraphWidget, PageExt};
+use crate::app;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
+
+use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
+use super::PageExt;
 
 mod imp {
     use super::*;
@@ -60,7 +63,7 @@ mod imp {
         #[property(get, set)]
         summary_mode: Cell<bool>,
 
-        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        #[property(get = Self::infobar_content, type = Option<gtk::Widget>)]
         pub infobar_content: OnceCell<gtk::Box>,
 
         pub active_time: OnceCell<gtk::Label>,
@@ -75,6 +78,10 @@ mod imp {
         pub formatted: OnceCell<gtk::Label>,
         pub system_disk: OnceCell<gtk::Label>,
         pub disk_type: OnceCell<gtk::Label>,
+        pub eject: OnceCell<gtk::Button>,
+        pub smart: OnceCell<gtk::Button>,
+
+        pub raw_disk_id: OnceCell<String>,
     }
 
     impl Default for PerformancePageDisk {
@@ -106,6 +113,10 @@ mod imp {
                 formatted: Default::default(),
                 system_disk: Default::default(),
                 disk_type: Default::default(),
+                eject: Default::default(),
+                smart: Default::default(),
+
+                raw_disk_id: Default::default(),
             }
         }
     }
@@ -205,6 +216,8 @@ mod imp {
 
             let this = this.imp();
 
+            let _ = this.raw_disk_id.set(disk.id.clone());
+
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
                     "Disk {} ({})",
@@ -233,10 +246,9 @@ mod imp {
             }
 
             if let Some(capacity) = this.capacity.get() {
-                if let Some(cap) = disk
-                    .capacity_bytes
-                    .map(|c| crate::to_human_readable(c as f32, 1024.))
-                {
+                let cap = disk.capacity_bytes;
+                if cap > 0 {
+                    let cap = crate::to_human_readable(cap as f32, 1024.);
                     capacity.set_text(&format!(
                         "{:.2} {}{}B",
                         cap.0,
@@ -249,15 +261,14 @@ mod imp {
             }
 
             if let Some(formatted) = this.formatted.get() {
-                if let Some(fmt) = disk
-                    .capacity_bytes
-                    .map(|c| crate::to_human_readable(c as f32, 1024.))
-                {
+                let capacity = disk.capacity_bytes;
+                if capacity > 0 {
+                    let capacity = crate::to_human_readable(capacity as f32, 1024.);
                     formatted.set_text(&format!(
                         "{:.2} {}{}B",
-                        fmt.0,
-                        fmt.1,
-                        if fmt.1.is_empty() { "" } else { "i" }
+                        capacity.0,
+                        capacity.1,
+                        if capacity.1.is_empty() { "" } else { "i" }
                     ));
                 } else {
                     formatted.set_text(&i18n("Unknown"));
@@ -290,6 +301,15 @@ mod imp {
                     disk_type.set_text(&i18n("Unknown"));
                 };
             }
+
+            if let Some(eject_button) = this.eject.get() {
+                eject_button.set_sensitive(disk.ejectable)
+            }
+
+            if let Some(smart_button) = this.smart.get() {
+                smart_button.set_sensitive(disk.smart_interface.is_some());
+            }
+
             true
         }
 
@@ -535,6 +555,71 @@ mod imp {
                     .object::<gtk::Label>("disk_type")
                     .expect("Could not find `disk_type` object in details pane"),
             );
+            let eject = sidebar_content_builder
+                .object::<gtk::Button>("eject")
+                .expect("Could not find `eject` object in details pane");
+            let _ = self.eject.set(eject.clone());
+            let smart = sidebar_content_builder
+                .object::<gtk::Button>("smart")
+                .expect("Could not find `smart` object in details pane");
+            let _ = self.smart.set(smart.clone());
+
+            eject.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get disk_id for eject");
+                        return;
+                    };
+
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
+
+                    match magpie.eject_disk(disk_id) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            let dialog = EjectFailureDialog::new(disk_id.clone(), e);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                        }
+                    }
+                }
+            });
+
+            smart.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "`disk_id` was not set");
+                        return;
+                    };
+
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
+
+                    let Some(smart_data) = magpie.smart_data(disk_id.clone()) else {
+                        return;
+                    };
+
+                    let dialog = SmartDataDialog::new(smart_data);
+                    dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                }
+            });
         }
     }
 

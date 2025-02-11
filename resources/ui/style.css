@@ -58,3 +58,7 @@ window checkbutton.theme-selector radio:checked {
 .transparent {
     background-color: transparent;
 }
+
+grid.layout-grid picture {
+    padding-right: 0.5em;
+}
