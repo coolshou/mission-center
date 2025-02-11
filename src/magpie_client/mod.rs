@@ -545,15 +545,15 @@ impl MagpieClient {
         gatherer.start();
 
         let mut readings = Readings {
+            running_processes: gatherer.processes(),
+            running_apps: gatherer.apps(),
+            disks_info: gatherer.disks_info(),
+            gpus: gatherer.gpus(),
             cpu: gatherer.cpu(),
             mem_info: gatherer.memory(),
             mem_devices: gatherer.memory_devices(),
-            disks_info: gatherer.disks_info(),
             fans_info: gatherer.fans_info(),
             network_connections: gatherer.network_connections(),
-            gpus: gatherer.gpus(),
-            running_processes: gatherer.processes(),
-            running_apps: gatherer.apps(),
             services: gatherer.services(),
         };
 
@@ -619,6 +619,38 @@ impl MagpieClient {
             let loop_start = std::time::Instant::now();
 
             let timer = std::time::Instant::now();
+            readings.running_processes = gatherer.processes();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Process load load took: {:?}",
+                timer.elapsed()
+            );
+
+            let timer = std::time::Instant::now();
+            readings.running_apps = gatherer.apps();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Running apps load took: {:?}",
+                timer.elapsed(),
+            );
+
+            let timer = std::time::Instant::now();
+            readings.disks_info = gatherer.disks_info();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Disks info load took: {:?}",
+                timer.elapsed()
+            );
+
+            let timer = std::time::Instant::now();
+            readings.gpus = gatherer.gpus();
+            g_debug!(
+                "MissionCenter::Perf",
+                "GPU info load took: {:?}",
+                timer.elapsed()
+            );
+
+            let timer = std::time::Instant::now();
             readings.cpu = gatherer.cpu();
             g_debug!(
                 "MissionCenter::Perf",
@@ -635,26 +667,10 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.disks_info = gatherer.disks_info();
-            g_debug!(
-                "MissionCenter::Perf",
-                "Disks info load took: {:?}",
-                timer.elapsed()
-            );
-
-            let timer = std::time::Instant::now();
             readings.network_connections = gatherer.network_connections();
             g_debug!(
                 "MissionCenter::Perf",
                 "Network devices info load took: {:?}",
-                timer.elapsed()
-            );
-
-            let timer = std::time::Instant::now();
-            readings.gpus = gatherer.gpus();
-            g_debug!(
-                "MissionCenter::Perf",
-                "GPU info load took: {:?}",
                 timer.elapsed()
             );
 
@@ -664,22 +680,6 @@ impl MagpieClient {
                 "MissionCenter::Perf",
                 "Fans info load took: {:?}",
                 timer.elapsed()
-            );
-
-            let timer = std::time::Instant::now();
-            readings.running_processes = gatherer.processes();
-            g_debug!(
-                "MissionCenter::Perf",
-                "Process load load took: {:?}",
-                timer.elapsed()
-            );
-
-            let timer = std::time::Instant::now();
-            readings.running_apps = gatherer.apps();
-            g_debug!(
-                "MissionCenter::Perf",
-                "Running apps load took: {:?}",
-                timer.elapsed(),
             );
 
             if refresh_services {
