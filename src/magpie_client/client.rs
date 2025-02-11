@@ -29,11 +29,13 @@ use gtk::glib::{g_critical, g_debug};
 use magpie_types::apps::apps_response;
 use magpie_types::apps::apps_response::AppList;
 pub use magpie_types::apps::App;
+use magpie_types::common::Empty;
 use magpie_types::cpu::cpu_response;
 pub use magpie_types::cpu::Cpu;
 use magpie_types::disks::disks_response;
-use magpie_types::disks::disks_response::DiskList;
-pub use magpie_types::disks::{Disk, DiskKind};
+use magpie_types::disks::disks_response::{DiskList, OptionalSmartData};
+use magpie_types::disks::disks_response_error::Error;
+pub use magpie_types::disks::{Disk, DiskKind, ErrorEjectFailed, SmartData};
 use magpie_types::fan::fans_response;
 use magpie_types::fan::fans_response::FanList;
 pub use magpie_types::fan::Fan;
@@ -108,6 +110,33 @@ macro_rules! parse_response {
                     $response
                 );
                 Default::default()
+            }
+        }
+    }};
+}
+
+macro_rules! parse_response_with_err {
+    ($response: ident, $body_kind: path, $response_kind_ok: path, $response_kind_err: path, $do: expr) => {{
+        match $response {
+            Some($body_kind(response)) => match response.response {
+                Some($response_kind_ok(arg)) => Some(Ok($do(arg))),
+                Some($response_kind_err(e)) => Some(Err(e)),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected response: {:?}",
+                        response.response
+                    );
+                    None
+                }
+            },
+            _ => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Unexpected response: {:?}",
+                    $response
+                );
+                None
             }
         }
     }};
@@ -763,6 +792,59 @@ impl Client {
         )
     }
 
+    pub fn eject_disk(&self, disk_id: String) -> Result<(), ErrorEjectFailed> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_eject_disk(disk_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        let result = parse_response_with_err!(
+            response,
+            ResponseBody::Disks,
+            DisksResponse::Eject,
+            DisksResponse::Error,
+            |_: Empty| { () }
+        );
+
+        let Some(result) = result else { return Ok(()) };
+        match result {
+            Ok(()) => Ok(()),
+            Err(e) => match e.error {
+                Some(Error::Eject(e)) => Err(e),
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Unexpected error response: {e:?}"
+                    );
+                    Ok(())
+                }
+            },
+        }
+    }
+
+    pub fn smart_data(&self, disk_id: String) -> Option<SmartData> {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_get_smart_data(disk_id),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Disks,
+            DisksResponse::Smart,
+            DisksResponse::Error,
+            |mut smart_data: OptionalSmartData| { std::mem::take(&mut smart_data.smart) }
+        )
+    }
+
     pub fn fans_info(&self) -> Vec<Fan> {
         let mut socket = self.socket.borrow_mut();
 
@@ -899,6 +981,7 @@ impl Client {
     pub fn terminate_process(&self, _pid: u32) {}
 
     pub fn kill_process(&self, _pid: u32) {}
+    pub fn kill_processes(&self, _pids: Vec<u32>) {}
 
     pub fn start_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();

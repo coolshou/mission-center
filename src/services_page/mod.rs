@@ -642,8 +642,19 @@ mod imp {
             {
                 let selected = selection_model.selected();
                 if selected != INVALID_LIST_POSITION {
-                    selection_model.set_selected(INVALID_LIST_POSITION);
-                    selection_model.set_selected(selected);
+                    let selected_item = selection_model
+                        .selected_item()
+                        .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned());
+
+                    if selected_item.map(|it| it.running()).unwrap_or(false) {
+                        self.actions.stop.set_enabled(true);
+                        self.actions.start.set_enabled(false);
+                        self.actions.restart.set_enabled(true);
+                    } else {
+                        self.actions.stop.set_enabled(false);
+                        self.actions.start.set_enabled(true);
+                        self.actions.restart.set_enabled(false);
+                    }
                 }
             }
         }
@@ -793,6 +804,7 @@ impl ServicesPage {
                 }
             }
         });
+
         this.column_view.set_model(Some(&selection_model));
 
         if let Some(header) = this.column_view.first_child() {
@@ -815,6 +827,7 @@ impl ServicesPage {
 
     pub fn update_readings(&self, readings: &mut Readings) -> bool {
         self.imp().update_model(readings);
+
         true
     }
 }

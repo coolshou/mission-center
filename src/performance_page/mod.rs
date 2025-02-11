@@ -33,6 +33,7 @@ use gtk::{
     glib::{self, g_critical},
 };
 
+use magpie_types::fan::Fan;
 use magpie_types::network::{Connection, ConnectionKind};
 
 use crate::{i18n::*, magpie_client::DiskKind, settings};
@@ -67,7 +68,6 @@ const MK_TO_0_C: i32 = -273150;
 
 mod imp {
     use super::*;
-    use magpie_types::fan::Fan;
 
     // GNOME color palette: Blue 4
     const CPU_BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
@@ -1022,18 +1022,20 @@ mod imp {
         ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
+            let mem_info = readings.mem_info;
 
             {
                 let graph_widget = summary.graph_widget();
 
-                graph_widget.set_value_range_max(readings.mem_info.mem_total as f32);
+                graph_widget.set_value_range_max(mem_info.mem_total as f32);
                 graph_widget.set_data_set_count(2);
                 graph_widget.set_filled(0, false);
                 graph_widget.set_dashed(0, true);
             }
 
             summary.set_heading(i18n("Memory"));
-            summary.set_info1("0/0 GiB (100%)");
+            summary.set_info1("0/0 GiB");
+            summary.set_info2("0%");
 
             summary.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
@@ -1098,16 +1100,33 @@ mod imp {
         pub fn update_disk_heading(
             &self,
             disk_graph: &SummaryGraph,
+            kind: Option<DiskKind>,
             disk_id: &str,
             index: Option<i32>,
         ) {
+            let kind = match kind {
+                Some(DiskKind::Hdd) => i18n("HDD"),
+                Some(DiskKind::Ssd) => i18n("SSD"),
+                Some(DiskKind::NvMe) => i18n("NVMe"),
+                Some(DiskKind::EMmc) => i18n("eMMC"),
+                Some(DiskKind::Sd) => i18n("SD"),
+                Some(DiskKind::IScsi) => i18n("iSCSI"),
+                Some(DiskKind::Optical) => i18n("Optical"),
+                Some(DiskKind::Floppy) => i18n("Floppy"),
+                None => i18n("Unknown"),
+            };
+
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
-                    "Drive {} ({})",
-                    &[&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                    "{} {} ({})",
+                    &[
+                        &format!("{}", kind),
+                        &format!("{}", index.unwrap()),
+                        &format!("{}", disk_id),
+                    ],
                 ));
             } else {
-                disk_graph.set_heading(i18n("Drive"));
+                disk_graph.set_heading(kind);
             }
         }
 
@@ -1121,30 +1140,32 @@ mod imp {
             disk_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, DiskPage)) {
-            let disk_static_info = &readings.disks_info[disk_id.unwrap_or(0) as usize];
+            let disk = &readings.disks_info[disk_id.unwrap_or(0) as usize];
 
-            let page_name = Self::disk_page_name(disk_static_info.id.as_ref());
+            let page_name = Self::disk_page_name(disk.id.as_ref());
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.id.as_ref(), disk_id);
-            if let Some(disk_kind) = disk_static_info.kind.and_then(|k| k.try_into().ok()) {
-                summary.set_info1(match disk_kind {
-                    DiskKind::Hdd => i18n("HDD"),
-                    DiskKind::Ssd => i18n("SSD"),
-                    DiskKind::NvMe => i18n("NVMe"),
-                    DiskKind::EMmc => i18n("eMMC"),
-                    DiskKind::Sd => i18n("SD"),
-                    DiskKind::IScsi => i18n("iSCSI"),
-                    DiskKind::Optical => i18n("Optical"),
-                    DiskKind::Floppy => i18n("Floppy"),
-                });
-            } else {
-                summary.set_info1(i18n("Unknown"));
-            };
+            self.update_disk_heading(
+                &summary,
+                disk.kind.and_then(|k| k.try_into().ok()),
+                &disk.id,
+                disk_id,
+            );
+            if let Some(model) = &disk.model {
+                summary.set_info1(model.as_ref());
+            }
+            summary.set_info2(format!(
+                "{:.0}%{}",
+                disk.busy_percent,
+                if let Some(temp_mk) = disk.temperature_milli_k {
+                    format!(" ({:.0} °C)", (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.)
+                } else {
+                    String::new()
+                }
+            ));
 
-            summary.set_info2(format!("{:.0}%", disk_static_info.busy_percent));
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -1169,7 +1190,7 @@ mod imp {
                 DISK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            page.set_static_information(disk_id, disk_static_info);
+            page.set_static_information(disk_id, disk);
 
             self.configure_page(&page);
 
@@ -1182,7 +1203,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up disk action for {}, logic bug?",
-                        &disk_static_info.id
+                        &disk.id
                     );
                 }
                 Some(action) => {
@@ -1432,9 +1453,10 @@ mod imp {
             fan_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, FanPage)) {
-            let fan = &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
+            let fan_static_info =
+                &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
 
-            let page_name = Self::fan_page_name(fan);
+            let page_name = Self::fan_page_name(fan_static_info);
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
@@ -1471,7 +1493,7 @@ mod imp {
                 FAN_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            page.set_static_information(fan);
+            page.set_static_information(fan_static_info);
 
             self.configure_page(&page);
 
@@ -1484,7 +1506,11 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up fan action for {}, logic bug?",
-                        fan.fan_label.as_ref().map(|l| l.as_str()).unwrap_or("")
+                        fan_static_info
+                            .fan_label
+                            .as_ref()
+                            .map(|s| s.as_str())
+                            .unwrap_or("Unknown")
                     );
                 }
                 Some(action) => {
@@ -1712,6 +1738,14 @@ mod imp {
                                 continue;
                             }
                         };
+
+                        let selection = sidebar.selected_row().unwrap();
+
+                        if selection.eq(&parent) {
+                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
+                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        }
+
                         summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
                         page_stack.remove(&page);
@@ -1726,8 +1760,9 @@ mod imp {
                     Pages::Memory(_) => {} // not dynamic
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
-                            if !readings.disks_info.iter().any(|device| {
-                                &Self::disk_page_name(device.id.as_ref()) == disk_page_name
+                            if !readings.disks_info.iter().any(|disk| {
+                                disk.capacity_bytes > 0
+                                    && &Self::disk_page_name(disk.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
                             }
@@ -1815,13 +1850,12 @@ mod imp {
                         let used = crate::to_human_readable(used_raw as _, 1024.);
 
                         summary.set_info1(format!(
-                            "{}%",
-                            ((used_raw as f32 / total_raw as f32) * 100.).round()
-                        ));
-
-                        summary.set_info2(format!(
                             "{0:.2$} {1}iB/{3:.5$} {4}iB",
                             used.0, used.1, used.2, total.0, total.1, total.2
+                        ));
+                        summary.set_info2(format!(
+                            "{}%",
+                            ((used_raw as f32 / total_raw as f32) * 100.).round()
                         ));
 
                         result &= page.update_readings(readings);
@@ -1838,6 +1872,7 @@ mod imp {
                             {
                                 this.imp().update_disk_heading(
                                     summary,
+                                    disk.kind.and_then(|k| k.try_into().ok()),
                                     disk.id.as_ref(),
                                     if hide_index { None } else { Some(index as i32) },
                                 );
@@ -1862,7 +1897,15 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                if let Some(temp_mk) = disk.temperature_milli_k {
+                                    summary.set_info2(format!(
+                                        "{:.0}% ({:.0} °C)",
+                                        disk.busy_percent,
+                                        (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.
+                                    ));
+                                } else {
+                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                                }
 
                                 result &= page.update_readings(
                                     if hide_index { None } else { Some(index) },
@@ -1874,6 +1917,9 @@ mod imp {
                         }
 
                         for new_device_index in new_devices {
+                            if readings.disks_info[new_device_index].capacity_bytes == 0 {
+                                continue;
+                            }
                             let (disk_id, page) = this.imp().create_disk_page(
                                 readings,
                                 if hide_index {
@@ -1921,6 +1967,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+
                                 graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
                                 graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
 
@@ -2001,15 +2048,26 @@ mod imp {
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
                                 graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(format!("{} RPM", fan_info.rpm));
-                                if let Some(temp) = fan_info.temp_amount {
-                                    summary.set_info2(format!(
-                                        "{:.0} °C",
-                                        (temp as i32 + MK_TO_0_C) as f32 / 1000.0
-                                    ));
-                                } else {
-                                    summary.set_info2("");
+                                if let Some(temp_name) = &fan_info.temp_name {
+                                    summary.set_info1(temp_name.as_str());
                                 }
+
+                                let temp_str = if let Some(temp_amount) = fan_info.temp_amount {
+                                    format!(
+                                        " ({:.0} °C)",
+                                        (temp_amount as i32 + MK_TO_0_C) as f32 / 1000.0
+                                    )
+                                } else {
+                                    String::new()
+                                };
+
+                                summary.set_info2(
+                                    if let Some(pwm_percent) = fan_info.pwm_percent {
+                                        format!("{:.0}%{}", pwm_percent * 100., temp_str)
+                                    } else {
+                                        format!("{} RPM{}", fan_info.rpm, temp_str)
+                                    },
+                                );
                                 result &= page.update_readings(fan_info);
                             }
                         }

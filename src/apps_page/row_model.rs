@@ -54,6 +54,8 @@ mod imp {
         pub cpu_usage: Cell<f32>,
         #[property(get, set = Self::set_memory_usage)]
         pub memory_usage: Cell<f32>,
+        #[property(get, set = Self::set_memory_shared)]
+        pub memory_shared: Cell<f32>,
         #[property(get, set)]
         pub disk_usage: Cell<f32>,
         #[property(get, set)]
@@ -103,6 +105,7 @@ mod imp {
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0.),
+                memory_shared: Cell::new(0.),
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
@@ -204,6 +207,11 @@ mod imp {
             self.obj().notify_memory_usage_percent();
         }
 
+        pub fn set_memory_shared(&self, memory_shared: f32) {
+            self.memory_shared.set(memory_shared);
+            self.obj().notify_memory_shared();
+        }
+
         pub fn set_gpu_memory_usage(&self, memory_usage: f32) {
             self.gpu_memory_usage.set(memory_usage);
 
@@ -278,6 +286,7 @@ pub struct RowModelBuilder {
 
     cpu_usage: f32,
     memory_usage: f32,
+    memory_shared: f32,
     disk_usage: f32,
     network_usage: f32,
     gpu_usage: f32,
@@ -303,6 +312,7 @@ impl RowModelBuilder {
 
             cpu_usage: 0.,
             memory_usage: 0.,
+            memory_shared: 0.,
             disk_usage: 0.,
             network_usage: 0.,
             gpu_usage: 0.,
@@ -364,6 +374,11 @@ impl RowModelBuilder {
         self
     }
 
+    pub fn memory_shared(mut self, memory_shared: f32) -> Self {
+        self.memory_shared = memory_shared;
+        self
+    }
+
     pub fn disk_usage(mut self, disk_usage: f32) -> Self {
         self.disk_usage = disk_usage;
         self
@@ -415,6 +430,7 @@ impl RowModelBuilder {
 
             this.set_cpu_usage(self.cpu_usage);
             this.set_memory_usage(self.memory_usage);
+            this.set_memory_shared(self.memory_shared);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);

@@ -650,7 +650,7 @@ msgid "Receive"
 msgstr "Recebendo"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Recieved"
+msgid "Total Received"
 msgstr "Total Recebido"
 
 #: resources/ui/performance_page/network_details.blp:114
