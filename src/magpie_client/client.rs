@@ -697,8 +697,6 @@ impl Client {
 }
 
 impl Client {
-    pub fn set_refresh_interval(&self, _interval: u64) {}
-
     pub fn set_core_count_affects_percentages(&self, _v: bool) {}
 
     pub fn cpu(&self) -> Cpu {

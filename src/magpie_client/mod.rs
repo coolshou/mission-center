@@ -82,7 +82,6 @@ fn flatpak_app_path() -> &'static str {
 
 enum Message {
     ContinueReading,
-    UpdateRefreshInterval(u64),
     UpdateCoreCountAffectsPercentages(bool),
     TerminateProcess(Pid),
     KillProcess(Pid),
@@ -203,20 +202,6 @@ impl MagpieClient {
 
     pub fn set_update_speed(&self, speed: u64) {
         self.speed.store(speed, atomic::Ordering::Release);
-
-        let refresh_interval = ((speed as f64 * INTERVAL_STEP) * 1000.) as u64;
-        match self
-            .sender
-            .send(Message::UpdateRefreshInterval(refresh_interval))
-        {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending UpdateRefreshInterval to Gatherer: {e}"
-                );
-            }
-            _ => {}
-        }
     }
 
     pub fn set_core_count_affects_percentages(&self, show: bool) {
@@ -471,9 +456,6 @@ impl MagpieClient {
                         "Received ContinueReading message while not reading"
                     );
                 }
-                Message::UpdateRefreshInterval(interval) => {
-                    gatherer.set_refresh_interval(interval);
-                }
                 Message::UpdateCoreCountAffectsPercentages(show) => {
                     gatherer.set_core_count_affects_percentages(show);
                 }
@@ -596,9 +578,6 @@ impl MagpieClient {
                 Ok(message) => match message {
                     Message::ContinueReading => {
                         break;
-                    }
-                    Message::UpdateRefreshInterval(interval) => {
-                        gatherer.set_refresh_interval(interval);
                     }
                     Message::UpdateCoreCountAffectsPercentages(show) => {
                         gatherer.set_core_count_affects_percentages(show);
