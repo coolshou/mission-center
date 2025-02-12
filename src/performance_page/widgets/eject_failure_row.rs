@@ -48,7 +48,7 @@ mod imp {
         pub kill: TemplateChild<gtk::Button>,
 
         pub raw_pid: Cell<u32>,
-        pub dialog: WeakRef<EjectFailureDialog>,
+        pub dialog: Cell<WeakRef<EjectFailureDialog>>,
     }
 
     impl EjectFailureRow {
@@ -179,6 +179,8 @@ impl EjectFailureRowBuilder {
             this.name.set_label(self.name.as_str());
             this.open_files
                 .set_label(self.files_open.join("\n").as_str());
+            this.raw_pid.set(self.pid);
+            this.dialog.set(self.dialog);
 
             this.kill.connect_clicked({
                 let this = this.obj().downgrade();
@@ -188,7 +190,8 @@ impl EjectFailureRowBuilder {
                     };
                     let this = this.imp();
 
-                    let Some(dialog) = this.dialog.upgrade() else {
+                    let dialog_weak = unsafe { &*this.dialog.as_ptr() }.clone();
+                    let Some(dialog) = dialog_weak.upgrade() else {
                         g_critical!(
                             "MissionCenter::EjectFailureRow",
                             "Failed to get parent dialog",
