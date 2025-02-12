@@ -976,10 +976,43 @@ impl Client {
         )
     }
 
-    pub fn terminate_process(&self, _pid: u32) {}
+    pub fn terminate_processes(&self, pids: Vec<u32>) {
+        let mut socket = self.socket.borrow_mut();
 
-    pub fn kill_process(&self, _pid: u32) {}
-    pub fn kill_processes(&self, _pids: Vec<u32>) {}
+        let response = make_request(
+            ipc::req_terminate_processes(pids),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Processes,
+            ProcessesResponse::TermKill,
+            ProcessesResponse::Error,
+            |_| {}
+        )
+    }
+
+    pub fn kill_processes(&self, pids: Vec<u32>) {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_terminate_processes(pids),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Processes,
+            ProcessesResponse::TermKill,
+            ProcessesResponse::Error,
+            |_| {}
+        )
+    }
 
     pub fn start_service(&self, service_id: String) {
         let mut socket = self.socket.borrow_mut();

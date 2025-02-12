@@ -83,8 +83,7 @@ fn flatpak_app_path() -> &'static str {
 enum Message {
     ContinueReading,
     UpdateCoreCountAffectsPercentages(bool),
-    TerminateProcess(Pid),
-    KillProcess(Pid),
+    TerminateProcesses(Vec<Pid>),
     KillProcesses(Vec<Pid>),
     GetServiceLogs(String, Option<NonZeroU32>),
     StartService(String),
@@ -232,32 +231,26 @@ impl MagpieClient {
         }
     }
 
+    #[inline(always)]
     pub fn terminate_process(&self, pid: u32) {
-        match self.sender.send(Message::TerminateProcess(pid)) {
+        self.terminate_processes(vec![pid]);
+    }
+
+    pub fn terminate_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::TerminateProcesses(pids)) {
             Err(e) => {
                 g_critical!(
                     "MissionCenter::SysInfo",
-                    "Error sending TerminateProcess({}) to gatherer: {}",
-                    pid,
-                    e
+                    "Error sending TerminateProcesses to gatherer: {e}",
                 );
             }
             _ => {}
         }
     }
 
+    #[inline(always)]
     pub fn kill_process(&self, pid: u32) {
-        match self.sender.send(Message::KillProcess(pid)) {
-            Err(e) => {
-                g_critical!(
-                    "MissionCenter::SysInfo",
-                    "Error sending KillProcess({}) to gatherer: {}",
-                    pid,
-                    e
-                );
-            }
-            _ => {}
-        }
+        self.kill_processes(vec![pid]);
     }
 
     pub fn kill_processes(&self, pids: Vec<u32>) {
@@ -459,11 +452,8 @@ impl MagpieClient {
                 Message::UpdateCoreCountAffectsPercentages(show) => {
                     gatherer.set_core_count_affects_percentages(show);
                 }
-                Message::TerminateProcess(pid) => {
-                    gatherer.terminate_process(pid);
-                }
-                Message::KillProcess(pid) => {
-                    gatherer.kill_process(pid);
+                Message::TerminateProcesses(pid) => {
+                    gatherer.terminate_processes(pid);
                 }
                 Message::KillProcesses(pids) => {
                     gatherer.kill_processes(pids);
