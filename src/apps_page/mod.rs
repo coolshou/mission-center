@@ -84,9 +84,9 @@ mod imp {
         pub processes_root_model: Cell<ListStore>,
 
         pub max_cpu_usage: Cell<f32>,
-        pub max_memory_usage: Cell<f32>,
+        pub max_memory_usage: Cell<u64>,
         pub max_disk_usage: Cell<f32>,
-        pub max_gpu_memory_usage: Cell<f32>,
+        pub max_gpu_memory_usage: Cell<u64>,
 
         pub apps: Cell<HashMap<String, App>>,
         pub processes: Cell<HashMap<u32, Process>>,
@@ -126,9 +126,9 @@ mod imp {
                 processes_root_model: Cell::new(ListStore::new::<row_model::RowModel>()),
 
                 max_cpu_usage: Cell::new(0.0),
-                max_memory_usage: Cell::new(0.0),
+                max_memory_usage: Cell::new(0),
                 max_disk_usage: Cell::new(0.0),
-                max_gpu_memory_usage: Cell::new(0.0),
+                max_gpu_memory_usage: Cell::new(0),
 
                 apps: Cell::new(HashMap::new()),
                 processes: Cell::new(HashMap::new()),
@@ -996,19 +996,19 @@ mod imp {
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
                         let lhs = if let Some(_merged_stats) = lhs.merged_stats() {
                             // merged_stats.memory_shared
-                            0.0
+                            0
                         } else {
                             lhs.memory_shared()
                         };
 
                         let rhs = if let Some(_merged_stats) = rhs.merged_stats() {
                             // merged_stats.memory_shared
-                            0.0
+                            0
                         } else {
                             rhs.memory_shared()
                         };
 
-                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        lhs.cmp(&rhs)
                     })
                     .into()
             });
@@ -1626,16 +1626,15 @@ impl AppsPage {
                 .sum::<u64>();
             if total_gpu_memory == 0 {
                 this.column_view.remove_column(&this.gpu_memory_column);
-                this.max_gpu_memory_usage.set(1.);
+                this.max_gpu_memory_usage.set(1);
             } else {
-                this.max_gpu_memory_usage.set(total_gpu_memory as f32);
+                this.max_gpu_memory_usage.set(total_gpu_memory);
             }
         }
 
         this.max_cpu_usage
             .set(readings.cpu.core_usage_percent.len() as f32 * 100.0);
-        this.max_memory_usage
-            .set(readings.mem_info.mem_total as f32);
+        this.max_memory_usage.set(readings.mem_info.mem_total);
 
         this.apps.set(std::mem::take(&mut readings.running_apps));
         this.processes
