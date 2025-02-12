@@ -782,19 +782,6 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/egl/egl-0.2.7.crate",
-    "sha256": "a373bc9844200b1ff15bd1b245931d1c20d09d06e4ec09f361171f29a4b0752d",
-    "dest": "cargo/vendor/egl-0.2.7"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"a373bc9844200b1ff15bd1b245931d1c20d09d06e4ec09f361171f29a4b0752d\", \"files\": {}}",
-    "dest": "cargo/vendor/egl-0.2.7",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/either/either-1.13.0.crate",
     "sha256": "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0",
     "dest": "cargo/vendor/either-1.13.0"
@@ -1406,14 +1393,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/khronos/khronos-0.1.2.crate",
-    "sha256": "c0711aaa80e6ba6eb1fa8978f1f46bfcb38ceb2f3f33f3736efbff39dac89f50",
-    "dest": "cargo/vendor/khronos-0.1.2"
+    "url": "https://static.crates.io/crates/khronos-egl/khronos-egl-6.0.0.crate",
+    "sha256": "6aae1df220ece3c0ada96b8153459b67eebe9ae9212258bb0134ae60416fdf76",
+    "dest": "cargo/vendor/khronos-egl-6.0.0"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"c0711aaa80e6ba6eb1fa8978f1f46bfcb38ceb2f3f33f3736efbff39dac89f50\", \"files\": {}}",
-    "dest": "cargo/vendor/khronos-0.1.2",
+    "contents": "{\"package\": \"6aae1df220ece3c0ada96b8153459b67eebe9ae9212258bb0134ae60416fdf76\", \"files\": {}}",
+    "dest": "cargo/vendor/khronos-egl-6.0.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1427,19 +1414,6 @@
     "type": "inline",
     "contents": "{\"package\": \"bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe\", \"files\": {}}",
     "dest": "cargo/vendor/lazy_static-1.5.0",
-    "dest-filename": ".cargo-checksum.json"
-  },
-  {
-    "type": "archive",
-    "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/libc/libc-0.1.12.crate",
-    "sha256": "e32a70cf75e5846d53a673923498228bbec6a8624708a9ea5645f075d6276122",
-    "dest": "cargo/vendor/libc-0.1.12"
-  },
-  {
-    "type": "inline",
-    "contents": "{\"package\": \"e32a70cf75e5846d53a673923498228bbec6a8624708a9ea5645f075d6276122\", \"files\": {}}",
-    "dest": "cargo/vendor/libc-0.1.12",
     "dest-filename": ".cargo-checksum.json"
   },
   {
