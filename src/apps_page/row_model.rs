@@ -54,8 +54,8 @@ mod imp {
         pub cpu_usage: Cell<f32>,
         #[property(get, set = Self::set_memory_usage)]
         pub memory_usage: Cell<u64>,
-        #[property(get, set = Self::set_memory_shared)]
-        pub memory_shared: Cell<u64>,
+        #[property(get, set = Self::set_shared_memory_usage)]
+        pub shared_memory_usage: Cell<u64>,
         #[property(get, set)]
         pub disk_usage: Cell<f32>,
         #[property(get, set)]
@@ -105,7 +105,7 @@ mod imp {
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0),
-                memory_shared: Cell::new(0),
+                shared_memory_usage: Cell::new(0),
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
@@ -207,9 +207,9 @@ mod imp {
             self.obj().notify_memory_usage_percent();
         }
 
-        pub fn set_memory_shared(&self, memory_shared: u64) {
-            self.memory_shared.set(memory_shared);
-            self.obj().notify_memory_shared();
+        pub fn set_shared_memory_usage(&self, memory_shared: u64) {
+            self.shared_memory_usage.set(memory_shared);
+            self.obj().notify_shared_memory_usage();
         }
 
         pub fn set_gpu_memory_usage(&self, memory_usage: u64) {
@@ -286,7 +286,7 @@ pub struct RowModelBuilder {
 
     cpu_usage: f32,
     memory_usage: u64,
-    memory_shared: u64,
+    shared_memory_usage: u64,
     disk_usage: f32,
     network_usage: f32,
     gpu_usage: f32,
@@ -312,7 +312,7 @@ impl RowModelBuilder {
 
             cpu_usage: 0.,
             memory_usage: 0,
-            memory_shared: 0,
+            shared_memory_usage: 0,
             disk_usage: 0.,
             network_usage: 0.,
             gpu_usage: 0.,
@@ -374,8 +374,8 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn memory_shared(mut self, memory_shared: u64) -> Self {
-        self.memory_shared = memory_shared;
+    pub fn shared_memory_usage(mut self, shared_memory_usage: u64) -> Self {
+        self.shared_memory_usage = shared_memory_usage;
         self
     }
 
@@ -430,7 +430,7 @@ impl RowModelBuilder {
 
             this.set_cpu_usage(self.cpu_usage);
             this.set_memory_usage(self.memory_usage);
-            this.set_memory_shared(self.memory_shared);
+            this.set_shared_memory_usage(self.shared_memory_usage);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
