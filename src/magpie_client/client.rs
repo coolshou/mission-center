@@ -19,7 +19,7 @@
  */
 
 use std::num::NonZeroU32;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
@@ -569,6 +569,9 @@ pub struct Client {
     socket_addr: Arc<str>,
     child_thread: RefCell<std::thread::JoinHandle<()>>,
     stop_requested: Arc<AtomicBool>,
+
+    core_count: AtomicU32,
+    scale_cpu_usage_to_core_count: AtomicBool,
 }
 
 impl Drop for Client {
@@ -600,6 +603,9 @@ impl Client {
             socket_addr,
             child_thread: RefCell::new(std::thread::spawn(|| {})),
             stop_requested: Arc::new(AtomicBool::new(false)),
+
+            core_count: AtomicU32::new(1),
+            scale_cpu_usage_to_core_count: AtomicBool::new(false),
         }
     }
 
@@ -697,7 +703,10 @@ impl Client {
 }
 
 impl Client {
-    pub fn set_core_count_affects_percentages(&self, _v: bool) {}
+    pub fn set_scale_cpu_usage_to_core_count(&self, v: bool) {
+        self.scale_cpu_usage_to_core_count
+            .store(v, Ordering::Relaxed);
+    }
 
     pub fn cpu(&self) -> Cpu {
         let mut socket = self.socket.borrow_mut();
@@ -705,13 +714,17 @@ impl Client {
         let response = make_request(ipc::req_get_cpu(), &mut socket, self.socket_addr.as_ref())
             .and_then(|response| response.body);
 
-        parse_response!(
+        let cpu = parse_response!(
             response,
             ResponseBody::Cpu,
             CpuResponse::Cpu,
             CpuResponse::Error,
             |cpu: Cpu| cpu
-        )
+        );
+        self.core_count
+            .store(cpu.core_usage_percent.len() as u32, Ordering::Relaxed);
+
+        cpu
     }
 
     pub fn memory(&self) -> Memory {
@@ -902,13 +915,26 @@ impl Client {
         )
         .and_then(|response| response.body);
 
-        parse_response!(
+        let mut processes = parse_response!(
             response,
             ResponseBody::Processes,
             ProcessesResponse::Processes,
             ProcessesResponse::Error,
             |mut processes: ProcessMap| { std::mem::take(&mut processes.processes) }
-        )
+        );
+
+        let scale_cpu_usage_to_core_count =
+            self.scale_cpu_usage_to_core_count.load(Ordering::Relaxed);
+        let factor = if !scale_cpu_usage_to_core_count {
+            self.core_count.load(Ordering::Relaxed) as f32
+        } else {
+            1.
+        };
+        for process in processes.values_mut() {
+            process.usage_stats.cpu_usage /= factor;
+        }
+
+        processes
     }
 
     pub fn apps(&self) -> HashMap<String, App> {

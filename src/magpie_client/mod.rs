@@ -450,7 +450,7 @@ impl MagpieClient {
                     );
                 }
                 Message::UpdateCoreCountAffectsPercentages(show) => {
-                    gatherer.set_core_count_affects_percentages(show);
+                    gatherer.set_scale_cpu_usage_to_core_count(show);
                 }
                 Message::TerminateProcesses(pid) => {
                     gatherer.terminate_processes(pid);
@@ -570,7 +570,7 @@ impl MagpieClient {
                         break;
                     }
                     Message::UpdateCoreCountAffectsPercentages(show) => {
-                        gatherer.set_core_count_affects_percentages(show);
+                        gatherer.set_scale_cpu_usage_to_core_count(show);
                     }
                     _ => {}
                 },
