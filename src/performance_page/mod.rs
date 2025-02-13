@@ -1824,15 +1824,18 @@ mod imp {
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
 
+                        let mut info2 = ArrayString::<256>::new();
+                        let _ = write!(&mut info2, "{}%", readings.cpu.total_usage_percent.round());
+                        if let Some(temp) = readings.cpu.temperature_celsius.as_ref() {
+                            let _ = write!(&mut info2, " ({:.0} °C)", temp);
+                        }
+
                         graph_widget.add_data_point(0, readings.cpu.total_usage_percent);
-                        summary.set_info1(format!(
-                            "{}% {:.2} GHz",
-                            readings.cpu.total_usage_percent.round(),
-                            readings.cpu.current_frequency_mhz as f32 / 1024.
-                        ));
-                        match readings.cpu.temperature_celsius.as_ref() {
-                            Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
-                            _ => {}
+                        if let Some(name) = readings.cpu.name.as_ref() {
+                            summary.set_info1(name.as_str());
+                            summary.set_info2(info2.as_str());
+                        } else {
+                            summary.set_info1(info2.as_str());
                         }
 
                         result &= page.update_readings(readings);
