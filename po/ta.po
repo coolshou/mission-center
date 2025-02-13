@@ -1,18 +1,18 @@
-# German translations for missioncenter package.
-# Copyright (C) 2023 missioncenter's COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the missioncenter package.
-# TecCheck <mcteccy@protonmail.com>, 2023.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-01-05 00:07+0000\n"
-"Last-Translator: Lauritz Tieste <lauritz6000000@gmail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
-"mission-center/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: 2025-01-18 11:51+0000\n"
+"Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
+"Language-Team: Tamil <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/ta/>\n"
+"Language: ta\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,65 +22,62 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr "Mission Center"
+msgstr "மிசன் நடுவண்"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;"
-"Aufgabenmonitor;Ressourcenmonitor;Systemmonitor;Prozessor;Prozesse;"
-"Leistugsmonitor;Platte;Speicher;Arbeitsspeicher;Netzwerk;Auslastung"
+"பணி மேலாளர்; வள மானிட்டர்; கணினி மானிட்டர்; செயலி; செயல்முறைகள்; செயல்திறன் மானிட்டர்; "
+"சிபியு; சி.பீ."
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr "Mission Center-Entwickler"
+msgstr "மிசன் சென்டர் உருவாக்குபவர்கள்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr "Resourcennutzung überwachen"
+msgstr "கணினி வள பயன்பாட்டை கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
-"Überwachen Sie die Nutzung von CPU, Arbeitsspeicher, Speicher, Netzwerk und "
-"GPU"
+"உங்கள் சிபியு, நினைவகம், வட்டு, பிணையம் மற்றும் GPU பயன்பாட்டைக் கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr "Funktionen:"
+msgstr "அம்சங்கள்:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Überwachen Sie die Auslastung aller oder einzelner Threads"
+msgstr "ஒட்டுமொத்த அல்லது ஒரு நூல் சிபியு பயன்பாட்டைக் கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Überwachen Sie Systemprozesse, Threads, Anzahl der Handles, Betriebszeit, "
-"Taktfrequenz (Sowohl basis- als auch aktueller Takt) und Cache-Größen"
+"கணினி செயல்முறை, நூல் மற்றும் கைப்பிடி எண்ணிக்கை, நேரம், கடிகார விரைவு (அடிப்படை மற்றும்"
+" நடப்பு), கேச் அளவுகள் ஆகியவற்றைக் காண்க"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Überwachen Sie die Auslastung von Arbeitsspeicher und Swap"
+msgstr "ரேம் கண்காணித்து பயன்பாட்டை மாற்றவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
 msgstr ""
-"Eine Zusammenfassung ansehen, wie der Arbeitsspeicher vom System genutzt wird"
+"கணினியால் நினைவகம் எவ்வாறு பயன்படுத்தப்படுகிறது என்பதை ஒரு முறிவைக் காண்க"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Überwachen Sie die Speichernutzung und Übertragungsraten"
+msgstr "வட்டு பயன்பாடு மற்றும் பரிமாற்ற விகிதங்களை கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Überwachen Sie die Netzwerknutzung und Übertragungsgeschwindigkeiten"
+msgstr "பிணைய பயன்பாடு மற்றும் பரிமாற்ற வேகத்தை கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -88,67 +85,61 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Informationen zur Netzwerkschnittstelle, wie Name der Netzwerkkarte, "
-"Verbindungstyp (WLAN oder Ethernet), Wireless-Geschwindigkeiten und -"
-"Frequenz, Hardware-Adresse und IP-Adresse"
+"பிணைய அட்டை பெயர், இணைப்பு வகை (வைஃபை அல்லது ஈதர்நெட்), வயர்லெச் விரைவு மற்றும் அதிர்வெண்"
+", வன்பொருள் முகவரி, ஐபி முகவரி போன்ற பிணைய இடைமுக தகவல்களைப் பார்க்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Überwachen Sie die gesamte GPU-Auslastung, die Nutzung von Video-Encodern "
-"und -Decodern, die Arbeitsspeichernutzung und den Stromverbrauch, ermöglicht "
-"durch das beliebte NVTOP-Projekt"
+"ஒட்டுமொத்த சி.பீ.யூ பயன்பாடு, வீடியோ குறியாக்கி மற்றும் டிகோடர் பயன்பாடு, நினைவக "
+"பயன்பாடு மற்றும் மின் நுகர்வு ஆகியவற்றைக் கண்காணிக்கவும், பிரபலமான என்விடாப் திட்டத்தால் "
+"இயக்கப்படுகிறது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
-"Eine Aufschlüsselung der Ressourcennutzung nach Anwendung und Prozess "
-"anzeigen"
+msgstr "பயன்பாடு மற்றும் செயல்முறை மூலம் வள பயன்பாட்டின் முறிவைக் காண்க"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
-"Unterstützt eine verkleinerte Übersichtsansicht für eine einfache Überwachung"
+msgstr "எளிய கண்காணிப்புக்கான குறைக்கப்பட்ட சுருக்கக் காட்சியை ஆதரிக்கிறது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Hardwarebeschleunigtes Rendering für alle Diagramme verwenden, um die CPU- "
-"und Gesamtressourcennutzung zu reduzieren"
+"சிபியு மற்றும் ஒட்டுமொத்த வள பயன்பாட்டைக் குறைக்கும் முயற்சியில் அனைத்து வரைபடங்களுக்கும் "
+"வன்பொருள் துரிதப்படுத்தப்பட்ட வழங்குதல் பயன்படுத்தவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Nutzt GTK4 und Libadwaita"
+msgstr "GTK4 மற்றும் லிபாட்வைட்டாவைப் பயன்படுத்துகிறது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr "Geschrieben in Rust"
+msgstr "துருவில் எழுதப்பட்டது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
-"Beschränkungen (an der Überwindung all dieser Beschränkungen wird "
-"gearbeitet):"
+msgstr "வரம்புகள் (இவை அனைத்தையும் சமாளிக்க தொடர்ந்து பணிகள் உள்ளன):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr "Keine Netzwerkauslastung pro Prozess"
+msgstr "செயல்முறை பிணையம் பயன்பாடு இல்லை"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr "GPU-Unterstützung ist experimentell"
+msgstr "சி.பீ.யூ உதவி சோதனை"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"Die Intel-GPU-Überwachung wird nur für Broadwell- und neuere GPUs "
-"unterstützt; und unterstützt keine VRAM-, Energie- oder Temperaturüberwachung"
+"இன்டெல் சி.பீ.யூ கண்காணிப்பு பிராட்வெல் மற்றும் பின்னர் சி.பீ.யுகளுக்கு மட்டுமே "
+"ஆதரிக்கப்படுகிறது; மற்றும் VRAM, ஆற்றல் அல்லது வெப்பநிலை கண்காணிப்பை ஆதரிக்காது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -156,148 +147,151 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
-"Bei der Verwendung von Linux Mint/Cinnamon werden gestartete Anwendungen "
-"möglicherweise nicht im Abschnitt „Anwendungen“ angezeigt (Upstream-Problem: "
-"https://github.com/linuxmint/cinnamon/issues/12015)"
+"லினக்ச் புதினா/இலவங்கப்பட்டை பயன்படுத்தும் போது, தொடங்கப்பட்ட பயன்பாடுகள் \"பயன்பாடுகள்\" "
+"பிரிவில் காட்டப்படாது (அப்ச்ட்ரீம் வெளியீடு: https://github.com/linuxmint/cinman/"
+"issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "Kommentare, Vorschläge, Fehlerberichte und Beiträge sind willkommen"
+msgstr ""
+"கருத்துகள், பரிந்துரைகள், பிழை அறிக்கைகள் மற்றும் பங்களிப்புகள் வரவேற்கப்படுகின்றன"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr "Welche Seite bei Programmstart angezeigt wird"
+msgstr "பயன்பாட்டு தொடக்கத்தில் எந்தப் பக்கம் காட்டப்பட்டுள்ளது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "VERALTET! NICHT MEHR IN VERWENDUNG!"
+msgstr "மதிப்பிடப்பட்டது! இனி பயன்பாட்டில் இல்லை!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Wie schnell sollen die Daten geholt und die Benutzeroberfläche aktualisiert "
-"werden? (in 50ms-Schritten)"
+"தரவு எவ்வளவு விரைவாக புதுப்பிக்கப்பட வேண்டும் மற்றும் இடைமுகம் புதுப்பிக்கப்பட வேண்டும் ("
+"50ms அதிகரிப்புகளில்)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr "Wie viele Punkte sollen auf jedem Graphen angezeigt werden?"
+msgstr "ஒவ்வொரு விளக்கப்படத்திலும் எத்தனை புள்ளிகள் காட்டப்பட வேண்டும்?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
-"Ob Bits (Standard) oder Bytes als Einheit für Netzwerkgeschwindigkeit "
-"verwendet werden sollen"
+"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"வரைபட அதிகபட்சத்தை அதிகபட்சம் (பொய்) அல்லது அதிகபட்சம் கவனிக்கப்பட்ட (உண்மை) என அமைக்க "
+"வேண்டுமா?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Statistiken über Eltern- und Kindprozesse werden einzeln oder nach oben "
-"zusammengefasst angezeigt"
+"பெற்றோர் மற்றும் குழந்தை செயல்முறை புள்ளிவிவரங்கள் தனித்தனியாக காட்டப்படுகின்றன அல்லது "
+"மேல்நோக்கி இணைக்கப்படுகின்றன"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts"
+msgstr "பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும் நெடுவரிசை வரிசையாக்கம் தொடர்கிறது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"CPU-Auslastung für Anwendungen und Prozesse anzeigen, skaliert auf die "
-"Anzahl der verfügbaren Kerne"
+"கிடைக்கக்கூடிய கோர்களின் எண்ணிக்கையில் அளவிடப்பட்ட பயன்பாடுகள் மற்றும் செயல்முறைகளுக்கான "
+"சிபியு பயன்பாட்டைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
-msgstr "Die Spalten-ID, nach der die Apps-Seitenansicht sortiert wird"
+msgstr "பயன்பாடுகளின் பக்கக் காட்சி வரிசைப்படுத்தப்பட்ட நெடுவரிசை ஐடி"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr "Die Sortierreihenfolge der Apps-Seitenansicht"
+msgstr "பயன்பாடுகளின் பக்கக் காட்சியின் வரிசையாக்க திசை"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Welcher Graph auf der CPU-Seite angezeigt wird"
+msgstr "எந்த வரைபடம் சிபியு செயல்திறன் பக்கத்தில் காட்டப்பட்டுள்ளது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr "Kernel-Zeiten in den CPU-Diagrammen anzeigen"
+msgstr "சிபியு வரைபடங்களில் கர்னல் நேரங்களைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "Welche Seite beim Programstart im Leistungstab angezeigt wird"
+msgstr ""
+"செயல்திறன் தாவலில், பயன்பாட்டு தொடக்கத்தில் எந்தப் பக்கம் காட்டப்பட்டுள்ளது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Geglättete oder ungegättete Leistungsgraphen"
+msgstr "செயல்திறன் வரைபடங்கள் மென்மையாகவோ அல்லது துண்டிக்கப்பட வேண்டும்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr "CPU-Informationen standardmäßig anzeigen"
+msgstr "முன்னிருப்பாக சிபியு தகவலைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr "Speicherinformationen standardmäßig anzeigen"
+msgstr "நினைவக தகவல்களை இயல்பாகவே காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr "Festplatteninformationen standardmäßig anzeigen"
+msgstr "வட்டு தகவல்களை இயல்பாகவே காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr "Netzwerkinformationen standardmäßig anzeigen"
+msgstr "பிணையம் தகவல்களை இயல்பாக காட்டுங்கள்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr "GPU-Informationen standardmäßig anzeigen"
+msgstr "முன்னிருப்பாக GPU தகவலைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr "Lüfterinformationen standardmäßig anzeigen"
+msgstr "விசிறி தகவல்களை இயல்பாகவே காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr "Widget für die Speicherzusammensetzung anzeigen"
+msgstr "மெம் கலவை விட்செட்டைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr "Auslagerungsdiagramm anzeigen"
+msgstr "இடமாற்று வரைபடத்தைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr "Anzeigen des GPU encode-decode Graphen"
+msgstr "GPU குறியாக்கம்-டெகோட் வரைபடத்தைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr "Die Sortierung der Einträge der Seitenleiste"
+msgstr "பயன்பாட்டு பக்கப்பட்டியில் உள்ளீடுகளை வரிசைப்படுத்துதல்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr "Welche Graphen in der Seitenleiste versteckt sein sollen"
+msgstr "பயன்பாட்டு பக்கப்பட்டியில் மறைக்கப்பட வேண்டிய வரைபடங்கள்"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
 msgid "CPU"
-msgstr "CPU"
+msgstr "சிபியு"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr "Auslastung über "
+msgstr "பயன்பாடு "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -307,19 +301,19 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
-msgstr "G_raph ändern in"
+msgstr "G_RAPH ஐ மாற்றவும்"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr "Allgemeine Auslas_tung"
+msgstr "ஒட்டுமொத்த பயன்பாடு"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
-msgstr "Logische _Prozessoren"
+msgstr "தர்க்கரீதியான _ செயல்முறை"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr "Kernel-Zeiten anzeigen"
+msgstr "கர்னல் நேரங்களைக் காட்டு"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -328,7 +322,7 @@ msgstr "Kernel-Zeiten anzeigen"
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr "Diagrammübersicht"
+msgstr "வரைபடம் _ மிகச்சிறந்த பார்வை"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -337,7 +331,7 @@ msgstr "Diagrammübersicht"
 #: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr "_Ansicht"
+msgstr "காட்சி (_V)"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -346,7 +340,7 @@ msgstr "_Ansicht"
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr "CP_U"
+msgstr "Cp_u"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -355,7 +349,7 @@ msgstr "CP_U"
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr "_Arbeitsspeicher"
+msgstr "_மெமரி"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -364,7 +358,7 @@ msgstr "_Arbeitsspeicher"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr "_Laufwerk"
+msgstr "_ இயக்கி"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -373,7 +367,7 @@ msgstr "_Laufwerk"
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr "_Netzwerk"
+msgstr "_நெட் வொர்க்"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -391,7 +385,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr "_Lüfter"
+msgstr "_ ஃபான்"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -399,439 +393,439 @@ msgstr "_Lüfter"
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr "_Kopieren"
+msgstr "_ கோபி"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr "Auslastung"
+msgstr "பயன்பாடு"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr "Geschwindigkeit"
+msgstr "வேகம்"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr "Prozesse"
+msgstr "செயல்முறைகள்"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr "Threads"
+msgstr "நூல்கள்"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
-msgstr "Handles"
+msgstr "கையாளுகிறது"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr "Betriebszeit"
+msgstr "நேரம்"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr "Basisgeschwindigkeit:"
+msgstr "அடிப்படை வேகம்:"
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr "Sockets:"
+msgstr "சாக்கெட்டுகள்:"
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr "Virtuelle Prozessoren:"
+msgstr "மெய்நிகர் செயலிகள்:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr "Virtualisierung:"
+msgstr "மெய்நிகராக்குதல்:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr "Virtuelle Maschine:"
+msgstr "மெய்நிகர் இயந்திரம்:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "L1-Cache:"
+msgstr "எல் 1 கேச்:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "L2-Cache:"
+msgstr "எல் 2 கேச்:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "L3-Cache:"
+msgstr "எல் 3 கேச்:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr "Cpufreq-Treiber:"
+msgstr "CPUFREQ இயக்கி:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr "CPUfreq-Regler:"
+msgstr "CPUFREQ கவர்னர்:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr "Energiemodus:"
+msgstr "ஆற்றல் விருப்பம்:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr "Aktive Zeit über "
+msgstr "செயலில் நேரம் "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr "Durchsatz über "
+msgstr "செயல்திறன் "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr "Aktive Zeit"
+msgstr "செயலில் நேரம்"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr "Durchschnittliche Antwortzeit"
+msgstr "ஏ.வி.சி. மறுமொழி நேரம்"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr "Lesegeschwindigkeit"
+msgstr "வேகத்தைப் படியுங்கள்"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr "Schreibgeschwindigkeit"
+msgstr "விரைவு எழுதுங்கள்"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr "Kapazität:"
+msgstr "திறன்:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr "Formatiert:"
+msgstr "வடிவமைக்கப்பட்டுள்ளது:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr "Systemdatenträger:"
+msgstr "கணினி வட்டு:"
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
-msgstr "Typ:"
+msgstr "தட்டச்சு:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr "Lüftergeschwindigkeit über "
+msgstr "ரசிகர்களின் விரைவு "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr "Temperatur über "
+msgstr "வெப்பநிலை ஓவர் "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
-msgstr "Lüftergeschwindigkeit"
+msgstr "ரசிகர்களின் விரைவு"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "Pwm %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
-msgstr "Aktuelle Temperatur"
+msgstr "தற்போதைய வெப்பநிலை"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr "Auslastung der Videokodierung/-dekodierung über "
+msgstr "வீடியோ குறியாக்கம்/டிகோட் பயன்பாடு "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr "Speicherverbrauch über "
+msgstr "நினைவக பயன்பாடு "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr "Encode-Decode Verwendung anzeigen"
+msgstr "குறியாக்கம்/டிகோட் பயன்பாட்டைக் காட்டு"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
-msgstr "Taktgeschwindigkeit"
+msgstr "கடிகார விரைவு"
 
 #: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
-msgstr "Energieverbrauch"
+msgstr "பவர் டிரா"
 
 #: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
-msgstr "Speicherverbrauch"
+msgstr "நினைவக பயன்பாடு"
 
 #: resources/ui/performance_page/gpu_details.blp:208
 msgid "GTT usage"
-msgstr "GTT-Nutzung"
+msgstr "சி.டி.டி பயன்பாடு"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
-msgstr "Speichergeschwindigkeit"
+msgstr "நினைவக விரைவு"
 
 #: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
-msgstr "Video kodieren"
+msgstr "வீடியோ குறியாக்கம்"
 
 #: resources/ui/performance_page/gpu_details.blp:343
 msgid "Video decode"
-msgstr "Video dekodieren"
+msgstr "வீடியோ டிகோட்"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
-msgstr "Temperatur"
+msgstr "வெப்பநிலை"
 
 #: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
-msgstr "OpenGL-Version:"
+msgstr "Opengl பதிப்பு:"
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
-msgstr "Vulkan-Version:"
+msgstr "வல்கன் பதிப்பு:"
 
 #: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
-msgstr "PCI Express-Geschwindigkeit:"
+msgstr "பிசிஐ எக்ச்பிரச் வேகம்:"
 
 #: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
-msgstr "PCI bus-Adresse:"
+msgstr "பிசிஐ பச் முகவரி:"
 
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
 msgid "Memory"
-msgstr "Arbeitsspeicher"
+msgstr "நினைவகம்"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr "Auslagerungsverbrauch über "
+msgstr "பயன்பாட்டை மாற்றவும் "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr "Speicherzusammensetzung"
+msgstr "நினைவக கலவை"
 
 #: resources/ui/performance_page/memory.blp:185
 msgid "Show Memory Composition"
-msgstr "Speicherzusammensetzung anzeigen"
+msgstr "நினைவக கலவையைக் காட்டு"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr "Auslagerungsverbrauch anzeigen"
+msgstr "இடமாற்று பயன்பாட்டைக் காட்டு"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
-msgstr "In Verwendung"
+msgstr "பயன்பாட்டில்"
 
 #: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
-msgstr "Verfügbar"
+msgstr "கிடைக்கிறது"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr "Zugesichert"
+msgstr "உறுதியானது"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
-msgstr "Im Cache"
+msgstr "தற்காலிகமாக"
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr "Verwendeter Swap"
+msgstr "பயன்படுத்தப்படும் இடமாற்று"
 
 #: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
-msgstr "Verfügbarer Swap"
+msgstr "இடமாற்றம் கிடைக்கிறது"
 
 #: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
-msgstr "Geschwindigkeit:"
+msgstr "வேகம்:"
 
 #: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
-msgstr "Steckplätze verwendet:"
+msgstr "பயன்படுத்தப்படும் இடங்கள்:"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
-msgstr "Formfaktor:"
+msgstr "படிவ காரணி:"
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr "Netzwerk-Eins_tellungen"
+msgstr "பிணைய அமைப்புகள்"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr "Empfangen"
+msgstr "பெறுங்கள்"
 
 #: resources/ui/performance_page/network_details.blp:78
-msgid "Total Received"
-msgstr "Insgesamt empfangen"
+msgid "Total Recieved"
+msgstr "மொத்தம் பெறப்பட்டது"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr "Senden"
+msgstr "அனுப்பு"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr "Insgesamt gesendet"
+msgstr "மொத்தம் அனுப்பப்பட்டது"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
-msgstr "Adaptername:"
+msgstr "இடைமுகத்தின் பெயர்:"
 
 #: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
-msgstr "Verbindungstyp:"
+msgstr "இணைப்பு வகை:"
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr "SSID:"
+msgstr "Ssid:"
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
-msgstr "Signalstärke:"
+msgstr "சிக்னல் வலிமை:"
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
-msgstr "Maximale Bitrate:"
+msgstr "அதிகபட்ச பிட்ரேட்:"
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
-msgstr "Frequenz:"
+msgstr "அதிர்வெண்:"
 
 #: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
-msgstr "Hardwareadresse:"
+msgstr "வன்பொருள் முகவரி:"
 
 #: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
-msgstr "IPv4-Adresse:"
+msgstr "IPv4 முகவரி:"
 
 #: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
-msgstr "IPv6-Adresse:"
+msgstr "IPv6 முகவரி:"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr "Allgemein"
+msgstr "பொது"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr "Aktualisierungsintervall"
+msgstr "இடைவெளி புதுப்பிக்கவும்"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Diagramm-Datenpunkte"
+msgstr "விளக்கப்படம் தரவு புள்ளிகள்"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
-msgstr "Leistungsseite"
+msgstr "செயல்திறன் பக்கம்"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr "Geglättete Graphen"
+msgstr "மென்மையான வரைபடங்கள்"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Geglättete statt ungeglättete Graphen zeichnen"
+msgstr "துண்டிக்கப்பட்ட வரிக்கு பதிலாக வரைபடங்களை மென்மையான வரியாக வரையவும்"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr "Netzwerkgeschwindigkeit in Bytes anzeigen"
+msgstr "பைட்டுகளில் பிணைய வேகத்தைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr "Netzwerkgraphen dynamisch skalieren"
+msgstr "பிணையம் வரைபடங்களை மாறும் அளவில் அளவிடவும்"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
-"Netzwerkgraphen dynamisch mit tatsächlicher Auslastung oder mit maximaler "
-"Kanalgeschwindigkeit skalieren"
+"பிணைய வரைபடத்தை உண்மையான பயன்பாட்டுடன் அல்லது சேனல் அதிகபட்ச வேகத்துடன் அளவிட அமைக்கவும்"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr "CPU-Informationen anzeigen"
+msgstr "சிபியு தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Memory Information"
-msgstr "Speicherinformationen anzeigen"
+msgstr "நினைவக தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr "Festplatteninformationen anzeigen"
+msgstr "வட்டு தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr "Netzwerkinformationen anzeigen"
+msgstr "பிணைய தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr "GPU-Informationen anzeigen"
+msgstr "GPU தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr "Lüfterinformationen anzeigen"
+msgstr "ரசிகர்களின் தகவலைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
-msgstr "App-Seite"
+msgstr "பயன்பாட்டு பக்கம்"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr "Prozessstatistiken zusammenführen"
+msgstr "செயல்முறை புள்ளிவிவரங்களை ஒன்றிணைக்கவும்"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
-msgstr "Sortierung merken"
+msgstr "வரிசையாக்கத்தை நினைவில் கொள்க"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
-"Die Sortierung der App- und Prozessliste über App-Neustarts hinweg merken"
+"பயன்பாட்டு மறுதொடக்கங்களில் பயன்பாடு மற்றும் செயல்முறை பட்டியலை வரிசைப்படுத்துவதை நினைவில்"
+" கொள்க"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr "CPU-Auslastung mit der Kernanzahl skalieren"
+msgstr "சிபியு பயன்பாட்டை மைய எண்ணிக்கையில் அளவிடவும்"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr "Dienstdetails"
+msgstr "பணி விவரங்கள்"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr "Status"
+msgstr "மாநிலம்"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr "Der aktuelle Status des Dienstes"
+msgstr "சேவையின் தற்போதைய நிலை"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
 msgid "Name"
-msgstr "Name"
+msgstr "பெயர்"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr "Beschreibung"
+msgstr "விவரம்"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr "Status"
+msgstr "நிலை"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr "Aktiviert"
+msgstr "இயக்கப்பட்டது"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
-msgstr "Prozess"
+msgstr "செயல்முறை"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr "Prozess- und Benutzerinformationen"
+msgstr "செயல்முறை மற்றும் பயனர் செய்தி"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr "Prozess-ID"
+msgstr "செயல்முறை ஐடி"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -843,125 +837,125 @@ msgstr "Prozess-ID"
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr "N/A"
+msgstr "இதற்கில்லை"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr "Benutzer"
+msgstr "பயனர்"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr "Gruppe"
+msgstr "குழு"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr "Protokolle"
+msgstr "பதிவுகள்"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr "Start"
+msgstr "தொடங்கு"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr "Stopp"
+msgstr "நிறுத்து"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr "Neu starten"
+msgstr "மறுதொடக்கம்"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr "Details"
+msgstr "விவரங்கள்"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
-msgstr "PID"
+msgstr "பிஐடி"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr "Alle Aktivieren"
+msgstr "அனைத்தையும் இயக்கு"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr "Alle Deaktivieren"
+msgstr "அனைத்தையும் முடக்கு"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr "Auf Standard zurücksetzen"
+msgstr "இயல்புநிலைக்கு மீட்டமைக்கவும்"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr "Geräte"
+msgstr "சாதனங்கள்"
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr "Seitenleiste bearbeiten"
+msgstr "பக்கப்பட்டியைத் திருத்து"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr "Seitenleiste umschalten"
+msgstr "பக்கப்பட்டியை மாற்றவும்"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
-msgstr "Geben Sie einen Namen oder eine PID ein, um zu suchen"
+msgstr "தேட ஒரு பெயர் அல்லது பிஐடி தட்டச்சு செய்க"
 
 #: resources/ui/window.blp:173
 msgid "Loading..."
-msgstr "Wird geladen …"
+msgstr "ஏற்றுகிறது ..."
 
 #: resources/ui/window.blp:187
 msgid "Performance"
-msgstr "Leistung"
+msgstr "செயல்திறன்"
 
 #: resources/ui/window.blp:199 src/apps_page/mod.rs:562
 msgid "Apps"
-msgstr "Apps"
+msgstr "பயன்பாடுகள்"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr "Dienste"
+msgstr "சேவைகள்"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr "_Einstellungen"
+msgstr "_ முனைகள்"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr "_Info zu MissionCenter"
+msgstr "_அபவுட் மிசன் சென்டர்"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr "Laufwerk"
+msgstr "ஓட்டு"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr "GPU-Nutzung"
+msgstr "GPU பயன்பாடு"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
-msgstr "GPU-Speicher"
+msgstr "சி.பீ.யூ மெம்"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
 msgid "Stop Application"
-msgstr "Anwendung stoppen"
+msgstr "விண்ணப்பத்தை நிறுத்துங்கள்"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr "Beenden der Anwendung erzwingen"
+msgstr "ஃபோர்ச் ச்டாப் பயன்பாடு"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
 msgid "Stop Process"
-msgstr "Prozess stoppen"
+msgstr "நிறுத்த செயல்முறை"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr "Beenden des Prozesses erzwingen"
+msgstr "படை நிறுத்த செயல்முறை"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -969,9 +963,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"In Verwendung ({}B)\n"
+"பயன்பாட்டில் ({} b)\n"
 "\n"
-"Speicher, der vom Betriebssystem und den laufenden Anwendungen genutzt wird"
+" இயக்க முறைமை மற்றும் இயங்கும் பயன்பாடுகளால் பயன்படுத்தப்படும் நினைவகம்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -980,10 +974,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Geändert ({}B)\n"
+"மாற்றியமைக்கப்பட்ட ({} b)\n"
 "\n"
-"Speicher, dessen Inhalt auf die Festplatte geschrieben werden muss, bevor er "
-"von einem anderen Prozess verwendet werden kann"
+" நினைவகம் அதன் உள்ளடக்கங்கள் மற்றொரு செயல்முறையால் பயன்படுத்தப்படுவதற்கு முன்பு வட்டுக்கு "
+"எழுதப்பட வேண்டும்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -991,10 +985,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Standby ({}B)\n"
+"காத்திருப்பு ({} பி)\n"
 "\n"
-"Speicher, der zwischengespeicherte Daten und Code enthält, der nicht aktiv "
-"genutzt wird"
+" தற்காலிகமாக பயன்பாட்டில் இல்லாத தற்காலிக சேமிப்பு தரவு மற்றும் குறியீட்டைக் கொண்ட நினைவகம்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -1003,39 +996,38 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Frei ({}B)\n"
+"இலவசம் ({} b)\n"
 "\n"
-"Speicher, der derzeit nicht verwendet wird und der erst wieder verwendet "
-"wird, wenn das Betriebssystem, die Treiber oder die Anwendungen mehr "
-"Speicher benötigen"
+" தற்போது பயன்பாட்டில் இல்லாத நினைவகம், இயக்க முறைமை, இயக்கிகள் அல்லது பயன்பாடுகளுக்கு அதி"
+"க நினைவகம் தேவைப்படும்போது அது முதலில் மீண்டும் உருவாக்கப்படும்"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr "Laufwerk {} ({})"
+msgstr "இயக்கி {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
-msgstr "HDD"
+msgstr "எச்டிடி"
 
 #: src/performance_page/mod.rs:1125
 msgid "SSD"
-msgstr "SSD"
+msgstr "திட நிலை இயக்கி"
 
 #: src/performance_page/mod.rs:1126
 msgid "NVMe"
-msgstr "NVMe"
+msgstr "என்விஎம்இ"
 
 #: src/performance_page/mod.rs:1127
 msgid "eMMC"
-msgstr "eMMC"
+msgstr "EMMC"
 
 #: src/performance_page/mod.rs:1128
 msgid "iSCSI"
-msgstr "iSCSI"
+msgstr "iscsi"
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr "Optisch"
+msgstr "ஆப்டிகல்"
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -1046,62 +1038,61 @@ msgstr "Optisch"
 #: src/performance_page/network.rs:520 src/performance_page/network.rs:570
 #: src/performance_page/network.rs:606
 msgid "Unknown"
-msgstr "Unbekannt"
+msgstr "தெரியவில்லை"
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr "GPU {}"
+msgstr "Gpu {}"
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
-msgstr "GPU"
+msgstr "சி.பீ."
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr "Lüfter {}"
+msgstr "விசிறி {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr "Lüfter"
+msgstr "விசிறி"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {} {} {}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
-msgstr "Nicht unterstützt"
+msgstr "ஆதரிக்கப்படாதது"
 
 #: src/performance_page/cpu.rs:344 src/performance_page/disk.rs:247
 msgid "Yes"
-msgstr "Ja"
+msgstr "ஆம்"
 
 #: src/performance_page/cpu.rs:346 src/performance_page/disk.rs:249
 msgid "No"
-msgstr "Nein"
+msgstr "இல்லை"
 
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr "{} Sekunde{}"
+msgstr "{} இரண்டாவது {}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr "{} Minute{} "
+msgstr "{} மணித்துளி {} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr "Datenträger {} ({})"
+msgstr "வட்டு {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr "Laufwerk ({})"
+msgstr "இயக்கி ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr "{} {}{}B/s"
+msgstr "{} {} {} B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
@@ -1109,7 +1100,7 @@ msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr "{} RPM"
+msgstr "{} Rpm"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
@@ -1117,284 +1108,51 @@ msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr "{} °C"
+msgstr "{}. C."
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
-msgstr "Abrufen zusätzlicher Speicherinformationen fehlgeschlagen"
+msgstr "கூடுதல் நினைவக தகவல்களைப் பெறுவது தோல்வியடைந்தது"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "பிபிஎச்"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr "{} {}{} B"
+msgstr "{} {} {} B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} Aktive Dienste"
+msgstr "சேவைகள் இயங்கும் சேவைகள்"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr "{} fehlgeschlagene Dienste von insgesamt {}"
+msgstr "{} மொத்தம் {} இல் தோல்வியுற்ற சேவைகள்"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr "Aktiv"
+msgstr "இயங்கும்"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr "Fehlgeschlagen"
+msgstr "தோல்வியுற்றது"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr "Gestoppt"
+msgstr "நிறுத்தப்பட்டது"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr ""
-"TecCheck <mcteccy@protonmail.com>\n"
-"Philipp Kiemle <philipp.kiemle@gmail.com>\n"
-"Finn Wiggers <aircraft192@gmail.com>"
+msgstr "மொழிபெயர்ப்பாளர்-வரவு"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr "_Beenden"
-
-#~ msgid "{} {}bps"
-#~ msgstr "{} {}bps"
-
-#~ msgid "Ethernet"
-#~ msgstr "Ethernet"
-
-#~ msgid "Wi-Fi"
-#~ msgstr "WLAN"
-
-#~ msgid "Other"
-#~ msgstr "Andere"
-
-#, fuzzy
-#~ msgid "{:} minute"
-#~ msgid_plural "{:} minutes"
-#~ msgstr[0] "{} Minute{} "
-#~ msgstr[1] "{} Minute{} "
-
-#~ msgid "Flatpak first"
-#~ msgstr "Flatpak zuerst"
-
-#~ msgid "Video decode utilization"
-#~ msgstr "Auslastung der Video-Dekodierung"
-
-#~ msgid "Display optical device information in the Performance tab"
-#~ msgstr ""
-#~ "Anzeige von optischen Geräteinformationen in der Leistungs-Registerkarte"
-
-#~ msgid "Fix a bug where the Gatherer process would crash at startup"
-#~ msgstr ""
-#~ "Fehler behoben, bei dem der Gatherer-Prozess beim Start abstürzen würde"
-
-#~ msgid ""
-#~ "Remove the need for admin rights to display extended memory information"
-#~ msgstr ""
-#~ "Entfernen der Notwendigkeit der Admin-Rechte um erweiterte "
-#~ "Speicherinformationen anzeigen"
-
-#~ msgid "Remove the requirement for `libgcc_s.so.1` on musl-based systems"
-#~ msgstr ""
-#~ "Anforderung für `libgcc_s.so.1` auf musl-basierten Systemen entfernt"
-
-#~ msgid ""
-#~ "Make the saturation and transfer graphs the same height in the disk usage "
-#~ "panes"
-#~ msgstr ""
-#~ "Machen den Sättigungs- und Übertragungsgraphen in den "
-#~ "Datenträgerverwendungsbereichen gleich hoch"
-
-#~ msgid "Translation updates and fixes"
-#~ msgstr "Übersetzungs-Updates und Korrekturen"
-
-#~ msgid ""
-#~ "Fix a bug where the number of CPUs was incorrectly detected on some "
-#~ "systems (again!)"
-#~ msgstr ""
-#~ "Einen Fehler behoben bei dem die Anzahl der CPUs auf einigen Systemen "
-#~ "falsch erkannt wurde (wieder!)"
-
-#~ msgid ""
-#~ "Fix a bug where the number of CPUs was incorrectly detected on some "
-#~ "systems"
-#~ msgstr ""
-#~ "Einen Fehler behoben bei dem die Anzahl der CPUs auf einigen Systemen "
-#~ "falsch erkannt wurde"
-
-#~ msgid "Add missing icon for the details panel in the Performance tab"
-#~ msgstr ""
-#~ "Fehlendes Symbol für das Detailpanel auf der Registerkarte „Leistung“ "
-#~ "hinzufügen"
-
-#~ msgid ""
-#~ "Fix a regression in 0.4.0 where GPU data would not be available for some "
-#~ "users"
-#~ msgstr ""
-#~ "Behebung einer Regression in 0.4.0, bei der GPU-Daten für einige Benutzer "
-#~ "nicht verfügbar waren"
-
-#~ msgid "Update to GTK 4.12 and libadwaita 1.4"
-#~ msgstr "Aktualisierung auf GTK 4.12 und libadwaita 1.4"
-
-#~ msgid "Redesigned the Performance tab to be adaptive"
-#~ msgstr ""
-#~ "Die Registerkarte „Leistung“ wurde neu gestaltet und ist nun adaptiv"
-
-#~ msgid "Early and very minimal Intel GPU support"
-#~ msgstr "Frühe und sehr minimale Intel-GPU-Unterstützung"
-
-#~ msgid "Fixes:"
-#~ msgstr "Korrekturen:"
-
-#~ msgid "Add CPU temperature, where possible"
-#~ msgstr "Wo möglich CPU Temperatur hinzufügen"
-
-#~ msgid "Translations:"
-#~ msgstr "Übersetzungen:"
-
-#~ msgid "Updated Spanish translation"
-#~ msgstr "Aktualisierte spanische Übersetzung"
-
-#~ msgid "Updated Finnish translation"
-#~ msgstr "Aktualisierte finnische Übersetzung"
-
-#~ msgid "Updated Russian translation"
-#~ msgstr "Aktualisierte russische Übersetzung"
-
-#~ msgid "Updated Greek translation"
-#~ msgstr "Aktualisierte griechische Übersetzung"
-
-#~ msgid "Updated German translation"
-#~ msgstr "Aktualisierte deutsche Übersetzung"
-
-#~ msgid "Add Spanish translation by Óscar Fernández Díaz"
-#~ msgstr "Spanische Übersetzung von Óscar Fernández Díaz hinzugefügt"
-
-#~ msgid ""
-#~ "The memory tab now shows configured memory speed instead of the maximum "
-#~ "supported by the modules"
-#~ msgstr ""
-#~ "Die Registerkarte \"Speicher\" zeigt nun die konfigurierte "
-#~ "Speichergeschwindigkeit anstelle der von den Modulen maximal "
-#~ "unterstützten Geschwindigkeit an"
-
-#~ msgid "Add German translation by TecCheck"
-#~ msgstr "Deutsche Übersetzung von TecCheck hinzufügt"
-
-#~ msgid ""
-#~ "When a process uses large amounts of CPU or RAM it is now highlighted in "
-#~ "the Apps and Processes list"
-#~ msgstr ""
-#~ "Wenn ein Prozess große Mengen an CPU oder RAM verwendet, wird er jetzt in "
-#~ "der Liste \"Apps und Prozesse\" hervorgehoben"
-
-#~ msgid "Add initial support for building for ARM64"
-#~ msgstr "Anfängliche Unterstützung für die Erstellung von ARM64 hinzufügt"
-
-#~ msgid ""
-#~ "Take into account multiple CPU cores and cache sharing when calculating "
-#~ "cache sizes"
-#~ msgstr ""
-#~ "Mehrerer CPU-Kerne und gemeinsamer Cache-Nutzung bei der Berechnung der "
-#~ "Cache-Größen werden nun berücksichtigt"
-
-#~ msgid "Fix a crash that occurs when the system is under heavy load"
-#~ msgstr ""
-#~ "Behebung eines Absturzes, der auftritt, wenn das System unter hoher Last "
-#~ "steht"
-
-#~ msgid "First official release!"
-#~ msgstr "Erste offizielle Version!"
-
-#~ msgid "_Disk"
-#~ msgstr "_Datenträger"
-
-#~ msgid "Disk transfer rate"
-#~ msgstr "Datenübertragungsrate"
-
-#~ msgid "Overall utilization"
-#~ msgstr "Allgemeine Auslastung"
-
-#~ msgid "Resources"
-#~ msgstr "Ressourcen"
-
-#~ msgid "Disk"
-#~ msgstr "Datenträger"
-
-#~ msgid ""
-#~ "GPU support is experimental and only AMD and nVidia GPUs can be monitored"
-#~ msgstr ""
-#~ "Die Grafikkartenunterstützug ist experimentell, nur AMD und nVidia "
-#~ "Grafikkarten werden unterstützt"
-
-#~ msgid "Update Speed"
-#~ msgstr "Aktualisierungsgeschwindigkeit"
-
-#~ msgid "Fast"
-#~ msgstr "Schnell"
-
-#~ msgid "Refresh every half second"
-#~ msgstr "Alle halbe Sekunde aktualisieren"
-
-#~ msgid "Normal"
-#~ msgstr "Normal"
-
-#~ msgid "Refresh every second"
-#~ msgstr "Jede Sekunde aktualisieren"
-
-#~ msgid "Slow"
-#~ msgstr "Langsam"
-
-#~ msgid "Refresh every second and a half"
-#~ msgstr "Alle eineinhalb Sekunden aktualisieren"
-
-#~ msgid "Very Slow"
-#~ msgstr "Sehr langsam"
-
-#~ msgid "Refresh every 2 seconds"
-#~ msgstr "Aktu"
-
-#~ msgid "Supported"
-#~ msgstr "Unterstützt"
-
-#~ msgid "Authentication failed"
-#~ msgstr "Authentifizierung fehlgeschlagen"
-
-#~ msgid "More info"
-#~ msgstr "Mehr Informationen"
-
-#~ msgid "Disk utilization percentage might not be accurate"
-#~ msgstr "Die Laufwerksauslastung ist eventuell nicht exakt"
-
-#~ msgid "No per-process GPU usage"
-#~ msgstr "Keine GPU Auslastung pro Prozess"
-
-#~ msgid "Some information requires administrative privileges"
-#~ msgstr "Einige Informationen benötigen Anmeldung"
-
-#~ msgid ""
-#~ "The application currently only supports monitoring, you cannot stop "
-#~ "processes for example"
-#~ msgstr ""
-#~ "Die Anwendung unterstützt zurzeit nur das Monitoren. Das stoppen von "
-#~ "Prozessen beispielsweise ist nicht möglich"
-
-#~ msgid "% Utilization"
-#~ msgstr "% Auslastung"
-
-#~ msgid "{}: {} {}bps {}: {} {}bps"
-#~ msgstr "{}: {} {}bps {}: {} {}bps"
+msgstr "_Quit"
