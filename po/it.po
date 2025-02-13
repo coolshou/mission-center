@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-12-23 09:00+0000\n"
+"PO-Revision-Date: 2025-02-07 15:02+0000\n"
 "Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/it/>\n"
@@ -206,7 +206,7 @@ msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
 "Mostra l'utilizzo della CPU per le app e i processi scalati al numero di "
-"core disponibili"
+"Core disponibili"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
@@ -293,7 +293,7 @@ msgstr "CPU"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr "Utilizzo "
+msgstr "Utilizzo ultimi "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -307,7 +307,7 @@ msgstr "Cambia g_rafico"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr "_Uso complessivo"
+msgstr "_Utilizzo complessivo"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
@@ -468,12 +468,12 @@ msgstr "Preferenze energetiche:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr "Tempo di attività "
+msgstr "Tempo di attività ultimi "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr "Capacità di trasmissione "
+msgstr "Traffico degli ultimi "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -510,11 +510,11 @@ msgstr "Tipo:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr "Velocità della ventola oltre "
+msgstr "Velocità della ventola ultimi "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr "Temperatura "
+msgstr "Temperatura ultimi "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -530,12 +530,12 @@ msgstr "Temperatura attuale"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr "Utilizzo video codifica/decodifica "
+msgstr "Utilizzo video codifica/decodifica ultimi "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr "Uso della memoria "
+msgstr "Utilizzo della memoria ultimi "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
@@ -596,7 +596,7 @@ msgstr "Memoria"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr "Utilizzo swap "
+msgstr "Utilizzo dello swap ultimi "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -712,7 +712,7 @@ msgstr "Intervallo di aggiornamento"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Punti dati del grafico"
+msgstr "Punti presenti sul grafico"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
@@ -732,14 +732,14 @@ msgstr "Mostra la velocità di rete in Bytes"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr "Scala Dinamicamente il Grafico di Rete"
+msgstr "Scala dinamicamente il grafico della rete"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
-"Scala dinamica il grafico di rete in base all'utilizzo effettivo o alla "
+"Scala dinamica il grafico della rete in base all'utilizzo effettivo o alla "
 "velocità massima del canale"
 
 #: resources/ui/preferences/page.blp:64
@@ -856,7 +856,7 @@ msgstr "Log"
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr "Avvio"
+msgstr "Avvia"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
@@ -866,7 +866,7 @@ msgstr "Stop"
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr "Riavvio"
+msgstr "Riavvia"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
@@ -879,15 +879,15 @@ msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr "Abilita tutto"
+msgstr "Abilita tutti"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr "Disabilita tutto"
+msgstr "Disabilita tutti"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr "Ripristina Impostazioni Iniziali"
+msgstr "Ripristina impostazioni iniziali"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
@@ -957,7 +957,7 @@ msgstr "Termina processo"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr "Forza il termine del processo"
+msgstr "Termina processo forzatamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -989,7 +989,7 @@ msgid ""
 msgstr ""
 "In attesa ({}B)\n"
 "\n"
-"Memoria che contiene dati nella cache e codice che non è attualmente in uso"
+"Memoria che contiene dati della cache e codice attualmente non in uso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -1000,7 +1000,7 @@ msgid ""
 msgstr ""
 "Libera ({}B)\n"
 "\n"
-"Memoria non attualmente in uso, e che sarà riconvertita per prima quando il "
+"Memoria attualmente non in uso: sarà riutilizzata per prima quando il "
 "sistema operativo, i driver o le applicazioni avranno bisogno di più memoria"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
@@ -1130,7 +1130,7 @@ msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "{} Servizi in esecuzione"
+msgstr "{} servizi in esecuzione"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
@@ -1155,7 +1155,8 @@ msgstr "Fermati"
 msgid "translator-credits"
 msgstr ""
 "beppeilgommista <enrico.ghignatti@gmail.com>, 2023\n"
-"Davide Ferracin <davide.ferracin@protonmail.com>, 2023"
+"Davide Ferracin <davide.ferracin@protonmail.com>, 2023\n"
+"Pierfrancesco Passerini <p.passerini@gmail.com>, 2025"
 
 #: src/main.rs:139
 msgid "_Quit"
