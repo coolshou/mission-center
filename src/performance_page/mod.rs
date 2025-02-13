@@ -2034,8 +2034,8 @@ mod imp {
                                     graph_widget.add_data_point(0, v);
                                     let _ = write!(&mut info2, "{v}%");
                                 }
-                                if let Some(v) = gpu.temperature_c {
-                                    let _ = write!(&mut info2, " ({v:.2}°C)");
+                                if let Some(v) = gpu.temperature_c.map(|v| v.round() as u32) {
+                                    let _ = write!(&mut info2, " ({v} °C)");
                                 }
                                 summary.set_info2(info2.as_str());
 
