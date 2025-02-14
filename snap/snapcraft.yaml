@@ -68,6 +68,7 @@ apps:
       - network-observe
       - process-control
       - system-observe
+      - udisks2
     extensions: [ gnome-3-38 ]
     command: usr/bin/missioncenter
     common-id: io.missioncenter.MissionCenter
