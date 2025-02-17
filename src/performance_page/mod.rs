@@ -124,6 +124,8 @@ mod imp {
         action_group: Cell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
+
+        cpu_cores_regex: Regex,
     }
 
     impl Default for PerformancePage {
@@ -148,6 +150,8 @@ mod imp {
                 action_group: Cell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
+
+                cpu_cores_regex: Regex::new(r" \S-Core Processor").unwrap(),
             }
         }
     }
@@ -1801,8 +1805,7 @@ mod imp {
                         );
 
                         let cpu_name = String::from(readings.cpu_static_info.name.as_ref());
-                        let pattern = Regex::new(r" \S-Core Processor").unwrap();
-                        let short_cpu_name = pattern.replace_all(&cpu_name, "").to_string();
+                        let short_cpu_name = this.imp().cpu_cores_regex.replace_all(&cpu_name, "").to_string();
                         summary.set_info1(short_cpu_name);
 
                         summary.set_info2(format!(
