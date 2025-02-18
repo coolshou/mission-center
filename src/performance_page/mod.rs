@@ -34,6 +34,7 @@ use gtk::{
 };
 
 use magpie_types::fan::Fan;
+use magpie_types::gpus::Gpu;
 use magpie_types::network::{Connection, ConnectionKind};
 
 use crate::{i18n::*, magpie_client::DiskKind, settings};
@@ -1335,6 +1336,88 @@ mod imp {
             format!("gpu-{}", device_id)
         }
 
+        fn create_gpu_page(
+            &self,
+            gpu: &Gpu,
+            index: Option<usize>,
+            pos_hint: Option<i32>,
+        ) -> (String, (SummaryGraph, GpuPage)) {
+            let page_name = Self::gpu_page_name(&gpu.id);
+
+            let summary = SummaryGraph::new();
+            summary.set_widget_name(&page_name);
+
+            let settings = settings!();
+
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("performance-page-data-points") as u32);
+
+            summary
+                .graph_widget()
+                .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+
+            let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
+
+            if let Some(index) = index {
+                summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
+            } else {
+                summary.set_heading(i18n_f("GPU", &[]));
+            }
+            summary.set_info1(
+                gpu.device_name
+                    .as_ref()
+                    .unwrap_or(&i18n("Unknown"))
+                    .as_str(),
+            );
+
+            let mut info2 = ArrayString::<256>::new();
+            if let Some(v) = gpu.utilization_percent {
+                let _ = write!(&mut info2, "{v}%");
+            }
+            if let Some(v) = gpu.temperature_c {
+                let _ = write!(&mut info2, " ({v:.2}°C)");
+            }
+            summary.set_info2(info2.as_str());
+
+            summary.set_base_color(gdk::RGBA::new(
+                GPU_BASE_COLOR[0] as f32 / 255.,
+                GPU_BASE_COLOR[1] as f32 / 255.,
+                GPU_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            page.set_base_color(gdk::RGBA::new(
+                GPU_BASE_COLOR[0] as f32 / 255.,
+                GPU_BASE_COLOR[1] as f32 / 255.,
+                GPU_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            page.set_static_information(index, gpu);
+
+            self.configure_page(&page);
+
+            self.page_stack.add_named(&page, Some(&page_name));
+            self.add_to_sidebar(&summary, pos_hint);
+
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("gpu") {
+                None => {
+                    g_critical!(
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up GPU action for {:?}, logic bug?",
+                        &gpu.device_name
+                    );
+                }
+                Some(action) => {
+                    actions.insert(page_name.clone(), action.clone());
+                }
+            }
+            self.context_menu_view_actions.set(actions);
+
+            (page_name, (summary, page))
+        }
+
         fn set_up_gpu_pages(
             &self,
             pages: &mut Vec<Pages>,
@@ -1344,79 +1427,8 @@ mod imp {
 
             let hide_index = readings.gpus.len() == 1;
             for (index, gpu) in readings.gpus.values().enumerate() {
-                let page_name = Self::gpu_page_name(&gpu.id);
-
-                let summary = SummaryGraph::new();
-                summary.set_widget_name(&page_name);
-
-                let settings = settings!();
-
-                summary
-                    .graph_widget()
-                    .set_data_points(settings.int("performance-page-data-points") as u32);
-
-                summary
-                    .graph_widget()
-                    .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
-
-                let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
-
-                if !hide_index {
-                    summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
-                } else {
-                    summary.set_heading(i18n_f("GPU", &[]));
-                }
-                summary.set_info1(
-                    gpu.device_name
-                        .as_ref()
-                        .unwrap_or(&i18n("Unknown"))
-                        .as_str(),
-                );
-
-                let mut info2 = ArrayString::<256>::new();
-                if let Some(v) = gpu.utilization_percent {
-                    let _ = write!(&mut info2, "{v}%");
-                }
-                if let Some(v) = gpu.temperature_c {
-                    let _ = write!(&mut info2, " ({v:.2}°C)");
-                }
-                summary.set_info2(info2.as_str());
-
-                summary.set_base_color(gdk::RGBA::new(
-                    GPU_BASE_COLOR[0] as f32 / 255.,
-                    GPU_BASE_COLOR[1] as f32 / 255.,
-                    GPU_BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
-
-                page.set_base_color(gdk::RGBA::new(
-                    GPU_BASE_COLOR[0] as f32 / 255.,
-                    GPU_BASE_COLOR[1] as f32 / 255.,
-                    GPU_BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
-                page.set_static_information(if !hide_index { Some(index) } else { None }, gpu);
-
-                self.configure_page(&page);
-
-                self.page_stack.add_named(&page, Some(&page_name));
-                self.add_to_sidebar(&summary, None);
-
-                let mut actions = self.context_menu_view_actions.take();
-                match actions.get("gpu") {
-                    None => {
-                        g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to wire up GPU action for {:?}, logic bug?",
-                            &gpu.device_name
-                        );
-                    }
-                    Some(action) => {
-                        actions.insert(page_name.clone(), action.clone());
-                    }
-                }
-                self.context_menu_view_actions.set(actions);
-
+                let (page_name, (summary, page)) =
+                    self.create_gpu_page(gpu, if hide_index { None } else { Some(index) }, None);
                 gpus.insert(page_name, (summary, page));
             }
 
@@ -1805,7 +1817,26 @@ mod imp {
 
                         this.imp().summary_graphs.set(summary_graphs);
                     }
-                    Pages::Gpu(_) => {}
+                    Pages::Gpu(gpu_pages) => {
+                        for gpu_page_name in gpu_pages.keys() {
+                            if !readings.gpus.contains_key(&gpu_page_name[4..]) {
+                                pages_to_destroy.push(gpu_page_name.clone());
+                            }
+                        }
+
+                        let mut summary_graphs = this.imp().summary_graphs.take();
+
+                        remove_pages(
+                            &pages_to_destroy,
+                            gpu_pages,
+                            &mut summary_graphs,
+                            &this.sidebar(),
+                            &this.imp().page_stack,
+                        );
+                        pages_to_destroy.clear();
+
+                        this.imp().summary_graphs.set(summary_graphs);
+                    }
                     Pages::Fan(_) => {}
                 }
             }
@@ -2022,12 +2053,45 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in readings.gpus.values() {
+                        let mut last_sidebar_pos = -1;
+                        let mut consecutive_dev_count = 0;
+
+                        let mut gpus = readings.gpus.iter().collect::<Vec<_>>();
+                        gpus.sort_by(|(lhs, _), (rhs, _)| lhs.cmp(&rhs));
+
+                        let hide_index = gpus.len() == 1;
+
+                        let mut new_devices = Vec::new();
+                        for (index, (id, gpu)) in gpus.drain(..).enumerate() {
+                            let index = if hide_index { None } else { Some(index) };
+
                             if let Some((summary, page)) = pages.get(&Self::gpu_page_name(&gpu.id))
                             {
+                                // Search for a group of existing GPUs and try to add new entries at that position
+                                summary
+                                    .parent()
+                                    .and_then(|p| p.downcast_ref::<gtk::ListBoxRow>().cloned())
+                                    .and_then(|row| {
+                                        let sidebar_pos = row.index();
+                                        if sidebar_pos == last_sidebar_pos + 1 {
+                                            consecutive_dev_count += 1;
+                                        } else {
+                                            consecutive_dev_count = 1;
+                                        };
+                                        last_sidebar_pos = sidebar_pos;
+
+                                        Some(())
+                                    });
+
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+
+                                if let Some(index) = index {
+                                    summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
+                                } else {
+                                    summary.set_heading(i18n("GPU"));
+                                }
 
                                 let mut info2 = ArrayString::<256>::new();
                                 if let Some(v) = gpu.utilization_percent {
@@ -2039,8 +2103,28 @@ mod imp {
                                 }
                                 summary.set_info2(info2.as_str());
 
-                                result &= page.update_readings(gpu);
+                                result &= page.update_readings(gpu, index);
+                            } else {
+                                new_devices.push((index, id.as_str()));
                             }
+                        }
+
+                        for (index, device_id) in new_devices {
+                            let Some(gpu) = readings.gpus.get(device_id) else {
+                                continue;
+                            };
+
+                            let (page_name, page) = this.imp().create_gpu_page(
+                                gpu,
+                                index,
+                                if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
+                                    last_sidebar_pos += 1;
+                                    Some(last_sidebar_pos)
+                                } else {
+                                    None
+                                },
+                            );
+                            pages.insert(page_name, page);
                         }
                     }
                     Pages::Fan(pages) => {

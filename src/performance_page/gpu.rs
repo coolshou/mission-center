@@ -336,8 +336,19 @@ mod imp {
             true
         }
 
-        pub(crate) fn update_readings(this: &super::PerformancePageGpu, gpu: &Gpu) -> bool {
+        pub(crate) fn update_readings(
+            this: &super::PerformancePageGpu,
+            gpu: &Gpu,
+            index: Option<usize>,
+        ) -> bool {
             let this = this.imp();
+
+            if let Some(index) = index {
+                this.gpu_id
+                    .set_text(&i18n_f("GPU {}", &[&format!("{}", index)]));
+            } else {
+                this.gpu_id.set_text(&i18n("GPU"));
+            }
 
             this.update_utilization(gpu);
             this.update_clock_speed(gpu);
@@ -912,7 +923,7 @@ impl PerformancePageGpu {
         imp::PerformancePageGpu::set_static_information(self, index, gpu)
     }
 
-    pub fn update_readings(&self, gpu: &Gpu) -> bool {
-        imp::PerformancePageGpu::update_readings(self, gpu)
+    pub fn update_readings(&self, gpu: &Gpu, index: Option<usize>) -> bool {
+        imp::PerformancePageGpu::update_readings(self, gpu, index)
     }
 }
