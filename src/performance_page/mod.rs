@@ -151,7 +151,7 @@ mod imp {
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
 
-                cpu_cores_regex: Regex::new(r" \S-Core Processor").unwrap(),
+                cpu_cores_regex: Regex::new(r" \S*-Core Processor").unwrap(),
             }
         }
     }
