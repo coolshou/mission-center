@@ -246,6 +246,20 @@
       ],
       "modules": [
         {
+          "name": "spawner",
+          "buildsystem": "simple",
+          "build-commands": [
+            "rustc -C opt-level=3 -C lto=true -C strip=debuginfo -C codegen-units=1 src/magpie_client/spawner.rs",
+            "install -v -p -m 755 spawner /app/bin/missioncenter-spawner"
+          ],
+          "sources": [
+            {
+              "type": "dir",
+              "path": ".."
+            }
+          ]
+        },
+        {
           "name": "magpie",
           "buildsystem": "simple",
           "build-commands": [
@@ -257,7 +271,10 @@
             "rm -rf subprojects/magpie/target",
             "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/gcc-musl:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
-            "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl"
+            "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl",
+            "",
+            "sh -c 'cd subprojects/magpie/platform-linux/hwdb && ./generate_hwdb.py -o . 20-pci-vendor-model.hwdb 20-usb-vendor-model.hwdb'",
+            "mkdir /app/share/missioncenter/ && mv subprojects/magpie/platform-linux/hwdb/hw.db /app/share/missioncenter/"
           ],
           "sources": [
             {

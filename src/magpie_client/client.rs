@@ -18,13 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use arrayvec::ArrayString;
+use gtk::glib::{g_critical, g_debug};
 use std::num::NonZeroU32;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::time::Duration;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
-
-use arrayvec::ArrayString;
-use gtk::glib::{g_critical, g_debug};
 
 use magpie_types::apps::apps_response;
 use magpie_types::apps::apps_response::AppList;
@@ -57,6 +56,7 @@ use magpie_types::services::services_response;
 use magpie_types::services::services_response::ServiceList;
 pub use magpie_types::services::Service;
 
+use crate::magpie_client::flatpak_app_path;
 use crate::{flatpak_data_dir, is_flatpak, show_error_dialog_and_exit};
 
 mod nng {
@@ -162,7 +162,7 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
         let exe_simple = "missioncenter-magpie".to_owned();
 
         if is_flatpak() {
-            let flatpak_app_path = super::flatpak_app_path();
+            let flatpak_app_path = flatpak_app_path();
 
             let cmd_glibc_status = cmd_flatpak_host!(&format!(
                 "{}/bin/missioncenter-magpie-glibc --test",
@@ -207,17 +207,18 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
     }
 
     let mut command = if is_flatpak() {
-        const FLATPAK_SPAWN_CMD: &str = "/usr/bin/flatpak-spawn";
-
-        let mut cmd = std::process::Command::new(FLATPAK_SPAWN_CMD);
+        let mut cmd = std::process::Command::new("/app/bin/missioncenter-spawner");
         cmd.arg("-v")
-            .arg("--watch-bus")
-            .arg("--host")
+            .arg("--env=LD_PRELOAD=")
+            .arg(format!(
+                "--env=MC_MAGPIE_HW_DB={}/share/missioncenter/hw.db",
+                flatpak_app_path()
+            ))
+            .arg(format!(
+                "--env=RUST_LOG={}",
+                std::env::var("RUST_LOG").unwrap_or_default()
+            ))
             .arg(executable());
-        cmd.env(
-            "MC_MAGPIE_HW_DB",
-            format!("{}/share/missioncenter/hw.db", super::flatpak_app_path()),
-        );
         cmd
     } else {
         let mut cmd = std::process::Command::new(executable());
