@@ -289,8 +289,8 @@ impl ServicesListItemBuilder {
         self
     }
 
-    pub fn pid(mut self, pid: NonZeroU32) -> Self {
-        self.pid = Some(pid);
+    pub fn pid(mut self, pid: Option<u32>) -> Self {
+        self.pid = pid.and_then(NonZeroU32::new);
         self
     }
 

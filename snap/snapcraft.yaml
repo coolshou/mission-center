@@ -56,9 +56,9 @@ slots:
 apps:
   mission-center:
     environment:
-      GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
-      HW_DB_DIR: $SNAP/usr/share/missioncenter/
       MC_RESOURCE_DIR: $SNAP/usr/share/missioncenter/
+      MC_MAGPIE_HW_DB: $SNAP/usr/share/missioncenter/hw.db
+      GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
       XDG_DATA_DIRS: /var/lib/snapd/hostfs/usr/share:/var/lib/snapd/hostfs/var/lib/snapd/desktop:/var/lib/snapd/hostfs/var/lib/flatpak/exports/share:$SNAP_REAL_HOME/.local/share:$SNAP_REAL_HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS
     plugs:
       - desktop
@@ -68,6 +68,7 @@ apps:
       - network-observe
       - process-control
       - system-observe
+      - udisks2
     extensions: [ gnome-3-38 ]
     command: usr/bin/missioncenter
     common-id: io.missioncenter.MissionCenter

@@ -24,6 +24,8 @@ use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
+use magpie_types::network::{Connection, ConnectionKind};
+
 use super::{widgets::GraphWidget, PageExt};
 use crate::{application::INTERVAL_STEP, i18n::*};
 
@@ -56,7 +58,7 @@ mod imp {
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
         pub interface_name: Cell<String>,
         #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
-        pub connection_type: Cell<crate::sys_info_v2::NetDeviceType>,
+        pub connection_type: Cell<ConnectionKind>,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Box>,
@@ -97,7 +99,7 @@ mod imp {
                 summary_mode: Cell::new(false),
 
                 interface_name: Cell::new(String::new()),
-                connection_type: Cell::new(crate::sys_info_v2::NetDeviceType::Other),
+                connection_type: Cell::new(ConnectionKind::Other),
 
                 infobar_content: Default::default(),
 
@@ -141,15 +143,16 @@ mod imp {
         }
 
         fn connection_type(&self) -> u8 {
-            self.connection_type.get().into()
+            self.connection_type.get() as i32 as u8
         }
 
         fn set_connection_type(&self, connection_type: u8) {
-            if connection_type == self.connection_type.get().into() {
+            if connection_type == self.connection_type.get() as i32 as u8 {
                 return;
             }
 
-            self.connection_type.replace(connection_type.into());
+            self.connection_type
+                .replace(unsafe { std::mem::transmute(connection_type as i32) });
         }
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
@@ -166,11 +169,10 @@ mod imp {
             action.connect_activate({
                 let this = this.downgrade();
                 move |_, _| {
-                    use crate::sys_info_v2::NetDeviceType;
                     if let Some(this) = this.upgrade() {
                         unsafe {
                             PerformancePageNetwork::gnome_settings_activate_action(
-                                if this.connection_type() == NetDeviceType::Wireless as u8 {
+                                if this.connection_type() == ConnectionKind::Wireless as u8 {
                                     "('launch-panel', [<('wifi', [<''>])>], {})"
                                 } else {
                                     "('launch-panel', [<('network', [<''>])>], {})"
@@ -303,17 +305,17 @@ mod imp {
     impl PerformancePageNetwork {
         pub fn set_static_information(
             this: &super::PerformancePageNetwork,
-            network_device: &crate::sys_info_v2::NetworkDevice,
+            connection: &Connection,
         ) -> bool {
-            use crate::sys_info_v2::NetDeviceType;
-
             let this = this.imp();
 
             let interface_name = this.interface_name.take();
             let connection_type = this.connection_type.get();
 
-            if let Some(adapter_name) = network_device.descriptor.adapter_name.as_ref() {
-                this.device_name.set_text(adapter_name.as_str());
+            if let Some(adapter_name) = &connection.device_name {
+                this.device_name.set_text(adapter_name);
+            } else {
+                this.device_name.set_text(&i18n("Unknown"));
             }
 
             let t = this.obj().clone();
@@ -340,7 +342,7 @@ mod imp {
             }
 
             let conn_type = match connection_type {
-                NetDeviceType::Wireless => {
+                ConnectionKind::Wireless => {
                     if let Some(ssid) = this.ssid.get() {
                         ssid.set_visible(true);
                     }
@@ -351,21 +353,23 @@ mod imp {
                         frequency.set_visible(true);
                     }
 
-                    connection_type.to_string()
+                    connection_type.as_str_name()
                 }
-                _ => connection_type.to_string(),
+                _ => connection_type.as_str_name(),
             };
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
-                if connection_type == NetDeviceType::Wireless || network_device.max_speed > 0 {
+                if connection_type == ConnectionKind::Wireless
+                    || connection.max_speed_bytes_ps.is_some()
+                {
                     max_bitrate.set_visible(true);
                 }
             }
 
             if let Some(connection_type_label) = this.connection_type_label.get() {
-                connection_type_label.set_text(&conn_type);
+                connection_type_label.set_text(conn_type);
             }
-            this.title_connection_type.set_text(&conn_type);
+            this.title_connection_type.set_text(conn_type);
 
             if let Some(legend_send) = this.legend_send.get() {
                 legend_send
@@ -382,12 +386,10 @@ mod imp {
             this.usage_graph.set_filled(0, false);
             this.usage_graph.set_dashed(0, true);
 
-            let max_speed = network_device.max_speed;
-            this.max_speed.set(Some(max_speed));
+            this.max_speed.set(connection.max_speed_bytes_ps);
 
-            if max_speed > 0 {
-                this.usage_graph
-                    .set_value_range_max(max_speed as f32 * this.obj().byte_conversion_factor());
+            if let Some(max_speed) = connection.max_speed_bytes_ps {
+                this.usage_graph.set_value_range_max(max_speed as f32);
             } else {
                 this.usage_graph
                     .set_scaling(GraphWidget::auto_pow2_scaling());
@@ -398,21 +400,22 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageNetwork,
-            network_device: &crate::sys_info_v2::NetworkDevice,
+            connection: &Connection,
         ) -> bool {
             let this = this.imp();
 
-            let use_bytes = this.use_bytes.get();
-            let data_per_time = if use_bytes { i18n("B/s") } else { i18n("bps") };
-            let byte_coeff = if use_bytes { 1f32 } else { 8f32 };
+            this.usage_graph
+                .add_data_point(0, connection.tx_rate_bytes_ps);
+            this.usage_graph
+                .add_data_point(1, connection.rx_rate_bytes_ps);
 
-            let send_speed = network_device.send_bps * byte_coeff;
-            let rec_speed = network_device.recv_bps * byte_coeff;
+            let data_per_time = this.obj().unit_per_second_label();
+            let byte_coeff = this.obj().byte_conversion_factor();
 
-            this.usage_graph.add_data_point(0, send_speed);
-            this.usage_graph.add_data_point(1, rec_speed);
+            let send_speed = connection.tx_rate_bytes_ps * byte_coeff;
+            let rec_speed = connection.rx_rate_bytes_ps * byte_coeff;
 
-            if let Some(wireless_info) = &network_device.wireless_info {
+            if let Some(wireless_info) = &connection.wireless_connection {
                 if let Some(ssid) = this.ssid.get() {
                     ssid.set_text(
                         &wireless_info
@@ -421,16 +424,20 @@ mod imp {
                             .map_or(i18n("Unknown"), |ssid| ssid.clone()),
                     );
                 }
-                this.signal_strength_percent
-                    .set(wireless_info.signal_strength_percent.clone());
+                this.signal_strength_percent.set(
+                    wireless_info
+                        .signal_strength_percent
+                        .map(|p| p.min(100) as u8)
+                        .clone(),
+                );
                 if let Some(signal_strength) = this.signal_strength.get() {
                     signal_strength.set_icon_name(Some(
                         if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
-                            if *percentage <= 25_u8 {
+                            if *percentage <= 25_u32 {
                                 "nm-signal-25-symbolic"
-                            } else if *percentage <= 50_u8 {
+                            } else if *percentage <= 50_u32 {
                                 "nm-signal-50-symbolic"
-                            } else if *percentage <= 75_u8 {
+                            } else if *percentage <= 75_u32 {
                                 "nm-signal-75-symbolic"
                             } else {
                                 "nm-signal-100-symbolic"
@@ -453,11 +460,9 @@ mod imp {
             }
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
-                if network_device.max_speed > 0 {
-                    let (val, unit, dec_to_display) = crate::to_human_readable(
-                        network_device.max_speed as f32 * byte_coeff,
-                        1024.,
-                    );
+                if let Some(max_speed) = connection.max_speed_bytes_ps {
+                    let (val, unit, dec_to_display) =
+                        crate::to_human_readable(max_speed as f32, 1024.);
 
                     max_bitrate.set_text(
                         format!(
@@ -501,7 +506,7 @@ mod imp {
                 ));
             }
 
-            let sent = crate::to_human_readable((network_device.sent_bytes) as f32, 1024.);
+            let sent = crate::to_human_readable(connection.tx_total_bytes as f32, 1024.);
             if let Some(total_sent) = this.total_sent.get() {
                 total_sent.set_text(&i18n_f(
                     "{} {}{}B",
@@ -512,7 +517,7 @@ mod imp {
                     ],
                 ));
             }
-            let received = crate::to_human_readable((network_device.recv_bytes) as f32, 1024.);
+            let received = crate::to_human_readable(connection.rx_total_bytes as f32, 1024.);
             if let Some(total_recv) = this.total_recv.get() {
                 total_recv.set_text(&i18n_f(
                     "{} {}{}B",
@@ -525,51 +530,15 @@ mod imp {
             }
 
             if let Some(hw_address) = this.hw_address.get() {
-                hw_address.set_text(&network_device.address.hw_address.map_or(
-                    i18n("Unknown"),
-                    |hw| {
-                        format!(
-                            "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
-                            hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]
-                        )
-                    },
-                ));
+                hw_address.set_text(&connection.hw_address)
             }
 
             if let Some(ipv4_address) = this.ipv4_address.get() {
-                ipv4_address.set_text(&network_device.address.ip4_address.map_or(
-                    i18n("N/A"),
-                    |ip| {
-                        let ip_array = unsafe {
-                            std::slice::from_raw_parts(&ip as *const u32 as *const u8, 4)
-                        };
-                        format!(
-                            "{}.{}.{}.{}",
-                            ip_array[0], ip_array[1], ip_array[2], ip_array[3]
-                        )
-                    },
-                ));
+                ipv4_address.set_text(connection.ipv4_address.as_ref().unwrap_or(&i18n("N/A")));
             }
 
             if let Some(ipv6_address) = this.ipv6_address.get() {
-                ipv6_address.set_text(&network_device.address.ip6_address.map_or(
-                    i18n("N/A"),
-                    |ip| {
-                        let ip_array = unsafe {
-                            std::slice::from_raw_parts(&ip as *const u128 as *const u16, 16)
-                        };
-                        let mut ip_address = format!("{:x}:", u16::from_le(ip_array[7]));
-                        ip_address.reserve(8 * 4);
-
-                        for i in (0..7).rev() {
-                            if ip_array[i] != 0 {
-                                ip_address.push(':');
-                                ip_address.push_str(&format!("{:x}", u16::from_le(ip_array[i])));
-                            }
-                        }
-                        ip_address
-                    },
-                ));
+                ipv6_address.set_text(connection.ipv6_address.as_ref().unwrap_or(&i18n("N/A")));
             }
 
             true
@@ -602,7 +571,7 @@ mod imp {
                     .get()
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
-                if self.connection_type.get() == crate::sys_info_v2::NetDeviceType::Wireless {
+                if self.connection_type.get() == ConnectionKind::Wireless {
                     format!(
                         r#"
     SSID:             {}
@@ -802,14 +771,10 @@ impl PageExt for PerformancePageNetwork {
 }
 
 impl PerformancePageNetwork {
-    pub fn new(
-        interface_name: &str,
-        connection_type: crate::sys_info_v2::NetDeviceType,
-        settings: &gio::Settings,
-    ) -> Self {
+    pub fn new(interface_name: &str, connection_kind: i32, settings: &gio::Settings) -> Self {
         let this: Self = glib::Object::builder()
             .property("interface-name", interface_name)
-            .property("connection-type", connection_type as u8)
+            .property("connection-type", connection_kind as u8)
             .build();
 
         fn update_refresh_rate_sensitive_labels(
@@ -858,8 +823,7 @@ impl PerformancePageNetwork {
             .use_bytes
             .set(settings.boolean("performance-page-network-use-bytes"));
 
-        let max_speed = this.imp().max_speed.get().unwrap_or(0);
-        if max_speed > 0 {
+        if let Some(max_speed) = this.imp().max_speed.get() {
             let dynamic_scaling = settings.boolean("performance-page-network-dynamic-scaling");
 
             if dynamic_scaling {
@@ -871,8 +835,7 @@ impl PerformancePageNetwork {
                     .usage_graph
                     .set_scaling(GraphWidget::no_scaling());
 
-                let max = (max_speed / if this.imp().use_bytes.get() { 8 } else { 1 }) as f32;
-                this.imp().usage_graph.set_value_range_max(max);
+                this.imp().usage_graph.set_value_range_max(max_speed as f32);
             }
         }
 
@@ -880,23 +843,20 @@ impl PerformancePageNetwork {
             let this = this.downgrade();
             move |settings, _| {
                 if let Some(this) = this.upgrade() {
-                    if let Some(speed) = this.imp().max_speed.get() {
-                        if speed > 0 {
-                            let dynamic_scaling =
-                                settings.boolean("performance-page-network-dynamic-scaling");
+                    if let Some(max_speed) = this.imp().max_speed.get() {
+                        let dynamic_scaling =
+                            settings.boolean("performance-page-network-dynamic-scaling");
 
-                            if dynamic_scaling {
-                                this.imp()
-                                    .usage_graph
-                                    .set_scaling(GraphWidget::auto_pow2_scaling());
-                            } else {
-                                this.imp()
-                                    .usage_graph
-                                    .set_scaling(GraphWidget::no_scaling());
+                        if dynamic_scaling {
+                            this.imp()
+                                .usage_graph
+                                .set_scaling(GraphWidget::auto_pow2_scaling());
+                        } else {
+                            this.imp()
+                                .usage_graph
+                                .set_scaling(GraphWidget::no_scaling());
 
-                                let max = speed as f32 * this.byte_conversion_factor();
-                                this.imp().usage_graph.set_value_range_max(max);
-                            }
+                            this.imp().usage_graph.set_value_range_max(max_speed as f32);
                         }
                     }
                 }
@@ -932,12 +892,8 @@ impl PerformancePageNetwork {
                                 .collect(),
                         );
 
-                        if let Some(speed) = this.imp().max_speed.get() {
-                            if speed > 0 {
-                                this.imp().usage_graph.set_value_range_max(
-                                    speed as f32 * this.byte_conversion_factor(),
-                                );
-                            }
+                        if let Some(max_speed) = this.imp().max_speed.get() {
+                            this.imp().usage_graph.set_value_range_max(max_speed as f32);
                         }
                     }
                     this.imp().use_bytes.set(new_units);
@@ -975,15 +931,12 @@ impl PerformancePageNetwork {
         this
     }
 
-    pub fn set_static_information(
-        &self,
-        network_device: &crate::sys_info_v2::NetworkDevice,
-    ) -> bool {
-        imp::PerformancePageNetwork::set_static_information(self, network_device)
+    pub fn set_static_information(&self, connection: &Connection) -> bool {
+        imp::PerformancePageNetwork::set_static_information(self, connection)
     }
 
-    pub fn update_readings(&self, network_device: &crate::sys_info_v2::NetworkDevice) -> bool {
-        imp::PerformancePageNetwork::update_readings(self, network_device)
+    pub fn update_readings(&self, connection: &Connection) -> bool {
+        imp::PerformancePageNetwork::update_readings(self, connection)
     }
 
     pub fn infobar_collapsed(&self) {

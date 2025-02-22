@@ -145,7 +145,7 @@ template $AppsPage : Box {
         };
       }
 
-      ColumnViewColumn memory_column_shared {
+      ColumnViewColumn shared_memory_column {
         resizable: true;
         fixed-width: 118;
 
@@ -162,7 +162,7 @@ template $AppsPage : Box {
 
               child: $StatColumn {
                 unit: "B";
-                value: bind (expander.item as <$RowModel>).memory-shared;
+                value: bind (expander.item as <$RowModel>).shared-memory-usage;
                 content-type: bind (expander.item as <$RowModel>).content-type;
               };
             };

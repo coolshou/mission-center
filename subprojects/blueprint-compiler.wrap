@@ -1,10 +1,9 @@
 [wrap-file]
-directory = blueprint-compiler-a42ec3a9450d865b9856d7ad3128edadd9a5fe1b
+directory = blueprint-compiler-v0.16.0
 
-source_url = https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/a42ec3a9450d865b9856d7ad3128edadd9a5fe1b/blueprint-compiler-a42ec3a9450d865b9856d7ad3128edadd9a5fe1b.tar.bz2
-source_filename = blueprint-compiler-a42ec3a9450d865b9856d7ad3128edadd9a5fe1b.tar.bz2
-source_hash = 1bf00aa3019324348171f09cee184cadaf0078e49978c1154ce9f5f813d495f7
+source_url = https://gitlab.gnome.org/jwestman/blueprint-compiler/-/archive/v0.16.0/blueprint-compiler-v0.16.0.tar.bz2
+source_filename = blueprint-compiler-v0.16.0.tar.bz2
+source_hash = 77a5d593f433c8ca70a05390532cd186c60944cfa6bcd39296c1c2597a7a50fc
 
 [provide]
 program_names = blueprint-compiler
-

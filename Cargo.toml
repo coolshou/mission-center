@@ -2,25 +2,38 @@
 name = "missioncenter"
 version = "0.6.2"
 edition = "2021"
-build = "build.rs"
+
+[features]
+skip-codegen = ["magpie-types/skip-codegen"]
 
 [dependencies]
-adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
-arrayvec = { version = "0.7" }
-dbus = { version = "0.9" }
-errno-sys = { version = "0.2.0" }
-gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gtk = { package = "gtk4", version = "0.9", features = ["gnome_47"] }
-lazy_static = { version = "1.4" }
-libc = { version = "0.2" }
-libudev-sys = { version = "0.1" }
-regex = { version = "1.10" }
-rust-ini = { version = "0.21" }
-rusqlite = { version = "0.32", features = ["bundled"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
-static_assertions = { version = "1.1" }
-textdistance = { version = "1.0" }
+arrayvec = "0.7"
+libc = "0.2"
+rand = "0.9.0-beta.1"
+regex = "1.10"
+rust-ini = "0.21"
+textdistance = "1.0"
+
+[dependencies.adw]
+package = "libadwaita"
+version = "0.7"
+features = ["v1_6"]
+
+[dependencies.gettext-rs]
+version = "0.7"
+features = ["gettext-system"]
+
+[dependencies.gtk]
+package = "gtk4"
+version = "0.9"
+features = ["gnome_47"]
+
+[dependencies.magpie-types]
+path = "subprojects/magpie/types"
+
+[dependencies.nng-c-sys]
+version = "1.10"
+default-features = false
 
 [profile.release]
 opt-level = 3

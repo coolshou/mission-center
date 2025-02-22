@@ -1,9 +1,5 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 
-if get_option('flatpak') == false  
-  subdir('sys_info_v2/gatherer')
-endif
-
 gnome = import('gnome')
 libudev = dependency('libudev', required: true)
 
@@ -25,7 +21,11 @@ if get_option('flatpak') == false
     cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
     cargo_opt  = []
 else
-    cargo_opt  = []
+    cargo_opt  = [ '--features=skip-codegen' ]
+endif
+
+if get_option('skip-codegen')
+    cargo_opt += [ '--features=skip-codegen' ]
 endif
 
 cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
@@ -49,7 +49,7 @@ cargo_build = custom_target(
   install_dir: get_option('bindir'),
   command: [
     'env', cargo_env,
-    cargo_bin, 'build',
-    cargo_opt, '&&', 'cp', 'src' / rust_target / meson.project_name(), '@OUTPUT@',
+    cargo_bin, 'build', cargo_opt,
+    '&&', 'cp', 'src' / rust_target / meson.project_name(), '@OUTPUT@',
   ]
 )

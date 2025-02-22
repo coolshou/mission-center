@@ -46,16 +46,16 @@ themes).
 <a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
 <a href="https://snapcraft.io/mission-center"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
 
-
 Also available from https://portable-linux-apps.github.io/apps/mission-center.html
 
 Might also be available in your distribution's repository:  
 [![](https://repology.org/badge/vertical-allrepos/mission-center.svg)](https://repology.org/project/mission-center/versions)
 
 Installed by default in:
- * [Aurora](https://getaurora.dev/)
- * [Bluefin](https://projectbluefin.io/)
- * [DeLinuxCo](https://www.delinuxco.com/)
+
+* [Aurora](https://getaurora.dev/)
+* [Bluefin](https://projectbluefin.io/)
+* [DeLinuxCo](https://www.delinuxco.com/)
 
 Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
 
@@ -105,18 +105,20 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
 * Meson (version >= 0.63)
 * Rust (version >= 1.69)
+* CMake
+* Protobuf
 * Python3
 * Python GObject Introspection (required for Blueprint)
 * DRM development libraries
 * GBM development libraries
-* udev development libraires
+* udev development libraries
 * GTK 4
 * libadwaita
 
 **Build instructions**
 
 ```bash
-# On Ubuntu 24.04 all dependencies, except for the Rust toolchain, can be installed with:
+# On Ubuntu 25.04 all dependencies, except for the Rust toolchain, can be installed with:
 sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson libdbus-1-dev pkg-config
 
 BUILD_ROOT="$(pwd)/build-meson-debug"
@@ -128,9 +130,9 @@ ninja -C "$BUILD_ROOT"
 If you want to run the application from the build directory (for development or debugging) some set up is required:
 
 ```bash
-export PATH="$BUILD_ROOT/src/sys_info_v2/gatherer:$PATH"
+export PATH="$BUILD_ROOT/subprojects/magpie/src:$PATH"
 export GSETTINGS_SCHEMA_DIR="$BUILD_ROOT/data"
-export HW_DB_DIR="$BUILD_ROOT/data/hwdb"
+export MC_MAGPIE_HW_DB="$BUILD_ROOT/subprojects/magpie/platform-linux/hwdb/hw.db"
 export MC_RESOURCE_DIR="$BUILD_ROOT/resources"
 
 glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$BUILD_ROOT/data/"
@@ -157,7 +159,7 @@ missioncenter
 ### Building - AppImage
 
 ```bash
-# On Ubuntu 24.04 all dependencies, except for the Rust toolchain, can be installed with:
+# On Ubuntu 25.04 all dependencies, except for the Rust toolchain, can be installed with:
 sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
