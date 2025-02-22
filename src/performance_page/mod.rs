@@ -1117,7 +1117,11 @@ mod imp {
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
                     "{} {} ({})",
-                    &[&format!("{}", r#type) ,&format!("{}", index.unwrap()), &format!("{}", disk_id)],
+                    &[
+                        &format!("{}", r#type),
+                        &format!("{}", index.unwrap()),
+                        &format!("{}", disk_id),
+                    ],
                 ));
             } else {
                 disk_graph.set_heading(r#type);
@@ -1141,12 +1145,21 @@ mod imp {
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            self.update_disk_heading(&summary, disk_static_info.r#type, disk_static_info.id.as_ref(), disk_id);
+            self.update_disk_heading(
+                &summary,
+                disk_static_info.r#type,
+                disk_static_info.id.as_ref(),
+                disk_id,
+            );
             summary.set_info1(format!("{}", disk_static_info.model));
-            summary.set_info2(format!("{:.0}%{}",
+            summary.set_info2(format!(
+                "{:.0}%{}",
                 disk_static_info.busy_percent,
                 if disk_static_info.drive_temperature >= 1 {
-                    format!(" ({:.0} °C)", (disk_static_info.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.)
+                    format!(
+                        " ({:.0} °C)",
+                        (disk_static_info.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.
+                    )
                 } else {
                     String::new()
                 }
@@ -1805,7 +1818,11 @@ mod imp {
                         );
 
                         let cpu_name = String::from(readings.cpu_static_info.name.as_ref());
-                        let short_cpu_name = this.imp().cpu_cores_regex.replace_all(&cpu_name, "").to_string();
+                        let short_cpu_name = this
+                            .imp()
+                            .cpu_cores_regex
+                            .replace_all(&cpu_name, "")
+                            .to_string();
                         summary.set_info1(short_cpu_name);
 
                         summary.set_info2(format!(
@@ -2041,18 +2058,18 @@ mod imp {
                                 summary.set_info1(fan_info.temp_name.as_ref());
 
                                 let temp_str = if fan_info.temp_amount != 0 {
-                                    format!(" ({:.0} °C)", (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0)
+                                    format!(
+                                        " ({:.0} °C)",
+                                        (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0
+                                    )
                                 } else {
                                     String::new()
                                 };
-                                summary.set_info2(
-                                    if fan_info.percent_vroomimg < 0. {
-                                        format!("{} RPM{}", fan_info.rpm, temp_str)
-                                    } else {
-                                        format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
-                                    },
-
-                                );
+                                summary.set_info2(if fan_info.percent_vroomimg < 0. {
+                                    format!("{} RPM{}", fan_info.rpm, temp_str)
+                                } else {
+                                    format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
+                                });
                                 result &= page.update_readings(fan_info);
                             }
                         }
