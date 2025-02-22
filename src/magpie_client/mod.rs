@@ -109,7 +109,7 @@ pub struct Readings {
     pub disks_info: Vec<Disk>,
     pub network_connections: Vec<Connection>,
     pub gpus: HashMap<String, Gpu>,
-    pub fans_info: Vec<Fan>,
+    pub fans: Vec<Fan>,
 
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
@@ -126,7 +126,7 @@ impl Readings {
             disks_info: vec![],
             network_connections: vec![],
             gpus: HashMap::new(),
-            fans_info: vec![],
+            fans: vec![],
 
             running_apps: HashMap::new(),
             running_processes: HashMap::new(),
@@ -524,7 +524,7 @@ impl MagpieClient {
             cpu: gatherer.cpu(),
             mem_info: gatherer.memory(),
             mem_devices: gatherer.memory_devices(),
-            fans_info: gatherer.fans_info(),
+            fans: gatherer.fans_info(),
             network_connections: gatherer.network_connections(),
             services: gatherer.services(),
         };
@@ -550,7 +550,7 @@ impl MagpieClient {
                 mem_info: readings.mem_info.clone(),
                 mem_devices: std::mem::take(&mut readings.mem_devices),
                 disks_info: std::mem::take(&mut readings.disks_info),
-                fans_info: std::mem::take(&mut readings.fans_info),
+                fans: std::mem::take(&mut readings.fans),
                 network_connections: std::mem::take(&mut readings.network_connections),
                 gpus: std::mem::take(&mut readings.gpus),
                 running_apps: std::mem::take(&mut readings.running_apps),
@@ -644,7 +644,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.fans_info = gatherer.fans_info();
+            readings.fans = gatherer.fans_info();
             g_debug!(
                 "MissionCenter::Perf",
                 "Fans info load took: {:?}",
@@ -678,7 +678,7 @@ impl MagpieClient {
                     mem_info: readings.mem_info.clone(),
                     mem_devices: readings.mem_devices.clone(),
                     disks_info: std::mem::take(&mut readings.disks_info),
-                    fans_info: std::mem::take(&mut readings.fans_info),
+                    fans: std::mem::take(&mut readings.fans),
                     network_connections: std::mem::take(&mut readings.network_connections),
                     gpus: std::mem::take(&mut readings.gpus),
                     running_apps: std::mem::take(&mut readings.running_apps),

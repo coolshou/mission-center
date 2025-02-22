@@ -222,10 +222,6 @@ mod imp {
                 None
             });
 
-            if let Some(fan_label) = &fan.fan_label {
-                this.title_fan_name.set_text(fan_label);
-            }
-
             if let Some(legend_send) = this.legend_speed.get() {
                 legend_send
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
@@ -267,13 +263,21 @@ mod imp {
             true
         }
 
-        pub fn update_readings(this: &super::PerformancePageFan, fan: &Fan) -> bool {
+        pub fn update_readings(
+            this: &super::PerformancePageFan,
+            fan: &Fan,
+            index: Option<usize>,
+        ) -> bool {
             let this = this.imp();
 
-            this.title_fan_name.set_text(&i18n_f(
-                "{}",
-                &[&fan.fan_label.clone().unwrap_or("".to_string())],
-            ));
+            if let Some(fan_label) = &fan.fan_label {
+                this.title_fan_name.set_text(fan_label);
+            } else if let Some(index) = index {
+                this.title_fan_name
+                    .set_text(&i18n_f("Fan {}", &[&index.to_string()]));
+            } else {
+                this.title_fan_name.set_text(&i18n("Fan"));
+            }
 
             if let Some(speed_send) = this.speed.get() {
                 speed_send.set_text(&i18n_f("{} RPM", &[&format!("{}", fan.rpm)]));
@@ -557,7 +561,7 @@ impl PerformancePageFan {
         imp::PerformancePageFan::set_static_information(self, fan_info)
     }
 
-    pub fn update_readings(&self, fan_info: &Fan) -> bool {
-        imp::PerformancePageFan::update_readings(self, fan_info)
+    pub fn update_readings(&self, fan_info: &Fan, index: Option<usize>) -> bool {
+        imp::PerformancePageFan::update_readings(self, fan_info, index)
     }
 }

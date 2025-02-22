@@ -1441,14 +1441,11 @@ mod imp {
             readings: &crate::magpie_client::Readings,
         ) {
             let mut fans = HashMap::new();
-            let len = readings.fans_info.len();
+            let len = readings.fans.len();
             let hide_index = len == 1;
             for i in 0..len {
-                let mut ret = self.create_fan_page(
-                    readings,
-                    if hide_index { None } else { Some(i as i32) },
-                    None,
-                );
+                let mut ret =
+                    self.create_fan_page(readings, if hide_index { None } else { Some(i) }, None);
                 fans.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
@@ -1462,19 +1459,18 @@ mod imp {
         pub fn create_fan_page(
             &self,
             readings: &crate::magpie_client::Readings,
-            fan_id: Option<i32>,
+            index: Option<usize>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, FanPage)) {
-            let fan_static_info =
-                &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
+            let fan_static_info = &readings.fans[index.unwrap_or(0)];
 
             let page_name = Self::fan_page_name(fan_static_info);
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            if fan_id.is_some() {
-                summary.set_heading(i18n_f("Fan {}", &[&format!("{}", fan_id.unwrap())]));
+            if let Some(index) = index {
+                summary.set_heading(i18n_f("Fan {}", &[&format!("{}", index)]));
             } else {
                 summary.set_heading(i18n("Fan"));
             }
@@ -1837,7 +1833,30 @@ mod imp {
 
                         this.imp().summary_graphs.set(summary_graphs);
                     }
-                    Pages::Fan(_) => {}
+                    Pages::Fan(fan_pages) => {
+                        for fan_page_name in fan_pages.keys() {
+                            if !readings
+                                .fans
+                                .iter()
+                                .any(|fan| &Self::fan_page_name(&fan) == fan_page_name)
+                            {
+                                pages_to_destroy.push(fan_page_name.clone());
+                            }
+                        }
+
+                        let mut summary_graphs = this.imp().summary_graphs.take();
+
+                        remove_pages(
+                            &pages_to_destroy,
+                            fan_pages,
+                            &mut summary_graphs,
+                            &this.sidebar(),
+                            &this.imp().page_stack,
+                        );
+                        pages_to_destroy.clear();
+
+                        this.imp().summary_graphs.set(summary_graphs);
+                    }
                 }
             }
 
@@ -2128,18 +2147,47 @@ mod imp {
                         }
                     }
                     Pages::Fan(pages) => {
-                        for fan_info in &readings.fans_info {
-                            if let Some((summary, page)) = pages.get(&Self::fan_page_name(fan_info))
-                            {
+                        let mut last_sidebar_pos = -1;
+                        let mut consecutive_dev_count = 0;
+
+                        let hide_index = readings.fans.len() == 1;
+
+                        let mut new_devices = Vec::new();
+                        for (index, fan) in readings.fans.iter().enumerate() {
+                            let index = if hide_index { None } else { Some(index) };
+
+                            if let Some((summary, page)) = pages.get(&Self::fan_page_name(&fan)) {
+                                // Search for a group of existing fans and try to add new entries at that position
+                                summary
+                                    .parent()
+                                    .and_then(|p| p.downcast_ref::<gtk::ListBoxRow>().cloned())
+                                    .and_then(|row| {
+                                        let sidebar_pos = row.index();
+                                        if sidebar_pos == last_sidebar_pos + 1 {
+                                            consecutive_dev_count += 1;
+                                        } else {
+                                            consecutive_dev_count = 1;
+                                        };
+                                        last_sidebar_pos = sidebar_pos;
+
+                                        Some(())
+                                    });
+
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                if let Some(temp_name) = &fan_info.temp_name {
+                                graph_widget.add_data_point(0, fan.rpm as f32);
+                                if let Some(temp_name) = &fan.temp_name {
                                     summary.set_info1(temp_name.as_str());
                                 }
 
-                                let temp_str = if let Some(temp_amount) = fan_info.temp_amount {
+                                if let Some(index) = index {
+                                    summary.set_heading(i18n_f("Fan {}", &[&format!("{}", index)]));
+                                } else {
+                                    summary.set_heading(i18n("Fan"));
+                                }
+
+                                let temp_str = if let Some(temp_amount) = fan.temp_amount {
                                     format!(
                                         " ({:.0} °C)",
                                         (temp_amount as i32 + MK_TO_0_C) as f32 / 1000.0
@@ -2148,15 +2196,29 @@ mod imp {
                                     String::new()
                                 };
 
-                                summary.set_info2(
-                                    if let Some(pwm_percent) = fan_info.pwm_percent {
-                                        format!("{:.0}%{}", pwm_percent * 100., temp_str)
-                                    } else {
-                                        format!("{} RPM{}", fan_info.rpm, temp_str)
-                                    },
-                                );
-                                result &= page.update_readings(fan_info);
+                                summary.set_info2(if let Some(pwm_percent) = fan.pwm_percent {
+                                    format!("{:.0}%{}", pwm_percent * 100., temp_str)
+                                } else {
+                                    format!("{} RPM{}", fan.rpm, temp_str)
+                                });
+                                result &= page.update_readings(fan, index);
+                            } else {
+                                new_devices.push(index);
                             }
+                        }
+
+                        for index in new_devices {
+                            let (page_name, page) = this.imp().create_fan_page(
+                                readings,
+                                index,
+                                if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
+                                    last_sidebar_pos += 1;
+                                    Some(last_sidebar_pos)
+                                } else {
+                                    None
+                                },
+                            );
+                            pages.insert(page_name, page);
                         }
                     }
                 }
