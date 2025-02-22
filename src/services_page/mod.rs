@@ -728,6 +728,66 @@ mod imp {
                 }
             });
             self.obj().add_controller(evt_key_press);
+
+            if let Some(window) = app!().window() {
+                window.add_action(&self.actions.start);
+                window.add_action(&self.actions.stop);
+                window.add_action(&self.actions.restart);
+            }
+
+            let filter_model = self.set_up_filter_model(self.model.clone().into());
+            let selection_model = gtk::SingleSelection::new(Some(filter_model));
+            selection_model.connect_selected_notify({
+                let this = self.obj().downgrade();
+                move |model| {
+                    let selected = match model
+                        .selected_item()
+                        .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
+                    {
+                        Some(list_item) => list_item,
+                        None => {
+                            return;
+                        }
+                    };
+
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => {
+                            g_critical!(
+                                "MissionCenter::ServicesPage",
+                                "Failed to get ServicesPage instance in `selected_notify` signal"
+                            );
+                            return;
+                        }
+                    };
+                    let this = this.imp();
+
+                    if selected.running() {
+                        this.actions.stop.set_enabled(true);
+                        this.actions.start.set_enabled(false);
+                        this.actions.restart.set_enabled(true);
+                    } else {
+                        this.actions.stop.set_enabled(false);
+                        this.actions.start.set_enabled(true);
+                        this.actions.restart.set_enabled(false);
+                    }
+                }
+            });
+
+            self.column_view.set_model(Some(&selection_model));
+
+            if let Some(header) = self.column_view.first_child() {
+                header.add_css_class("app-list-header");
+
+                // Add 10px padding to the left of the first column header to align it with the content
+                if let Some(first_column) = header
+                    .first_child()
+                    .and_then(|w| w.first_child())
+                    .and_then(|w| w.first_child())
+                {
+                    first_column.set_margin_start(10);
+                }
+            }
         }
     }
 
@@ -755,74 +815,6 @@ impl ServicesPage {
     #[inline]
     pub fn expand(&self) {
         self.imp().expand();
-    }
-
-    pub fn set_initial_readings(&self, readings: &mut Readings) -> bool {
-        let this = self.imp();
-
-        if let Some(window) = app!().window() {
-            window.add_action(&this.actions.start);
-            window.add_action(&this.actions.stop);
-            window.add_action(&this.actions.restart);
-        }
-
-        let filter_model = this.set_up_filter_model(this.model.clone().into());
-        let selection_model = gtk::SingleSelection::new(Some(filter_model));
-        selection_model.connect_selected_notify({
-            let this = self.downgrade();
-            move |model| {
-                let selected = match model
-                    .selected_item()
-                    .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
-                {
-                    Some(list_item) => list_item,
-                    None => {
-                        return;
-                    }
-                };
-
-                let this = match this.upgrade() {
-                    Some(this) => this,
-                    None => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to get ServicesPage instance in `selected_notify` signal"
-                        );
-                        return;
-                    }
-                };
-                let this = this.imp();
-
-                if selected.running() {
-                    this.actions.stop.set_enabled(true);
-                    this.actions.start.set_enabled(false);
-                    this.actions.restart.set_enabled(true);
-                } else {
-                    this.actions.stop.set_enabled(false);
-                    this.actions.start.set_enabled(true);
-                    this.actions.restart.set_enabled(false);
-                }
-            }
-        });
-
-        this.column_view.set_model(Some(&selection_model));
-
-        if let Some(header) = this.column_view.first_child() {
-            header.add_css_class("app-list-header");
-
-            // Add 10px padding to the left of the first column header to align it with the content
-            if let Some(first_column) = header
-                .first_child()
-                .and_then(|w| w.first_child())
-                .and_then(|w| w.first_child())
-            {
-                first_column.set_margin_start(10);
-            }
-        }
-
-        this.update_model(readings);
-
-        true
     }
 
     pub fn update_readings(&self, readings: &mut Readings) -> bool {

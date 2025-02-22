@@ -745,21 +745,9 @@ impl MissionCenterWindow {
             .apps_page
             .add_css_class("mission-center-apps-page");
 
-        if readings.services.is_empty() {
-            g_critical!("MissionCenter", "No services found, hiding services page");
-            self.imp().services_stack_page.set_visible(false);
-        } else {
-            let ok = self.imp().services_page.set_initial_readings(&mut readings);
-            if !ok {
-                g_critical!(
-                    "MissionCenter",
-                    "Failed to set initial readings for services page"
-                );
-            }
-            self.imp()
-                .services_page
-                .add_css_class("mission-center-services-page");
-        }
+        self.imp()
+            .services_page
+            .add_css_class("mission-center-services-page");
 
         self.imp().loading_box.set_visible(false);
         self.imp().header_bar.set_visible(true);
@@ -787,9 +775,17 @@ impl MissionCenterWindow {
     pub fn update_readings(&self, readings: &mut Readings) -> bool {
         let mut result = true;
 
-        result &= self.imp().performance_page.update_readings(readings);
-        result &= self.imp().apps_page.update_readings(readings);
-        result &= self.imp().services_page.update_readings(readings);
+        let this = self.imp();
+
+        result &= this.performance_page.update_readings(readings);
+        result &= this.apps_page.update_readings(readings);
+
+        if !readings.services.is_empty() {
+            this.services_stack_page.set_visible(true);
+            result &= this.services_page.update_readings(readings);
+        } else {
+            this.services_stack_page.set_visible(false);
+        }
 
         result
     }

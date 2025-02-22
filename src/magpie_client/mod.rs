@@ -529,14 +529,6 @@ impl MagpieClient {
             services: gatherer.services(),
         };
 
-        let refresh_services = !readings.services.is_empty();
-        if readings.services.is_empty() {
-            g_warning!(
-                "MissionCenter::SysInfo",
-                "No services were found, not asking for them again to avoid spamming the logs"
-            );
-        }
-
         readings
             .disks_info
             .sort_unstable_by(|d1, d2| d1.id.cmp(&d2.id));
@@ -651,15 +643,13 @@ impl MagpieClient {
                 timer.elapsed()
             );
 
-            if refresh_services {
-                let timer = std::time::Instant::now();
-                readings.services = gatherer.services();
-                g_debug!(
-                    "MissionCenter::Perf",
-                    "Services load took: {:?}",
-                    timer.elapsed()
-                );
-            }
+            let timer = std::time::Instant::now();
+            readings.services = gatherer.services();
+            g_debug!(
+                "MissionCenter::Perf",
+                "Services load took: {:?}",
+                timer.elapsed()
+            );
 
             readings
                 .disks_info
