@@ -524,6 +524,22 @@ mod imp {
             true
         }
 
+        pub fn update_animations(
+            this: &super::PerformancePageCpu,
+        ) -> bool {
+            let this = this.imp();
+            
+            let widgets = this.graph_widgets.take();
+            
+            for widget in &widgets {
+                widget.update_animation();
+            }
+            
+            this.graph_widgets.set(widgets);
+            
+            true
+        }
+
         fn data_summary(&self) -> String {
             let base_speed = self
                 .base_speed
@@ -1042,5 +1058,9 @@ impl PerformancePageCpu {
 
     pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageCpu::update_readings(self, readings)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageCpu::update_animations(self)
     }
 }

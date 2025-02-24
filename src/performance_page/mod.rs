@@ -2228,6 +2228,72 @@ mod imp {
 
             result
         }
+        
+        pub fn update_animations(
+            this: &super::PerformancePage,
+        ) -> bool {
+            let mut pages = this.imp().pages.take();
+
+            let mut result = true;
+
+            let settings = settings!();
+
+            let data_points = settings.int("performance-page-data-points") as u32;
+            let smooth = settings.boolean("performance-smooth-graphs");
+
+            for page in &mut pages {
+                match page {
+                    Pages::Cpu((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Memory((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Disk(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Network(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Gpu(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();      
+                            
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Fan(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                }
+            }
+
+            this.imp().pages.set(pages);
+
+            result
+        }
     }
 
     #[glib::object_subclass]
@@ -2386,6 +2452,10 @@ impl PerformancePage {
 
     pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePage::update_readings(self, readings)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePage::update_animations(self)
     }
 
     pub fn sidebar_enable_all(&self) {

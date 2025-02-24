@@ -503,6 +503,17 @@ mod imp {
             true
         }
 
+        pub fn update_animations(
+            this: &super::PerformancePageMemory,
+        ) -> bool {
+            let this = this.imp();
+            
+            this.usage_graph.update_animation();
+            this.swap_usage_graph.update_animation();
+            
+            true
+        }
+
         fn data_summary(&self) -> String {
             let unknown = i18n("Unknown");
             let unknown = unknown.as_str();
@@ -906,5 +917,9 @@ impl PerformancePageMemory {
 
     pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageMemory::update_readings(self, readings)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageMemory::update_animations(self)
     }
 }

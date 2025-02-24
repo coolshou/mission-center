@@ -94,6 +94,9 @@ mod imp {
 
         scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
+
+        pub animation_ticks: Cell<u32>,
+        pub expected_animation_ticks: Cell<u32>,
     }
 
     impl Default for GraphWidget {
@@ -128,6 +131,8 @@ mod imp {
 
                 scroll_offset: Cell::new(0),
                 prev_size: Cell::new((0, 0)),
+                animation_ticks: Cell::new(0),
+                expected_animation_ticks: Cell::new(10),
             }
         }
     }
@@ -334,7 +339,7 @@ mod imp {
             let val_max = self.value_range_max.get() - self.value_range_min.get();
             let val_min = 0.;
 
-            let spacing_x = width / (data_points.data_set.len() - 1) as f32;
+            let spacing_x = width / (data_points.data_set.len() - 2) as f32;
 
             let mut points: Vec<(f32, f32)> = if self.scaling.get() != NORMALIZED_SCALING {
                 (0..)
@@ -381,18 +386,20 @@ mod imp {
             };
 
             for (x, y) in &mut points {
-                *x = *x * spacing_x;
+                *x = *x * spacing_x - spacing_x;
                 *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
             }
 
             if !points.is_empty() {
+                let anime_offset = -spacing_x * (1f32 - self.animation_ticks.get() as f32 / self.expected_animation_ticks.get() as f32);
+                
                 let startindex;
                 let (mut x, mut y);
                 let pointlen = points.len();
 
                 if pointlen < data_points.data_set.len() {
                     (x, y) = (
-                        (data_points.data_set.len() - pointlen - 1) as f32 * spacing_x,
+                        (data_points.data_set.len() - pointlen - 2) as f32 * spacing_x,
                         height,
                     );
                     startindex = 0;
@@ -400,6 +407,9 @@ mod imp {
                     (x, y) = points[0];
                     startindex = 1;
                 }
+                
+                x -= anime_offset;
+                
                 let path_builder = PathBuilder::new();
                 path_builder.move_to(x, y);
 
@@ -407,13 +417,17 @@ mod imp {
 
                 for i in startindex..pointlen {
                     (x, y) = points[i];
+                    
+                    x -= anime_offset;
                     if smooth {
-                        let (lastx, lasty);
+                        let (mut lastx, lasty);
                         if i > 0 {
                             (lastx, lasty) = points[i - 1];
                         } else {
-                            (lastx, lasty) = (x - spacing_x, height);
+                            (lastx, lasty) = (x - spacing_x + anime_offset, height);
                         }
+
+                        lastx -= anime_offset;
 
                         path_builder.cubic_to(
                             lastx + spacing_x / 2f32,
@@ -429,6 +443,7 @@ mod imp {
                 }
 
                 // Make sure to close out the path
+                // path_builder.line_to(points[pointlen - 1].0, points[pointlen - 1].1);
                 path_builder.line_to(points[pointlen - 1].0, height);
                 path_builder.line_to(points[0].0, height);
                 path_builder.close();
@@ -597,6 +612,8 @@ impl GraphWidget {
     pub fn add_data_point(&self, index: usize, mut value: f32) {
         let mut data = self.imp().data_sets.take();
 
+        self.imp().animation_ticks.set(0);
+
         if index == 0 {
             self.imp().try_increment_scroll();
         }
@@ -632,6 +649,16 @@ impl GraphWidget {
         if self.is_visible() {
             self.queue_draw();
         }
+    }
+    
+    pub fn update_animation(&self) -> bool {
+        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.imp().expected_animation_ticks.get() - 1));
+        
+        if self.is_visible() {
+            self.queue_draw();
+        }
+        
+        true
     }
 
     pub fn data(&self, index: usize) -> Option<Vec<f32>> {

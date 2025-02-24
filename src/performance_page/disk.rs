@@ -382,6 +382,17 @@ mod imp {
             true
         }
 
+        pub fn update_animations(
+            this: &super::PerformancePageDisk,
+        ) -> bool {
+            let this = this.imp();
+            
+            this.usage_graph.update_animation();
+            this.disk_transfer_rate_graph.update_animation();
+            
+            true
+        }
+
         fn data_summary(&self) -> String {
             let unknown = i18n("Unknown");
             let unknown = unknown.as_str();
@@ -734,5 +745,9 @@ impl PerformancePageDisk {
 
     pub fn update_readings(&self, index: Option<usize>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::update_readings(self, index, disk)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageDisk::update_animations(self)
     }
 }

@@ -789,4 +789,14 @@ impl MissionCenterWindow {
 
         result
     }
+
+    pub fn update_animations(&self) -> bool {
+        let mut result = true;
+
+        let this = self.imp();
+
+        result &= this.performance_page.update_animations();
+
+        result
+    }
 }

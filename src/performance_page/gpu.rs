@@ -368,6 +368,18 @@ mod imp {
             true
         }
 
+        pub(crate) fn update_animations(
+            this: &super::PerformancePageGpu,
+        ) -> bool {
+            let this = this.imp();
+            
+            this.graph_utilization.update_animation();
+            this.usage_graph_memory.update_animation();
+            this.usage_graph_encode_decode.update_animation();
+            
+            true
+        }
+
         fn data_summary(&self) -> String {
             format!(
                 r#"{}
@@ -925,5 +937,9 @@ impl PerformancePageGpu {
 
     pub fn update_readings(&self, gpu: &Gpu, index: Option<usize>) -> bool {
         imp::PerformancePageGpu::update_readings(self, gpu, index)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageGpu::update_animations(self)
     }
 }

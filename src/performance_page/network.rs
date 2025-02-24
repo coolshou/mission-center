@@ -543,7 +543,17 @@ mod imp {
 
             true
         }
-
+        
+        pub fn update_animations(
+            this: &super::PerformancePageNetwork,
+        ) -> bool {
+            let this = this.imp();
+            
+            this.usage_graph.update_animation();
+            
+            true
+        }
+        
         fn data_summary(&self) -> String {
             let unknown = i18n("Unknown");
             let unknown = unknown.as_str();
@@ -937,6 +947,10 @@ impl PerformancePageNetwork {
 
     pub fn update_readings(&self, connection: &Connection) -> bool {
         imp::PerformancePageNetwork::update_readings(self, connection)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageNetwork::update_animations(self)
     }
 
     pub fn infobar_collapsed(&self) {

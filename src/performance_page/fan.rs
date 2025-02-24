@@ -326,6 +326,17 @@ mod imp {
 
             true
         }
+        
+        pub fn update_animations(
+            this: &super::PerformancePageFan,
+        ) -> bool {
+            let this = this.imp();
+
+            this.speed_graph.update_animation();
+            this.temp_graph.update_animation();
+            
+            true
+        }
 
         fn data_summary(&self) -> String {
             let unsupported = i18n("Unsupported");
@@ -563,5 +574,9 @@ impl PerformancePageFan {
 
     pub fn update_readings(&self, fan_info: &Fan, index: Option<usize>) -> bool {
         imp::PerformancePageFan::update_readings(self, fan_info, index)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageFan::update_animations(self)
     }
 }
