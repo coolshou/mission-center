@@ -8,67 +8,75 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-02-25 18:04+0000\n"
+"Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/gl/>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.2-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Xestor de tarefas; Monitor de recursos;Monitor do "
+"sistema;Procesador;Procesos;Monitor de "
+"rendemento;CPU;GPU;Disco;Memoria;Rede;Utilización;Uso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Desenvolvedores de Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Monitoriza o uso dos recursos do sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
-msgstr ""
+msgstr "Monitoriza o uso da túa CPU, Memoria, Disco, Rede e GPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr ""
+msgstr "Características:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Monitoriza o uso total ou por fío da CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Ver recuento de procesos, fíos, e controladores do sistema, tempo activo, "
+"velocidade do reloxo (base e actual), tamaños de caché"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Monitoriza o uso de RAM e Swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Vexa un desglose de como a memoria está a ser empregada polo sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Monitoriza a utilización do disco e as taxas de transferencia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Monitoriza o uso da rede e as velocidades de transferencia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -76,52 +84,61 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Ver información das interfaces de rede tales coma nome da tarxeta de rede, "
+"tipo de conexión (Wi-Fi ou Ethernet), velocidadee e frecuencia sen fíos, "
+"enderezo de hardware, enderezo IP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Monitor xeral de uso da GPU, uso do codificador e decodificador de vídeo, "
+"uso de memoria e consumo de enerxía, coa teclonoxía do popular proxecto NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Ver unha desagregación do uso de recursos por aplicación e proceso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Admite unha vista resumida minimizada para unha monitorización sinxela"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
+"Empregue renderizado acelerado por hardware para todas as gráficas nun "
+"esforzo por reducir o uso total de recursos e de CPU"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Emprega GTK4 e Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr ""
+msgstr "Escrito en Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Limitacións (estase a traballar para superalas todas):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr ""
+msgstr "No hai uso de rede por proceso"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "O soporte da GPU é experimental"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"A monitorización da GPU de Intel só se admite para GPUs Broadwell e "
+"posteriormes; e non soporta VRAM, potencia ou monitorización de temperatura"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -129,73 +146,86 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Ao empregar Linux Mint/Cinnamon, as aplicacións lanzadas poden non aparecer "
+"na sección \"Aplicacións\" (Upstream issue: https://github.com/linuxmint/"
+"cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Comentarios, suxestións, informes de erros e contribucións son benvidos"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Qué páxina se amosa ao arranque da aplicación"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "OBSOLETO! XA NON SE ESTÁ A EMPREGAR!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
+"Con qué rapidez deberían actualizarse os datos e a interface de usuario (en "
+"incrementos de 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Cantos puntos deben amosarse en cada gráfico?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "Empregar ou non bits (por defecto) ou Bytes para a velocidade da rede"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Establecer o gráfico máximo coma o máximo da interface (falso) ou o máximo "
+"observado (verdadeiro)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"As estatísticas dos procesos padre e fillo amósanse individualmente ou "
+"fusionadas cara arriba"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "A orde das colúmnas persiste ou reiniciar a aplicación"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Amosar uso da CPU por Aplicacións e Procesos escalado ao número de núcleos "
+"dispoñíbeis"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
 msgstr ""
+"O identificador de columna polo cal se ordea a vista da Páxina de aplicacións"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "A dirección da orde da vista da Páxina de aplicacións"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Qué gráfico se amosa na páxina de rendemento da CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Amosar os tempos de kernel nas gráficas de CPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
+"Qué páxina se amosa ao arranque da aplicación, no separador de rendemento"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
