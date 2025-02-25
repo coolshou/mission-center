@@ -1252,8 +1252,9 @@ mod imp {
                     3 => &self.memory_column,
                     4 => &self.shared_memory_column,
                     5 => &self.disk_column,
-                    6 => &self.gpu_usage_column,
-                    7 => &self.gpu_memory_column,
+                    6 => &self.network_column,
+                    7 => &self.gpu_usage_column,
+                    8 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
                         g_critical!(
