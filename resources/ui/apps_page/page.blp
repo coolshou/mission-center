@@ -195,6 +195,31 @@ template $AppsPage : Box {
         };
       }
 
+      ColumnViewColumn network_column {
+        resizable: true;
+        fixed-width: 90;
+
+        factory: BuilderListItemFactory {
+          template ListItem {
+            // focusable: false;
+            child: TreeExpander expander {
+              list-row: bind template.item as <ListItem>;
+              hide-expander: true;
+              indent-for-depth: false;
+              indent-for-icon: false;
+
+              halign: end;
+
+              child: $StatColumn {
+                unit: "bps";
+                value: bind (expander.item as <$RowModel>).net-usage;
+                content-type: bind (expander.item as <$RowModel>).content-type;
+              };
+            };
+          }
+        };
+      }
+
       ColumnViewColumn gpu_usage_column {
         resizable: true;
         fixed-width: 90;

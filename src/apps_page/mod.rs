@@ -62,6 +62,8 @@ mod imp {
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
+        pub network_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -75,6 +77,7 @@ mod imp {
         pub column_header_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_shared_memory: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_disk: Cell<Option<column_header::ColumnHeader>>,
+        pub column_header_network: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_usage: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_gpu_memory_usage: Cell<Option<column_header::ColumnHeader>>,
 
@@ -86,6 +89,7 @@ mod imp {
         pub max_cpu_usage: Cell<f32>,
         pub max_memory_usage: Cell<u64>,
         pub max_disk_usage: Cell<f32>,
+        pub max_network_usage: Cell<f32>,
         pub max_gpu_memory_usage: Cell<u64>,
 
         pub apps: Cell<HashMap<String, App>>,
@@ -106,6 +110,7 @@ mod imp {
                 memory_column: TemplateChild::default(),
                 shared_memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
+                network_column: Default::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
 
@@ -117,6 +122,7 @@ mod imp {
                 column_header_memory: Cell::new(None),
                 column_header_shared_memory: Cell::new(None),
                 column_header_disk: Cell::new(None),
+                column_header_network: Cell::new(None),
                 column_header_gpu_usage: Cell::new(None),
                 column_header_gpu_memory_usage: Cell::new(None),
 
@@ -128,6 +134,7 @@ mod imp {
                 max_cpu_usage: Cell::new(0.0),
                 max_memory_usage: Cell::new(0),
                 max_disk_usage: Cell::new(0.0),
+                max_network_usage: Cell::new(0.0),
                 max_gpu_memory_usage: Cell::new(0),
 
                 apps: Cell::new(HashMap::new()),
@@ -1055,6 +1062,36 @@ mod imp {
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
                         let lhs = if let Some(merged_stats) = lhs.merged_stats() {
+                            merged_stats.network_usage
+                        } else {
+                            lhs.network_usage()
+                        };
+
+                        let rhs = if let Some(merged_stats) = rhs.merged_stats() {
+                            merged_stats.network_usage
+                        } else {
+                            rhs.network_usage()
+                        };
+
+                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                    })
+                    .into()
+            });
+            self.network_column.set_sorter(Some(&sorter));
+
+            let this = self.obj().downgrade();
+            let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
+                use std::cmp::Ordering;
+
+                let this = this.upgrade();
+                if this.is_none() {
+                    return Ordering::Equal.into();
+                }
+                let this = this.unwrap();
+
+                this.imp()
+                    .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
+                        let lhs = if let Some(merged_stats) = lhs.merged_stats() {
                             merged_stats.gpu_usage
                         } else {
                             lhs.gpu_usage()
@@ -1129,6 +1166,7 @@ mod imp {
                             let mc = this.imp().memory_column.as_ptr() as usize;
                             let ms = this.imp().shared_memory_column.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
+                            let wc = this.imp().network_column.as_ptr() as usize;
                             let gc = this.imp().gpu_usage_column.as_ptr() as usize;
                             let gm = this.imp().gpu_memory_column.as_ptr() as usize;
 
@@ -1144,10 +1182,12 @@ mod imp {
                                 settings.set_enum("apps-page-sorting-column", 4)
                             } else if sort_column == dc {
                                 settings.set_enum("apps-page-sorting-column", 5)
-                            } else if sort_column == gc {
+                            } else if sort_column == wc {
                                 settings.set_enum("apps-page-sorting-column", 6)
-                            } else if sort_column == gm {
+                            } else if sort_column == gc {
                                 settings.set_enum("apps-page-sorting-column", 7)
+                            } else if sort_column == gm {
+                                settings.set_enum("apps-page-sorting-column", 8)
                             } else {
                                 g_critical!(
                                     "MissionCenter::AppsPage",
@@ -1308,6 +1348,12 @@ mod imp {
                 }
             }
             self.column_header_disk.set(column_header_disk);
+
+            let column_header_net = self.column_header_network.take();
+            if let Some(column_header_net) = &column_header_net {
+                column_header_net.set_heading("0%");
+            }
+            self.column_header_network.set(column_header_net);
 
             let column_header_gpu = self.column_header_gpu_usage.take();
             if let Some(column_header_gpu) = &column_header_gpu {
@@ -1566,6 +1612,12 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
+            let (column_view_title, column_header_network) = self.configure_column_header(
+                &column_view_title.unwrap(),
+                &i18n("Network"),
+                "0%",
+                gtk::Align::End,
+            );
 
             self.column_header_name.set(Some(column_header_name));
             self.column_header_pid.set(Some(column_header_pid));
@@ -1574,6 +1626,7 @@ mod imp {
             self.column_header_shared_memory
                 .set(Some(column_header_shared_memory));
             self.column_header_disk.set(Some(column_header_disk));
+            self.column_header_network.set(Some(column_header_network));
 
             if let Some(column_view_title) = column_view_title {
                 let (column_view_title, column_header_gpu_usage) = self.configure_column_header(
