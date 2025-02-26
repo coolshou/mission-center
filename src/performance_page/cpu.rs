@@ -680,6 +680,7 @@ mod imp {
             let graph_selection = settings.int("performance-page-cpu-graph");
             let show_kernel_times = settings.boolean("performance-page-kernel-times");
             let data_points = settings.int("performance-page-data-points") as u32;
+            let delay = settings.int("app-update-interval-u64") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
             // Add one for overall CPU utilization
@@ -689,6 +690,7 @@ mod imp {
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_points(data_points);
             graph_widgets[0].set_smooth_graphs(smooth);
+            graph_widgets[0].set_expected_animation_ticks(delay);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_data_set_count(2);
             graph_widgets[0].set_filled(1, false);
@@ -754,6 +756,7 @@ mod imp {
                 }
                 graph_widgets[graph_widget_index].set_data_points(data_points);
                 graph_widgets[graph_widget_index].set_smooth_graphs(smooth);
+                graph_widgets[graph_widget_index].set_expected_animation_ticks(delay);
                 graph_widgets[graph_widget_index].set_data_set_count(2);
                 graph_widgets[graph_widget_index].set_scroll(true);
                 graph_widgets[graph_widget_index].set_filled(1, false);
@@ -980,7 +983,8 @@ impl PerformancePageCpu {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
                 .round() as u32;
@@ -1019,6 +1023,7 @@ impl PerformancePageCpu {
             for graph_widget in &widgets {
                 graph_widget.set_data_points(data_points);
                 graph_widget.set_smooth_graphs(smooth);
+                graph_widget.set_expected_animation_ticks(delay as u32);
             }
             this.graph_widgets.set(widgets);
         }

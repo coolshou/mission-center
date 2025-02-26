@@ -210,6 +210,8 @@ impl MissionCenterApplication {
             "Starting Mission Center v{}",
             env!("CARGO_PKG_VERSION")
         );
+        
+        // this.setup_animations();
 
         this
     }
@@ -226,6 +228,20 @@ impl MissionCenterApplication {
         };
 
         window.set_initial_readings(readings)
+    }
+
+    pub fn setup_animations(&self) {
+        use gtk::glib::*;
+
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return;
+        };
+
+        window.setup_animations()
     }
 
     pub fn refresh_readings(&self, readings: &mut Readings) -> bool {

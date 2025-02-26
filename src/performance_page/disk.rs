@@ -671,7 +671,8 @@ impl PerformancePageDisk {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
                 .round() as u32;
@@ -704,8 +705,10 @@ impl PerformancePageDisk {
             ));
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
+            this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.disk_transfer_rate_graph.set_data_points(data_points);
             this.disk_transfer_rate_graph.set_smooth_graphs(smooth);
+            this.disk_transfer_rate_graph.set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 

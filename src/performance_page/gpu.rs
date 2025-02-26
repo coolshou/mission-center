@@ -854,7 +854,8 @@ impl PerformancePageGpu {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)
                 * (data_points as f64))
                 .round() as u32;
@@ -891,10 +892,13 @@ impl PerformancePageGpu {
 
             this.graph_utilization.set_data_points(data_points);
             this.graph_utilization.set_smooth_graphs(smooth);
+            this.graph_utilization.set_expected_animation_ticks(delay as u32);
             this.usage_graph_encode_decode.set_data_points(data_points);
             this.usage_graph_encode_decode.set_smooth_graphs(smooth);
+            this.usage_graph_encode_decode.set_expected_animation_ticks(delay as u32);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
+            this.usage_graph_memory.set_expected_animation_ticks(delay as u32);
         }
 
         let this: Self = glib::Object::builder().property("name", name).build();

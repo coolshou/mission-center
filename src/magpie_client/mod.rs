@@ -717,9 +717,6 @@ impl MagpieClient {
                 if !running.load(atomic::Ordering::Acquire) {
                     break 'read_loop;
                 }
-                
-                let app = app!();
-                app.refresh_animations();
 
                 wait_time = wait_time.saturating_sub(wait_timer.elapsed());
                 if wait_time.is_zero() {

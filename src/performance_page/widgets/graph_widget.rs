@@ -96,7 +96,8 @@ mod imp {
         prev_size: Cell<(i32, i32)>,
 
         pub animation_ticks: Cell<u32>,
-        pub expected_animation_ticks: Cell<u32>,
+        #[property(get, set = Self::set_expected_animation_ticks)]
+        expected_animation_ticks: Cell<u32>,
     }
 
     impl Default for GraphWidget {
@@ -246,6 +247,12 @@ mod imp {
             if self.smooth_graphs.get() != smooth {
                 self.smooth_graphs.set(smooth);
                 self.obj().upcast_ref::<super::GraphWidget>().queue_draw();
+            }
+        }
+
+        fn set_expected_animation_ticks(&self, ticks: u32) {
+            if self.expected_animation_ticks.get() != ticks {
+                self.expected_animation_ticks.set(ticks);
             }
         }
 
@@ -652,7 +659,7 @@ impl GraphWidget {
     }
     
     pub fn update_animation(&self) -> bool {
-        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.imp().expected_animation_ticks.get() - 1));
+        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks() - 1));
         
         if self.is_visible() {
             self.queue_draw();

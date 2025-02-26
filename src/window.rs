@@ -19,8 +19,9 @@
  */
 
 use std::cell::Cell;
-
+use std::time::Duration;
 use adw::{prelude::*, subclass::prelude::*};
+use adw::glib::ControlFlow;
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::{gio, glib};
 
@@ -714,6 +715,20 @@ impl MissionCenterWindow {
         });
 
         this
+    }
+    
+    pub fn setup_animations(&self) {
+        glib::timeout_add_local(Duration::from_millis(50), {
+            let this = self.downgrade();
+            
+            move || {
+                if let Some(this) = this.upgrade() {
+                    this.update_animations();
+                }
+
+                ControlFlow::Continue
+            }
+        });
     }
 
     pub fn set_initial_readings(&self, mut readings: Readings) {
