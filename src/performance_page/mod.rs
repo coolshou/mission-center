@@ -30,7 +30,7 @@ use arrayvec::ArrayString;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{
     gdk, gio,
-    glib::{self, g_critical},
+    glib::{self, g_critical, g_warning},
 };
 
 use magpie_types::fan::Fan;
@@ -1719,8 +1719,6 @@ mod imp {
             this: &super::PerformancePage,
             readings: &crate::magpie_client::Readings,
         ) -> bool {
-            use glib::g_warning;
-
             let mut pages = this.imp().pages.take();
 
             let mut pages_to_destroy = Vec::new();
@@ -1745,23 +1743,24 @@ mod imp {
                             None => {
                                 g_warning!(
                                     "MissionCenter::PerformancePage",
-                                    "Failed to get parent of graph widget",
+                                    "Failed to get parent of graph widget, is it not in the sidebar?"
                                 );
                                 continue;
                             }
                         };
 
-                        let selection = sidebar.selected_row().unwrap();
-
-                        if selection.eq(&parent) {
-                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
-                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        if let Some(selection) = sidebar.selected_row() {
+                            if selection.eq(&parent) {
+                                let row = pages
+                                    .values()
+                                    .next()
+                                    .and_then(|(graph, _)| graph.parent())
+                                    .and_then(|row| row.downcast::<gtk::ListBoxRow>().ok());
+                                sidebar.select_row(row.as_ref());
+                            }
                         }
 
-                        summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
-                        page_stack.remove(&page);
-                        pages.remove(disk_page_name);
                     }
                 }
             }
