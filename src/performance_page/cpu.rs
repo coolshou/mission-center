@@ -680,7 +680,7 @@ mod imp {
             let graph_selection = settings.int("performance-page-cpu-graph");
             let show_kernel_times = settings.boolean("performance-page-kernel-times");
             let data_points = settings.int("performance-page-data-points") as u32;
-            let delay = settings.int("app-update-interval-u64") as u32;
+            let delay = settings.uint64("app-update-interval-u64") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
 
             // Add one for overall CPU utilization

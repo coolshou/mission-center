@@ -251,8 +251,12 @@ mod imp {
         }
 
         fn set_expected_animation_ticks(&self, ticks: u32) {
-            if self.expected_animation_ticks.get() != ticks {
-                self.expected_animation_ticks.set(ticks);
+            if ticks > 0 {
+                if self.expected_animation_ticks.get() != ticks {
+                    self.expected_animation_ticks.set(ticks);
+                }
+            } else {
+                println!("STOP IT");
             }
         }
 

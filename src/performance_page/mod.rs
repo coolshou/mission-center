@@ -1000,7 +1000,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = CpuPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1059,7 +1059,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = MemoryPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1191,7 +1191,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = DiskPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1281,7 +1281,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             if let Some(max_speed) = connection.max_speed_bytes_ps {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
@@ -1369,7 +1369,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
 
@@ -1509,7 +1509,7 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
-                .set_expected_animation_ticks(settings.int("app-update-interval-u64") as u32);
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = FanPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1888,7 +1888,7 @@ mod imp {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let delay = settings.int("app-update-interval-u64") as u32;
+            let delay = settings.uint64("app-update-interval-u64") as u32;
 
             for page in &mut pages {
                 match page {

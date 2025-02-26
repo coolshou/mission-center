@@ -210,8 +210,6 @@ impl MissionCenterApplication {
             "Starting Mission Center v{}",
             env!("CARGO_PKG_VERSION")
         );
-        
-        // this.setup_animations();
 
         this
     }
