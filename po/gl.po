@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-26 16:51+0000\n"
+"PO-Revision-Date: 2025-02-26 23:54+0000\n"
 "Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/gl/>\n"
@@ -59,8 +59,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Ver recuento de procesos, fíos, e controladores do sistema, tempo activo, "
-"velocidade do reloxo (base e actual), tamaños de caché"
+"Ver recuento de procesos, fíos, e controladores do sistema, tempo de "
+"actividade, velocidade do reloxo (base e actual), tamaños de caché"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -306,9 +306,8 @@ msgid "Overall U_tilization"
 msgstr "U_so global"
 
 #: resources/ui/performance_page/cpu.blp:113
-#, fuzzy
 msgid "Logical _Processors"
-msgstr "Procesadores _Lógicos"
+msgstr "_Procesadores Lógicos"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
@@ -413,117 +412,117 @@ msgstr "Fíos"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
-msgstr ""
+msgstr "Identificadores"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr ""
+msgstr "Tempo de funcionamento"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr ""
+msgstr "Velocidade base:"
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr ""
+msgstr "Sockets:"
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Procesadores virtuais:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr ""
+msgstr "Virtualización:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Máquina virtual:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr ""
+msgstr "Caché L1:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr ""
+msgstr "Caché L2:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr ""
+msgstr "Caché L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Controlador de cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Gobernador de cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr ""
+msgstr "Preferencias de enerxía:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr ""
+msgstr "Tempo de actividade "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr ""
+msgstr "Rendemento superior a "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr ""
+msgstr "Tempo activo"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr ""
+msgstr "Tempo promedio de resposta"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr ""
+msgstr "Velocidade de lectura"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr ""
+msgstr "Velocidade de escritura"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr ""
+msgstr "Capacidade:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr ""
+msgstr "Formateado:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr ""
+msgstr "Disco do sistema:"
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
-msgstr ""
+msgstr "Tipo:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr ""
+msgstr "Velocidade do ventilador por encima de "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr ""
+msgstr "Temperatura máxima "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
-msgstr ""
+msgstr "Velocidade do ventilador"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
-msgstr ""
+msgstr "Temperatura actual"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
