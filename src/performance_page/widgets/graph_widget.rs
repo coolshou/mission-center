@@ -312,10 +312,12 @@ mod imp {
             let col_height = height - scale_factor;
 
             let x_offset = if self.obj().scroll() {
+                let anime_offset = -width * (1f32 - self.animation_ticks.get() as f32 / self.expected_animation_ticks.get() as f32);
+
                 vertical_line_count += 1;
 
                 let x_index = self.scroll_offset.get();
-                let mut x_offset = (x_index as f32) * width / (data_point_count as f32);
+                let mut x_offset = (x_index as f32) * width / (data_point_count as f32) + anime_offset;
                 x_offset %= col_width;
 
                 x_offset
@@ -410,7 +412,7 @@ mod imp {
 
                 if pointlen < data_points.data_set.len() {
                     (x, y) = (
-                        (data_points.data_set.len() - pointlen - 2) as f32 * spacing_x,
+                        (data_points.data_set.len().saturating_sub(pointlen + 2)) as f32 * spacing_x,
                         height,
                     );
                     startindex = 0;
@@ -658,17 +660,17 @@ impl GraphWidget {
         self.imp().data_sets.set(data);
 
         if self.is_visible() {
-            self.queue_draw();
+            // self.queue_draw();
         }
     }
     
     pub fn update_animation(&self) -> bool {
-        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks() - 1));
-        
         if self.is_visible() {
             self.queue_draw();
         }
-        
+
+        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks() - 1));
+
         true
     }
 
