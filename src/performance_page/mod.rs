@@ -1736,28 +1736,33 @@ mod imp {
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
+                        summary_graphs.remove(&graph);
+                        page_stack.remove(&page);
+                        pages.remove(disk_page_name);
+
                         let parent = match graph.parent() {
                             Some(parent) => parent,
                             None => {
                                 g_warning!(
                                     "MissionCenter::PerformancePage",
-                                    "Failed to get parent of graph widget"
+                                    "Failed to get parent of graph widget, is it not in the sidebar?"
                                 );
                                 continue;
                             }
                         };
 
-                        let selection = sidebar.selected_row().unwrap();
-
-                        if selection.eq(&parent) {
-                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
-                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        if let Some(selection) = sidebar.selected_row() {
+                            if selection.eq(&parent) {
+                                let row = pages
+                                    .values()
+                                    .next()
+                                    .and_then(|(graph, _)| graph.parent())
+                                    .and_then(|row| row.downcast::<gtk::ListBoxRow>().ok());
+                                sidebar.select_row(row.as_ref());
+                            }
                         }
 
-                        summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
-                        page_stack.remove(&page);
-                        pages.remove(disk_page_name);
                     }
                 }
             }
