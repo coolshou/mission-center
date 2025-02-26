@@ -4,7 +4,7 @@ set -e
 
 cd "$(git rev-parse --show-toplevel)"
 
-sh -c "cargo fmt"
+cargo fmt
 DIFF=$(git diff)
 
 if [ ! -z "$DIFF" ]; then
