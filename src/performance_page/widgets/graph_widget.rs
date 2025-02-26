@@ -311,8 +311,8 @@ mod imp {
             let col_width = width / vertical_line_count as f32;
             let col_height = height - scale_factor;
 
-            let x_offset = if self.obj().scroll() {
-                let anime_offset = -width * (1f32 - self.animation_ticks.get() as f32 / self.expected_animation_ticks.get() as f32);
+            let x_offset = 0.;/*if self.obj().scroll() {
+                let anime_offset = (-width / (self.data_points.get() - 1) as f32) * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
 
                 vertical_line_count += 1;
 
@@ -323,7 +323,7 @@ mod imp {
                 x_offset
             } else {
                 0.
-            };
+            };*/
 
             for i in 1..vertical_line_count {
                 let path_builder = PathBuilder::new();
@@ -403,16 +403,18 @@ mod imp {
                 *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
             }
 
+            println!("Plotting {}/{}", self.animation_ticks.get(), self.expected_animation_ticks.get());
+
             if !points.is_empty() {
-                let anime_offset = -spacing_x * (1f32 - self.animation_ticks.get() as f32 / self.expected_animation_ticks.get() as f32);
-                
+                let anime_offset = -spacing_x * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
+
                 let startindex;
                 let (mut x, mut y);
                 let pointlen = points.len();
 
                 if pointlen < data_points.data_set.len() {
                     (x, y) = (
-                        (data_points.data_set.len().saturating_sub(pointlen + 2)) as f32 * spacing_x,
+                        ((data_points.data_set.len() as f32) - (pointlen + 2) as f32) * spacing_x,
                         height,
                     );
                     startindex = 0;
@@ -665,11 +667,11 @@ impl GraphWidget {
     }
     
     pub fn update_animation(&self) -> bool {
+        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks()));
+
         if self.is_visible() {
             self.queue_draw();
         }
-
-        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks() - 1));
 
         true
     }
