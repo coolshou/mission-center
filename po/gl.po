@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-26 00:57+0000\n"
+"PO-Revision-Date: 2025-02-26 16:51+0000\n"
 "Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/gl/>\n"
@@ -298,21 +298,21 @@ msgid "100%"
 msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:105
-#, fuzzy
 msgid "Change G_raph To"
 msgstr "Cambiar G_ráfica a"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "U_so global"
 
 #: resources/ui/performance_page/cpu.blp:113
+#, fuzzy
 msgid "Logical _Processors"
-msgstr ""
+msgstr "Procesadores _Lógicos"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Amosar tempos do núcleo"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -321,7 +321,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "Vista _Resumida da gráfica"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -330,7 +330,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr ""
+msgstr "_Vista"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -339,7 +339,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr ""
+msgstr "CP_U"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -348,7 +348,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr ""
+msgstr "_Memoria"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -357,7 +357,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Disco"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -366,7 +366,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr ""
+msgstr "_Rede"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -375,7 +375,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr ""
+msgstr "_GPU"
 
 #: resources/ui/performance_page/cpu.blp:159
 #: resources/ui/performance_page/disk.blp:180
@@ -384,7 +384,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Ventilador"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -392,24 +392,24 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr ""
+msgstr "_Copiar"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr ""
+msgstr "Uso"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr ""
+msgstr "Velocidade"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr ""
+msgstr "Procesos"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr ""
+msgstr "Fíos"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
