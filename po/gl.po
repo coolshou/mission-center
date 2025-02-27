@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-26 23:54+0000\n"
+"PO-Revision-Date: 2025-02-28 14:02+0000\n"
 "Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2-dev\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -64,7 +64,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr "Monitoriza o uso de RAM e Swap"
+msgstr "Monitoriza o uso de RAM e memoria de intercambio (Swap)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
@@ -190,8 +190,8 @@ msgstr ""
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"As estatísticas dos procesos padre e fillo amósanse individualmente ou "
-"fusionadas cara arriba"
+"As estatísticas dos procesos pai e fillo amósanse individualmente ou "
+"mesturadas cara arriba"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
@@ -267,7 +267,7 @@ msgstr "Amosar o widget da composición da memoria"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr "Amosar o gráfico de intercambio"
+msgstr "Amosar o gráfico de memoria de intercambio (swap)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
@@ -464,7 +464,7 @@ msgstr "Preferencias de enerxía:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr "Tempo de actividade "
+msgstr "Tempo activo superior a "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
@@ -506,11 +506,11 @@ msgstr "Tipo:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr "Velocidade do ventilador por encima de "
+msgstr "Velocidade do ventilador superior a "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr "Temperatura máxima "
+msgstr "Temperatura máxima superior a "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -526,301 +526,304 @@ msgstr "Temperatura actual"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr ""
+msgstr "Utilización da codificación/decodificación de vídeo superior a "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr ""
+msgstr "Uso de memoria superior a "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Amosar uso da codificación/decodificación"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
-msgstr ""
+msgstr "Velocidade do reloxo"
 
 #: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
-msgstr ""
+msgstr "Consumo de enerxía"
 
 #: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
-msgstr ""
+msgstr "Uso de memoria"
 
 #: resources/ui/performance_page/gpu_details.blp:208
 msgid "GTT usage"
-msgstr ""
+msgstr "Uso de GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
-msgstr ""
+msgstr "Velocidade da memoria"
 
 #: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
-msgstr ""
+msgstr "Codificación de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:343
 msgid "Video decode"
-msgstr ""
+msgstr "Decodificación de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatura"
 
 #: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
-msgstr ""
+msgstr "Versión de OpenGL:"
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
-msgstr ""
+msgstr "Versión de Vulkan:"
 
 #: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "Velocidade de PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
-msgstr ""
+msgstr "Enderezo do bus PCI:"
 
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
 msgid "Memory"
-msgstr ""
+msgstr "Memoria"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr ""
+msgstr "Uso da memoria de intercambio (swap) superior a "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr ""
+msgstr "Composición da memoria"
 
 #: resources/ui/performance_page/memory.blp:185
 msgid "Show Memory Composition"
-msgstr ""
+msgstr "Amosar composición da memoria"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Amosar uso da memoria de intercambio (swap)"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
-msgstr ""
+msgstr "En uso"
 
 #: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
-msgstr ""
+msgstr "Dispoñíbel"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr ""
+msgstr "Comprometida"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
-msgstr ""
+msgstr "En caché"
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr ""
+msgstr "Memoria de intercambio (swap) empregada"
 
 #: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
-msgstr ""
+msgstr "Memoria de intercambio (swap) dispoñíbel"
 
 #: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
-msgstr ""
+msgstr "Velocidade:"
 
 #: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
-msgstr ""
+msgstr "Ranuras empregadas:"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
-msgstr ""
+msgstr "Factor de forma:"
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr ""
+msgstr "Con_figuración da rede"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr ""
+msgstr "Recepción"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Received"
-msgstr ""
+msgstr "Total recibido"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr ""
+msgstr "Envío"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Total enviado"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
-msgstr ""
+msgstr "Nome da interface:"
 
 #: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
-msgstr ""
+msgstr "Tipo de conexión:"
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr ""
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
-msgstr ""
+msgstr "Intensidade do sinal:"
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
-msgstr ""
+msgstr "Taxa de bits máxima:"
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
-msgstr ""
+msgstr "Frecuencia:"
 
 #: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
-msgstr ""
+msgstr "Enderezo do hardware:"
 
 #: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
-msgstr ""
+msgstr "Enderezo IPv4:"
 
 #: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
-msgstr ""
+msgstr "Enderezo IPv6:"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr ""
+msgstr "Xeral"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Intervalo de actualización"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Puntos de datos da gráfica"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
-msgstr ""
+msgstr "Páxina de rendemento"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Suavizar gráficas"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Debuxar gráficas como liñas suaves en troques de dentadas"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Amosar velocidade da rede en bytes"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Escalar dinámicamente as gráficas da rede"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Configurar a gráfica de rede para axustarse dinámicamente co uso real ou coa "
+"velocidade máxima da canle"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Amosar información da CPU"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Memory Information"
-msgstr ""
+msgstr "Amosar información da memoria"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Amosar información do disco"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Amosar información da rede"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Amosar información da GPU"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr ""
+msgstr "Amosar información do ventilador"
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
-msgstr ""
+msgstr "Páxina da aplicación"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Mesturar estatísticas do proceso"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Lembrar a orde"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Lembrar a orde da lista de aplicacións e procesos ao reiniciar a aplicación"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Escalar o uso da CPU ao número de núcleos"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Detalles do servizo"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "O estado actual do servizo"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Descrición"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Estado operativo"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
-msgstr ""
+msgstr "Proceso"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Proceso e información do usuario"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr ""
+msgstr "ID do proceso"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -832,112 +835,112 @@ msgstr ""
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Usuario"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Grupo"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Rexistros"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Iniciar"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Deter"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Reiniciar"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr ""
+msgstr "Detalles"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "Activar todos"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Desactivar todos"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Restablecer aos valores predeterminados"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr ""
+msgstr "Dispositivos"
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr ""
+msgstr "Editar barra lateral"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Alternar barra lateral"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
-msgstr ""
+msgstr "Escriba un nome ou PID para buscar"
 
 #: resources/ui/window.blp:173
 msgid "Loading..."
-msgstr ""
+msgstr "Cargando..."
 
 #: resources/ui/window.blp:187
 msgid "Performance"
-msgstr ""
+msgstr "Rendemento"
 
 #: resources/ui/window.blp:199 src/apps_page/mod.rs:562
 msgid "Apps"
-msgstr ""
+msgstr "Aplicacións"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr ""
+msgstr "Servizos"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr ""
+msgstr "_Preferencias"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr ""
+msgstr "_Acerca de Mission Center"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "Unidade"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr ""
+msgstr "Uso da GPU"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
-msgstr ""
+msgstr "Mem GPU"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
 msgid "Stop Application"
-msgstr ""
+msgstr "Deter aplicación"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
@@ -958,6 +961,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"En uso ({}B)\n"
+"\n"
+"Memoria empregada polo sistema operativo e as aplicaciones en execución"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -966,6 +972,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Modificada ({}B)\n"
+"\n"
+"Memoria cuxo contido debe escribirse en disco antes de que poida ser "
+"empregada por outro proceso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -996,7 +1006,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1126
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:1127
 msgid "eMMC"
