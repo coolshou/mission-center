@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-26 23:54+0000\n"
+"PO-Revision-Date: 2025-02-28 14:02+0000\n"
 "Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2-dev\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -776,7 +776,7 @@ msgstr "Página de la aplicación"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr "Estadísticas del proceso de fusión"
+msgstr "Fusionar estadísticas del proceso"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
