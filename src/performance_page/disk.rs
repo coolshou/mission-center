@@ -739,6 +739,15 @@ impl PerformancePageDisk {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         this
     }
 

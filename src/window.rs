@@ -21,11 +21,11 @@
 use std::cell::Cell;
 use std::time::Duration;
 
+use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use gtk::glib::ControlFlow;
 use gtk::{gio, glib};
-
-use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
 
 mod imp {
     use super::*;

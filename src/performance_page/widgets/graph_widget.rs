@@ -356,7 +356,11 @@ mod imp {
             let val_max = self.value_range_max.get() - self.value_range_min.get();
             let val_min = 0.;
 
-            let spacing_x = width / (data_points.data_set.len() - 2) as f32;
+            let spacing_x = if self.do_animation.get() {
+                width / (data_points.data_set.len() - 2) as f32
+            } else {
+                width / (data_points.data_set.len() - 1) as f32
+            };
 
             let mut points: Vec<(f32, f32)> = if self.scaling.get() != NORMALIZED_SCALING {
                 (0..)
@@ -403,15 +407,22 @@ mod imp {
             };
 
             for (x, y) in &mut points {
-                *x = *x * spacing_x - spacing_x;
+                *x = *x * spacing_x;
+                if self.do_animation.get() {
+                    *x -= spacing_x;
+                }
                 *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
             }
 
             if !points.is_empty() {
-                let anime_offset = -spacing_x
-                    * (1f32
-                        - self.animation_ticks.get().saturating_sub(1) as f32
-                            / self.expected_animation_ticks.get() as f32);
+                let anime_offset = if self.do_animation.get() {
+                    -spacing_x
+                        * (1f32
+                            - self.animation_ticks.get().saturating_sub(1) as f32
+                                / self.expected_animation_ticks.get() as f32)
+                } else {
+                    0.
+                };
 
                 let startindex;
                 let (mut x, mut y);

@@ -890,6 +890,15 @@ impl PerformancePageMemory {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         fn set_hidden(this: &PerformancePageMemory, settings: &gio::Settings) {
             let visible = settings.boolean("performance-page-memory-swap-visible");
 
