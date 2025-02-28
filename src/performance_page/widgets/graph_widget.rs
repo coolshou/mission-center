@@ -95,9 +95,12 @@ mod imp {
         scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
 
-        pub animation_ticks: Cell<u32>,
+        #[property(get, set)]
+        animation_ticks: Cell<u32>,
         #[property(get, set = Self::set_expected_animation_ticks)]
         expected_animation_ticks: Cell<u32>,
+        #[property(get, set)]
+        do_animation: Cell<bool>,
     }
 
     impl Default for GraphWidget {
@@ -134,6 +137,7 @@ mod imp {
                 prev_size: Cell::new((0, 0)),
                 animation_ticks: Cell::new(0),
                 expected_animation_ticks: Cell::new(10),
+                do_animation: Cell::new(false),
             }
         }
     }
@@ -627,7 +631,7 @@ impl GraphWidget {
     pub fn add_data_point(&self, index: usize, mut value: f32) {
         let mut data = self.imp().data_sets.take();
 
-        self.imp().animation_ticks.set(0);
+        self.set_animation_ticks(0);
 
         if index == 0 {
             self.imp().try_increment_scroll();
@@ -667,12 +671,18 @@ impl GraphWidget {
     }
     
     pub fn update_animation(&self) -> bool {
-        self.imp().animation_ticks.set((self.imp().animation_ticks.get() + 1).min(self.expected_animation_ticks()));
-
         if self.is_visible() {
+            if self.do_animation() {
+                self.set_animation_ticks((self.animation_ticks() + 1).min(self.expected_animation_ticks()));
+            } else if self.animation_ticks() == 0 {
+                self.set_animation_ticks(self.expected_animation_ticks());
+            } else {
+                return true
+            }
+
             self.queue_draw();
         }
-
+        
         true
     }
 

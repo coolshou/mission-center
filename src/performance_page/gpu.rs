@@ -853,6 +853,7 @@ impl PerformancePageGpu {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
 
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration = (((delay as f64)
@@ -892,12 +893,15 @@ impl PerformancePageGpu {
 
             this.graph_utilization.set_data_points(data_points);
             this.graph_utilization.set_smooth_graphs(smooth);
+            this.graph_utilization.set_do_animation(sliding);
             this.graph_utilization.set_expected_animation_ticks(delay as u32);
             this.usage_graph_encode_decode.set_data_points(data_points);
             this.usage_graph_encode_decode.set_smooth_graphs(smooth);
+            this.usage_graph_encode_decode.set_do_animation(sliding);
             this.usage_graph_encode_decode.set_expected_animation_ticks(delay as u32);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
+            this.usage_graph_memory.set_do_animation(sliding);
             this.usage_graph_memory.set_expected_animation_ticks(delay as u32);
         }
 

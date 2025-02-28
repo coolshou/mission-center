@@ -682,6 +682,7 @@ mod imp {
             let data_points = settings.int("performance-page-data-points") as u32;
             let delay = settings.uint64("app-update-interval-u64") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
 
             // Add one for overall CPU utilization
             let mut graph_widgets = vec![];
@@ -983,6 +984,7 @@ impl PerformancePageCpu {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)

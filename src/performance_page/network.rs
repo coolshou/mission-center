@@ -793,6 +793,7 @@ impl PerformancePageNetwork {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)
@@ -827,6 +828,7 @@ impl PerformancePageNetwork {
 
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
+            this.usage_graph.set_do_animation(sliding);
             this.usage_graph.set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);

@@ -1888,6 +1888,7 @@ mod imp {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64") as u32;
 
             for page in &mut pages {
@@ -2269,6 +2270,7 @@ mod imp {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
 
             for page in &mut pages {
                 match page {

@@ -496,6 +496,7 @@ impl PerformancePageFan {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration = (((delay as f64)
                 * INTERVAL_STEP)
@@ -532,11 +533,13 @@ impl PerformancePageFan {
             this.speed_graph_max_duration.set_text(time_string);
             this.speed_graph.set_data_points(data_points);
             this.speed_graph.set_smooth_graphs(smooth);
+            this.speed_graph.set_do_animation(sliding);
             this.speed_graph.set_expected_animation_ticks(delay as u32);
 
             this.temp_graph_max_duration.set_text(time_string);
             this.temp_graph.set_data_points(data_points);
             this.temp_graph.set_smooth_graphs(smooth);
+            this.temp_graph.set_do_animation(sliding);
             this.temp_graph.set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
