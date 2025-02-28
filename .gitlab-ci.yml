@@ -200,7 +200,7 @@ appimage-job-x86:
   before_script:
     - !reference [".shared", "setup_apt_focal"]
 
-    - apt-get install -y curl ca-certificates
+    - apt-get install -y curl ca-certificates libpcap-dev
   script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
@@ -221,7 +221,7 @@ appimage-job-arm:
   before_script:
     - !reference [".shared", "setup_apt_focal_ports"]
 
-    - apt-get install -y curl ca-certificates
+    - apt-get install -y curl ca-certificates libpcap-dev
   script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
