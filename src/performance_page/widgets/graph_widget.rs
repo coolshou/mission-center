@@ -407,8 +407,6 @@ mod imp {
                 *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
             }
 
-            println!("Plotting {}/{}", self.animation_ticks.get(), self.expected_animation_ticks.get());
-
             if !points.is_empty() {
                 let anime_offset = -spacing_x * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
 
