@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-28 14:02+0000\n"
+"PO-Revision-Date: 2025-03-01 03:17+0000\n"
 "Last-Translator: Eloi Barcon Piñeiro <eloi.b.pineiro@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/gl/>\n"
@@ -944,16 +944,16 @@ msgstr "Deter aplicación"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Forzar detención da aplicación"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
 msgid "Stop Process"
-msgstr ""
+msgstr "Deter proceso"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Forzar detención do proceso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -983,6 +983,9 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"En agarda ({}B)\n"
+"\n"
+"Memoria que contén datos en caché e código que non está en uso activo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -991,18 +994,23 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Libre ({}B)\n"
+"\n"
+"Memoria que non está actualmente en uso, e que será reutilizada en primeiro "
+"lugar cando o sistema operativo, os controladores ou as aplicacións precisen "
+"máis memoria"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr ""
+msgstr "Unidade {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:1125
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:1126
 msgid "NVMe"
@@ -1010,15 +1018,15 @@ msgstr "NVMe"
 
 #: src/performance_page/mod.rs:1127
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:1128
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr ""
+msgstr "Óptico"
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -1029,121 +1037,121 @@ msgstr ""
 #: src/performance_page/network.rs:520 src/performance_page/network.rs:570
 #: src/performance_page/network.rs:606
 msgid "Unknown"
-msgstr ""
+msgstr "Descoñecido"
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr ""
+msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
-msgstr ""
+msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Ventilador {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Ventilador"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 msgid "{}: {} {}{}"
-msgstr ""
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
-msgstr ""
+msgstr "Non soportado"
 
 #: src/performance_page/cpu.rs:344 src/performance_page/disk.rs:247
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #: src/performance_page/cpu.rs:346 src/performance_page/disk.rs:249
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr ""
+msgstr "{} segundo{}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minuto{} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Disco {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr ""
+msgstr "Unidade ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Erro ao obter información adicional da memoria"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr ""
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} Servizos en execución"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} servizos fallidos dun total de {}"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "En execución"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "Fallido"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Detido"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr ""
+msgstr "Eloi Barcón Piñeiro <eloi.b.pineiro@protonmail.com>"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr ""
+msgstr "_Saír"
