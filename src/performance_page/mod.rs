@@ -1000,6 +1000,9 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = CpuPage::new(&settings);
@@ -1057,6 +1060,9 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
             summary
                 .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
@@ -1191,6 +1197,9 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = DiskPage::new(&page_name, &settings);
@@ -1281,6 +1290,9 @@ mod imp {
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
             summary
                 .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             if let Some(max_speed) = connection.max_speed_bytes_ps {
@@ -1367,6 +1379,9 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
             summary
                 .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
@@ -1507,6 +1522,9 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
             summary
                 .graph_widget()
                 .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
@@ -1897,6 +1915,7 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
                         graph_widget.set_expected_animation_ticks(delay);
 
                         let mut info2 = ArrayString::<256>::new();
@@ -1923,6 +1942,7 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
                         graph_widget.set_expected_animation_ticks(delay);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
@@ -1975,6 +1995,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
                                 graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 if let Some(temp_mk) = disk.temperature_milli_k {
@@ -2047,6 +2068,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
                                 graph_widget.set_expected_animation_ticks(delay);
 
                                 graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
@@ -2133,6 +2155,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
                                 graph_widget.set_expected_animation_ticks(delay);
 
                                 if let Some(index) = index {
@@ -2205,6 +2228,7 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
                                 graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, fan.rpm as f32);
                                 if let Some(temp_name) = &fan.temp_name {
