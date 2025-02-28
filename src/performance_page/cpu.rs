@@ -691,6 +691,7 @@ mod imp {
             self.usage_graphs.attach(&graph_widgets[0], 0, 0, 1, 1);
             graph_widgets[0].set_data_points(data_points);
             graph_widgets[0].set_smooth_graphs(smooth);
+            graph_widgets[0].set_do_animation(sliding);
             graph_widgets[0].set_expected_animation_ticks(delay);
             graph_widgets[0].set_scroll(true);
             graph_widgets[0].set_data_set_count(2);
@@ -757,6 +758,7 @@ mod imp {
                 }
                 graph_widgets[graph_widget_index].set_data_points(data_points);
                 graph_widgets[graph_widget_index].set_smooth_graphs(smooth);
+                graph_widgets[graph_widget_index].set_do_animation(sliding);
                 graph_widgets[graph_widget_index].set_expected_animation_ticks(delay);
                 graph_widgets[graph_widget_index].set_data_set_count(2);
                 graph_widgets[graph_widget_index].set_scroll(true);
@@ -1025,6 +1027,7 @@ impl PerformancePageCpu {
             for graph_widget in &widgets {
                 graph_widget.set_data_points(data_points);
                 graph_widget.set_smooth_graphs(smooth);
+                graph_widget.set_do_animation(sliding);
                 graph_widget.set_expected_animation_ticks(delay as u32);
             }
             this.graph_widgets.set(widgets);
