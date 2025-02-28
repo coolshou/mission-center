@@ -2282,10 +2282,8 @@ mod imp {
 
             result
         }
-        
-        pub fn update_animations(
-            this: &super::PerformancePage,
-        ) -> bool {
+
+        pub fn update_animations(this: &super::PerformancePage) -> bool {
             let mut pages = this.imp().pages.take();
 
             let mut result = true;
@@ -2328,8 +2326,8 @@ mod imp {
                     }
                     Pages::Gpu(pages) => {
                         for (summary, page) in pages.values() {
-                            let graph_widget = summary.graph_widget();      
-                            
+                            let graph_widget = summary.graph_widget();
+
                             result &= graph_widget.update_animation();
                             result &= page.update_animations();
                         }

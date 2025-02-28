@@ -382,14 +382,12 @@ mod imp {
             true
         }
 
-        pub fn update_animations(
-            this: &super::PerformancePageDisk,
-        ) -> bool {
+        pub fn update_animations(this: &super::PerformancePageDisk) -> bool {
             let this = this.imp();
-            
+
             this.usage_graph.update_animation();
             this.disk_transfer_rate_graph.update_animation();
-            
+
             true
         }
 
@@ -673,10 +671,8 @@ impl PerformancePageDisk {
             let smooth = settings.boolean("performance-smooth-graphs");
             let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
-            let graph_max_duration = (((delay as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
 
@@ -711,7 +707,8 @@ impl PerformancePageDisk {
             this.disk_transfer_rate_graph.set_data_points(data_points);
             this.disk_transfer_rate_graph.set_smooth_graphs(smooth);
             this.disk_transfer_rate_graph.set_do_animation(sliding);
-            this.disk_transfer_rate_graph.set_expected_animation_ticks(delay as u32);
+            this.disk_transfer_rate_graph
+                .set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 

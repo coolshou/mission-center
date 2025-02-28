@@ -326,15 +326,13 @@ mod imp {
 
             true
         }
-        
-        pub fn update_animations(
-            this: &super::PerformancePageFan,
-        ) -> bool {
+
+        pub fn update_animations(this: &super::PerformancePageFan) -> bool {
             let this = this.imp();
 
             this.speed_graph.update_animation();
             this.temp_graph.update_animation();
-            
+
             true
         }
 
@@ -498,10 +496,8 @@ impl PerformancePageFan {
             let smooth = settings.boolean("performance-smooth-graphs");
             let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
-            let graph_max_duration = (((delay as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
 

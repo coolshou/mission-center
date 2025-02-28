@@ -368,15 +368,13 @@ mod imp {
             true
         }
 
-        pub(crate) fn update_animations(
-            this: &super::PerformancePageGpu,
-        ) -> bool {
+        pub(crate) fn update_animations(this: &super::PerformancePageGpu) -> bool {
             let this = this.imp();
-            
+
             this.graph_utilization.update_animation();
             this.usage_graph_memory.update_animation();
             this.usage_graph_encode_decode.update_animation();
-            
+
             true
         }
 
@@ -856,10 +854,8 @@ impl PerformancePageGpu {
             let sliding = settings.boolean("performance-sliding-graphs");
 
             let delay = settings.uint64("app-update-interval-u64");
-            let graph_max_duration = (((delay as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let mins = graph_max_duration / 60;
             let seconds_to_string = &i18n_f(
@@ -894,15 +890,18 @@ impl PerformancePageGpu {
             this.graph_utilization.set_data_points(data_points);
             this.graph_utilization.set_smooth_graphs(smooth);
             this.graph_utilization.set_do_animation(sliding);
-            this.graph_utilization.set_expected_animation_ticks(delay as u32);
+            this.graph_utilization
+                .set_expected_animation_ticks(delay as u32);
             this.usage_graph_encode_decode.set_data_points(data_points);
             this.usage_graph_encode_decode.set_smooth_graphs(smooth);
             this.usage_graph_encode_decode.set_do_animation(sliding);
-            this.usage_graph_encode_decode.set_expected_animation_ticks(delay as u32);
+            this.usage_graph_encode_decode
+                .set_expected_animation_ticks(delay as u32);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
             this.usage_graph_memory.set_do_animation(sliding);
-            this.usage_graph_memory.set_expected_animation_ticks(delay as u32);
+            this.usage_graph_memory
+                .set_expected_animation_ticks(delay as u32);
         }
 
         let this: Self = glib::Object::builder().property("name", name).build();

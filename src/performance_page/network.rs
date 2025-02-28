@@ -543,17 +543,15 @@ mod imp {
 
             true
         }
-        
-        pub fn update_animations(
-            this: &super::PerformancePageNetwork,
-        ) -> bool {
+
+        pub fn update_animations(this: &super::PerformancePageNetwork) -> bool {
             let this = this.imp();
-            
+
             this.usage_graph.update_animation();
-            
+
             true
         }
-        
+
         fn data_summary(&self) -> String {
             let unknown = i18n("Unknown");
             let unknown = unknown.as_str();
@@ -795,10 +793,8 @@ impl PerformancePageNetwork {
             let smooth = settings.boolean("performance-smooth-graphs");
             let sliding = settings.boolean("performance-sliding-graphs");
             let delay = settings.uint64("app-update-interval-u64");
-            let graph_max_duration = (((delay as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
             let mins = graph_max_duration / 60;
