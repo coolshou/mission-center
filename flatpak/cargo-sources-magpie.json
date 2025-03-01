@@ -2667,6 +2667,19 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/tokio-macros/tokio-macros-2.5.0.crate",
+    "sha256": "6e06d43f1345a3bcd39f6a56dbb7dcab2ba47e68e8ac134855e7e2bdbaf8cab8",
+    "dest": "cargo/vendor/tokio-macros-2.5.0"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"6e06d43f1345a3bcd39f6a56dbb7dcab2ba47e68e8ac134855e7e2bdbaf8cab8\", \"files\": {}}",
+    "dest": "cargo/vendor/tokio-macros-2.5.0",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/toml_datetime/toml_datetime-0.6.8.crate",
     "sha256": "0dd7358ecb8fc2f8d014bf86f6f638ce72ba252a2c3a2572f2a795f1d23efb41",
     "dest": "cargo/vendor/toml_datetime-0.6.8"
