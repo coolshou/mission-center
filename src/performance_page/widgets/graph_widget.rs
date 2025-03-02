@@ -259,8 +259,6 @@ mod imp {
                 if self.expected_animation_ticks.get() != ticks {
                     self.expected_animation_ticks.set(ticks);
                 }
-            } else {
-                println!("STOP IT");
             }
         }
 
@@ -316,12 +314,12 @@ mod imp {
             let col_height = height - scale_factor;
 
             let x_offset = 0.; /*if self.obj().scroll() {
-                                   let anime_offset = (-width / (self.data_points.get() - 1) as f32) * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
+                                   let anim_offset = (-width / (self.data_points.get() - 1) as f32) * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
 
                                    vertical_line_count += 1;
 
                                    let x_index = self.scroll_offset.get();
-                                   let mut x_offset = (x_index as f32) * width / (data_point_count as f32) + anime_offset;
+                                   let mut x_offset = (x_index as f32) * width / (data_point_count as f32) + anim_offset;
                                    x_offset %= col_width;
 
                                    x_offset
@@ -415,7 +413,7 @@ mod imp {
             }
 
             if !points.is_empty() {
-                let anime_offset = if self.do_animation.get() {
+                let anim_offset = if self.do_animation.get() {
                     -spacing_x
                         * (1f32
                             - self.animation_ticks.get().saturating_sub(1) as f32
@@ -439,7 +437,7 @@ mod imp {
                     startindex = 1;
                 }
 
-                x -= anime_offset;
+                x -= anim_offset;
 
                 let path_builder = PathBuilder::new();
                 path_builder.move_to(x, y);
@@ -449,16 +447,16 @@ mod imp {
                 for i in startindex..pointlen {
                     (x, y) = points[i];
 
-                    x -= anime_offset;
+                    x -= anim_offset;
                     if smooth {
                         let (mut lastx, lasty);
                         if i > 0 {
                             (lastx, lasty) = points[i - 1];
                         } else {
-                            (lastx, lasty) = (x - spacing_x + anime_offset, height);
+                            (lastx, lasty) = (x - spacing_x + anim_offset, height);
                         }
 
-                        lastx -= anime_offset;
+                        lastx -= anim_offset;
 
                         path_builder.cubic_to(
                             lastx + spacing_x / 2f32,
@@ -474,7 +472,6 @@ mod imp {
                 }
 
                 // Make sure to close out the path
-                // path_builder.line_to(points[pointlen - 1].0, points[pointlen - 1].1);
                 path_builder.line_to(points[pointlen - 1].0, height);
                 path_builder.line_to(points[0].0, height);
                 path_builder.close();
@@ -676,10 +673,6 @@ impl GraphWidget {
         }
 
         self.imp().data_sets.set(data);
-
-        if self.is_visible() {
-            // self.queue_draw();
-        }
     }
 
     pub fn update_animation(&self) -> bool {
