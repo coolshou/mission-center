@@ -2290,10 +2290,6 @@ mod imp {
 
             let settings = settings!();
 
-            let data_points = settings.int("performance-page-data-points") as u32;
-            let smooth = settings.boolean("performance-smooth-graphs");
-            let sliding = settings.boolean("performance-sliding-graphs");
-
             for page in &mut pages {
                 match page {
                     Pages::Cpu((summary, page)) => {

@@ -308,29 +308,27 @@ mod imp {
             }
 
             // Draw vertical lines
-            let mut vertical_line_count = self.obj().vertical_line_count() + 1;
+            let vertical_line_count = self.obj().vertical_line_count() + 1;
+
+            let animdist = if self.do_animation.get() {
+                width / (data_point_count - 2) as f32
+            } else {
+                width / (data_point_count - 1) as f32
+            };
 
             let col_width = width / vertical_line_count as f32;
             let col_height = height - scale_factor;
 
-            let x_offset = 0.; /*if self.obj().scroll() {
-                                   let anim_offset = (-width / (self.data_points.get() - 1) as f32) * (1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32);
+            let anim_offset = if self.obj().scroll() {
+                ((animdist) * (-(self.scroll_offset.get() as f32) + 1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32)).rem_euclid(col_width)
+            } else {
+                0.
+            };
 
-                                   vertical_line_count += 1;
-
-                                   let x_index = self.scroll_offset.get();
-                                   let mut x_offset = (x_index as f32) * width / (data_point_count as f32) + anim_offset;
-                                   x_offset %= col_width;
-
-                                   x_offset
-                               } else {
-                                   0.
-                               };*/
-
-            for i in 1..vertical_line_count {
+            for i in 0..vertical_line_count {
                 let path_builder = PathBuilder::new();
-                path_builder.move_to(col_width * i as f32 - x_offset, scale_factor / 2.);
-                path_builder.line_to(col_width * i as f32 - x_offset, col_height);
+                path_builder.move_to(col_width * i as f32 + anim_offset, scale_factor / 2.);
+                path_builder.line_to(col_width * i as f32 + anim_offset, col_height);
                 snapshot.append_stroke(&path_builder.to_path(), &stroke, &color);
             }
         }
