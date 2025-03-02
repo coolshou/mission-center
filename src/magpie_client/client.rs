@@ -1026,7 +1026,7 @@ impl Client {
         let mut socket = self.socket.borrow_mut();
 
         let response = make_request(
-            ipc::req_terminate_processes(pids),
+            ipc::req_kill_processes(pids),
             &mut socket,
             self.socket_addr.as_ref(),
         )

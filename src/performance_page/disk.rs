@@ -295,6 +295,7 @@ mod imp {
                         DiskKind::IScsi => i18n("iSCSI"),
                         DiskKind::Optical => i18n("Optical"),
                         DiskKind::Floppy => i18n("Floppy"),
+                        DiskKind::ThumbDrive => i18n("Thumb Drive"),
                     };
                     disk_type.set_text(&disk_type_str);
                 } else {
