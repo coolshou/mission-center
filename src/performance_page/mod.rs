@@ -2288,8 +2288,6 @@ mod imp {
 
             let mut result = true;
 
-            let settings = settings!();
-
             for page in &mut pages {
                 match page {
                     Pages::Cpu((summary, page)) => {

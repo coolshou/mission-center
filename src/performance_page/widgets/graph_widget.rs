@@ -320,7 +320,11 @@ mod imp {
             let col_height = height - scale_factor;
 
             let anim_offset = if self.obj().scroll() {
-                ((animdist) * (-(self.scroll_offset.get() as f32) + 1f32 - self.animation_ticks.get().saturating_sub(1) as f32 / self.expected_animation_ticks.get() as f32)).rem_euclid(col_width)
+                ((animdist)
+                    * (-(self.scroll_offset.get() as f32) + 1f32
+                        - self.animation_ticks.get().saturating_sub(1) as f32
+                            / self.expected_animation_ticks.get() as f32))
+                    .rem_euclid(col_width)
             } else {
                 0.
             };
