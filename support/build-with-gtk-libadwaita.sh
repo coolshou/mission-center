@@ -28,7 +28,7 @@ dpkg-reconfigure --frontend noninteractive tzdata
 apt-get install -y curl
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.84.1 -y
 
-apt-get install -y build-essential flex bison git gettext python3-pip python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev libxslt-dev libpcre2-dev libfuse3-dev libgcrypt-dev libjpeg-turbo8-dev libpng-dev libisocodes-dev libepoxy-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libgstreamer-plugins-bad1.0-dev libpixman-1-dev libfontconfig1-dev libxkbcommon-dev libcurl4-openssl-dev libyaml-dev libzstd-dev libgraphviz-dev librsvg2-2 libtiff5 libbrotli-dev shared-mime-info desktop-file-utils pkg-config gperf itstool xsltproc valac docbook-xsl libxml2-utils python3-packaging libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev tk-dev python-openssl
+apt-get install -y build-essential flex bison git gettext python3-pip python3-gi libudev-dev libdrm-dev libgbm-dev libdbus-1-dev libxslt-dev libpcre2-dev libfuse3-dev libgcrypt-dev libjpeg-turbo8-dev libpng-dev libisocodes-dev libepoxy-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libgstreamer-plugins-bad1.0-dev libpixman-1-dev libfontconfig1-dev libxkbcommon-dev libcurl4-openssl-dev libyaml-dev libzstd-dev libgraphviz-dev librsvg2-2 libtiff5 libbrotli-dev shared-mime-info desktop-file-utils pkg-config gperf itstool xsltproc valac docbook-xsl libxml2-utils python3-packaging libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev tk-dev python-openssl libpcap-dev
 
 curl https://pyenv.run | bash
 
