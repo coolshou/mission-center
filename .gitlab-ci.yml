@@ -32,7 +32,7 @@ stages:
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
   install_rust:
-    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold libpcap-dev
+    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
     - ln -sf /usr/bin/python3 /usr/local/bin/python
     - ln -sf /usr/bin/mold /usr/bin/ld
 
@@ -200,7 +200,7 @@ appimage-job-x86:
   before_script:
     - !reference [".shared", "setup_apt_focal"]
 
-    - apt-get install -y curl ca-certificates libpcap-dev
+    - apt-get install -y curl ca-certificates
   script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
@@ -221,7 +221,7 @@ appimage-job-arm:
   before_script:
     - !reference [".shared", "setup_apt_focal_ports"]
 
-    - apt-get install -y curl ca-certificates libpcap-dev
+    - apt-get install -y curl ca-certificates
   script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
