@@ -998,6 +998,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = CpuPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1054,6 +1060,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = MemoryPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1183,6 +1195,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = DiskPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1270,6 +1288,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             if let Some(max_speed) = connection.max_speed_bytes_ps {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
@@ -1352,10 +1376,15 @@ mod imp {
             summary
                 .graph_widget()
                 .set_data_points(settings.int("performance-page-data-points") as u32);
-
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
 
@@ -1493,6 +1522,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = FanPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1871,6 +1906,8 @@ mod imp {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
+            let delay = settings.uint64("app-update-interval-u64") as u32;
 
             for page in &mut pages {
                 match page {
@@ -1878,6 +1915,8 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
+                        graph_widget.set_expected_animation_ticks(delay);
 
                         let mut info2 = ArrayString::<256>::new();
                         let _ = write!(&mut info2, "{}%", readings.cpu.total_usage_percent.round());
@@ -1903,6 +1942,8 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
+                        graph_widget.set_expected_animation_ticks(delay);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
@@ -1954,6 +1995,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, disk.busy_percent);
                                 if let Some(temp_mk) = disk.temperature_milli_k {
                                     summary.set_info2(format!(
@@ -2025,6 +2068,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
 
                                 graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
                                 graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
@@ -2110,6 +2155,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
 
                                 if let Some(index) = index {
                                     summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
@@ -2181,6 +2228,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, fan.rpm as f32);
                                 if let Some(temp_name) = &fan.temp_name {
                                     summary.set_info1(temp_name.as_str());
@@ -2224,6 +2273,65 @@ mod imp {
                                 },
                             );
                             pages.insert(page_name, page);
+                        }
+                    }
+                }
+            }
+
+            this.imp().pages.set(pages);
+
+            result
+        }
+
+        pub fn update_animations(this: &super::PerformancePage) -> bool {
+            let mut pages = this.imp().pages.take();
+
+            let mut result = true;
+
+            for page in &mut pages {
+                match page {
+                    Pages::Cpu((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Memory((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Disk(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Network(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Gpu(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Fan(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
                         }
                     }
                 }
@@ -2391,6 +2499,10 @@ impl PerformancePage {
 
     pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePage::update_readings(self, readings)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePage::update_animations(self)
     }
 
     pub fn sidebar_enable_all(&self) {
