@@ -336,7 +336,7 @@ mod imp {
             true
         }
 
-        pub(crate) fn update_readings(
+        pub fn update_readings(
             this: &super::PerformancePageGpu,
             gpu: &Gpu,
             index: Option<usize>,
@@ -364,6 +364,16 @@ mod imp {
             this.container_bottom.set_visible(
                 this.memory_graph.property::<bool>("visible") || this.encode_decode_available.get(),
             );
+
+            true
+        }
+
+        pub(crate) fn update_animations(this: &super::PerformancePageGpu) -> bool {
+            let this = this.imp();
+
+            this.graph_utilization.update_animation();
+            this.usage_graph_memory.update_animation();
+            this.usage_graph_encode_decode.update_animation();
 
             true
         }
@@ -841,11 +851,11 @@ impl PerformancePageGpu {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
 
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let mins = graph_max_duration / 60;
             let seconds_to_string = &i18n_f(
@@ -879,10 +889,19 @@ impl PerformancePageGpu {
 
             this.graph_utilization.set_data_points(data_points);
             this.graph_utilization.set_smooth_graphs(smooth);
+            this.graph_utilization.set_do_animation(sliding);
+            this.graph_utilization
+                .set_expected_animation_ticks(delay as u32);
             this.usage_graph_encode_decode.set_data_points(data_points);
             this.usage_graph_encode_decode.set_smooth_graphs(smooth);
+            this.usage_graph_encode_decode.set_do_animation(sliding);
+            this.usage_graph_encode_decode
+                .set_expected_animation_ticks(delay as u32);
             this.usage_graph_memory.set_data_points(data_points);
             this.usage_graph_memory.set_smooth_graphs(smooth);
+            this.usage_graph_memory.set_do_animation(sliding);
+            this.usage_graph_memory
+                .set_expected_animation_ticks(delay as u32);
         }
 
         let this: Self = glib::Object::builder().property("name", name).build();
@@ -916,6 +935,15 @@ impl PerformancePageGpu {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         this
     }
 
@@ -925,5 +953,9 @@ impl PerformancePageGpu {
 
     pub fn update_readings(&self, gpu: &Gpu, index: Option<usize>) -> bool {
         imp::PerformancePageGpu::update_readings(self, gpu, index)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageGpu::update_animations(self)
     }
 }
