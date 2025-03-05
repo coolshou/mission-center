@@ -336,7 +336,7 @@ mod imp {
             true
         }
 
-        pub(crate) fn update_readings(
+        pub fn update_readings(
             this: &super::PerformancePageGpu,
             gpu: &Gpu,
             index: Option<usize>,
