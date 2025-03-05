@@ -94,6 +94,13 @@ mod imp {
 
         scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
+
+        #[property(get, set)]
+        animation_ticks: Cell<u32>,
+        #[property(get, set = Self::set_expected_animation_ticks)]
+        expected_animation_ticks: Cell<u32>,
+        #[property(get, set)]
+        do_animation: Cell<bool>,
     }
 
     impl Default for GraphWidget {
@@ -128,6 +135,9 @@ mod imp {
 
                 scroll_offset: Cell::new(0),
                 prev_size: Cell::new((0, 0)),
+                animation_ticks: Cell::new(0),
+                expected_animation_ticks: Cell::new(10),
+                do_animation: Cell::new(false),
             }
         }
     }
@@ -244,6 +254,14 @@ mod imp {
             }
         }
 
+        fn set_expected_animation_ticks(&self, ticks: u32) {
+            if ticks > 0 {
+                if self.expected_animation_ticks.get() != ticks {
+                    self.expected_animation_ticks.set(ticks);
+                }
+            }
+        }
+
         pub fn try_increment_scroll(&self) {
             if !self.scroll.get() {
                 return;
@@ -290,27 +308,31 @@ mod imp {
             }
 
             // Draw vertical lines
-            let mut vertical_line_count = self.obj().vertical_line_count() + 1;
+            let vertical_line_count = self.obj().vertical_line_count() + 1;
+
+            let animdist = if self.do_animation.get() {
+                width / (data_point_count - 2) as f32
+            } else {
+                width / (data_point_count - 1) as f32
+            };
 
             let col_width = width / vertical_line_count as f32;
             let col_height = height - scale_factor;
 
-            let x_offset = if self.obj().scroll() {
-                vertical_line_count += 1;
-
-                let x_index = self.scroll_offset.get();
-                let mut x_offset = (x_index as f32) * width / (data_point_count as f32);
-                x_offset %= col_width;
-
-                x_offset
+            let anim_offset = if self.obj().scroll() {
+                ((animdist)
+                    * (-(self.scroll_offset.get() as f32) + 1f32
+                        - self.animation_ticks.get().saturating_sub(1) as f32
+                            / self.expected_animation_ticks.get() as f32))
+                    .rem_euclid(col_width)
             } else {
                 0.
             };
 
-            for i in 1..vertical_line_count {
+            for i in 0..vertical_line_count {
                 let path_builder = PathBuilder::new();
-                path_builder.move_to(col_width * i as f32 - x_offset, scale_factor / 2.);
-                path_builder.line_to(col_width * i as f32 - x_offset, col_height);
+                path_builder.move_to(col_width * i as f32 + anim_offset, scale_factor / 2.);
+                path_builder.line_to(col_width * i as f32 + anim_offset, col_height);
                 snapshot.append_stroke(&path_builder.to_path(), &stroke, &color);
             }
         }
@@ -334,7 +356,11 @@ mod imp {
             let val_max = self.value_range_max.get() - self.value_range_min.get();
             let val_min = 0.;
 
-            let spacing_x = width / (data_points.data_set.len() - 1) as f32;
+            let spacing_x = if self.do_animation.get() {
+                width / (data_points.data_set.len() - 2) as f32
+            } else {
+                width / (data_points.data_set.len() - 1) as f32
+            };
 
             let mut points: Vec<(f32, f32)> = if self.scaling.get() != NORMALIZED_SCALING {
                 (0..)
@@ -382,17 +408,29 @@ mod imp {
 
             for (x, y) in &mut points {
                 *x = *x * spacing_x;
+                if self.do_animation.get() {
+                    *x -= spacing_x;
+                }
                 *y = height - ((y.clamp(val_min, val_max) / val_max) * (height));
             }
 
             if !points.is_empty() {
+                let anim_offset = if self.do_animation.get() {
+                    -spacing_x
+                        * (1f32
+                            - self.animation_ticks.get().saturating_sub(1) as f32
+                                / self.expected_animation_ticks.get() as f32)
+                } else {
+                    0.
+                };
+
                 let startindex;
                 let (mut x, mut y);
                 let pointlen = points.len();
 
                 if pointlen < data_points.data_set.len() {
                     (x, y) = (
-                        (data_points.data_set.len() - pointlen - 1) as f32 * spacing_x,
+                        ((data_points.data_set.len() as f32) - (pointlen + 2) as f32) * spacing_x,
                         height,
                     );
                     startindex = 0;
@@ -400,6 +438,9 @@ mod imp {
                     (x, y) = points[0];
                     startindex = 1;
                 }
+
+                x -= anim_offset;
+
                 let path_builder = PathBuilder::new();
                 path_builder.move_to(x, y);
 
@@ -407,13 +448,17 @@ mod imp {
 
                 for i in startindex..pointlen {
                     (x, y) = points[i];
+
+                    x -= anim_offset;
                     if smooth {
-                        let (lastx, lasty);
+                        let (mut lastx, lasty);
                         if i > 0 {
                             (lastx, lasty) = points[i - 1];
                         } else {
-                            (lastx, lasty) = (x - spacing_x, height);
+                            (lastx, lasty) = (x - spacing_x + anim_offset, height);
                         }
+
+                        lastx -= anim_offset;
 
                         path_builder.cubic_to(
                             lastx + spacing_x / 2f32,
@@ -597,6 +642,8 @@ impl GraphWidget {
     pub fn add_data_point(&self, index: usize, mut value: f32) {
         let mut data = self.imp().data_sets.take();
 
+        self.set_animation_ticks(0);
+
         if index == 0 {
             self.imp().try_increment_scroll();
         }
@@ -628,10 +675,24 @@ impl GraphWidget {
         }
 
         self.imp().data_sets.set(data);
+    }
 
+    pub fn update_animation(&self) -> bool {
         if self.is_visible() {
+            if self.do_animation() {
+                self.set_animation_ticks(
+                    (self.animation_ticks() + 1).min(self.expected_animation_ticks()),
+                );
+            } else if self.animation_ticks() == 0 {
+                self.set_animation_ticks(self.expected_animation_ticks());
+            } else {
+                return true;
+            }
+
             self.queue_draw();
         }
+
+        true
     }
 
     pub fn data(&self, index: usize) -> Option<Vec<f32>> {

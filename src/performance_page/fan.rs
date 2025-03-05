@@ -327,6 +327,15 @@ mod imp {
             true
         }
 
+        pub fn update_animations(this: &super::PerformancePageFan) -> bool {
+            let this = this.imp();
+
+            this.speed_graph.update_animation();
+            this.temp_graph.update_animation();
+
+            true
+        }
+
         fn data_summary(&self) -> String {
             let unsupported = i18n("Unsupported");
             let unsupported = glib::GString::from(unsupported);
@@ -485,10 +494,10 @@ impl PerformancePageFan {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let sliding = settings.boolean("performance-sliding-graphs");
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
 
@@ -520,10 +529,14 @@ impl PerformancePageFan {
             this.speed_graph_max_duration.set_text(time_string);
             this.speed_graph.set_data_points(data_points);
             this.speed_graph.set_smooth_graphs(smooth);
+            this.speed_graph.set_do_animation(sliding);
+            this.speed_graph.set_expected_animation_ticks(delay as u32);
 
             this.temp_graph_max_duration.set_text(time_string);
             this.temp_graph.set_data_points(data_points);
             this.temp_graph.set_smooth_graphs(smooth);
+            this.temp_graph.set_do_animation(sliding);
+            this.temp_graph.set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -554,6 +567,15 @@ impl PerformancePageFan {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         this
     }
 
@@ -563,5 +585,9 @@ impl PerformancePageFan {
 
     pub fn update_readings(&self, fan_info: &Fan, index: Option<usize>) -> bool {
         imp::PerformancePageFan::update_readings(self, fan_info, index)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageFan::update_animations(self)
     }
 }

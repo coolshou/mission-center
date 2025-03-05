@@ -552,6 +552,7 @@ impl MagpieClient {
 
             move || {
                 app!().set_initial_readings(initial_readings);
+                app!().setup_animations();
             }
         });
 
