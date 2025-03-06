@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-28 14:02+0000\n"
+"PO-Revision-Date: 2025-03-06 11:58+0000\n"
 "Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -67,7 +67,7 @@ msgstr "Jälgi mälu ja saaleala kasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Vaata ülevaadet, kuidas mälu süsteemi poolt kasutatakse"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
@@ -92,46 +92,54 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Jälgi üldist graafikaprotsessori kasutust, video kodeerimise ja "
+"dekodeerimise kasutust, mälukasutust ja voolutarvet, populaarse NVTOP "
+"projekti abil"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Vaata ülevaadet rakenduste ja protsesside ressursikasutusest"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
+msgstr "Toetab lihtsaks jälgimiseks vähendatud koondvaadet"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
+"Kasutab kõikide graafikute renderdamiseks riistvaralist kiirendust, et "
+"vähendada protsessori ja üldist ressursikasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "Kasutab GTK4 ja Libadwaita raamistikke"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr ""
+msgstr "Kirjutatud Rust programmeerimiskeeles"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Piirangud (nende ületamiseks on töö käimas):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Puudub protsessipõhine võrgukasutus"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "Graafikaprotsessori tugi on eksperimentaalne"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Inteli graafikaprotsessori jälgimine on toetatud ainult Broadwell ja "
+"hilisemate põlvkondade puhul, ning ei toeta videomälu, voolutarbe ega "
+"temperatuuri jälgimist"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -139,10 +147,13 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Linux Mint/Cinnamoni kasutamisel ei pruugi käivitatud rakendused "
+"\"Rakendused\" sektsioonis nähtavad olla (seotud probleem: https://"
+"github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr ""
+msgstr "Kommentaarid, ettepanekud, vearaportid ja kaastöö on teretulnud"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
@@ -173,6 +184,8 @@ msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Kas graafiku maksimaalne väärtus peaks tulema liidesest (väär) või jälgitud "
+"väärtustest (tõene)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -255,7 +268,7 @@ msgstr "Kuva saaleala graafikut"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Kuva graafikaprotsessori kodeerimise-dekodeerimise graafikut"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
@@ -263,7 +276,7 @@ msgstr "Seadmete järjestus rakenduse külgribal"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr "Graafikut, mis tuleks rakenduse külgribalt peita"
+msgstr "Graafikud, mis tuleks rakenduse külgribalt peita"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -283,15 +296,15 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
-msgstr ""
+msgstr "Muuda g_raafikut"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "Üldine k_asutus"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
-msgstr ""
+msgstr "Loogilised _protsessorid"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
@@ -313,7 +326,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr ""
+msgstr "_Vaade"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -375,7 +388,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopeeri"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
@@ -400,7 +413,7 @@ msgstr "Pidemed"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr ""
+msgstr "Aktiivaeg"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
@@ -444,7 +457,7 @@ msgstr "Cpufreq haldur:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr ""
+msgstr "Jõudluse eelistus:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
@@ -461,7 +474,7 @@ msgstr "Aktiivne aeg"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr ""
+msgstr "Keskm. reaktsiooniaeg"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
@@ -519,11 +532,11 @@ msgstr ""
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Kuva kodeerimise/dekodeerimise kasutust"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
-msgstr ""
+msgstr "Taktsagedus"
 
 #: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
@@ -580,15 +593,15 @@ msgstr ""
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr ""
+msgstr "Mälu koostis"
 
 #: resources/ui/performance_page/memory.blp:185
 msgid "Show Memory Composition"
-msgstr ""
+msgstr "Kuva mälu koostist"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Kuva saaleala kasutust"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -600,19 +613,19 @@ msgstr "Saadaval"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr ""
+msgstr "Jaotatud"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
-msgstr ""
+msgstr "Puhverdatud"
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr ""
+msgstr "Saaleala kasutatud"
 
 #: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
-msgstr ""
+msgstr "Saaleala saadaval"
 
 #: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
@@ -620,15 +633,15 @@ msgstr "Kiirus:"
 
 #: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
-msgstr ""
+msgstr "Pesasid kasutatud:"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
-msgstr ""
+msgstr "Kujutegur:"
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr ""
+msgstr "Võrgu _seaded"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
@@ -636,7 +649,7 @@ msgstr "Vastuvõtmisel"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Received"
-msgstr "Kokku vastuvõetud"
+msgstr "Kokku vastu võetud"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -692,7 +705,7 @@ msgstr "Uuendamise välp"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Andmekirjeid joonisel"
+msgstr "Graafiku punktide arv"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
@@ -712,13 +725,15 @@ msgstr "Kuva võrgu kiirust baitides"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Muuda võrgugraafikute skaalat dünaamiliselt"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Seadista võrgu graafikute skaala kohalduma tegeliku kasutuse või liidese "
+"maksimaalse kiirusega"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
@@ -746,7 +761,7 @@ msgstr "Kuva ventilaatori infot"
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
-msgstr ""
+msgstr "Rakenduste leht"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -776,7 +791,7 @@ msgstr "Seisund"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Teenuse hetkeseisund"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
@@ -794,7 +809,7 @@ msgstr "Seisund"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Lubatud"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
@@ -802,7 +817,7 @@ msgstr "Protsess"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Protsessi ja kasutaja info"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
@@ -830,7 +845,7 @@ msgstr "Grupp"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Logid"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
@@ -858,11 +873,11 @@ msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "Luba kõik"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Keela kõik"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
@@ -874,11 +889,11 @@ msgstr "Seadmed"
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr ""
+msgstr "Muuda külgriba"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Kuva/peida külgriba"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
@@ -906,19 +921,19 @@ msgstr "_Eelistused"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr ""
+msgstr "_Teave Juhtimiskeskuse kohta"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "Andmekandja"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU kasutus"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
-msgstr ""
+msgstr "GPU mälu"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
@@ -944,6 +959,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"Kasutusel ({} B)\n"
+"\n"
+"Mälu, mida kasutavad operatsioonisüsteem ja jooksvad rakendused"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -952,6 +970,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Muudetud ({} B)\n"
+"\n"
+"Mälu, mille sisu tuleb andmekandjale kirjutada, enne kui seda saab mõni "
+"teine protsess kasutada"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -959,6 +981,10 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Ootel ({} B)\n"
+"\n"
+"Mälu, mis sisaldab puhverdatud andmeid ja koodi, mis ei ole aktiivses "
+"kasutuses"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -967,6 +993,10 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Vaba ({} B)\n"
+"\n"
+"Mälu, mis ei ole hetkel kasutuses, ning mis taaskasutatakse esmajärjekorras, "
+"kui operatsioonisüsteem, draiverid või rakendused rohkem mälu vajavad"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
@@ -1013,7 +1043,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
-msgstr ""
+msgstr "Graafikaprotsessor"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
@@ -1021,7 +1051,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Ventilaator"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 msgid "{}: {} {}{}"
@@ -1059,7 +1089,7 @@ msgstr ""
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{} B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
@@ -1079,7 +1109,7 @@ msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Täiendava mäluteabe pärimine ebaõnnestus"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
@@ -1091,15 +1121,15 @@ msgstr "b/s"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr ""
+msgstr "{} {}{} B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr "Töös on {} teenust"
+msgstr "{} töötavat teenust"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr "{}/{} ebaõnnestunud teenust"
+msgstr "{} ebaõnnestunud teenust {}-st"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
