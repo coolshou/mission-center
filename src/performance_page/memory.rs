@@ -382,16 +382,13 @@ mod imp {
             let mem_info = &readings.mem_info;
 
             {
-                let used = mem_info
-                    .mem_total
-                    .saturating_sub(mem_info.mem_available + mem_info.dirty);
-                let dirty = mem_info.mem_total.saturating_sub(mem_info.mem_available);
+                let used = mem_info.mem_total.saturating_sub(mem_info.mem_available);
                 let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
                 this.usage_graph.add_data_point(0, mem_info.committed as _);
-                this.usage_graph.add_data_point(1, dirty as _);
+                this.usage_graph.add_data_point(1, mem_info.dirty as _);
                 this.usage_graph.add_data_point(2, used as _);
 
-                let swap_used = mem_info.swap_total - mem_info.swap_free;
+                let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
                 this.swap_usage_graph.add_data_point(0, swap_used as _);
 
                 this.mem_composition.update_memory_information(mem_info);
@@ -438,25 +435,35 @@ mod imp {
 
                 let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
                 if let Some(sa) = this.swap_available.get() {
-                    sa.set_text(&format!(
-                        "{:.2} {}{}B",
-                        swap_available.0,
-                        swap_available.1,
-                        if swap_available.1.is_empty() { "" } else { "i" }
-                    ));
+                    if swap_available.0 > 0. {
+                        sa.set_visible(true);
+                        sa.set_text(&format!(
+                            "{:.2} {}{}B",
+                            swap_available.0,
+                            swap_available.1,
+                            if swap_available.1.is_empty() { "" } else { "i" }
+                        ));
+                    } else {
+                        sa.set_visible(false);
+                    }
                 }
 
-                let swap_used = crate::to_human_readable(
-                    (mem_info.swap_total - mem_info.swap_free) as _,
-                    1024.,
-                );
-                if let Some(su) = this.swap_used.get() {
-                    su.set_text(&format!(
-                        "{:.2} {}{}B",
-                        swap_used.0,
-                        swap_used.1,
-                        if swap_used.1.is_empty() { "" } else { "i" }
-                    ));
+                if swap_available.0 > 0. {
+                    let swap_used = crate::to_human_readable(
+                        mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
+                        1024.,
+                    );
+                    if let Some(su) = this.swap_used.get() {
+                        su.set_visible(true);
+                        su.set_text(&format!(
+                            "{:.2} {}{}B",
+                            swap_used.0,
+                            swap_used.1,
+                            if swap_used.1.is_empty() { "" } else { "i" }
+                        ));
+                    }
+                } else if let Some(su) = this.swap_used.get() {
+                    su.set_visible(false);
                 }
 
                 let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);

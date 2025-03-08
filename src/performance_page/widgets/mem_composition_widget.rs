@@ -198,7 +198,7 @@ mod imp {
                 radius,
             );
 
-            gtk::prelude::SnapshotExt::push_rounded_clip(snapshot, &bounds);
+            SnapshotExt::push_rounded_clip(snapshot, &bounds);
 
             let mem_info = self.mem_info.get();
 
@@ -224,7 +224,7 @@ mod imp {
             tooltip_texts.clear();
 
             // Used memory
-            let used = (mem_info.mem_total - (mem_info.mem_available + mem_info.dirty)) as f32;
+            let used = mem_info.mem_total.saturating_sub(mem_info.mem_available) as f32;
             let x = self.render_bar(
                 snapshot,
                 0.,

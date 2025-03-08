@@ -1938,8 +1938,10 @@ mod imp {
                     Pages::Memory((summary, page)) => {
                         let total_raw = readings.mem_info.mem_total;
                         let total = crate::to_human_readable(total_raw as _, 1024.);
-                        let used_raw = readings.mem_info.mem_total
-                            - (readings.mem_info.mem_available + readings.mem_info.dirty);
+                        let used_raw = readings
+                            .mem_info
+                            .mem_total
+                            .saturating_sub(readings.mem_info.mem_available);
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
