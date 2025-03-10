@@ -766,7 +766,7 @@ mod imp {
 
                 self.infobar_content
                     .temperature()
-                    .set_text(&format!("{:.2}°C", temp));
+                    .set_text(&format!("{} °C", temp.round() as i32));
             } else {
                 self.infobar_content.box_temp().set_visible(false);
             }
