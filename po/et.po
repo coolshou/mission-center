@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-03-06 11:58+0000\n"
+"PO-Revision-Date: 2025-03-11 13:02+0000\n"
 "Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -60,6 +60,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Vaata süsteemi protsesside, lõimede ja pidemete arvu, aktiivaega, "
+"taktsagedust, puhvrite mahtu"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -161,7 +163,7 @@ msgstr "Millist lehte rakenduse käivitamisel kuvada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "AEGUNUD! EI OLE ENAM KASUTUSEL!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
@@ -191,6 +193,8 @@ msgstr ""
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Vanem- ja lapsprotsesside statistikat kuvatakse eraldi või mestitakse "
+"ülespoole"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
@@ -222,7 +226,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "Millist lehte kuvatakse rakenduse käivitamisel jõudluse vahelehel"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
@@ -260,7 +264,7 @@ msgstr "Kuva vaikimisi ventilaatori infot"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr ""
+msgstr "Kuva mälu koostise vidinat"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
@@ -765,7 +769,7 @@ msgstr "Rakenduste leht"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Mesti protsesside statistika"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
@@ -783,7 +787,7 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Teenuse detailid"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
@@ -881,7 +885,7 @@ msgstr "Keela kõik"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Lähtesta"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
@@ -942,7 +946,7 @@ msgstr "Peata rakendus"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Tapa rakendus"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
@@ -951,7 +955,7 @@ msgstr "Peata protsess"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Tapa protsess"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
