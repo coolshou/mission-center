@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-03-11 13:02+0000\n"
+"PO-Revision-Date: 2025-03-12 14:06+0000\n"
 "Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -222,7 +222,7 @@ msgstr "Millist graafikut protsessori jõudluse lehel kuvada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Kuva protsessori graafikutel tuuma tööaega"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
@@ -290,7 +290,7 @@ msgstr "Protsessor"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr ""
+msgstr "Kasutus perioodil "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -312,7 +312,7 @@ msgstr "Loogilised _protsessorid"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Kuva tuuma tööaega"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -465,12 +465,12 @@ msgstr "Jõudluse eelistus:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr ""
+msgstr "Aktiivaeg perioodil "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr ""
+msgstr "Andmemaht perioodil "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -507,11 +507,11 @@ msgstr "Tüüp:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr ""
+msgstr "Ventilaatori kiirus perioodil "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr ""
+msgstr "Temperatuur perioodil "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -527,12 +527,12 @@ msgstr "Hetketemperatuur"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr ""
+msgstr "Video kodeerimise/dekodeerimise kasutus perioodil "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr ""
+msgstr "Mälukasutus perioodil "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
@@ -593,7 +593,7 @@ msgstr "Mälu"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr ""
+msgstr "Saaleala kasutus perioodil "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -1051,7 +1051,7 @@ msgstr "Graafikaprotsessor"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Ventilaator {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
@@ -1076,12 +1076,12 @@ msgstr "Ei"
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr ""
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minut[} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
