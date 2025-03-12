@@ -1126,6 +1126,7 @@ mod imp {
                 Some(DiskKind::IScsi) => i18n("iSCSI"),
                 Some(DiskKind::Optical) => i18n("Optical"),
                 Some(DiskKind::Floppy) => i18n("Floppy"),
+                Some(DiskKind::ThumbDrive) => i18n("Thumb Drive"),
                 None => i18n("Unknown"),
             };
 

@@ -121,7 +121,7 @@
             <default>false</default>
             <summary>Should performance graphs be smooth or jagged</summary>
         </key>
-        
+
         <key name="performance-sliding-graphs" type="b">
             <default>false</default>
             <summary>Should graphs be animated</summary>
