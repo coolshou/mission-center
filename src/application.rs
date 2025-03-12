@@ -228,6 +228,20 @@ impl MissionCenterApplication {
         window.set_initial_readings(readings)
     }
 
+    pub fn setup_animations(&self) {
+        use gtk::glib::*;
+
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return;
+        };
+
+        window.setup_animations()
+    }
+
     pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
         use gtk::glib::*;
 
@@ -240,6 +254,20 @@ impl MissionCenterApplication {
         };
 
         window.update_readings(readings)
+    }
+
+    pub fn refresh_animations(&self) -> bool {
+        use gtk::glib::*;
+
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return false;
+        };
+
+        window.update_animations()
     }
 
     pub fn settings(&self) -> gio::Settings {

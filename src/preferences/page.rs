@@ -60,6 +60,8 @@ mod imp {
         #[template_child]
         pub smooth_graphs: TemplateChild<SwitchRow>,
         #[template_child]
+        pub sliding_graphs: TemplateChild<SwitchRow>,
+        #[template_child]
         pub network_bytes: TemplateChild<SwitchRow>,
         #[template_child]
         pub network_dynamic_scaling: TemplateChild<SwitchRow>,
@@ -91,6 +93,7 @@ mod imp {
                 data_points: Default::default(),
 
                 smooth_graphs: Default::default(),
+                sliding_graphs: Default::default(),
                 network_bytes: Default::default(),
                 network_dynamic_scaling: Default::default(),
                 show_cpu: Default::default(),
@@ -199,6 +202,7 @@ mod imp {
                 });
 
             connect_switch_to_setting!(self, self.smooth_graphs, "performance-smooth-graphs");
+            connect_switch_to_setting!(self, self.sliding_graphs, "performance-sliding-graphs");
             connect_switch_to_setting!(
                 self,
                 self.network_bytes,
@@ -252,6 +256,8 @@ impl PreferencesPage {
 
         imp.smooth_graphs
             .set_active(settings.boolean("performance-smooth-graphs"));
+        imp.sliding_graphs
+            .set_active(settings.boolean("performance-sliding-graphs"));
         imp.network_bytes
             .set_active(settings.boolean("performance-page-network-use-bytes"));
         imp.network_dynamic_scaling
