@@ -344,6 +344,14 @@ glib::wrapper! {
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+impl DetailsDialog {
+    pub fn new() -> Self {
+        glib::Object::builder()
+            .property("follows-content-size", true)
+            .build()
+    }
+}
+
 fn to_signal_id(id: u64) -> SignalHandlerId {
     unsafe { std::mem::transmute(id) }
 }
