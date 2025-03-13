@@ -20,10 +20,7 @@
 
 use std::cell::Cell;
 
-use adw::{
-    glib::{ParamSpec, Propagation, Properties, Value},
-    prelude::AdwDialogExt,
-};
+use adw::{glib::Propagation, prelude::AdwDialogExt};
 use gtk::{
     gdk, gio,
     glib::{
@@ -60,8 +57,41 @@ mod imp {
         pub restart: gio::SimpleAction,
     }
 
-    #[derive(Properties)]
-    #[properties(wrapper_type = super::ContextMenuButton)]
+    fn find_selected_item(
+        this: WeakRef<crate::services_page::ServicesPage>,
+    ) -> Option<(crate::services_page::ServicesPage, ServicesListItem)> {
+        let this_obj = match this.upgrade() {
+            Some(this) => this,
+            None => {
+                g_critical!(
+                    "MissionCenter::ServicesPage",
+                    "Failed to get ServicesPage instance for action"
+                );
+                return None;
+            }
+        };
+        let this = this_obj.imp();
+
+        let selected_item = match this
+            .column_view
+            .model()
+            .and_then(|m| m.downcast_ref::<gtk::SingleSelection>().cloned())
+            .and_then(|s| s.selected_item())
+            .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
+        {
+            Some(item) => item,
+            None => {
+                g_critical!(
+                    "MissionCenter::ServicesPage",
+                    "Failed to find selected item"
+                );
+                return None;
+            }
+        };
+
+        Some((this_obj, selected_item))
+    }
+
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/services_page/page.ui")]
     pub struct ServicesPage {
@@ -92,13 +122,11 @@ mod imp {
         #[template_child]
         context_menu: TemplateChild<gtk::PopoverMenu>,
 
-        #[property(name = "details-dialog", get = Self::details_dialog, set = Self::set_details_dialog, type = Option<DetailsDialog>
-        )]
         details_dialog: Cell<Option<DetailsDialog>>,
         pub details_dialog_visible: Cell<bool>,
 
         pub model: gio::ListStore,
-        pub actions: Actions,
+        pub actions: Cell<Actions>,
     }
 
     impl Default for ServicesPage {
@@ -122,11 +150,11 @@ mod imp {
                 details_dialog_visible: Cell::new(false),
 
                 model: gio::ListStore::new::<ServicesListItem>(),
-                actions: Actions {
+                actions: Cell::new(Actions {
                     start: gio::SimpleAction::new("selected-svc-start", None),
                     stop: gio::SimpleAction::new("selected-svc-stop", None),
                     restart: gio::SimpleAction::new("selected-svc-restart", None),
-                },
+                }),
             }
         }
     }
@@ -136,21 +164,8 @@ mod imp {
             unsafe { &*self.details_dialog.as_ptr() }.clone()
         }
 
-        fn set_details_dialog(&self, widget: Option<&DetailsDialog>) {
-            if let Some(widget) = widget {
-                widget.connect_closed({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(this) = this.upgrade() {
-                            this.imp().details_dialog_visible.set(false);
-                        }
-                    }
-                });
-
-                unsafe { widget.set_data("list-item", ServicesListItemBuilder::new().build()) };
-            }
-
-            self.details_dialog.set(widget.cloned());
+        fn actions(&self) -> &Actions {
+            unsafe { &*self.actions.as_ptr() }
         }
     }
 
@@ -337,108 +352,13 @@ mod imp {
             });
             actions.add_action(&action);
 
-            fn find_selected_item(
-                this: WeakRef<super::ServicesPage>,
-            ) -> Option<(super::ServicesPage, ServicesListItem)> {
-                let this_obj = match this.upgrade() {
-                    Some(this) => this,
-                    None => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to get ServicesPage instance for action"
-                        );
-                        return None;
-                    }
-                };
-                let this = this_obj.imp();
-
-                let selected_item = match this
-                    .column_view
-                    .model()
-                    .and_then(|m| m.downcast_ref::<gtk::SingleSelection>().cloned())
-                    .and_then(|s| s.selected_item())
-                    .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
-                {
-                    Some(item) => item,
-                    None => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to find selected item"
-                        );
-                        return None;
-                    }
-                };
-
-                Some((this_obj, selected_item))
-            }
-
-            fn make_magpie_request(
-                this: WeakRef<super::ServicesPage>,
-                request: fn(&MagpieClient, &str),
-            ) {
-                let app = app!();
-
-                let (_, selected_item) = match find_selected_item(this) {
-                    Some((this, item)) => (this, item),
-                    None => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to get selected item for action"
-                        );
-                        return;
-                    }
-                };
-
-                match app.sys_info() {
-                    Ok(sys_info) => {
-                        request(&sys_info, &selected_item.name());
-                    }
-                    Err(e) => {
-                        g_critical!(
-                            "MissionCenter::ServicesPage",
-                            "Failed to get sys_info from MissionCenterApplication: {}",
-                            e
-                        );
-                    }
-                };
-            }
-
-            self.actions.start.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    make_magpie_request(this.clone(), |sys_info, service_name| {
-                        sys_info.start_service(service_name.to_owned());
-                    });
-                }
-            });
-
-            self.actions.stop.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    make_magpie_request(this.clone(), |sys_info, service_name| {
-                        sys_info.stop_service(service_name.to_owned());
-                    });
-                }
-            });
-
-            self.actions.restart.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    make_magpie_request(this.clone(), |sys_info, service_name| {
-                        sys_info.restart_service(service_name.to_owned());
-                    });
-                }
-            });
-
             let action = gio::SimpleAction::new("details", None);
             action.connect_activate({
                 let this = this.downgrade();
                 move |_action, _| {
                     match find_selected_item(this.clone()) {
                         Some((this, item)) => {
-                            let details_dialog =
-                                unsafe { &*this.imp().details_dialog.as_ptr() }.clone();
-                            details_dialog.map(move |d| {
+                            this.imp().details_dialog().map(move |d| {
                                 this.imp().details_dialog_visible.set(true);
                                 unsafe {
                                     d.set_data("list-item", item);
@@ -647,13 +567,13 @@ mod imp {
                         .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned());
 
                     if selected_item.map(|it| it.running()).unwrap_or(false) {
-                        self.actions.stop.set_enabled(true);
-                        self.actions.start.set_enabled(false);
-                        self.actions.restart.set_enabled(true);
+                        self.actions().stop.set_enabled(true);
+                        self.actions().start.set_enabled(false);
+                        self.actions().restart.set_enabled(true);
                     } else {
-                        self.actions.stop.set_enabled(false);
-                        self.actions.start.set_enabled(true);
-                        self.actions.restart.set_enabled(false);
+                        self.actions().stop.set_enabled(false);
+                        self.actions().start.set_enabled(true);
+                        self.actions().restart.set_enabled(false);
                     }
                 }
             }
@@ -681,18 +601,6 @@ mod imp {
     }
 
     impl ObjectImpl for ServicesPage {
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
-
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -708,6 +616,8 @@ mod imp {
                     .set_menu_model(Some(&gio::MenuModel::from(menu)));
             }
 
+            self.details_dialog.set(Some(DetailsDialog::new()));
+
             self.configure_actions();
 
             let evt_key_press = gtk::EventControllerKey::new();
@@ -718,9 +628,7 @@ mod imp {
                         let this = this.imp();
 
                         if key == gdk::Key::Escape {
-                            unsafe { &*this.details_dialog.as_ptr() }
-                                .clone()
-                                .map(|d| d.force_close());
+                            this.details_dialog().map(|d| d.force_close());
                         }
                     }
 
@@ -728,12 +636,6 @@ mod imp {
                 }
             });
             self.obj().add_controller(evt_key_press);
-
-            if let Some(window) = app!().window() {
-                window.add_action(&self.actions.start);
-                window.add_action(&self.actions.stop);
-                window.add_action(&self.actions.restart);
-            }
 
             let filter_model = self.set_up_filter_model(self.model.clone().into());
             let selection_model = gtk::SingleSelection::new(Some(filter_model));
@@ -763,13 +665,13 @@ mod imp {
                     let this = this.imp();
 
                     if selected.running() {
-                        this.actions.stop.set_enabled(true);
-                        this.actions.start.set_enabled(false);
-                        this.actions.restart.set_enabled(true);
+                        this.actions().stop.set_enabled(true);
+                        this.actions().start.set_enabled(false);
+                        this.actions().restart.set_enabled(true);
                     } else {
-                        this.actions.stop.set_enabled(false);
-                        this.actions.start.set_enabled(true);
-                        this.actions.restart.set_enabled(false);
+                        this.actions().stop.set_enabled(false);
+                        this.actions().start.set_enabled(true);
+                        this.actions().restart.set_enabled(false);
                     }
                 }
             });
@@ -791,7 +693,108 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ServicesPage {}
+    impl WidgetImpl for ServicesPage {
+        fn realize(&self) {
+            self.parent_realize();
+
+            fn make_magpie_request(
+                this: WeakRef<super::ServicesPage>,
+                request: fn(&MagpieClient, &str),
+            ) {
+                let app = app!();
+
+                let (_, selected_item) = match find_selected_item(this) {
+                    Some((this, item)) => (this, item),
+                    None => {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get selected item for action"
+                        );
+                        return;
+                    }
+                };
+
+                match app.sys_info() {
+                    Ok(sys_info) => {
+                        request(&sys_info, &selected_item.name());
+                    }
+                    Err(e) => {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get sys_info from MissionCenterApplication: {}",
+                            e
+                        );
+                    }
+                };
+            }
+
+            if let Some(window) = app!().window() {
+                let svc_start_action = window
+                    .lookup_action("selected-svc-start")
+                    .and_then(|a| a.downcast::<gio::SimpleAction>().ok())
+                    .unwrap_or_else(|| {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get `selected-svc-start` action from MissionCenterWindow"
+                        );
+                        gio::SimpleAction::new("selected-svc-start", None)
+                    });
+                let svc_stop_action = window
+                    .lookup_action("selected-svc-stop")
+                    .and_then(|a| a.downcast::<gio::SimpleAction>().ok())
+                    .unwrap_or_else(|| {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get `selected-svc-stop` action from MissionCenterWindow"
+                        );
+                        gio::SimpleAction::new("selected-svc-stop", None)
+                    });
+                let svc_restart_action = window
+                    .lookup_action("selected-svc-restart")
+                    .and_then(|a| a.downcast::<gio::SimpleAction>().ok())
+                    .unwrap_or_else(|| {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get `selected-svc-restart` action from MissionCenterWindow"
+                        );
+                        gio::SimpleAction::new("selected-svc-restart", None)
+                    });
+
+                svc_start_action.connect_activate({
+                    let this = self.obj().downgrade();
+                    move |_action, _| {
+                        make_magpie_request(this.clone(), |sys_info, service_name| {
+                            sys_info.start_service(service_name.to_owned());
+                        });
+                    }
+                });
+
+                svc_stop_action.connect_activate({
+                    let this = self.obj().downgrade();
+                    move |_action, _| {
+                        make_magpie_request(this.clone(), |sys_info, service_name| {
+                            sys_info.stop_service(service_name.to_owned());
+                        });
+                    }
+                });
+
+                svc_restart_action.connect_activate({
+                    let this = self.obj().downgrade();
+                    move |_action, _| {
+                        make_magpie_request(this.clone(), |sys_info, service_name| {
+                            sys_info.restart_service(service_name.to_owned());
+                        });
+                    }
+                });
+
+                self.actions.set(Actions {
+                    start: svc_start_action,
+                    stop: svc_stop_action,
+                    restart: svc_restart_action,
+                })
+            }
+        }
+    }
 
     impl BoxImpl for ServicesPage {}
 }

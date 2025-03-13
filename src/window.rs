@@ -287,6 +287,16 @@ mod imp {
                 action.set_state(&interface_style.to_variant());
             });
             self.obj().add_action(&interface_style);
+
+            // Not clear how actions actually become usable, what I know is that they need to be
+            // created and configured at object construction otherwise they flat out don't work.
+            // And since these actions *need* to be tied to the window they are created here.
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-start", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-stop", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-restart", None));
         }
 
         fn configure_theme_selection(&self) {
