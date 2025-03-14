@@ -44,7 +44,7 @@ locale-gen en_US.UTF-8
 
 # Adapted from https://raw.githubusercontent.com/snapcore/snapcraft/master/docker/Dockerfile
 install-snap core20
-install-snap core22
+install-snap core24
 install-snap gtk-common-themes
 install-snap gnome-3-38-2004
 install-snap snapcraft

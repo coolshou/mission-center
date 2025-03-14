@@ -273,7 +273,7 @@ mod imp {
     impl PerformancePageMemory {
         pub fn set_static_information(
             this: &super::PerformancePageMemory,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
@@ -345,12 +345,38 @@ mod imp {
                 if total_swap.1.is_empty() { "" } else { "i" }
             ));
 
+            let mem_module_count = readings.mem_devices.len();
+            if mem_module_count > 0 {
+                if let Some(sp) = this.speed.get() {
+                    if readings.mem_devices[0].speed != 0 {
+                        sp.set_text(&format!("{} MT/s", readings.mem_devices[0].speed));
+                    }
+                }
+                if let Some(su) = this.slots_used.get() {
+                    su.set_text(&format!("{}", mem_module_count));
+                }
+                if let Some(ff) = this.form_factor.get() {
+                    if readings.mem_devices[0].form_factor != "" {
+                        ff.set_text(&format!("{}", readings.mem_devices[0].form_factor));
+                    }
+                }
+                if let Some(rt) = this.ram_type.get() {
+                    if readings.mem_devices[0].ram_type != "" {
+                        rt.set_text(&format!("{}", readings.mem_devices[0].ram_type));
+                    }
+                }
+            } else {
+                this.toast_overlay.add_toast(adw::Toast::new(&i18n(
+                    "Getting additional memory information failed",
+                )))
+            }
+
             true
         }
 
         pub fn update_readings(
             this: &super::PerformancePageMemory,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
             let mem_info = &readings.mem_info;
@@ -709,73 +735,6 @@ mod imp {
                     .expect("Could not find `legend_commited` object in details pane"),
             );
 
-            // Get memory device information using `load_memory_device_info()` from
-            // sys_info_v2::MemInfo and update the appropriate labels
-            fn update_memory_hw_info(this: &super::PerformancePageMemory) {
-                unsafe { glib::gobject_ffi::g_object_ref(this.as_ptr() as *mut _) };
-                let ptr = this.as_ptr() as usize;
-
-                // Do this in another thread to avoid stalling the GUI
-                let _ = std::thread::spawn(move || {
-                    // Load memory device info
-                    use crate::sys_info_v2::MemInfo;
-                    let memory_device_info = MemInfo::load_memory_device_info();
-
-                    glib::idle_add_once(move || {
-                        use glib::translate::from_glib_none;
-
-                        let this: gtk::Widget =
-                            unsafe { from_glib_none(ptr as *mut gtk::ffi::GtkWidget) };
-                        unsafe { glib::gobject_ffi::g_object_unref(ptr as *mut _) };
-
-                        let this = this.downcast_ref::<super::PerformancePageMemory>().unwrap();
-
-                        // Update the labels with the retrieved information
-                        match memory_device_info {
-                            Some(memory_device_info) => {
-                                // Only update info if we have more than 0 modules
-                                let mem_module_count = memory_device_info.len();
-                                if mem_module_count > 0 {
-                                    if let Some(sp) = this.imp().speed.get() {
-                                        if memory_device_info[0].speed != 0 {
-                                            sp.set_text(&format!(
-                                                "{} MT/s",
-                                                memory_device_info[0].speed
-                                            ));
-                                        }
-                                    }
-                                    if let Some(su) = this.imp().slots_used.get() {
-                                        su.set_text(&format!("{}", mem_module_count));
-                                    }
-                                    if let Some(ff) = this.imp().form_factor.get() {
-                                        if memory_device_info[0].form_factor != "" {
-                                            ff.set_text(&format!(
-                                                "{}",
-                                                memory_device_info[0].form_factor
-                                            ));
-                                        }
-                                    }
-                                    if let Some(rt) = this.imp().ram_type.get() {
-                                        if memory_device_info[0].ram_type != "" {
-                                            rt.set_text(&format!(
-                                                "{}",
-                                                memory_device_info[0].ram_type
-                                            ));
-                                        }
-                                    }
-                                }
-                            }
-                            _ => this // If getting memory device info failed, show error toast
-                                .imp()
-                                .toast_overlay
-                                .add_toast(adw::Toast::new(&i18n(
-                                    "Getting additional memory information failed",
-                                ))),
-                        }
-                    });
-                });
-            }
-
             let default_label = format!("{}", i18n("Unknown"));
             let default_label = default_label.as_str();
 
@@ -802,8 +761,6 @@ mod imp {
                 .expect("Could not find `ram_type` object in details pane");
             ram_type.set_label(default_label);
             let _ = self.ram_type.set(ram_type);
-
-            update_memory_hw_info(&this);
         }
     }
 
@@ -943,11 +900,11 @@ impl PerformancePageMemory {
         this
     }
 
-    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_static_information(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageMemory::set_static_information(self, readings)
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageMemory::update_readings(self, readings)
     }
 }

@@ -18,19 +18,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, collections::HashMap, sync::Arc};
+use std::{cell::Cell, collections::HashMap};
 
 use gio::ListStore;
+use glib::g_critical;
 use glib::translate::from_glib_full;
 use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 
-use crate::{
-    app,
-    apps_page::{list_item::ListItem, row_model::ContentType},
-    i18n::*,
-    settings,
-    sys_info_v2::{App, Process},
-};
+use magpie_types::apps::icon::Icon;
+
+use crate::apps_page::{list_item::ListItem, row_model::ContentType};
+use crate::magpie_client::{App, Process, ProcessUsageStats};
+use crate::{app, i18n::*, settings};
 
 mod column_header;
 mod list_item;
@@ -59,7 +58,7 @@ mod imp {
         #[template_child]
         pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        pub memory_column_shared: TemplateChild<gtk::ColumnViewColumn>,
+        pub shared_memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
@@ -85,19 +84,18 @@ mod imp {
         pub processes_root_model: Cell<ListStore>,
 
         pub max_cpu_usage: Cell<f32>,
-        pub max_memory_usage: Cell<f32>,
+        pub max_memory_usage: Cell<u64>,
         pub max_disk_usage: Cell<f32>,
-        pub max_gpu_memory_usage: Cell<f32>,
+        pub max_gpu_memory_usage: Cell<u64>,
 
-        pub apps: Cell<HashMap<Arc<str>, App>>,
-        pub process_tree: Cell<Process>,
+        pub apps: Cell<HashMap<String, App>>,
+        pub processes: Cell<HashMap<u32, Process>>,
 
         pub use_merge_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
         fn default() -> Self {
-            use crate::sys_info_v2::Process;
             use std::collections::HashMap;
 
             Self {
@@ -106,7 +104,7 @@ mod imp {
                 pid_column: TemplateChild::default(),
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
-                memory_column_shared: TemplateChild::default(),
+                shared_memory_column: TemplateChild::default(),
                 disk_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
@@ -128,12 +126,12 @@ mod imp {
                 processes_root_model: Cell::new(ListStore::new::<row_model::RowModel>()),
 
                 max_cpu_usage: Cell::new(0.0),
-                max_memory_usage: Cell::new(0.0),
+                max_memory_usage: Cell::new(0),
                 max_disk_usage: Cell::new(0.0),
-                max_gpu_memory_usage: Cell::new(0.0),
+                max_gpu_memory_usage: Cell::new(0),
 
                 apps: Cell::new(HashMap::new()),
-                process_tree: Cell::new(Process::default()),
+                processes: Cell::new(HashMap::new()),
 
                 use_merge_stats: Cell::new(false),
             }
@@ -141,28 +139,8 @@ mod imp {
     }
 
     impl AppsPage {
-        fn find_process(root_process: &Process, pid: u32) -> Option<&Process> {
-            if root_process.pid == pid {
-                return Some(root_process);
-            }
-
-            match root_process.children.get(&pid) {
-                Some(process) => return Some(process),
-                None => {}
-            }
-
-            for (_, process) in &root_process.children {
-                match Self::find_process(process, pid) {
-                    Some(process) => return Some(process),
-                    None => {}
-                }
-            }
-
-            None
-        }
-
         fn configure_actions(&self) {
-            use crate::sys_info_v2::Process;
+            use crate::magpie_client::Process;
             use gtk::glib::*;
 
             fn find_pid(
@@ -189,15 +167,26 @@ mod imp {
                 // just continue running which makes it confusing for the end-user. So go through
                 // the children of the bwrap process and find the first child that is not a bwrap
                 // and terminate that instead.
-                fn find_first_non_bwrap_child(root: &Process) -> Option<&Process> {
-                    for (_, child) in &root.children {
-                        if child.name.as_ref() != "bwrap" {
+                fn find_first_non_bwrap_child<'a>(
+                    root: &Process,
+                    processes: &'a HashMap<u32, Process>,
+                ) -> Option<&'a Process> {
+                    for pid in &root.children {
+                        let child = match processes.get(pid) {
+                            None => continue,
+                            Some(child) => child,
+                        };
+                        if child.name.as_str() != "bwrap" {
                             return Some(child);
                         }
                     }
 
-                    for (_, child) in &root.children {
-                        if let Some(child) = find_first_non_bwrap_child(child) {
+                    for pid in &root.children {
+                        let child = match processes.get(pid) {
+                            None => continue,
+                            Some(child) => child,
+                        };
+                        if let Some(child) = find_first_non_bwrap_child(child, processes) {
                             return Some(child);
                         }
                     }
@@ -205,15 +194,15 @@ mod imp {
                     None
                 }
                 if is_app {
-                    if let Some(process) =
-                        AppsPage::find_process(unsafe { &*this.imp().process_tree.as_ptr() }, pid)
-                    {
-                        if process.name.as_ref() == "bwrap" {
-                            if let Some(child) = find_first_non_bwrap_child(process) {
+                    let processes = this.imp().processes.take();
+                    if let Some(process) = processes.get(&pid) {
+                        if process.name.as_str() == "bwrap" {
+                            if let Some(child) = find_first_non_bwrap_child(process, &processes) {
                                 pid = child.pid;
                             }
                         }
                     }
+                    this.imp().processes.set(processes);
                 }
 
                 Some(pid)
@@ -476,7 +465,7 @@ mod imp {
 
             let model = glib_clone!(self.apps_model);
             let apps = self.apps.take();
-            let process_tree = self.process_tree.take();
+            let processes = self.processes.take();
 
             let mut to_remove = BTreeSet::new();
             for i in 0..model.n_items() {
@@ -504,7 +493,7 @@ mod imp {
                         }
                         let current = current.unwrap();
 
-                        current.id().as_str() == app_id.as_ref()
+                        current.id().as_str() == app_id.as_str()
                     })
                 } else {
                     None
@@ -516,7 +505,7 @@ mod imp {
                     let mut primary_process = None;
                     let mut primary_pid = 0;
                     for (index, pid) in app.pids.iter().enumerate() {
-                        if let Some(process) = Self::find_process(&process_tree, *pid) {
+                        if let Some(process) = processes.get(pid) {
                             if process.children.len() > 0 || index == app.pids.len() - 1 {
                                 primary_process = Some(process);
                                 primary_pid = process.pid;
@@ -528,27 +517,42 @@ mod imp {
                     (primary_process, primary_pid)
                 };
 
-                let pp = primary_process.cloned().unwrap_or_default();
+                let usage_stats = if let Some(pp) = primary_process {
+                    if self.use_merge_stats.get() {
+                        pp.merged_usage_stats(&processes)
+                    } else {
+                        pp.usage_stats
+                    }
+                } else {
+                    ProcessUsageStats::default()
+                };
+
                 let row_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
-                        .name(app.name.as_ref())
-                        .id(app.id.as_ref())
+                        .name(app.name.as_str())
+                        .id(app.id.as_str())
                         .icon(
                             app.icon
                                 .as_ref()
-                                .map(|i| i.as_ref())
+                                .and_then(|i| i.icon.as_ref())
+                                .and_then(|i| match i {
+                                    Icon::Empty(_) => None,
+                                    Icon::Path(p) => Some(p.as_str()),
+                                    Icon::Id(id) => Some(id.as_str()),
+                                    Icon::Data(_) => None,
+                                })
                                 .unwrap_or("application-x-executable"),
                         )
                         .pid(primary_pid)
                         .content_type(ContentType::App)
                         .expanded(false)
-                        .cpu_usage(pp.merged_usage_stats.cpu_usage)
-                        .memory_usage(pp.merged_usage_stats.memory_usage)
-                        .memory_shared(pp.merged_usage_stats.memory_shared)
-                        .disk_usage(pp.merged_usage_stats.disk_usage)
-                        .network_usage(pp.merged_usage_stats.network_usage)
-                        .gpu_usage(pp.merged_usage_stats.gpu_usage)
-                        .gpu_mem_usage(pp.merged_usage_stats.gpu_memory_usage)
+                        .cpu_usage(usage_stats.cpu_usage)
+                        .memory_usage(usage_stats.memory_usage)
+                        .shared_memory_usage(usage_stats.shared_memory_usage)
+                        .disk_usage(usage_stats.disk_usage)
+                        .network_usage(usage_stats.network_usage)
+                        .gpu_usage(usage_stats.gpu_usage)
+                        .gpu_mem_usage(usage_stats.gpu_memory_usage)
                         .max_cpu_usage(self.max_cpu_usage.get())
                         .max_memory_usage(self.max_memory_usage.get())
                         .build();
@@ -566,13 +570,13 @@ mod imp {
                     // The app might have been stopped and restarted between updates, so always
                     // reset the primary PID, and repopulate the list of child processes.
                     row_model.set_pid(primary_pid);
-                    row_model.set_cpu_usage(pp.merged_usage_stats.cpu_usage);
-                    row_model.set_memory_usage(pp.merged_usage_stats.memory_usage);
-                    row_model.set_memory_shared(pp.merged_usage_stats.memory_shared);
-                    row_model.set_disk_usage(pp.merged_usage_stats.disk_usage);
-                    row_model.set_network_usage(pp.merged_usage_stats.network_usage);
-                    row_model.set_gpu_usage(pp.merged_usage_stats.gpu_usage);
-                    row_model.set_gpu_memory_usage(pp.merged_usage_stats.gpu_memory_usage);
+                    row_model.set_cpu_usage(usage_stats.cpu_usage);
+                    row_model.set_memory_usage(usage_stats.memory_usage);
+                    row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
+                    row_model.set_disk_usage(usage_stats.disk_usage);
+                    row_model.set_network_usage(usage_stats.network_usage);
+                    row_model.set_gpu_usage(usage_stats.gpu_usage);
+                    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
                     row_model
                 };
@@ -589,7 +593,13 @@ mod imp {
                         let icon = app
                             .icon
                             .as_ref()
-                            .map(|i| i.as_ref())
+                            .and_then(|i| i.icon.as_ref())
+                            .and_then(|i| match i {
+                                Icon::Empty(_) => None,
+                                Icon::Path(p) => Some(p.as_str()),
+                                Icon::Id(id) => Some(id.as_str()),
+                                Icon::Data(_) => None,
+                            })
                             .unwrap_or("application-x-executable-symbolic");
 
                         model.set_icon(icon);
@@ -600,7 +610,7 @@ mod imp {
                         g_critical!(
                             "MissionCenter::AppsPage",
                             "Failed to find process in process tree, for App {}",
-                            app.name.as_ref()
+                            &app.name
                         );
                     }
                 } else {
@@ -609,24 +619,27 @@ mod imp {
                     g_critical!(
                         "MissionCenter::AppsPage",
                         "Failed to find process in process tree, for App {}",
-                        app.name.as_ref()
+                        &app.name
                     );
                 }
             }
 
-            self.process_tree.set(process_tree);
+            self.processes.set(processes);
             self.apps.set(apps);
         }
 
         pub fn update_processes_models(&self) {
             use crate::glib_clone;
 
-            let process_tree = self.process_tree.take();
+            let processes = self.processes.take();
             let processes_root_model = glib_clone!(self.processes_root_model);
 
-            Self::update_process_model(self, processes_root_model, &process_tree);
+            let init = processes.get(&1);
+            if let Some(init) = init {
+                Self::update_process_model(self, processes_root_model, &init, &processes);
+            }
 
-            self.process_tree.set(process_tree);
+            self.processes.set(processes);
         }
 
         pub fn column_compare_entries_by(
@@ -982,22 +995,22 @@ mod imp {
                 this.imp()
                     .column_compare_entries_by(lhs, rhs, |lhs, rhs| {
                         let lhs = if let Some(merged_stats) = lhs.merged_stats() {
-                            merged_stats.memory_shared
+                            merged_stats.shared_memory_usage
                         } else {
-                            lhs.memory_shared()
+                            lhs.shared_memory_usage()
                         };
 
                         let rhs = if let Some(merged_stats) = rhs.merged_stats() {
-                            merged_stats.memory_shared
+                            merged_stats.shared_memory_usage
                         } else {
-                            rhs.memory_shared()
+                            rhs.shared_memory_usage()
                         };
 
-                        lhs.partial_cmp(&rhs).unwrap_or(Ordering::Equal)
+                        lhs.cmp(&rhs)
                     })
                     .into()
             });
-            self.memory_column_shared.set_sorter(Some(&sorter));
+            self.shared_memory_column.set_sorter(Some(&sorter));
 
             let this = self.obj().downgrade();
             let sorter = gtk::CustomSorter::new(move |lhs, rhs| {
@@ -1114,7 +1127,7 @@ mod imp {
                             let pc = this.imp().pid_column.as_ptr() as usize;
                             let cc = this.imp().cpu_column.as_ptr() as usize;
                             let mc = this.imp().memory_column.as_ptr() as usize;
-                            let ms = this.imp().memory_column_shared.as_ptr() as usize;
+                            let ms = this.imp().shared_memory_column.as_ptr() as usize;
                             let dc = this.imp().disk_column.as_ptr() as usize;
                             let gc = this.imp().gpu_usage_column.as_ptr() as usize;
                             let gm = this.imp().gpu_memory_column.as_ptr() as usize;
@@ -1197,13 +1210,13 @@ mod imp {
                     1 => &self.pid_column,
                     2 => &self.cpu_column,
                     3 => &self.memory_column,
-                    4 => &self.memory_column_shared,
+                    4 => &self.shared_memory_column,
                     5 => &self.disk_column,
                     6 => &self.gpu_usage_column,
                     7 => &self.gpu_memory_column,
                     255 => return,
                     _ => {
-                        glib::g_critical!(
+                        g_critical!(
                             "MissionCenter::AppsPage",
                             "Unknown column retrieved from settings, sorting by name as a fallback"
                         );
@@ -1216,7 +1229,7 @@ mod imp {
                     1 => gtk::SortType::Descending,
                     255 => return,
                     _ => {
-                        glib::g_critical!(
+                        g_critical!(
                             "MissionCenter::AppsPage",
                             "Unknown column sorting order retrieved from settings, sorting in ascending order as a fallback"
                         );
@@ -1248,16 +1261,11 @@ mod imp {
             (column_header.next_sibling(), header)
         }
 
-        pub fn update_column_headers(&self, readings: &crate::sys_info_v2::Readings) {
+        pub fn update_column_headers(&self, readings: &crate::magpie_client::Readings) {
             let column_header_cpu = self.column_header_cpu.take();
             if let Some(column_header_cpu) = &column_header_cpu {
-                column_header_cpu.set_heading(format!(
-                    "{}%",
-                    readings
-                        .cpu_dynamic_info
-                        .overall_utilization_percent
-                        .round()
-                ));
+                column_header_cpu
+                    .set_heading(format!("{}%", readings.cpu.total_usage_percent.round()));
             }
             self.column_header_cpu.set(column_header_cpu);
 
@@ -1304,11 +1312,11 @@ mod imp {
             let column_header_gpu = self.column_header_gpu_usage.take();
             if let Some(column_header_gpu) = &column_header_gpu {
                 let avg = readings
-                    .gpu_dynamic_info
-                    .iter()
-                    .map(|g| g.util_percent)
-                    .sum::<u32>() as f32
-                    / readings.gpu_dynamic_info.len() as f32;
+                    .gpus
+                    .values()
+                    .map(|g| g.utilization_percent.unwrap_or(0.))
+                    .sum::<f32>()
+                    / readings.gpus.len() as f32;
                 column_header_gpu.set_heading(format!("{:.0}%", avg.round()));
             }
             self.column_header_gpu_usage.set(column_header_gpu);
@@ -1316,25 +1324,29 @@ mod imp {
             let column_header_gpu_mem = self.column_header_gpu_memory_usage.take();
             if let Some(column_header_gpu_mem) = &column_header_gpu_mem {
                 let avg = readings
-                    .gpu_dynamic_info
-                    .iter()
-                    .enumerate()
-                    .map(|(i, g)| {
-                        let total_memory = readings.gpu_static_info[i].total_memory;
-                        if total_memory == 0 {
-                            return 0;
+                    .gpus
+                    .values()
+                    .map(|gpu| {
+                        if let Some(total_memory) = gpu.total_memory {
+                            (gpu.used_memory.unwrap_or(0) * 100) / total_memory
+                        } else {
+                            0
                         }
-                        (g.used_memory * 100) / total_memory
                     })
                     .sum::<u64>() as f32
-                    / readings.gpu_dynamic_info.len() as f32;
+                    / readings.gpus.len() as f32;
                 column_header_gpu_mem.set_heading(format!("{:.0}%", avg.round()));
             }
             self.column_header_gpu_memory_usage
                 .set(column_header_gpu_mem);
         }
 
-        fn update_process_model(this: &AppsPage, model: ListStore, process: &Process) {
+        fn update_process_model(
+            this: &AppsPage,
+            model: ListStore,
+            process: &Process,
+            processes: &HashMap<u32, Process>,
+        ) {
             use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
 
             let mut to_remove = Vec::new();
@@ -1345,7 +1357,7 @@ mod imp {
                 }
                 let current = current.unwrap();
 
-                if !process.children.contains_key(&(current.pid())) {
+                if !process.children.contains(&(current.pid())) {
                     to_remove.push(i);
                 }
             }
@@ -1355,7 +1367,7 @@ mod imp {
                 model.remove(to_remove_i);
             }
 
-            for (pid, child) in &process.children {
+            for pid in &process.children {
                 let pos = if model.n_items() > 0 {
                     model.find_with_equal_func(|current| {
                         let current = current.downcast_ref::<RowModel>();
@@ -1369,17 +1381,29 @@ mod imp {
                     None
                 };
 
-                let entry_name = if !child.exe.as_ref().is_empty() {
-                    let entry_name = std::path::Path::new(child.exe.as_ref())
+                let child = match processes.get(pid) {
+                    None => {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to find process with PID '{}'",
+                            pid
+                        );
+                        continue;
+                    }
+                    Some(child) => child,
+                };
+
+                let entry_name = if !child.exe.as_str().is_empty() {
+                    let entry_name = std::path::Path::new(child.exe.as_str())
                         .file_name()
-                        .map(|name| name.to_str().unwrap_or(child.name.as_ref()))
-                        .unwrap_or(child.name.as_ref());
+                        .map(|name| name.to_str().unwrap_or(child.name.as_str()))
+                        .unwrap_or(child.name.as_str());
                     if entry_name.starts_with("wine") {
                         if child.cmd.is_empty() {
-                            child.name.as_ref()
+                            child.name.as_str()
                         } else {
                             child.cmd[0]
-                                .as_ref()
+                                .as_str()
                                 .split("\\")
                                 .last()
                                 .unwrap_or(child.name.as_ref())
@@ -1394,55 +1418,32 @@ mod imp {
                     child.name.as_ref()
                 };
 
-                let child_model = if pos.is_none() {
-                    let (
-                        cpu_usage,
-                        mem_usage,
-                        mem_shared,
-                        net_usage,
-                        disk_usage,
-                        gpu_usage,
-                        gpu_mem_usage,
-                    ) = if this.use_merge_stats.get() {
-                        (
-                            child.merged_usage_stats.cpu_usage,
-                            child.merged_usage_stats.memory_usage,
-                            child.merged_usage_stats.memory_shared,
-                            child.merged_usage_stats.network_usage,
-                            child.merged_usage_stats.disk_usage,
-                            child.merged_usage_stats.gpu_usage,
-                            child.merged_usage_stats.gpu_memory_usage,
-                        )
-                    } else {
-                        (
-                            child.usage_stats.cpu_usage,
-                            child.usage_stats.memory_usage,
-                            child.usage_stats.memory_shared,
-                            child.usage_stats.network_usage,
-                            child.usage_stats.disk_usage,
-                            child.usage_stats.gpu_usage,
-                            child.usage_stats.gpu_memory_usage,
-                        )
-                    };
+                let merged_usage_stats = child.merged_usage_stats(&processes);
+                let usage_stats = if this.use_merge_stats.get() {
+                    &merged_usage_stats
+                } else {
+                    &child.usage_stats
+                };
 
+                let child_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
                         .name(entry_name)
                         .content_type(ContentType::Process)
                         .icon("application-x-executable-symbolic")
                         .pid(*pid)
-                        .cpu_usage(cpu_usage)
-                        .memory_usage(mem_usage)
-                        .memory_shared(mem_shared)
-                        .disk_usage(disk_usage)
-                        .network_usage(net_usage)
-                        .gpu_usage(gpu_usage)
-                        .gpu_mem_usage(gpu_mem_usage)
+                        .cpu_usage(usage_stats.cpu_usage)
+                        .memory_usage(usage_stats.memory_usage)
+                        .shared_memory_usage(usage_stats.shared_memory_usage)
+                        .disk_usage(usage_stats.disk_usage)
+                        .network_usage(usage_stats.network_usage)
+                        .gpu_usage(usage_stats.gpu_usage)
+                        .gpu_mem_usage(usage_stats.gpu_memory_usage)
                         .max_cpu_usage(this.max_cpu_usage.get())
                         .max_memory_usage(this.max_memory_usage.get())
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
 
-                    row_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&merged_usage_stats);
 
                     model.append(&row_model);
                     row_model.children().clone()
@@ -1453,51 +1454,21 @@ mod imp {
                         .downcast::<RowModel>()
                         .unwrap();
 
-                    let (
-                        cpu_usage,
-                        mem_usage,
-                        mem_shared,
-                        net_usage,
-                        disk_usage,
-                        gpu_usage,
-                        gpu_mem_usage,
-                    ) = if this.use_merge_stats.get() {
-                        (
-                            child.merged_usage_stats.cpu_usage,
-                            child.merged_usage_stats.memory_usage,
-                            child.merged_usage_stats.memory_shared,
-                            child.merged_usage_stats.network_usage,
-                            child.merged_usage_stats.disk_usage,
-                            child.merged_usage_stats.gpu_usage,
-                            child.merged_usage_stats.gpu_memory_usage,
-                        )
-                    } else {
-                        (
-                            child.usage_stats.cpu_usage,
-                            child.usage_stats.memory_usage,
-                            child.usage_stats.memory_shared,
-                            child.usage_stats.network_usage,
-                            child.usage_stats.disk_usage,
-                            child.usage_stats.gpu_usage,
-                            child.usage_stats.gpu_memory_usage,
-                        )
-                    };
-
                     row_model.set_icon("application-x-executable-symbolic");
-                    row_model.set_cpu_usage(cpu_usage);
-                    row_model.set_memory_usage(mem_usage);
-                    row_model.set_memory_shared(mem_shared);
-                    row_model.set_disk_usage(disk_usage);
-                    row_model.set_network_usage(net_usage);
-                    row_model.set_gpu_usage(gpu_usage);
-                    row_model.set_gpu_memory_usage(gpu_mem_usage);
+                    row_model.set_cpu_usage(usage_stats.cpu_usage);
+                    row_model.set_memory_usage(usage_stats.memory_usage);
+                    row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
+                    row_model.set_disk_usage(usage_stats.disk_usage);
+                    row_model.set_network_usage(usage_stats.network_usage);
+                    row_model.set_gpu_usage(usage_stats.gpu_usage);
+                    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
-                    row_model.set_merged_stats(&child.merged_usage_stats);
+                    row_model.set_merged_stats(&merged_usage_stats);
 
                     row_model.children().clone()
                 };
 
-                Self::update_process_model(this, child_model, child);
+                Self::update_process_model(this, child_model, child, processes);
             }
         }
     }
@@ -1509,7 +1480,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            list_item::ListItem::ensure_type();
+            ListItem::ensure_type();
 
             row_model::RowModel::ensure_type();
 
@@ -1583,7 +1554,7 @@ mod imp {
                 "0%",
                 gtk::Align::End,
             );
-            let (column_view_title, column_header_memory_shared) = self.configure_column_header(
+            let (column_view_title, column_header_shared_memory) = self.configure_column_header(
                 &column_view_title.unwrap(),
                 &i18n("Shared Memory"),
                 "0%",
@@ -1601,7 +1572,7 @@ mod imp {
             self.column_header_cpu.set(Some(column_header_cpu));
             self.column_header_memory.set(Some(column_header_memory));
             self.column_header_shared_memory
-                .set(Some(column_header_memory_shared));
+                .set(Some(column_header_shared_memory));
             self.column_header_disk.set(Some(column_header_disk));
 
             if let Some(column_view_title) = column_view_title {
@@ -1639,45 +1610,33 @@ glib::wrapper! {
 }
 
 impl AppsPage {
-    pub fn set_initial_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
-        use std::collections::HashMap;
-
+    pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let this = self.imp();
 
-        if readings.gpu_static_info.is_empty() {
+        if readings.gpus.is_empty() {
             this.column_view.remove_column(&this.gpu_usage_column);
             this.column_view.remove_column(&this.gpu_memory_column);
         } else {
-            // Intel GPUs don't have memory information
-            if readings
-                .gpu_static_info
-                .iter()
-                .all(|g| g.vendor_id == 0x8086)
-            {
+            let total_gpu_memory = readings
+                .gpus
+                .values()
+                .map(|g| g.total_memory.unwrap_or(0))
+                .sum::<u64>();
+            if total_gpu_memory == 0 {
                 this.column_view.remove_column(&this.gpu_memory_column);
+                this.max_gpu_memory_usage.set(1);
             } else {
-                this.max_gpu_memory_usage.set(
-                    readings
-                        .gpu_static_info
-                        .iter()
-                        .map(|g| g.total_memory as f32)
-                        .sum(),
-                );
+                this.max_gpu_memory_usage.set(total_gpu_memory);
             }
         }
 
         this.max_cpu_usage
-            .set(readings.cpu_static_info.logical_cpu_count as f32 * 100.0);
-        this.max_memory_usage
-            .set(readings.mem_info.mem_total as f32);
+            .set(readings.cpu.core_usage_percent.len() as f32 * 100.0);
+        this.max_memory_usage.set(readings.mem_info.mem_total);
 
-        let mut apps = HashMap::new();
-        std::mem::swap(&mut apps, &mut readings.running_apps);
-        this.apps.set(apps);
-
-        let mut process_tree = Process::default();
-        std::mem::swap(&mut process_tree, &mut readings.process_tree);
-        this.process_tree.set(process_tree);
+        this.apps.set(std::mem::take(&mut readings.running_apps));
+        this.processes
+            .set(std::mem::take(&mut readings.running_processes));
 
         this.set_up_model();
 
@@ -1688,16 +1647,12 @@ impl AppsPage {
         true
     }
 
-    pub fn update_readings(&self, readings: &mut crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let this = self.imp();
 
-        let mut apps = this.apps.take();
-        std::mem::swap(&mut apps, &mut readings.running_apps);
-        this.apps.set(apps);
-
-        let mut process_tree = this.process_tree.take();
-        std::mem::swap(&mut process_tree, &mut readings.process_tree);
-        this.process_tree.set(process_tree);
+        this.apps.set(std::mem::take(&mut readings.running_apps));
+        this.processes
+            .set(std::mem::take(&mut readings.running_processes));
 
         this.update_processes_models();
         this.update_app_model();
@@ -1712,7 +1667,7 @@ impl AppsPage {
         true
     }
 
-    pub fn get_running_apps(&self) -> HashMap<Arc<str>, App> {
+    pub fn get_running_apps(&self) -> HashMap<String, App> {
         let this = self.imp();
 
         let out = this.apps.take();

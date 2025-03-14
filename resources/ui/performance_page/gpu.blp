@@ -86,7 +86,7 @@ template $PerformancePageGpu: Box {
         }
       }
 
-      $GraphWidget usage_graph_overall {
+      $GraphWidget graph_utilization {
         vexpand: true;
         hexpand: true;
 
@@ -98,11 +98,14 @@ template $PerformancePageGpu: Box {
         scroll: true;
       }
     }
-    Box {
+
+    Box container_bottom {
       orientation: vertical;
       spacing: 10;
 
       Box encode_decode_graph {
+        visible: bind template.encode_decode_available;
+
         orientation: vertical;
 
         Box {

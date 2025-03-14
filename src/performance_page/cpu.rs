@@ -305,18 +305,19 @@ mod imp {
     impl PerformancePageCpu {
         pub fn set_static_information(
             this: &super::PerformancePageCpu,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
-            let static_cpu_info = &readings.cpu_static_info;
+            let static_cpu_info = &readings.cpu;
 
-            this.cpu_name.set_text(&static_cpu_info.name);
+            this.cpu_name
+                .set_text(static_cpu_info.name.as_ref().unwrap_or(&i18n("Unknown")));
 
-            this.populate_usage_graphs(static_cpu_info.logical_cpu_count as usize);
+            this.populate_usage_graphs(static_cpu_info.core_usage_percent.len());
 
             if let Some(base_speed) = this.base_speed.get() {
-                if let Some(base_frequency) = static_cpu_info.base_frequency_khz {
+                if let Some(base_frequency) = static_cpu_info.base_freq_khz {
                     base_speed.set_text(&format!(
                         "{:.2} GHz",
                         base_frequency as f32 / (1000. * 1000.)
@@ -327,7 +328,7 @@ mod imp {
             }
 
             if let Some(virt_proc) = this.virt_proc.get() {
-                virt_proc.set_text(&format!("{}", static_cpu_info.logical_cpu_count));
+                virt_proc.set_text(&format!("{}", static_cpu_info.core_usage_percent.len()));
             }
 
             if let Some(virtualization) = this.virtualization.get() {
@@ -358,7 +359,7 @@ mod imp {
                 }
             }
 
-            let l1_cache_size = if let Some(size) = static_cpu_info.l1_combined_cache {
+            let l1_cache_size = if let Some(size) = static_cpu_info.l1_combined_cache_bytes {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
                     "{} {}{}B",
@@ -373,7 +374,7 @@ mod imp {
                 l1_cache.set_text(&l1_cache_size);
             }
 
-            let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache {
+            let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache_bytes {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
                     "{} {}{}B",
@@ -388,7 +389,7 @@ mod imp {
                 l2_cache.set_text(&l2_cache_size);
             }
 
-            let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache {
+            let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache_bytes {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
                     "{} {}{}B",
@@ -403,7 +404,7 @@ mod imp {
                 l3_cache.set_text(&l3_cache_size);
             }
 
-            let _ = if let Some(size) = static_cpu_info.l4_cache {
+            let _ = if let Some(size) = static_cpu_info.l4_cache_bytes {
                 let size = crate::to_human_readable(size as f32, 1024.);
                 format!(
                     "{} {}{}B",
@@ -420,30 +421,26 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePageCpu,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let mut graph_widgets = this.imp().graph_widgets.take();
             let this = this.imp();
 
-            let dynamic_cpu_info = &readings.cpu_dynamic_info;
+            let dynamic_cpu_info = &readings.cpu;
 
             if graph_widgets.len() == 0 {
                 return false;
             }
 
             // Update global CPU graph
-            graph_widgets[0].add_data_point(0, dynamic_cpu_info.overall_utilization_percent);
-            graph_widgets[0].add_data_point(1, dynamic_cpu_info.overall_kernel_utilization_percent);
+            graph_widgets[0].add_data_point(0, dynamic_cpu_info.total_usage_percent);
+            graph_widgets[0].add_data_point(1, dynamic_cpu_info.kernel_usage_percent);
 
             // Update per-core graphs
-            for i in 0..dynamic_cpu_info.per_logical_cpu_utilization_percent.len() {
+            for i in 0..dynamic_cpu_info.core_usage_percent.len() {
                 let graph_widget = &mut graph_widgets[i + 1];
-                graph_widget
-                    .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
-                graph_widget.add_data_point(
-                    1,
-                    dynamic_cpu_info.per_logical_cpu_kernel_utilization_percent[i],
-                );
+                graph_widget.add_data_point(0, dynamic_cpu_info.core_usage_percent[i]);
+                graph_widget.add_data_point(1, dynamic_cpu_info.core_kernel_usage_percent[i]);
             }
 
             this.graph_widgets.set(graph_widgets);
@@ -451,27 +448,27 @@ mod imp {
             if let Some(utilization) = this.utilization.get() {
                 utilization.set_text(&format!(
                     "{}%",
-                    dynamic_cpu_info.overall_utilization_percent.round()
+                    dynamic_cpu_info.total_usage_percent.round()
                 ));
             }
 
             if let Some(speed) = this.speed.get() {
                 speed.set_text(&format!(
                     "{:.2} GHz",
-                    readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1000.
+                    dynamic_cpu_info.current_frequency_mhz as f32 / 1000.
                 ));
             }
 
             if let Some(processes) = this.processes.get() {
-                processes.set_text(&format!("{}", dynamic_cpu_info.process_count));
+                processes.set_text(&format!("{}", dynamic_cpu_info.total_process_count));
             }
 
             if let Some(threads) = this.threads.get() {
-                threads.set_text(&format!("{}", dynamic_cpu_info.thread_count));
+                threads.set_text(&format!("{}", dynamic_cpu_info.total_thread_count));
             }
 
             if let Some(handles) = this.handles.get() {
-                handles.set_text(&format!("{}", dynamic_cpu_info.handle_count));
+                handles.set_text(&format!("{}", dynamic_cpu_info.total_handle_count));
             }
 
             let uptime = dynamic_cpu_info.uptime_seconds;
@@ -490,7 +487,7 @@ mod imp {
             if let (Some(cpufreq_driver), Some(cpufreq_driver_label)) =
                 (this.cpufreq_driver.get(), this.cpufreq_driver_label.get())
             {
-                if let Some(governor) = dynamic_cpu_info.cpufreq_driver.as_ref() {
+                if let Some(governor) = dynamic_cpu_info.frequency_driver.as_ref() {
                     cpufreq_driver.set_text(governor.as_ref());
                 } else {
                     cpufreq_driver.set_visible(false);
@@ -502,7 +499,7 @@ mod imp {
                 this.cpufreq_governor.get(),
                 this.cpufreq_governor_label.get(),
             ) {
-                if let Some(governor) = dynamic_cpu_info.cpufreq_governor.as_ref() {
+                if let Some(governor) = dynamic_cpu_info.frequency_governor.as_ref() {
                     cpufreq_governor.set_text(governor.as_ref());
                 } else {
                     cpufreq_governor.set_visible(false);
@@ -517,7 +514,7 @@ mod imp {
                 this.energy_performance_preference.get(),
                 this.energy_performance_preference_label.get(),
             ) {
-                if let Some(governor) = dynamic_cpu_info.energy_performance_preference.as_ref() {
+                if let Some(governor) = dynamic_cpu_info.power_preference.as_ref() {
                     energy_performance_preference.set_text(governor.as_ref());
                 } else {
                     energy_performance_preference.set_visible(false);
@@ -1039,11 +1036,11 @@ impl PerformancePageCpu {
         this
     }
 
-    pub fn set_static_information(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_static_information(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageCpu::set_static_information(self, readings)
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePageCpu::update_readings(self, readings)
     }
 }

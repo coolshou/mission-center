@@ -53,9 +53,9 @@ mod imp {
         #[property(get, set = Self::set_cpu_usage)]
         pub cpu_usage: Cell<f32>,
         #[property(get, set = Self::set_memory_usage)]
-        pub memory_usage: Cell<f32>,
-        #[property(get, set = Self::set_memory_shared)]
-        pub memory_shared: Cell<f32>,
+        pub memory_usage: Cell<u64>,
+        #[property(get, set = Self::set_shared_memory_usage)]
+        pub shared_memory_usage: Cell<u64>,
         #[property(get, set)]
         pub disk_usage: Cell<f32>,
         #[property(get, set)]
@@ -63,7 +63,7 @@ mod imp {
         #[property(get, set)]
         pub gpu_usage: Cell<f32>,
         #[property(get, set = Self::set_gpu_memory_usage)]
-        pub gpu_memory_usage: Cell<f32>,
+        pub gpu_memory_usage: Cell<u64>,
 
         #[property(get)]
         pub cpu_usage_percent: Cell<f32>,
@@ -73,10 +73,10 @@ mod imp {
         pub gpu_memory_usage_percent: Cell<f32>,
 
         pub max_cpu_usage: Cell<f32>,
-        pub max_memory_usage: Cell<f32>,
-        pub max_gpu_memory_usage: Cell<f32>,
+        pub max_memory_usage: Cell<u64>,
+        pub max_gpu_memory_usage: Cell<u64>,
 
-        pub merged_stats: Cell<Option<crate::sys_info_v2::ProcessUsageStats>>,
+        pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
 
         pub children: Cell<gio::ListStore>,
     }
@@ -104,20 +104,20 @@ mod imp {
                 expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
-                memory_usage: Cell::new(0.),
-                memory_shared: Cell::new(0.),
+                memory_usage: Cell::new(0),
+                shared_memory_usage: Cell::new(0),
                 disk_usage: Cell::new(0.),
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
-                gpu_memory_usage: Cell::new(0.),
+                gpu_memory_usage: Cell::new(0),
 
                 cpu_usage_percent: Cell::new(0.),
                 memory_usage_percent: Cell::new(0.),
                 gpu_memory_usage_percent: Cell::new(0.),
 
                 max_cpu_usage: Cell::new(0.),
-                max_memory_usage: Cell::new(0.),
-                max_gpu_memory_usage: Cell::new(0.),
+                max_memory_usage: Cell::new(0),
+                max_gpu_memory_usage: Cell::new(0),
 
                 merged_stats: Cell::new(None),
 
@@ -194,34 +194,34 @@ mod imp {
             self.obj().notify_cpu_usage_percent();
         }
 
-        pub fn set_memory_usage(&self, memory_usage: f32) {
+        pub fn set_memory_usage(&self, memory_usage: u64) {
             self.memory_usage.set(memory_usage);
 
-            let usage_percent = if self.max_memory_usage.get() == 0. {
+            let usage_percent = if self.max_memory_usage.get() == 0 {
                 0.
             } else {
-                self.memory_usage.get() * 100.0 / self.max_memory_usage.get()
+                (self.memory_usage.get() * 100) as f64 / self.max_memory_usage.get() as f64
             };
 
-            self.memory_usage_percent.set(usage_percent);
+            self.memory_usage_percent.set(usage_percent as f32);
             self.obj().notify_memory_usage_percent();
         }
 
-        pub fn set_memory_shared(&self, memory_shared: f32) {
-            self.memory_shared.set(memory_shared);
-            self.obj().notify_memory_shared();
+        pub fn set_shared_memory_usage(&self, memory_shared: u64) {
+            self.shared_memory_usage.set(memory_shared);
+            self.obj().notify_shared_memory_usage();
         }
 
-        pub fn set_gpu_memory_usage(&self, memory_usage: f32) {
+        pub fn set_gpu_memory_usage(&self, memory_usage: u64) {
             self.gpu_memory_usage.set(memory_usage);
 
-            let usage_percent = if self.max_gpu_memory_usage.get() == 0. {
+            let usage_percent = if self.max_gpu_memory_usage.get() == 0 {
                 0.
             } else {
-                self.gpu_memory_usage.get() * 100.0 / self.max_gpu_memory_usage.get()
+                (self.gpu_memory_usage.get() * 100) as f64 / self.max_gpu_memory_usage.get() as f64
             };
 
-            self.gpu_memory_usage_percent.set(usage_percent);
+            self.gpu_memory_usage_percent.set(usage_percent as f32);
             self.obj().notify_gpu_memory_usage_percent();
         }
 
@@ -285,16 +285,16 @@ pub struct RowModelBuilder {
     expanded: bool,
 
     cpu_usage: f32,
-    memory_usage: f32,
-    memory_shared: f32,
+    memory_usage: u64,
+    shared_memory_usage: u64,
     disk_usage: f32,
     network_usage: f32,
     gpu_usage: f32,
-    gpu_mem_usage: f32,
+    gpu_mem_usage: u64,
 
     max_cpu_usage: f32,
-    max_memory_usage: f32,
-    max_gpu_memory_usage: f32,
+    max_memory_usage: u64,
+    max_gpu_memory_usage: u64,
 }
 
 impl RowModelBuilder {
@@ -311,16 +311,16 @@ impl RowModelBuilder {
             expanded: true,
 
             cpu_usage: 0.,
-            memory_usage: 0.,
-            memory_shared: 0.,
+            memory_usage: 0,
+            shared_memory_usage: 0,
             disk_usage: 0.,
             network_usage: 0.,
             gpu_usage: 0.,
-            gpu_mem_usage: 0.,
+            gpu_mem_usage: 0,
 
             max_cpu_usage: 0.,
-            max_memory_usage: 0.,
-            max_gpu_memory_usage: 0.,
+            max_memory_usage: 0,
+            max_gpu_memory_usage: 0,
         }
     }
 
@@ -369,13 +369,13 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn memory_usage(mut self, memory_usage: f32) -> Self {
+    pub fn memory_usage(mut self, memory_usage: u64) -> Self {
         self.memory_usage = memory_usage;
         self
     }
 
-    pub fn memory_shared(mut self, memory_shared: f32) -> Self {
-        self.memory_shared = memory_shared;
+    pub fn shared_memory_usage(mut self, shared_memory_usage: u64) -> Self {
+        self.shared_memory_usage = shared_memory_usage;
         self
     }
 
@@ -394,7 +394,7 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn gpu_mem_usage(mut self, gpu_mem_usage: f32) -> Self {
+    pub fn gpu_mem_usage(mut self, gpu_mem_usage: u64) -> Self {
         self.gpu_mem_usage = gpu_mem_usage;
         self
     }
@@ -404,12 +404,12 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn max_memory_usage(mut self, v: f32) -> Self {
+    pub fn max_memory_usage(mut self, v: u64) -> Self {
         self.max_memory_usage = v;
         self
     }
 
-    pub fn max_gpu_memory_usage(mut self, v: f32) -> Self {
+    pub fn max_gpu_memory_usage(mut self, v: u64) -> Self {
         self.max_gpu_memory_usage = v;
         self
     }
@@ -430,7 +430,7 @@ impl RowModelBuilder {
 
             this.set_cpu_usage(self.cpu_usage);
             this.set_memory_usage(self.memory_usage);
-            this.set_memory_shared(self.memory_shared);
+            this.set_shared_memory_usage(self.shared_memory_usage);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
@@ -487,11 +487,11 @@ impl RowModel {
         this
     }
 
-    pub fn merged_stats(&self) -> &Option<crate::sys_info_v2::ProcessUsageStats> {
+    pub fn merged_stats(&self) -> &Option<crate::magpie_client::ProcessUsageStats> {
         unsafe { &*self.imp().merged_stats.as_ptr() }
     }
 
-    pub fn set_merged_stats(&self, stats: &crate::sys_info_v2::ProcessUsageStats) {
+    pub fn set_merged_stats(&self, stats: &crate::magpie_client::ProcessUsageStats) {
         self.imp().merged_stats.set(Some(*stats));
     }
 
