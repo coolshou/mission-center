@@ -57,7 +57,7 @@ stages:
     - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
 
   ready_to_merge:
-    - if: '$CI_MERGE_REQUEST_LABELS =~ /Ready To Merge/'
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /CI: Ready To Merge/'
 
 check-fmt:
   stage: build
