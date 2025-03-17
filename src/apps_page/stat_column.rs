@@ -29,6 +29,8 @@ use gtk::{
 };
 
 mod imp {
+    use std::cell::RefCell;
+
     use super::*;
 
     #[derive(Properties)]
@@ -39,10 +41,10 @@ mod imp {
         #[template_child]
         label: TemplateChild<gtk::Label>,
 
-        css_provider: Cell<gtk::CssProvider>,
+        css_provider: RefCell<gtk::CssProvider>,
 
-        #[property(get = Self::unit, set = Self::set_unit, type = glib::GString)]
-        unit: Cell<glib::GString>,
+        #[property(get = Self::unit, set = Self::set_unit, type = String)]
+        unit: RefCell<String>,
         #[property(set = Self::set_content_type, type = u8)]
         content_type: Cell<crate::apps_page::row_model::ContentType>,
         #[property(get, set)]
@@ -57,8 +59,8 @@ mod imp {
 
             Self {
                 label: TemplateChild::default(),
-                css_provider: Cell::new(gtk::CssProvider::new()),
-                unit: Cell::new(glib::GString::from("")),
+                css_provider: RefCell::new(gtk::CssProvider::new()),
+                unit: RefCell::new(String::new()),
                 content_type: Cell::new(ContentType::SectionHeader),
                 value: Cell::new(0.),
                 usage_percent: Cell::new(0.),
@@ -67,12 +69,12 @@ mod imp {
     }
 
     impl StatColumn {
-        fn unit(&self) -> glib::GString {
-            unsafe { &*self.unit.as_ptr() }.clone()
+        fn unit(&self) -> String {
+            self.unit.borrow().clone()
         }
 
         fn set_unit(&self, unit: &str) {
-            self.unit.set(glib::GString::from(unit));
+            self.unit.replace(unit.to_owned());
         }
 
         fn set_content_type(&self, v: u8) {
@@ -95,7 +97,7 @@ mod imp {
 
             self.usage_percent.set(usage_percent);
 
-            let css_provider = unsafe { &*self.css_provider.as_ptr() };
+            let css_provider = self.css_provider.borrow();
             if usage_percent >= 90.0 {
                 css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_HIGH));
             } else if usage_percent >= 80.0 {
@@ -117,7 +119,8 @@ mod imp {
                 return;
             }
 
-            let prop_unit = unsafe { &*self.unit.as_ptr() }.as_str();
+            let unit = self.unit.borrow();
+            let prop_unit = unit.as_str();
 
             let value = self.value.get();
             if prop_unit == "%" {
@@ -188,13 +191,13 @@ mod imp {
 
             if let Some(tree_expander) = self.obj().parent() {
                 if let Some(column_view_cell) = tree_expander.parent() {
-                    let style_provider = unsafe { &*self.css_provider.as_ptr() };
+                    let style_provider = self.css_provider.borrow();
                     // FIXME: Deprecated in GTK 4.10, removed in GTK 5.0, unclear what the replacement is
                     #[allow(deprecated)]
                     {
                         column_view_cell
                             .style_context()
-                            .add_provider(style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
+                            .add_provider(&*style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
                     }
                 }
             }
