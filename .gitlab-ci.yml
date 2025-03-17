@@ -5,10 +5,9 @@ workflow:
     on_new_commit: interruptible
 
 stages:
-  - build
-  - flatpak
-  - portable-build
-  - package-appimage-snap
+  - test
+  - package-build
+  - package
 
 .shared:
   checkout_submodule:
@@ -60,7 +59,7 @@ stages:
     - if: '$CI_MERGE_REQUEST_LABELS =~ /CI: Ready To Merge/'
 
 check-fmt:
-  stage: build
+  stage: test
   interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
@@ -72,7 +71,7 @@ check-fmt:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 build-job-x86:
-  stage: build
+  stage: package-build
   interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
@@ -88,7 +87,7 @@ build-job-x86:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 build-job-arm:
-  stage: build
+  stage: package-build
   interruptible: true
   tags:
     - saas-linux-medium-arm64
@@ -106,7 +105,7 @@ build-job-arm:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 flatpak-job-x86:
-  stage: flatpak
+  stage: package-build
   interruptible: true
   tags:
     - saas-linux-large-amd64
@@ -125,7 +124,7 @@ flatpak-job-x86:
     - !reference [ ".shared", "ready_to_merge" ]
 
 flatpak-job-arm:
-  stage: flatpak
+  stage: package-build
   interruptible: true
   tags:
     - saas-linux-large-arm64
@@ -143,8 +142,8 @@ flatpak-job-arm:
     - if: $BUILD_FLATPAK != null
     - !reference [ ".shared", "ready_to_merge" ]
 
-portable-build-job-x86:
-  stage: portable-build
+package-build-job-x86:
+  stage: package-build
   interruptible: true
   image: ubuntu:20.04
   tags:
@@ -165,8 +164,8 @@ portable-build-job-x86:
     - !reference [ ".shared", "ready_to_merge" ]
     - when: never
 
-portable-build-job-arm:
-  stage: portable-build
+package-build-job-arm:
+  stage: package-build
   interruptible: true
   image: ubuntu:20.04
   tags:
@@ -187,7 +186,7 @@ portable-build-job-arm:
     - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-x86:
-  stage: package-appimage-snap
+  stage: package
   interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
@@ -199,6 +198,8 @@ snap-job-x86:
 
     - SRC_PATH=$PWD bash support/create-snap.sh
 
+  needs:
+    - package-build-job-x86
   artifacts:
     paths:
       - '**/*.snap'
@@ -207,7 +208,7 @@ snap-job-x86:
     - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-arm:
-  stage: package-appimage-snap
+  stage: package
   interruptible: true
   tags:
     - saas-linux-medium-arm64
@@ -222,6 +223,8 @@ snap-job-arm:
 
     - SRC_PATH=$PWD bash support/create-snap.sh
 
+  needs:
+    - package-build-job-arm
   artifacts:
     paths:
       - '**/*.snap'
@@ -230,7 +233,7 @@ snap-job-arm:
     - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-x86:
-  stage: package-appimage-snap
+  stage: package
   interruptible: true
   image: ubuntu:20.04
   before_script:
@@ -243,6 +246,8 @@ appimage-job-x86:
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
 
+  needs:
+    - package-build-job-x86
   artifacts:
     paths:
       - '**/*.AppImage'
@@ -251,7 +256,7 @@ appimage-job-x86:
     - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-arm:
-  stage: package-appimage-snap
+  stage: package
   interruptible: true
   image: ubuntu:20.04
   tags:
@@ -266,6 +271,8 @@ appimage-job-arm:
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
 
+  needs:
+    - package-build-job-arm
   artifacts:
     paths:
       - '**/*.AppImage'
