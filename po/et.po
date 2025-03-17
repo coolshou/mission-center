@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-03-12 14:06+0000\n"
+"PO-Revision-Date: 2025-03-18 03:14+0000\n"
 "Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.3-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -321,7 +321,7 @@ msgstr "Kuva tuuma tööaega"
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "_Koondvaade"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -339,7 +339,7 @@ msgstr "_Vaade"
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr ""
+msgstr "_Protsessor"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -348,7 +348,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr ""
+msgstr "_Mälu"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -357,7 +357,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Andmekandja"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -366,7 +366,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr ""
+msgstr "_Võrk"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -375,7 +375,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr ""
+msgstr "_Graafikaprotsessor"
 
 #: resources/ui/performance_page/cpu.blp:159
 #: resources/ui/performance_page/disk.blp:180
@@ -384,7 +384,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "V_entilaator"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -783,7 +783,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Kuva protsessori kasutust tuumade arvu suhtes"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
@@ -837,7 +837,7 @@ msgstr "Protsessi ID"
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr ""
+msgstr "-"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
@@ -1004,7 +1004,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr ""
+msgstr "Ketas {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
@@ -1043,7 +1043,7 @@ msgstr "Tundmatu"
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr ""
+msgstr "Graafikaprotsessor {}"
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
@@ -1085,11 +1085,11 @@ msgstr "{} minut[} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Andmekandja {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr ""
+msgstr "Ketas ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
