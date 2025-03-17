@@ -143,52 +143,48 @@ flatpak-job-arm:
     - if: $BUILD_FLATPAK != null
     - !reference [ ".shared", "ready_to_merge" ]
 
-#portable-build-job-x86:
-#  stage: portable-build
-#  interruptible: true
-#  image: ubuntu:20.04
-#  tags:
-#    - saas-linux-large-amd64
-#  before_script:
-#    - !reference [ ".shared", "setup_apt_focal" ]
-#    - !reference [ ".shared", "checkout_submodule" ]
-#  script:
-#    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
-#    - cd portable && tar zcf ../portable-x86_64.tar.gz *
-#
-#  artifacts:
-#    paths:
-#      - 'logs.txt'
-#      - 'portable-x86_64.tar.gz'
-#  rules:
-##    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
-##      when: never
-#    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
-#    - !reference [ ".shared", "ready_to_merge" ]
-#    - when: never
-#
-#portable-build-job-arm:
-#  stage: portable-build
-#  interruptible: true
-#  image: ubuntu:20.04
-#  tags:
-#    - saas-linux-large-arm64
-#  before_script:
-#    - !reference [ ".shared", "setup_apt_focal_ports" ]
-#    - !reference [ ".shared", "checkout_submodule" ]
-#  script:
-#    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
-#    - cd portable && tar zcf ../portable-aarch64.tar.gz *
-#
-#  artifacts:
-#    paths:
-#      - 'logs.txt'
-#      - 'portable-aarch64.tar.gz'
-#  rules:
-##    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
-##      when: never
-#    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
-#    - !reference [ ".shared", "ready_to_merge" ]
+portable-build-job-x86:
+  stage: portable-build
+  interruptible: true
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-amd64
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal" ]
+    - !reference [ ".shared", "checkout_submodule" ]
+  script:
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-x86_64.tar.gz *
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable-x86_64.tar.gz'
+  rules:
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - !reference [ ".shared", "ready_to_merge" ]
+    - when: never
+
+portable-build-job-arm:
+  stage: portable-build
+  interruptible: true
+  image: ubuntu:20.04
+  tags:
+    - saas-linux-large-arm64
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal_ports" ]
+    - !reference [ ".shared", "checkout_submodule" ]
+  script:
+    - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
+    - cd portable && tar zcf ../portable-aarch64.tar.gz *
+
+  artifacts:
+    paths:
+      - 'logs.txt'
+      - 'portable-aarch64.tar.gz'
+  rules:
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-x86:
   stage: package-appimage-snap
