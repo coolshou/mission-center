@@ -26,7 +26,7 @@ use gtk::{
     glib::{self, g_critical, property::PropertySet},
 };
 
-use crate::{config::VERSION, i18n::i18n, sys_info_v2::Readings};
+use crate::{config::VERSION, i18n::i18n, magpie_client::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
@@ -53,7 +53,7 @@ mod imp {
 
     pub struct MissionCenterApplication {
         pub settings: Cell<Option<gio::Settings>>,
-        pub sys_info: RefCell<Option<crate::sys_info_v2::SysInfoV2>>,
+        pub sys_info: RefCell<Option<crate::magpie_client::MagpieClient>>,
         pub window: RefCell<Option<crate::MissionCenterWindow>>,
     }
 
@@ -101,7 +101,7 @@ mod imp {
                 let settings = unsafe { self.settings.take().unwrap_unchecked() };
                 self.settings.set(Some(settings.clone()));
 
-                let sys_info = crate::sys_info_v2::SysInfoV2::new();
+                let sys_info = crate::magpie_client::MagpieClient::new();
 
                 let window = crate::MissionCenterWindow::new(&*application, &settings, &sys_info);
 
@@ -228,6 +228,20 @@ impl MissionCenterApplication {
         window.set_initial_readings(readings)
     }
 
+    pub fn setup_animations(&self) {
+        use gtk::glib::*;
+
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return;
+        };
+
+        window.setup_animations()
+    }
+
     pub fn refresh_readings(&self, readings: &mut Readings) -> bool {
         use gtk::glib::*;
 
@@ -242,11 +256,25 @@ impl MissionCenterApplication {
         window.update_readings(readings)
     }
 
+    pub fn refresh_animations(&self) -> bool {
+        use gtk::glib::*;
+
+        let Some(window) = self.window() else {
+            g_critical!(
+                "MissionCenter::Application",
+                "No active window, when trying to refresh data"
+            );
+            return false;
+        };
+
+        window.update_animations()
+    }
+
     pub fn settings(&self) -> gio::Settings {
         unsafe { (&*self.imp().settings.as_ptr()).as_ref().unwrap_unchecked() }.clone()
     }
 
-    pub fn sys_info(&self) -> Result<Ref<crate::sys_info_v2::SysInfoV2>, BorrowError> {
+    pub fn sys_info(&self) -> Result<Ref<crate::magpie_client::MagpieClient>, BorrowError> {
         match self.imp().sys_info.try_borrow() {
             Ok(sys_info_ref) => Ok(Ref::map(sys_info_ref, |sys_info_opt| match sys_info_opt {
                 Some(sys_info) => sys_info,

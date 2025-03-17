@@ -20,20 +20,18 @@
 
 use std::cell::{Cell, OnceCell};
 
-use adw::{self, prelude::AdwDialogExt, subclass::prelude::*};
-use glib::{ParamSpec, Properties, Value};
+use adw::{prelude::AdwDialogExt, subclass::prelude::*};
+use glib::{g_warning, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
-use super::{
-    widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog},
-    PageExt,
-};
+use magpie_types::disks::{Disk, DiskKind};
+
+use crate::app;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
-use crate::app;
-use crate::sys_info_v2::{DiskSmartInterface, EjectResult, NVMeSmartResult, SataSmartResult};
-use adw::glib::g_warning;
+use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
+use super::PageExt;
 
 mod imp {
     use super::*;
@@ -65,7 +63,7 @@ mod imp {
         #[property(get, set)]
         summary_mode: Cell<bool>,
 
-        #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
+        #[property(get = Self::infobar_content, type = Option<gtk::Widget>)]
         pub infobar_content: OnceCell<gtk::Box>,
 
         pub active_time: OnceCell<gtk::Label>,
@@ -84,17 +82,6 @@ mod imp {
         pub smart: OnceCell<gtk::Button>,
 
         pub raw_disk_id: OnceCell<String>,
-        pub raw_smart_interface: OnceCell<DiskSmartInterface>,
-
-        #[property(name = "eject-failure-dialog", get = Self::eject_failure_dialog, set = Self::set_eject_failure_dialog, type = Option<EjectFailureDialog>
-        )]
-        eject_failure_dialog: Cell<Option<EjectFailureDialog>>,
-        pub eject_failure_dialog_visible: Cell<bool>,
-
-        #[property(name = "smart-dialog", get = Self::smart_dialog, set = Self::set_smart_dialog, type = Option<SmartDataDialog>
-        )]
-        smart_dialog: Cell<Option<SmartDataDialog>>,
-        pub smart_dialog_visible: Cell<bool>,
     }
 
     impl Default for PerformancePageDisk {
@@ -130,12 +117,6 @@ mod imp {
                 smart: Default::default(),
 
                 raw_disk_id: Default::default(),
-                raw_smart_interface: Default::default(),
-
-                eject_failure_dialog: Cell::new(None),
-                eject_failure_dialog_visible: Cell::new(false),
-                smart_dialog: Cell::new(None),
-                smart_dialog_visible: Cell::new(false),
             }
         }
     }
@@ -158,66 +139,6 @@ mod imp {
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
             self.infobar_content.get().map(|ic| ic.clone().into())
-        }
-
-        fn eject_failure_dialog(&self) -> Option<EjectFailureDialog> {
-            unsafe { &*self.eject_failure_dialog.as_ptr() }.clone()
-        }
-
-        fn set_eject_failure_dialog(&self, widget: Option<&EjectFailureDialog>) {
-            self.eject_failure_dialog.set(widget.cloned());
-        }
-
-        fn smart_dialog(&self) -> Option<SmartDataDialog> {
-            unsafe { &*self.smart_dialog.as_ptr() }.clone()
-        }
-
-        fn set_smart_dialog(&self, widget: Option<&SmartDataDialog>) {
-            self.smart_dialog.set(widget.cloned());
-        }
-
-        pub fn show_eject_result(&self, this: &super::PerformancePageDisk, result: EjectResult) {
-            let details_dialog = unsafe { &*this.imp().eject_failure_dialog.as_ptr() }.clone();
-
-            details_dialog.map(move |d| {
-                if result.success {
-                    d.force_close();
-                    return;
-                } else {
-                    self.eject_failure_dialog_visible.set(true);
-                    d.imp().apply_eject_result(result, this);
-
-                    d.present(Some(this));
-                }
-            });
-        }
-
-        pub fn show_nvme_smart_info(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: NVMeSmartResult,
-        ) {
-            let nvme_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
-            nvme_smart_dialog.map(move |d| {
-                self.smart_dialog_visible.set(true);
-                d.imp().apply_nvme_smart_result(result, this);
-
-                d.present(Some(this));
-            });
-        }
-
-        pub fn show_sata_smart_info(
-            &self,
-            this: &super::PerformancePageDisk,
-            result: SataSmartResult,
-        ) {
-            let sata_smart_dialog = unsafe { &*this.imp().smart_dialog.as_ptr() }.clone();
-            sata_smart_dialog.map(move |d| {
-                self.smart_dialog_visible.set(true);
-                d.imp().apply_sata_smart_result(result, this);
-
-                d.present(Some(this));
-            });
         }
     }
 
@@ -266,10 +187,8 @@ mod imp {
         pub fn set_static_information(
             this: &super::PerformancePageDisk,
             index: Option<i32>,
-            disk: &crate::sys_info_v2::DiskInfo,
+            disk: &Disk,
         ) -> bool {
-            use crate::sys_info_v2::DiskType;
-
             let t = this.clone();
             this.imp()
                 .usage_graph
@@ -297,8 +216,7 @@ mod imp {
 
             let this = this.imp();
 
-            let _ = this.raw_disk_id.set(disk.id.to_string());
-            let _ = this.raw_smart_interface.set(disk.smart_interface.clone());
+            let _ = this.raw_disk_id.set(disk.id.clone());
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
@@ -308,7 +226,12 @@ mod imp {
             } else {
                 this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
-            this.model.set_text(&disk.model);
+
+            if let Some(disk_model) = disk.model.as_ref() {
+                this.model.set_text(disk_model);
+            } else {
+                this.model.set_text(&i18n("Unknown"));
+            }
 
             this.disk_transfer_rate_graph.set_dashed(1, true);
             this.disk_transfer_rate_graph.set_filled(1, false);
@@ -322,27 +245,37 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
             }
 
-            let cap = crate::to_human_readable(disk.capacity as f32, 1024.);
             if let Some(capacity) = this.capacity.get() {
-                capacity.set_text(&format!(
-                    "{:.2} {}{}B",
-                    cap.0,
-                    cap.1,
-                    if cap.1.is_empty() { "" } else { "i" }
-                ));
+                let cap = disk.capacity_bytes;
+                if cap > 0 {
+                    let cap = crate::to_human_readable(cap as f32, 1024.);
+                    capacity.set_text(&format!(
+                        "{:.2} {}{}B",
+                        cap.0,
+                        cap.1,
+                        if cap.1.is_empty() { "" } else { "i" }
+                    ));
+                } else {
+                    capacity.set_text(&i18n("Unknown"));
+                }
             }
 
-            let fmt = crate::to_human_readable(disk.formatted as f32, 1024.);
             if let Some(formatted) = this.formatted.get() {
-                formatted.set_text(&format!(
-                    "{:.2} {}{}B",
-                    fmt.0,
-                    fmt.1,
-                    if fmt.1.is_empty() { "" } else { "i" }
-                ));
+                let capacity = disk.capacity_bytes;
+                if capacity > 0 {
+                    let capacity = crate::to_human_readable(capacity as f32, 1024.);
+                    formatted.set_text(&format!(
+                        "{:.2} {}{}B",
+                        capacity.0,
+                        capacity.1,
+                        if capacity.1.is_empty() { "" } else { "i" }
+                    ));
+                } else {
+                    formatted.set_text(&i18n("Unknown"));
+                }
             }
 
-            let is_system_disk = if disk.system_disk {
+            let is_system_disk = if disk.is_system {
                 i18n("Yes")
             } else {
                 i18n("No")
@@ -352,16 +285,22 @@ mod imp {
             }
 
             if let Some(disk_type) = this.disk_type.get() {
-                disk_type.set_text(match disk.r#type {
-                    DiskType::HDD => "HDD",
-                    DiskType::SSD => "SSD",
-                    DiskType::NVMe => "NVMe",
-                    DiskType::eMMC => "eMMC",
-                    DiskType::SD => "SD",
-                    DiskType::Floppy => "Floppy",
-                    DiskType::Optical => "Optical",
-                    DiskType::Unknown => "Unknown",
-                });
+                if let Some(disk_kind) = disk.kind.and_then(|k| k.try_into().ok()) {
+                    let disk_type_str = match disk_kind {
+                        DiskKind::Hdd => i18n("HDD"),
+                        DiskKind::Ssd => i18n("SSD"),
+                        DiskKind::NvMe => i18n("NVMe"),
+                        DiskKind::EMmc => i18n("eMMC"),
+                        DiskKind::Sd => i18n("SD"),
+                        DiskKind::IScsi => i18n("iSCSI"),
+                        DiskKind::Optical => i18n("Optical"),
+                        DiskKind::Floppy => i18n("Floppy"),
+                        DiskKind::ThumbDrive => i18n("Thumb Drive"),
+                    };
+                    disk_type.set_text(&disk_type_str);
+                } else {
+                    disk_type.set_text(&i18n("Unknown"));
+                };
             }
 
             if let Some(eject_button) = this.eject.get() {
@@ -369,7 +308,7 @@ mod imp {
             }
 
             if let Some(smart_button) = this.smart.get() {
-                smart_button.set_sensitive(disk.smart_interface != DiskSmartInterface::Dumb);
+                smart_button.set_sensitive(disk.smart_interface.is_some());
             }
 
             true
@@ -378,7 +317,7 @@ mod imp {
         pub fn update_readings(
             this: &super::PerformancePageDisk,
             index: Option<usize>,
-            disk: &crate::sys_info_v2::DiskInfo,
+            disk: &Disk,
         ) -> bool {
             let this = this.imp();
 
@@ -414,32 +353,41 @@ mod imp {
             }
 
             this.disk_transfer_rate_graph
-                .add_data_point(0, disk.read_speed as f32);
-            let rsp = crate::to_human_readable(disk.read_speed as f32, 1024.);
+                .add_data_point(0, disk.rx_speed_bytes_ps as f32);
+            let rsp = crate::to_human_readable(disk.rx_speed_bytes_ps as f32, 1024.);
             let i = if rsp.1.is_empty() { "" } else { "i" };
             if let Some(read_speed) = this.read_speed.get() {
                 read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
             }
 
-            let trd = crate::to_human_readable(disk.total_read as f32, 1024.);
+            let trd = crate::to_human_readable(disk.rx_bytes_total as f32, 1024.);
             let i = if trd.1.is_empty() { "" } else { "i" };
             if let Some(total_read) = this.total_read.get() {
                 total_read.set_text(&format!("{0:.2$} {1}{3}B", trd.0, trd.1, trd.2, i,));
             }
 
             this.disk_transfer_rate_graph
-                .add_data_point(1, disk.write_speed as f32);
-            let wsp = crate::to_human_readable(disk.write_speed as f32, 1024.);
+                .add_data_point(1, disk.tx_speed_bytes_ps as f32);
+            let wsp = crate::to_human_readable(disk.tx_speed_bytes_ps as f32, 1024.);
             let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
                 write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
             }
 
-            let twt = crate::to_human_readable(disk.total_write as f32, 1024.);
+            let twt = crate::to_human_readable(disk.tx_bytes_total as f32, 1024.);
             let i = if twt.1.is_empty() { "" } else { "i" };
             if let Some(total_write) = this.total_write.get() {
                 total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
             }
+
+            true
+        }
+
+        pub fn update_animations(this: &super::PerformancePageDisk) -> bool {
+            let this = this.imp();
+
+            this.usage_graph.update_animation();
+            this.disk_transfer_rate_graph.update_animation();
 
             true
         }
@@ -517,8 +465,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            EjectFailureDialog::ensure_type();
-
             klass.bind_template();
         }
 
@@ -619,95 +565,71 @@ mod imp {
                     .object::<gtk::Label>("disk_type")
                     .expect("Could not find `disk_type` object in details pane"),
             );
-            let _ = self.eject.set(
-                sidebar_content_builder
-                    .object::<gtk::Button>("eject")
-                    .expect("Could not find `eject` object in details pane"),
-            );
-            let _ = self.smart.set(
-                sidebar_content_builder
-                    .object::<gtk::Button>("smart")
-                    .expect("Could not find `smart` object in details pane"),
-            );
+            let eject = sidebar_content_builder
+                .object::<gtk::Button>("eject")
+                .expect("Could not find `eject` object in details pane");
+            let _ = self.eject.set(eject.clone());
+            let smart = sidebar_content_builder
+                .object::<gtk::Button>("smart")
+                .expect("Could not find `smart` object in details pane");
+            let _ = self.smart.set(smart.clone());
 
-            self.eject
-                .get()
-                .expect("Eject button missing")
-                .connect_clicked({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(that) = this.upgrade() {
-                            let this = that.imp();
-                            let that = &that;
+            eject.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
 
-                            match app!().sys_info().and_then(move |sys_info| {
-                                let eject_result =
-                                    sys_info.eject_disk(this.raw_disk_id.get().unwrap(), false, 0);
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get disk_id for eject");
+                        return;
+                    };
 
-                                this.show_eject_result(that, eject_result);
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
 
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                        "MissionCenter::DetailsDialog",
-                                        "Failed to get `sys_info`: {}",
-                                        e
-                                    );
-                                }
-                                _ => {}
-                            }
+                    match magpie.eject_disk(disk_id) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            let dialog = EjectFailureDialog::new(disk_id.clone(), e);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         }
                     }
-                });
+                }
+            });
 
-            self.smart
-                .get()
-                .expect("Smart Button Missing")
-                .connect_clicked({
-                    let this = self.obj().downgrade();
-                    move |_| {
-                        if let Some(that) = this.upgrade() {
-                            let this = that.imp();
-                            let that = &that;
+            smart.connect_clicked({
+                let this = self.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
 
-                            match app!().sys_info().and_then(move |sys_info| {
-                                let disk_id = this.raw_disk_id.get().unwrap();
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "`disk_id` was not set");
+                        return;
+                    };
 
-                                match this.raw_smart_interface.get() {
-                                    Some(DiskSmartInterface::NVMe) => {
-                                        let smart_info = sys_info.nvme_smart_info(disk_id);
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
 
-                                        this.show_nvme_smart_info(that, smart_info);
-                                    }
-                                    Some(DiskSmartInterface::Ata) => {
-                                        let smart_info = sys_info.sata_smart_info(disk_id);
+                    let Some(smart_data) = magpie.smart_data(disk_id.clone()) else {
+                        return;
+                    };
 
-                                        this.show_sata_smart_info(that, smart_info);
-                                    }
-                                    e => {
-                                        g_warning!(
-                                            "MissionCenter::DetailsDialog",
-                                            "Unknown interface {:?}",
-                                            e
-                                        );
-                                    }
-                                }
-
-                                Ok(())
-                            }) {
-                                Err(e) => {
-                                    g_warning!(
-                                        "MissionCenter::DetailsDialog",
-                                        "Failed to get `sys_info`: {}",
-                                        e
-                                    );
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                });
+                    let dialog = SmartDataDialog::new(smart_data);
+                    dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                }
+            });
         }
     }
 
@@ -748,10 +670,10 @@ impl PerformancePageDisk {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let sliding = settings.boolean("performance-sliding-graphs");
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
 
@@ -781,8 +703,13 @@ impl PerformancePageDisk {
             ));
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
+            this.usage_graph.set_do_animation(sliding);
+            this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.disk_transfer_rate_graph.set_data_points(data_points);
             this.disk_transfer_rate_graph.set_smooth_graphs(smooth);
+            this.disk_transfer_rate_graph.set_do_animation(sliding);
+            this.disk_transfer_rate_graph
+                .set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -813,22 +740,27 @@ impl PerformancePageDisk {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         this
     }
 
-    pub fn set_static_information(
-        &self,
-        index: Option<i32>,
-        disk: &crate::sys_info_v2::DiskInfo,
-    ) -> bool {
+    pub fn set_static_information(&self, index: Option<i32>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::set_static_information(self, index, disk)
     }
 
-    pub fn update_readings(
-        &self,
-        index: Option<usize>,
-        disk: &crate::sys_info_v2::DiskInfo,
-    ) -> bool {
+    pub fn update_readings(&self, index: Option<usize>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::update_readings(self, index, disk)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageDisk::update_animations(self)
     }
 }

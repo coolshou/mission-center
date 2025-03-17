@@ -18,20 +18,21 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use adw::ResponseAppearance;
-use adw::{prelude::*, subclass::prelude::*};
-use gtk::glib::g_critical;
-use gtk::glib::{self, g_warning};
 use std::cell::Cell;
 use std::collections::HashMap;
-use std::sync::Arc;
 
-use crate::app;
-use crate::i18n;
-use crate::performance_page::disk::PerformancePageDisk;
+use adw::ResponseAppearance;
+use adw::{prelude::*, subclass::prelude::*};
+use glib::{g_critical, g_warning};
+use gtk::glib;
+
+use magpie_types::apps::icon::Icon;
+use magpie_types::apps::App;
+use magpie_types::disks::error_eject_failed::Blocker;
+use magpie_types::disks::ErrorEjectFailed;
+
 use crate::performance_page::widgets::eject_failure_row::EjectFailureRowBuilder;
-use crate::sys_info_v2::App;
-use crate::sys_info_v2::EjectResult;
+use crate::{app, i18n};
 
 mod imp {
     use super::*;
@@ -42,102 +43,88 @@ mod imp {
     )]
     pub struct EjectFailureDialog {
         #[template_child]
-        pub column_view: TemplateChild<gtk::ListBox>,
+        column_view: TemplateChild<gtk::ListBox>,
 
-        pub parent_page: Cell<Option<PerformancePageDisk>>,
+        pub disk_id: Cell<String>,
+        pub error: Cell<ErrorEjectFailed>,
     }
 
     impl EjectFailureDialog {
-        pub fn apply_eject_result(&self, result: EjectResult, parent: &PerformancePageDisk) {
-            let parsed_results = Self::parse_blocking_processes(result);
-
+        pub fn update_model(&self, disk_id: &str, error: &ErrorEjectFailed) {
             let model = self.column_view.get();
-
-            self.parent_page.set(Some(parent.clone()));
-
             model.remove_all();
 
-            for (appname, (app_obj, processes)) in parsed_results {
-                let iconname = match app_obj.icon.as_ref() {
-                    Some(icon) => icon,
-                    None => &Arc::from(""),
+            let parsed_results = Self::parse_error(error);
+
+            for (appname, (app_obj, blockers)) in parsed_results {
+                let icon = match app_obj.icon.as_ref().and_then(|i| i.icon.as_ref()) {
+                    Some(Icon::Id(id)) => id,
+                    Some(Icon::Path(path)) => path,
+                    None | Some(Icon::Empty(..)) | Some(Icon::Data(..)) => "",
                 };
 
-                let parent_id = &parent
-                    .imp()
-                    .raw_disk_id
-                    .get()
-                    .expect("Expected a raw disk id, got none");
-
-                for (pid, files, dirs) in processes {
+                for blocker in blockers {
                     let row_builder = EjectFailureRowBuilder::new()
-                        .id(parent_id)
-                        .icon(iconname)
-                        .pid(pid)
+                        .id(disk_id)
+                        .icon(icon)
+                        .pid(blocker.pid)
                         .name(&appname)
-                        .parent_page(parent.clone());
+                        .dialog(&self.obj());
 
-                    if !files.is_empty() {
-                        model.append(&row_builder.clone().files_open(files.clone()).build());
+                    if !blocker.files.is_empty() {
+                        model.append(
+                            &row_builder
+                                .clone()
+                                .files_open(blocker.files.clone())
+                                .build(),
+                        );
                     }
 
-                    if !dirs.is_empty() {
-                        model.append(&row_builder.files_open(dirs).build());
+                    if !blocker.dirs.is_empty() {
+                        model.append(&row_builder.files_open(blocker.dirs).build());
                     }
                 }
             }
         }
 
-        fn parse_blocking_processes(
-            result: EjectResult,
-        ) -> HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> {
-            let mut parsed_results: HashMap<String, (App, Vec<(u32, Vec<String>, Vec<String>)>)> =
-                HashMap::new();
+        fn parse_error(error: &ErrorEjectFailed) -> HashMap<String, (App, Vec<Blocker>)> {
+            let mut result = HashMap::new();
 
-            if !result.success {
-                let Some(window) = app!().window() else {
-                    g_critical!(
-                        "MissionCenter::Application",
-                        "No active window, when trying to show eject dialog"
-                    );
+            let Some(window) = app!().window() else {
+                g_critical!(
+                    "MissionCenter::Application",
+                    "No active window, when trying to show eject dialog"
+                );
 
-                    return parsed_results;
-                };
+                return result;
+            };
 
-                if result.blocking_processes.is_empty() {
-                    return parsed_results;
-                }
+            if error.blockers.is_empty() {
+                return result;
+            }
 
-                let apps = window.imp().apps_page.get_running_apps();
-                let apps = apps.values().map(|c| c.clone()).collect::<Vec<_>>();
+            let apps = window.imp().apps_page.get_running_apps();
 
-                for blocking_process in result.blocking_processes {
-                    if let Some(black) = apps.iter().find(|a| a.pids.contains(&blocking_process.0))
-                    {
-                        if let Some((_, blocking)) =
-                            parsed_results.get_mut(black.name.to_string().as_str())
-                        {
-                            blocking.push(blocking_process);
-                        } else {
-                            parsed_results.insert(
-                                black.name.as_ref().parse().unwrap(),
-                                (black.clone(), vec![blocking_process]),
-                            );
-                        }
+            for blocker in error.blockers.iter().map(|b| b.clone()) {
+                if let Some(blocking_app) = apps.values().find(|a| a.pids.contains(&blocker.pid)) {
+                    if let Some((_, blocking)) = result.get_mut(&blocking_app.name) {
+                        blocking.push(blocker);
                     } else {
-                        if let Some((_, blocking)) = parsed_results.get_mut("") {
-                            blocking.push(blocking_process);
-                        } else {
-                            parsed_results.insert(
-                                "".parse().unwrap(),
-                                (Default::default(), vec![blocking_process]),
-                            );
-                        }
+                        result.insert(
+                            blocking_app.name.clone(),
+                            (blocking_app.clone(), vec![blocker]),
+                        );
+                    }
+                } else {
+                    if let Some((_, blocking)) = result.get_mut("") {
+                        blocking.push(blocker);
+                    } else {
+                        result.insert("".parse().unwrap(), (Default::default(), vec![blocker]));
                     }
                 }
             }
 
-            parsed_results
+            result
         }
     }
 
@@ -145,7 +132,9 @@ mod imp {
         fn default() -> Self {
             Self {
                 column_view: Default::default(),
-                parent_page: Cell::new(None),
+
+                disk_id: Cell::new(String::new()),
+                error: Cell::new(ErrorEjectFailed::default()),
             }
         }
     }
@@ -187,88 +176,47 @@ mod imp {
 
     impl AdwAlertDialogImpl for EjectFailureDialog {
         fn response(&self, response: &str) {
+            let app = app!();
+            let Ok(magpie) = app.sys_info() else {
+                g_warning!(
+                    "MissionCenter::EjectFailureDialog",
+                    "Failed to get magpie client"
+                );
+                return;
+            };
+
+            let disk_id = unsafe { &*self.disk_id.as_ptr() }.clone();
+            let error = unsafe { &*self.error.as_ptr() }.clone();
+
             match response {
-                "retry" => {
-                    match app!().sys_info().and_then(move |sys_info| {
-                        let parent = match self.parent_page.take() {
-                            Some(parent) => parent,
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::DetailsDialog",
-                                    "`parent_page` was unexpectedly empty",
-                                );
-                                return Ok(());
-                            }
-                        };
-
-                        let disk_id = match parent.imp().raw_disk_id.get() {
-                            Some(id) => id,
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::DetailsDialog",
-                                    "`disk_id` was unexpectedly empty",
-                                );
-                                return Ok(());
-                            }
-                        };
-                        let eject_result = sys_info.eject_disk(disk_id, false, 0);
-
-                        parent.imp().show_eject_result(&parent, eject_result);
-
-                        Ok(())
-                    }) {
-                        Err(e) => {
-                            g_warning!(
-                                "MissionCenter::DetailsDialog",
-                                "Failed to get `sys_info`: {}",
-                                e
-                            );
-                        }
-                        _ => {}
+                "retry" => match magpie.eject_disk(&disk_id) {
+                    Ok(_) => {
+                        self.obj().close();
                     }
-                }
+                    Err(e) => {
+                        self.update_model(&disk_id, &e);
+                    }
+                },
                 "kill" => {
-                    match app!().sys_info().and_then(move |sys_info| {
-                        let parent = match self.parent_page.take() {
-                            Some(parent) => parent,
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::DetailsDialog",
-                                    "`parent_page` was unexpectedly empty",
-                                );
-                                return Ok(());
-                            }
-                        };
-
-                        let disk_id = match parent.imp().raw_disk_id.get() {
-                            Some(id) => id,
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::DetailsDialog",
-                                    "`disk_id` was unexpectedly empty",
-                                );
-                                return Ok(());
-                            }
-                        };
-                        let eject_result = sys_info.eject_disk(disk_id, true, 0);
-
-                        parent.imp().show_eject_result(&parent, eject_result);
-
-                        Ok(())
-                    }) {
-                        Err(e) => {
-                            g_warning!(
-                                "MissionCenter::DetailsDialog",
-                                "Failed to get `sys_info`: {}",
-                                e
-                            );
+                    magpie.kill_processes(error.blockers.iter().map(|b| b.pid).collect());
+                    match magpie.eject_disk(&disk_id) {
+                        Ok(_) => {
+                            self.obj().close();
                         }
-                        _ => {}
+                        Err(e) => {
+                            self.update_model(&disk_id, &e);
+                            self.error.set(e);
+                        }
                     }
                 }
-                "close" => {}
-                e => {
-                    g_warning!("MissionCenter::DetailsDialog", "Unexpected response: {}", e);
+                "close" => {
+                    self.obj().close();
+                }
+                other => {
+                    g_warning!(
+                        "MissionCenter::DetailsDialog",
+                        "Unexpected response: {other}"
+                    );
                 }
             }
         }
@@ -280,13 +228,39 @@ mod imp {
         }
     }
 
-    impl AdwDialogImpl for EjectFailureDialog {
-        fn closed(&self) {}
-    }
+    impl AdwDialogImpl for EjectFailureDialog {}
 }
 
 glib::wrapper! {
     pub struct EjectFailureDialog(ObjectSubclass<imp::EjectFailureDialog>)
         @extends adw::AlertDialog, adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl EjectFailureDialog {
+    pub fn new(disk_id: String, error: ErrorEjectFailed) -> Self {
+        let this: Self = glib::Object::builder()
+            .property("follows-content-size", true)
+            .build();
+        {
+            let this = this.imp();
+            this.update_model(&disk_id, &error);
+            this.disk_id.set(disk_id);
+            this.error.set(error);
+        }
+
+        this
+    }
+
+    pub fn disk_id(&self) -> String {
+        unsafe { &*self.imp().disk_id.as_ptr() }.clone()
+    }
+
+    pub fn update_model(&self, error: ErrorEjectFailed) {
+        let this = self.imp();
+
+        let disk_id = unsafe { &*this.disk_id.as_ptr() }.clone();
+        this.update_model(&disk_id, &error);
+        this.error.set(error);
+    }
 }

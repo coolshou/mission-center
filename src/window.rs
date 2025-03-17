@@ -19,12 +19,13 @@
  */
 
 use std::cell::Cell;
+use std::time::Duration;
 
+use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use gtk::glib::ControlFlow;
 use gtk::{gio, glib};
-
-use crate::{app, settings, sys_info_v2::Readings, theme_selector::ThemeSelector};
 
 mod imp {
     use super::*;
@@ -286,6 +287,16 @@ mod imp {
                 action.set_state(&interface_style.to_variant());
             });
             self.obj().add_action(&interface_style);
+
+            // Not clear how actions actually become usable, what I know is that they need to be
+            // created and configured at object construction otherwise they flat out don't work.
+            // And since these actions *need* to be tied to the window they are created here.
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-start", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-stop", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-restart", None));
         }
 
         fn configure_theme_selection(&self) {
@@ -684,7 +695,7 @@ impl MissionCenterWindow {
     pub fn new<P: IsA<gtk::Application>>(
         application: &P,
         settings: &gio::Settings,
-        sys_info: &crate::sys_info_v2::SysInfoV2,
+        sys_info: &crate::magpie_client::MagpieClient,
     ) -> Self {
         use gtk::glib::*;
 
@@ -716,6 +727,20 @@ impl MissionCenterWindow {
         this
     }
 
+    pub fn setup_animations(&self) {
+        glib::timeout_add_local(Duration::from_millis(50), {
+            let this = self.downgrade();
+
+            move || {
+                if let Some(this) = this.upgrade() {
+                    this.update_animations();
+                }
+
+                ControlFlow::Continue
+            }
+        });
+    }
+
     pub fn set_initial_readings(&self, mut readings: Readings) {
         use gtk::glib::*;
 
@@ -745,21 +770,9 @@ impl MissionCenterWindow {
             .apps_page
             .add_css_class("mission-center-apps-page");
 
-        if readings.services.is_empty() {
-            g_critical!("MissionCenter", "No services found, hiding services page");
-            self.imp().services_stack_page.set_visible(false);
-        } else {
-            let ok = self.imp().services_page.set_initial_readings(&mut readings);
-            if !ok {
-                g_critical!(
-                    "MissionCenter",
-                    "Failed to set initial readings for services page"
-                );
-            }
-            self.imp()
-                .services_page
-                .add_css_class("mission-center-services-page");
-        }
+        self.imp()
+            .services_page
+            .add_css_class("mission-center-services-page");
 
         self.imp().loading_box.set_visible(false);
         self.imp().header_bar.set_visible(true);
@@ -787,9 +800,27 @@ impl MissionCenterWindow {
     pub fn update_readings(&self, readings: &mut Readings) -> bool {
         let mut result = true;
 
-        result &= self.imp().performance_page.update_readings(readings);
-        result &= self.imp().apps_page.update_readings(readings);
-        result &= self.imp().services_page.update_readings(readings);
+        let this = self.imp();
+
+        result &= this.performance_page.update_readings(readings);
+        result &= this.apps_page.update_readings(readings);
+
+        if !readings.services.is_empty() {
+            this.services_stack_page.set_visible(true);
+            result &= this.services_page.update_readings(readings);
+        } else {
+            this.services_stack_page.set_visible(false);
+        }
+
+        result
+    }
+
+    pub fn update_animations(&self) -> bool {
+        let mut result = true;
+
+        let this = self.imp();
+
+        result &= this.performance_page.update_animations();
 
         result
     }

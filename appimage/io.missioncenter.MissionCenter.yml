@@ -13,7 +13,7 @@ AppDir:
   runtime:
     env:
       MC_RESOURCE_DIR: $APPDIR/usr/share/missioncenter
-      HW_DB_DIR: $APPDIR/usr/share/missioncenter
+      MC_MAGPIE_HW_DB: $APPDIR/usr/share/missioncenter/hw.db
   test:
     ubuntu-focal:
       image: appimagecrafters/tests-env:ubuntu-focal
