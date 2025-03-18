@@ -1261,9 +1261,9 @@ mod imp {
             let if_name = connection.id.as_str();
             let page_name = Self::network_page_name(if_name);
 
-            let conn_type: ConnectionKind =
+            let conn_kind: ConnectionKind =
                 ConnectionKind::try_from(connection.kind).expect("Invalid connection type");
-            let conn_type = conn_type.as_str_name();
+            let conn_type = conn_kind.as_str_name();
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
@@ -1325,7 +1325,7 @@ mod imp {
                 });
             }
 
-            let page = NetworkPage::new(if_name, connection.kind, &settings);
+            let page = NetworkPage::new(if_name, conn_kind, &settings);
             page.set_base_color(gdk::RGBA::new(
                 NETWORK_BASE_COLOR[0] as f32 / 255.,
                 NETWORK_BASE_COLOR[1] as f32 / 255.,

@@ -57,7 +57,6 @@ mod imp {
 
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
         pub interface_name: RefCell<String>,
-        #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
         pub connection_type: Cell<ConnectionKind>,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
@@ -139,19 +138,6 @@ mod imp {
             self.interface_name.replace(interface_name);
         }
 
-        fn connection_type(&self) -> u8 {
-            self.connection_type.get() as i32 as u8
-        }
-
-        fn set_connection_type(&self, connection_type: u8) {
-            if connection_type == self.connection_type.get() as i32 as u8 {
-                return;
-            }
-
-            self.connection_type
-                .replace(ConnectionKind::try_from(connection_type as i32).unwrap());
-        }
-
         fn infobar_content(&self) -> Option<gtk::Widget> {
             self.infobar_content.get().map(|ic| ic.clone().into())
         }
@@ -168,7 +154,7 @@ mod imp {
                 move |_, _| {
                     if let Some(this) = this.upgrade() {
                         PerformancePageNetwork::gnome_settings_activate_action(
-                            if this.connection_type() == ConnectionKind::Wireless as u8 {
+                            if this.imp().connection_type.get() == ConnectionKind::Wireless {
                                 "('launch-panel', [<('wifi', [<''>])>], {})"
                             } else {
                                 "('launch-panel', [<('network', [<''>])>], {})"
@@ -736,11 +722,16 @@ impl PageExt for PerformancePageNetwork {
 }
 
 impl PerformancePageNetwork {
-    pub fn new(interface_name: &str, connection_kind: i32, settings: &gio::Settings) -> Self {
+    pub fn new(
+        interface_name: &str,
+        connection_kind: ConnectionKind,
+        settings: &gio::Settings,
+    ) -> Self {
         let this: Self = glib::Object::builder()
             .property("interface-name", interface_name)
-            .property("connection-type", connection_kind as u8)
             .build();
+
+        this.imp().connection_type.set(connection_kind);
 
         fn update_refresh_rate_sensitive_labels(
             this: &PerformancePageNetwork,
