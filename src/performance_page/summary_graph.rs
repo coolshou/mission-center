@@ -29,6 +29,8 @@ use super::widgets::{GraphWidget, SidebarDropHint};
 use crate::settings;
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     #[derive(Properties)]
@@ -52,17 +54,17 @@ mod imp {
         #[template_child]
         pub enabled_switch: TemplateChild<gtk::Switch>,
 
-        #[property(get = Self::is_enabled, set = Self::set_enabled, type = bool)]
-        is_enabled: [u8; 0],
+        #[property(get = Self::is_enabled, set = Self::set_enabled)]
+        is_enabled: PhantomData<bool>,
 
-        #[property(get = Self::base_color, set = Self::set_base_color, type = gdk::RGBA)]
-        base_color: [u8; 0],
-        #[property(get = Self::heading, set = Self::set_heading, type = String)]
-        heading: [u8; 0],
-        #[property(get = Self::info1, set = Self::set_info1, type = String)]
-        info1: [u8; 0],
-        #[property(get = Self::info2, set = Self::set_info2, type = String)]
-        info2: [u8; 0],
+        #[property(get = Self::base_color, set = Self::set_base_color)]
+        base_color: PhantomData<gdk::RGBA>,
+        #[property(get = Self::heading, set = Self::set_heading)]
+        heading: PhantomData<String>,
+        #[property(get = Self::info1, set = Self::set_info1)]
+        info1: PhantomData<String>,
+        #[property(get = Self::info2, set = Self::set_info2)]
+        info2: PhantomData<String>,
     }
 
     impl Default for SummaryGraph {
@@ -76,12 +78,12 @@ mod imp {
                 label_info2: Default::default(),
                 enabled_switch: Default::default(),
 
-                is_enabled: [0; 0],
+                is_enabled: PhantomData,
 
-                base_color: [0; 0],
-                heading: [0; 0],
-                info1: [0; 0],
-                info2: [0; 0],
+                base_color: PhantomData,
+                heading: PhantomData,
+                info1: PhantomData,
+                info2: PhantomData,
             }
         }
     }

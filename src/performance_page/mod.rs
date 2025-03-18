@@ -68,6 +68,8 @@ trait PageExt {
 const MK_TO_0_C: i32 = -273150;
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     // GNOME color palette: Blue 4
@@ -112,11 +114,10 @@ mod imp {
         pub sidebar_edit_mode: Cell<bool>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
-        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible, type = bool
-        )]
-        _infobar_visible: [u8; 0],
-        #[property(name = "info-button-visible", get = Self::info_button_visible, type = bool)]
-        _info_button_visible: [u8; 0],
+        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible)]
+        _infobar_visible: PhantomData<bool>,
+        #[property(name = "info-button-visible", get = Self::info_button_visible)]
+        _info_button_visible: PhantomData<bool>,
 
         breakpoint_applied: Cell<bool>,
 
@@ -138,8 +139,8 @@ mod imp {
                 sidebar: RefCell::new(gtk::ListBox::new()),
                 sidebar_edit_mode: Cell::new(false),
                 summary_mode: Cell::new(false),
-                _infobar_visible: [0; 0],
-                _info_button_visible: [0; 0],
+                _infobar_visible: PhantomData,
+                _info_button_visible: PhantomData,
 
                 breakpoint_applied: Cell::new(false),
 
