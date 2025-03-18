@@ -25,7 +25,6 @@ use std::{
 
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::{gio, prelude::*};
-use lazy_static::lazy_static;
 
 use crate::i18n::{i18n, i18n_f};
 use application::MissionCenterApplication;
@@ -35,10 +34,10 @@ use window::MissionCenterWindow;
 mod application;
 mod apps_page;
 mod i18n;
+mod magpie_client;
 mod performance_page;
 mod preferences;
 mod services_page;
-mod sys_info_v2;
 mod theme_selector;
 mod window;
 
@@ -53,16 +52,6 @@ mod config {
     include!(concat!(env!("BUILD_ROOT"), "/src/config.rs"));
 }
 
-lazy_static! {
-    pub static ref HW_DB_DIR: String = {
-        if let Ok(path) = std::env::var("HW_DB_DIR") {
-            path
-        } else {
-            PKGDATADIR.to_owned()
-        }
-    };
-}
-
 fn user_home() -> &'static Path {
     static HOME: OnceLock<PathBuf> = OnceLock::new();
 
@@ -71,7 +60,7 @@ fn user_home() -> &'static Path {
             .or(env::var_os("USERPROFILE"))
             .map(|v| PathBuf::from(v))
             .unwrap_or(if cfg!(windows) {
-                "C:/".into()
+                "C:\\Windows\\Temp".into()
             } else {
                 "/tmp".into()
             })
@@ -79,58 +68,21 @@ fn user_home() -> &'static Path {
     .as_path()
 }
 
-pub fn years_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} year", &[&timestr])
-    } else {
-        i18n_f("{} years", &[&timestr])
-    }
+fn flatpak_data_dir() -> &'static Path {
+    static DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+    DATA_DIR
+        .get_or_init(|| {
+            let path = user_home().join(".var/app/io.missioncenter.MissionCenter/data");
+            std::fs::create_dir_all(&path).expect("Failed to create flatpak data directory");
+            path
+        })
+        .as_path()
 }
 
-pub fn months_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} month", &[&timestr])
-    } else {
-        i18n_f("{} months", &[&timestr])
-    }
-}
-
-pub fn days_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} day", &[&timestr])
-    } else {
-        i18n_f("{} days", &[&timestr])
-    }
-}
-
-pub fn hours_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} hour", &[&timestr])
-    } else {
-        i18n_f("{} hours", &[&timestr])
-    }
-}
-
-pub fn minutes_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} minute", &[&timestr])
-    } else {
-        i18n_f("{} minutes", &[&timestr])
-    }
-}
-
-pub fn seconds_to_string(time: u64) -> String {
-    let timestr = time.to_string();
-    if time == 1 {
-        i18n_f("{} second", &[&timestr])
-    } else {
-        i18n_f("{} seconds", &[&timestr])
-    }
+pub fn is_flatpak() -> bool {
+    static IS_FLATPAK: OnceLock<bool> = OnceLock::new();
+    *IS_FLATPAK.get_or_init(|| Path::new("/.flatpak-info").exists())
 }
 
 // tysm gdu
@@ -140,6 +92,60 @@ pub fn to_human_readable_time(seconds: u64) -> String {
     const USEC_PER_DAY: u64 = 60 * 60 * 24;
     const USEC_PER_HOUR: u64 = 60 * 60;
     const USEC_PER_MINUTE: u64 = 60;
+
+    pub fn years_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} year", &[&timestr])
+        } else {
+            i18n_f("{} years", &[&timestr])
+        }
+    }
+
+    pub fn months_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} month", &[&timestr])
+        } else {
+            i18n_f("{} months", &[&timestr])
+        }
+    }
+
+    pub fn days_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} day", &[&timestr])
+        } else {
+            i18n_f("{} days", &[&timestr])
+        }
+    }
+
+    pub fn hours_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} hour", &[&timestr])
+        } else {
+            i18n_f("{} hours", &[&timestr])
+        }
+    }
+
+    pub fn minutes_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} minute", &[&timestr])
+        } else {
+            i18n_f("{} minutes", &[&timestr])
+        }
+    }
+
+    pub fn seconds_to_string(time: u64) -> String {
+        let timestr = time.to_string();
+        if time == 1 {
+            i18n_f("{} second", &[&timestr])
+        } else {
+            i18n_f("{} seconds", &[&timestr])
+        }
+    }
 
     let mut t = seconds;
     let years = t / USEC_PER_YEAR;
@@ -234,7 +240,7 @@ pub fn to_human_readable_adv(
 }
 
 pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str, usize) {
-    return to_human_readable_adv(value, divisor, 1);
+    to_human_readable_adv(value, divisor, 1)
 }
 
 pub fn show_error_dialog_and_exit(message: &str) -> ! {
@@ -289,5 +295,5 @@ fn main() {
     gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
     let exit_code = app.run();
-    std::process::exit(exit_code.into());
+    std::process::exit(exit_code.value());
 }

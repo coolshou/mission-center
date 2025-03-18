@@ -7,6 +7,12 @@ project('missioncenter',
 i18n = import('i18n')
 gnome = import('gnome')
 
+skip_codegen = get_option('skip-codegen')
+
+if get_option('flatpak') == false
+    proj_magpie = subproject('magpie', default_options: [ 'skip-codegen=' + skip_codegen.to_string() ])
+endif
+
 subdir('data')
 subdir('po')
 subdir('resources')

@@ -19,32 +19,33 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use regex::Regex;
+use std::fmt::Write;
 use std::{
     cell::Cell,
     collections::{HashMap, HashSet},
 };
 
 use adw::{prelude::*, subclass::prelude::*};
+use arrayvec::ArrayString;
 use glib::{ParamSpec, Properties, Value};
 use gtk::{
     gdk, gio,
-    glib::{self, g_critical},
+    glib::{self, g_critical, g_warning},
 };
+
+use magpie_types::fan::Fan;
+use magpie_types::gpus::Gpu;
+use magpie_types::network::{Connection, ConnectionKind};
+
+use crate::{i18n::*, magpie_client::DiskKind, settings};
 
 use widgets::{GraphWidget, SidebarDropHint};
-
-use crate::sys_info_v2::FanInfo;
-use crate::{
-    i18n::*,
-    settings,
-    sys_info_v2::{DiskType, NetworkDevice},
-};
 
 mod cpu;
 mod disk;
 mod fan;
 mod gpu;
+mod gpu_details;
 mod memory;
 mod network;
 mod summary_graph;
@@ -56,6 +57,7 @@ type DiskPage = disk::PerformancePageDisk;
 type MemoryPage = memory::PerformancePageMemory;
 type NetworkPage = network::PerformancePageNetwork;
 type GpuPage = gpu::PerformancePageGpu;
+type GpuDetails = gpu_details::GpuDetails;
 type FanPage = fan::PerformancePageFan;
 
 trait PageExt {
@@ -63,7 +65,7 @@ trait PageExt {
     fn infobar_uncollapsed(&self);
 }
 
-const MK_TO_0_C: i32 = 273150;
+const MK_TO_0_C: i32 = -273150;
 
 mod imp {
     use super::*;
@@ -124,8 +126,6 @@ mod imp {
         action_group: Cell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
-
-        cpu_cores_regex: Regex,
     }
 
     impl Default for PerformancePage {
@@ -150,8 +150,6 @@ mod imp {
                 action_group: Cell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
-
-                cpu_cores_regex: Regex::new(r" \S*-Core Processor").unwrap(),
             }
         }
     }
@@ -970,13 +968,17 @@ mod imp {
             }
         }
 
-        fn set_up_cpu_page(&self, pages: &mut Vec<Pages>, readings: &crate::sys_info_v2::Readings) {
+        fn set_up_cpu_page(
+            &self,
+            pages: &mut Vec<Pages>,
+            readings: &crate::magpie_client::Readings,
+        ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
             summary.set_info1("0% 0.00 GHz");
-            match readings.cpu_dynamic_info.temperature.as_ref() {
+            match readings.cpu.temperature_celsius.as_ref() {
                 Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                 _ => {}
             }
@@ -996,6 +998,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = CpuPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1017,7 +1025,7 @@ mod imp {
         fn set_up_memory_page(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let summary = SummaryGraph::new();
             summary.set_widget_name("memory");
@@ -1052,6 +1060,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = MemoryPage::new(&settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1079,7 +1093,7 @@ mod imp {
         fn set_up_disk_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut disks = HashMap::new();
             let len = readings.disks_info.len();
@@ -1099,32 +1113,34 @@ mod imp {
         pub fn update_disk_heading(
             &self,
             disk_graph: &SummaryGraph,
-            r#type: DiskType,
+            kind: Option<DiskKind>,
             disk_id: &str,
             index: Option<i32>,
         ) {
-            let r#type = match r#type {
-                DiskType::HDD => i18n("HDD"),
-                DiskType::SSD => i18n("SSD"),
-                DiskType::NVMe => i18n("NVMe"),
-                DiskType::eMMC => i18n("eMMC"),
-                DiskType::SD => i18n("SD"),
-                DiskType::Floppy => i18n("Floppy"),
-                DiskType::Optical => i18n("Optical"),
-                DiskType::Unknown => i18n("Drive"),
+            let kind = match kind {
+                Some(DiskKind::Hdd) => i18n("HDD"),
+                Some(DiskKind::Ssd) => i18n("SSD"),
+                Some(DiskKind::NvMe) => i18n("NVMe"),
+                Some(DiskKind::EMmc) => i18n("eMMC"),
+                Some(DiskKind::Sd) => i18n("SD"),
+                Some(DiskKind::IScsi) => i18n("iSCSI"),
+                Some(DiskKind::Optical) => i18n("Optical"),
+                Some(DiskKind::Floppy) => i18n("Floppy"),
+                Some(DiskKind::ThumbDrive) => i18n("Thumb Drive"),
+                None => i18n("Unknown"),
             };
 
             if index.is_some() {
                 disk_graph.set_heading(i18n_f(
                     "{} {} ({})",
                     &[
-                        &format!("{}", r#type),
+                        &format!("{}", kind),
                         &format!("{}", index.unwrap()),
                         &format!("{}", disk_id),
                     ],
                 ));
             } else {
-                disk_graph.set_heading(r#type);
+                disk_graph.set_heading(kind);
             }
         }
 
@@ -1134,36 +1150,36 @@ mod imp {
 
         pub fn create_disk_page(
             &self,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
             disk_id: Option<i32>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, DiskPage)) {
-            let disk_static_info = &readings.disks_info[disk_id.unwrap_or(0) as usize];
+            let disk = &readings.disks_info[disk_id.unwrap_or(0) as usize];
 
-            let page_name = Self::disk_page_name(disk_static_info.id.as_ref());
+            let page_name = Self::disk_page_name(disk.id.as_ref());
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
             self.update_disk_heading(
                 &summary,
-                disk_static_info.r#type,
-                disk_static_info.id.as_ref(),
+                disk.kind.and_then(|k| k.try_into().ok()),
+                &disk.id,
                 disk_id,
             );
-            summary.set_info1(format!("{}", disk_static_info.model));
+            if let Some(model) = &disk.model {
+                summary.set_info1(model.as_ref());
+            }
             summary.set_info2(format!(
                 "{:.0}%{}",
-                disk_static_info.busy_percent,
-                if disk_static_info.drive_temperature >= 1 {
-                    format!(
-                        " ({:.0} °C)",
-                        (disk_static_info.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.
-                    )
+                disk.busy_percent,
+                if let Some(temp_mk) = disk.temperature_milli_k {
+                    format!(" ({:.0} °C)", (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.)
                 } else {
                     String::new()
                 }
             ));
+
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
                 DISK_BASE_COLOR[1] as f32 / 255.,
@@ -1180,6 +1196,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = DiskPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1188,7 +1210,7 @@ mod imp {
                 DISK_BASE_COLOR[2] as f32 / 255.,
                 1.,
             ));
-            page.set_static_information(disk_id, disk_static_info);
+            page.set_static_information(disk_id, disk);
 
             self.configure_page(&page);
 
@@ -1201,7 +1223,7 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up disk action for {}, logic bug?",
-                        &disk_static_info.id
+                        &disk.id
                     );
                 }
                 Some(action) => {
@@ -1216,11 +1238,11 @@ mod imp {
         fn set_up_network_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut networks = HashMap::new();
-            for network_device in &readings.network_devices {
-                let mut ret = self.create_network_page(network_device, None);
+            for connection in &readings.network_connections {
+                let mut ret = self.create_network_page(connection, None);
                 networks.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
@@ -1233,16 +1255,18 @@ mod imp {
 
         fn create_network_page(
             &self,
-            network_device: &NetworkDevice,
+            connection: &Connection,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, NetworkPage)) {
-            let if_name = network_device.descriptor.if_name.as_str();
+            let if_name = connection.id.as_str();
             let page_name = Self::network_page_name(if_name);
 
-            let conn_type = network_device.descriptor.kind.to_string();
+            let conn_type: ConnectionKind = unsafe { std::mem::transmute(connection.kind) };
+            let conn_type = conn_type.as_str_name();
+
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
-            summary.set_heading(format!("{} ({})", conn_type.clone(), if_name.to_string()));
+            summary.set_heading(format!("{} ({})", conn_type, if_name));
             {
                 let graph_widget = summary.graph_widget();
                 graph_widget.set_data_set_count(2);
@@ -1265,17 +1289,20 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
-            if network_device.max_speed > 0 {
+            if let Some(max_speed) = connection.max_speed_bytes_ps {
                 if !settings.boolean("performance-page-network-dynamic-scaling") {
                     summary
                         .graph_widget()
                         .set_scaling(GraphWidget::no_scaling());
-                    summary
-                        .graph_widget()
-                        .set_value_range_max((network_device.max_speed * 8) as f32);
+                    summary.graph_widget().set_value_range_max(max_speed as f32);
                 }
-                let max_speed = network_device.max_speed * 8;
                 settings.connect_changed(Some("performance-page-network-dynamic-scaling"), {
                     let graph = summary.graph_widget().downgrade();
                     move |settings, _| {
@@ -1297,7 +1324,7 @@ mod imp {
                 });
             }
 
-            let page = NetworkPage::new(if_name, network_device.descriptor.kind, &settings);
+            let page = NetworkPage::new(if_name, connection.kind, &settings);
             page.set_base_color(gdk::RGBA::new(
                 NETWORK_BASE_COLOR[0] as f32 / 255.,
                 NETWORK_BASE_COLOR[1] as f32 / 255.,
@@ -1305,7 +1332,7 @@ mod imp {
                 1.,
             ));
 
-            page.set_static_information(network_device);
+            page.set_static_information(connection);
             self.configure_page(&page);
 
             self.page_stack.add_named(&page, Some(&page_name));
@@ -1334,82 +1361,104 @@ mod imp {
             format!("gpu-{}", device_id)
         }
 
+        fn create_gpu_page(
+            &self,
+            gpu: &Gpu,
+            index: Option<usize>,
+            pos_hint: Option<i32>,
+        ) -> (String, (SummaryGraph, GpuPage)) {
+            let page_name = Self::gpu_page_name(&gpu.id);
+
+            let summary = SummaryGraph::new();
+            summary.set_widget_name(&page_name);
+
+            let settings = settings!();
+
+            summary
+                .graph_widget()
+                .set_data_points(settings.int("performance-page-data-points") as u32);
+            summary
+                .graph_widget()
+                .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
+
+            let page = GpuPage::new(gpu.device_name.as_ref().unwrap_or(&i18n("Unknown")));
+
+            if let Some(index) = index {
+                summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
+            } else {
+                summary.set_heading(i18n_f("GPU", &[]));
+            }
+            summary.set_info1(
+                gpu.device_name
+                    .as_ref()
+                    .unwrap_or(&i18n("Unknown"))
+                    .as_str(),
+            );
+
+            let mut info2 = ArrayString::<256>::new();
+            if let Some(v) = gpu.utilization_percent {
+                let _ = write!(&mut info2, "{v}%");
+            }
+            if let Some(v) = gpu.temperature_c {
+                let _ = write!(&mut info2, " ({v:.2}°C)");
+            }
+            summary.set_info2(info2.as_str());
+
+            summary.set_base_color(gdk::RGBA::new(
+                GPU_BASE_COLOR[0] as f32 / 255.,
+                GPU_BASE_COLOR[1] as f32 / 255.,
+                GPU_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+
+            page.set_base_color(gdk::RGBA::new(
+                GPU_BASE_COLOR[0] as f32 / 255.,
+                GPU_BASE_COLOR[1] as f32 / 255.,
+                GPU_BASE_COLOR[2] as f32 / 255.,
+                1.,
+            ));
+            page.set_static_information(index, gpu);
+
+            self.configure_page(&page);
+
+            self.page_stack.add_named(&page, Some(&page_name));
+            self.add_to_sidebar(&summary, pos_hint);
+
+            let mut actions = self.context_menu_view_actions.take();
+            match actions.get("gpu") {
+                None => {
+                    g_critical!(
+                        "MissionCenter::PerformancePage",
+                        "Failed to wire up GPU action for {:?}, logic bug?",
+                        &gpu.device_name
+                    );
+                }
+                Some(action) => {
+                    actions.insert(page_name.clone(), action.clone());
+                }
+            }
+            self.context_menu_view_actions.set(actions);
+
+            (page_name, (summary, page))
+        }
+
         fn set_up_gpu_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut gpus = HashMap::new();
 
-            let hide_index = readings.gpu_static_info.len() == 1;
-            for (index, static_info) in readings.gpu_static_info.iter().enumerate() {
-                let dynamic_info = &readings.gpu_dynamic_info[index];
-
-                let page_name = Self::gpu_page_name(static_info.id.as_ref());
-
-                let summary = SummaryGraph::new();
-                summary.set_widget_name(&page_name);
-
-                let settings = settings!();
-
-                summary
-                    .graph_widget()
-                    .set_data_points(settings.int("performance-page-data-points") as u32);
-
-                summary
-                    .graph_widget()
-                    .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
-
-                let page = GpuPage::new(&static_info.device_name, &settings);
-
-                if !hide_index {
-                    summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
-                } else {
-                    summary.set_heading(i18n_f("GPU", &[]));
-                }
-                summary.set_info1(static_info.device_name.as_ref());
-                summary.set_info2(format!(
-                    "{}% ({} °C)",
-                    dynamic_info.util_percent, dynamic_info.temp_celsius
-                ));
-                summary.set_base_color(gdk::RGBA::new(
-                    GPU_BASE_COLOR[0] as f32 / 255.,
-                    GPU_BASE_COLOR[1] as f32 / 255.,
-                    GPU_BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
-
-                page.set_base_color(gdk::RGBA::new(
-                    GPU_BASE_COLOR[0] as f32 / 255.,
-                    GPU_BASE_COLOR[1] as f32 / 255.,
-                    GPU_BASE_COLOR[2] as f32 / 255.,
-                    1.,
-                ));
-                page.set_static_information(
-                    if !hide_index { Some(index) } else { None },
-                    static_info,
-                );
-
-                self.configure_page(&page);
-
-                self.page_stack.add_named(&page, Some(&page_name));
-                self.add_to_sidebar(&summary, None);
-
-                let mut actions = self.context_menu_view_actions.take();
-                match actions.get("gpu") {
-                    None => {
-                        g_critical!(
-                            "MissionCenter::PerformancePage",
-                            "Failed to wire up GPU action for {}, logic bug?",
-                            &static_info.device_name
-                        );
-                    }
-                    Some(action) => {
-                        actions.insert(page_name.clone(), action.clone());
-                    }
-                }
-                self.context_menu_view_actions.set(actions);
-
+            let hide_index = readings.gpus.len() == 1;
+            for (index, gpu) in readings.gpus.values().enumerate() {
+                let (page_name, (summary, page)) =
+                    self.create_gpu_page(gpu, if hide_index { None } else { Some(index) }, None);
                 gpus.insert(page_name, (summary, page));
             }
 
@@ -1419,43 +1468,39 @@ mod imp {
         fn set_up_fan_pages(
             &self,
             pages: &mut Vec<Pages>,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) {
             let mut fans = HashMap::new();
-            let len = readings.fans_info.len();
+            let len = readings.fans.len();
             let hide_index = len == 1;
             for i in 0..len {
-                let mut ret = self.create_fan_page(
-                    readings,
-                    if hide_index { None } else { Some(i as i32) },
-                    None,
-                );
+                let mut ret =
+                    self.create_fan_page(readings, if hide_index { None } else { Some(i) }, None);
                 fans.insert(std::mem::take(&mut ret.0), ret.1);
             }
 
             pages.push(Pages::Fan(fans));
         }
 
-        fn fan_page_name(fan_info: &FanInfo) -> String {
+        fn fan_page_name(fan_info: &Fan) -> String {
             format!("fan-{}-{}", fan_info.hwmon_index, fan_info.fan_index)
         }
 
         pub fn create_fan_page(
             &self,
-            readings: &crate::sys_info_v2::Readings,
-            fan_id: Option<i32>,
+            readings: &crate::magpie_client::Readings,
+            index: Option<usize>,
             pos_hint: Option<i32>,
         ) -> (String, (SummaryGraph, FanPage)) {
-            let fan_static_info =
-                &readings.fans_info[fan_id.map(|i| i as usize).clone().unwrap_or(0)];
+            let fan_static_info = &readings.fans[index.unwrap_or(0)];
 
             let page_name = Self::fan_page_name(fan_static_info);
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
 
-            if fan_id.is_some() {
-                summary.set_heading(i18n_f("Fan {}", &[&format!("{}", fan_id.unwrap())]));
+            if let Some(index) = index {
+                summary.set_heading(i18n_f("Fan {}", &[&format!("{}", index)]));
             } else {
                 summary.set_heading(i18n("Fan"));
             }
@@ -1478,6 +1523,12 @@ mod imp {
             summary
                 .graph_widget()
                 .set_smooth_graphs(settings.boolean("performance-smooth-graphs"));
+            summary
+                .graph_widget()
+                .set_do_animation(settings.boolean("performance-sliding-graphs"));
+            summary
+                .graph_widget()
+                .set_expected_animation_ticks(settings.uint64("app-update-interval-u64") as u32);
 
             let page = FanPage::new(&page_name, &settings);
             page.set_base_color(gdk::RGBA::new(
@@ -1499,7 +1550,11 @@ mod imp {
                     g_critical!(
                         "MissionCenter::PerformancePage",
                         "Failed to wire up fan action for {}, logic bug?",
-                        &fan_static_info.fan_label
+                        fan_static_info
+                            .fan_label
+                            .as_ref()
+                            .map(|s| s.as_str())
+                            .unwrap_or("Unknown")
                     );
                 }
                 Some(action) => {
@@ -1591,7 +1646,7 @@ mod imp {
     impl PerformancePage {
         pub fn set_up_pages(
             this: &super::PerformancePage,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
             let this = this.imp();
 
@@ -1698,10 +1753,8 @@ mod imp {
 
         pub fn update_readings(
             this: &super::PerformancePage,
-            readings: &crate::sys_info_v2::Readings,
+            readings: &crate::magpie_client::Readings,
         ) -> bool {
-            use glib::g_warning;
-
             let mut pages = this.imp().pages.take();
 
             let mut pages_to_destroy = Vec::new();
@@ -1717,28 +1770,33 @@ mod imp {
                     if let Some((graph, page)) =
                         pages.get(disk_page_name).and_then(|v| Some(v.clone()))
                     {
+                        summary_graphs.remove(&graph);
+                        page_stack.remove(&page);
+                        pages.remove(disk_page_name);
+
                         let parent = match graph.parent() {
                             Some(parent) => parent,
                             None => {
                                 g_warning!(
                                     "MissionCenter::PerformancePage",
-                                    "Failed to get parent of graph widget"
+                                    "Failed to get parent of graph widget, is it not in the sidebar?"
                                 );
                                 continue;
                             }
                         };
 
-                        let selection = sidebar.selected_row().unwrap();
-
-                        if selection.eq(&parent) {
-                            let option = &pages.values().collect::<Vec<_>>()[0].0.parent().unwrap();
-                            sidebar.select_row(option.downcast_ref::<gtk::ListBoxRow>());
+                        if let Some(selection) = sidebar.selected_row() {
+                            if selection.eq(&parent) {
+                                let row = pages
+                                    .values()
+                                    .next()
+                                    .and_then(|(graph, _)| graph.parent())
+                                    .and_then(|row| row.downcast::<gtk::ListBoxRow>().ok());
+                                sidebar.select_row(row.as_ref());
+                            }
                         }
 
-                        summary_graphs.remove(&graph);
                         sidebar.remove(&parent);
-                        page_stack.remove(&page);
-                        pages.remove(disk_page_name);
                     }
                 }
             }
@@ -1749,9 +1807,9 @@ mod imp {
                     Pages::Memory(_) => {} // not dynamic
                     Pages::Disk(ref mut disks_pages) => {
                         for disk_page_name in disks_pages.keys() {
-                            if !readings.disks_info.iter().any(|device| {
-                                device.capacity > 0
-                                    && &Self::disk_page_name(device.id.as_ref()) == disk_page_name
+                            if !readings.disks_info.iter().any(|disk| {
+                                disk.capacity_bytes > 0
+                                    && &Self::disk_page_name(disk.id.as_ref()) == disk_page_name
                             }) {
                                 pages_to_destroy.push(disk_page_name.clone());
                             }
@@ -1772,10 +1830,11 @@ mod imp {
                     }
                     Pages::Network(net_pages) => {
                         for net_page_name in net_pages.keys() {
-                            if !readings.network_devices.iter().any(|device| {
-                                &Self::network_page_name(&device.descriptor.if_name)
-                                    == net_page_name
-                            }) {
+                            if !readings
+                                .network_connections
+                                .iter()
+                                .any(|device| &Self::network_page_name(&device.id) == net_page_name)
+                            {
                                 pages_to_destroy.push(net_page_name.clone());
                             }
                         }
@@ -1793,8 +1852,50 @@ mod imp {
 
                         this.imp().summary_graphs.set(summary_graphs);
                     }
-                    Pages::Gpu(_) => {}
-                    Pages::Fan(_) => {}
+                    Pages::Gpu(gpu_pages) => {
+                        for gpu_page_name in gpu_pages.keys() {
+                            if !readings.gpus.contains_key(&gpu_page_name[4..]) {
+                                pages_to_destroy.push(gpu_page_name.clone());
+                            }
+                        }
+
+                        let mut summary_graphs = this.imp().summary_graphs.take();
+
+                        remove_pages(
+                            &pages_to_destroy,
+                            gpu_pages,
+                            &mut summary_graphs,
+                            &this.sidebar(),
+                            &this.imp().page_stack,
+                        );
+                        pages_to_destroy.clear();
+
+                        this.imp().summary_graphs.set(summary_graphs);
+                    }
+                    Pages::Fan(fan_pages) => {
+                        for fan_page_name in fan_pages.keys() {
+                            if !readings
+                                .fans
+                                .iter()
+                                .any(|fan| &Self::fan_page_name(&fan) == fan_page_name)
+                            {
+                                pages_to_destroy.push(fan_page_name.clone());
+                            }
+                        }
+
+                        let mut summary_graphs = this.imp().summary_graphs.take();
+
+                        remove_pages(
+                            &pages_to_destroy,
+                            fan_pages,
+                            &mut summary_graphs,
+                            &this.sidebar(),
+                            &this.imp().page_stack,
+                        );
+                        pages_to_destroy.clear();
+
+                        this.imp().summary_graphs.set(summary_graphs);
+                    }
                 }
             }
 
@@ -1804,6 +1905,8 @@ mod imp {
 
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
+            let sliding = settings.boolean("performance-sliding-graphs");
+            let delay = settings.uint64("app-update-interval-u64") as u32;
 
             for page in &mut pages {
                 match page {
@@ -1811,32 +1914,22 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
+                        graph_widget.set_expected_animation_ticks(delay);
 
-                        graph_widget.add_data_point(
-                            0,
-                            readings.cpu_dynamic_info.overall_utilization_percent,
-                        );
+                        let mut info2 = ArrayString::<256>::new();
+                        let _ = write!(&mut info2, "{}%", readings.cpu.total_usage_percent.round());
+                        if let Some(temp) = readings.cpu.temperature_celsius.as_ref() {
+                            let _ = write!(&mut info2, " ({:.0} °C)", temp);
+                        }
 
-                        let cpu_name = String::from(readings.cpu_static_info.name.as_ref());
-                        let short_cpu_name = this
-                            .imp()
-                            .cpu_cores_regex
-                            .replace_all(&cpu_name, "")
-                            .to_string();
-                        summary.set_info1(short_cpu_name);
-
-                        summary.set_info2(format!(
-                            "{}%{}",
-                            readings
-                                .cpu_dynamic_info
-                                .overall_utilization_percent
-                                .round(),
-                            if let Some(temp) = readings.cpu_dynamic_info.temperature.as_ref() {
-                                format!(" ({:.0} °C)", temp)
-                            } else {
-                                String::new()
-                            }
-                        ));
+                        graph_widget.add_data_point(0, readings.cpu.total_usage_percent);
+                        if let Some(name) = readings.cpu.name.as_ref() {
+                            summary.set_info1(name.as_str());
+                            summary.set_info2(info2.as_str());
+                        } else {
+                            summary.set_info1(info2.as_str());
+                        }
 
                         result &= page.update_readings(readings);
                     }
@@ -1848,6 +1941,8 @@ mod imp {
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
+                        graph_widget.set_do_animation(sliding);
+                        graph_widget.set_expected_animation_ticks(delay);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
                         let used = crate::to_human_readable(used_raw as _, 1024.);
@@ -1875,7 +1970,7 @@ mod imp {
                             {
                                 this.imp().update_disk_heading(
                                     summary,
-                                    disk.r#type,
+                                    disk.kind.and_then(|k| k.try_into().ok()),
                                     disk.id.as_ref(),
                                     if hide_index { None } else { Some(index as i32) },
                                 );
@@ -1899,13 +1994,14 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, disk.busy_percent);
-                                // i dare you to have a 1mK(elvin) drive
-                                if disk.drive_temperature >= 1 {
+                                if let Some(temp_mk) = disk.temperature_milli_k {
                                     summary.set_info2(format!(
                                         "{:.0}% ({:.0} °C)",
                                         disk.busy_percent,
-                                        (disk.drive_temperature as i32 - MK_TO_0_C) as f64 / 1000.
+                                        (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.
                                     ));
                                 } else {
                                     summary.set_info2(format!("{:.0}%", disk.busy_percent));
@@ -1921,7 +2017,7 @@ mod imp {
                         }
 
                         for new_device_index in new_devices {
-                            if readings.disks_info[new_device_index].capacity == 0 {
+                            if readings.disks_info[new_device_index].capacity_bytes == 0 {
                                 continue;
                             }
                             let (disk_id, page) = this.imp().create_disk_page(
@@ -1946,16 +2042,12 @@ mod imp {
                         let mut consecutive_dev_count = 0;
 
                         let mut new_devices = Vec::new();
-                        for (index, network_device) in readings.network_devices.iter().enumerate() {
-                            if let Some((summary, page)) = pages
-                                .get(&Self::network_page_name(&network_device.descriptor.if_name))
+                        for (index, network_connection) in
+                            readings.network_connections.iter().enumerate()
+                        {
+                            if let Some((summary, page)) =
+                                pages.get(&Self::network_page_name(&network_connection.id))
                             {
-                                let data_per_time = page.unit_per_second_label();
-                                let byte_coeff = page.byte_conversion_factor();
-
-                                let send_speed = network_device.send_bps * byte_coeff;
-                                let rec_speed = network_device.recv_bps * byte_coeff;
-
                                 // Search for a group of existing network devices and try to add new entries at that position
                                 summary
                                     .parent()
@@ -1975,7 +2067,18 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, send_speed);
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
+
+                                graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
+                                graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
+
+                                let data_per_time = page.unit_per_second_label();
+                                let byte_coeff = page.byte_conversion_factor();
+
+                                let send_speed = network_connection.tx_rate_bytes_ps * byte_coeff;
+                                let rec_speed = network_connection.rx_rate_bytes_ps * byte_coeff;
+
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
@@ -1998,7 +2101,7 @@ mod imp {
                                     ],
                                 ));
 
-                                result &= page.update_readings(network_device);
+                                result &= page.update_readings(network_connection);
                             } else {
                                 new_devices.push(index);
                             }
@@ -2006,7 +2109,7 @@ mod imp {
 
                         for new_device_index in new_devices {
                             let (net_if_id, page) = this.imp().create_network_page(
-                                &readings.network_devices[new_device_index],
+                                &readings.network_connections[new_device_index],
                                 if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
                                     last_sidebar_pos += 1;
                                     Some(last_sidebar_pos)
@@ -2018,60 +2121,216 @@ mod imp {
                         }
                     }
                     Pages::Gpu(pages) => {
-                        for gpu in &readings.gpu_dynamic_info {
-                            if let Some((summary, page)) =
-                                pages.get(&Self::gpu_page_name(gpu.id.as_ref()))
+                        let mut last_sidebar_pos = -1;
+                        let mut consecutive_dev_count = 0;
+
+                        let mut gpus = readings.gpus.iter().collect::<Vec<_>>();
+                        gpus.sort_by(|(lhs, _), (rhs, _)| lhs.cmp(&rhs));
+
+                        let hide_index = gpus.len() == 1;
+
+                        let mut new_devices = Vec::new();
+                        for (index, (id, gpu)) in gpus.drain(..).enumerate() {
+                            let index = if hide_index { None } else { Some(index) };
+
+                            if let Some((summary, page)) = pages.get(&Self::gpu_page_name(&gpu.id))
                             {
+                                // Search for a group of existing GPUs and try to add new entries at that position
+                                summary
+                                    .parent()
+                                    .and_then(|p| p.downcast_ref::<gtk::ListBoxRow>().cloned())
+                                    .and_then(|row| {
+                                        let sidebar_pos = row.index();
+                                        if sidebar_pos == last_sidebar_pos + 1 {
+                                            consecutive_dev_count += 1;
+                                        } else {
+                                            consecutive_dev_count = 1;
+                                        };
+                                        last_sidebar_pos = sidebar_pos;
+
+                                        Some(())
+                                    });
+
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, gpu.util_percent as f32);
-                                if gpu.temp_celsius > 20 {
-                                    summary.set_info2(format!(
-                                        "{}% ({} °C)",
-                                        gpu.util_percent, gpu.temp_celsius
-                                    ));
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
+
+                                if let Some(index) = index {
+                                    summary.set_heading(i18n_f("GPU {}", &[&format!("{}", index)]));
                                 } else {
-                                    summary.set_info2(format!("{}%", gpu.util_percent));
-                                }
-                                let id = gpu.id.clone();
-                                let mut gpu_static = None;
-                                for gpu_stat in &readings.gpu_static_info {
-                                    if id == gpu_stat.id {
-                                        gpu_static = Some(gpu_stat);
-                                        break;
-                                    }
+                                    summary.set_heading(i18n("GPU"));
                                 }
 
-                                result &= page.update_readings(gpu, gpu_static.unwrap());
+                                let mut info2 = ArrayString::<256>::new();
+                                if let Some(v) = gpu.utilization_percent {
+                                    graph_widget.add_data_point(0, v);
+                                    let _ = write!(&mut info2, "{v}%");
+                                }
+                                if let Some(v) = gpu.temperature_c.map(|v| v.round() as u32) {
+                                    let _ = write!(&mut info2, " ({v} °C)");
+                                }
+                                summary.set_info2(info2.as_str());
+
+                                result &= page.update_readings(gpu, index);
+                            } else {
+                                new_devices.push((index, id.as_str()));
                             }
+                        }
+
+                        for (index, device_id) in new_devices {
+                            let Some(gpu) = readings.gpus.get(device_id) else {
+                                continue;
+                            };
+
+                            let (page_name, page) = this.imp().create_gpu_page(
+                                gpu,
+                                index,
+                                if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
+                                    last_sidebar_pos += 1;
+                                    Some(last_sidebar_pos)
+                                } else {
+                                    None
+                                },
+                            );
+                            pages.insert(page_name, page);
                         }
                     }
                     Pages::Fan(pages) => {
-                        for fan_info in &readings.fans_info {
-                            if let Some((summary, page)) = pages.get(&Self::fan_page_name(fan_info))
-                            {
+                        let mut last_sidebar_pos = -1;
+                        let mut consecutive_dev_count = 0;
+
+                        let hide_index = readings.fans.len() == 1;
+
+                        let mut new_devices = Vec::new();
+                        for (index, fan) in readings.fans.iter().enumerate() {
+                            let index = if hide_index { None } else { Some(index) };
+
+                            if let Some((summary, page)) = pages.get(&Self::fan_page_name(&fan)) {
+                                // Search for a group of existing fans and try to add new entries at that position
+                                summary
+                                    .parent()
+                                    .and_then(|p| p.downcast_ref::<gtk::ListBoxRow>().cloned())
+                                    .and_then(|row| {
+                                        let sidebar_pos = row.index();
+                                        if sidebar_pos == last_sidebar_pos + 1 {
+                                            consecutive_dev_count += 1;
+                                        } else {
+                                            consecutive_dev_count = 1;
+                                        };
+                                        last_sidebar_pos = sidebar_pos;
+
+                                        Some(())
+                                    });
+
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
-                                graph_widget.add_data_point(0, fan_info.rpm as f32);
-                                summary.set_info1(fan_info.temp_name.as_ref());
+                                graph_widget.set_do_animation(sliding);
+                                graph_widget.set_expected_animation_ticks(delay);
+                                graph_widget.add_data_point(0, fan.rpm as f32);
+                                if let Some(temp_name) = &fan.temp_name {
+                                    summary.set_info1(temp_name.as_str());
+                                }
 
-                                let temp_str = if fan_info.temp_amount != 0 {
+                                if let Some(index) = index {
+                                    summary.set_heading(i18n_f("Fan {}", &[&format!("{}", index)]));
+                                } else {
+                                    summary.set_heading(i18n("Fan"));
+                                }
+
+                                let temp_str = if let Some(temp_amount) = fan.temp_amount {
                                     format!(
                                         " ({:.0} °C)",
-                                        (fan_info.temp_amount as i32 - MK_TO_0_C) as f32 / 1000.0
+                                        (temp_amount as i32 + MK_TO_0_C) as f32 / 1000.0
                                     )
                                 } else {
                                     String::new()
                                 };
-                                summary.set_info2(if fan_info.percent_vroomimg < 0. {
-                                    format!("{} RPM{}", fan_info.rpm, temp_str)
+
+                                summary.set_info2(if let Some(pwm_percent) = fan.pwm_percent {
+                                    format!("{:.0}%{}", pwm_percent * 100., temp_str)
                                 } else {
-                                    format!("{:.0}%{}", fan_info.percent_vroomimg * 100., temp_str)
+                                    format!("{} RPM{}", fan.rpm, temp_str)
                                 });
-                                result &= page.update_readings(fan_info);
+                                result &= page.update_readings(fan, index);
+                            } else {
+                                new_devices.push(index);
                             }
+                        }
+
+                        for index in new_devices {
+                            let (page_name, page) = this.imp().create_fan_page(
+                                readings,
+                                index,
+                                if last_sidebar_pos > -1 && consecutive_dev_count > 1 {
+                                    last_sidebar_pos += 1;
+                                    Some(last_sidebar_pos)
+                                } else {
+                                    None
+                                },
+                            );
+                            pages.insert(page_name, page);
+                        }
+                    }
+                }
+            }
+
+            this.imp().pages.set(pages);
+
+            result
+        }
+
+        pub fn update_animations(this: &super::PerformancePage) -> bool {
+            let mut pages = this.imp().pages.take();
+
+            let mut result = true;
+
+            for page in &mut pages {
+                match page {
+                    Pages::Cpu((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Memory((summary, page)) => {
+                        let graph_widget = summary.graph_widget();
+
+                        result &= graph_widget.update_animation();
+                        result &= page.update_animations();
+                    }
+                    Pages::Disk(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Network(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Gpu(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
+                        }
+                    }
+                    Pages::Fan(pages) => {
+                        for (summary, page) in pages.values() {
+                            let graph_widget = summary.graph_widget();
+
+                            result &= graph_widget.update_animation();
+                            result &= page.update_animations();
                         }
                     }
                 }
@@ -2232,13 +2491,17 @@ glib::wrapper! {
 }
 
 impl PerformancePage {
-    pub fn set_initial_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn set_initial_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         let ok = imp::PerformancePage::set_up_pages(self, readings);
         imp::PerformancePage::update_readings(self, readings) && ok
     }
 
-    pub fn update_readings(&self, readings: &crate::sys_info_v2::Readings) -> bool {
+    pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
         imp::PerformancePage::update_readings(self, readings)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePage::update_animations(self)
     }
 
     pub fn sidebar_enable_all(&self) {

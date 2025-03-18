@@ -32,9 +32,10 @@ use gtk::{
     Snapshot,
 };
 
-use crate::i18n::i18n_f;
+use magpie_types::memory::Memory;
 
 use super::GRAPH_RADIUS;
+use crate::i18n::i18n_f;
 
 mod imp {
     use super::*;
@@ -49,7 +50,7 @@ mod imp {
         #[property(get, set)]
         range_max: Cell<f32>,
 
-        pub(crate) mem_info: Cell<crate::sys_info_v2::MemInfo>,
+        pub(crate) mem_info: Cell<Memory>,
 
         tooltip_texts: Cell<Vec<(f32, String)>>,
     }
@@ -61,7 +62,7 @@ mod imp {
                 range_min: Cell::new(0.0),
                 range_max: Cell::new(100.0),
 
-                mem_info: Cell::new(crate::sys_info_v2::MemInfo::default()),
+                mem_info: Cell::new(Memory::default()),
 
                 tooltip_texts: Cell::new(vec![]),
             }
@@ -415,7 +416,7 @@ impl MemoryCompositionWidget {
         this
     }
 
-    pub fn update_memory_information(&self, mem_info: &crate::sys_info_v2::MemInfo) {
+    pub fn update_memory_information(&self, mem_info: &Memory) {
         self.imp().mem_info.set(mem_info.clone());
         self.queue_draw();
     }

@@ -6,26 +6,72 @@ stages:
   - portable-build
   - package-appimage-snap
 
-build-job-x86:
-  stage: build
-  script:
+.shared:
+  checkout_submodule:
+    - apt-get install -y git
+    - git submodule update --init --recursive
+
+  setup_apt:
     - rm -rf /etc/apt/sources.list.d
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
-
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
+
+  setup_apt_ports:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - apt-get update && apt-get dist-upgrade -y
+
+  setup_apt_focal:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - apt-get update && apt-get dist-upgrade -y
+
+  setup_apt_focal_ports:
+    - rm -rf /etc/apt/sources.list.d
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - apt-get update && apt-get dist-upgrade -y
+
+  install_rust:
+    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
     - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - ln -sf /usr/bin/mold /usr/bin/ld
 
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - export PATH="$HOME/.cargo/bin:$PATH"
 
+  install_flatpak:
+    - apt-get install -y build-essential flatpak flatpak-builder
+    - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+    - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
+
+check-fmt:
+  stage: build
+  before_script:
+    - !reference [ ".shared", "setup_apt" ]
+    - !reference [ ".shared", "install_rust" ]
+  script:
     - ./support/check-cargo-fmt.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+build-job-x86:
+  stage: build
+  before_script:
+    - !reference [ ".shared", "setup_apt" ]
+    - !reference [ ".shared", "install_rust" ]
+    - !reference [ ".shared", "checkout_submodule" ]
 
     - pip install meson ninja --break-system-packages
-
-    - meson setup _build -Dbuildtype=release
+  script:
+    - meson setup _build -Dbuildtype=release -Dskip-codegen=true
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
@@ -35,24 +81,14 @@ build-job-arm:
   stage: build
   tags:
     - saas-linux-medium-arm64
-  script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential curl git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils
-    - ln -sf /usr/bin/python3 /usr/local/bin/python
-
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - export PATH="$HOME/.cargo/bin:$PATH"
-
-    - ./support/check-cargo-fmt.sh
+  before_script:
+    - !reference [ ".shared", "setup_apt_ports" ]
+    - !reference [ ".shared", "install_rust" ]
+    - !reference [ ".shared", "checkout_submodule" ]
 
     - pip install meson ninja --break-system-packages
-
-    - meson setup _build -Dbuildtype=release
+  script:
+    - meson setup _build -Dbuildtype=release -Dskip-codegen=true
     - ninja -C _build
     - glib-compile-schemas --strict data/
   rules:
@@ -62,17 +98,11 @@ flatpak-job-x86:
   stage: flatpak
   tags:
     - saas-linux-large-amd64
+  before_script:
+    - !reference [ ".shared", "setup_apt" ]
+    - !reference [ ".shared", "install_flatpak" ]
+    - !reference [ ".shared", "checkout_submodule" ]
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential flatpak flatpak-builder
-    - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
-
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
   artifacts:
@@ -85,17 +115,11 @@ flatpak-job-arm:
   stage: flatpak
   tags:
     - saas-linux-large-arm64
+  before_script:
+    - !reference [ ".shared", "setup_apt_ports" ]
+    - !reference [ ".shared", "install_flatpak" ]
+    - !reference [ ".shared", "checkout_submodule" ]
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y build-essential flatpak flatpak-builder
-    - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
-
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
   artifacts:
@@ -109,14 +133,10 @@ portable-build-job-x86:
   image: ubuntu:20.04
   tags:
     - saas-linux-large-amd64
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal" ]
+    - !reference [ ".shared", "checkout_submodule" ]
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y
-
     - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
     - cd portable && tar zcf ../portable-x86_64.tar.gz *
 
@@ -134,14 +154,10 @@ portable-build-job-arm:
   image: ubuntu:20.04
   tags:
     - saas-linux-large-arm64
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal_ports" ]
+    - !reference [ ".shared", "checkout_submodule" ]
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y
-
     - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
     - cd portable && tar zcf ../portable-aarch64.tar.gz *
 
@@ -156,15 +172,11 @@ portable-build-job-arm:
 
 snap-job-x86:
   stage: package-appimage-snap
-  script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+  before_script:
+    - !reference [ ".shared", "setup_apt" ]
 
-    - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y curl ca-certificates
-
+  script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cd ../..
 
@@ -180,14 +192,11 @@ snap-job-arm:
   stage: package-appimage-snap
   tags:
     - saas-linux-medium-arm64
-  script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports oracular-security main restricted universe multiverse' >> /etc/apt/sources.list
+  before_script:
+    - !reference [ ".shared", "setup_apt_ports" ]
 
-    - apt-get update && apt-get dist-upgrade -y
     - apt-get install -y curl ca-certificates
+  script:
 
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-aarch64.tar.gz && cd ../..
@@ -203,14 +212,11 @@ snap-job-arm:
 appimage-job-x86:
   stage: package-appimage-snap
   image: ubuntu:20.04
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal" ]
+
+    - apt-get install -y curl ca-certificates
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
-
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
 
@@ -227,14 +233,11 @@ appimage-job-arm:
   image: ubuntu:20.04
   tags:
     - saas-linux-medium-arm64
+  before_script:
+    - !reference [ ".shared", "setup_apt_focal_ports" ]
+
+    - apt-get install -y curl ca-certificates
   script:
-    - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
-
-    - apt-get update && apt-get dist-upgrade -y && apt-get install -y curl ca-certificates
-
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
 
