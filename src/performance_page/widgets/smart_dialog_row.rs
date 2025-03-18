@@ -102,7 +102,7 @@ impl SmartDialogRow {
                     3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
                     4 => i18n_f(
                         "{} °C",
-                        &[&format!("{}", (pretty as i32 - MK_TO_0_C) / 1000)],
+                        &[&format!("{}", (pretty as i32 + MK_TO_0_C) / 1000)],
                     ),
                     _ => format!("{}", pretty),
                 },
