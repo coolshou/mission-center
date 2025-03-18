@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::{Cell, OnceCell};
+use std::cell::{Cell, OnceCell, RefCell};
 
 use adw;
 use adw::subclass::prelude::*;
@@ -68,7 +68,7 @@ mod imp {
         pub context_menu: TemplateChild<gtk::Popover>,
 
         #[property(get = Self::name, set = Self::set_name, type = String)]
-        name: Cell<String>,
+        name: RefCell<String>,
         #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
@@ -101,7 +101,7 @@ mod imp {
                 temp_graph_box: Default::default(),
                 context_menu: Default::default(),
 
-                name: Cell::new(String::new()),
+                name: RefCell::new(String::new()),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
@@ -120,15 +120,12 @@ mod imp {
 
     impl PerformancePageFan {
         fn name(&self) -> String {
-            unsafe { &*self.name.as_ptr() }.clone()
+            self.name.borrow().clone()
         }
 
         fn set_name(&self, name: String) {
-            {
-                let if_name = unsafe { &*self.name.as_ptr() };
-                if if_name == &name {
-                    return;
-                }
+            if name == *self.name.borrow() {
+                return;
             }
 
             self.name.replace(name);
