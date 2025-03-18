@@ -21,7 +21,7 @@
 
 use std::fmt::Write;
 use std::{
-    cell::Cell,
+    cell::{Cell, RefCell},
     collections::{HashMap, HashSet},
 };
 
@@ -107,7 +107,7 @@ mod imp {
         pub info_bar: TemplateChild<adw::Bin>,
 
         #[property(get = Self::sidebar, set = Self::set_sidebar)]
-        pub sidebar: Cell<gtk::ListBox>,
+        pub sidebar: RefCell<gtk::ListBox>,
         #[property(get, set = Self::set_sidebar_edit_mode)]
         pub sidebar_edit_mode: Cell<bool>,
         #[property(get, set)]
@@ -123,7 +123,7 @@ mod imp {
         pages: Cell<Vec<Pages>>,
         pub summary_graphs: Cell<HashMap<SummaryGraph, gtk::DragSource>>,
 
-        action_group: Cell<gio::SimpleActionGroup>,
+        action_group: RefCell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
     }
@@ -136,7 +136,7 @@ mod imp {
                 page_stack: Default::default(),
                 info_bar: Default::default(),
 
-                sidebar: Cell::new(gtk::ListBox::new()),
+                sidebar: RefCell::new(gtk::ListBox::new()),
                 sidebar_edit_mode: Cell::new(false),
                 summary_mode: Cell::new(false),
                 _infobar_visible: [0; 0],
@@ -147,7 +147,7 @@ mod imp {
                 pages: Cell::new(Vec::new()),
                 summary_graphs: Cell::new(HashMap::new()),
 
-                action_group: Cell::new(gio::SimpleActionGroup::new()),
+                action_group: RefCell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
             }
@@ -156,7 +156,7 @@ mod imp {
 
     impl PerformancePage {
         pub fn sidebar(&self) -> gtk::ListBox {
-            unsafe { &*self.sidebar.as_ptr() }.clone()
+            self.sidebar.borrow().clone()
         }
 
         fn set_sidebar(&self, lb: &gtk::ListBox) {
@@ -376,7 +376,7 @@ mod imp {
             });
             lb.add_controller(drop_target);
 
-            self.sidebar.set(lb.clone())
+            self.sidebar.replace(lb.clone());
         }
 
         fn set_sidebar_edit_mode(&self, edit_mode: bool) {
@@ -493,7 +493,7 @@ mod imp {
 
     impl PerformancePage {
         fn configure_actions(this: &super::PerformancePage) {
-            let actions = unsafe { &*this.imp().action_group.as_ptr() }.clone();
+            let actions = this.imp().action_group.borrow().clone();
 
             let mut view_actions = HashMap::new();
 
@@ -1261,7 +1261,8 @@ mod imp {
             let if_name = connection.id.as_str();
             let page_name = Self::network_page_name(if_name);
 
-            let conn_type: ConnectionKind = unsafe { std::mem::transmute(connection.kind) };
+            let conn_type: ConnectionKind =
+                ConnectionKind::try_from(connection.kind).expect("Invalid connection type");
             let conn_type = conn_type.as_str_name();
 
             let summary = SummaryGraph::new();
@@ -2381,7 +2382,7 @@ mod imp {
 
             let this = self.obj().clone();
 
-            this.insert_action_group("graph", Some(unsafe { &*self.action_group.as_ptr() }));
+            this.insert_action_group("graph", Some(&*self.action_group.borrow()));
 
             self.breakpoint.set_condition(Some(
                 &adw::BreakpointCondition::parse("max-width: 570sp").unwrap(),
