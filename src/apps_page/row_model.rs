@@ -43,7 +43,7 @@ mod imp {
 
         #[property(get = Self::content_type, type = ContentType, builder(ContentType::SectionHeader))]
         pub content_type: Cell<ContentType>,
-        #[property(get = Self::section_type, type = u8)]
+        #[property(get = Self::section_type, type = SectionType, builder(SectionType::Apps))]
         pub section_type: Cell<SectionType>,
         #[property(get, set)]
         pub show_expander: Cell<bool>,
@@ -229,8 +229,8 @@ mod imp {
             self.content_type.get()
         }
 
-        pub fn section_type(&self) -> u8 {
-            self.section_type.get() as _
+        pub fn section_type(&self) -> SectionType {
+            self.section_type.get()
         }
     }
 
@@ -268,7 +268,8 @@ pub enum ContentType {
     Process,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, glib::Enum)]
+#[enum_type(name = "SectionType")]
 pub enum SectionType {
     Apps,
     Processes,

@@ -674,11 +674,11 @@ mod imp {
             };
 
             if lhs.content_type() == ContentType::SectionHeader {
-                if lhs.section_type() == SectionType::Apps as u8 {
+                if lhs.section_type() == SectionType::Apps {
                     return ord_less;
                 }
 
-                if lhs.section_type() == SectionType::Processes as u8 {
+                if lhs.section_type() == SectionType::Processes {
                     return if rhs.content_type() == ContentType::Process {
                         ord_less
                     } else {
@@ -688,11 +688,11 @@ mod imp {
             }
 
             if rhs.content_type() == ContentType::SectionHeader {
-                if rhs.section_type() == SectionType::Apps as u8 {
+                if rhs.section_type() == SectionType::Apps {
                     return ord_greater;
                 }
 
-                if rhs.section_type() == SectionType::Processes as u8 {
+                if rhs.section_type() == SectionType::Processes {
                     return if lhs.content_type() == ContentType::Process {
                         ord_greater
                     } else {
@@ -771,12 +771,12 @@ mod imp {
                 let content_type = row_model.content_type();
 
                 if content_type == ContentType::SectionHeader {
-                    if row_model.section_type() == SectionType::Apps as u8 {
+                    if row_model.section_type() == SectionType::Apps {
                         let apps_model = glib_clone!(this.apps_model);
                         return Some(apps_model.into());
                     }
 
-                    if row_model.section_type() == SectionType::Processes as u8 {
+                    if row_model.section_type() == SectionType::Processes {
                         let processes_model = glib_clone!(this.processes_root_model);
                         return Some(processes_model.into());
                     }
