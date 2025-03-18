@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-03-18 03:14+0000\n"
-"Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-03-19 03:59+0000\n"
+"Last-Translator: Indrek Haav <indrek.haav@hotmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
 "Language: et\n"
@@ -1152,7 +1152,9 @@ msgstr "Peatatud"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr "Priit Jõerüüt 2024, Indrek Haav"
+msgstr ""
+"Priit Jõerüüt 2024\n"
+"Indrek Haav <indrek.haav@pm.me>"
 
 #: src/main.rs:139
 msgid "_Quit"
