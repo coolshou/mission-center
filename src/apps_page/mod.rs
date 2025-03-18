@@ -255,7 +255,7 @@ mod imp {
                                 }
                             };
                             let list_item = list_item.downcast::<ListItem>().unwrap();
-                            if list_item.content_type() == ContentType::SectionHeader as u8 {
+                            if list_item.content_type() == ContentType::SectionHeader {
                                 return;
                             }
 
@@ -302,14 +302,11 @@ mod imp {
                         None::<()>
                     });
 
-                    const CONTENT_TYPE_APP: u8 = ContentType::App as _;
-                    const CONTENT_TYPE_PROCESS: u8 = ContentType::Process as _;
-
                     let (stop_label, force_stop_label, is_app) = match list_item.content_type() {
-                        CONTENT_TYPE_APP => {
+                        ContentType::App => {
                             (i18n("Stop Application"), i18n("Force Stop Application"), true)
                         }
-                        CONTENT_TYPE_PROCESS => {
+                        ContentType::Process => {
                             (i18n("Stop Process"), i18n("Force Stop Process"), false)
                         }
                         _ => unreachable!(),

@@ -260,7 +260,8 @@ mod imp {
 }
 
 #[repr(u8)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, glib::Enum)]
+#[enum_type(name = "ContentType")]
 pub enum ContentType {
     SectionHeader,
     App,
