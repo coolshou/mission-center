@@ -123,7 +123,6 @@ mod imp {
         pages: Cell<Vec<Pages>>,
         pub summary_graphs: Cell<HashMap<SummaryGraph, gtk::DragSource>>,
 
-        action_group: RefCell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
     }
@@ -147,7 +146,6 @@ mod imp {
                 pages: Cell::new(Vec::new()),
                 summary_graphs: Cell::new(HashMap::new()),
 
-                action_group: RefCell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
             }
@@ -162,7 +160,6 @@ mod imp {
         fn set_sidebar(&self, lb: &gtk::ListBox) {
             let this = self.obj().as_ref().clone();
 
-            Self::configure_actions(&this);
             lb.connect_row_selected(move |_, selected_row| {
                 if let Some(row) = selected_row {
                     let child = match row.child() {
@@ -492,15 +489,16 @@ mod imp {
     }
 
     impl PerformancePage {
-        fn configure_actions(this: &super::PerformancePage) {
-            let actions = this.imp().action_group.borrow().clone();
+        fn configure_actions(&self) -> gio::SimpleActionGroup {
+            let this = self.obj();
+            let actions = gio::SimpleActionGroup::new();
 
             let mut view_actions = HashMap::new();
 
             let action = gio::SimpleAction::new_stateful(
                 "summary",
                 None,
-                &glib::Variant::from(this.imp().summary_mode.get()),
+                &glib::Variant::from(self.summary_mode.get()),
             );
             action.connect_activate({
                 let this = this.downgrade();
@@ -560,7 +558,7 @@ mod imp {
             });
             actions.add_action(&action);
             view_actions.insert("cpu".to_string(), action.clone());
-            this.imp().current_view_action.set(action);
+            self.current_view_action.set(action);
 
             let action =
                 gio::SimpleAction::new_stateful("memory", None, &glib::Variant::from(false));
@@ -783,7 +781,9 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("fan".to_string(), action);
 
-            this.imp().context_menu_view_actions.set(view_actions);
+            self.context_menu_view_actions.set(view_actions);
+
+            actions
         }
 
         fn configure_page<P: PageExt + IsA<gtk::Widget>>(&self, page: &P) {
@@ -2382,7 +2382,8 @@ mod imp {
 
             let this = self.obj().clone();
 
-            this.insert_action_group("graph", Some(&*self.action_group.borrow()));
+            let group = self.configure_actions();
+            this.insert_action_group("graph", Some(&group));
 
             self.breakpoint.set_condition(Some(
                 &adw::BreakpointCondition::parse("max-width: 570sp").unwrap(),
