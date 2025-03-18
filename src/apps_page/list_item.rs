@@ -26,7 +26,7 @@ use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 use crate::apps_page::row_model::{ContentType, RowModel};
 
 mod imp {
-    use std::cell::RefCell;
+    use std::{cell::RefCell, marker::PhantomData};
 
     use crate::i18n::i18n;
 
@@ -48,10 +48,10 @@ mod imp {
         gesture_click: gtk::GestureClick,
         row: RefCell<Option<WeakRef<gtk::Widget>>>,
 
-        #[property(name = "name", get = Self::name, set = Self::set_name, type = glib::GString)]
-        _name_property: (),
-        #[property(name = "icon", get = Self::icon, set = Self::set_icon, type = glib::GString)]
-        _icon_property: (),
+        #[property(name = "name", get = Self::name, set = Self::set_name)]
+        _name_property: PhantomData<glib::GString>,
+        #[property(name = "icon", get = Self::icon, set = Self::set_icon)]
+        _icon_property: PhantomData<glib::GString>,
         #[property(get, set)]
         pid: Cell<u32>,
         #[property(get = Self::content_type, set = Self::set_content_type, type = ContentType, builder(ContentType::SectionHeader))]
@@ -82,8 +82,8 @@ mod imp {
                 gesture_click: gtk::GestureClick::new(),
                 row: RefCell::new(None),
 
-                _name_property: (),
-                _icon_property: (),
+                _name_property: PhantomData,
+                _icon_property: PhantomData,
                 pid: Cell::new(0),
                 content_type: Cell::new(ContentType::SectionHeader),
                 show_expander: Cell::new(true),
