@@ -1,10 +1,13 @@
 image: "ubuntu:24.10"
 
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+
 stages:
-  - build
-  - flatpak
-  - portable-build
-  - package-appimage-snap
+  - test
+  - package-build
+  - package
 
 .shared:
   checkout_submodule:
@@ -52,18 +55,24 @@ stages:
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//47 org.gnome.Sdk//47
 
+  ready_to_merge:
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /CI: Ready To Merge/'
+
 check-fmt:
-  stage: build
+  stage: test
+  interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
     - !reference [ ".shared", "install_rust" ]
   script:
     - ./support/check-cargo-fmt.sh
+    - echo $CI_MERGE_REQUEST_LABELS
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 build-job-x86:
-  stage: build
+  stage: package-build
+  interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
     - !reference [ ".shared", "install_rust" ]
@@ -78,7 +87,8 @@ build-job-x86:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 build-job-arm:
-  stage: build
+  stage: package-build
+  interruptible: true
   tags:
     - saas-linux-medium-arm64
   before_script:
@@ -95,7 +105,8 @@ build-job-arm:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 flatpak-job-x86:
-  stage: flatpak
+  stage: package-build
+  interruptible: true
   tags:
     - saas-linux-large-amd64
   before_script:
@@ -110,9 +121,11 @@ flatpak-job-x86:
       - flatpak/missioncenter-x86_64.flatpak
   rules:
     - if: $BUILD_FLATPAK != null
+    - !reference [ ".shared", "ready_to_merge" ]
 
 flatpak-job-arm:
-  stage: flatpak
+  stage: package-build
+  interruptible: true
   tags:
     - saas-linux-large-arm64
   before_script:
@@ -127,9 +140,11 @@ flatpak-job-arm:
       - flatpak/missioncenter-aarch64.flatpak
   rules:
     - if: $BUILD_FLATPAK != null
+    - !reference [ ".shared", "ready_to_merge" ]
 
-portable-build-job-x86:
-  stage: portable-build
+package-build-job-x86:
+  stage: package-build
+  interruptible: true
   image: ubuntu:20.04
   tags:
     - saas-linux-large-amd64
@@ -145,12 +160,13 @@ portable-build-job-x86:
       - 'logs.txt'
       - 'portable-x86_64.tar.gz'
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - !reference [ ".shared", "ready_to_merge" ]
+    - when: never
 
-portable-build-job-arm:
-  stage: portable-build
+package-build-job-arm:
+  stage: package-build
+  interruptible: true
   image: ubuntu:20.04
   tags:
     - saas-linux-large-arm64
@@ -166,12 +182,12 @@ portable-build-job-arm:
       - 'logs.txt'
       - 'portable-aarch64.tar.gz'
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_FLATPAK == null)
+    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-x86:
-  stage: package-appimage-snap
+  stage: package
+  interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
 
@@ -182,14 +198,18 @@ snap-job-x86:
 
     - SRC_PATH=$PWD bash support/create-snap.sh
 
+  needs:
+    - package-build-job-x86
   artifacts:
     paths:
       - '**/*.snap'
   rules:
     - if: $BUILD_SNAP != null
+    - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-arm:
-  stage: package-appimage-snap
+  stage: package
+  interruptible: true
   tags:
     - saas-linux-medium-arm64
   before_script:
@@ -203,14 +223,18 @@ snap-job-arm:
 
     - SRC_PATH=$PWD bash support/create-snap.sh
 
+  needs:
+    - package-build-job-arm
   artifacts:
     paths:
       - '**/*.snap'
   rules:
     - if: $BUILD_SNAP != null
+    - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-x86:
-  stage: package-appimage-snap
+  stage: package
+  interruptible: true
   image: ubuntu:20.04
   before_script:
     - !reference [ ".shared", "setup_apt_focal" ]
@@ -222,14 +246,18 @@ appimage-job-x86:
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
 
+  needs:
+    - package-build-job-x86
   artifacts:
     paths:
       - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null
+    - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-arm:
-  stage: package-appimage-snap
+  stage: package
+  interruptible: true
   image: ubuntu:20.04
   tags:
     - saas-linux-medium-arm64
@@ -243,8 +271,11 @@ appimage-job-arm:
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
 
+  needs:
+    - package-build-job-arm
   artifacts:
     paths:
       - '**/*.AppImage'
   rules:
     - if: $BUILD_APPIMAGE != null
+    - !reference [ ".shared", "ready_to_merge" ]
