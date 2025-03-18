@@ -31,6 +31,8 @@ use gtk::{
 mod imp {
     use std::cell::RefCell;
 
+    use crate::apps_page::row_model::ContentType;
+
     use super::*;
 
     #[derive(Properties)]
@@ -45,8 +47,8 @@ mod imp {
 
         #[property(get = Self::unit, set = Self::set_unit, type = String)]
         unit: RefCell<String>,
-        #[property(set = Self::set_content_type, type = u8)]
-        content_type: Cell<crate::apps_page::row_model::ContentType>,
+        #[property(set = Self::set_content_type, type = ContentType, builder(ContentType::SectionHeader))]
+        content_type: Cell<ContentType>,
         #[property(get, set)]
         value: Cell<f32>,
         #[property(set = Self::set_usage_percent)]
@@ -55,8 +57,6 @@ mod imp {
 
     impl Default for StatColumn {
         fn default() -> Self {
-            use crate::apps_page::row_model::ContentType;
-
             Self {
                 label: TemplateChild::default(),
                 css_provider: RefCell::new(gtk::CssProvider::new()),
@@ -77,16 +77,7 @@ mod imp {
             self.unit.replace(unit.to_owned());
         }
 
-        fn set_content_type(&self, v: u8) {
-            use crate::apps_page::row_model::ContentType;
-
-            let content_type = match v {
-                0 => ContentType::SectionHeader,
-                1 => ContentType::App,
-                2 => ContentType::Process,
-                _ => unreachable!(),
-            };
-
+        fn set_content_type(&self, content_type: ContentType) {
             self.content_type.set(content_type);
         }
 
