@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::{Cell, OnceCell};
+use std::cell::{Cell, OnceCell, RefCell};
 
 use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
@@ -56,7 +56,7 @@ mod imp {
         summary_mode: Cell<bool>,
 
         #[property(get = Self::interface_name, set = Self::set_interface_name, type = String)]
-        pub interface_name: Cell<String>,
+        pub interface_name: RefCell<String>,
         #[property(get = Self::connection_type, set = Self::set_connection_type, type = u8)]
         pub connection_type: Cell<ConnectionKind>,
 
@@ -98,7 +98,7 @@ mod imp {
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
-                interface_name: Cell::new(String::new()),
+                interface_name: RefCell::new(String::new()),
                 connection_type: Cell::new(ConnectionKind::Other),
 
                 infobar_content: Default::default(),
@@ -128,15 +128,12 @@ mod imp {
 
     impl PerformancePageNetwork {
         fn interface_name(&self) -> String {
-            unsafe { &*self.interface_name.as_ptr() }.clone()
+            self.interface_name.borrow().clone()
         }
 
         fn set_interface_name(&self, interface_name: String) {
-            {
-                let if_name = unsafe { &*self.interface_name.as_ptr() };
-                if if_name == &interface_name {
-                    return;
-                }
+            if interface_name == *self.interface_name.borrow() {
+                return;
             }
 
             self.interface_name.replace(interface_name);
@@ -152,7 +149,7 @@ mod imp {
             }
 
             self.connection_type
-                .replace(unsafe { std::mem::transmute(connection_type as i32) });
+                .replace(ConnectionKind::try_from(connection_type as i32).unwrap());
         }
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
@@ -170,15 +167,13 @@ mod imp {
                 let this = this.downgrade();
                 move |_, _| {
                     if let Some(this) = this.upgrade() {
-                        unsafe {
-                            PerformancePageNetwork::gnome_settings_activate_action(
-                                if this.connection_type() == ConnectionKind::Wireless as u8 {
-                                    "('launch-panel', [<('wifi', [<''>])>], {})"
-                                } else {
-                                    "('launch-panel', [<('network', [<''>])>], {})"
-                                },
-                            )
-                        }
+                        PerformancePageNetwork::gnome_settings_activate_action(
+                            if this.connection_type() == ConnectionKind::Wireless as u8 {
+                                "('launch-panel', [<('wifi', [<''>])>], {})"
+                            } else {
+                                "('launch-panel', [<('network', [<''>])>], {})"
+                            },
+                        )
                     }
                 }
             });
@@ -219,86 +214,48 @@ mod imp {
             this.add_controller(right_click_controller);
         }
 
-        unsafe fn gnome_settings_activate_action(variant_str: &str) {
-            use gtk::gio::ffi::*;
-            use gtk::glib::{ffi::*, gobject_ffi::*, translate::from_glib_full, *};
+        fn gnome_settings_activate_action(variant_str: &str) {
+            use gtk::glib::{self, g_critical};
 
-            let mut error: *mut GError = std::ptr::null_mut();
-
-            let gnome_settings_proxy = g_dbus_proxy_new_for_bus_sync(
-                G_BUS_TYPE_SESSION,
-                G_DBUS_PROXY_FLAGS_NONE,
-                std::ptr::null_mut(),
-                b"org.gnome.Settings\0".as_ptr() as _,
-                b"/org/gnome/Settings\0".as_ptr() as _,
-                b"org.freedesktop.Application\0".as_ptr() as _,
-                std::ptr::null_mut(),
-                &mut error,
-            );
-
-            if gnome_settings_proxy.is_null() {
-                if !error.is_null() {
-                    let error: Error = from_glib_full(error);
-                    g_critical!(
-                        "MissionCenter",
-                        "Failed to open settings panel, failed connect to 'org.gnome.Settings': {}",
-                        error.message()
-                    );
-                } else {
-                    g_critical!(
-                        "MissionCenter",
-                        "Failed to open settings panel, failed connect to 'org.gnome.Settings': Unknown error",
-                    );
+            let proxy = match gio::DBusProxy::for_bus_sync(
+                gio::BusType::Session,
+                gio::DBusProxyFlags::NONE,
+                None,
+                "org.gnome.Settings",
+                "/org/gnome/Settings",
+                "org.freedesktop.Application",
+                gio::Cancellable::NONE,
+            ) {
+                Ok(proxy) => proxy,
+                Err(e) => {
+                    g_critical!("MissionCenter", "Failed to open settings panel, failed connect to 'org.gnome.Settings': {e}");
+                    return;
                 }
-                return;
-            }
+            };
 
-            let method_params =
-                Variant::parse(Some(VariantTy::new("(sava{sv})").unwrap()), variant_str);
-            if method_params.is_err() {
-                g_object_unref(gnome_settings_proxy as _);
+            let method_params = match glib::Variant::parse(
+                Some(glib::VariantTy::new("(sava{sv})").unwrap()),
+                variant_str,
+            ) {
+                Ok(params) => params,
+                Err(e) => {
+                    g_critical!(
+                        "MissionCenter",
+                        "Failed to open settings panel, failed set-up D-Bus call parameters: {e}"
+                    );
+                    return;
+                }
+            };
 
-                g_critical!(
-                    "MissionCenter",
-                    "Failed to open settings panel, failed set-up D-Bus call parameters: {}",
-                    method_params.err().unwrap().message()
-                );
-
-                return;
-            }
-            let method_params = method_params.unwrap();
-
-            let variant = g_dbus_proxy_call_sync(
-                gnome_settings_proxy,
-                b"org.freedesktop.Application.ActivateAction\0".as_ptr() as _,
-                method_params.as_ptr(),
-                G_DBUS_CALL_FLAGS_NONE,
+            if let Err(e) = proxy.call_sync(
+                "org.freedesktop.Application.ActivateAction",
+                Some(&method_params),
+                gio::DBusCallFlags::NONE,
                 -1,
-                std::ptr::null_mut(),
-                &mut error,
-            );
-            if variant.is_null() {
-                g_object_unref(gnome_settings_proxy as _);
-
-                if !error.is_null() {
-                    let error: Error = from_glib_full(error);
-                    g_critical!(
-                        "MissionCenter",
-                        "Failed to open settings panel, failed to call 'org.freedesktop.Application.ActivateAction': {}",
-                        error.message()
-                    );
-                } else {
-                    g_critical!(
-                        "MissionCenter",
-                        "Failed to open settings panel, failed to call 'org.freedesktop.Application.ActivateAction': Unknown error",
-                    );
-                }
-
-                return;
+                gio::Cancellable::NONE,
+            ) {
+                g_critical!("MissionCenter", "Failed to open settings panel, failed to call 'org.freedesktop.Application.ActivateAction': {e}");
             }
-
-            g_variant_unref(variant);
-            g_object_unref(gnome_settings_proxy as _);
         }
     }
 
@@ -381,7 +338,7 @@ mod imp {
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-net.svg"));
             }
 
-            this.interface_name.set(interface_name);
+            this.interface_name.replace(interface_name);
 
             this.usage_graph.set_filled(0, false);
             this.usage_graph.set_dashed(0, true);
