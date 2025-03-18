@@ -209,7 +209,7 @@ impl EjectFailureRowBuilder {
                     };
 
                     magpie.kill_process(this.raw_pid.get());
-                    match magpie.eject_disk(&dialog.disk_id()) {
+                    match magpie.eject_disk(dialog.disk_id()) {
                         Ok(_) => {
                             dialog.close();
                         }
