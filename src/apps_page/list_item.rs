@@ -327,7 +327,7 @@ mod imp {
                 // out collapsed. We set the expanded property to true in the model, so that any
                 // action from the user (expand/collapse) will be ignored. We do this with a timeout
                 // so that the view has time to refresh at least once with the binding set to true.
-                if row_model.content_type() == ContentType::App as u8 {
+                if row_model.content_type() == ContentType::App {
                     glib::timeout_add_seconds_local_once(1, {
                         let row_model = row_model.downgrade();
                         move || {

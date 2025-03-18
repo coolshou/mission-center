@@ -41,7 +41,7 @@ mod imp {
         #[property(get = Self::id, set = Self::set_id, type = glib::GString)]
         pub id: Cell<glib::GString>,
 
-        #[property(get = Self::content_type, type = u8)]
+        #[property(get = Self::content_type, type = ContentType, builder(ContentType::SectionHeader))]
         pub content_type: Cell<ContentType>,
         #[property(get = Self::section_type, type = u8)]
         pub section_type: Cell<SectionType>,
@@ -78,7 +78,7 @@ mod imp {
 
         pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
 
-        pub children: Cell<gio::ListStore>,
+        pub children: gio::ListStore,
     }
 
     impl Default for RowModel {
@@ -121,7 +121,7 @@ mod imp {
 
                 merged_stats: Cell::new(None),
 
-                children: Cell::new(gio::ListStore::new::<super::RowModel>()),
+                children: gio::ListStore::new::<super::RowModel>(),
             }
         }
     }
@@ -225,8 +225,8 @@ mod imp {
             self.obj().notify_gpu_memory_usage_percent();
         }
 
-        pub fn content_type(&self) -> u8 {
-            self.content_type.get() as _
+        pub fn content_type(&self) -> ContentType {
+            self.content_type.get()
         }
 
         pub fn section_type(&self) -> u8 {
@@ -488,15 +488,15 @@ impl RowModel {
         this
     }
 
-    pub fn merged_stats(&self) -> &Option<crate::magpie_client::ProcessUsageStats> {
-        unsafe { &*self.imp().merged_stats.as_ptr() }
+    pub fn merged_stats(&self) -> Option<crate::magpie_client::ProcessUsageStats> {
+        self.imp().merged_stats.get()
     }
 
-    pub fn set_merged_stats(&self, stats: &crate::magpie_client::ProcessUsageStats) {
-        self.imp().merged_stats.set(Some(*stats));
+    pub fn set_merged_stats(&self, stats: crate::magpie_client::ProcessUsageStats) {
+        self.imp().merged_stats.set(Some(stats));
     }
 
     pub fn children(&self) -> &gio::ListStore {
-        unsafe { &*self.imp().children.as_ptr() }
+        &self.imp().children
     }
 }

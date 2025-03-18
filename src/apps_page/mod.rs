@@ -673,13 +673,13 @@ mod imp {
                 (Ordering::Greater, Ordering::Less)
             };
 
-            if lhs.content_type() == ContentType::SectionHeader as u8 {
+            if lhs.content_type() == ContentType::SectionHeader {
                 if lhs.section_type() == SectionType::Apps as u8 {
                     return ord_less;
                 }
 
                 if lhs.section_type() == SectionType::Processes as u8 {
-                    return if rhs.content_type() == ContentType::Process as u8 {
+                    return if rhs.content_type() == ContentType::Process {
                         ord_less
                     } else {
                         ord_greater
@@ -687,13 +687,13 @@ mod imp {
                 }
             }
 
-            if rhs.content_type() == ContentType::SectionHeader as u8 {
+            if rhs.content_type() == ContentType::SectionHeader {
                 if rhs.section_type() == SectionType::Apps as u8 {
                     return ord_greater;
                 }
 
                 if rhs.section_type() == SectionType::Processes as u8 {
-                    return if lhs.content_type() == ContentType::Process as u8 {
+                    return if lhs.content_type() == ContentType::Process {
                         ord_greater
                     } else {
                         ord_less
@@ -701,22 +701,22 @@ mod imp {
                 }
             }
 
-            if lhs.content_type() == ContentType::App as u8 {
-                if rhs.content_type() == ContentType::App as u8 {
+            if lhs.content_type() == ContentType::App {
+                if rhs.content_type() == ContentType::App {
                     return compare_fn(lhs, rhs);
                 }
 
-                if rhs.content_type() == ContentType::Process as u8 {
+                if rhs.content_type() == ContentType::Process {
                     return ord_less;
                 }
             }
 
-            if lhs.content_type() == ContentType::Process as u8 {
-                if rhs.content_type() == ContentType::Process as u8 {
+            if lhs.content_type() == ContentType::Process {
+                if rhs.content_type() == ContentType::Process {
                     return compare_fn(lhs, rhs);
                 }
 
-                if rhs.content_type() == ContentType::App as u8 {
+                if rhs.content_type() == ContentType::App {
                     return ord_greater;
                 }
             }
@@ -770,7 +770,7 @@ mod imp {
 
                 let content_type = row_model.content_type();
 
-                if content_type == ContentType::SectionHeader as u8 {
+                if content_type == ContentType::SectionHeader {
                     if row_model.section_type() == SectionType::Apps as u8 {
                         let apps_model = glib_clone!(this.apps_model);
                         return Some(apps_model.into());
@@ -784,9 +784,7 @@ mod imp {
                     return None;
                 }
 
-                if content_type == ContentType::Process as u8
-                    || content_type == ContentType::App as u8
-                {
+                if content_type == ContentType::Process || content_type == ContentType::App {
                     return Some(row_model.children().clone().into());
                 }
 
@@ -833,7 +831,7 @@ mod imp {
                         None => return false,
                         Some(vm) => vm,
                     };
-                    if row_model.content_type() == ContentType::SectionHeader as u8 {
+                    if row_model.content_type() == ContentType::SectionHeader {
                         return true;
                     }
 
@@ -1440,7 +1438,7 @@ mod imp {
                         .max_gpu_memory_usage(this.max_gpu_memory_usage.get())
                         .build();
 
-                    row_model.set_merged_stats(&merged_usage_stats);
+                    row_model.set_merged_stats(merged_usage_stats);
 
                     model.append(&row_model);
                     row_model.children().clone()
@@ -1460,7 +1458,7 @@ mod imp {
                     row_model.set_gpu_usage(usage_stats.gpu_usage);
                     row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
-                    row_model.set_merged_stats(&merged_usage_stats);
+                    row_model.set_merged_stats(merged_usage_stats);
 
                     row_model.children().clone()
                 };
