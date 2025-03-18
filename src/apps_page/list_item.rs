@@ -20,13 +20,15 @@
 
 use std::cell::Cell;
 
-use glib::{gobject_ffi, ParamSpec, Properties, Value, Variant, WeakRef};
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use glib::{ParamSpec, Properties, Value, Variant, WeakRef};
+use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 
 mod imp {
     use std::cell::RefCell;
+
+    use crate::i18n::i18n;
 
     use super::*;
 
@@ -39,6 +41,8 @@ mod imp {
         pub icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
         css_provider: RefCell<gtk::CssProvider>,
         gesture_click: gtk::GestureClick,
@@ -72,6 +76,7 @@ mod imp {
             Self {
                 name: TemplateChild::default(),
                 icon: TemplateChild::default(),
+                context_menu: TemplateChild::default(),
 
                 css_provider: RefCell::new(gtk::CssProvider::new()),
                 gesture_click: gtk::GestureClick::new(),
@@ -246,6 +251,51 @@ mod imp {
                 css_provider.load_from_bytes(&glib::Bytes::from_static(b""));
             }
         }
+
+        fn show_context_menu(&self, x: f64, y: f64) {
+            if matches!(self.content_type(), ContentType::SectionHeader) {
+                return;
+            }
+
+            let pid = self.pid.get();
+            let anchor = gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1);
+
+            // For some reason we're not able to activate this action in ColumnView unless we get the parent.
+            if let Some(row) = self.obj().row() {
+                let _ = row
+                    .activate_action("listitem.select", Some(&glib::Variant::from((true, true))));
+            }
+
+            let (stop_label, force_stop_label, is_app) = match self.obj().content_type() {
+                ContentType::App => (
+                    i18n("Stop Application"),
+                    i18n("Force Stop Application"),
+                    true,
+                ),
+                ContentType::Process => (i18n("Stop Process"), i18n("Force Stop Process"), false),
+                _ => unreachable!(),
+            };
+
+            let menu = gio::Menu::new();
+
+            let mi_stop = gio::MenuItem::new(Some(&stop_label), None);
+            mi_stop.set_action_and_target_value(
+                Some("apps-page.stop"),
+                Some(&Variant::from((pid, is_app))),
+            );
+            let mi_force_stop = gio::MenuItem::new(Some(&force_stop_label), None);
+            mi_force_stop.set_action_and_target_value(
+                Some("apps-page.force-stop"),
+                Some(&Variant::from((pid, is_app))),
+            );
+
+            menu.append_item(&mi_stop);
+            menu.append_item(&mi_force_stop);
+
+            self.context_menu.set_menu_model(Some(&menu));
+            self.context_menu.set_pointing_to(Some(&anchor));
+            self.context_menu.popup();
+        }
     }
 
     #[glib::object_subclass]
@@ -284,18 +334,7 @@ mod imp {
                 #[weak(rename_to = this)]
                 self.obj(),
                 move |_, _, x, y| {
-                    let weak_self = unsafe {
-                        let weak_ref =
-                            Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
-                        gobject_ffi::g_weak_ref_init(weak_ref, this.as_ptr() as *mut _);
-
-                        weak_ref as *mut _ as u64
-                    };
-
-                    let _ = this.activate_action(
-                        "apps-page.show-context-menu",
-                        Some(&Variant::from((this.pid(), weak_self, x, y))),
-                    );
+                    this.imp().show_context_menu(x, y);
                 }
             ));
         }

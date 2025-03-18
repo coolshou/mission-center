@@ -22,12 +22,11 @@ use std::{cell::Cell, collections::HashMap};
 
 use gio::ListStore;
 use glib::g_critical;
-use glib::translate::from_glib_full;
-use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use magpie_types::apps::icon::Icon;
 
-use crate::apps_page::{list_item::ListItem, row_model::ContentType};
+use crate::apps_page::list_item::ListItem;
 use crate::magpie_client::{App, Process, ProcessUsageStats};
 use crate::{app, i18n::*, settings};
 
@@ -65,9 +64,6 @@ mod imp {
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
-
-        #[template_child]
-        pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
         pub column_header_name: Cell<Option<column_header::ColumnHeader>>,
         pub column_header_pid: Cell<Option<column_header::ColumnHeader>>,
@@ -108,8 +104,6 @@ mod imp {
                 disk_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
-
-                context_menu: TemplateChild::default(),
 
                 column_header_name: Cell::new(None),
                 column_header_pid: Cell::new(None),
@@ -215,119 +209,6 @@ mod imp {
             this.insert_action_group("apps-page", Some(&actions));
 
             let app = app!();
-
-            let action = gio::SimpleAction::new("show-context-menu", Some(VariantTy::TUPLE));
-            action.connect_activate({
-                let this = this.downgrade();
-                move |_action, service| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => {
-                            g_critical!(
-                                "MissionCenter::ServicesPage",
-                                "Failed to get ServicesPage instance from show-context-menu action"
-                            );
-                            return;
-                        }
-                    };
-                    let this = this.imp();
-
-                    let (list_item, pid, anchor) = match service.and_then(|s| s.get::<(u32, u64, f64, f64)>()) {
-                        Some((pid, ptr, x, y)) => {
-                            // We just get a pointer to a weak reference to the object
-                            // Do the necessary checks and downcast the object to a Widget
-                            let list_item = unsafe {
-                                let ptr = gobject_ffi::g_weak_ref_get(ptr as usize as *mut _);
-                                if ptr.is_null() {
-                                    return;
-                                } else {
-                                    let obj: Object = from_glib_full(ptr);
-                                    match obj.downcast::<gtk::Widget>() {
-                                        Ok(w) => w,
-                                        Err(_) => {
-                                            g_critical!(
-                                                "MissionCenter::AppsPage",
-                                                "Failed to downcast object to GtkWidget"
-                                            );
-                                            return;
-                                        }
-                                    }
-                                }
-                            };
-                            let list_item = list_item.downcast::<ListItem>().unwrap();
-                            if list_item.content_type() == ContentType::SectionHeader {
-                                return;
-                            }
-
-                            let anchor = match list_item.compute_point(
-                                &*this.obj(),
-                                &gtk::graphene::Point::new(x as _, y as _),
-                            ) {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::AppsPage",
-                                        "Failed to compute_point, context menu will not be anchored to mouse position"
-                                    );
-                                    gdk::Rectangle::new(
-                                        x.round() as i32,
-                                        y.round() as i32,
-                                        1,
-                                        1,
-                                    )
-                                }
-                                Some(p) => {
-                                    gdk::Rectangle::new(
-                                        p.x().round() as i32,
-                                        p.y().round() as i32,
-                                        1,
-                                        1,
-                                    )
-                                }
-                            };
-
-                            (list_item, pid, anchor)
-                        }
-
-                        None => {
-                            g_critical!(
-                                "MissionCenter::AppsPage",
-                                "Failed to get process/app PID from show-context-menu action"
-                            );
-                            return;
-                        }
-                    };
-
-                    list_item.row().and_then(|row| {
-                        let _ = row.activate_action("listitem.select", Some(&glib::Variant::from((true, true))));
-                        None::<()>
-                    });
-
-                    let (stop_label, force_stop_label, is_app) = match list_item.content_type() {
-                        ContentType::App => {
-                            (i18n("Stop Application"), i18n("Force Stop Application"), true)
-                        }
-                        ContentType::Process => {
-                            (i18n("Stop Process"), i18n("Force Stop Process"), false)
-                        }
-                        _ => unreachable!(),
-                    };
-
-                    let menu = gio::Menu::new();
-
-                    let mi_stop = gio::MenuItem::new(Some(&stop_label), None);
-                    mi_stop.set_action_and_target_value(Some("apps-page.stop"), Some(&Variant::from((pid, is_app))));
-                    let mi_force_stop = gio::MenuItem::new(Some(&force_stop_label), None);
-                    mi_force_stop.set_action_and_target_value(Some("apps-page.force-stop"), Some(&Variant::from((pid, is_app))));
-
-                    menu.append_item(&mi_stop);
-                    menu.append_item(&mi_force_stop);
-
-                    this.context_menu.set_menu_model(Some(&menu));
-                    this.context_menu.set_pointing_to(Some(&anchor));
-                    this.context_menu.popup();
-                }
-            });
-            actions.add_action(&action);
 
             let action = gio::SimpleAction::new("stop", Some(VariantTy::TUPLE));
             action.connect_activate({
