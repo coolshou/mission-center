@@ -19,16 +19,17 @@
  */
 
 use gtk::{
-    glib,
-    glib::{prelude::*, ParamSpec, Properties, Value},
+    glib::{self, prelude::*, ParamSpec, Properties, Value},
     prelude::*,
     subclass::prelude::*,
 };
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
-    #[derive(Properties)]
+    #[derive(Properties, Default)]
     #[properties(wrapper_type = super::ColumnHeader)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/column_header.ui")]
@@ -38,28 +39,12 @@ mod imp {
         #[template_child]
         title_label: TemplateChild<gtk::Label>,
 
-        #[property(get = Self::heading, set = Self::set_heading, type = glib::GString)]
-        #[allow(dead_code)]
-        heading: [u8; 0],
-        #[property(get = Self::title, set = Self::set_title, type = glib::GString)]
-        #[allow(dead_code)]
-        title: [u8; 0],
-        #[property(get = Self::alignment, set = Self::set_alignment, type = i32)]
-        #[allow(dead_code)]
-        alignment: [u8; 0],
-    }
-
-    impl Default for ColumnHeader {
-        fn default() -> Self {
-            Self {
-                heading_label: TemplateChild::default(),
-                title_label: TemplateChild::default(),
-
-                heading: [0; 0],
-                title: [0; 0],
-                alignment: [0; 0],
-            }
-        }
+        #[property(get = Self::heading, set = Self::set_heading)]
+        _heading: PhantomData<glib::GString>,
+        #[property(get = Self::title, set = Self::set_title)]
+        _title: PhantomData<glib::GString>,
+        #[property(get = Self::alignment, set = Self::set_alignment, builder(gtk::Align::Fill))]
+        _alignment: PhantomData<gtk::Align>,
     }
 
     impl ColumnHeader {
@@ -84,17 +69,11 @@ mod imp {
             self.title_label.set_label(title)
         }
 
-        pub fn alignment(&self) -> i32 {
-            use gtk::glib::translate::IntoGlib;
-
-            self.obj().halign().into_glib()
+        pub fn alignment(&self) -> gtk::Align {
+            self.obj().halign()
         }
 
-        pub fn set_alignment(&self, alignment: i32) {
-            use gtk::glib::translate::FromGlib;
-
-            let alignment = unsafe { gtk::Align::from_glib(alignment) };
-
+        pub fn set_alignment(&self, alignment: gtk::Align) {
             self.obj().set_halign(alignment);
             self.heading_label.set_halign(alignment);
             self.title_label.set_halign(alignment);
@@ -141,20 +120,12 @@ glib::wrapper! {
 
 impl ColumnHeader {
     pub fn new(heading: &str, title: &str, alignment: gtk::Align) -> Self {
-        use gtk::glib::translate::IntoGlib;
+        let this = glib::Object::builder()
+            .property("heading", heading)
+            .property("title", title)
+            .property("alignment", alignment)
+            .build();
 
-        let this: Self = unsafe {
-            glib::Object::new_internal(
-                ColumnHeader::static_type(),
-                &mut [
-                    ("heading", heading.into()),
-                    ("title", title.into()),
-                    ("alignment", alignment.into_glib().into()),
-                ],
-            )
-            .downcast()
-            .unwrap()
-        };
         this
     }
 }

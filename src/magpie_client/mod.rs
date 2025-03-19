@@ -436,7 +436,7 @@ impl MagpieClient {
 
 impl MagpieClient {
     fn handle_incoming_message(
-        gatherer: &Client,
+        magpie: &Client,
         rx: &mut Receiver<Message>,
         tx: &mut Sender<Response>,
         timeout: Duration,
@@ -450,31 +450,31 @@ impl MagpieClient {
                     );
                 }
                 Message::UpdateCoreCountAffectsPercentages(show) => {
-                    gatherer.set_scale_cpu_usage_to_core_count(show);
+                    magpie.set_scale_cpu_usage_to_core_count(show);
                 }
                 Message::TerminateProcesses(pid) => {
-                    gatherer.terminate_processes(pid);
+                    magpie.terminate_processes(pid);
                 }
                 Message::KillProcesses(pids) => {
-                    gatherer.kill_processes(pids);
+                    magpie.kill_processes(pids);
                 }
                 Message::StartService(name) => {
-                    gatherer.start_service(name);
+                    magpie.start_service(name);
                 }
                 Message::StopService(name) => {
-                    gatherer.stop_service(name);
+                    magpie.stop_service(name);
                 }
                 Message::RestartService(name) => {
-                    gatherer.restart_service(name);
+                    magpie.restart_service(name);
                 }
                 Message::EnableService(name) => {
-                    gatherer.enable_service(name);
+                    magpie.enable_service(name);
                 }
                 Message::DisableService(name) => {
-                    gatherer.disable_service(name);
+                    magpie.disable_service(name);
                 }
                 Message::GetServiceLogs(name, pid) => {
-                    let resp = gatherer.service_logs(name, pid);
+                    let resp = magpie.service_logs(name, pid);
                     if let Err(e) = tx.send(Response::String(resp)) {
                         g_critical!(
                             "MissionCenter::SysInfo",
@@ -484,7 +484,7 @@ impl MagpieClient {
                     }
                 }
                 Message::EjectDisk(disk_id) => {
-                    if let Err(e) = tx.send(Response::EjectResult(gatherer.eject_disk(disk_id))) {
+                    if let Err(e) = tx.send(Response::EjectResult(magpie.eject_disk(disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending EjectDisk response: {e}",
@@ -492,7 +492,7 @@ impl MagpieClient {
                     }
                 }
                 Message::SmartData(disk_id) => {
-                    if let Err(e) = tx.send(Response::SmartData(gatherer.smart_data(disk_id))) {
+                    if let Err(e) = tx.send(Response::SmartData(magpie.smart_data(disk_id))) {
                         g_critical!(
                             "MissionCenter::SysInfo",
                             "Error sending SataSmartInfo response: {}",
@@ -513,20 +513,20 @@ impl MagpieClient {
         running: Arc<AtomicBool>,
         speed: Arc<AtomicU64>,
     ) {
-        let gatherer = Client::new();
-        gatherer.start();
+        let magpie = Client::new();
+        magpie.start();
 
         let mut readings = Readings {
-            running_processes: gatherer.processes(),
-            running_apps: gatherer.apps(),
-            disks_info: gatherer.disks_info(),
-            gpus: gatherer.gpus(),
-            cpu: gatherer.cpu(),
-            mem_info: gatherer.memory(),
-            mem_devices: gatherer.memory_devices(),
-            fans: gatherer.fans_info(),
-            network_connections: gatherer.network_connections(),
-            services: gatherer.services(),
+            running_processes: magpie.processes(),
+            running_apps: magpie.apps(),
+            disks_info: magpie.disks_info(),
+            gpus: magpie.gpus(),
+            cpu: magpie.cpu(),
+            mem_info: magpie.memory(),
+            mem_devices: magpie.memory_devices(),
+            fans: magpie.fans_info(),
+            network_connections: magpie.network_connections(),
+            services: magpie.services(),
         };
 
         readings
@@ -552,6 +552,7 @@ impl MagpieClient {
 
             move || {
                 app!().set_initial_readings(initial_readings);
+                app!().setup_animations();
             }
         });
 
@@ -562,7 +563,7 @@ impl MagpieClient {
                         break;
                     }
                     Message::UpdateCoreCountAffectsPercentages(show) => {
-                        gatherer.set_scale_cpu_usage_to_core_count(show);
+                        magpie.set_scale_cpu_usage_to_core_count(show);
                     }
                     _ => {}
                 },
@@ -580,7 +581,7 @@ impl MagpieClient {
             let loop_start = std::time::Instant::now();
 
             let timer = std::time::Instant::now();
-            readings.running_processes = gatherer.processes();
+            readings.running_processes = magpie.processes();
             g_debug!(
                 "MissionCenter::Perf",
                 "Process load load took: {:?}",
@@ -588,7 +589,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.running_apps = gatherer.apps();
+            readings.running_apps = magpie.apps();
             g_debug!(
                 "MissionCenter::Perf",
                 "Running apps load took: {:?}",
@@ -596,7 +597,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.disks_info = gatherer.disks_info();
+            readings.disks_info = magpie.disks_info();
             g_debug!(
                 "MissionCenter::Perf",
                 "Disks info load took: {:?}",
@@ -604,7 +605,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.gpus = gatherer.gpus();
+            readings.gpus = magpie.gpus();
             g_debug!(
                 "MissionCenter::Perf",
                 "GPU info load took: {:?}",
@@ -612,7 +613,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.cpu = gatherer.cpu();
+            readings.cpu = magpie.cpu();
             g_debug!(
                 "MissionCenter::Perf",
                 "CPU info load took: {:?}",
@@ -620,7 +621,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.mem_info = gatherer.memory();
+            readings.mem_info = magpie.memory();
             g_debug!(
                 "MissionCenter::Perf",
                 "Memory info load took: {:?}",
@@ -628,7 +629,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.network_connections = gatherer.network_connections();
+            readings.network_connections = magpie.network_connections();
             g_debug!(
                 "MissionCenter::Perf",
                 "Network devices info load took: {:?}",
@@ -636,7 +637,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.fans = gatherer.fans_info();
+            readings.fans = magpie.fans_info();
             g_debug!(
                 "MissionCenter::Perf",
                 "Fans info load took: {:?}",
@@ -644,7 +645,7 @@ impl MagpieClient {
             );
 
             let timer = std::time::Instant::now();
-            readings.services = gatherer.services();
+            readings.services = magpie.services();
             g_debug!(
                 "MissionCenter::Perf",
                 "Services load took: {:?}",
@@ -710,7 +711,7 @@ impl MagpieClient {
             for _ in 0..ITERATIONS_COUNT {
                 let wait_timer = std::time::Instant::now();
 
-                if !Self::handle_incoming_message(&gatherer, &mut rx, &mut tx, wait_time_fraction) {
+                if !Self::handle_incoming_message(&magpie, &mut rx, &mut tx, wait_time_fraction) {
                     break 'read_loop;
                 }
 
@@ -724,7 +725,7 @@ impl MagpieClient {
                 }
             }
 
-            if !Self::handle_incoming_message(&gatherer, &mut rx, &mut tx, wait_time) {
+            if !Self::handle_incoming_message(&magpie, &mut rx, &mut tx, wait_time) {
                 break 'read_loop;
             }
 

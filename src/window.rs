@@ -19,12 +19,13 @@
  */
 
 use std::cell::Cell;
-
-use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
-use gtk::{gio, glib};
+use std::time::Duration;
 
 use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
+use adw::{prelude::*, subclass::prelude::*};
+use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use gtk::glib::ControlFlow;
+use gtk::{gio, glib};
 
 mod imp {
     use super::*;
@@ -286,6 +287,16 @@ mod imp {
                 action.set_state(&interface_style.to_variant());
             });
             self.obj().add_action(&interface_style);
+
+            // Not clear how actions actually become usable, what I know is that they need to be
+            // created and configured at object construction otherwise they flat out don't work.
+            // And since these actions *need* to be tied to the window they are created here.
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-start", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-stop", None));
+            self.obj()
+                .add_action(&gio::SimpleAction::new("selected-svc-restart", None));
         }
 
         fn configure_theme_selection(&self) {
@@ -716,6 +727,20 @@ impl MissionCenterWindow {
         this
     }
 
+    pub fn setup_animations(&self) {
+        glib::timeout_add_local(Duration::from_millis(50), {
+            let this = self.downgrade();
+
+            move || {
+                if let Some(this) = this.upgrade() {
+                    this.update_animations();
+                }
+
+                ControlFlow::Continue
+            }
+        });
+    }
+
     pub fn set_initial_readings(&self, mut readings: Readings) {
         use gtk::glib::*;
 
@@ -786,6 +811,16 @@ impl MissionCenterWindow {
         } else {
             this.services_stack_page.set_visible(false);
         }
+
+        result
+    }
+
+    pub fn update_animations(&self) -> bool {
+        let mut result = true;
+
+        let this = self.imp();
+
+        result &= this.performance_page.update_animations();
 
         result
     }

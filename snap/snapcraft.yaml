@@ -48,11 +48,6 @@ slots:
     bus: session
     name: io.missioncenter.MissionCenter
 
-  mission-center-gatherer:
-    interface: dbus
-    bus: session
-    name: io.missioncenter.MissionCenter.Gatherer
-
 apps:
   mission-center:
     environment:

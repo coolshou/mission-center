@@ -124,6 +124,11 @@
             <summary>Should performance graphs be smooth or jagged</summary>
         </key>
 
+        <key name="performance-sliding-graphs" type="b">
+            <default>false</default>
+            <summary>Should graphs be animated</summary>
+        </key>
+
         <key name="performance-show-cpu" type="b">
             <default>true</default>
             <summary>Show CPU information by default</summary>

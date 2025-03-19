@@ -119,7 +119,7 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
 ```bash
 # On Ubuntu 25.04 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson libdbus-1-dev pkg-config
+sudo apt install build-essential cmake curl desktop-file-utils gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libudev-dev meson pkg-config protobuf-compiler python3-gi python3-pip
 
 BUILD_ROOT="$(pwd)/build-meson-debug"
 
@@ -160,7 +160,7 @@ missioncenter
 
 ```bash
 # On Ubuntu 25.04 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential curl git gettext python3-pip libadwaita-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils meson
+sudo apt install build-essential cmake curl desktop-file-utils gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libudev-dev meson pkg-config protobuf-compiler python3-gi python3-pip
 
 meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
 ninja -C _build

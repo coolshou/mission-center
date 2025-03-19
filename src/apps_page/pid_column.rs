@@ -28,6 +28,8 @@ use gtk::{
 };
 
 mod imp {
+    use crate::apps_page::row_model::ContentType;
+
     use super::*;
 
     #[derive(Properties)]
@@ -38,7 +40,7 @@ mod imp {
         #[template_child]
         label: TemplateChild<gtk::Label>,
 
-        #[property(set = Self::set_content_type, type = u8)]
+        #[property(set = Self::set_content_type, type = ContentType, builder(ContentType::SectionHeader))]
         content_type: Cell<crate::apps_page::row_model::ContentType>,
         #[property(get, set = Self::set_value)]
         value: Cell<u32>,
@@ -57,16 +59,7 @@ mod imp {
     }
 
     impl PidColumn {
-        fn set_content_type(&self, v: u8) {
-            use crate::apps_page::row_model::ContentType;
-
-            let content_type = match v {
-                0 => ContentType::SectionHeader,
-                1 => ContentType::App,
-                2 => ContentType::Process,
-                _ => unreachable!(),
-            };
-
+        fn set_content_type(&self, content_type: ContentType) {
             self.content_type.set(content_type);
         }
 

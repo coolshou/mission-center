@@ -20,12 +20,16 @@
 
 use std::cell::Cell;
 
-use glib::{gobject_ffi, ParamSpec, Properties, Value, Variant, WeakRef};
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use glib::{ParamSpec, Properties, Value, Variant, WeakRef};
+use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 
 mod imp {
+    use std::{cell::RefCell, marker::PhantomData};
+
+    use crate::i18n::i18n;
+
     use super::*;
 
     #[derive(Properties)]
@@ -37,20 +41,20 @@ mod imp {
         pub icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
-        css_provider: Cell<gtk::CssProvider>,
+        css_provider: RefCell<gtk::CssProvider>,
         gesture_click: gtk::GestureClick,
-        row: Cell<Option<WeakRef<gtk::Widget>>>,
+        row: RefCell<Option<WeakRef<gtk::Widget>>>,
 
-        #[allow(dead_code)]
-        #[property(name = "name", get = Self::name, set = Self::set_name, type = glib::GString)]
-        name_property: [u8; 0],
-        #[allow(dead_code)]
-        #[property(name = "icon", get = Self::icon, set = Self::set_icon, type = glib::GString)]
-        icon_property: [u8; 0],
+        #[property(name = "name", get = Self::name, set = Self::set_name)]
+        _name_property: PhantomData<glib::GString>,
+        #[property(name = "icon", get = Self::icon, set = Self::set_icon)]
+        _icon_property: PhantomData<glib::GString>,
         #[property(get, set)]
         pid: Cell<u32>,
-        #[property(get = Self::content_type, set = Self::set_content_type, type = u8)]
+        #[property(get = Self::content_type, set = Self::set_content_type, type = ContentType, builder(ContentType::SectionHeader))]
         pub content_type: Cell<ContentType>,
         #[property(get, set = Self::set_show_expander)]
         pub show_expander: Cell<bool>,
@@ -72,13 +76,14 @@ mod imp {
             Self {
                 name: TemplateChild::default(),
                 icon: TemplateChild::default(),
+                context_menu: TemplateChild::default(),
 
-                css_provider: Cell::new(gtk::CssProvider::new()),
+                css_provider: RefCell::new(gtk::CssProvider::new()),
                 gesture_click: gtk::GestureClick::new(),
-                row: Cell::new(None),
+                row: RefCell::new(None),
 
-                name_property: [0; 0],
-                icon_property: [0; 0],
+                _name_property: PhantomData,
+                _icon_property: PhantomData,
                 pid: Cell::new(0),
                 content_type: Cell::new(ContentType::SectionHeader),
                 show_expander: Cell::new(true),
@@ -122,14 +127,14 @@ mod imp {
             }
         }
 
-        fn content_type(&self) -> u8 {
-            self.content_type.get() as u8
+        fn content_type(&self) -> ContentType {
+            self.content_type.get()
         }
 
-        fn set_content_type(&self, v: u8) {
+        fn set_content_type(&self, content_type: ContentType) {
             let tree_expander = self.obj().parent().and_downcast::<gtk::TreeExpander>();
-            let content_type = match v {
-                0 => {
+            match content_type {
+                ContentType::SectionHeader => {
                     self.icon.set_visible(false);
                     self.name.add_css_class("heading");
 
@@ -141,10 +146,8 @@ mod imp {
                     if let Some(tree_expander) = tree_expander {
                         tree_expander.set_indent_for_icon(false);
                     }
-
-                    ContentType::SectionHeader
                 }
-                1 => {
+                ContentType::App => {
                     self.icon.set_visible(true);
                     self.icon.set_margin_end(10);
                     self.icon.set_pixel_size(24);
@@ -158,10 +161,8 @@ mod imp {
                     if let Some(tree_expander) = tree_expander {
                         tree_expander.set_indent_for_icon(true);
                     }
-
-                    ContentType::App
                 }
-                2 => {
+                ContentType::Process => {
                     self.icon.set_visible(true);
                     self.icon.set_margin_end(10);
                     self.icon.set_pixel_size(16);
@@ -175,10 +176,7 @@ mod imp {
                     if let Some(tree_expander) = tree_expander {
                         tree_expander.set_indent_for_icon(true);
                     }
-
-                    ContentType::Process
                 }
-                _ => unreachable!(),
             };
 
             self.content_type.set(content_type);
@@ -242,7 +240,7 @@ mod imp {
                 CSS_CELL_USAGE_HIGH, CSS_CELL_USAGE_LOW, CSS_CELL_USAGE_MEDIUM,
             };
 
-            let css_provider = unsafe { &*self.css_provider.as_ptr() };
+            let css_provider = self.css_provider.borrow();
             if usage_percent >= 90.0 {
                 css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_HIGH));
             } else if usage_percent >= 80.0 {
@@ -252,6 +250,51 @@ mod imp {
             } else {
                 css_provider.load_from_bytes(&glib::Bytes::from_static(b""));
             }
+        }
+
+        fn show_context_menu(&self, x: f64, y: f64) {
+            if matches!(self.content_type(), ContentType::SectionHeader) {
+                return;
+            }
+
+            let pid = self.pid.get();
+            let anchor = gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1);
+
+            // For some reason we're not able to activate this action in ColumnView unless we get the parent.
+            if let Some(row) = self.obj().row() {
+                let _ = row
+                    .activate_action("listitem.select", Some(&glib::Variant::from((true, true))));
+            }
+
+            let (stop_label, force_stop_label, is_app) = match self.obj().content_type() {
+                ContentType::App => (
+                    i18n("Stop Application"),
+                    i18n("Force Stop Application"),
+                    true,
+                ),
+                ContentType::Process => (i18n("Stop Process"), i18n("Force Stop Process"), false),
+                _ => unreachable!(),
+            };
+
+            let menu = gio::Menu::new();
+
+            let mi_stop = gio::MenuItem::new(Some(&stop_label), None);
+            mi_stop.set_action_and_target_value(
+                Some("apps-page.stop"),
+                Some(&Variant::from((pid, is_app))),
+            );
+            let mi_force_stop = gio::MenuItem::new(Some(&force_stop_label), None);
+            mi_force_stop.set_action_and_target_value(
+                Some("apps-page.force-stop"),
+                Some(&Variant::from((pid, is_app))),
+            );
+
+            menu.append_item(&mi_stop);
+            menu.append_item(&mi_force_stop);
+
+            self.context_menu.set_menu_model(Some(&menu));
+            self.context_menu.set_pointing_to(Some(&anchor));
+            self.context_menu.popup();
         }
     }
 
@@ -287,25 +330,13 @@ mod imp {
             self.parent_constructed();
 
             self.gesture_click.set_button(3);
-            self.gesture_click.connect_released({
-                let this = self.obj();
-                let weak_self = unsafe {
-                    let weak_ref =
-                        Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
-                    gobject_ffi::g_weak_ref_init(weak_ref, this.as_ptr() as *mut _);
-
-                    weak_ref as *mut _ as u64
-                };
-                let this = self.obj().downgrade();
+            self.gesture_click.connect_released(glib::clone!(
+                #[weak(rename_to = this)]
+                self.obj(),
                 move |_, _, x, y| {
-                    if let Some(this) = this.upgrade() {
-                        let _ = this.activate_action(
-                            "apps-page.show-context-menu",
-                            Some(&Variant::from((this.pid(), weak_self, x, y))),
-                        );
-                    }
+                    this.imp().show_context_menu(x, y);
                 }
-            });
+            ));
         }
     }
 
@@ -335,7 +366,7 @@ mod imp {
                 // out collapsed. We set the expanded property to true in the model, so that any
                 // action from the user (expand/collapse) will be ignored. We do this with a timeout
                 // so that the view has time to refresh at least once with the binding set to true.
-                if row_model.content_type() == ContentType::App as u8 {
+                if row_model.content_type() == ContentType::App {
                     glib::timeout_add_seconds_local_once(1, {
                         let row_model = row_model.downgrade();
                         move || {
@@ -363,9 +394,7 @@ mod imp {
                             new_row.set_visible(false);
                         }
 
-                        let old_row = unsafe { &*self.row.as_ptr() }
-                            .as_ref()
-                            .and_then(|r| r.upgrade());
+                        let old_row = self.row.borrow().as_ref().and_then(|r| r.upgrade());
 
                         if Some(new_row.clone()) == old_row {
                             return;
@@ -376,7 +405,7 @@ mod imp {
                         }
 
                         new_row.add_controller(self.gesture_click.clone());
-                        self.row.set(Some(new_row.downgrade()));
+                        self.row.replace(Some(new_row.downgrade()));
                     }
                 }
             }

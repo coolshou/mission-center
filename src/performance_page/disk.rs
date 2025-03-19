@@ -295,6 +295,7 @@ mod imp {
                         DiskKind::IScsi => i18n("iSCSI"),
                         DiskKind::Optical => i18n("Optical"),
                         DiskKind::Floppy => i18n("Floppy"),
+                        DiskKind::ThumbDrive => i18n("Thumb Drive"),
                     };
                     disk_type.set_text(&disk_type_str);
                 } else {
@@ -378,6 +379,15 @@ mod imp {
             if let Some(total_write) = this.total_write.get() {
                 total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
             }
+
+            true
+        }
+
+        pub fn update_animations(this: &super::PerformancePageDisk) -> bool {
+            let this = this.imp();
+
+            this.usage_graph.update_animation();
+            this.disk_transfer_rate_graph.update_animation();
 
             true
         }
@@ -660,10 +670,10 @@ impl PerformancePageDisk {
         ) {
             let data_points = settings.int("performance-page-data-points") as u32;
             let smooth = settings.boolean("performance-smooth-graphs");
-            let graph_max_duration = (((settings.uint64("app-update-interval-u64") as f64)
-                * INTERVAL_STEP)
-                * (data_points as f64))
-                .round() as u32;
+            let sliding = settings.boolean("performance-sliding-graphs");
+            let delay = settings.uint64("app-update-interval-u64");
+            let graph_max_duration =
+                (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
 
@@ -693,8 +703,13 @@ impl PerformancePageDisk {
             ));
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
+            this.usage_graph.set_do_animation(sliding);
+            this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.disk_transfer_rate_graph.set_data_points(data_points);
             this.disk_transfer_rate_graph.set_smooth_graphs(smooth);
+            this.disk_transfer_rate_graph.set_do_animation(sliding);
+            this.disk_transfer_rate_graph
+                .set_expected_animation_ticks(delay as u32);
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -725,6 +740,15 @@ impl PerformancePageDisk {
             }
         });
 
+        settings.connect_changed(Some("performance-sliding-graphs"), {
+            let this = this.downgrade();
+            move |settings, _| {
+                if let Some(this) = this.upgrade() {
+                    update_refresh_rate_sensitive_labels(&this, settings);
+                }
+            }
+        });
+
         this
     }
 
@@ -734,5 +758,9 @@ impl PerformancePageDisk {
 
     pub fn update_readings(&self, index: Option<usize>, disk: &Disk) -> bool {
         imp::PerformancePageDisk::update_readings(self, index, disk)
+    }
+
+    pub fn update_animations(&self) -> bool {
+        imp::PerformancePageDisk::update_animations(self)
     }
 }
