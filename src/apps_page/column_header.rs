@@ -25,6 +25,8 @@ use gtk::{
 };
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     #[derive(Properties, Default)]
@@ -37,12 +39,12 @@ mod imp {
         #[template_child]
         title_label: TemplateChild<gtk::Label>,
 
-        #[property(get = Self::heading, set = Self::set_heading, type = glib::GString)]
-        _heading: (),
-        #[property(get = Self::title, set = Self::set_title, type = glib::GString)]
-        _title: (),
-        #[property(get = Self::alignment, set = Self::set_alignment, type = gtk::Align, builder(gtk::Align::Fill))]
-        _alignment: (),
+        #[property(get = Self::heading, set = Self::set_heading)]
+        _heading: PhantomData<glib::GString>,
+        #[property(get = Self::title, set = Self::set_title)]
+        _title: PhantomData<glib::GString>,
+        #[property(get = Self::alignment, set = Self::set_alignment, builder(gtk::Align::Fill))]
+        _alignment: PhantomData<gtk::Align>,
     }
 
     impl ColumnHeader {
