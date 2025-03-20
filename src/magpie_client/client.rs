@@ -61,9 +61,6 @@ use crate::{flatpak_data_dir, is_flatpak, show_error_dialog_and_exit};
 
 mod nng {
     pub use nng_c_sys::nng_errno_enum::*;
-    pub use nng_c_sys::*;
-
-    pub const NNG_OK: i32 = 0;
 }
 
 type ResponseBody = response::Body;
@@ -240,124 +237,58 @@ fn magpie_command(socket_addr: &str) -> std::process::Command {
     command
 }
 
-fn connect_socket(socket: &mut nng::nng_socket, socket_addr: &str) -> bool {
-    let _ = unsafe { nng::nng_close(*socket) };
+fn connect_socket(socket: &mut nng_c::Socket, socket_addr: &str) -> bool {
+    let _ = socket.close();
     socket.id = 0;
 
-    let res = unsafe { nng::nng_req0_open(socket) };
-    match res {
-        nng::NNG_OK => {}
-        nng::NNG_ENOMEM => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to open socket: Out of memory"
-            );
+    let new_socket = match nng_c::Socket::req0().map_err(|e| e.raw_code()) {
+        Ok(s) => s,
+        Err(error_code) => {
+            let msg = match error_code {
+                nng::NNG_ENOMEM => "Out of memory".to_string(),
+                nng::NNG_ENOTSUP => "Protocol not supported".to_string(),
+                _ => format!("Unknown error: {error_code}"),
+            };
+            g_critical!("MissionCenter::Gatherer", "Failed to open socket: {msg}");
             return false;
         }
-        nng::NNG_ENOTSUP => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to open socket: Protocol not supported"
-            );
-            return false;
-        }
-        _ => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to open socket: Unknown error: {}",
-                res
-            );
-            return false;
+    };
+
+    *socket = new_socket;
+
+    match socket
+        .connect(nng_c::str::String::new(socket_addr.as_bytes()))
+        .map_err(|e| e.raw_code())
+    {
+        Ok(_) => true,
+        Err(error_code) => {
+            let msg = match error_code {
+                nng::NNG_EADDRINVAL => "An invalid url was specified".to_string(),
+                nng::NNG_ECLOSED => "The socket is not open".to_string(),
+                nng::NNG_ECONNREFUSED => "The remote peer refused the connection".to_string(),
+                nng::NNG_ECONNRESET => "The remote peer reset the connection".to_string(),
+                nng::NNG_EINVAL => {
+                    "An invalid set of flags or an invalid url was specified".to_string()
+                }
+                nng::NNG_ENOMEM => "Insufficient memory is available".to_string(),
+                nng::NNG_EPEERAUTH => "Authentication or authorization failure".to_string(),
+                nng::NNG_EPROTO => "A protocol error occurred".to_string(),
+                nng::NNG_EUNREACHABLE => "The remote address is not reachable".to_string(),
+                _ => format!("Unknown error: {error_code}"),
+            };
+            g_critical!("MissionCenter::Gatherer", "Failed to dial socket: {msg}");
+            false
         }
     }
-
-    let res = unsafe { nng::nng_dial(*socket, socket_addr.as_ptr() as _, std::ptr::null_mut(), 0) };
-    match res {
-        nng::NNG_OK => {}
-        nng::NNG_EADDRINVAL => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: An invalid url was specified"
-            );
-            return false;
-        }
-        nng::NNG_ECLOSED => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: The socket is not open"
-            );
-            return false;
-        }
-        nng::NNG_ECONNREFUSED => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: The remote peer refused the connection"
-            );
-            return false;
-        }
-        nng::NNG_ECONNRESET => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: The remote peer reset the connection"
-            );
-            return false;
-        }
-        nng::NNG_EINVAL => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: An invalid set of flags or an invalid url was specified"
-            );
-            return false;
-        }
-        nng::NNG_ENOMEM => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: Insufficient memory is available"
-            );
-            return false;
-        }
-        nng::NNG_EPEERAUTH => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: Authentication or authorization failure"
-            );
-            return false;
-        }
-        nng::NNG_EPROTO => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: A protocol error occurred"
-            );
-            return false;
-        }
-        nng::NNG_EUNREACHABLE => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: The remote address is not reachable"
-            );
-            return false;
-        }
-        _ => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to dial socket: Unknown error: {}",
-                res
-            );
-            return false;
-        }
-    }
-
-    true
 }
 
 fn make_request(
     request: ipc::Request,
-    socket: &mut nng::nng_socket,
+    socket: &mut nng_c::Socket,
     socket_addr: &str,
 ) -> Option<ipc::Response> {
-    fn try_reconnect(socket: &mut nng::nng_socket, socket_addr: &str) {
-        unsafe { nng::nng_close(*socket) };
-        socket.id = 0;
+    fn try_reconnect(socket: &mut nng_c::Socket, socket_addr: &str) {
+        socket.close();
 
         for i in 0..=5 {
             if !connect_socket(socket, socket_addr) {
@@ -390,152 +321,130 @@ fn make_request(
         return None;
     }
 
-    let res = unsafe { nng::nng_send(*socket, req_buf.as_ptr() as *mut _, req_buf.len(), 0) };
-    match res {
-        nng::NNG_OK => {}
-        nng::NNG_EAGAIN => {
-            g_critical!("MissionCenter::Gatherer","Failed to send request: The operation would block, but NNG_FLAG_NONBLOCK was specified");
-            return None;
+    if let Err(error_code) = socket
+        .send(nng_c::socket::Buf::from(req_buf.as_slice()))
+        .map_err(|e| e.raw_code())
+    {
+        match error_code {
+            nng::NNG_EAGAIN => {
+                g_critical!("MissionCenter::Gatherer","Failed to send request: The operation would block, but NNG_FLAG_NONBLOCK was specified");
+            }
+            nng::NNG_ECLOSED => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: The socket is not open"
+                );
+                try_reconnect(socket, socket_addr);
+            }
+            nng::NNG_EINVAL => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: An invalid set of flags was specified"
+                );
+            }
+            nng::NNG_EMSGSIZE => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: The value of size is too large"
+                );
+            }
+            nng::NNG_ENOMEM => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: Insufficient memory is available"
+                );
+            }
+            nng::NNG_ENOTSUP => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: The protocol for socket does not support sending"
+                );
+            }
+            nng::NNG_ESTATE => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: The socket cannot send data in this state"
+                );
+            }
+            nng::NNG_ETIMEDOUT => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: The operation timed out"
+                );
+            }
+            _ => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to send request: Unknown error: {error_code}",
+                );
+            }
         }
-        nng::NNG_ECLOSED => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: The socket is not open"
-            );
-            try_reconnect(socket, socket_addr);
-            return None;
-        }
-        nng::NNG_EINVAL => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: An invalid set of flags was specified"
-            );
-            return None;
-        }
-        nng::NNG_EMSGSIZE => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: The value of size is too large"
-            );
-            return None;
-        }
-        nng::NNG_ENOMEM => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: Insufficient memory is available"
-            );
-            return None;
-        }
-        nng::NNG_ENOTSUP => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: The protocol for socket does not support sending"
-            );
-            return None;
-        }
-        nng::NNG_ESTATE => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: The socket cannot send data in this state"
-            );
-            return None;
-        }
-        nng::NNG_ETIMEDOUT => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: The operation timed out"
-            );
-            return None;
-        }
-        _ => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to send request: Unknown error: {}",
-                res
-            );
-            return None;
-        }
+        return None;
     }
 
-    let mut message_buffer: *mut libc::c_void = std::ptr::null_mut();
-    let mut message_len: libc::size_t = 0;
-
-    let res = unsafe {
-        nng::nng_recv(
-            *socket,
-            (&mut message_buffer) as *mut *mut _ as *mut _,
-            &mut message_len,
-            nng::NNG_FLAG_ALLOC,
-        )
+    let message = match socket.recv_msg().map_err(|e| e.raw_code()) {
+        Ok(buffer) => buffer,
+        Err(error_code) => {
+            match error_code {
+                nng::NNG_EAGAIN => {
+                    g_critical!("MissionCenter::Gatherer","Failed to read message: The operation would block, but NNG_FLAG_NONBLOCK was specified");
+                }
+                nng::NNG_ECLOSED => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to read message: The socket is not open"
+                    );
+                    try_reconnect(socket, socket_addr);
+                }
+                nng::NNG_EINVAL => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to read message: An invalid set of flags was specified"
+                    );
+                }
+                nng::NNG_EMSGSIZE => {
+                    g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to read message: The received message did not fit in the size provided"
+                );
+                }
+                nng::NNG_ENOMEM => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to read message: Insufficient memory is available"
+                    );
+                }
+                nng::NNG_ENOTSUP => {
+                    g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to read message: The protocol for socket does not support receiving"
+                );
+                }
+                nng::NNG_ESTATE => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to read message: The socket cannot receive data in this state"
+                    );
+                }
+                nng::NNG_ETIMEDOUT => {
+                    g_debug!(
+                        "MissionCenter::Gatherer",
+                        "No message received for 64ms, waiting and trying again..."
+                    );
+                    std::thread::sleep(Duration::from_millis(10));
+                }
+                _ => {
+                    g_critical!(
+                        "MissionCenter::Gatherer",
+                        "Failed to read message: Unknown error: {error_code}",
+                    );
+                }
+            };
+            return None;
+        }
     };
-    match res {
-        nng::NNG_OK => {}
-        nng::NNG_EAGAIN => {
-            g_critical!("MissionCenter::Gatherer","Failed to read message: The operation would block, but NNG_FLAG_NONBLOCK was specified");
-            return None;
-        }
-        nng::NNG_ECLOSED => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: The socket is not open"
-            );
-            try_reconnect(socket, socket_addr);
-            return None;
-        }
-        nng::NNG_EINVAL => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: An invalid set of flags was specified"
-            );
-            return None;
-        }
-        nng::NNG_EMSGSIZE => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: The received message did not fit in the size provided"
-            );
-            return None;
-        }
-        nng::NNG_ENOMEM => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: Insufficient memory is available"
-            );
-            return None;
-        }
-        nng::NNG_ENOTSUP => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: The protocol for socket does not support receiving"
-            );
-            return None;
-        }
-        nng::NNG_ESTATE => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: The socket cannot receive data in this state"
-            );
-            return None;
-        }
-        nng::NNG_ETIMEDOUT => {
-            g_debug!(
-                "MissionCenter::Gatherer",
-                "No message received for 64ms, waiting and trying again..."
-            );
-            std::thread::sleep(Duration::from_millis(10));
-            return None;
-        }
-        _ => {
-            g_critical!(
-                "MissionCenter::Gatherer",
-                "Failed to read message: Unknown error: {}",
-                res
-            );
-            return None;
-        }
-    }
 
-    if message_len == 0 || message_buffer.is_null() {
+    if message.body().is_empty() {
         g_critical!(
             "MissionCenter::Gatherer",
             "Failed to read response: Empty message"
@@ -543,10 +452,7 @@ fn make_request(
         return None;
     }
 
-    let response_buffer =
-        unsafe { core::slice::from_raw_parts(message_buffer as *const u8, message_len) };
-
-    let response = match ipc::Response::decode(response_buffer) {
+    let response = match ipc::Response::decode(message.body()) {
         Ok(r) => r,
         Err(e) => {
             g_critical!(
@@ -554,18 +460,15 @@ fn make_request(
                 "Error while decoding response: {:?}",
                 e
             );
-            unsafe { nng::nng_free(message_buffer, message_len) };
             return None;
         }
     };
-
-    unsafe { nng::nng_free(message_buffer, message_len) };
 
     Some(response)
 }
 
 pub struct Client {
-    socket: RefCell<nng::nng_socket>,
+    socket: RefCell<nng_c::Socket>,
 
     socket_addr: Arc<str>,
     child_thread: RefCell<std::thread::JoinHandle<()>>,
@@ -598,8 +501,10 @@ impl Client {
                 }
             };
 
+        let socket = nng_c::Socket::req0().expect("Could not create initial socket");
+
         Self {
-            socket: RefCell::new(nng::nng_socket { id: 0 }),
+            socket: RefCell::new(socket),
 
             socket_addr,
             child_thread: RefCell::new(std::thread::spawn(|| {})),

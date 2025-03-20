@@ -162,6 +162,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "error-code"
+version = "3.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5d9305ccc6942a704f4335694ecd3de2ea531b114ac2d51f5f843750787a92f"
+
+[[package]]
 name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -686,6 +692,7 @@ dependencies = [
  "libadwaita",
  "libc",
  "magpie-types",
+ "nng-c",
  "nng-c-sys",
  "rand",
  "regex",
@@ -698,6 +705,16 @@ name = "multimap"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
+
+[[package]]
+name = "nng-c"
+version = "1.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "24b9efa81292c733e84edd7320415ad42f5eaba6e3f4844b64583fa38bc97666"
+dependencies = [
+ "error-code",
+ "nng-c-sys",
+]
 
 [[package]]
 name = "nng-c-sys"
