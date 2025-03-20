@@ -1269,12 +1269,19 @@ mod imp {
                 let processes = self.processes.take();
                 let avg = processes
                     .values()
+                    .clone()
                     .map(|gpu| {
                         gpu.usage_stats.network_usage
                     })
                     .sum::<f32>();
 
-                if avg < 0. {
+                let error = processes
+                    .values()
+                    .any(|process| {
+                        process.usage_stats.network_error.is_some()
+                    });
+
+                if error {
                     column_header_network.set_visible(false);
                     self.network_column.set_visible(false);
                 }
