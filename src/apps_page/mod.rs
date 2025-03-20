@@ -41,6 +41,7 @@ pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97
 pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 45, 0.3); }";
 
 mod imp {
+    use crate::to_human_readable;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -1262,6 +1263,32 @@ mod imp {
             }
             self.column_header_gpu_memory_usage
                 .set(column_header_gpu_mem);
+
+            let column_header_network = self.column_header_network.take();
+            if let Some(column_header_network) = &column_header_network {
+                let processes = self.processes.take();
+                let avg = processes
+                    .values()
+                    .map(|gpu| {
+                        gpu.usage_stats.network_usage
+                    })
+                    .sum::<f32>();
+
+                if avg < 0. {
+                    column_header_network.set_visible(false);
+                    self.network_column.set_visible(false);
+                }
+
+                self.processes.set(processes);
+
+                let (value, unit, dec_to_display) = to_human_readable(avg, 1024.);
+                column_header_network.set_heading(format!(
+                    "{0:.2$} {1}{3}",
+                    value, unit, dec_to_display, "bps"
+                ));
+            }
+            self.column_header_network
+                .set(column_header_network);
         }
 
         fn update_process_model(
