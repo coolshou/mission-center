@@ -24,6 +24,8 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk::prelude::*, glib, subclass::prelude::*};
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     #[derive(Properties)]
@@ -119,21 +121,21 @@ mod imp {
         #[property(get, set = Self::set_used_memory_valid)]
         used_memory_valid: Cell<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::dedicated_memory_available, type = bool)]
-        dedicated_memory_available: [u8; 0],
+        #[property(get = Self::dedicated_memory_available)]
+        dedicated_memory_available: PhantomData<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::show_dedicated_separator, type = bool)]
-        show_dedicated_separator: [u8; 0],
+        #[property(get = Self::show_dedicated_separator)]
+        show_dedicated_separator: PhantomData<bool>,
         #[property(get, set = Self::set_total_shared_memory_valid)]
         total_shared_memory_valid: Cell<bool>,
         #[property(get, set = Self::set_used_shared_memory_valid)]
         used_shared_memory_valid: Cell<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::shared_memory_available, type = bool)]
-        shared_memory_available: [u8; 0],
+        #[property(get = Self::shared_memory_available)]
+        shared_memory_available: PhantomData<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::show_shared_separator, type = bool)]
-        show_shared_separator: [u8; 0],
+        #[property(get = Self::show_shared_separator)]
+        show_shared_separator: PhantomData<bool>,
         #[property(get, set)]
         pcie_info_visible: Cell<bool>,
     }
@@ -186,12 +188,12 @@ mod imp {
                 encode_decode_shared: Cell::new(false),
                 total_memory_valid: Cell::new(true),
                 used_memory_valid: Cell::new(true),
-                dedicated_memory_available: [0; 0],
-                show_dedicated_separator: [0; 0],
+                dedicated_memory_available: PhantomData,
+                show_dedicated_separator: PhantomData,
                 total_shared_memory_valid: Cell::new(false),
                 used_shared_memory_valid: Cell::new(false),
-                shared_memory_available: [0; 0],
-                show_shared_separator: [0; 0],
+                shared_memory_available: PhantomData,
+                show_shared_separator: PhantomData,
                 pcie_info_visible: Cell::new(true),
             }
         }

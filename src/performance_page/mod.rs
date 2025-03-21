@@ -21,7 +21,7 @@
 
 use std::fmt::Write;
 use std::{
-    cell::Cell,
+    cell::{Cell, RefCell},
     collections::{HashMap, HashSet},
 };
 
@@ -68,6 +68,8 @@ trait PageExt {
 const MK_TO_0_C: i32 = -273150;
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     // GNOME color palette: Blue 4
@@ -107,23 +109,21 @@ mod imp {
         pub info_bar: TemplateChild<adw::Bin>,
 
         #[property(get = Self::sidebar, set = Self::set_sidebar)]
-        pub sidebar: Cell<gtk::ListBox>,
+        pub sidebar: RefCell<gtk::ListBox>,
         #[property(get, set = Self::set_sidebar_edit_mode)]
         pub sidebar_edit_mode: Cell<bool>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
-        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible, type = bool
-        )]
-        _infobar_visible: [u8; 0],
-        #[property(name = "info-button-visible", get = Self::info_button_visible, type = bool)]
-        _info_button_visible: [u8; 0],
+        #[property(name = "infobar-visible", get = Self::infobar_visible, set = Self::set_infobar_visible)]
+        _infobar_visible: PhantomData<bool>,
+        #[property(name = "info-button-visible", get = Self::info_button_visible)]
+        _info_button_visible: PhantomData<bool>,
 
         breakpoint_applied: Cell<bool>,
 
         pages: Cell<Vec<Pages>>,
         pub summary_graphs: Cell<HashMap<SummaryGraph, gtk::DragSource>>,
 
-        action_group: Cell<gio::SimpleActionGroup>,
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
     }
@@ -136,18 +136,17 @@ mod imp {
                 page_stack: Default::default(),
                 info_bar: Default::default(),
 
-                sidebar: Cell::new(gtk::ListBox::new()),
+                sidebar: RefCell::new(gtk::ListBox::new()),
                 sidebar_edit_mode: Cell::new(false),
                 summary_mode: Cell::new(false),
-                _infobar_visible: [0; 0],
-                _info_button_visible: [0; 0],
+                _infobar_visible: PhantomData,
+                _info_button_visible: PhantomData,
 
                 breakpoint_applied: Cell::new(false),
 
                 pages: Cell::new(Vec::new()),
                 summary_graphs: Cell::new(HashMap::new()),
 
-                action_group: Cell::new(gio::SimpleActionGroup::new()),
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
             }
@@ -156,13 +155,12 @@ mod imp {
 
     impl PerformancePage {
         pub fn sidebar(&self) -> gtk::ListBox {
-            unsafe { &*self.sidebar.as_ptr() }.clone()
+            self.sidebar.borrow().clone()
         }
 
         fn set_sidebar(&self, lb: &gtk::ListBox) {
             let this = self.obj().as_ref().clone();
 
-            Self::configure_actions(&this);
             lb.connect_row_selected(move |_, selected_row| {
                 if let Some(row) = selected_row {
                     let child = match row.child() {
@@ -376,7 +374,7 @@ mod imp {
             });
             lb.add_controller(drop_target);
 
-            self.sidebar.set(lb.clone())
+            self.sidebar.replace(lb.clone());
         }
 
         fn set_sidebar_edit_mode(&self, edit_mode: bool) {
@@ -492,15 +490,16 @@ mod imp {
     }
 
     impl PerformancePage {
-        fn configure_actions(this: &super::PerformancePage) {
-            let actions = unsafe { &*this.imp().action_group.as_ptr() }.clone();
+        fn configure_actions(&self) -> gio::SimpleActionGroup {
+            let this = self.obj();
+            let actions = gio::SimpleActionGroup::new();
 
             let mut view_actions = HashMap::new();
 
             let action = gio::SimpleAction::new_stateful(
                 "summary",
                 None,
-                &glib::Variant::from(this.imp().summary_mode.get()),
+                &glib::Variant::from(self.summary_mode.get()),
             );
             action.connect_activate({
                 let this = this.downgrade();
@@ -560,7 +559,7 @@ mod imp {
             });
             actions.add_action(&action);
             view_actions.insert("cpu".to_string(), action.clone());
-            this.imp().current_view_action.set(action);
+            self.current_view_action.set(action);
 
             let action =
                 gio::SimpleAction::new_stateful("memory", None, &glib::Variant::from(false));
@@ -783,7 +782,9 @@ mod imp {
             actions.add_action(&action);
             view_actions.insert("fan".to_string(), action);
 
-            this.imp().context_menu_view_actions.set(view_actions);
+            self.context_menu_view_actions.set(view_actions);
+
+            actions
         }
 
         fn configure_page<P: PageExt + IsA<gtk::Widget>>(&self, page: &P) {
@@ -1261,8 +1262,9 @@ mod imp {
             let if_name = connection.id.as_str();
             let page_name = Self::network_page_name(if_name);
 
-            let conn_type: ConnectionKind = unsafe { std::mem::transmute(connection.kind) };
-            let conn_type = conn_type.as_str_name();
+            let conn_kind: ConnectionKind =
+                ConnectionKind::try_from(connection.kind).expect("Invalid connection type");
+            let conn_type = conn_kind.as_str_name();
 
             let summary = SummaryGraph::new();
             summary.set_widget_name(&page_name);
@@ -1324,7 +1326,7 @@ mod imp {
                 });
             }
 
-            let page = NetworkPage::new(if_name, connection.kind, &settings);
+            let page = NetworkPage::new(if_name, conn_kind, &settings);
             page.set_base_color(gdk::RGBA::new(
                 NETWORK_BASE_COLOR[0] as f32 / 255.,
                 NETWORK_BASE_COLOR[1] as f32 / 255.,
@@ -2381,7 +2383,8 @@ mod imp {
 
             let this = self.obj().clone();
 
-            this.insert_action_group("graph", Some(unsafe { &*self.action_group.as_ptr() }));
+            let group = self.configure_actions();
+            this.insert_action_group("graph", Some(&group));
 
             self.breakpoint.set_condition(Some(
                 &adw::BreakpointCondition::parse("max-width: 570sp").unwrap(),
