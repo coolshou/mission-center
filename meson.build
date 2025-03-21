@@ -8,6 +8,8 @@ project('missioncenter',
 i18n = import('i18n')
 gnome = import('gnome')
 
+c_compiler = meson.get_compiler('c')
+
 skip_codegen = get_option('skip-codegen')
 
 if get_option('flatpak') == false

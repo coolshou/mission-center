@@ -7,9 +7,22 @@
   "build-options": {
     "no-debuginfo": true,
     "append-path": "/app/rust-toolchain-glibc/cargo/bin",
+    "prepend-path": "/app/clang-glibc/bin",
     "env": {
       "RUSTUP_HOME": "/app/rust-toolchain-glibc/rustup",
       "RUST_BACKTRACE": "full"
+    },
+    "arch": {
+      "x86_64": {
+        "env": {
+          "LD_LIBRARY_PATH": "/app/clang-glibc/lib/x86_64-unknown-linux-gnu"
+        }
+      },
+      "aarch64": {
+        "env": {
+          "LD_LIBRARY_PATH": "/app/clang-glibc/lib/aarch64-unknown-linux-gnu"
+        }
+      }
     }
   },
   "finish-args": [
@@ -67,6 +80,7 @@
         "ln -sf /opt/clang/bin/clang   rootfs-glibc/usr/bin/cc",
         "ln -sf /opt/clang/bin/ld.lld  rootfs-glibc/usr/bin/ld",
         "ln -sf /opt/clang/bin/llvm-ar rootfs-glibc/usr/bin/ar",
+        "ln -sf /opt/clang/bin/llvm-as rootfs-glibc/usr/bin/as",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libc++.so.1    rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libc++abi.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libunwind.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
@@ -74,6 +88,7 @@
         "ln -sf /opt/clang/bin/clang   rootfs-musl/usr/bin/cc",
         "ln -sf /opt/clang/bin/ld.lld  rootfs-musl/usr/bin/ld",
         "ln -sf /opt/clang/bin/llvm-ar rootfs-musl/usr/bin/ar",
+        "ln -sf /opt/clang/bin/llvm-as rootfs-musl/usr/bin/as",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libc++.so.1    rootfs-musl/usr/lib/",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libc++abi.so.1 rootfs-musl/usr/lib/",
         "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libunwind.so.1 rootfs-musl/usr/lib/",
@@ -174,7 +189,7 @@
         {
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-gnu-20.1.0.tar.zst",
-          "dest": "gcc-glibc",
+          "dest": "clang-glibc",
           "sha256": "5d060228483707511df8ba084c0da6fe02be29b33813bf083968217553a4ade2",
           "only-arches": [
             "aarch64"
@@ -183,7 +198,7 @@
         {
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-musl-20.1.0.tar.zst",
-          "dest": "gcc-musl",
+          "dest": "clang-musl",
           "sha256": "6ebb6907b33989783cfaef5c15ce2136edb4f0cd84c8d0db5867593be00c18bd",
           "only-arches": [
             "aarch64"
@@ -219,6 +234,17 @@
         "-Dskip-codegen=true",
         "-Dcargo_env='CARGO_HOME=/run/build/missioncenter/cargo'"
       ],
+      "post-install": [
+        "strip /app/bin/missioncenter"
+      ],
+      "build-options": {
+        "env": {
+          "CC": "clang",
+          "CXX": "clang++",
+          "CC_LD": "lld",
+          "CXX_LD": "lld"
+        }
+      },
       "sources": [
         {
           "type": "dir",
@@ -237,7 +263,7 @@
           "name": "spawner",
           "buildsystem": "simple",
           "build-commands": [
-            "rustc -C opt-level=3 -C lto=true -C codegen-units=1 src/magpie_client/spawner.rs",
+            "rustc -C opt-level=3 -C linker=clang -C link-arg=-fuse-ld=lld -C linker-plugin-lto -C codegen-units=1 src/magpie_client/spawner.rs",
             "install -v -p -m 755 spawner /app/bin/missioncenter-spawner",
             "strip /app/bin/missioncenter-spawner"
           ],
