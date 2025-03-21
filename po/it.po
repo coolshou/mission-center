@@ -460,7 +460,7 @@ msgstr "Driver di frequenza della CPU:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr "Governatore di frequenza della CPU:"
+msgstr "Governor CPU:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
