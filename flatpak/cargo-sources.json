@@ -262,6 +262,19 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/error-code/error-code-3.3.1.crate",
+    "sha256": "a5d9305ccc6942a704f4335694ecd3de2ea531b114ac2d51f5f843750787a92f",
+    "dest": "cargo/vendor/error-code-3.3.1"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"a5d9305ccc6942a704f4335694ecd3de2ea531b114ac2d51f5f843750787a92f\", \"files\": {}}",
+    "dest": "cargo/vendor/error-code-3.3.1",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/fastrand/fastrand-2.3.0.crate",
     "sha256": "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be",
     "dest": "cargo/vendor/fastrand-2.3.0"
@@ -868,6 +881,19 @@
     "type": "inline",
     "contents": "{\"package\": \"defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03\", \"files\": {}}",
     "dest": "cargo/vendor/multimap-0.10.0",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/nng-c/nng-c-1.10.1.crate",
+    "sha256": "24b9efa81292c733e84edd7320415ad42f5eaba6e3f4844b64583fa38bc97666",
+    "dest": "cargo/vendor/nng-c-1.10.1"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"24b9efa81292c733e84edd7320415ad42f5eaba6e3f4844b64583fa38bc97666\", \"files\": {}}",
+    "dest": "cargo/vendor/nng-c-1.10.1",
     "dest-filename": ".cargo-checksum.json"
   },
   {
