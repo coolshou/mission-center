@@ -53,38 +53,34 @@
       "buildsystem": "simple",
       "build-commands": [
         "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
-        "ln -sf /opt/gcc/bin/gcc rootfs-glibc/usr/bin/cc",
-        "",
-        "mv gcc-glibc/binutils/bin/as rootfs-glibc/usr/bin/",
-        "mv gcc-glibc/binutils/lib/libbfd-2.43.1.so rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
-        "mv gcc-glibc/binutils/lib/libopcodes-2.43.1.so rootfs-glibc/usr/lib/$(arch)-linux-gnu || true",
-        "mv gcc-glibc/binutils/lib/libsframe.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
-        "rm -rf gcc-glibc/binutils",
-        "",
-        "rm rootfs-glibc/usr/share/vim/vimfiles",
-        "cp -ar gcc-glibc/cmake/usr rootfs-glibc/",
-        "cp -ar gcc-glibc/cmake/usr/* /app/",
-        "rm -rf gcc-glibc/cmake",
-        "",
-        "ln -sf /opt/gcc/mold/usr/bin/mold rootfs-glibc/usr/bin/ld",
-        "",
         "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-*.tar.zst && rm ../alpine-*.tar.zst",
-        "ln -sf /opt/gcc/bin/gcc rootfs-musl/usr/bin/cc",
         "",
-        "mv rootfs-musl/usr/bin/ar rootfs-musl/usr/bin/ar.orig",
-        "mv musl-ar rootfs-musl/usr/bin/ar",
-        "rm rootfs-musl/usr/bin/ld && mv musl-ld rootfs-musl/usr/bin/ld",
+        "rm -rf rootfs-glibc/usr/share/vim/vimfiles",
+        "cp -ar clang-glibc/cmake/usr rootfs-glibc/",
+        "cp -ar clang-glibc/cmake/usr/* /app/",
+        "rm -rf clang-glibc/cmake",
         "",
-        "mv gcc-musl/binutils/bin/as rootfs-musl/usr/bin/",
-        "mv gcc-musl/binutils/lib/libbfd-2.43.1.so rootfs-musl/usr/lib/",
-        "mv gcc-musl/binutils/lib/libopcodes-2.43.1.so rootfs-musl/usr/lib/ || true",
-        "mv gcc-musl/binutils/lib/libsframe.so.1 rootfs-musl/usr/lib/",
-        "rm -rf gcc-musl/binutils",
+        "rm -rf rootfs-musl/usr/share/vim/vimfiles",
+        "cp -ar clang-musl/cmake/usr rootfs-musl/",
+        "rm -rf clang-musl/cmake",
         "",
-        "cp -ar gcc-musl/cmake/usr rootfs-musl/ && rm -rf gcc-musl/cmake",
+        "ln -sf /opt/clang/bin/clang   rootfs-glibc/usr/bin/cc",
+        "ln -sf /opt/clang/bin/ld.lld  rootfs-glibc/usr/bin/ld",
+        "ln -sf /opt/clang/bin/llvm-ar rootfs-glibc/usr/bin/ar",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libc++.so.1    rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libc++abi.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-gnu/libunwind.so.1 rootfs-glibc/usr/lib/$(arch)-linux-gnu/",
         "",
-        "ln -sf libgbm.so.1 rootfs-musl/usr/lib/libgcc_s.so",
-        "ln -sf /usr/lib/libgbm.so.1 gcc-musl/lib64/libgcc_s.so",
+        "ln -sf /opt/clang/bin/clang   rootfs-musl/usr/bin/cc",
+        "ln -sf /opt/clang/bin/ld.lld  rootfs-musl/usr/bin/ld",
+        "ln -sf /opt/clang/bin/llvm-ar rootfs-musl/usr/bin/ar",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libc++.so.1    rootfs-musl/usr/lib/",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libc++abi.so.1 rootfs-musl/usr/lib/",
+        "ln -sf /opt/clang/lib/$(arch)-unknown-linux-musl/libunwind.so.1 rootfs-musl/usr/lib/",
+        "",
+        "rm clang-musl/lib/$(arch)-unknown-linux-musl/libunwind.so",
+        "",
+        "ln -sf libc.so rootfs-musl/usr/lib/libgcc_s.so",
         "",
         "mv * /app/"
       ],
@@ -125,18 +121,18 @@
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/gcc-10-glibc-x86_64.tar.zst",
-          "dest": "gcc-glibc",
-          "sha256": "1a21103c0cfeb891fe9aae688b5e039f2016c4425917af1129b4317cebcc6b1c",
+          "url": "https://missioncenter.io/build-tools/llvm-tooling-x86_64-gnu-20.1.0.tar.zst",
+          "dest": "clang-glibc",
+          "sha256": "839188805946ad38d14c6aca1af4194121f593ae91f1b7dee8b442301c5406ec",
           "only-arches": [
             "x86_64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/gcc-10-musl-x86_64.tar.zst",
-          "dest": "gcc-musl",
-          "sha256": "19f68cb76025cf0d1147c5240a6999bc34e0ec50af3248950e335da403657748",
+          "url": "https://missioncenter.io/build-tools/llvm-tooling-x86_64-musl-20.1.0.tar.zst",
+          "dest": "clang-musl",
+          "sha256": "f1b95bd60cd8c3cec78533f1e0fcd93180e7994eba0075d2620bbe54f42abd30",
           "only-arches": [
             "x86_64"
           ]
@@ -177,29 +173,21 @@
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/gcc-10-glibc-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-gnu-20.1.0.tar.zst",
           "dest": "gcc-glibc",
-          "sha256": "53b37fb98c6fcd576bc058b6f93cc89364456099479e8a9d5af6ffd34ebb3aea",
+          "sha256": "5d060228483707511df8ba084c0da6fe02be29b33813bf083968217553a4ade2",
           "only-arches": [
             "aarch64"
           ]
         },
         {
           "type": "archive",
-          "url": "https://missioncenter.io/build-tools/gcc-10-musl-aarch64.tar.zst",
+          "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-musl-20.1.0.tar.zst",
           "dest": "gcc-musl",
-          "sha256": "53ebfe827209387261d7e94661e0129abe17cffd877c712b100fb36ef40bf551",
+          "sha256": "6ebb6907b33989783cfaef5c15ce2136edb4f0cd84c8d0db5867593be00c18bd",
           "only-arches": [
             "aarch64"
           ]
-        },
-        {
-          "type": "file",
-          "path": "../support/musl-ar"
-        },
-        {
-          "type": "file",
-          "path": "../support/musl-ld"
         }
       ],
       "cleanup": [
@@ -249,8 +237,9 @@
           "name": "spawner",
           "buildsystem": "simple",
           "build-commands": [
-            "rustc -C opt-level=3 -C lto=true -C strip=debuginfo -C codegen-units=1 src/magpie_client/spawner.rs",
-            "install -v -p -m 755 spawner /app/bin/missioncenter-spawner"
+            "rustc -C opt-level=3 -C lto=true -C codegen-units=1 src/magpie_client/spawner.rs",
+            "install -v -p -m 755 spawner /app/bin/missioncenter-spawner",
+            "strip /app/bin/missioncenter-spawner"
           ],
           "sources": [
             {
@@ -265,13 +254,15 @@
           "build-commands": [
             "rm -rf subprojects/magpie/target",
             "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
-            "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/gcc-glibc:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
+            "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/clang-glibc:/opt/clang -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/clang/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup env CC=clang env CXX=clang++ env CFLAGS=-flto env CXXFLAGS=-flto cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-glibc",
             "",
             "rm -rf subprojects/magpie/target",
             "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
-            "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/gcc-musl:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
+            "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/clang-musl:/opt/clang -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/clang/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup env CC=clang env CXX=clang++ cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl",
+            "",
+            "strip /app/bin/missioncenter-magpie-glibc /app/bin/missioncenter-magpie-musl",
             "",
             "sh -c 'cd subprojects/magpie/platform-linux/hwdb && ./generate_hwdb.py -o . 20-pci-vendor-model.hwdb 20-usb-vendor-model.hwdb'",
             "mkdir /app/share/missioncenter/ && mv subprojects/magpie/platform-linux/hwdb/hw.db /app/share/missioncenter/"
@@ -294,8 +285,8 @@
               ]
             },
             {
-              "type": "inline",
-              "contents": "[source.vendored-sources]\ndirectory = \"../../cargo/vendor\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"\n\n[target.x86_64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-L/opt/gcc/lib/gcc/x86_64-unknown-linux-musl/10.5.0 -lgcc -lgcc_eh' ]\n\n[target.aarch64-unknown-linux-musl]\nrustflags = [ '-C', 'target-feature=-crt-static', '-C', 'link-args=-L/opt/gcc/lib/gcc/aarch64-unknown-linux-musl/10.5.0 -lgcc -lgcc_eh' ]\n",
+              "type": "file",
+              "path": "magpie-cargo-config.toml",
               "dest": "subprojects/magpie/.cargo",
               "dest-filename": "config.toml"
             },
