@@ -264,12 +264,12 @@
           "buildsystem": "simple",
           "build-commands": [
             "rm -rf subprojects/magpie/target",
-            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
+            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/ && cp -ar nethogs-* subprojects/magpie/target/release/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/gcc-glibc:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-glibc",
             "",
             "rm -rf subprojects/magpie/target",
-            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
+            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/ && cp -ar nethogs-* subprojects/magpie/target/release/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/gcc-musl:/opt/gcc -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/gcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl",
             "",
@@ -291,6 +291,18 @@
               "type": "shell",
               "commands": [
                 "cd nvtop-* && find ../subprojects/magpie/platform-linux/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
+              ]
+            },
+            {
+              "type": "archive",
+              "url": "https://github.com/raboof/nethogs/archive/refs/tags/v0.8.8.tar.gz",
+              "sha256": "111ade20cc545e8dfd7ce4e293bd6b31cd1678a989b6a730bd2fa2acc6254818",
+              "dest": "nethogs-v0.8.8"
+            },
+            {
+              "type": "shell",
+              "commands": [
+                "cd nethogs-* && find ../subprojects/magpie/platform-linux/3rdparty/nethogs/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
               ]
             },
             {
