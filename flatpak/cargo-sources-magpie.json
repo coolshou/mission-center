@@ -574,14 +574,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/cmake/cmake-0.1.53.crate",
-    "sha256": "e24a03c8b52922d68a1589ad61032f2c1aa5a8158d2aa0d93c6e9534944bbad6",
-    "dest": "cargo/vendor/cmake-0.1.53"
+    "url": "https://static.crates.io/crates/cmake/cmake-0.1.54.crate",
+    "sha256": "e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0",
+    "dest": "cargo/vendor/cmake-0.1.54"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"e24a03c8b52922d68a1589ad61032f2c1aa5a8158d2aa0d93c6e9534944bbad6\", \"files\": {}}",
-    "dest": "cargo/vendor/cmake-0.1.53",
+    "contents": "{\"package\": \"e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0\", \"files\": {}}",
+    "dest": "cargo/vendor/cmake-0.1.54",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1427,6 +1427,32 @@
     "type": "inline",
     "contents": "{\"package\": \"b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a\", \"files\": {}}",
     "dest": "cargo/vendor/libc-0.2.169",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/libffi/libffi-3.2.0.crate",
+    "sha256": "ce826c243048e3d5cec441799724de52e2d42f820468431fc3fceee2341871e2",
+    "dest": "cargo/vendor/libffi-3.2.0"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"ce826c243048e3d5cec441799724de52e2d42f820468431fc3fceee2341871e2\", \"files\": {}}",
+    "dest": "cargo/vendor/libffi-3.2.0",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/libffi-sys/libffi-sys-2.3.0.crate",
+    "sha256": "f36115160c57e8529781b4183c2bb51fdc1f6d6d1ed345591d84be7703befb3c",
+    "dest": "cargo/vendor/libffi-sys-2.3.0"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"f36115160c57e8529781b4183c2bb51fdc1f6d6d1ed345591d84be7703befb3c\", \"files\": {}}",
+    "dest": "cargo/vendor/libffi-sys-2.3.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
