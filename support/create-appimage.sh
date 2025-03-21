@@ -25,7 +25,7 @@ ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
 DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 dpkg-reconfigure --frontend noninteractive tzdata
 
-apt-get install -y python3-pip squashfs-tools zsync librsvg2-2
+apt-get install -y python3-pip squashfs-tools zsync librsvg2-2 libcap2
 pip3 install appimage-builder
 
 # https://github.com/AppImageCrafters/appimage-builder/issues/280

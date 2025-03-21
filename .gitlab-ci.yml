@@ -116,6 +116,7 @@ flatpak-job-x86:
     - !reference [ ".shared", "install_flatpak" ]
     - !reference [ ".shared", "checkout_submodule" ]
   script:
+    - CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true
     - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
     - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
   artifacts:
