@@ -58,6 +58,7 @@ strip $APPDIR_PATH/entrypoint
 
 mv $APPDIR_PATH/usr/bin /helper_binaries
 mkdir -p $APPDIR_PATH/usr/bin
+setcap cap_net_raw,cap_net_admin+eip /helper_binaries/missioncenter*
 mv /helper_binaries/missioncenter* $APPDIR_PATH/usr/bin/
 mv /helper_binaries/gtk4-broadwayd $APPDIR_PATH/usr/bin/
 cp -rv $APPDIR_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0 /usr/lib/$(arch)-linux-gnu/
