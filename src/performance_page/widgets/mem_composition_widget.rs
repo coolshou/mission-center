@@ -104,15 +104,8 @@ mod imp {
                 }
             }
 
-            let pattern_data = unsafe {
-                std::slice::from_raw_parts(
-                    pattern_data.as_ptr() as *const u8,
-                    pattern_data.len() * std::mem::size_of::<[u8; 4]>(),
-                )
-            };
-
             gdk_pixbuf::Pixbuf::from_bytes(
-                &glib::Bytes::from(pattern_data),
+                &glib::Bytes::from(pattern_data.as_flattened()),
                 gdk_pixbuf::Colorspace::Rgb,
                 true,
                 8,
@@ -408,12 +401,7 @@ glib::wrapper! {
 
 impl MemoryCompositionWidget {
     pub fn new() -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(MemoryCompositionWidget::static_type(), &mut [])
-                .downcast()
-                .unwrap()
-        };
-        this
+        glib::Object::new()
     }
 
     pub fn update_memory_information(&self, mem_info: &Memory) {

@@ -607,12 +607,7 @@ glib::wrapper! {
 
 impl GraphWidget {
     pub fn new() -> Self {
-        let this: Self = unsafe {
-            glib::Object::new_internal(GraphWidget::static_type(), &mut [])
-                .downcast()
-                .unwrap()
-        };
-        this
+        glib::Object::new()
     }
 
     pub fn set_dashed(&self, index: usize, dashed: bool) {

@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
 use adw::glib::g_warning;
 use adw::prelude::*;
@@ -48,7 +48,7 @@ mod imp {
         pub kill: TemplateChild<gtk::Button>,
 
         pub raw_pid: Cell<u32>,
-        pub dialog: Cell<WeakRef<EjectFailureDialog>>,
+        pub dialog: RefCell<WeakRef<EjectFailureDialog>>,
     }
 
     impl EjectFailureRow {
@@ -180,7 +180,7 @@ impl EjectFailureRowBuilder {
             this.open_files
                 .set_label(self.files_open.join("\n").as_str());
             this.raw_pid.set(self.pid);
-            this.dialog.set(self.dialog);
+            this.dialog.replace(self.dialog);
 
             this.kill.connect_clicked({
                 let this = this.obj().downgrade();
@@ -190,8 +190,7 @@ impl EjectFailureRowBuilder {
                     };
                     let this = this.imp();
 
-                    let dialog_weak = unsafe { &*this.dialog.as_ptr() }.clone();
-                    let Some(dialog) = dialog_weak.upgrade() else {
+                    let Some(dialog) = this.dialog.borrow().upgrade() else {
                         g_critical!(
                             "MissionCenter::EjectFailureRow",
                             "Failed to get parent dialog",
@@ -209,7 +208,7 @@ impl EjectFailureRowBuilder {
                     };
 
                     magpie.kill_process(this.raw_pid.get());
-                    match magpie.eject_disk(&dialog.disk_id()) {
+                    match magpie.eject_disk(dialog.disk_id()) {
                         Ok(_) => {
                             dialog.close();
                         }
