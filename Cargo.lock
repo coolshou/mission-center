@@ -690,7 +690,6 @@ dependencies = [
  "gettext-rs",
  "gtk4",
  "libadwaita",
- "libc",
  "magpie-types",
  "nng-c",
  "nng-c-sys",
