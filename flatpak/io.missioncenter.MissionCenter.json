@@ -77,6 +77,10 @@
         "cp -ar clang-musl/cmake/usr rootfs-musl/",
         "rm -rf clang-musl/cmake",
         "",
+        "rm clang-glibc/lib/$(arch)-unknown-linux-gnu/crtbeginS.o",
+        "rm clang-glibc/lib/$(arch)-unknown-linux-gnu/crtendS.o",
+        "rm clang-glibc/lib/$(arch)-unknown-linux-gnu/libgcc.a",
+        "",
         "ln -sf /opt/clang/bin/clang   rootfs-glibc/usr/bin/cc",
         "ln -sf /opt/clang/bin/ld.lld  rootfs-glibc/usr/bin/ld",
         "ln -sf /opt/clang/bin/llvm-ar rootfs-glibc/usr/bin/ar",
@@ -138,7 +142,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-x86_64-gnu-20.1.0.tar.zst",
           "dest": "clang-glibc",
-          "sha256": "839188805946ad38d14c6aca1af4194121f593ae91f1b7dee8b442301c5406ec",
+          "sha256": "f11d967ea4a44a7e89f62f738241acefc6440e4a672d89029e8cf722675bbfe2",
           "only-arches": [
             "x86_64"
           ]
@@ -147,7 +151,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-x86_64-musl-20.1.0.tar.zst",
           "dest": "clang-musl",
-          "sha256": "f1b95bd60cd8c3cec78533f1e0fcd93180e7994eba0075d2620bbe54f42abd30",
+          "sha256": "9bf215f5c7e2909af809af91981df5c97f04cd749adaeaa894adb5c844983dc5",
           "only-arches": [
             "x86_64"
           ]
@@ -190,7 +194,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-gnu-20.1.0.tar.zst",
           "dest": "clang-glibc",
-          "sha256": "5d060228483707511df8ba084c0da6fe02be29b33813bf083968217553a4ade2",
+          "sha256": "6bfd53e9ce7452bafffa46d17d7d6bc27a8eed7de48ab3a692be9f2b3695ae22",
           "only-arches": [
             "aarch64"
           ]
@@ -199,7 +203,7 @@
           "type": "archive",
           "url": "https://missioncenter.io/build-tools/llvm-tooling-aarch64-musl-20.1.0.tar.zst",
           "dest": "clang-musl",
-          "sha256": "6ebb6907b33989783cfaef5c15ce2136edb4f0cd84c8d0db5867593be00c18bd",
+          "sha256": "6a94fd355e85a865658190a391cf01f206c902639a6c67bc0a9700e4fe5c53ca",
           "only-arches": [
             "aarch64"
           ]
@@ -242,7 +246,8 @@
           "CC": "clang",
           "CXX": "clang++",
           "CC_LD": "lld",
-          "CXX_LD": "lld"
+          "CXX_LD": "lld",
+          "LDFLAGS": "-lgcc"
         }
       },
       "sources": [
