@@ -516,3 +516,7 @@ cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-
 cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache $OUT_PATH/usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/2.10.0/
 cp -v  /usr/lib/$(arch)-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders $OUT_PATH/usr/bin/
 cp -v  /usr/bin/{glib-compile-schemas,gtk-update-icon-cache} $OUT_PATH/usr/bin/
+
+# Strip binaries
+find $OUT_PATH -type f -executable -exec llvm-strip {} \;
+find $OUT_PATH -type f -name "*.so*" -exec llvm-strip {} \;
