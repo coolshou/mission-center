@@ -285,6 +285,8 @@ Box root {
 
       halign: start;
 
+      selectable: true;
+
       layout {
         column: '3';
         row: '3';
@@ -297,6 +299,8 @@ Box root {
       ]
 
       halign: start;
+
+      selectable: true;
 
       layout {
         column: '3';
@@ -311,6 +315,8 @@ Box root {
 
       halign: start;
       visible: false;
+
+      selectable: true;
 
       layout {
         column: '3';
@@ -340,6 +346,8 @@ Box root {
       halign: start;
       visible: false;
 
+      selectable: true;
+
       layout {
         column: '3';
         row: '7';
@@ -354,6 +362,8 @@ Box root {
       halign: start;
       visible: false;
 
+      selectable: true;
+
       layout {
         column: '3';
         row: '8';
@@ -367,13 +377,15 @@ Box root {
 
       halign: start;
 
+      selectable: true;
+
       layout {
         column: '3';
         row: '9';
       }
     }
 
-    Box wireless_spacer {
+    Box blank_space {
       layout {
         column: '0';
         row: '10';
@@ -382,67 +394,61 @@ Box root {
     }
   }
 
-  Grid {
-    row-spacing: 5;
-    column-spacing: 0;
+  Box {
+    orientation: vertical;
+    spacing: 5;
+    margin-start: 10;
 
-    styles [
-      "layout-grid"
-    ]
+    Box {
+      orientation: horizontal;
+      spacing: 2;
 
-    Label {
-      styles [
-        "caption",
-      ]
+      Label {
+        styles [
+          "caption",
+        ]
 
-      halign: start;
-      label: _("IPv4 address:");
+        halign: start;
+        label: _("IPv4 address:");
 
-      layout {
-        column: '0';
-        row: '0';
+        ellipsize: end;
+      }
+
+      Label ipv4_address {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        selectable: true;
       }
     }
 
-    Label {
-      styles [
-        "caption",
-      ]
+    Box {
+      orientation: horizontal;
+      spacing: 2;
 
-      halign: start;
-      label: _("IPv6 address:");
+      Label {
+        styles [
+          "caption",
+        ]
 
-      ellipsize: middle;
+        halign: start;
+        label: _("IPv6 address:");
 
-      layout {
-        column: '0';
-        row: '1';
+        ellipsize: end;
       }
-    }
 
-    Label ipv4_address {
-      styles [
-        "caption",
-      ]
+      Label ipv6_address {
+        styles [
+          "caption",
+        ]
 
-      halign: start;
+        halign: start;
 
-      layout {
-        column: '1';
-        row: '0';
-      }
-    }
-
-    Label ipv6_address {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-
-      layout {
-        column: '1';
-        row: '1';
+        ellipsize: middle;
+        selectable: true;
       }
     }
   }

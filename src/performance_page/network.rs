@@ -481,7 +481,13 @@ mod imp {
             }
 
             if let Some(ipv6_address) = this.ipv6_address.get() {
-                ipv6_address.set_text(connection.ipv6_address.as_ref().unwrap_or(&i18n("N/A")));
+                if let Some(address) = connection.ipv6_address.as_ref().map(|a| a.as_str()) {
+                    ipv6_address.set_text(address);
+                    ipv6_address.set_tooltip_text(Some(address));
+                } else {
+                    ipv6_address.set_text(&i18n("N/A"));
+                    ipv6_address.set_tooltip_text(None);
+                }
             }
 
             true
