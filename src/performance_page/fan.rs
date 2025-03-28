@@ -1,6 +1,6 @@
 /* performance_page/fan.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,12 +75,12 @@ mod imp {
         summary_mode: Cell<bool>,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
-        pub infobar_content: OnceCell<gtk::Box>,
+        pub infobar_content: OnceCell<gtk::Grid>,
 
         pub legend_speed: OnceCell<gtk::Picture>,
         pub speed: OnceCell<gtk::Label>,
-        pub pwm_legend_box: OnceCell<gtk::Box>,
-        pub temp_label_box: OnceCell<gtk::Box>,
+        pub bow_pwm: OnceCell<gtk::Box>,
+        pub box_temp: OnceCell<gtk::Box>,
         pub legend_pwm: OnceCell<gtk::Picture>,
         pub pwm: OnceCell<gtk::Label>,
         pub temp: OnceCell<gtk::Label>,
@@ -109,8 +109,8 @@ mod imp {
 
                 legend_speed: Default::default(),
                 speed: Default::default(),
-                pwm_legend_box: Default::default(),
-                temp_label_box: Default::default(),
+                bow_pwm: Default::default(),
+                box_temp: Default::default(),
                 legend_pwm: Default::default(),
                 pwm: Default::default(),
                 temp: Default::default(),
@@ -237,8 +237,8 @@ mod imp {
             this.speed_graph.set_dashed(1, true);
 
             if fan.pwm_percent.is_none() {
-                if let Some(pwm_legend_box) = this.pwm_legend_box.get() {
-                    pwm_legend_box.set_visible(false);
+                if let Some(box_pwm) = this.bow_pwm.get() {
+                    box_pwm.set_visible(false);
                 }
 
                 if let Some(legend_speed) = this.legend_speed.get() {
@@ -249,7 +249,7 @@ mod imp {
             if fan.temp_amount.is_none() {
                 this.temp_graph_box.set_visible(false);
 
-                if let Some(sidebar_temp_box) = this.temp_label_box.get() {
+                if let Some(sidebar_temp_box) = this.box_temp.get() {
                     sidebar_temp_box.set_visible(false);
                 }
             }
@@ -409,7 +409,7 @@ mod imp {
 
             let _ = self.infobar_content.set(
                 sidebar_content_builder
-                    .object::<gtk::Box>("root")
+                    .object::<gtk::Grid>("root")
                     .expect("Could not find `root` object in details pane"),
             );
 
@@ -424,16 +424,16 @@ mod imp {
                     .expect("Could not find `legend_pwm` object in details pane"),
             );
 
-            let _ = self.pwm_legend_box.set(
+            let _ = self.bow_pwm.set(
                 sidebar_content_builder
-                    .object::<gtk::Box>("pwm_legend_box")
-                    .expect("Could not find `pwm_legend_box` object in details pane"),
+                    .object::<gtk::Box>("box_pwm")
+                    .expect("Could not find `box_pwm` object in details pane"),
             );
 
-            let _ = self.temp_label_box.set(
+            let _ = self.box_temp.set(
                 sidebar_content_builder
-                    .object::<gtk::Box>("temp_label_box")
-                    .expect("Could not find `temp_legend_box` object in details pane"),
+                    .object::<gtk::Box>("box_temp")
+                    .expect("Could not find `box_temp` object in details pane"),
             );
 
             let _ = self.speed.set(
