@@ -1,6 +1,6 @@
 /* ui/performance_page/disk_details.blp
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ Box root {
   margin-top: 65;
   margin-bottom: 10;
   orientation: vertical;
-  spacing: 20;
+  spacing: 25;
 
   Grid {
     row-spacing: 5;
@@ -119,6 +119,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -147,6 +148,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -175,6 +177,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -203,6 +206,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -222,122 +226,118 @@ Box root {
       }
     }
 
-    Box {
-      layout {
-        column: '0';
-        row: '4';
-      }
-      height-request: 10;
-    }
-
     Label {
+      layout {
+        column: '1';
+        row: '3';
+      }
+
+      margin-top: 20;
+
       styles [
         "caption",
       ]
 
       halign: start;
       label: _("Capacity:");
-
-      layout {
-        column: '1';
-        row: '5';
-      }
     }
 
     Label {
-      styles [
+      layout {
+        column: '1';
+        row: '4';
+      }
+
+       styles [
         "caption",
       ]
 
       halign: start;
       label: _("Formatted:");
-
-      layout {
-        column: '1';
-        row: '6';
-      }
-    }
+   }
 
     Label {
+      layout {
+        column: '1';
+        row: '5';
+      }
+
       styles [
         "caption",
       ]
 
       halign: start;
       label: _("System disk:");
-
-      layout {
-        column: '1';
-        row: '7';
-      }
     }
 
     Label {
+      layout {
+        column: '1';
+        row: '6';
+      }
+
       styles [
         "caption",
       ]
 
       halign: start;
       label: _("Type:");
-
-      layout {
-        column: '1';
-        row: '8';
-      }
     }
 
     Label capacity {
+      layout {
+        column: '3';
+        row: '3';
+      }
+
       styles [
         "caption",
       ]
 
       halign: start;
+      margin-top: 20;
+    }
 
+    Label formatted {
+      layout {
+        column: '3';
+        row: '4';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+
+    Label system_disk {
       layout {
         column: '3';
         row: '5';
       }
-    }
 
-    Label formatted {
       styles [
         "caption",
       ]
 
       halign: start;
+    }
 
+    Label disk_type {
       layout {
         column: '3';
         row: '6';
       }
-    }
 
-    Label system_disk {
       styles [
         "caption",
       ]
 
       halign: start;
-
-      layout {
-        column: '3';
-        row: '7';
-      }
-    }
-
-    Label disk_type {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-
-      layout {
-        column: '3';
-        row: '8';
-      }
     }
   }
+
   Box {
     styles [
       "linked"
