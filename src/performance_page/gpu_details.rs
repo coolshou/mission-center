@@ -1,6 +1,6 @@
 /* performance_page/gpu_details.rs
  *
- * Copyright 2024 Mission Center Developers
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,13 +87,7 @@ mod imp {
         #[template_child]
         pub box_mem_speed: TemplateChild<gtk::Box>,
         #[template_child]
-        pub box_mem_usage: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub box_gtt_usage: TemplateChild<gtk::Box>,
-        #[template_child]
         pub box_power_draw: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub box_decode: TemplateChild<gtk::Box>,
         #[template_child]
         pub encode_label: TemplateChild<gtk::Label>,
 
@@ -170,10 +164,7 @@ mod imp {
 
                 box_temp: TemplateChild::default(),
                 box_mem_speed: TemplateChild::default(),
-                box_mem_usage: TemplateChild::default(),
-                box_gtt_usage: TemplateChild::default(),
                 box_power_draw: TemplateChild::default(),
-                box_decode: TemplateChild::default(),
                 encode_label: TemplateChild::default(),
 
                 legend_encode: TemplateChild::default(),
@@ -408,20 +399,8 @@ impl GpuDetails {
         &self.imp().box_mem_speed
     }
 
-    pub fn box_mem_usage(&self) -> &gtk::Box {
-        &self.imp().box_mem_usage
-    }
-
-    pub fn box_gtt_usage(&self) -> &gtk::Box {
-        &self.imp().box_gtt_usage
-    }
-
     pub fn box_power_draw(&self) -> &gtk::Box {
         &self.imp().box_power_draw
-    }
-
-    pub fn box_decode(&self) -> &gtk::Box {
-        &self.imp().box_decode
     }
 
     pub fn encode_label(&self) -> &gtk::Label {

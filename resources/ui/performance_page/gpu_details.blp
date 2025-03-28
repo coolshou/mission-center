@@ -1,6 +1,6 @@
 /* ui/performance_page/gpu_details.blp
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,22 @@ using Gtk 4.0;
 template $GpuDetails: Box {
   margin-top: 65;
   margin-bottom: 10;
-  orientation: vertical;
-  spacing: 20;
 
-  Box dynamic_data {
+  Grid dynamic_data {
+    row-spacing: 5;
+    column-spacing: 0;
     orientation: vertical;
-    spacing: 10;
+
+    styles [
+      "layout-grid"
+    ]
 
     Box {
+      layout {
+        column: '1';
+        row: '0';
+      }
+
       orientation: vertical;
       spacing: 3;
 
@@ -53,6 +61,11 @@ template $GpuDetails: Box {
     }
 
     Box {
+      layout {
+        column: '1';
+        row: '1';
+      }
+
       visible: bind template.clock_speed_available;
 
       orientation: vertical;
@@ -100,6 +113,11 @@ template $GpuDetails: Box {
     }
 
     Box box_power_draw {
+      layout {
+        column: '1';
+        row: '2';
+      }
+
       visible: bind template.power_draw_available;
 
       orientation: vertical;
@@ -146,11 +164,13 @@ template $GpuDetails: Box {
       }
     }
 
-    Box box_mem_usage {
-      visible: bind template.dedicated_memory_available;
+    Box {
+      layout {
+        column: '0';
+        row: '3';
+      }
 
-      orientation: horizontal;
-      spacing: 5;
+      visible: bind template.dedicated_memory_available;
 
       Picture legend_vram {
         visible: bind template.shared_memory_available;
@@ -158,64 +178,73 @@ template $GpuDetails: Box {
         can-shrink: false;
         content-fit: scale_down;
       }
+    }
+
+    Box {
+      layout {
+        column: '1';
+        row: '3';
+      }
+
+      visible: bind template.dedicated_memory_available;
+
+      orientation: vertical;
+      spacing: 3;
+
+      Label memory_usage_title {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Memory Usage");
+      }
 
       Box {
-        orientation: vertical;
-        spacing: 3;
+        Label memory_usage_current {
+          visible: bind template.used_memory_valid;
 
-        Label memory_usage_title {
           styles [
-            "caption",
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label {
+          visible: bind template.show_dedicated_separator;
+
+          styles [
+            "title-4",
           ]
 
           halign: start;
-          label: _("Memory Usage");
+          label: " / ";
         }
 
-        Box {
-          Label memory_usage_current {
-            visible: bind template.used_memory_valid;
+        Label memory_usage_max {
+          visible: bind template.total_memory_valid;
 
-            styles [
-              "title-4",
-            ]
+          styles [
+            "title-4",
+          ]
 
-            ellipsize: middle;
+          ellipsize: middle;
 
-            halign: start;
-          }
-
-          Label {
-            visible: bind template.show_dedicated_separator;
-
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-            label: " / ";
-          }
-
-          Label memory_usage_max {
-            visible: bind template.total_memory_valid;
-
-            styles [
-              "title-4",
-            ]
-
-            ellipsize: middle;
-
-            halign: start;
-          }
+          halign: start;
         }
       }
     }
 
-    Box box_gtt_usage {
-      visible: bind template.shared_memory_available;
+    Box {
+      layout {
+        column: '0';
+        row: '4';
+      }
 
-      orientation: horizontal;
-      spacing: 5;
+      visible: bind template.shared_memory_available;
 
       Picture legend_gtt {
         visible: bind template.dedicated_memory_available;
@@ -223,59 +252,72 @@ template $GpuDetails: Box {
         can-shrink: false;
         content-fit: scale_down;
       }
+    }
+
+    Box {
+      layout {
+        column: '1';
+        row: '4';
+      }
+
+      visible: bind template.shared_memory_available;
+
+      orientation: vertical;
+      spacing: 3;
+
+      Label shared_memory_usage_title {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Shared Memory Usage");
+      }
 
       Box {
-        orientation: vertical;
-        spacing: 3;
-        Label shared_memory_usage_title {
+        Label gtt_usage_current {
+          visible: bind template.used_shared_memory_valid;
+
           styles [
-            "caption",
+            "title-4",
+          ]
+
+          ellipsize: middle;
+
+          halign: start;
+        }
+
+        Label gtt_separator {
+          visible: bind template.show_shared_separator;
+
+          styles [
+            "title-4",
           ]
 
           halign: start;
-          label: _("Shared Memory Usage");
+          label: " / ";
         }
 
-        Box {
-          Label gtt_usage_current {
-            visible: bind template.used_shared_memory_valid;
+        Label gtt_usage_max {
+          visible: bind template.total_shared_memory_valid;
 
-            styles [
-              "title-4",
-            ]
+          styles [
+            "title-4",
+          ]
 
-            ellipsize: middle;
+          ellipsize: middle;
 
-            halign: start;
-          }
-
-          Label gtt_separator {
-            visible: bind template.show_shared_separator;
-
-            styles [
-              "title-4",
-            ]
-
-            halign: start;
-            label: " / ";
-          }
-
-          Label gtt_usage_max {
-            visible: bind template.total_shared_memory_valid;
-
-            styles [
-              "title-4",
-            ]
-
-            ellipsize: middle;
-
-            halign: start;
-          }
+          halign: start;
         }
       }
     }
 
     Box box_mem_speed {
+      layout {
+        column: '1';
+        row: '5';
+      }
+
       visible: bind template.memory_speed_available;
 
       orientation: vertical;
@@ -323,84 +365,112 @@ template $GpuDetails: Box {
     }
 
     Box {
-      orientation: horizontal;
-      spacing: 20;
+      layout {
+        column: '0';
+        row: '6';
+      }
+
+      visible: bind template.encode_decode_available;
+
+      Picture legend_encode {
+        visible: bind template.encode_decode_shared inverted;
+
+        can-shrink: false;
+        content-fit: scale_down;
+      }
+    }
+
+    Grid {
+      layout {
+        column: '1';
+        row: '6';
+        column-span: '3';
+      }
 
       visible: bind template.encode_decode_available;
 
       Box {
-        spacing: 5;
-
-        Picture legend_encode {
-          visible: bind template.encode_decode_shared inverted;
-
-          can-shrink: false;
-          content-fit: scale_down;
+        layout {
+          column: '0';
+          row: '0';
         }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
+        orientation: vertical;
+        spacing: 3;
 
-          Label encode_label {
-            styles [
-              "caption",
-            ]
+        Label encode_label {
+          styles [
+            "caption",
+          ]
 
-            halign: start;
-            label: _("Video encode");
-          }
+          halign: start;
+          label: _("Video encode");
+        }
 
-          Label encode_percent {
-            styles [
-              "title-4",
-            ]
+        Label encode_percent {
+          styles [
+            "title-4",
+          ]
 
-            ellipsize: middle;
+          ellipsize: middle;
 
-            halign: start;
-          }
+          halign: start;
         }
       }
 
-      Box box_decode {
-        spacing: 5;
+      Picture legend_decode {
+        layout {
+          column: '1';
+          row: '0';
+        }
+
+        margin-start: 20;
 
         visible: bind template.encode_decode_shared inverted;
 
-        Picture legend_decode {
-          can-shrink: false;
-          content-fit: scale_down;
+        can-shrink: false;
+        content-fit: scale_down;
+      }
+
+      Box {
+        layout {
+          column: '2';
+          row: '0';
         }
 
-        Box {
-          orientation: vertical;
-          spacing: 3;
-          halign: end;
+        visible: bind template.encode_decode_shared inverted;
 
+        orientation: vertical;
+        spacing: 3;
+        halign: end;
 
-          Label {
-            styles [
-              "caption",
-            ]
+        Label {
+          styles [
+            "caption",
+          ]
 
-            halign: start;
-            label: _("Video decode");
-          }
-          Label decode_percent {
-            styles [
-              "title-4",
-            ]
+          halign: start;
+          label: _("Video decode");
+        }
 
-            ellipsize: middle;
+        Label decode_percent {
+          styles [
+            "title-4",
+          ]
 
-            halign: start;
-          }
+          ellipsize: middle;
+
+          halign: start;
         }
       }
     }
 
     Box box_temp {
+      layout {
+        column: '1';
+        row: '7';
+      }
+
       orientation: vertical;
       spacing: 3;
 
@@ -423,129 +493,136 @@ template $GpuDetails: Box {
         halign: start;
       }
     }
-  }
 
-  Grid system_info {
-    row-spacing: 5;
-    column-spacing: 10;
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-      label: _("OpenGL version:");
-
-      ellipsize: middle;
-
-      layout {
-        column: '0';
-        row: '0';
-      }
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-      label: _("Vulkan version:");
-
-      ellipsize: middle;
-
-      layout {
-        column: '0';
-        row: '1';
-      }
-    }
-
-    Label pcie_speed_label {
-      visible: bind template.pcie_info_visible;
-
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-      label: _("PCI Express speed:");
-
-      ellipsize: middle;
-
-      layout {
-        column: '0';
-        row: '2';
-      }
-    }
-
-    Label {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-      label: _("PCI bus address:");
-
-      ellipsize: middle;
-
-      layout {
-        column: '0';
-        row: '3';
-      }
-    }
-
-    Label opengl_version {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-
+    Grid system_info {
       layout {
         column: '1';
-        row: '0';
+        row: '8';
       }
-    }
 
-    Label vulkan_version {
-      styles [
-        "caption",
-      ]
+      margin-top: 20;
 
-      halign: start;
+      row-spacing: 5;
+      column-spacing: 10;
 
-      layout {
-        column: '1';
-        row: '1';
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("OpenGL version:");
+
+        ellipsize: middle;
+
+        layout {
+          column: '0';
+          row: '0';
+        }
       }
-    }
 
-    Label pcie_speed {
-      visible: bind template.pcie_info_visible;
+      Label {
+        styles [
+          "caption",
+        ]
 
-      styles [
-        "caption",
-      ]
+        halign: start;
+        label: _("Vulkan version:");
 
-      halign: start;
+        ellipsize: middle;
 
-      layout {
-        column: '1';
-        row: '2';
+        layout {
+          column: '0';
+          row: '1';
+        }
       }
-    }
 
-    Label pci_addr {
-      styles [
-        "caption",
-      ]
+      Label pcie_speed_label {
+        visible: bind template.pcie_info_visible;
 
-      halign: start;
+        styles [
+          "caption",
+        ]
 
-      layout {
-        column: '1';
-        row: '3';
+        halign: start;
+        label: _("PCI Express speed:");
+
+        ellipsize: middle;
+
+        layout {
+          column: '0';
+          row: '2';
+        }
+      }
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("PCI bus address:");
+
+        ellipsize: middle;
+
+        layout {
+          column: '0';
+          row: '3';
+        }
+      }
+
+      Label opengl_version {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        layout {
+          column: '1';
+          row: '0';
+        }
+      }
+
+      Label vulkan_version {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        layout {
+          column: '1';
+          row: '1';
+        }
+      }
+
+      Label pcie_speed {
+        visible: bind template.pcie_info_visible;
+
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        layout {
+          column: '1';
+          row: '2';
+        }
+      }
+
+      Label pci_addr {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        layout {
+          column: '1';
+          row: '3';
+        }
       }
     }
   }
