@@ -33,14 +33,49 @@ template $PerformancePageDisk: Box {
       Box {
         spacing: 20;
 
-        Label disk_id {
-          styles [
-            "title-1",
-          ]
+        Box {
+          spacing: 5;
 
           hexpand: true;
           halign: start;
-          ellipsize: middle;
+
+          Label disk_id {
+            styles [
+              "title-1",
+            ]
+
+            hexpand: true;
+            halign: start;
+            ellipsize: middle;
+          }
+
+          Box {
+            orientation: horizontal;
+            homogeneous: true;
+            halign: start;
+
+            Button button_smart {
+              styles [
+                "flat"
+              ]
+
+              visible: false;
+
+              icon-name: 'info-symbolic';
+              tooltip-text: _("Show SMART Data");
+            }
+
+            Button button_eject {
+              styles [
+                "flat"
+              ]
+
+              visible: false;
+
+              icon-name: 'media-eject-symbolic';
+              tooltip-text: _("Eject Disk");
+            }
+          }
         }
 
         Label model {
