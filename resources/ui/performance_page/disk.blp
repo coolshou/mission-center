@@ -27,6 +27,7 @@ template $PerformancePageDisk: Box {
   WindowHandle {
     child: Box description {
       orientation: vertical;
+      margin-top: 2;
       spacing: 7;
       hexpand: true;
 
@@ -43,13 +44,48 @@ template $PerformancePageDisk: Box {
           ellipsize: middle;
         }
 
-        Label model {
-          styles [
-            "title-3",
-          ]
+        Box {
+          spacing: 5;
 
+          hexpand: true;
           halign: end;
-          ellipsize: middle;
+
+          Box {
+            orientation: horizontal;
+            homogeneous: true;
+            halign: end;
+
+            Button button_smart {
+              styles [
+                "flat"
+              ]
+
+              visible: false;
+
+              icon-name: 'info-symbolic';
+              tooltip-text: _("Show SMART Data");
+            }
+
+            Button button_eject {
+              styles [
+                "flat"
+              ]
+
+              visible: false;
+
+              icon-name: 'media-eject-symbolic';
+              tooltip-text: _("Eject Disk");
+            }
+          }
+
+          Label model {
+            styles [
+              "title-3",
+            ]
+
+            halign: end;
+            ellipsize: middle;
+          }
         }
       }
 
