@@ -27,32 +27,33 @@ template $PerformancePageDisk: Box {
   WindowHandle {
     child: Box description {
       orientation: vertical;
+      margin-top: 2;
       spacing: 7;
       hexpand: true;
 
       Box {
         spacing: 20;
 
+        Label disk_id {
+          styles [
+            "title-1",
+          ]
+
+          hexpand: true;
+          halign: start;
+          ellipsize: middle;
+        }
+
         Box {
           spacing: 5;
 
           hexpand: true;
-          halign: start;
-
-          Label disk_id {
-            styles [
-              "title-1",
-            ]
-
-            hexpand: true;
-            halign: start;
-            ellipsize: middle;
-          }
+          halign: end;
 
           Box {
             orientation: horizontal;
             homogeneous: true;
-            halign: start;
+            halign: end;
 
             Button button_smart {
               styles [
@@ -76,15 +77,15 @@ template $PerformancePageDisk: Box {
               tooltip-text: _("Eject Disk");
             }
           }
-        }
 
-        Label model {
-          styles [
-            "title-3",
-          ]
+          Label model {
+            styles [
+              "title-3",
+            ]
 
-          halign: end;
-          ellipsize: middle;
+            halign: end;
+            ellipsize: middle;
+          }
         }
       }
 

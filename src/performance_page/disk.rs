@@ -42,6 +42,8 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk.ui")]
     pub struct PerformancePageDisk {
         #[template_child]
+        pub description: TemplateChild<gtk::Box>,
+        #[template_child]
         pub disk_id: TemplateChild<gtk::Label>,
         #[template_child]
         pub button_smart: TemplateChild<gtk::Button>,
@@ -89,6 +91,7 @@ mod imp {
     impl Default for PerformancePageDisk {
         fn default() -> Self {
             Self {
+                description: Default::default(),
                 disk_id: Default::default(),
                 button_smart: Default::default(),
                 button_eject: Default::default(),
@@ -303,6 +306,9 @@ mod imp {
             }
 
             if disk.smart_interface.is_some() {
+                this.description.set_margin_top(0);
+                this.description.set_spacing(5);
+
                 this.button_smart.set_visible(true);
                 this.button_smart.connect_clicked({
                     let this = this.obj().downgrade();
@@ -334,6 +340,9 @@ mod imp {
             }
 
             if disk.ejectable {
+                this.description.set_margin_top(0);
+                this.description.set_spacing(5);
+
                 this.button_eject.set_visible(disk.ejectable);
                 this.button_eject.connect_clicked({
                     let this = this.obj().downgrade();
