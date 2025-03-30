@@ -21,6 +21,7 @@
         <file preprocess="xml-stripblanks">service-running.svg</file>
         <file preprocess="xml-stripblanks">service-stopped.svg</file>
         <file preprocess="xml-stripblanks">sidebar-toggle-left-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">sidebar-toggle-right-symbolic.svg</file>
         <file preprocess="xml-stripblanks">speedometer-symbolic.svg</file>
     </gresource>
 
