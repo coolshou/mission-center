@@ -52,14 +52,7 @@ template $PerformancePageFan: Box {
           ellipsize: middle;
         }
       }
-    };
-  }
 
-  Box {
-    orientation: vertical;
-    spacing: 10;
-    Box speed_box {
-      orientation: vertical;
       Box {
         Label {
           styles [
@@ -84,6 +77,14 @@ template $PerformancePageFan: Box {
           ]
         }
       }
+    };
+  }
+
+  Box {
+    orientation: vertical;
+    spacing: 10;
+    Box speed_box {
+      orientation: vertical;
 
       $GraphWidget speed_graph {
         vexpand: true;
