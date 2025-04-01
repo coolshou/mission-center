@@ -21,6 +21,7 @@
 use std::cell::Cell;
 
 use glib::{ParamSpec, Properties, Value};
+use gtk::prelude::WidgetExt;
 use gtk::{gdk::prelude::*, glib, subclass::prelude::*};
 
 mod imp {
@@ -293,6 +294,14 @@ glib::wrapper! {
 impl GpuDetails {
     pub fn new() -> Self {
         glib::Object::builder().build()
+    }
+
+    pub fn set_collapsed(&self, collapsed: bool) {
+        if collapsed {
+            self.set_margin_top(10);
+        } else {
+            self.set_margin_top(65);
+        }
     }
 
     pub fn utilization(&self) -> &gtk::Label {

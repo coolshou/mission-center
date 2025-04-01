@@ -1,6 +1,6 @@
 /* performance_page/gpu.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -826,11 +826,11 @@ glib::wrapper! {
 
 impl PageExt for PerformancePageGpu {
     fn infobar_collapsed(&self) {
-        self.imp().infobar_content.set_margin_top(10);
+        self.imp().infobar_content.set_collapsed(true);
     }
 
     fn infobar_uncollapsed(&self) {
-        self.imp().infobar_content.set_margin_top(65);
+        self.imp().infobar_content.set_collapsed(false);
     }
 }
 
