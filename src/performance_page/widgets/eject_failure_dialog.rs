@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{OnceCell, RefCell};
 use std::collections::HashMap;
 
 use adw::ResponseAppearance;
@@ -45,8 +45,8 @@ mod imp {
         #[template_child]
         column_view: TemplateChild<gtk::ListBox>,
 
-        pub disk_id: Cell<String>,
-        pub error: Cell<ErrorEjectFailed>,
+        pub disk_id: OnceCell<String>,
+        pub error: RefCell<ErrorEjectFailed>,
     }
 
     impl EjectFailureDialog {
@@ -133,8 +133,8 @@ mod imp {
             Self {
                 column_view: Default::default(),
 
-                disk_id: Cell::new(String::new()),
-                error: Cell::new(ErrorEjectFailed::default()),
+                disk_id: OnceCell::new(),
+                error: RefCell::new(ErrorEjectFailed::default()),
             }
         }
     }
@@ -185,27 +185,27 @@ mod imp {
                 return;
             };
 
-            let disk_id = unsafe { &*self.disk_id.as_ptr() }.clone();
-            let error = unsafe { &*self.error.as_ptr() }.clone();
+            let disk_id = self.disk_id.get().unwrap();
+            let mut error = self.error.borrow_mut();
 
             match response {
-                "retry" => match magpie.eject_disk(&disk_id) {
+                "retry" => match magpie.eject_disk(disk_id) {
                     Ok(_) => {
                         self.obj().close();
                     }
                     Err(e) => {
-                        self.update_model(&disk_id, &e);
+                        self.update_model(disk_id, &e);
                     }
                 },
                 "kill" => {
                     magpie.kill_processes(error.blockers.iter().map(|b| b.pid).collect());
-                    match magpie.eject_disk(&disk_id) {
+                    match magpie.eject_disk(disk_id) {
                         Ok(_) => {
                             self.obj().close();
                         }
                         Err(e) => {
-                            self.update_model(&disk_id, &e);
-                            self.error.set(e);
+                            self.update_model(disk_id, &e);
+                            *error = e;
                         }
                     }
                 }
@@ -245,22 +245,22 @@ impl EjectFailureDialog {
         {
             let this = this.imp();
             this.update_model(&disk_id, &error);
-            this.disk_id.set(disk_id);
-            this.error.set(error);
+            this.disk_id.set(disk_id).unwrap();
+            this.error.replace(error);
         }
 
         this
     }
 
-    pub fn disk_id(&self) -> String {
-        unsafe { &*self.imp().disk_id.as_ptr() }.clone()
+    pub fn disk_id(&self) -> &str {
+        self.imp().disk_id.get().unwrap().as_str()
     }
 
     pub fn update_model(&self, error: ErrorEjectFailed) {
         let this = self.imp();
 
-        let disk_id = unsafe { &*this.disk_id.as_ptr() }.clone();
+        let disk_id = self.disk_id();
         this.update_model(&disk_id, &error);
-        this.error.set(error);
+        this.error.replace(error);
     }
 }

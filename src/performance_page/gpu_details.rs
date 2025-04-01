@@ -1,6 +1,6 @@
 /* performance_page/gpu_details.rs
  *
- * Copyright 2024 Mission Center Developers
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@
 use std::cell::Cell;
 
 use glib::{ParamSpec, Properties, Value};
+use gtk::prelude::WidgetExt;
 use gtk::{gdk::prelude::*, glib, subclass::prelude::*};
 
 mod imp {
+    use std::marker::PhantomData;
+
     use super::*;
 
     #[derive(Properties)]
@@ -85,13 +88,7 @@ mod imp {
         #[template_child]
         pub box_mem_speed: TemplateChild<gtk::Box>,
         #[template_child]
-        pub box_mem_usage: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub box_gtt_usage: TemplateChild<gtk::Box>,
-        #[template_child]
         pub box_power_draw: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub box_decode: TemplateChild<gtk::Box>,
         #[template_child]
         pub encode_label: TemplateChild<gtk::Label>,
 
@@ -119,21 +116,21 @@ mod imp {
         #[property(get, set = Self::set_used_memory_valid)]
         used_memory_valid: Cell<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::dedicated_memory_available, type = bool)]
-        dedicated_memory_available: [u8; 0],
+        #[property(get = Self::dedicated_memory_available)]
+        dedicated_memory_available: PhantomData<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::show_dedicated_separator, type = bool)]
-        show_dedicated_separator: [u8; 0],
+        #[property(get = Self::show_dedicated_separator)]
+        show_dedicated_separator: PhantomData<bool>,
         #[property(get, set = Self::set_total_shared_memory_valid)]
         total_shared_memory_valid: Cell<bool>,
         #[property(get, set = Self::set_used_shared_memory_valid)]
         used_shared_memory_valid: Cell<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::shared_memory_available, type = bool)]
-        shared_memory_available: [u8; 0],
+        #[property(get = Self::shared_memory_available)]
+        shared_memory_available: PhantomData<bool>,
         #[allow(dead_code)]
-        #[property(get = Self::show_shared_separator, type = bool)]
-        show_shared_separator: [u8; 0],
+        #[property(get = Self::show_shared_separator)]
+        show_shared_separator: PhantomData<bool>,
         #[property(get, set)]
         pcie_info_visible: Cell<bool>,
     }
@@ -168,10 +165,7 @@ mod imp {
 
                 box_temp: TemplateChild::default(),
                 box_mem_speed: TemplateChild::default(),
-                box_mem_usage: TemplateChild::default(),
-                box_gtt_usage: TemplateChild::default(),
                 box_power_draw: TemplateChild::default(),
-                box_decode: TemplateChild::default(),
                 encode_label: TemplateChild::default(),
 
                 legend_encode: TemplateChild::default(),
@@ -186,12 +180,12 @@ mod imp {
                 encode_decode_shared: Cell::new(false),
                 total_memory_valid: Cell::new(true),
                 used_memory_valid: Cell::new(true),
-                dedicated_memory_available: [0; 0],
-                show_dedicated_separator: [0; 0],
+                dedicated_memory_available: PhantomData,
+                show_dedicated_separator: PhantomData,
                 total_shared_memory_valid: Cell::new(false),
                 used_shared_memory_valid: Cell::new(false),
-                shared_memory_available: [0; 0],
-                show_shared_separator: [0; 0],
+                shared_memory_available: PhantomData,
+                show_shared_separator: PhantomData,
                 pcie_info_visible: Cell::new(true),
             }
         }
@@ -302,6 +296,14 @@ impl GpuDetails {
         glib::Object::builder().build()
     }
 
+    pub fn set_collapsed(&self, collapsed: bool) {
+        if collapsed {
+            self.set_margin_top(10);
+        } else {
+            self.set_margin_top(65);
+        }
+    }
+
     pub fn utilization(&self) -> &gtk::Label {
         &self.imp().utilization
     }
@@ -406,20 +408,8 @@ impl GpuDetails {
         &self.imp().box_mem_speed
     }
 
-    pub fn box_mem_usage(&self) -> &gtk::Box {
-        &self.imp().box_mem_usage
-    }
-
-    pub fn box_gtt_usage(&self) -> &gtk::Box {
-        &self.imp().box_gtt_usage
-    }
-
     pub fn box_power_draw(&self) -> &gtk::Box {
         &self.imp().box_power_draw
-    }
-
-    pub fn box_decode(&self) -> &gtk::Box {
-        &self.imp().box_decode
     }
 
     pub fn encode_label(&self) -> &gtk::Label {

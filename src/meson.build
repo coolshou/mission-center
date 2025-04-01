@@ -17,6 +17,7 @@ configure_file(
 
 cargo_bin = find_program('cargo')
 cargo_env = get_option('cargo_env')
+rustflags = []
 if get_option('flatpak') == false
     cargo_env += [ 'CARGO_HOME=' + meson.project_build_root()  / 'cargo-home' ]
     cargo_opt  = []
@@ -31,6 +32,25 @@ endif
 cargo_opt += [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
 cargo_opt += [ '--target-dir', meson.project_build_root()  / 'src' ]
 cargo_env += [ 'BUILD_ROOT=' + meson.project_build_root() ]
+
+if get_option('b_lto') == true
+    if c_compiler.get_id() != 'clang'
+        error('LTO is only supported with CLang. Make sure both C and C++ compilers are CLang')
+    endif
+
+    if c_compiler.get_linker_id() != 'ld.lld'
+        error('LTO is only supported with lld')
+    endif
+
+    cargo_env += ['CC=clang']
+    cargo_env += ['CXX=clang++']
+    cargo_env += ['CFLAGS="-fuse-ld=lld -flto"']
+    cargo_env += ['CXXFLAGS="-fuse-ld=lld -flto"']
+
+    rustflags += ['-Clinker=clang', '-Clink-arg=-fuse-ld=lld', '-Clinker-plugin-lto']
+endif
+
+cargo_env += ['RUSTFLAGS="' + ' '.join(rustflags) + '"']
 
 if get_option('buildtype') == 'release'
   cargo_opt += [ '--release' ]
@@ -48,8 +68,10 @@ cargo_build = custom_target(
   install: true,
   install_dir: get_option('bindir'),
   command: [
-    'env', cargo_env,
-    cargo_bin, 'build', cargo_opt,
-    '&&', 'cp', 'src' / rust_target / meson.project_name(), '@OUTPUT@',
+    'sh', '-c', 'env '
+    + ' env '.join(cargo_env)
+    + ' ' + cargo_bin.full_path() + ' build ' + ' '.join(cargo_opt)
+    + ' ' + '&&'
+    + ' ' + 'cp ' + meson.project_build_root() + '/src/' + rust_target + '/' + meson.project_name() + ' ' + '@OUTPUT@'
   ]
 )

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-03-06 11:58+0000\n"
-"Last-Translator: Indrek Haav <IndrekHaav@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-03-19 03:59+0000\n"
+"Last-Translator: Indrek Haav <indrek.haav@hotmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
 "Language: et\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.3-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -60,6 +60,8 @@ msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Vaata süsteemi protsesside, lõimede ja pidemete arvu, aktiivaega, "
+"taktsagedust, puhvrite mahtu"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -161,7 +163,7 @@ msgstr "Millist lehte rakenduse käivitamisel kuvada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "AEGUNUD! EI OLE ENAM KASUTUSEL!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
@@ -191,6 +193,8 @@ msgstr ""
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Vanem- ja lapsprotsesside statistikat kuvatakse eraldi või mestitakse "
+"ülespoole"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
@@ -218,11 +222,11 @@ msgstr "Millist graafikut protsessori jõudluse lehel kuvada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Kuva protsessori graafikutel tuuma tööaega"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "Millist lehte kuvatakse rakenduse käivitamisel jõudluse vahelehel"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
@@ -260,7 +264,7 @@ msgstr "Kuva vaikimisi ventilaatori infot"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr ""
+msgstr "Kuva mälu koostise vidinat"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
@@ -286,7 +290,7 @@ msgstr "Protsessor"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr ""
+msgstr "Kasutus perioodil "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -308,7 +312,7 @@ msgstr "Loogilised _protsessorid"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Kuva tuuma tööaega"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -317,7 +321,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "_Koondvaade"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -335,7 +339,7 @@ msgstr "_Vaade"
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr ""
+msgstr "_Protsessor"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -344,7 +348,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr ""
+msgstr "_Mälu"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -353,7 +357,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Andmekandja"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -362,7 +366,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr ""
+msgstr "_Võrk"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -371,7 +375,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr ""
+msgstr "_Graafikaprotsessor"
 
 #: resources/ui/performance_page/cpu.blp:159
 #: resources/ui/performance_page/disk.blp:180
@@ -380,7 +384,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "V_entilaator"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -461,12 +465,12 @@ msgstr "Jõudluse eelistus:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr ""
+msgstr "Aktiivaeg perioodil "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr ""
+msgstr "Andmemaht perioodil "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -503,11 +507,11 @@ msgstr "Tüüp:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr ""
+msgstr "Ventilaatori kiirus perioodil "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr ""
+msgstr "Temperatuur perioodil "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -523,12 +527,12 @@ msgstr "Hetketemperatuur"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr ""
+msgstr "Video kodeerimise/dekodeerimise kasutus perioodil "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr ""
+msgstr "Mälukasutus perioodil "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
@@ -589,7 +593,7 @@ msgstr "Mälu"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr ""
+msgstr "Saaleala kasutus perioodil "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -765,7 +769,7 @@ msgstr "Rakenduste leht"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Mesti protsesside statistika"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
@@ -779,11 +783,11 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Kuva protsessori kasutust tuumade arvu suhtes"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Teenuse detailid"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
@@ -833,7 +837,7 @@ msgstr "Protsessi ID"
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr ""
+msgstr "-"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
@@ -881,7 +885,7 @@ msgstr "Keela kõik"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Lähtesta"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
@@ -942,7 +946,7 @@ msgstr "Peata rakendus"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Tapa rakendus"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
@@ -951,7 +955,7 @@ msgstr "Peata protsess"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Tapa protsess"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -1000,7 +1004,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr ""
+msgstr "Ketas {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
@@ -1039,7 +1043,7 @@ msgstr "Tundmatu"
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr ""
+msgstr "Graafikaprotsessor {}"
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
@@ -1047,7 +1051,7 @@ msgstr "Graafikaprotsessor"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Ventilaator {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
@@ -1072,20 +1076,20 @@ msgstr "Ei"
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr ""
+msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minut[} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Andmekandja {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr ""
+msgstr "Ketas ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
@@ -1148,7 +1152,9 @@ msgstr "Peatatud"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr "Priit Jõerüüt 2024, Indrek Haav"
+msgstr ""
+"Priit Jõerüüt 2024\n"
+"Indrek Haav <indrek.haav@pm.me>"
 
 #: src/main.rs:139
 msgid "_Quit"

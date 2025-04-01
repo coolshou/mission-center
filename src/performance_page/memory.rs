@@ -71,7 +71,7 @@ mod imp {
         summary_mode: Cell<bool>,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
-        pub infobar_content: OnceCell<gtk::Box>,
+        pub infobar_content: OnceCell<gtk::Grid>,
 
         pub tooltip_widget: OnceCell<gtk::Box>,
         pub tt_label_in_use: OnceCell<gtk::Label>,
@@ -699,7 +699,7 @@ mod imp {
             );
             let _ = self.infobar_content.set(
                 sidebar_content_builder
-                    .object::<gtk::Box>("root")
+                    .object::<gtk::Grid>("root")
                     .expect("Could not find `root` object in details pane"),
             );
 

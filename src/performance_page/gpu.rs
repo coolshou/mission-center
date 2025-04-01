@@ -1,6 +1,6 @@
 /* performance_page/gpu.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::fmt::Write;
 
 use adw::{self, subclass::prelude::*};
@@ -66,7 +66,7 @@ mod imp {
         pub graph_max_duration: TemplateChild<gtk::Label>,
 
         #[property(get = Self::name, set = Self::set_name, type = String)]
-        name: Cell<String>,
+        name: RefCell<String>,
         #[property(get, set)]
         base_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
@@ -97,7 +97,7 @@ mod imp {
                 context_menu: Default::default(),
                 graph_max_duration: Default::default(),
 
-                name: Cell::new(String::new()),
+                name: RefCell::new(String::new()),
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
@@ -116,15 +116,12 @@ mod imp {
 
     impl PerformancePageGpu {
         fn name(&self) -> String {
-            unsafe { &*self.name.as_ptr() }.clone()
+            self.name.borrow().clone()
         }
 
         fn set_name(&self, name: String) {
-            {
-                let if_name = unsafe { &*self.name.as_ptr() };
-                if if_name == &name {
-                    return;
-                }
+            if name == *self.name.borrow() {
+                return;
             }
 
             self.name.replace(name);
@@ -320,15 +317,11 @@ mod imp {
             };
             this.infobar_content.vulkan_version().set_text(&vk_version);
 
-            this.infobar_content
-                .set_pcie_info_visible(gpu.pcie_gen.is_some() && gpu.pcie_lanes.is_some());
-            if this.infobar_content.pcie_info_visible() {
-                this.infobar_content.pcie_speed().set_text(&format!(
-                    "PCIe Gen {} x{} ",
-                    // SAFETY: Both of these are checked to be `Some` in the `if` statement above.
-                    unsafe { gpu.pcie_gen.unwrap_unchecked() },
-                    unsafe { gpu.pcie_lanes.unwrap_unchecked() }
-                ));
+            if let (Some(pcie_gen), Some(pcie_lanes)) = (gpu.pcie_gen, gpu.pcie_lanes) {
+                this.infobar_content.set_pcie_info_visible(true);
+                this.infobar_content
+                    .pcie_speed()
+                    .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
             }
 
             this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
@@ -833,11 +826,11 @@ glib::wrapper! {
 
 impl PageExt for PerformancePageGpu {
     fn infobar_collapsed(&self) {
-        self.imp().infobar_content.set_margin_top(10);
+        self.imp().infobar_content.set_collapsed(true);
     }
 
     fn infobar_uncollapsed(&self) {
-        self.imp().infobar_content.set_margin_top(65);
+        self.imp().infobar_content.set_collapsed(false);
     }
 }
 

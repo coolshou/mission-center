@@ -1,6 +1,6 @@
 /* ui/performance_page/gpu.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ template $PerformancePageGpu: Box {
   WindowHandle {
     child: Box description {
       orientation: vertical;
+      margin-top: 2;
       spacing: 7;
       hexpand: true;
 
@@ -114,6 +115,7 @@ template $PerformancePageGpu: Box {
               "caption",
             ]
 
+            ellipsize: middle;
             label: _("Video encode/decode utilization over ");
           }
           Label {
@@ -156,8 +158,10 @@ template $PerformancePageGpu: Box {
               "caption",
             ]
 
+            ellipsize: middle;
             label: _("Memory usage over ");
           }
+
           Label {
             styles [
             "caption",
@@ -165,6 +169,8 @@ template $PerformancePageGpu: Box {
 
             hexpand: true;
             halign: start;
+
+            ellipsize: end;
             label: bind graph_max_duration.label;
           }
 

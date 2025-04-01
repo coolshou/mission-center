@@ -27,6 +27,7 @@ template $PerformancePageMemory: Box {
   WindowHandle {
     child: Box description {
       hexpand: true;
+      margin-top: 2;
       margin-bottom: 7;
 
       Label {
@@ -95,7 +96,6 @@ template $PerformancePageMemory: Box {
           hexpand: true;
 
           width-request: 100;
-          height-request: 50;
 
           base-color: bind template.base-color;
           data-set-count: 3;
@@ -106,10 +106,17 @@ template $PerformancePageMemory: Box {
           menu-model: context_menu_model;
         }
       }
-      Box {
+
+      Grid {
         orientation: vertical;
-        spacing: 10;
+
         Box {
+          layout {
+            column: '0';
+            row: '0';
+            row-span: 10;
+          }
+
           orientation: vertical;
           Box swap_box {
             Label {
@@ -141,7 +148,6 @@ template $PerformancePageMemory: Box {
             hexpand: true;
 
             width-request: 100;
-            height-request: 50;
 
             base-color: bind template.memory-color;
             data-set-count: 1;
@@ -150,7 +156,15 @@ template $PerformancePageMemory: Box {
         }
 
         Box mem_composition_box {
+          layout {
+            column: '0';
+            row: '10';
+          }
+
+          margin-top: 10;
+
           orientation: vertical;
+
           Label {
             styles [
               "caption",
@@ -162,15 +176,13 @@ template $PerformancePageMemory: Box {
             label: _("Memory composition");
           }
 
-          Adw.Clamp {
-            orientation: vertical;
-
+          $MemoryCompositionWidget mem_composition {
             width-request: 100;
-            maximum-size: 50;
+            height-request: 25;
 
-            child: $MemoryCompositionWidget mem_composition {
-              base-color: bind template.base-color;
-            };
+            vexpand: true;
+
+            base-color: bind template.base-color;
           }
         }
       }

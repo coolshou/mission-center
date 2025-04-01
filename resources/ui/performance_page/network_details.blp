@@ -24,7 +24,7 @@ Box root {
   margin-top: 65;
   margin-bottom: 10;
   orientation: vertical;
-  spacing: 20;
+  spacing: 25;
 
   Grid {
     row-spacing: 5;
@@ -119,6 +119,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -147,6 +148,7 @@ Box root {
       orientation: vertical;
       spacing: 3;
       width-request: 100;
+      margin-top: 7;
 
       Label {
         styles [
@@ -166,43 +168,42 @@ Box root {
       }
     }
 
-    Box {
+    Label {
       layout {
-        column: '0';
+        column: '1';
         row: '2';
       }
-      height-request: 10;
-    }
 
-    Label {
       styles [
         "caption",
       ]
 
+      margin-top: 20;
+
       halign: start;
       label: _("Interface name:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '3';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
 
       halign: start;
       label: _("Connection type:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '4';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
@@ -210,14 +211,14 @@ Box root {
       halign: start;
       visible: bind ssid.visible;
       label: _("SSID:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '5';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
@@ -225,14 +226,14 @@ Box root {
       halign: start;
       visible: bind signal_strength.visible;
       label: _("Signal strength:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '6';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
@@ -240,14 +241,14 @@ Box root {
       halign: start;
       visible: bind max_bitrate.visible;
       label: _("Maximum Bitrate:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '7';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
@@ -255,14 +256,14 @@ Box root {
       halign: start;
       visible: bind frequency.visible;
       label: _("Frequency:");
+    }
 
+    Label {
       layout {
         column: '1';
         row: '8';
       }
-    }
 
-    Label {
       styles [
         "caption",
       ]
@@ -271,40 +272,45 @@ Box root {
       label: _("Hardware address:");
 
       ellipsize: middle;
-
-      layout {
-        column: '1';
-        row: '9';
-      }
     }
 
     Label interface_name_label {
+      layout {
+        column: '3';
+        row: '2';
+      }
+
       styles [
         "caption",
       ]
 
       halign: start;
+      margin-top: 20;
 
+      selectable: true;
+    }
+
+    Label connection_type_label {
       layout {
         column: '3';
         row: '3';
       }
-    }
 
-    Label connection_type_label {
       styles [
         "caption",
       ]
 
       halign: start;
 
+      selectable: true;
+    }
+
+    Label ssid {
       layout {
         column: '3';
         row: '4';
       }
-    }
 
-    Label ssid {
       styles [
         "caption",
       ]
@@ -312,27 +318,29 @@ Box root {
       halign: start;
       visible: false;
 
+      selectable: true;
+    }
+
+    Image signal_strength {
       layout {
         column: '3';
         row: '5';
       }
-    }
 
-    Image signal_strength {
       styles [
         "caption",
       ]
 
       halign: start;
       visible: false;
+    }
 
+    Label max_bitrate {
       layout {
         column: '3';
         row: '6';
       }
-    }
 
-    Label max_bitrate {
       styles [
         "caption",
       ]
@@ -340,13 +348,15 @@ Box root {
       halign: start;
       visible: false;
 
+      selectable: true;
+    }
+
+    Label frequency {
       layout {
         column: '3';
         row: '7';
       }
-    }
 
-    Label frequency {
       styles [
         "caption",
       ]
@@ -354,95 +364,80 @@ Box root {
       halign: start;
       visible: false;
 
+      selectable: true;
+    }
+
+    Label hw_address {
       layout {
         column: '3';
         row: '8';
       }
-    }
 
-    Label hw_address {
       styles [
         "caption",
       ]
 
       halign: start;
 
-      layout {
-        column: '3';
-        row: '9';
-      }
-    }
-
-    Box wireless_spacer {
-      layout {
-        column: '0';
-        row: '10';
-      }
-      height-request: 10;
+      selectable: true;
     }
   }
 
-  Grid {
-    row-spacing: 5;
-    column-spacing: 0;
+  Box {
+    orientation: vertical;
+    spacing: 5;
+    margin-start: 10;
 
-    styles [
-      "layout-grid"
-    ]
+    Box {
+      orientation: horizontal;
+      spacing: 2;
 
-    Label {
-      styles [
-        "caption",
-      ]
+      Label {
+        styles [
+          "caption",
+        ]
 
-      halign: start;
-      label: _("IPv4 address:");
+        halign: start;
+        label: _("IPv4 address:");
 
-      layout {
-        column: '0';
-        row: '0';
+        ellipsize: end;
+      }
+
+      Label ipv4_address {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        selectable: true;
       }
     }
 
-    Label {
-      styles [
-        "caption",
-      ]
+    Box {
+      orientation: horizontal;
+      spacing: 2;
 
-      halign: start;
-      label: _("IPv6 address:");
+      Label {
+        styles [
+          "caption",
+        ]
 
-      ellipsize: middle;
+        halign: start;
+        label: _("IPv6 address:");
 
-      layout {
-        column: '0';
-        row: '1';
+        ellipsize: end;
       }
-    }
 
-    Label ipv4_address {
-      styles [
-        "caption",
-      ]
+      Label ipv6_address {
+        styles [
+          "caption",
+        ]
 
-      halign: start;
+        halign: start;
 
-      layout {
-        column: '1';
-        row: '0';
-      }
-    }
-
-    Label ipv6_address {
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-
-      layout {
-        column: '1';
-        row: '1';
+        ellipsize: middle;
+        selectable: true;
       }
     }
   }
