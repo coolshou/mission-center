@@ -1,6 +1,6 @@
 /* apps_page/list_item.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,100 +18,114 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
-use glib::{ParamSpec, Properties, Value, Variant, WeakRef};
-use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 
 mod imp {
-    use std::{cell::RefCell, marker::PhantomData};
-
-    use crate::i18n::i18n;
-
     use super::*;
 
-    #[derive(Properties)]
-    #[properties(wrapper_type = super::ListItem)]
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/list_item.ui")]
     pub struct ListItem {
         #[template_child]
-        pub icon: TemplateChild<gtk::Image>,
+        icon: TemplateChild<gtk::Image>,
         #[template_child]
-        pub name: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub context_menu: TemplateChild<gtk::PopoverMenu>,
+        name: TemplateChild<gtk::Label>,
 
-        css_provider: RefCell<gtk::CssProvider>,
-        gesture_click: gtk::GestureClick,
-        row: RefCell<Option<WeakRef<gtk::Widget>>>,
+        sig_icon: Cell<Option<glib::SignalHandlerId>>,
+        sig_name: Cell<Option<glib::SignalHandlerId>>,
+        sig_content_type: Cell<Option<glib::SignalHandlerId>>,
 
-        #[property(name = "name", get = Self::name, set = Self::set_name)]
-        _name_property: PhantomData<glib::GString>,
-        #[property(name = "icon", get = Self::icon, set = Self::set_icon)]
-        _icon_property: PhantomData<glib::GString>,
-        #[property(get, set)]
-        pid: Cell<u32>,
-        #[property(get = Self::content_type, set = Self::set_content_type, type = ContentType, builder(ContentType::SectionHeader))]
-        pub content_type: Cell<ContentType>,
-        #[property(get, set = Self::set_show_expander)]
-        pub show_expander: Cell<bool>,
-        #[property(get, set = Self::set_expanded)]
-        pub expanded: Cell<bool>,
-
-        #[property(set = Self::set_cpu_usage_percent)]
-        pub cpu_usage_percent: Cell<f32>,
-        #[property(set = Self::set_memory_usage_percent)]
-        pub memory_usage_percent: Cell<f32>,
-        #[property(set = Self::set_gpu_usage_percent)]
-        pub gpu_usage_percent: Cell<f32>,
-        #[property(set = Self::set_gpu_memory_usage_percent)]
-        pub gpu_memory_usage_percent: Cell<f32>,
+        model: Cell<Option<RowModel>>,
+        expander: RefCell<Option<gtk::TreeExpander>>,
     }
 
     impl Default for ListItem {
         fn default() -> Self {
             Self {
-                name: TemplateChild::default(),
                 icon: TemplateChild::default(),
-                context_menu: TemplateChild::default(),
+                name: TemplateChild::default(),
 
-                css_provider: RefCell::new(gtk::CssProvider::new()),
-                gesture_click: gtk::GestureClick::new(),
-                row: RefCell::new(None),
+                sig_icon: Cell::new(None),
+                sig_name: Cell::new(None),
+                sig_content_type: Cell::new(None),
 
-                _name_property: PhantomData,
-                _icon_property: PhantomData,
-                pid: Cell::new(0),
-                content_type: Cell::new(ContentType::SectionHeader),
-                show_expander: Cell::new(true),
-                expanded: Cell::new(false),
-
-                cpu_usage_percent: Cell::new(0.0),
-                memory_usage_percent: Cell::new(0.0),
-                gpu_usage_percent: Cell::new(0.0),
-                gpu_memory_usage_percent: Cell::new(0.0),
+                model: Cell::new(None),
+                expander: RefCell::new(None),
             }
         }
     }
 
     impl ListItem {
-        pub fn name(&self) -> glib::GString {
-            self.name.text()
+        pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
+            let this = self.obj().downgrade();
+
+            let sig_icon = model.connect_icon_notify({
+                let this = this.clone();
+                move |model| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+                    this.set_icon(model.icon());
+                }
+            });
+            self.sig_icon.set(Some(sig_icon));
+            self.set_icon(model.icon());
+
+            let sig_name = model.connect_name_notify({
+                let this = this.clone();
+                move |model| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+                    this.name.set_label(&model.name());
+                }
+            });
+            self.sig_name.set(Some(sig_name));
+            self.name.set_label(&model.name());
+
+            let sig_content_type = model.connect_content_type_notify({
+                move |model| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+                    this.set_content_type(model.content_type());
+                }
+            });
+            self.sig_content_type.set(Some(sig_content_type));
+            self.set_content_type(model.content_type());
+
+            self.model.set(Some(model.clone()));
+            *self.expander.borrow_mut() = Some(expander.clone());
         }
 
-        pub fn set_name(&self, name: &str) {
-            self.name.set_text(name);
+        pub fn unbind(&self) {
+            self.expander.replace(None);
+            let Some(model) = self.model.take() else {
+                return;
+            };
+
+            if let Some(sig_id) = self.sig_icon.take() {
+                model.disconnect(sig_id);
+            }
+
+            if let Some(sig_id) = self.sig_name.take() {
+                model.disconnect(sig_id);
+            }
+
+            if let Some(sig_id) = self.sig_content_type.take() {
+                model.disconnect(sig_id);
+            }
         }
 
-        pub fn icon(&self) -> glib::GString {
-            self.icon.icon_name().unwrap_or("".into())
-        }
-
-        pub fn set_icon(&self, icon: &str) {
-            let icon_path = std::path::Path::new(icon);
+        fn set_icon(&self, icon: glib::GString) {
+            let icon_path = std::path::Path::new(icon.as_str());
             if icon_path.exists() {
                 self.icon.set_from_file(Some(&icon_path));
                 return;
@@ -120,19 +134,14 @@ mod imp {
             let display = gtk::gdk::Display::default().unwrap();
             let icon_theme = gtk::IconTheme::for_display(&display);
 
-            if icon_theme.has_icon(icon) {
-                self.icon.set_icon_name(Some(icon));
+            if icon_theme.has_icon(&icon) {
+                self.icon.set_icon_name(Some(&icon));
             } else {
                 self.icon.set_icon_name(Some("application-x-executable"));
             }
         }
 
-        fn content_type(&self) -> ContentType {
-            self.content_type.get()
-        }
-
         fn set_content_type(&self, content_type: ContentType) {
-            let tree_expander = self.obj().parent().and_downcast::<gtk::TreeExpander>();
             match content_type {
                 ContentType::SectionHeader => {
                     self.icon.set_visible(false);
@@ -143,9 +152,9 @@ mod imp {
                     this.set_margin_top(6);
                     this.set_margin_bottom(6);
 
-                    if let Some(tree_expander) = tree_expander {
-                        tree_expander.set_indent_for_icon(false);
-                    }
+                    if let Some(expander) = self.expander.borrow().as_ref() {
+                        expander.set_indent_for_icon(false);
+                    };
                 }
                 ContentType::App => {
                     self.icon.set_visible(true);
@@ -158,9 +167,17 @@ mod imp {
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
 
-                    if let Some(tree_expander) = tree_expander {
-                        tree_expander.set_indent_for_icon(true);
-                    }
+                    let this = this.downgrade();
+                    glib::idle_add_local_once(move || {
+                        let Some(this) = this.upgrade() else {
+                            return;
+                        };
+                        let _ = this.activate_action("listitem.collapse", None);
+                    });
+
+                    if let Some(expander) = self.expander.borrow().as_ref() {
+                        expander.set_indent_for_icon(true);
+                    };
                 }
                 ContentType::Process => {
                     self.icon.set_visible(true);
@@ -173,128 +190,11 @@ mod imp {
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
 
-                    if let Some(tree_expander) = tree_expander {
-                        tree_expander.set_indent_for_icon(true);
-                    }
+                    if let Some(expander) = self.expander.borrow().as_ref() {
+                        expander.set_indent_for_icon(true);
+                    };
                 }
             };
-
-            self.content_type.set(content_type);
-        }
-
-        fn set_show_expander(&self, show: bool) {
-            use glib::g_critical;
-
-            let parent = self
-                .obj()
-                .parent()
-                .and_then(|p| p.downcast::<gtk::TreeExpander>().ok());
-            if parent.is_none() {
-                g_critical!(
-                    "MissionCenter::AppsPage",
-                    "Failed to get parent TreeExpander"
-                );
-            } else {
-                let parent = parent.unwrap();
-
-                parent.set_hide_expander(!show);
-            }
-
-            self.show_expander.set(show);
-        }
-
-        fn set_expanded(&self, expanded: bool) {
-            self.expanded.set(expanded);
-
-            if !expanded {
-                let _ = self.obj().activate_action("listitem.collapse", None);
-            }
-        }
-
-        fn set_cpu_usage_percent(&self, usage_percent: f32) {
-            self.cpu_usage_percent.set(usage_percent);
-
-            self.update_css(usage_percent.max(self.memory_usage_percent.get()));
-        }
-
-        fn set_memory_usage_percent(&self, usage_percent: f32) {
-            self.memory_usage_percent.set(usage_percent);
-
-            self.update_css(usage_percent.max(self.cpu_usage_percent.get()));
-        }
-
-        fn set_gpu_usage_percent(&self, usage_percent: f32) {
-            self.gpu_usage_percent.set(usage_percent);
-
-            self.update_css(usage_percent.max(self.gpu_memory_usage_percent.get()));
-        }
-
-        fn set_gpu_memory_usage_percent(&self, usage_percent: f32) {
-            self.gpu_memory_usage_percent.set(usage_percent);
-
-            self.update_css(usage_percent.max(self.gpu_usage_percent.get()));
-        }
-
-        fn update_css(&self, usage_percent: f32) {
-            use crate::apps_page::{
-                CSS_CELL_USAGE_HIGH, CSS_CELL_USAGE_LOW, CSS_CELL_USAGE_MEDIUM,
-            };
-
-            let css_provider = self.css_provider.borrow();
-            if usage_percent >= 90.0 {
-                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_HIGH));
-            } else if usage_percent >= 80.0 {
-                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_MEDIUM));
-            } else if usage_percent >= 70.0 {
-                css_provider.load_from_bytes(&glib::Bytes::from_static(CSS_CELL_USAGE_LOW));
-            } else {
-                css_provider.load_from_bytes(&glib::Bytes::from_static(b""));
-            }
-        }
-
-        fn show_context_menu(&self, x: f64, y: f64) {
-            if matches!(self.content_type(), ContentType::SectionHeader) {
-                return;
-            }
-
-            let pid = self.pid.get();
-            let anchor = gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1);
-
-            // For some reason we're not able to activate this action in ColumnView unless we get the parent.
-            if let Some(row) = self.obj().row() {
-                let _ = row
-                    .activate_action("listitem.select", Some(&glib::Variant::from((true, true))));
-            }
-
-            let (stop_label, force_stop_label, is_app) = match self.obj().content_type() {
-                ContentType::App => (
-                    i18n("Stop Application"),
-                    i18n("Force Stop Application"),
-                    true,
-                ),
-                ContentType::Process => (i18n("Stop Process"), i18n("Force Stop Process"), false),
-                _ => unreachable!(),
-            };
-
-            let menu = gio::Menu::new();
-
-            let mi_stop = gio::MenuItem::new(Some(&stop_label), None);
-            mi_stop.set_action_and_target_value(
-                Some("apps-page.stop"),
-                Some(&Variant::from((pid, is_app))),
-            );
-            let mi_force_stop = gio::MenuItem::new(Some(&force_stop_label), None);
-            mi_force_stop.set_action_and_target_value(
-                Some("apps-page.force-stop"),
-                Some(&Variant::from((pid, is_app))),
-            );
-
-            menu.append_item(&mi_stop);
-            menu.append_item(&mi_force_stop);
-
-            self.context_menu.set_menu_model(Some(&menu));
-            self.context_menu.set_pointing_to(Some(&anchor));
-            self.context_menu.popup();
         }
     }
 
@@ -314,101 +214,14 @@ mod imp {
     }
 
     impl ObjectImpl for ListItem {
-        fn properties() -> &'static [ParamSpec] {
-            Self::derived_properties()
-        }
-
-        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
-            self.derived_set_property(id, value, pspec)
-        }
-
-        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
-            self.derived_property(id, pspec)
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
-
-            self.gesture_click.set_button(3);
-            self.gesture_click.connect_released(glib::clone!(
-                #[weak(rename_to = this)]
-                self.obj(),
-                move |_, _, x, y| {
-                    this.imp().show_context_menu(x, y);
-                }
-            ));
         }
     }
 
     impl WidgetImpl for ListItem {
         fn realize(&self) {
-            use glib::g_critical;
-
             self.parent_realize();
-
-            if let Some(tree_expander) = self.obj().expander() {
-                let row_model = match tree_expander
-                    .item()
-                    .and_then(|model| model.downcast::<RowModel>().ok())
-                {
-                    None => {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to get ViewModel, cannot show context menu for App/Process"
-                        );
-                        return;
-                    }
-                    Some(model) => model,
-                };
-
-                // FIXME (Romeo Calota):
-                // Compound hackery with the property in the ViewModel. If we're an app we start
-                // out collapsed. We set the expanded property to true in the model, so that any
-                // action from the user (expand/collapse) will be ignored. We do this with a timeout
-                // so that the view has time to refresh at least once with the binding set to true.
-                if row_model.content_type() == ContentType::App {
-                    glib::timeout_add_seconds_local_once(1, {
-                        let row_model = row_model.downgrade();
-                        move || {
-                            if let Some(row_model) = row_model.upgrade() {
-                                row_model.set_expanded(true);
-                            }
-                        }
-                    });
-                }
-
-                if let Some(column_view_cell) = tree_expander.parent() {
-                    // FIXME: Deprecated in GTK 4.10, removed in GTK 5.0, unclear what the replacement is
-                    #[allow(deprecated)]
-                    {
-                        let style_provider = crate::glib_clone!(self.css_provider);
-                        column_view_cell
-                            .style_context()
-                            .add_provider(&style_provider, gtk::STYLE_PROVIDER_PRIORITY_USER);
-                    }
-
-                    if let Some(new_row) = column_view_cell.parent() {
-                        if self.content_type.get() != ContentType::SectionHeader
-                            && row_model.pid() == 0
-                        {
-                            new_row.set_visible(false);
-                        }
-
-                        let old_row = self.row.borrow().as_ref().and_then(|r| r.upgrade());
-
-                        if Some(new_row.clone()) == old_row {
-                            return;
-                        }
-
-                        if let Some(old_row) = old_row {
-                            old_row.remove_controller(&self.gesture_click);
-                        }
-
-                        new_row.add_controller(self.gesture_click.clone());
-                        self.row.replace(Some(new_row.downgrade()));
-                    }
-                }
-            }
         }
     }
 
@@ -422,20 +235,15 @@ glib::wrapper! {
 }
 
 impl ListItem {
-    pub fn expander(&self) -> Option<gtk::TreeExpander> {
-        self.parent()
-            .and_then(|p| p.downcast::<gtk::TreeExpander>().ok())
+    pub fn new() -> Self {
+        glib::Object::builder().build()
     }
 
-    pub fn row(&self) -> Option<gtk::Widget> {
-        self.expander()
-            .and_then(|te| te.parent())
-            .and_then(|p| p.parent())
+    pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
+        self.imp().bind(model, expander);
     }
 
-    pub fn row_model(&self) -> Option<RowModel> {
-        self.expander()
-            .and_then(|te| te.item())
-            .and_then(|model| model.downcast::<RowModel>().ok())
+    pub fn unbind(&self) {
+        self.imp().unbind();
     }
 }

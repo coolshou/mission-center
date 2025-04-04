@@ -34,6 +34,7 @@ use window::MissionCenterWindow;
 mod application;
 mod apps_page;
 mod i18n;
+mod list_cell;
 mod magpie_client;
 mod performance_page;
 mod preferences;

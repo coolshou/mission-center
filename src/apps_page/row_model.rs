@@ -1,6 +1,6 @@
-/* apps_page/view_model.rs
+/* apps_page/row_model.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,6 @@ mod imp {
         pub content_type: Cell<ContentType>,
         #[property(get = Self::section_type, type = SectionType, builder(SectionType::Apps))]
         pub section_type: Cell<SectionType>,
-        #[property(get, set)]
-        pub show_expander: Cell<bool>,
-        #[property(get, set)]
-        pub expanded: Cell<bool>,
 
         #[property(get, set = Self::set_cpu_usage)]
         pub cpu_usage: Cell<f32>,
@@ -92,16 +88,6 @@ mod imp {
 
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
-                show_expander: Cell::new(true),
-                // FIXME (Romeo Calota):
-                // This property is only used as a workaround for a weirdness in GTK.
-                // When the property is set to false, the list item will honor it and collapse the
-                // expander. However, when the property is set to true, the list item will ignore it.
-                // This is done to force App entries to initially be collapsed, while retaining
-                // the ability to stay expanded when the user expands them.
-                // Ideally this should be a bidirectional bind with the list item, but there is no
-                // way to know when a user expands or collapses an item.
-                expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0),
@@ -283,8 +269,6 @@ pub struct RowModelBuilder {
 
     content_type: ContentType,
     section_type: SectionType,
-    show_expander: Option<bool>,
-    expanded: bool,
 
     cpu_usage: f32,
     memory_usage: u64,
@@ -309,8 +293,6 @@ impl RowModelBuilder {
 
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
-            show_expander: None,
-            expanded: true,
 
             cpu_usage: 0.,
             memory_usage: 0,
@@ -353,16 +335,6 @@ impl RowModelBuilder {
 
     pub fn section_type(mut self, section_type: SectionType) -> Self {
         self.section_type = section_type;
-        self
-    }
-
-    pub fn show_expander(mut self, show_expander: bool) -> Self {
-        self.show_expander = Some(show_expander);
-        self
-    }
-
-    pub fn expanded(mut self, expanded: bool) -> Self {
-        self.expanded = expanded;
         self
     }
 
@@ -417,7 +389,7 @@ impl RowModelBuilder {
     }
 
     pub fn build(self) -> RowModel {
-        let this = RowModel::new(self.content_type, self.show_expander);
+        let this = RowModel::new(self.content_type);
 
         {
             let this = this.imp();
@@ -427,7 +399,6 @@ impl RowModelBuilder {
             this.name.set(self.name);
             this.id.set(self.id);
 
-            this.expanded.set(self.expanded);
             this.section_type.set(self.section_type);
 
             this.set_cpu_usage(self.cpu_usage);
@@ -452,39 +423,9 @@ glib::wrapper! {
 }
 
 impl RowModel {
-    pub fn new(content_type: ContentType, show_expander: Option<bool>) -> Self {
-        use gtk::prelude::*;
-
+    pub fn new(content_type: ContentType) -> Self {
         let this: Self = glib::Object::builder().build();
         this.imp().content_type.set(content_type);
-
-        if show_expander.is_none() {
-            glib::idle_add_local_once({
-                let this = this.downgrade();
-                move || {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-
-                    this.set_show_expander(this.children().n_items() > 0);
-                }
-            });
-
-            this.children().connect_items_changed({
-                let this = this.downgrade();
-                move |_, _, _, _| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-
-                    this.set_show_expander(this.children().n_items() > 0);
-                }
-            });
-        } else {
-            this.set_show_expander(show_expander.unwrap());
-        }
 
         this
     }

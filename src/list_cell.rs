@@ -1,6 +1,6 @@
-/* widgets/mission_center_cell.rs
+/* list_cell.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use adw::{self, subclass::prelude::*};
-use gtk::{
-    glib::{self, gobject_ffi, ParamSpec, Properties, Value, Variant},
-    prelude::*,
-};
+use glib::{gobject_ffi, ParamSpec, Properties, Value, Variant};
+use gtk::glib;
+use gtk::prelude::*;
 
 #[allow(unreachable_code)]
 mod imp {
@@ -34,20 +33,28 @@ mod imp {
     #[properties(wrapper_type = super::ListCell)]
     pub struct ListCell {
         #[property(set = Self::set_item_name, type = glib::GString)]
-        item_name: Cell<Rc<str>>,
+        item_name: RefCell<Rc<str>>,
+        #[property(set = Self::set_action_name, type = glib::GString)]
+        action_name: RefCell<Rc<str>>,
     }
 
     impl Default for ListCell {
         fn default() -> Self {
+            let empty_str = Rc::<str>::from("");
             Self {
-                item_name: Cell::new(Rc::<str>::from("")),
+                item_name: RefCell::new(empty_str.clone()),
+                action_name: RefCell::new(empty_str),
             }
         }
     }
 
     impl ListCell {
         fn set_item_name(&self, item_name: &str) {
-            self.item_name.set(Rc::<str>::from(item_name));
+            *self.item_name.borrow_mut() = Rc::<str>::from(item_name);
+        }
+
+        fn set_action_name(&self, action_name: &str) {
+            *self.action_name.borrow_mut() = Rc::<str>::from(action_name);
         }
     }
 
@@ -95,16 +102,16 @@ mod imp {
                     };
                     let this = this.downgrade();
                     move |_, _, x, y| {
-                        if let Some(this) = this.upgrade() {
-                            let item_name = unsafe { &*this.imp().item_name.as_ptr() }
-                                .as_ref()
-                                .to_owned();
+                        let Some(this) = this.upgrade() else {
+                            return;
+                        };
+                        let this = this.imp();
 
-                            let _ = this.activate_action(
-                                "services-page.show-context-menu",
-                                Some(&Variant::from((item_name, weak_self, x, y))),
-                            );
-                        }
+                        let item_name = this.item_name.borrow().as_ref().to_owned();
+                        let _ = this.obj().activate_action(
+                            this.action_name.borrow().as_ref(),
+                            Some(&Variant::from((item_name, weak_self, x, y))),
+                        );
                     }
                 });
                 row_widget.add_controller(gesture_click);
@@ -121,4 +128,10 @@ glib::wrapper! {
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl ListCell {}
+impl ListCell {
+    pub fn new(action_name: &str) -> Self {
+        glib::Object::builder()
+            .property("action-name", action_name)
+            .build()
+    }
+}

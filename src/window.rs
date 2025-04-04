@@ -1,6 +1,6 @@
 /* window.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,14 @@
 use std::cell::Cell;
 use std::time::Duration;
 
-use crate::{app, magpie_client::Readings, settings, theme_selector::ThemeSelector};
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::glib::ControlFlow;
 use gtk::{gio, glib};
+
+use crate::list_cell::ListCell;
+use crate::theme_selector::ThemeSelector;
+use crate::{app, magpie_client::Readings, settings};
 
 mod imp {
     use super::*;
@@ -388,6 +391,8 @@ mod imp {
             use crate::{
                 apps_page::AppsPage, performance_page::PerformancePage, services_page::ServicesPage,
             };
+
+            ListCell::ensure_type();
 
             PerformancePage::ensure_type();
             AppsPage::ensure_type();

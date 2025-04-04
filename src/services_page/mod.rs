@@ -1,6 +1,6 @@
 /* services_page/mod.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ use gtk::{
 
 use context_menu_button::ContextMenuButton;
 use details_dialog::DetailsDialog;
-use list_cell::ListCell;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 
 use crate::{
@@ -45,7 +44,6 @@ use crate::{
 
 mod context_menu_button;
 mod details_dialog;
-mod list_cell;
 mod services_list_item;
 
 mod imp {
@@ -587,7 +585,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            ListCell::ensure_type();
             ContextMenuButton::ensure_type();
             ServicesListItem::ensure_type();
             DetailsDialog::ensure_type();
