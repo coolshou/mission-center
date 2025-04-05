@@ -27,7 +27,11 @@ use magpie_types::apps::icon::Icon;
 
 use crate::magpie_client::App;
 
-use columns::{name_list_item_factory, pid_list_item_factory};
+use columns::{
+    cpu_list_item_factory, drive_list_item_factory, gpu_list_item_factory,
+    gpu_memory_list_item_factory, memory_list_item_factory, name_list_item_factory,
+    pid_list_item_factory, shared_memory_list_item_factory,
+};
 use row_model::{ContentType, RowModel, RowModelBuilder};
 
 mod column_header;
@@ -60,7 +64,7 @@ mod imp {
         #[template_child]
         pub shared_memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        pub disk_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub drive_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
@@ -76,7 +80,7 @@ mod imp {
                 cpu_column: TemplateChild::default(),
                 memory_column: TemplateChild::default(),
                 shared_memory_column: TemplateChild::default(),
-                disk_column: TemplateChild::default(),
+                drive_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
             }
@@ -109,15 +113,23 @@ mod imp {
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
             self.pid_column.set_factory(Some(&pid_list_item_factory()));
+            self.cpu_column.set_factory(Some(&cpu_list_item_factory()));
+            self.memory_column
+                .set_factory(Some(&memory_list_item_factory()));
+            self.shared_memory_column
+                .set_factory(Some(&shared_memory_list_item_factory()));
+            self.drive_column
+                .set_factory(Some(&drive_list_item_factory()));
+            self.gpu_usage_column
+                .set_factory(Some(&gpu_list_item_factory()));
+            self.gpu_memory_column
+                .set_factory(Some(&gpu_memory_list_item_factory()));
         }
     }
 
     impl WidgetImpl for AppsPage {
         fn realize(&self) {
             self.parent_realize();
-            if let Some(header) = self.column_view.first_child() {
-                header.add_css_class("app-list-header");
-            }
         }
     }
 
@@ -163,6 +175,12 @@ impl AppsPage {
                 .content_type(ContentType::App)
                 .name(app.name.as_str())
                 .pid(app.pids[0])
+                .cpu_usage(20.)
+                .memory_usage(200)
+                .shared_memory_usage(200)
+                .disk_usage(100.)
+                .gpu_usage(20.)
+                .gpu_mem_usage(200)
                 .icon(icon.as_str())
                 .build();
             apps_section.children().append(&row_model)

@@ -1,15 +1,15 @@
-.app-list-header {
-    padding: 0;
-    margin-left: 0px;
+window columnview header {
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
-.faint-text {
-    opacity: 0.33;
+window listview {
+    margin-left: -2px;
 }
 
-listview row {
+window listview row {
     border-radius: 8px;
-    margin: 0 2px 0 2px;
+    margin: 0 0px 0 2px;
 }
 
 themeselector {

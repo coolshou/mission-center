@@ -4,6 +4,8 @@ use gtk::prelude::{ListItemExt, WidgetExt};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 
+use super::format_bytes;
+
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     let factory = gtk::SignalListItemFactory::new();
 
@@ -67,13 +69,15 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
             return;
         }
 
-        let sig_handler = model.connect_pid_notify({
+        let sig_handler = model.connect_shared_memory_usage_notify({
             let label = label.clone();
             move |model| {
-                label.set_label(&model.pid().to_string());
+                let bytes = format_bytes(model.shared_memory_usage() as _);
+                label.set_label(bytes.as_str());
             }
         });
-        label.set_label(&model.pid().to_string());
+        let bytes = format_bytes(model.shared_memory_usage() as _);
+        label.set_label(bytes.as_str());
 
         unsafe {
             label.set_data("sig_handler", sig_handler);

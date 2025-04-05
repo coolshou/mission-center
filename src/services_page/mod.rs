@@ -676,8 +676,6 @@ mod imp {
             self.column_view.set_model(Some(&selection_model));
 
             if let Some(header) = self.column_view.first_child() {
-                header.add_css_class("app-list-header");
-
                 // Add 10px padding to the left of the first column header to align it with the content
                 if let Some(first_column) = header
                     .first_child()

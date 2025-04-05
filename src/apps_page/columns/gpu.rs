@@ -1,4 +1,7 @@
+use std::fmt::Write;
+
 use adw::prelude::{Cast, ObjectExt};
+use arrayvec::ArrayString;
 use gtk::glib;
 use gtk::prelude::{ListItemExt, WidgetExt};
 
@@ -67,13 +70,17 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
             return;
         }
 
-        let sig_handler = model.connect_pid_notify({
+        let sig_handler = model.connect_gpu_usage_notify({
             let label = label.clone();
             move |model| {
-                label.set_label(&model.pid().to_string());
+                let mut buffer = ArrayString::<128>::new();
+                let _ = write!(&mut buffer, "{}%", model.gpu_usage());
+                label.set_label(&mut buffer.as_str());
             }
         });
-        label.set_label(&model.pid().to_string());
+        let mut buffer = ArrayString::<128>::new();
+        let _ = write!(buffer, "{}%", model.gpu_usage());
+        label.set_label(buffer.as_str());
 
         unsafe {
             label.set_data("sig_handler", sig_handler);

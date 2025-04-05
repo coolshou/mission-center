@@ -162,7 +162,7 @@ template $AppsPage : Box {
 
             reorderable: false;
             show-row-separators: false;
-            show-column-separators: false;
+            show-column-separators: true;
 
             ColumnViewColumn name_column {
               title: _("Name");
@@ -190,8 +190,8 @@ template $AppsPage : Box {
               resizable: true;
             }
 
-            ColumnViewColumn disk_column {
-              title: _("Disk");
+            ColumnViewColumn drive_column {
+              title: _("Drive");
               resizable: true;
             }
 
