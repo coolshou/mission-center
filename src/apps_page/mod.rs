@@ -25,6 +25,7 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use magpie_types::apps::icon::Icon;
 
+use crate::i18n;
 use crate::magpie_client::App;
 
 use columns::{
@@ -124,6 +125,34 @@ mod imp {
                 .set_factory(Some(&gpu_list_item_factory()));
             self.gpu_memory_column
                 .set_factory(Some(&gpu_memory_list_item_factory()));
+
+            let mut column_view_title =
+                self.column_view.first_child().and_then(|w| w.first_child());
+            loop {
+                let Some(view_title) = column_view_title.take() else {
+                    break;
+                };
+                column_view_title = view_title.next_sibling();
+
+                let Some(container) = view_title.first_child() else {
+                    continue;
+                };
+
+                let Some(label) = container
+                    .first_child()
+                    .and_then(|l| l.downcast::<gtk::Label>().ok())
+                else {
+                    continue;
+                };
+
+                if label.label().starts_with(&i18n("Name")) {
+                    continue;
+                }
+
+                container.set_halign(gtk::Align::End);
+                label.set_halign(gtk::Align::End);
+                label.set_justify(gtk::Justification::Right);
+            }
         }
     }
 
@@ -144,6 +173,17 @@ glib::wrapper! {
 
 impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
+        let imp = self.imp();
+
+        columns::update_column_titles(
+            &imp.cpu_column,
+            &imp.memory_column,
+            &imp.drive_column,
+            &imp.gpu_usage_column,
+            &imp.gpu_memory_column,
+            readings,
+        );
+
         let model = gio::ListStore::new::<RowModel>();
 
         let apps_section = RowModelBuilder::new()
@@ -193,14 +233,23 @@ impl AppsPage {
             Some(row_model.children().clone().into())
         });
 
-        self.imp()
-            .column_view
+        imp.column_view
             .set_model(Some(&gtk::SingleSelection::new(Some(tree_model))));
 
         true
     }
 
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
+        let imp = self.imp();
+
+        columns::update_column_titles(
+            &imp.cpu_column,
+            &imp.memory_column,
+            &imp.drive_column,
+            &imp.gpu_usage_column,
+            &imp.gpu_memory_column,
+            readings,
+        );
         true
     }
 
