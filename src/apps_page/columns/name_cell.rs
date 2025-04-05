@@ -27,13 +27,9 @@ use crate::apps_page::row_model::{ContentType, RowModel};
 mod imp {
     use super::*;
 
-    #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/list_item.ui")]
-    pub struct ListItem {
-        #[template_child]
-        icon: TemplateChild<gtk::Image>,
-        #[template_child]
-        name: TemplateChild<gtk::Label>,
+    pub struct NameCell {
+        icon: gtk::Image,
+        name: gtk::Label,
 
         sig_icon: Cell<Option<glib::SignalHandlerId>>,
         sig_name: Cell<Option<glib::SignalHandlerId>>,
@@ -43,11 +39,11 @@ mod imp {
         expander: RefCell<Option<gtk::TreeExpander>>,
     }
 
-    impl Default for ListItem {
+    impl Default for NameCell {
         fn default() -> Self {
             Self {
-                icon: TemplateChild::default(),
-                name: TemplateChild::default(),
+                icon: gtk::Image::new(),
+                name: gtk::Label::new(None),
 
                 sig_icon: Cell::new(None),
                 sig_name: Cell::new(None),
@@ -59,7 +55,7 @@ mod imp {
         }
     }
 
-    impl ListItem {
+    impl NameCell {
         pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
             let this = self.obj().downgrade();
 
@@ -199,42 +195,41 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ListItem {
-        const NAME: &'static str = "ListItem";
-        type Type = super::ListItem;
+    impl ObjectSubclass for NameCell {
+        const NAME: &'static str = "NameCell";
+        type Type = super::NameCell;
         type ParentType = gtk::Box;
 
-        fn class_init(klass: &mut Self::Class) {
-            klass.bind_template();
-        }
+        fn class_init(_klass: &mut Self::Class) {}
 
-        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-            obj.init_template();
-        }
+        fn instance_init(_obj: &glib::subclass::InitializingObject<Self>) {}
     }
 
-    impl ObjectImpl for ListItem {
+    impl ObjectImpl for NameCell {
         fn constructed(&self) {
             self.parent_constructed();
+
+            let _ = self.obj().append(&self.icon);
+            let _ = self.obj().append(&self.name);
         }
     }
 
-    impl WidgetImpl for ListItem {
+    impl WidgetImpl for NameCell {
         fn realize(&self) {
             self.parent_realize();
         }
     }
 
-    impl BoxImpl for ListItem {}
+    impl BoxImpl for NameCell {}
 }
 
 glib::wrapper! {
-    pub struct ListItem(ObjectSubclass<imp::ListItem>)
+    pub struct NameCell(ObjectSubclass<imp::NameCell>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
-impl ListItem {
+impl NameCell {
     pub fn new() -> Self {
         glib::Object::builder().build()
     }

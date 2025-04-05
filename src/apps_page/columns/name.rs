@@ -1,0 +1,109 @@
+use adw::prelude::*;
+
+use crate::apps_page::columns::NameCell;
+use crate::apps_page::row_model::RowModel;
+use crate::list_cell::ListCell;
+
+pub fn list_item_factory() -> gtk::SignalListItemFactory {
+    let factory = gtk::SignalListItemFactory::new();
+
+    factory.connect_setup(|_, list_item| {
+        let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+            return;
+        };
+
+        let name_cell = NameCell::new();
+
+        let list_cell = ListCell::new("apps-page.show-context-menu");
+        list_cell.set_child(Some(&name_cell));
+
+        let expander = gtk::TreeExpander::new();
+        expander.set_child(Some(&list_cell));
+
+        expander.set_hide_expander(false);
+        expander.set_indent_for_icon(true);
+        expander.set_indent_for_depth(true);
+        expander.set_halign(gtk::Align::Start);
+
+        list_item.set_child(Some(&expander));
+
+        unsafe {
+            list_item.set_data("expander", expander);
+            list_item.set_data("list_cell", list_cell);
+            list_item.set_data("list_item", name_cell);
+        }
+    });
+
+    factory.connect_bind(|_, list_item| {
+        let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+            return;
+        };
+
+        let Some(row) = list_item
+            .item()
+            .and_then(|item| item.downcast::<gtk::TreeListRow>().ok())
+        else {
+            return;
+        };
+
+        let expander = unsafe {
+            list_item
+                .data::<gtk::TreeExpander>("expander")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+        expander.set_list_row(Some(&row));
+
+        let name_cell = unsafe {
+            list_item
+                .data::<NameCell>("list_item")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+
+        let Some(model) = expander
+            .item()
+            .and_then(|item| item.downcast::<RowModel>().ok())
+        else {
+            return;
+        };
+
+        name_cell.bind(&model, expander);
+    });
+
+    factory.connect_unbind(|_, list_item| {
+        let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+            return;
+        };
+
+        let expander = unsafe {
+            list_item
+                .data::<gtk::TreeExpander>("expander")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+        expander.set_list_row(None);
+
+        let name_cell = unsafe {
+            list_item
+                .data::<NameCell>("list_item")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+        name_cell.unbind();
+    });
+
+    factory.connect_teardown(|_, list_item| {
+        let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+            return;
+        };
+
+        unsafe {
+            let _ = list_item.steal_data::<gtk::TreeExpander>("expander");
+            let _ = list_item.steal_data::<ListCell>("list_cell");
+            let _ = list_item.steal_data::<NameCell>("list_item");
+        }
+    });
+
+    factory
+}

@@ -25,12 +25,14 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
 use magpie_types::apps::icon::Icon;
 
-use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
-use crate::list_cell::ListCell;
 use crate::magpie_client::App;
 
+use columns::{name_list_item_factory, pid_list_item_factory};
+use row_model::{ContentType, RowModel, RowModelBuilder};
+
 mod column_header;
-mod list_item;
+mod columns;
+mod model;
 mod pid_column;
 mod row_model;
 mod stat_column;
@@ -104,98 +106,9 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let name_factory = gtk::SignalListItemFactory::new();
-            self.name_column.set_factory(Some(&name_factory));
-
-            name_factory.connect_setup(|_, list_item| {
-                let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
-                    return;
-                };
-
-                let my_list_item = list_item::ListItem::new();
-
-                let list_cell = ListCell::new("apps-page.show-context-menu");
-                list_cell.set_child(Some(&my_list_item));
-
-                let expander = gtk::TreeExpander::new();
-                expander.set_child(Some(&list_cell));
-
-                list_item.set_child(Some(&expander));
-
-                unsafe {
-                    list_item.set_data("expander", expander);
-                    list_item.set_data("list_cell", list_cell);
-                    list_item.set_data("list_item", my_list_item);
-                }
-            });
-            name_factory.connect_bind(|_, list_item| {
-                let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
-                    return;
-                };
-
-                let Some(row) = list_item
-                    .item()
-                    .and_then(|item| item.downcast::<gtk::TreeListRow>().ok())
-                else {
-                    return;
-                };
-
-                let expander = unsafe {
-                    list_item
-                        .data::<gtk::TreeExpander>("expander")
-                        .unwrap_unchecked()
-                        .as_ref()
-                };
-                expander.set_list_row(Some(&row));
-
-                let my_list_item = unsafe {
-                    list_item
-                        .data::<list_item::ListItem>("list_item")
-                        .unwrap_unchecked()
-                        .as_ref()
-                };
-
-                let Some(model) = expander
-                    .item()
-                    .and_then(|item| item.downcast::<RowModel>().ok())
-                else {
-                    return;
-                };
-
-                my_list_item.bind(&model, expander);
-            });
-            name_factory.connect_unbind(|_, list_item| {
-                let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
-                    return;
-                };
-
-                let expander = unsafe {
-                    list_item
-                        .data::<gtk::TreeExpander>("expander")
-                        .unwrap_unchecked()
-                        .as_ref()
-                };
-                expander.set_list_row(None);
-
-                let my_list_item = unsafe {
-                    list_item
-                        .data::<list_item::ListItem>("list_item")
-                        .unwrap_unchecked()
-                        .as_ref()
-                };
-                my_list_item.unbind();
-            });
-            name_factory.connect_teardown(|_, list_item| {
-                let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
-                    return;
-                };
-
-                unsafe {
-                    let _ = list_item.steal_data::<gtk::TreeExpander>("expander");
-                    let _ = list_item.steal_data::<ListCell>("list_cell");
-                    let _ = list_item.steal_data::<list_item::ListItem>("list_item");
-                }
-            });
+            self.name_column
+                .set_factory(Some(&name_list_item_factory()));
+            self.pid_column.set_factory(Some(&pid_list_item_factory()));
         }
     }
 

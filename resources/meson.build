@@ -5,7 +5,6 @@ gnome = import('gnome')
 blueprints = custom_target('blueprints',
   input: files(
     'ui/apps_page/column_header.blp',
-    'ui/apps_page/list_item.blp',
     'ui/apps_page/page.blp',
     'ui/apps_page/pid_column.blp',
     'ui/apps_page/stat_column.blp',
