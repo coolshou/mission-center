@@ -18,13 +18,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use adw::prelude::*;
+use gtk::glib::g_critical;
+use gtk::{gio, glib, subclass::prelude::*};
+use magpie_types::apps::icon::Icon;
+use magpie_types::processes::Process;
 use std::cell::Cell;
 use std::collections::HashMap;
-
-use adw::prelude::*;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
-
-use magpie_types::apps::icon::Icon;
 
 use crate::i18n;
 use crate::magpie_client::App;
@@ -73,6 +73,8 @@ mod imp {
         pub processes_section: RowModel,
 
         pub root_process: Cell<u32>,
+
+        pub use_merged_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
@@ -98,6 +100,8 @@ mod imp {
                     .build(),
 
                 root_process: Cell::new(1),
+
+                use_merged_stats: Cell::new(false),
             }
         }
     }
@@ -208,40 +212,24 @@ impl AppsPage {
             readings,
         );
 
-        for app in readings.running_apps.values() {
-            let icon = app
-                .icon
-                .as_ref()
-                .and_then(|i| i.icon.clone())
-                .map(|i| match i {
-                    Icon::Empty(_) => String::new(),
-                    Icon::Path(p) => p,
-                    Icon::Id(i) => i,
-                    Icon::Data(_) => String::new(),
-                })
-                .unwrap_or(String::new());
-            let row_model = RowModelBuilder::new()
-                .content_type(ContentType::App)
-                .name(app.name.as_str())
-                .pid(app.pids[0])
-                .cpu_usage(20.)
-                .memory_usage(20000000)
-                .shared_memory_usage(200000000)
-                .disk_usage(10000000.)
-                .gpu_usage(20.)
-                .gpu_mem_usage(200000000)
-                .icon(icon.as_str())
-                .build();
-            imp.apps_section.children().append(&row_model)
-        }
-
+        let mut process_model_map = HashMap::new();
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
         update_processes(
             &readings.running_processes,
             root_process,
             &imp.processes_section.children(),
+            true,
+            &mut process_model_map,
         );
         imp.root_process.set(*root_process);
+
+        update_apps(
+            &readings.running_apps,
+            &readings.running_processes,
+            &process_model_map,
+            imp.apps_section.children(),
+            true,
+        );
 
         true
     }
@@ -258,11 +246,22 @@ impl AppsPage {
             readings,
         );
 
+        let mut process_model_map = HashMap::new();
         let root_process = imp.root_process.get();
         update_processes(
             &readings.running_processes,
             &root_process,
             &imp.processes_section.children(),
+            true,
+            &mut process_model_map,
+        );
+
+        update_apps(
+            &readings.running_apps,
+            &readings.running_processes,
+            &process_model_map,
+            imp.apps_section.children(),
+            true,
         );
 
         true
@@ -273,10 +272,148 @@ impl AppsPage {
     }
 }
 
+fn update_apps(
+    app_map: &HashMap<String, App>,
+    process_map: &HashMap<u32, Process>,
+    process_model_map: &HashMap<u32, RowModel>,
+    list: &gio::ListStore,
+    use_merged_stats: bool,
+) {
+    let mut to_remove = Vec::with_capacity(list.n_items() as _);
+    for i in (0..list.n_items()).rev() {
+        let Some(app) = list.item(i).and_then(|obj| obj.downcast::<RowModel>().ok()) else {
+            to_remove.push(i);
+            continue;
+        };
+
+        if app_map.contains_key(app.app_id().as_str()) {
+            continue;
+        }
+
+        to_remove.push(i);
+    }
+    for i in to_remove {
+        list.remove(i);
+    }
+
+    for app in app_map.values() {
+        // Find the first process that has any children. This is most likely the root
+        // of the App's process tree.
+        let mut primary_pid = 0;
+        for (index, pid) in app.pids.iter().enumerate() {
+            if let Some(process) = process_map.get(pid) {
+                if process.children.len() > 0 || index == app.pids.len() - 1 {
+                    primary_pid = process.pid;
+                    break;
+                }
+            }
+        }
+
+        if primary_pid == 0 {
+            g_critical!(
+                "MissionCenter::AppsPage",
+                "Failed to find primary PID for app {}",
+                app.name
+            );
+            continue;
+        }
+
+        let row_model = if let Some(index) = list.find_with_equal_func(|obj| {
+            let Some(row_model) = obj.downcast_ref::<RowModel>() else {
+                return false;
+            };
+            row_model.app_id() == app.id
+        }) {
+            unsafe {
+                list.item(index)
+                    .and_then(|obj| obj.downcast().ok())
+                    .unwrap_unchecked()
+            }
+        } else {
+            let row_model = RowModelBuilder::new()
+                .content_type(ContentType::App)
+                .app_id(&app.id)
+                .build();
+            list.append(&row_model);
+            row_model
+        };
+
+        let Some(primary_process) = process_map.get(&primary_pid) else {
+            g_critical!(
+                "MissionCenter::AppsPage",
+                "Failed to find primary PID {} for app {}",
+                primary_pid,
+                app.name
+            );
+            continue;
+        };
+        let usage_stats = if use_merged_stats {
+            primary_process.merged_usage_stats(&process_map)
+        } else {
+            primary_process.usage_stats
+        };
+
+        let icon = app
+            .icon
+            .as_ref()
+            .map(|i| match &i.icon {
+                Some(Icon::Path(p)) => p,
+                Some(Icon::Id(i)) => i,
+                _ => "application-x-executable",
+            })
+            .unwrap_or("application-x-executable");
+
+        row_model.set_name(app.name.as_str());
+        row_model.set_icon(icon);
+        row_model.set_pid(primary_pid);
+        row_model.set_cpu_usage(usage_stats.cpu_usage);
+        row_model.set_memory_usage(usage_stats.memory_usage);
+        row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
+        row_model.set_disk_usage(usage_stats.disk_usage);
+        row_model.set_network_usage(usage_stats.network_usage);
+        row_model.set_gpu_usage(usage_stats.gpu_usage);
+        row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
+
+        if let Some(process_model) = process_model_map.get(&primary_pid) {
+            let app_children = row_model.children();
+            let process_children = process_model.children();
+
+            let mut to_remove = Vec::with_capacity(app_children.n_items() as _);
+            for i in 0..app_children.n_items() {
+                let Some(child) = app_children.item(i) else {
+                    continue;
+                };
+
+                if process_children.find(&child).is_some() {
+                    continue;
+                }
+
+                to_remove.push(i);
+            }
+            for i in to_remove {
+                app_children.remove(i);
+            }
+
+            for i in 0..process_children.n_items() {
+                let Some(child) = process_children.item(i) else {
+                    continue;
+                };
+
+                if app_children.find(&child).is_some() {
+                    continue;
+                }
+                app_children.append(&child);
+            }
+        }
+    }
+}
+
 fn update_processes(
-    process_map: &HashMap<u32, magpie_types::processes::Process>,
+    process_map: &HashMap<u32, Process>,
     pid: &u32,
     list: &gio::ListStore,
+    use_merged_stats: bool,
+    models: &mut HashMap<u32, RowModel>,
 ) {
     let Some(process) = process_map.get(&pid) else {
         return;
@@ -351,9 +488,7 @@ fn update_processes(
     }
 
     let merged_usage_stats = process.merged_usage_stats(&process_map);
-    let usage_stats = if false
-    /* this.use_merge_stats.get() */
-    {
+    let usage_stats = if use_merged_stats {
         &merged_usage_stats
     } else {
         &process.usage_stats
@@ -371,6 +506,14 @@ fn update_processes(
     row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
     for child in &process.children {
-        update_processes(process_map, child, row_model.children())
+        update_processes(
+            process_map,
+            child,
+            row_model.children(),
+            use_merged_stats,
+            models,
+        );
     }
+
+    models.insert(process.pid, row_model);
 }

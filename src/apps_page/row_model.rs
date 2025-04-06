@@ -31,14 +31,17 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::RowModel)]
     pub struct RowModel {
+        #[property(get = Self::app_id, set = Self::set_app_id)]
+        pub app_id: Cell<glib::GString>,
+
         #[property(get, set)]
         pub pid: Cell<u32>,
 
-        #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        #[property(get = Self::icon, set = Self::set_icon)]
         pub icon: Cell<glib::GString>,
-        #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
+        #[property(get = Self::name, set = Self::set_name)]
         pub name: Cell<glib::GString>,
-        #[property(get = Self::id, set = Self::set_id, type = glib::GString)]
+        #[property(get = Self::id, set = Self::set_id)]
         pub id: Cell<glib::GString>,
 
         #[property(get = Self::content_type, type = ContentType, builder(ContentType::SectionHeader))]
@@ -80,6 +83,7 @@ mod imp {
     impl Default for RowModel {
         fn default() -> Self {
             Self {
+                app_id: Cell::new(glib::GString::default()),
                 pid: Cell::new(0),
 
                 icon: Cell::new(glib::GString::default()),
@@ -113,6 +117,24 @@ mod imp {
     }
 
     impl RowModel {
+        pub fn app_id(&self) -> glib::GString {
+            let app_id = self.app_id.take();
+            let result = app_id.clone();
+            self.app_id.set(app_id);
+
+            result
+        }
+
+        pub fn set_app_id(&self, app_id: &str) {
+            let current_app_id = self.app_id.take();
+            if current_app_id == app_id {
+                self.app_id.set(current_app_id);
+                return;
+            }
+
+            self.app_id.set(glib::GString::from(app_id));
+        }
+
         pub fn icon(&self) -> glib::GString {
             let icon = self.icon.take();
             let result = icon.clone();
@@ -262,6 +284,7 @@ pub enum SectionType {
 }
 
 pub struct RowModelBuilder {
+    app_id: glib::GString,
     pid: u32,
     icon: glib::GString,
     name: glib::GString,
@@ -286,6 +309,7 @@ pub struct RowModelBuilder {
 impl RowModelBuilder {
     pub fn new() -> Self {
         Self {
+            app_id: glib::GString::default(),
             pid: 0,
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
@@ -306,6 +330,11 @@ impl RowModelBuilder {
             max_memory_usage: 0,
             max_gpu_memory_usage: 0,
         }
+    }
+
+    pub fn app_id(mut self, app_id: &str) -> Self {
+        self.app_id = app_id.into();
+        self
     }
 
     pub fn pid(mut self, pid: u32) -> Self {
@@ -394,6 +423,7 @@ impl RowModelBuilder {
         {
             let this = this.imp();
 
+            this.app_id.set(self.app_id);
             this.pid.set(self.pid);
             this.icon.set(self.icon);
             this.name.set(self.name);
