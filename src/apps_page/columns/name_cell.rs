@@ -34,6 +34,7 @@ mod imp {
         sig_icon: Cell<Option<glib::SignalHandlerId>>,
         sig_name: Cell<Option<glib::SignalHandlerId>>,
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
+        sig_children_changed: Cell<Option<glib::SignalHandlerId>>,
 
         model: Cell<Option<RowModel>>,
         expander: RefCell<Option<gtk::TreeExpander>>,
@@ -48,6 +49,7 @@ mod imp {
                 sig_icon: Cell::new(None),
                 sig_name: Cell::new(None),
                 sig_content_type: Cell::new(None),
+                sig_children_changed: Cell::new(None),
 
                 model: Cell::new(None),
                 expander: RefCell::new(None),
@@ -58,6 +60,9 @@ mod imp {
     impl NameCell {
         pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
             let this = self.obj().downgrade();
+
+            self.model.set(Some(model.clone()));
+            *self.expander.borrow_mut() = Some(expander.clone());
 
             let sig_icon = model.connect_icon_notify({
                 let this = this.clone();
@@ -86,6 +91,7 @@ mod imp {
             self.name.set_label(&model.name());
 
             let sig_content_type = model.connect_content_type_notify({
+                let this = this.clone();
                 move |model| {
                     let Some(this) = this.upgrade() else {
                         return;
@@ -97,8 +103,17 @@ mod imp {
             self.sig_content_type.set(Some(sig_content_type));
             self.set_content_type(model.content_type());
 
-            self.model.set(Some(model.clone()));
-            *self.expander.borrow_mut() = Some(expander.clone());
+            let sig_children_changed = model.children().connect_items_changed({
+                let expander = expander.downgrade();
+                move |children, _, _, _| {
+                    let Some(expander) = expander.upgrade() else {
+                        return;
+                    };
+                    expander.set_hide_expander(children.n_items() == 0);
+                }
+            });
+            self.sig_children_changed.set(Some(sig_children_changed));
+            expander.set_hide_expander(model.children().n_items() == 0);
         }
 
         pub fn unbind(&self) {
@@ -117,6 +132,10 @@ mod imp {
 
             if let Some(sig_id) = self.sig_content_type.take() {
                 model.disconnect(sig_id);
+            }
+
+            if let Some(sig_id) = self.sig_children_changed.take() {
+                model.children().disconnect(sig_id);
             }
         }
 

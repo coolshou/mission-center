@@ -35,12 +35,9 @@ use columns::{
 };
 use row_model::{ContentType, RowModel, RowModelBuilder};
 
-mod column_header;
 mod columns;
 mod model;
-mod pid_column;
 mod row_model;
-mod stat_column;
 
 pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
 pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97, 0, 0.3); }";
@@ -70,6 +67,9 @@ mod imp {
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
+
+        pub apps_section: RowModel,
+        pub processes_section: RowModel,
     }
 
     impl Default for AppsPage {
@@ -84,6 +84,15 @@ mod imp {
                 drive_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
+
+                apps_section: RowModelBuilder::new()
+                    .name("Apps")
+                    .content_type(ContentType::SectionHeader)
+                    .build(),
+                processes_section: RowModelBuilder::new()
+                    .name("Processes")
+                    .content_type(ContentType::SectionHeader)
+                    .build(),
             }
         }
     }
@@ -95,10 +104,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            column_header::ColumnHeader::ensure_type();
-            pid_column::PidColumn::ensure_type();
-            stat_column::StatColumn::ensure_type();
-
             klass.bind_template();
         }
 
@@ -110,6 +115,20 @@ mod imp {
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
             self.parent_constructed();
+
+            let model = gio::ListStore::new::<RowModel>();
+            model.append(&self.apps_section);
+            model.append(&self.processes_section);
+
+            let tree_model = gtk::TreeListModel::new(model, false, true, move |model_entry| {
+                let Some(row_model) = model_entry.downcast_ref::<RowModel>() else {
+                    return None;
+                };
+                Some(row_model.children().clone().into())
+            });
+
+            self.column_view
+                .set_model(Some(&gtk::SingleSelection::new(Some(tree_model))));
 
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
@@ -184,21 +203,6 @@ impl AppsPage {
             readings,
         );
 
-        let model = gio::ListStore::new::<RowModel>();
-
-        let apps_section = RowModelBuilder::new()
-            .name("Apps")
-            .content_type(ContentType::SectionHeader)
-            .build();
-
-        let processes_section = RowModelBuilder::new()
-            .name("Processes")
-            .content_type(ContentType::SectionHeader)
-            .build();
-
-        model.append(&apps_section);
-        model.append(&processes_section);
-
         for app in readings.running_apps.values() {
             let icon = app
                 .icon
@@ -216,25 +220,61 @@ impl AppsPage {
                 .name(app.name.as_str())
                 .pid(app.pids[0])
                 .cpu_usage(20.)
-                .memory_usage(200)
-                .shared_memory_usage(200)
-                .disk_usage(100.)
+                .memory_usage(20000000)
+                .shared_memory_usage(200000000)
+                .disk_usage(10000000.)
                 .gpu_usage(20.)
-                .gpu_mem_usage(200)
+                .gpu_mem_usage(200000000)
                 .icon(icon.as_str())
                 .build();
-            apps_section.children().append(&row_model)
+            imp.apps_section.children().append(&row_model)
         }
 
-        let tree_model = gtk::TreeListModel::new(model, false, true, move |model_entry| {
-            let Some(row_model) = model_entry.downcast_ref::<RowModel>() else {
-                return None;
+        fn update_processes(
+            process_map: &HashMap<u32, magpie_types::processes::Process>,
+            pid: &u32,
+            list: &gio::ListStore,
+        ) {
+            let Some(process) = process_map.get(&pid) else {
+                return;
             };
-            Some(row_model.children().clone().into())
-        });
 
-        imp.column_view
-            .set_model(Some(&gtk::SingleSelection::new(Some(tree_model))));
+            let row_model = RowModelBuilder::new()
+                .content_type(ContentType::Process)
+                .name(if process.exe.is_empty() {
+                    if let Some(cmd) = process.cmd.first() {
+                        cmd.split_ascii_whitespace()
+                            .next()
+                            .and_then(|s| s.split('/').last())
+                            .unwrap_or(&process.name)
+                    } else {
+                        &process.name
+                    }
+                } else {
+                    process.exe.split('/').last().unwrap_or(&process.name)
+                })
+                .pid(process.pid)
+                .cpu_usage(process.usage_stats.cpu_usage)
+                .memory_usage(process.usage_stats.memory_usage)
+                .shared_memory_usage(process.usage_stats.shared_memory_usage)
+                .disk_usage(process.usage_stats.disk_usage)
+                .gpu_usage(process.usage_stats.gpu_usage)
+                .gpu_mem_usage(process.usage_stats.gpu_memory_usage)
+                .build();
+
+            for child in &process.children {
+                update_processes(process_map, child, row_model.children())
+            }
+
+            list.append(&row_model);
+        }
+
+        let root_process = readings.running_processes.keys().min().unwrap_or(&1);
+        update_processes(
+            &readings.running_processes,
+            root_process,
+            &imp.processes_section.children(),
+        );
 
         true
     }

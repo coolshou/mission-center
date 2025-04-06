@@ -74,12 +74,12 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
             let label = label.clone();
             move |model| {
                 let mut buffer = ArrayString::<128>::new();
-                let _ = write!(&mut buffer, "{}%", model.gpu_usage());
+                let _ = write!(&mut buffer, "{}%", model.gpu_usage().round() as u32);
                 label.set_label(&mut buffer.as_str());
             }
         });
         let mut buffer = ArrayString::<128>::new();
-        let _ = write!(buffer, "{}%", model.gpu_usage());
+        let _ = write!(buffer, "{}%", model.gpu_usage().round() as u32);
         label.set_label(buffer.as_str());
 
         unsafe {

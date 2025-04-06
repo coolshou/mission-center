@@ -75,19 +75,23 @@ pub fn update_column_titles(
         gpu_memory_column.set_title(Some(buffer.as_str()));
     } else {
         let mut sum_util = 0.;
-        let mut sum_mem = 0.;
+        let mut sum_mem_used = 0.;
+        let mut sum_mem_total = 0.;
         for gpu in readings.gpus.values() {
             sum_util += gpu.utilization_percent.unwrap_or(0.);
-            sum_mem += gpu.used_memory.unwrap_or(0) as f32;
+            sum_mem_used += gpu.used_memory.unwrap_or(0) as f32;
+            sum_mem_total += gpu.total_memory.unwrap_or(0) as f32;
         }
         let gpu_usage = sum_util / readings.gpus.len() as f32;
         let gpu_usage = gpu_usage.round() as u32;
         let _ = write!(&mut buffer, "{}\n{}%", i18n("GPU"), gpu_usage);
+        gpu_usage_column.set_title(Some(buffer.as_str()));
 
         buffer.clear();
-        let gpu_mem_usage = sum_util / readings.gpus.len() as f32;
+        let gpu_mem_usage = sum_mem_used * 100. / sum_mem_total;
         let gpu_mem_usage = gpu_mem_usage.round() as u32;
         let _ = write!(&mut buffer, "{}\n{}%", i18n("GPU Memory"), gpu_mem_usage);
+        gpu_memory_column.set_title(Some(buffer.as_str()));
     }
 }
 
