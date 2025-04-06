@@ -18,6 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::Cell;
 use std::collections::HashMap;
 
 use adw::prelude::*;
@@ -70,6 +71,8 @@ mod imp {
 
         pub apps_section: RowModel,
         pub processes_section: RowModel,
+
+        pub root_process: Cell<u32>,
     }
 
     impl Default for AppsPage {
@@ -93,6 +96,8 @@ mod imp {
                     .name("Processes")
                     .content_type(ContentType::SectionHeader)
                     .build(),
+
+                root_process: Cell::new(1),
             }
         }
     }
@@ -230,51 +235,13 @@ impl AppsPage {
             imp.apps_section.children().append(&row_model)
         }
 
-        fn update_processes(
-            process_map: &HashMap<u32, magpie_types::processes::Process>,
-            pid: &u32,
-            list: &gio::ListStore,
-        ) {
-            let Some(process) = process_map.get(&pid) else {
-                return;
-            };
-
-            let row_model = RowModelBuilder::new()
-                .content_type(ContentType::Process)
-                .name(if process.exe.is_empty() {
-                    if let Some(cmd) = process.cmd.first() {
-                        cmd.split_ascii_whitespace()
-                            .next()
-                            .and_then(|s| s.split('/').last())
-                            .unwrap_or(&process.name)
-                    } else {
-                        &process.name
-                    }
-                } else {
-                    process.exe.split('/').last().unwrap_or(&process.name)
-                })
-                .pid(process.pid)
-                .cpu_usage(process.usage_stats.cpu_usage)
-                .memory_usage(process.usage_stats.memory_usage)
-                .shared_memory_usage(process.usage_stats.shared_memory_usage)
-                .disk_usage(process.usage_stats.disk_usage)
-                .gpu_usage(process.usage_stats.gpu_usage)
-                .gpu_mem_usage(process.usage_stats.gpu_memory_usage)
-                .build();
-
-            for child in &process.children {
-                update_processes(process_map, child, row_model.children())
-            }
-
-            list.append(&row_model);
-        }
-
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
         update_processes(
             &readings.running_processes,
             root_process,
             &imp.processes_section.children(),
         );
+        imp.root_process.set(*root_process);
 
         true
     }
@@ -290,10 +257,120 @@ impl AppsPage {
             &imp.gpu_memory_column,
             readings,
         );
+
+        let root_process = imp.root_process.get();
+        update_processes(
+            &readings.running_processes,
+            &root_process,
+            &imp.processes_section.children(),
+        );
+
         true
     }
 
     pub fn get_running_apps(&self) -> HashMap<String, App> {
         HashMap::new()
+    }
+}
+
+fn update_processes(
+    process_map: &HashMap<u32, magpie_types::processes::Process>,
+    pid: &u32,
+    list: &gio::ListStore,
+) {
+    let Some(process) = process_map.get(&pid) else {
+        return;
+    };
+
+    let pretty_name = if process.exe.is_empty() {
+        if let Some(cmd) = process.cmd.first() {
+            cmd.split_ascii_whitespace()
+                .next()
+                .and_then(|s| s.split('/').last())
+                .unwrap_or(&process.name)
+        } else {
+            &process.name
+        }
+    } else {
+        let exe_name = process.exe.split('/').last().unwrap_or(&process.name);
+        if exe_name.starts_with("wine") {
+            if process.cmd.is_empty() {
+                process.name.as_str()
+            } else {
+                process.cmd[0]
+                    .split("\\")
+                    .last()
+                    .unwrap_or(&process.name)
+                    .split("/")
+                    .last()
+                    .unwrap_or(&process.name)
+            }
+        } else {
+            exe_name
+        }
+    };
+
+    let row_model = if let Some(index) = list.find_with_equal_func(|obj| {
+        let Some(row_model) = obj.downcast_ref::<RowModel>() else {
+            return false;
+        };
+        row_model.pid() == process.pid
+    }) {
+        unsafe {
+            list.item(index)
+                .and_then(|obj| obj.downcast().ok())
+                .unwrap_unchecked()
+        }
+    } else {
+        let row_model = RowModelBuilder::new()
+            .content_type(ContentType::Process)
+            .build();
+        list.append(&row_model);
+        row_model
+    };
+
+    let prev_children = row_model.children();
+    let mut to_remove = Vec::with_capacity(prev_children.n_items() as _);
+    for i in (0..prev_children.n_items()).rev() {
+        let Some(child) = prev_children
+            .item(i)
+            .and_then(|obj| obj.downcast::<RowModel>().ok())
+        else {
+            to_remove.push(i);
+            continue;
+        };
+
+        if process.children.contains(&child.pid()) {
+            continue;
+        }
+
+        to_remove.push(i);
+    }
+    for i in to_remove {
+        prev_children.remove(i);
+    }
+
+    let merged_usage_stats = process.merged_usage_stats(&process_map);
+    let usage_stats = if false
+    /* this.use_merge_stats.get() */
+    {
+        &merged_usage_stats
+    } else {
+        &process.usage_stats
+    };
+
+    row_model.set_name(pretty_name);
+    row_model.set_icon("application-x-executable-symbolic");
+    row_model.set_pid(process.pid);
+    row_model.set_cpu_usage(usage_stats.cpu_usage);
+    row_model.set_memory_usage(usage_stats.memory_usage);
+    row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
+    row_model.set_disk_usage(usage_stats.disk_usage);
+    row_model.set_network_usage(usage_stats.network_usage);
+    row_model.set_gpu_usage(usage_stats.gpu_usage);
+    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
+
+    for child in &process.children {
+        update_processes(process_map, child, row_model.children())
     }
 }
