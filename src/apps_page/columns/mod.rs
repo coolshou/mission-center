@@ -8,6 +8,7 @@ pub use cpu::list_item_factory as cpu_list_item_factory;
 pub use drive::list_item_factory as drive_list_item_factory;
 pub use gpu::list_item_factory as gpu_list_item_factory;
 pub use gpu_memory::list_item_factory as gpu_memory_list_item_factory;
+pub use label_cell::LabelCell;
 pub use memory::list_item_factory as memory_list_item_factory;
 pub use name::list_item_factory as name_list_item_factory;
 pub use name_cell::NameCell;
@@ -18,11 +19,124 @@ mod cpu;
 mod drive;
 mod gpu;
 mod gpu_memory;
+mod label_cell;
 mod memory;
 mod name;
 mod name_cell;
 mod pid;
 mod shared_memory;
+
+#[macro_export]
+macro_rules! label_cell_factory {
+    ($property: literal, $setter: expr) => {{
+        use gtk::prelude::*;
+
+        use crate::apps_page::row_model::{ContentType, RowModel};
+
+        let factory = gtk::SignalListItemFactory::new();
+
+        factory.connect_setup(|_, list_item| {
+            let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+                return;
+            };
+
+            let label = LabelCell::new();
+            let expander = gtk::TreeExpander::new();
+            expander.set_child(Some(&label));
+
+            expander.set_hide_expander(true);
+            expander.set_indent_for_icon(false);
+            expander.set_indent_for_depth(false);
+            expander.set_halign(gtk::Align::End);
+
+            list_item.set_child(Some(&expander));
+
+            unsafe {
+                list_item.set_data("expander", expander);
+                list_item.set_data("label", label);
+            }
+        });
+
+        factory.connect_bind(move |_, list_item| {
+            let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+                return;
+            };
+
+            let Some(row) = list_item
+                .item()
+                .and_then(|item| item.downcast::<gtk::TreeListRow>().ok())
+            else {
+                return;
+            };
+
+            let expander = unsafe {
+                list_item
+                    .data::<gtk::TreeExpander>("expander")
+                    .unwrap_unchecked()
+                    .as_ref()
+            };
+            expander.set_list_row(Some(&row));
+
+            let Some(model) = expander
+                .item()
+                .and_then(|item| item.downcast::<RowModel>().ok())
+            else {
+                return;
+            };
+
+            if model.content_type() == ContentType::SectionHeader {
+                return;
+            }
+
+            let label = unsafe {
+                list_item
+                    .data::<LabelCell>("label")
+                    .unwrap_unchecked()
+                    .as_ref()
+            };
+
+            let value = model.property_value($property);
+            ($setter)(&label, value);
+
+            label.bind(&model, $property, $setter);
+        });
+
+        factory.connect_unbind(|_, list_item| {
+            let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+                return;
+            };
+
+            let expander = unsafe {
+                list_item
+                    .data::<gtk::TreeExpander>("expander")
+                    .unwrap_unchecked()
+                    .as_ref()
+            };
+            expander.set_list_row(None);
+
+            let label = unsafe {
+                list_item
+                    .data::<LabelCell>("label")
+                    .unwrap_unchecked()
+                    .as_ref()
+            };
+            label.unbind();
+        });
+
+        factory.connect_teardown(|_, list_item| {
+            let Some(list_item) = list_item.downcast_ref::<gtk::ListItem>() else {
+                return;
+            };
+
+            unsafe {
+                let _ = list_item.steal_data::<gtk::TreeExpander>("expander");
+                let _ = list_item.steal_data::<gtk::Label>("label");
+            }
+        });
+
+        factory
+    }};
+}
 
 pub fn update_column_titles(
     cpu_column: &gtk::ColumnViewColumn,

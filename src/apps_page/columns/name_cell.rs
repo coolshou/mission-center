@@ -1,4 +1,4 @@
-/* apps_page/list_item.rs
+/* apps_page/columns/name_cell.rs
  *
  * Copyright 2025 Mission Center Developers
  *
