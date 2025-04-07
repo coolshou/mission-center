@@ -29,6 +29,7 @@ use magpie_types::apps::icon::Icon;
 use magpie_types::processes::Process;
 
 use crate::magpie_client::App;
+use crate::settings;
 
 use columns::{
     adjust_view_header_alignment, cpu_list_item_factory, drive_list_item_factory,
@@ -131,6 +132,8 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
+            let settings = settings!();
+
             self.content.set_maximum_size(i32::MAX);
 
             self.name_column
@@ -150,6 +153,19 @@ mod imp {
 
             let column_view_title = self.column_view.first_child();
             adjust_view_header_alignment(column_view_title);
+
+            self.use_merged_stats
+                .set(settings.boolean("apps-page-merged-process-stats"));
+            settings.connect_changed(Some("apps-page-merged-process-stats"), {
+                let this = self.obj().downgrade();
+                move |settings, _| {
+                    if let Some(this) = this.upgrade() {
+                        this.imp()
+                            .use_merged_stats
+                            .set(settings.boolean("apps-page-merged-process-stats"));
+                    }
+                }
+            });
         }
     }
 
@@ -192,15 +208,19 @@ impl AppsPage {
 
         let mut process_model_map = HashMap::new();
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
-        update_processes(
-            &readings.running_processes,
-            root_process,
-            &imp.processes_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            true,
-            &mut process_model_map,
-        );
+        if let Some(init) = readings.running_processes.get(root_process) {
+            for child in &init.children {
+                update_processes(
+                    &readings.running_processes,
+                    child,
+                    &imp.processes_section.children(),
+                    &imp.app_icons.borrow(),
+                    "application-x-executable-symbolic",
+                    imp.use_merged_stats.get(),
+                    &mut process_model_map,
+                );
+            }
+        }
         imp.root_process.set(*root_process);
 
         update_apps(
@@ -209,7 +229,7 @@ impl AppsPage {
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
             imp.apps_section.children(),
-            true,
+            imp.use_merged_stats.get(),
         );
 
         true
@@ -229,15 +249,19 @@ impl AppsPage {
 
         let mut process_model_map = HashMap::new();
         let root_process = imp.root_process.get();
-        update_processes(
-            &readings.running_processes,
-            &root_process,
-            &imp.processes_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            true,
-            &mut process_model_map,
-        );
+        if let Some(init) = readings.running_processes.get(&root_process) {
+            for child in &init.children {
+                update_processes(
+                    &readings.running_processes,
+                    child,
+                    &imp.processes_section.children(),
+                    &imp.app_icons.borrow(),
+                    "application-x-executable-symbolic",
+                    imp.use_merged_stats.get(),
+                    &mut process_model_map,
+                );
+            }
+        }
 
         update_apps(
             &readings.running_apps,
@@ -245,7 +269,7 @@ impl AppsPage {
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
             imp.apps_section.children(),
-            true,
+            imp.use_merged_stats.get(),
         );
 
         true
