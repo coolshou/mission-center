@@ -9,16 +9,23 @@ use crate::apps_page::row_model::{ContentType, RowModel, SectionType};
 use crate::i18n::i18n;
 
 pub use cpu::list_item_factory as cpu_list_item_factory;
+pub use cpu::sorter as cpu_sorter;
 pub use drive::list_item_factory as drive_list_item_factory;
+pub use drive::sorter as drive_sorter;
 pub use gpu::list_item_factory as gpu_list_item_factory;
+pub use gpu::sorter as gpu_sorter;
 pub use gpu_memory::list_item_factory as gpu_memory_list_item_factory;
+pub use gpu_memory::sorter as gpu_memory_sorter;
 pub use label_cell::LabelCell;
 pub use memory::list_item_factory as memory_list_item_factory;
+pub use memory::sorter as memory_sorter;
 pub use name::list_item_factory as name_list_item_factory;
 pub use name::sorter as name_sorter;
 pub use name_cell::NameCell;
 pub use pid::list_item_factory as pid_list_item_factory;
+pub use pid::sorter as pid_sorter;
 pub use shared_memory::list_item_factory as shared_memory_list_item_factory;
+pub use shared_memory::sorter as shared_memory_sorter;
 
 mod cpu;
 mod drive;
@@ -169,9 +176,17 @@ pub fn adjust_view_header_alignment(column_view_titlebar: Option<gtk::Widget>) {
             continue;
         }
 
-        container.set_halign(gtk::Align::End);
+        container.set_hexpand(true);
         label.set_halign(gtk::Align::End);
         label.set_justify(gtk::Justification::Right);
+
+        if let Some(arrow) = label.next_sibling() {
+            if let Some(container) = container.downcast_ref::<gtk::Box>() {
+                container.reorder_child_after(&label, Some(&arrow));
+                arrow.set_halign(gtk::Align::Start);
+                arrow.set_hexpand(true);
+            }
+        }
     }
 }
 
@@ -259,7 +274,15 @@ fn format_bytes(bytes: f32) -> ArrayString<128> {
     buffer
 }
 
-pub fn compare_column_entries_by(
+fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {
+    column_view
+        .sorter()
+        .and_downcast_ref::<gtk::ColumnViewSorter>()
+        .and_then(|sorter| Some(sorter.primary_sort_order()))
+        .unwrap_or(gtk::SortType::Ascending)
+}
+
+fn compare_column_entries_by(
     lhs: &glib::Object,
     rhs: &glib::Object,
     sort_order: gtk::SortType,

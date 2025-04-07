@@ -31,11 +31,7 @@ use magpie_types::processes::Process;
 use crate::magpie_client::App;
 use crate::settings;
 
-use columns::{
-    adjust_view_header_alignment, cpu_list_item_factory, drive_list_item_factory,
-    gpu_list_item_factory, gpu_memory_list_item_factory, memory_list_item_factory,
-    name_list_item_factory, name_sorter, pid_list_item_factory, shared_memory_list_item_factory,
-};
+use columns::*;
 use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 mod columns;
@@ -144,17 +140,37 @@ mod imp {
                 .set_sorter(Some(&name_sorter(&self.column_view)));
 
             self.pid_column.set_factory(Some(&pid_list_item_factory()));
+            self.pid_column
+                .set_sorter(Some(&pid_sorter(&self.column_view)));
+
             self.cpu_column.set_factory(Some(&cpu_list_item_factory()));
+            self.cpu_column
+                .set_sorter(Some(&cpu_sorter(&self.column_view)));
+
             self.memory_column
                 .set_factory(Some(&memory_list_item_factory()));
+            self.memory_column
+                .set_sorter(Some(&memory_sorter(&self.column_view)));
+
             self.shared_memory_column
                 .set_factory(Some(&shared_memory_list_item_factory()));
+            self.shared_memory_column
+                .set_sorter(Some(&shared_memory_sorter(&self.column_view)));
+
             self.drive_column
                 .set_factory(Some(&drive_list_item_factory()));
+            self.drive_column
+                .set_sorter(Some(&drive_sorter(&self.column_view)));
+
             self.gpu_usage_column
                 .set_factory(Some(&gpu_list_item_factory()));
+            self.gpu_usage_column
+                .set_sorter(Some(&gpu_sorter(&self.column_view)));
+
             self.gpu_memory_column
                 .set_factory(Some(&gpu_memory_list_item_factory()));
+            self.gpu_memory_column
+                .set_sorter(Some(&gpu_memory_sorter(&self.column_view)));
 
             let column_view_title = self.column_view.first_child();
             adjust_view_header_alignment(column_view_title);
