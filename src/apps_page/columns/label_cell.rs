@@ -71,8 +71,6 @@ mod imp {
         }
 
         pub fn unbind(&self) {
-            self.label.set_label("");
-
             let Some(model) = self.model.take() else {
                 return;
             };

@@ -51,6 +51,8 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
     pub struct AppsPage {
         #[template_child]
+        pub content: TemplateChild<adw::Clamp>,
+        #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
         pub name_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -80,6 +82,7 @@ mod imp {
     impl Default for AppsPage {
         fn default() -> Self {
             Self {
+                content: TemplateChild::default(),
                 column_view: TemplateChild::default(),
                 name_column: TemplateChild::default(),
                 pid_column: TemplateChild::default(),
@@ -124,6 +127,8 @@ mod imp {
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.content.set_maximum_size(i32::MAX);
 
             let model = gio::ListStore::new::<RowModel>();
             model.append(&self.apps_section);

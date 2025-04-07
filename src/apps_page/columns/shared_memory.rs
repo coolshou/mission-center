@@ -5,7 +5,7 @@ use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     label_cell_factory!(
-        "shared_memory_usage",
+        "shared-memory-usage",
         |label: &LabelCell, value: glib::Value| {
             let shared_memory_usage: u64 = value.get().unwrap();
             let formatted = format_bytes(shared_memory_usage as _);

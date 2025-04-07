@@ -24,53 +24,91 @@ using Adw 1;
 template $AppsPage : Box {
   orientation: vertical;
 
-  Box {
-    orientation: vertical;
+  Adw.Clamp content {
+    margin-start: 20;
+    margin-end: 20;
+    margin-bottom: 20;
 
-    margin-start: 30;
-    margin-end: 30;
-    margin-bottom: 30;
-
-    Box {
-      margin-bottom: 20;
+    child: Box {
+      orientation: vertical;
 
       Box {
-        orientation: vertical;
-
-        spacing: 10;
-
-        hexpand: true;
-
-        Label h1 {
-          styles [
-            "title-1",
-          ]
-
-          ellipsize: end;
-
-          halign: start;
-        }
-
-        Label h2 {
-          styles [
-            "faint-text",
-          ]
-
-          halign: start;
-        }
-      }
-
-      Box {
-        valign: end;
-        spacing: 5;
+        margin-bottom: 20;
 
         Box {
-          styles [
-            "linked"
-          ]
+          orientation: vertical;
 
-          Button start {
-            action-name: "win.selected-svc-start";
+          spacing: 10;
+
+          hexpand: true;
+
+          Label h1 {
+            styles [
+              "title-1",
+            ]
+
+            ellipsize: end;
+
+            halign: start;
+          }
+
+          Label h2 {
+            styles [
+              "faint-text",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          valign: end;
+          spacing: 5;
+
+          Box {
+            styles [
+              "linked"
+            ]
+
+            Button start {
+              action-name: "win.selected-svc-start";
+
+              child: Box {
+                spacing: 5;
+
+                halign: center;
+
+                Image {
+                  icon-name: "media-playback-start-symbolic";
+                }
+
+                Label start_label {
+                  label: _("Start");
+                }
+              };
+            }
+
+            Button stop {
+              action-name: "win.selected-svc-stop";
+
+              child: Box {
+                spacing: 5;
+
+                halign: center;
+
+                Image {
+                  icon-name: "media-playback-stop-symbolic";
+                }
+
+                Label stop_label {
+                  label: _("Stop");
+                }
+              };
+            }
+          }
+
+          Button restart {
+            action-name: "win.selected-svc-restart";
 
             child: Box {
               spacing: 5;
@@ -78,17 +116,17 @@ template $AppsPage : Box {
               halign: center;
 
               Image {
-                icon-name: "media-playback-start-symbolic";
+                icon-name: "media-playlist-repeat-symbolic";
               }
 
-              Label start_label {
-                label: _("Start");
+              Label restart_label {
+                label: _("Restart");
               }
             };
           }
 
-          Button stop {
-            action-name: "win.selected-svc-stop";
+          Button status {
+            action-name: "services-page.details";
 
             child: Box {
               spacing: 5;
@@ -96,129 +134,93 @@ template $AppsPage : Box {
               halign: center;
 
               Image {
-                icon-name: "media-playback-stop-symbolic";
+                icon-name: "details-symbolic";
               }
 
-              Label stop_label {
-                label: _("Stop");
+              Label details_label {
+                label: _("Details");
               }
             };
           }
+
+
         }
-
-        Button restart {
-          action-name: "win.selected-svc-restart";
-
-          child: Box {
-            spacing: 5;
-
-            halign: center;
-
-            Image {
-              icon-name: "media-playlist-repeat-symbolic";
-            }
-
-            Label restart_label {
-              label: _("Restart");
-            }
-          };
-        }
-
-        Button status {
-          action-name: "services-page.details";
-
-          child: Box {
-            spacing: 5;
-
-            halign: center;
-
-            Image {
-              icon-name: "details-symbolic";
-            }
-
-            Label details_label {
-              label: _("Details");
-            }
-          };
-        }
-
-
       }
-    }
 
-    Frame {
-      child: ScrolledWindow {
-        hexpand: true;
-        vexpand: true;
+      Frame {
+        child: ScrolledWindow {
+          hexpand: true;
+          vexpand: true;
 
-        ColumnView column_view {
-          styles [
-            "rich-list"
-          ]
+          ColumnView column_view {
+            styles [
+              "rich-list"
+            ]
 
-          reorderable: false;
-          show-row-separators: false;
-          show-column-separators: true;
+            reorderable: false;
+            show-row-separators: false;
+            show-column-separators: true;
 
-          ColumnViewColumn name_column {
-            title: _("Name");
-            expand: true;
-            resizable: false;
+            ColumnViewColumn name_column {
+              title: _("Name");
+              expand: true;
+              resizable: false;
+            }
+
+            ColumnViewColumn pid_column {
+              title: _("PID");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn cpu_column {
+              title: _("CPU");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn memory_column {
+              title: _("Memory");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn shared_memory_column {
+              title: _("Shared\nMemory");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn drive_column {
+              title: _("Drive");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn gpu_usage_column {
+              title: _("GPU");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn gpu_memory_column {
+              title: _("GPU Memory");
+              resizable: true;
+              fixed-width: 80;
+            }
+
+            ColumnViewColumn menu_column {
+              resizable: false;
+              fixed-width: 50;
+              factory: BuilderListItemFactory {
+                template ListItem {
+                }
+              };
+            }
           }
-
-          ColumnViewColumn pid_column {
-            title: _("PID");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn cpu_column {
-            title: _("CPU");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn memory_column {
-            title: _("Memory");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn shared_memory_column {
-            title: _("Shared\nMemory");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn drive_column {
-            title: _("Drive");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn gpu_usage_column {
-            title: _("GPU");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn gpu_memory_column {
-            title: _("GPU Memory");
-            resizable: true;
-            fixed-width: 80;
-          }
-
-          ColumnViewColumn menu_column {
-            resizable: false;
-            fixed-width: 50;
-            factory: BuilderListItemFactory {
-              template ListItem {
-              }
-            };
-          }
-        }
-      };
-    }
+        };
+      }
+    };
   }
 
   PopoverMenu context_menu {

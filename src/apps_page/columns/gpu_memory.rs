@@ -5,7 +5,7 @@ use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     label_cell_factory!(
-        "gpu_memory_usage",
+        "gpu-memory-usage",
         |label: &LabelCell, value: glib::Value| {
             let gpu_memory_usage: u64 = value.get().unwrap();
             let formatted = format_bytes(gpu_memory_usage as _);

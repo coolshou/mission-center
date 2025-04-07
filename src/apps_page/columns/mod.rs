@@ -84,16 +84,17 @@ macro_rules! label_cell_factory {
                 return;
             };
 
-            if model.content_type() == ContentType::SectionHeader {
-                return;
-            }
-
             let label = unsafe {
                 list_item
                     .data::<LabelCell>("label")
                     .unwrap_unchecked()
                     .as_ref()
             };
+
+            if model.content_type() == ContentType::SectionHeader {
+                label.set_label("");
+                return;
+            }
 
             let value = model.property_value($property);
             ($setter)(&label, value);
