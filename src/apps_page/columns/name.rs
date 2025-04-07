@@ -1,6 +1,8 @@
+use std::cmp::Ordering;
+
 use adw::prelude::*;
 
-use crate::apps_page::columns::NameCell;
+use crate::apps_page::columns::{compare_column_entries_by, NameCell};
 use crate::apps_page::row_model::RowModel;
 use crate::list_cell::ListCell;
 
@@ -106,4 +108,24 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
     });
 
     factory
+}
+
+pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
+    let column_view = column_view.downgrade();
+    gtk::CustomSorter::new(move |lhs, rhs| {
+        let Some(column_view) = column_view.upgrade() else {
+            return Ordering::Equal.into();
+        };
+
+        let sort_order = column_view
+            .sorter()
+            .and_downcast_ref::<gtk::ColumnViewSorter>()
+            .and_then(|sorter| Some(sorter.primary_sort_order()))
+            .unwrap_or(gtk::SortType::Ascending);
+
+        compare_column_entries_by(lhs, rhs, sort_order, |lhs, rhs| {
+            lhs.name().to_lowercase().cmp(&rhs.name().to_lowercase())
+        })
+        .into()
+    })
 }

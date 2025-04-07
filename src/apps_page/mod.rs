@@ -34,9 +34,9 @@ use crate::settings;
 use columns::{
     adjust_view_header_alignment, cpu_list_item_factory, drive_list_item_factory,
     gpu_list_item_factory, gpu_memory_list_item_factory, memory_list_item_factory,
-    name_list_item_factory, pid_list_item_factory, shared_memory_list_item_factory,
+    name_list_item_factory, name_sorter, pid_list_item_factory, shared_memory_list_item_factory,
 };
-use row_model::{ContentType, RowModel, RowModelBuilder};
+use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 mod columns;
 mod models;
@@ -99,10 +99,12 @@ mod imp {
                 apps_section: RowModelBuilder::new()
                     .name("Apps")
                     .content_type(ContentType::SectionHeader)
+                    .section_type(SectionType::Apps)
                     .build(),
                 processes_section: RowModelBuilder::new()
                     .name("Processes")
                     .content_type(ContentType::SectionHeader)
+                    .section_type(SectionType::Processes)
                     .build(),
 
                 root_process: Cell::new(1),
@@ -138,6 +140,9 @@ mod imp {
 
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
+            self.name_column
+                .set_sorter(Some(&name_sorter(&self.column_view)));
+
             self.pid_column.set_factory(Some(&pid_list_item_factory()));
             self.cpu_column.set_factory(Some(&cpu_list_item_factory()));
             self.memory_column
@@ -193,9 +198,10 @@ impl AppsPage {
         let base_model = models::base_model(&imp.apps_section, &imp.processes_section);
         let tree_list_model = models::tree_list_model(base_model);
         let filter_list_model = models::filter_list_model(tree_list_model);
+        let sort_list_model = models::sort_list_model(filter_list_model, &imp.column_view);
 
         imp.column_view
-            .set_model(Some(&gtk::SingleSelection::new(Some(filter_list_model))));
+            .set_model(Some(&gtk::SingleSelection::new(Some(sort_list_model))));
 
         columns::update_column_titles(
             &imp.cpu_column,

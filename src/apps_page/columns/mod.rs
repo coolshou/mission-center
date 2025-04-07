@@ -1,8 +1,11 @@
+use std::cmp::Ordering;
 use std::fmt::Write;
 
 use arrayvec::ArrayString;
+use gtk::glib;
 use gtk::prelude::*;
 
+use crate::apps_page::row_model::{ContentType, RowModel, SectionType};
 use crate::i18n::i18n;
 
 pub use cpu::list_item_factory as cpu_list_item_factory;
@@ -12,6 +15,7 @@ pub use gpu_memory::list_item_factory as gpu_memory_list_item_factory;
 pub use label_cell::LabelCell;
 pub use memory::list_item_factory as memory_list_item_factory;
 pub use name::list_item_factory as name_list_item_factory;
+pub use name::sorter as name_sorter;
 pub use name_cell::NameCell;
 pub use pid::list_item_factory as pid_list_item_factory;
 pub use shared_memory::list_item_factory as shared_memory_list_item_factory;
@@ -253,4 +257,72 @@ fn format_bytes(bytes: f32) -> ArrayString<128> {
     }
 
     buffer
+}
+
+pub fn compare_column_entries_by(
+    lhs: &glib::Object,
+    rhs: &glib::Object,
+    sort_order: gtk::SortType,
+    compare_fn: fn(&RowModel, &RowModel) -> Ordering,
+) -> Ordering {
+    let Some(lhs) = lhs.downcast_ref::<RowModel>() else {
+        return Ordering::Equal.into();
+    };
+
+    let Some(rhs) = rhs.downcast_ref::<RowModel>() else {
+        return Ordering::Equal.into();
+    };
+
+    let (ord_less, ord_greater) = if sort_order == gtk::SortType::Ascending {
+        (Ordering::Less, Ordering::Greater)
+    } else {
+        (Ordering::Greater, Ordering::Less)
+    };
+
+    if lhs.content_type() == ContentType::SectionHeader {
+        if lhs.section_type() == SectionType::Apps {
+            return ord_less;
+        }
+
+        if lhs.section_type() == SectionType::Processes {
+            return if rhs.content_type() == ContentType::Process {
+                ord_less
+            } else {
+                ord_greater
+            };
+        }
+    }
+
+    if rhs.content_type() == ContentType::SectionHeader {
+        if rhs.section_type() == SectionType::Apps {
+            return ord_greater;
+        }
+        if rhs.section_type() == SectionType::Processes {
+            return if lhs.content_type() == ContentType::Process {
+                ord_greater
+            } else {
+                ord_less
+            };
+        }
+    }
+
+    if lhs.content_type() == ContentType::App {
+        if rhs.content_type() == ContentType::App {
+            return compare_fn(lhs, rhs);
+        }
+        if rhs.content_type() == ContentType::Process {
+            return ord_less;
+        }
+    }
+
+    if lhs.content_type() == ContentType::Process {
+        if rhs.content_type() == ContentType::Process {
+            return compare_fn(lhs, rhs);
+        }
+        if rhs.content_type() == ContentType::App {
+            return ord_greater;
+        }
+    }
+
+    Ordering::Equal
 }
