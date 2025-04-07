@@ -1,6 +1,7 @@
 use std::fmt::Write;
 
 use arrayvec::ArrayString;
+use gtk::prelude::*;
 
 use crate::i18n::i18n;
 
@@ -137,6 +138,37 @@ macro_rules! label_cell_factory {
 
         factory
     }};
+}
+
+pub fn adjust_view_header_alignment(column_view_titlebar: Option<gtk::Widget>) {
+    let mut column_view_title = column_view_titlebar.and_then(|w| w.first_child());
+    loop {
+        let Some(view_title) = column_view_title.take() else {
+            break;
+        };
+        column_view_title = view_title.next_sibling();
+
+        let Some(container) = view_title.first_child() else {
+            continue;
+        };
+
+        let Some(label) = container
+            .first_child()
+            .and_then(|l| l.downcast::<gtk::Label>().ok())
+        else {
+            continue;
+        };
+
+        // The `Name` column should be default aligned
+        // The column that contains the context menu button should be default aligned
+        if label.label().starts_with(&i18n("Name")) || label.label().is_empty() {
+            continue;
+        }
+
+        container.set_halign(gtk::Align::End);
+        label.set_halign(gtk::Align::End);
+        label.set_justify(gtk::Justification::Right);
+    }
 }
 
 pub fn update_column_titles(

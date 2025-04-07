@@ -1,6 +1,6 @@
 /* apps_page/mod.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,16 +24,16 @@ use std::collections::HashMap;
 use adw::prelude::*;
 use gtk::glib::g_critical;
 use gtk::{gio, glib, subclass::prelude::*};
+
 use magpie_types::apps::icon::Icon;
 use magpie_types::processes::Process;
 
-use crate::i18n;
 use crate::magpie_client::App;
 
 use columns::{
-    cpu_list_item_factory, drive_list_item_factory, gpu_list_item_factory,
-    gpu_memory_list_item_factory, memory_list_item_factory, name_list_item_factory,
-    pid_list_item_factory, shared_memory_list_item_factory,
+    adjust_view_header_alignment, cpu_list_item_factory, drive_list_item_factory,
+    gpu_list_item_factory, gpu_memory_list_item_factory, memory_list_item_factory,
+    name_list_item_factory, pid_list_item_factory, shared_memory_list_item_factory,
 };
 use row_model::{ContentType, RowModel, RowModelBuilder};
 
@@ -133,20 +133,6 @@ mod imp {
 
             self.content.set_maximum_size(i32::MAX);
 
-            let model = gio::ListStore::new::<RowModel>();
-            model.append(&self.apps_section);
-            model.append(&self.processes_section);
-
-            let tree_model = gtk::TreeListModel::new(model, false, true, move |model_entry| {
-                let Some(row_model) = model_entry.downcast_ref::<RowModel>() else {
-                    return None;
-                };
-                Some(row_model.children().clone().into())
-            });
-
-            self.column_view
-                .set_model(Some(&gtk::SingleSelection::new(Some(tree_model))));
-
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
             self.pid_column.set_factory(Some(&pid_list_item_factory()));
@@ -162,33 +148,8 @@ mod imp {
             self.gpu_memory_column
                 .set_factory(Some(&gpu_memory_list_item_factory()));
 
-            let mut column_view_title =
-                self.column_view.first_child().and_then(|w| w.first_child());
-            loop {
-                let Some(view_title) = column_view_title.take() else {
-                    break;
-                };
-                column_view_title = view_title.next_sibling();
-
-                let Some(container) = view_title.first_child() else {
-                    continue;
-                };
-
-                let Some(label) = container
-                    .first_child()
-                    .and_then(|l| l.downcast::<gtk::Label>().ok())
-                else {
-                    continue;
-                };
-
-                if label.label().starts_with(&i18n("Name")) {
-                    continue;
-                }
-
-                container.set_halign(gtk::Align::End);
-                label.set_halign(gtk::Align::End);
-                label.set_justify(gtk::Justification::Right);
-            }
+            let column_view_title = self.column_view.first_child();
+            adjust_view_header_alignment(column_view_title);
         }
     }
 
@@ -210,6 +171,15 @@ glib::wrapper! {
 impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
+
+        // Set up the models here since we need access to the main application window
+        // which is not yet available in the constructor.
+        let base_model = models::base_model(&imp.apps_section, &imp.processes_section);
+        let tree_list_model = models::tree_list_model(base_model);
+        let filter_list_model = models::filter_list_model(tree_list_model);
+
+        imp.column_view
+            .set_model(Some(&gtk::SingleSelection::new(Some(filter_list_model))));
 
         columns::update_column_titles(
             &imp.cpu_column,
