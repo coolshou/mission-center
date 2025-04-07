@@ -18,13 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
+
 use adw::prelude::*;
 use gtk::glib::g_critical;
 use gtk::{gio, glib, subclass::prelude::*};
 use magpie_types::apps::icon::Icon;
 use magpie_types::processes::Process;
-use std::cell::Cell;
-use std::collections::HashMap;
 
 use crate::i18n;
 use crate::magpie_client::App;
@@ -37,7 +38,7 @@ use columns::{
 use row_model::{ContentType, RowModel, RowModelBuilder};
 
 mod columns;
-mod model;
+mod models;
 mod row_model;
 
 pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
@@ -75,6 +76,7 @@ mod imp {
         pub processes_section: RowModel,
 
         pub root_process: Cell<u32>,
+        pub app_icons: RefCell<HashMap<u32, String>>,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -103,6 +105,7 @@ mod imp {
                     .build(),
 
                 root_process: Cell::new(1),
+                app_icons: RefCell::new(HashMap::new()),
 
                 use_merged_stats: Cell::new(false),
             }
@@ -223,6 +226,8 @@ impl AppsPage {
             &readings.running_processes,
             root_process,
             &imp.processes_section.children(),
+            &imp.app_icons.borrow(),
+            "application-x-executable-symbolic",
             true,
             &mut process_model_map,
         );
@@ -232,6 +237,7 @@ impl AppsPage {
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
+            &mut imp.app_icons.borrow_mut(),
             imp.apps_section.children(),
             true,
         );
@@ -257,6 +263,8 @@ impl AppsPage {
             &readings.running_processes,
             &root_process,
             &imp.processes_section.children(),
+            &imp.app_icons.borrow(),
+            "application-x-executable-symbolic",
             true,
             &mut process_model_map,
         );
@@ -265,6 +273,7 @@ impl AppsPage {
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
+            &mut imp.app_icons.borrow_mut(),
             imp.apps_section.children(),
             true,
         );
@@ -281,9 +290,12 @@ fn update_apps(
     app_map: &HashMap<String, App>,
     process_map: &HashMap<u32, Process>,
     process_model_map: &HashMap<u32, RowModel>,
+    app_icons: &mut HashMap<u32, String>,
     list: &gio::ListStore,
     use_merged_stats: bool,
 ) {
+    app_icons.clear();
+
     let mut to_remove = Vec::with_capacity(list.n_items() as _);
     for i in (0..list.n_items()).rev() {
         let Some(app) = list.item(i).and_then(|obj| obj.downcast::<RowModel>().ok()) else {
@@ -352,6 +364,7 @@ fn update_apps(
             );
             continue;
         };
+
         let usage_stats = if use_merged_stats {
             primary_process.merged_usage_stats(&process_map)
         } else {
@@ -367,6 +380,8 @@ fn update_apps(
                 _ => "application-x-executable",
             })
             .unwrap_or("application-x-executable");
+
+        app_icons.insert(primary_pid, icon.to_string());
 
         row_model.set_name(app.name.as_str());
         row_model.set_icon(icon);
@@ -417,6 +432,8 @@ fn update_processes(
     process_map: &HashMap<u32, Process>,
     pid: &u32,
     list: &gio::ListStore,
+    app_icons: &HashMap<u32, String>,
+    icon: &str,
     use_merged_stats: bool,
     models: &mut HashMap<u32, RowModel>,
 ) {
@@ -499,8 +516,14 @@ fn update_processes(
         &process.usage_stats
     };
 
+    let icon = if let Some(icon) = app_icons.get(&process.pid) {
+        icon.as_str()
+    } else {
+        icon
+    };
+
     row_model.set_name(pretty_name);
-    row_model.set_icon("application-x-executable-symbolic");
+    row_model.set_icon(icon);
     row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);
     row_model.set_memory_usage(usage_stats.memory_usage);
@@ -515,6 +538,8 @@ fn update_processes(
             process_map,
             child,
             row_model.children(),
+            app_icons,
+            icon,
             use_merged_stats,
             models,
         );
