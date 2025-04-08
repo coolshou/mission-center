@@ -216,7 +216,7 @@ template $AppsPage : Box {
                 template ListItem {
                   child: $ContextMenuButton {
                     action-name: "apps-page.show-context-menu";
-                    item-id: bind (template.item as <$RowModel>).name;
+                    item-id: bind (template.item as <$RowModel>).id;
                   };
                 }
               };
@@ -236,12 +236,10 @@ menu context_menu_model {
   section {
     item {
       label: _("Terminate");
-      action: "win.selected-svc-start";
     }
 
     item {
       label: _("Force Terminate");
-      action: "win.selected-svc-stop";
     }
   }
 

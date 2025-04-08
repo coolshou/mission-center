@@ -19,7 +19,6 @@
  */
 
 use std::cell::RefCell;
-use std::marker::PhantomData;
 use std::rc::Rc;
 
 use gtk::{
@@ -39,24 +38,47 @@ mod imp {
         #[template_child]
         pub button: TemplateChild<gtk::Button>,
 
-        #[property(name = "item-id", set = Self::set_item_id)]
-        _item_id: PhantomData<glib::GString>,
+        #[property(set = Self::set_item_id, type = glib::GString)]
+        item_id: RefCell<Rc<str>>,
         #[property(set = Self::set_action_name, type = glib::GString)]
         action_name: RefCell<Rc<str>>,
     }
 
     impl Default for ContextMenuButton {
         fn default() -> Self {
+            let empty_string = Rc::<str>::from("");
             Self {
                 button: TemplateChild::default(),
-                _item_id: PhantomData,
-                action_name: RefCell::new(Rc::<str>::from("")),
+                item_id: RefCell::new(empty_string.clone()),
+                action_name: RefCell::new(empty_string),
             }
         }
     }
 
     impl ContextMenuButton {
         pub fn set_item_id(&self, id: &str) {
+            *self.item_id.borrow_mut() = Rc::<str>::from(id);
+
+            if self.action_name.borrow().is_empty() {
+                return;
+            }
+
+            self.update_action();
+        }
+
+        fn set_action_name(&self, action_name: &str) {
+            *self.action_name.borrow_mut() = Rc::<str>::from(action_name);
+
+            if self.item_id.borrow().is_empty() {
+                return;
+            }
+
+            self.update_action();
+        }
+    }
+
+    impl ContextMenuButton {
+        fn update_action(&self) {
             // Create a weak reference to the object and pass it to the action
             let weak_self = unsafe {
                 let weak_ref = Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
@@ -68,16 +90,11 @@ mod imp {
             self.button
                 .set_action_name(Some(self.action_name.borrow().as_ref()));
             self.button.set_action_target_value(Some(&Variant::from((
-                id.to_owned(),
+                self.item_id.borrow().as_ref().to_owned(),
                 weak_self,
                 -1_f64,
                 -1_f64,
             ))));
-        }
-
-        fn set_action_name(&self, action_name: &str) {
-            *self.action_name.borrow_mut() = Rc::<str>::from(action_name);
-            self.button.set_action_name(Some(action_name));
         }
     }
 

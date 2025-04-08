@@ -22,7 +22,7 @@ use adw::glib::translate::from_glib_full;
 use adw::glib::{gobject_ffi, Object};
 use adw::prelude::*;
 use gtk::glib::g_critical;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, subclass::prelude::*, TreeListRow};
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 
@@ -327,7 +327,7 @@ impl AppsPage {
         imp.column_view
             .set_model(Some(&gtk::SingleSelection::new(Some(sort_list_model))));
 
-        columns::update_column_titles(
+        update_column_titles(
             &imp.cpu_column,
             &imp.memory_column,
             &imp.drive_column,
@@ -368,7 +368,7 @@ impl AppsPage {
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
-        columns::update_column_titles(
+        update_column_titles(
             &imp.cpu_column,
             &imp.memory_column,
             &imp.drive_column,
@@ -413,7 +413,7 @@ impl AppsPage {
 fn update_apps(
     app_map: &HashMap<String, App>,
     process_map: &HashMap<u32, Process>,
-    process_model_map: &HashMap<u32, RowModel>,
+    process_model_map: &HashMap<u32, (RowModel, Vec<u32>)>,
     app_icons: &mut HashMap<u32, String>,
     list: &gio::ListStore,
     use_merged_stats: bool,
@@ -518,17 +518,21 @@ fn update_apps(
         row_model.set_gpu_usage(usage_stats.gpu_usage);
         row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
-        if let Some(process_model) = process_model_map.get(&primary_pid) {
+        if let Some((process_model, process_children_pids)) = process_model_map.get(&primary_pid) {
             let app_children = row_model.children();
             let process_children = process_model.children();
 
             let mut to_remove = Vec::with_capacity(app_children.n_items() as _);
             for i in 0..app_children.n_items() {
-                let Some(child) = app_children.item(i) else {
+                let Some(child) = app_children
+                    .item(i)
+                    .and_then(|obj| obj.downcast::<RowModel>().ok())
+                else {
+                    to_remove.push(i);
                     continue;
                 };
 
-                if process_children.find(&child).is_some() {
+                if process_children_pids.contains(&child.pid()) {
                     continue;
                 }
 
@@ -539,13 +543,25 @@ fn update_apps(
             }
 
             for i in 0..process_children.n_items() {
-                let Some(child) = process_children.item(i) else {
+                let Some(child) = process_children
+                    .item(i)
+                    .and_then(|obj| obj.downcast::<RowModel>().ok())
+                else {
                     continue;
                 };
 
-                if app_children.find(&child).is_some() {
+                if app_children
+                    .find_with_equal_func(|obj| {
+                        let Some(row_model) = obj.downcast_ref::<RowModel>() else {
+                            return false;
+                        };
+                        row_model.pid() == child.pid()
+                    })
+                    .is_some()
+                {
                     continue;
                 }
+
                 app_children.append(&child);
             }
         }
@@ -559,7 +575,7 @@ fn update_processes(
     app_icons: &HashMap<u32, String>,
     icon: &str,
     use_merged_stats: bool,
-    models: &mut HashMap<u32, RowModel>,
+    models: &mut HashMap<u32, (RowModel, Vec<u32>)>,
 ) {
     let Some(process) = process_map.get(&pid) else {
         return;
@@ -669,7 +685,7 @@ fn update_processes(
         );
     }
 
-    models.insert(process.pid, row_model);
+    models.insert(process.pid, (row_model, process.children.clone()));
 }
 
 fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
@@ -683,8 +699,13 @@ fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
 
 fn select_item(model: &gtk::SelectionModel, id: &str) {
     for i in 0..model.n_items() {
-        if let Some(item) = model.item(i).and_then(|i| i.downcast::<RowModel>().ok()) {
-            if item.name() == id {
+        if let Some(item) = model
+            .item(i)
+            .and_then(|i| i.downcast::<TreeListRow>().ok())
+            .and_then(|row| row.item())
+            .and_then(|obj| obj.downcast::<RowModel>().ok())
+        {
+            if item.id() == id {
                 model.select_item(i, false);
                 return;
             }
