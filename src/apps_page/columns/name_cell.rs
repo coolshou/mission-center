@@ -23,6 +23,7 @@ use std::cell::{Cell, RefCell};
 use gtk::{glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
+use crate::widgets::ListCell;
 
 mod imp {
     use super::*;
@@ -31,6 +32,7 @@ mod imp {
         icon: gtk::Image,
         name: gtk::Label,
 
+        sig_id: Cell<Option<glib::SignalHandlerId>>,
         sig_icon: Cell<Option<glib::SignalHandlerId>>,
         sig_name: Cell<Option<glib::SignalHandlerId>>,
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
@@ -46,6 +48,7 @@ mod imp {
                 icon: gtk::Image::new(),
                 name: gtk::Label::new(None),
 
+                sig_id: Cell::new(None),
                 sig_icon: Cell::new(None),
                 sig_name: Cell::new(None),
                 sig_content_type: Cell::new(None),
@@ -58,11 +61,23 @@ mod imp {
     }
 
     impl NameCell {
-        pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
+        pub fn bind(&self, model: &RowModel, list_cell: &ListCell, expander: &gtk::TreeExpander) {
             let this = self.obj().downgrade();
 
             self.model.set(Some(model.clone()));
             *self.expander.borrow_mut() = Some(expander.clone());
+
+            let sig_id = model.connect_id_notify({
+                let list_cell = list_cell.downgrade();
+                move |model| {
+                    let Some(list_cell) = list_cell.upgrade() else {
+                        return;
+                    };
+                    list_cell.set_item_id(model.id())
+                }
+            });
+            self.sig_id.set(Some(sig_id));
+            list_cell.set_item_id(model.id());
 
             let sig_icon = model.connect_icon_notify({
                 let this = this.clone();
@@ -121,6 +136,10 @@ mod imp {
             let Some(model) = self.model.take() else {
                 return;
             };
+
+            if let Some(sig_id) = self.sig_id.take() {
+                model.disconnect(sig_id);
+            }
 
             if let Some(sig_id) = self.sig_icon.take() {
                 model.disconnect(sig_id);
@@ -253,8 +272,8 @@ impl NameCell {
         glib::Object::builder().build()
     }
 
-    pub fn bind(&self, model: &RowModel, expander: &gtk::TreeExpander) {
-        self.imp().bind(model, expander);
+    pub fn bind(&self, model: &RowModel, list_cell: &ListCell, expander: &gtk::TreeExpander) {
+        self.imp().bind(model, list_cell, expander);
     }
 
     pub fn unbind(&self) {

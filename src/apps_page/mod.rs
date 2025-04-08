@@ -18,12 +18,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
-
+use adw::glib::translate::from_glib_full;
+use adw::glib::{gobject_ffi, Object};
 use adw::prelude::*;
 use gtk::glib::g_critical;
 use gtk::{gio, glib, subclass::prelude::*};
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 
 use magpie_types::apps::icon::Icon;
 use magpie_types::processes::Process;
@@ -44,6 +45,8 @@ pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 
 
 mod imp {
     use super::*;
+    use adw::gdk;
+    use adw::glib::{g_warning, VariantTy};
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
@@ -68,6 +71,8 @@ mod imp {
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
+        context_menu: TemplateChild<gtk::PopoverMenu>,
 
         pub apps_section: RowModel,
         pub processes_section: RowModel,
@@ -91,6 +96,7 @@ mod imp {
                 drive_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
+                context_menu: TemplateChild::default(),
 
                 apps_section: RowModelBuilder::new()
                     .name("Apps")
@@ -111,6 +117,104 @@ mod imp {
         }
     }
 
+    impl AppsPage {
+        fn configure_actions(&self) {
+            let this = self.obj();
+            let this = this.as_ref();
+
+            let actions = gio::SimpleActionGroup::new();
+            this.insert_action_group("apps-page", Some(&actions));
+
+            let action = gio::SimpleAction::new("show-context-menu", Some(VariantTy::TUPLE));
+            action.connect_activate({
+                let this = this.downgrade();
+                move |_action, entry| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let Some(model) = this.column_view.model().as_ref().cloned() else {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to get model for `show-context-menu` action"
+                        );
+                        return;
+                    };
+
+                    let Some((id, anchor_widget, x, y)) =
+                        entry.and_then(|s| s.get::<(String, u64, f64, f64)>())
+                    else {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to get service name and button from show-context-menu action"
+                        );
+                        return;
+                    };
+
+                    let anchor_widget = upgrade_weak_ptr(anchor_widget as _);
+                    let anchor = this.calculate_anchor_point(&anchor_widget, x, y);
+
+                    select_item(&model, &id);
+                    this.context_menu.set_pointing_to(Some(&anchor));
+                    this.context_menu.popup();
+                }
+            });
+            actions.add_action(&action);
+        }
+
+        fn calculate_anchor_point(
+            &self,
+            widget: &Option<gtk::Widget>,
+            x: f64,
+            y: f64,
+        ) -> gdk::Rectangle {
+            let Some(anchor_widget) = widget else {
+                g_warning!(
+                    "MissionCenter::AppsPage",
+                    "Failed to get anchor widget, popup will display in an arbitrary location"
+                );
+                return gdk::Rectangle::new(0, 0, 0, 0);
+            };
+
+            if x > 0. && y > 0. {
+                self.context_menu.set_has_arrow(false);
+
+                match anchor_widget
+                    .compute_point(&*self.obj(), &gtk::graphene::Point::new(x as _, y as _))
+                {
+                    Some(p) => {
+                        gdk::Rectangle::new(p.x().round() as i32, p.y().round() as i32, 1, 1)
+                    }
+                    None => {
+                        g_critical!(
+                            "MissionCenter::AppsPage",
+                            "Failed to compute_point, context menu will not be anchored to mouse position"
+                        );
+                        gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1)
+                    }
+                }
+            } else {
+                self.context_menu.set_has_arrow(true);
+
+                if let Some(bounds) = anchor_widget.compute_bounds(&*self.obj()) {
+                    gdk::Rectangle::new(
+                        bounds.x() as i32,
+                        bounds.y() as i32,
+                        bounds.width() as i32,
+                        bounds.height() as i32,
+                    )
+                } else {
+                    g_warning!(
+                        "MissionCenter::AppsPage",
+                        "Failed to get bounds for menu button, popup will display in an arbitrary location"
+                    );
+                    gdk::Rectangle::new(0, 0, 0, 0)
+                }
+            }
+        }
+    }
+
     #[glib::object_subclass]
     impl ObjectSubclass for AppsPage {
         const NAME: &'static str = "AppsPage";
@@ -118,6 +222,8 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            RowModel::ensure_type();
+
             klass.bind_template();
         }
 
@@ -129,6 +235,8 @@ mod imp {
     impl ObjectImpl for AppsPage {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.configure_actions();
 
             let settings = settings!();
 
@@ -319,7 +427,7 @@ fn update_apps(
             continue;
         };
 
-        if app_map.contains_key(app.app_id().as_str()) {
+        if app_map.contains_key(app.id().as_str()) {
             continue;
         }
 
@@ -355,7 +463,7 @@ fn update_apps(
             let Some(row_model) = obj.downcast_ref::<RowModel>() else {
                 return false;
             };
-            row_model.app_id() == app.id
+            row_model.id() == app.id
         }) {
             unsafe {
                 list.item(index)
@@ -365,7 +473,7 @@ fn update_apps(
         } else {
             let row_model = RowModelBuilder::new()
                 .content_type(ContentType::App)
-                .app_id(&app.id)
+                .id(&app.id)
                 .build();
             list.append(&row_model);
             row_model
@@ -499,6 +607,7 @@ fn update_processes(
     } else {
         let row_model = RowModelBuilder::new()
             .content_type(ContentType::Process)
+            .id(&process.pid.to_string())
             .build();
         list.append(&row_model);
         row_model
@@ -540,7 +649,6 @@ fn update_processes(
 
     row_model.set_name(pretty_name);
     row_model.set_icon(icon);
-    row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);
     row_model.set_memory_usage(usage_stats.memory_usage);
     row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
@@ -562,4 +670,24 @@ fn update_processes(
     }
 
     models.insert(process.pid, row_model);
+}
+
+fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
+    let ptr = unsafe { gobject_ffi::g_weak_ref_get(ptr as *mut _) };
+    if ptr.is_null() {
+        return None;
+    }
+    let obj: Object = unsafe { from_glib_full(ptr) };
+    obj.downcast::<gtk::Widget>().ok()
+}
+
+fn select_item(model: &gtk::SelectionModel, id: &str) {
+    for i in 0..model.n_items() {
+        if let Some(item) = model.item(i).and_then(|i| i.downcast::<RowModel>().ok()) {
+            if item.name() == id {
+                model.select_item(i, false);
+                return;
+            }
+        }
+    }
 }

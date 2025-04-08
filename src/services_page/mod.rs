@@ -255,7 +255,7 @@ mod imp {
                                 ) {
                                     None => {
                                         g_critical!(
-                                            "MissionCenter::AppsPage",
+                                            "MissionCenter::ServicesPage",
                                             "Failed to compute_point, context menu will not be anchored to mouse position"
                                         );
                                         gdk::Rectangle::new(

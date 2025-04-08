@@ -76,13 +76,6 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
         };
         expander.set_list_row(Some(&row));
 
-        let name_cell = unsafe {
-            list_item
-                .data::<NameCell>("list_item")
-                .unwrap_unchecked()
-                .as_ref()
-        };
-
         let Some(model) = expander
             .item()
             .and_then(|item| item.downcast::<RowModel>().ok())
@@ -90,7 +83,21 @@ pub fn list_item_factory() -> gtk::SignalListItemFactory {
             return;
         };
 
-        name_cell.bind(&model, expander);
+        let name_cell = unsafe {
+            list_item
+                .data::<NameCell>("list_item")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+
+        let list_cell = unsafe {
+            list_item
+                .data::<ListCell>("list_cell")
+                .unwrap_unchecked()
+                .as_ref()
+        };
+
+        name_cell.bind(&model, list_cell, expander);
     });
 
     factory.connect_unbind(|_, list_item| {

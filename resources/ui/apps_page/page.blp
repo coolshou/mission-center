@@ -159,7 +159,7 @@ template $AppsPage : Box {
 
             reorderable: true;
             show-row-separators: false;
-            show-column-separators: true;
+            show-column-separators: false;
 
             ColumnViewColumn name_column {
               title: _("Name");
@@ -211,9 +211,13 @@ template $AppsPage : Box {
 
             ColumnViewColumn menu_column {
               resizable: false;
-              fixed-width: 50;
+              fixed-width: 60;
               factory: BuilderListItemFactory {
                 template ListItem {
+                  child: $ContextMenuButton {
+                    action-name: "apps-page.show-context-menu";
+                    item-id: bind (template.item as <$RowModel>).name;
+                  };
                 }
               };
             }
@@ -231,18 +235,13 @@ template $AppsPage : Box {
 menu context_menu_model {
   section {
     item {
-      label: _("Start");
+      label: _("Terminate");
       action: "win.selected-svc-start";
     }
 
     item {
-      label: _("Stop");
+      label: _("Force Terminate");
       action: "win.selected-svc-stop";
-    }
-
-    item {
-      label: _("Restart");
-      action: "win.selected-svc-restart";
     }
   }
 

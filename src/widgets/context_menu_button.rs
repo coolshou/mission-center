@@ -18,6 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::RefCell;
+use std::marker::PhantomData;
+use std::rc::Rc;
+
 use gtk::{
     glib::{self, gobject_ffi, prelude::*, ParamSpec, Properties, Value, Variant},
     prelude::*,
@@ -35,21 +39,24 @@ mod imp {
         #[template_child]
         pub button: TemplateChild<gtk::Button>,
 
-        #[property(name = "item-name", set = Self::set_item_name, type = glib::GString)]
-        _item_name: [u8; 0],
+        #[property(name = "item-id", set = Self::set_item_id)]
+        _item_id: PhantomData<glib::GString>,
+        #[property(set = Self::set_action_name, type = glib::GString)]
+        action_name: RefCell<Rc<str>>,
     }
 
     impl Default for ContextMenuButton {
         fn default() -> Self {
             Self {
                 button: TemplateChild::default(),
-                _item_name: [0; 0],
+                _item_id: PhantomData,
+                action_name: RefCell::new(Rc::<str>::from("")),
             }
         }
     }
 
     impl ContextMenuButton {
-        pub fn set_item_name(&self, name: &str) {
+        pub fn set_item_id(&self, id: &str) {
             // Create a weak reference to the object and pass it to the action
             let weak_self = unsafe {
                 let weak_ref = Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
@@ -59,13 +66,18 @@ mod imp {
             };
 
             self.button
-                .set_action_name(Some("services-page.show-context-menu"));
+                .set_action_name(Some(self.action_name.borrow().as_ref()));
             self.button.set_action_target_value(Some(&Variant::from((
-                name.to_owned(),
+                id.to_owned(),
                 weak_self,
                 -1_f64,
                 -1_f64,
             ))));
+        }
+
+        fn set_action_name(&self, action_name: &str) {
+            *self.action_name.borrow_mut() = Rc::<str>::from(action_name);
+            self.button.set_action_name(Some(action_name));
         }
     }
 

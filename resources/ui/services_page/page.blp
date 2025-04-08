@@ -173,7 +173,7 @@ template $ServicesPage : Box {
               factory: BuilderListItemFactory {
                 template ListItem {
                   child: $ListCell {
-                    item-name: bind (template.item as <$ServicesListItem>).name;
+                    item-id: bind (template.item as <$ServicesListItem>).name;
                     action-name: "services-page.show-context-menu";
 
                     child: Box {
@@ -250,7 +250,8 @@ template $ServicesPage : Box {
               factory: BuilderListItemFactory {
                 template ListItem {
                   child: $ContextMenuButton {
-                    item-name: bind (template.item as <$ServicesListItem>).name;
+                    action-name: "services-page.show-context-menu";
+                    item-id: bind (template.item as <$ServicesListItem>).name;
                   };
                 }
               };

@@ -32,8 +32,8 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::ListCell)]
     pub struct ListCell {
-        #[property(set = Self::set_item_name, type = glib::GString)]
-        item_name: RefCell<Rc<str>>,
+        #[property(set = Self::set_item_id, type = glib::GString)]
+        item_id: RefCell<Rc<str>>,
         #[property(set = Self::set_action_name, type = glib::GString)]
         action_name: RefCell<Rc<str>>,
     }
@@ -42,15 +42,15 @@ mod imp {
         fn default() -> Self {
             let empty_str = Rc::<str>::from("");
             Self {
-                item_name: RefCell::new(empty_str.clone()),
+                item_id: RefCell::new(empty_str.clone()),
                 action_name: RefCell::new(empty_str),
             }
         }
     }
 
     impl ListCell {
-        fn set_item_name(&self, item_name: &str) {
-            *self.item_name.borrow_mut() = Rc::<str>::from(item_name);
+        fn set_item_id(&self, item_name: &str) {
+            *self.item_id.borrow_mut() = Rc::<str>::from(item_name);
         }
 
         fn set_action_name(&self, action_name: &str) {
@@ -107,7 +107,7 @@ mod imp {
                         };
                         let this = this.imp();
 
-                        let item_name = this.item_name.borrow().as_ref().to_owned();
+                        let item_name = this.item_id.borrow().as_ref().to_owned();
                         let _ = this.obj().activate_action(
                             this.action_name.borrow().as_ref(),
                             Some(&Variant::from((item_name, weak_self, x, y))),
