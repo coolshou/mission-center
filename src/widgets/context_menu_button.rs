@@ -1,6 +1,6 @@
-/* services_page/context_menu_button.rs
+/* widgets/context_menu_button.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::ContextMenuButton)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/services_page/context_menu_button.ui"
-    )]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/widgets/context_menu_button.ui")]
     pub struct ContextMenuButton {
         #[template_child]
         pub button: TemplateChild<gtk::Button>,

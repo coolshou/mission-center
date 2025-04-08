@@ -1,4 +1,4 @@
-/* list_cell.rs
+/* widgets/list_cell.rs
  *
  * Copyright 2025 Mission Center Developers
  *

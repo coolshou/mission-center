@@ -26,8 +26,8 @@ use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, 
 use gtk::glib::ControlFlow;
 use gtk::{gio, glib};
 
-use crate::list_cell::ListCell;
-use crate::theme_selector::ThemeSelector;
+use crate::widgets::ListCell;
+use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
 
 mod imp {

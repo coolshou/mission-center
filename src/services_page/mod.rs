@@ -32,7 +32,8 @@ use gtk::{
     INVALID_LIST_POSITION,
 };
 
-use context_menu_button::ContextMenuButton;
+use crate::widgets::ContextMenuButton;
+
 use details_dialog::DetailsDialog;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 
@@ -42,7 +43,6 @@ use crate::{
     magpie_client::{MagpieClient, Readings},
 };
 
-mod context_menu_button;
 mod details_dialog;
 mod services_list_item;
 

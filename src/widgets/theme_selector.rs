@@ -1,4 +1,4 @@
-/* performance_page/widgets/sidebar_drop_hint.rs
+/* widgets/theme_selector.rs
  *
  * Copyright 2024 Mission Center Developers
  *
@@ -29,7 +29,7 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::ThemeSelector)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/theme_selector.ui")]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/widgets/theme_selector.ui")]
     pub struct ThemeSelector {
         #[property(get = Self::action_name, set = Self::set_action_name, type = glib::GString)]
         action_name: Cell<glib::GString>,
