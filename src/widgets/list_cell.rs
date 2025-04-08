@@ -18,7 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::RefCell, rc::Rc};
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 use adw::{self, subclass::prelude::*};
 use glib::{gobject_ffi, ParamSpec, Properties, Value, Variant};
@@ -36,6 +37,8 @@ mod imp {
         item_id: RefCell<Rc<str>>,
         #[property(set = Self::set_action_name, type = glib::GString)]
         action_name: RefCell<Rc<str>>,
+        #[property(set)]
+        is_tree_view: Cell<bool>,
     }
 
     impl Default for ListCell {
@@ -44,6 +47,7 @@ mod imp {
             Self {
                 item_id: RefCell::new(empty_str.clone()),
                 action_name: RefCell::new(empty_str),
+                is_tree_view: Cell::new(false),
             }
         }
     }
@@ -88,7 +92,13 @@ mod imp {
             self.parent_realize();
 
             let this = self.obj();
-            if let Some(row_widget) = this.parent().and_then(|p| p.parent()) {
+            if let Some(mut row_widget) = this.parent().and_then(|p| p.parent()) {
+                if self.is_tree_view.get() {
+                    if let Some(rw) = row_widget.parent() {
+                        row_widget = rw;
+                    }
+                }
+
                 let gesture_click = gtk::GestureClick::new();
                 gesture_click.set_button(3);
 

@@ -413,7 +413,7 @@ impl AppsPage {
 fn update_apps(
     app_map: &HashMap<String, App>,
     process_map: &HashMap<u32, Process>,
-    process_model_map: &HashMap<u32, (RowModel, Vec<u32>)>,
+    process_model_map: &HashMap<u32, RowModel>,
     app_icons: &mut HashMap<u32, String>,
     list: &gio::ListStore,
     use_merged_stats: bool,
@@ -518,21 +518,17 @@ fn update_apps(
         row_model.set_gpu_usage(usage_stats.gpu_usage);
         row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
 
-        if let Some((process_model, process_children_pids)) = process_model_map.get(&primary_pid) {
+        if let Some(process_model) = process_model_map.get(&primary_pid) {
             let app_children = row_model.children();
             let process_children = process_model.children();
 
             let mut to_remove = Vec::with_capacity(app_children.n_items() as _);
             for i in 0..app_children.n_items() {
-                let Some(child) = app_children
-                    .item(i)
-                    .and_then(|obj| obj.downcast::<RowModel>().ok())
-                else {
-                    to_remove.push(i);
+                let Some(child) = app_children.item(i) else {
                     continue;
                 };
 
-                if process_children_pids.contains(&child.pid()) {
+                if process_children.find(&child).is_some() {
                     continue;
                 }
 
@@ -543,25 +539,13 @@ fn update_apps(
             }
 
             for i in 0..process_children.n_items() {
-                let Some(child) = process_children
-                    .item(i)
-                    .and_then(|obj| obj.downcast::<RowModel>().ok())
-                else {
+                let Some(child) = process_children.item(i) else {
                     continue;
                 };
 
-                if app_children
-                    .find_with_equal_func(|obj| {
-                        let Some(row_model) = obj.downcast_ref::<RowModel>() else {
-                            return false;
-                        };
-                        row_model.pid() == child.pid()
-                    })
-                    .is_some()
-                {
+                if app_children.find(&child).is_some() {
                     continue;
                 }
-
                 app_children.append(&child);
             }
         }
@@ -575,7 +559,7 @@ fn update_processes(
     app_icons: &HashMap<u32, String>,
     icon: &str,
     use_merged_stats: bool,
-    models: &mut HashMap<u32, (RowModel, Vec<u32>)>,
+    models: &mut HashMap<u32, RowModel>,
 ) {
     let Some(process) = process_map.get(&pid) else {
         return;
@@ -665,6 +649,7 @@ fn update_processes(
 
     row_model.set_name(pretty_name);
     row_model.set_icon(icon);
+    row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);
     row_model.set_memory_usage(usage_stats.memory_usage);
     row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
@@ -685,7 +670,7 @@ fn update_processes(
         );
     }
 
-    models.insert(process.pid, (row_model, process.children.clone()));
+    models.insert(process.pid, row_model);
 }
 
 fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
