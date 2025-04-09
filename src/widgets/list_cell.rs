@@ -99,10 +99,7 @@ mod imp {
                     }
                 }
 
-                let gesture_click = gtk::GestureClick::new();
-                gesture_click.set_button(3);
-
-                gesture_click.connect_released({
+                let gesture_handler = {
                     let weak_self = unsafe {
                         let weak_ref =
                             Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
@@ -111,7 +108,7 @@ mod imp {
                         weak_ref as *mut _ as u64
                     };
                     let this = this.downgrade();
-                    move |_, _, x, y| {
+                    move |x, y| {
                         let Some(this) = this.upgrade() else {
                             return;
                         };
@@ -123,8 +120,26 @@ mod imp {
                             Some(&Variant::from((item_name, weak_self, x, y))),
                         );
                     }
+                };
+
+                let gesture_click = gtk::GestureClick::new();
+                gesture_click.set_button(3);
+                gesture_click.connect_released({
+                    let gesture_handler = gesture_handler.clone();
+                    move |_, _, x, y| {
+                        gesture_handler(x, y);
+                    }
                 });
+
+                let gesture_touch = gtk::GestureLongPress::new();
+                gesture_touch.set_button(1);
+                gesture_touch.set_touch_only(true);
+                gesture_touch.connect_pressed(move |_, x, y| {
+                    gesture_handler(x, y);
+                });
+
                 row_widget.add_controller(gesture_click);
+                row_widget.add_controller(gesture_touch);
             }
         }
     }

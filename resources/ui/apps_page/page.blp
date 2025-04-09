@@ -208,19 +208,6 @@ template $AppsPage : Box {
               resizable: true;
               fixed-width: 105;
             }
-
-            ColumnViewColumn menu_column {
-              resizable: false;
-              fixed-width: 60;
-              factory: BuilderListItemFactory {
-                template ListItem {
-                  child: $ContextMenuButton {
-                    action-name: "apps-page.show-context-menu";
-                    item-id: bind (template.item as <$RowModel>).id;
-                  };
-                }
-              };
-            }
           }
         };
       }

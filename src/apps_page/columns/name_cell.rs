@@ -20,10 +20,37 @@
 
 use std::cell::{Cell, RefCell};
 
+use gtk::gdk;
+use gtk::glib::g_critical;
+use gtk::glib::FileError;
 use gtk::{glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 use crate::widgets::ListCell;
+
+mod icon_cache {
+    use super::*;
+
+    use std::collections::HashMap;
+
+    thread_local! {
+        static CACHE: RefCell<HashMap<String, gdk::gdk_pixbuf::Pixbuf>> = RefCell::new(HashMap::new());
+    }
+
+    pub fn get(name: &str) -> Option<gdk::gdk_pixbuf::Pixbuf> {
+        CACHE.with(|cache| {
+            let cache = cache.borrow();
+            cache.get(name).cloned()
+        })
+    }
+
+    pub fn set(name: glib::GString, pixbuf: gdk::gdk_pixbuf::Pixbuf) {
+        CACHE.with(|cache| {
+            let mut cache = cache.borrow_mut();
+            cache.insert(name.into(), pixbuf);
+        })
+    }
+}
 
 mod imp {
     use super::*;
@@ -158,18 +185,33 @@ mod imp {
             }
         }
 
-        fn set_icon(&self, icon: glib::GString) {
-            let icon_path = std::path::Path::new(icon.as_str());
-            if icon_path.exists() {
-                self.icon.set_from_file(Some(&icon_path));
+        #[allow(deprecated)]
+        fn set_icon(&self, icon_name: glib::GString) {
+            if let Some(pixbuf) = icon_cache::get(icon_name.as_str()) {
+                self.icon.set_from_pixbuf(Some(&pixbuf));
                 return;
+            }
+
+            let icon_path = std::path::Path::new(icon_name.as_str());
+            match gdk::gdk_pixbuf::Pixbuf::from_file(&icon_path) {
+                Ok(pixbuf) => {
+                    self.icon.set_from_pixbuf(Some(&pixbuf));
+                    icon_cache::set(icon_name, pixbuf);
+                    return;
+                }
+                Err(e) => {
+                    if !e.matches(FileError::Noent) {
+                        g_critical!("MissionCenter::AppsPage", "Failed to load icon: {}", e);
+                        return;
+                    }
+                }
             }
 
             let display = gtk::gdk::Display::default().unwrap();
             let icon_theme = gtk::IconTheme::for_display(&display);
 
-            if icon_theme.has_icon(&icon) {
-                self.icon.set_icon_name(Some(&icon));
+            if icon_theme.has_icon(&icon_name) {
+                self.icon.set_icon_name(Some(&icon_name));
             } else {
                 self.icon.set_icon_name(Some("application-x-executable"));
             }
