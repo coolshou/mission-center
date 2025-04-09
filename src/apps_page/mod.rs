@@ -524,11 +524,23 @@ fn update_apps(
 
             let mut to_remove = Vec::with_capacity(app_children.n_items() as _);
             for i in 0..app_children.n_items() {
-                let Some(child) = app_children.item(i) else {
+                let Some(app_child_model) = app_children
+                    .item(i)
+                    .and_then(|c| c.downcast::<RowModel>().ok())
+                else {
+                    to_remove.push(i);
                     continue;
                 };
 
-                if process_children.find(&child).is_some() {
+                if process_children
+                    .find_with_equal_func(|obj| {
+                        let Some(process_child_model) = obj.downcast_ref::<RowModel>() else {
+                            return false;
+                        };
+                        process_child_model.pid() == app_child_model.pid()
+                    })
+                    .is_some()
+                {
                     continue;
                 }
 
@@ -539,14 +551,25 @@ fn update_apps(
             }
 
             for i in 0..process_children.n_items() {
-                let Some(child) = process_children.item(i) else {
+                let Some(process_child_model) = process_children
+                    .item(i)
+                    .and_then(|c| c.downcast::<RowModel>().ok())
+                else {
                     continue;
                 };
 
-                if app_children.find(&child).is_some() {
+                if app_children
+                    .find_with_equal_func(|obj| {
+                        let Some(app_child_model) = obj.downcast_ref::<RowModel>() else {
+                            return false;
+                        };
+                        app_child_model.pid() == process_child_model.pid()
+                    })
+                    .is_some()
+                {
                     continue;
                 }
-                app_children.append(&child);
+                app_children.append(&process_child_model);
             }
         }
     }
