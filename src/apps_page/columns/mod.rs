@@ -192,7 +192,8 @@ pub fn adjust_view_header_alignment(column_view_titlebar: Option<gtk::Widget>) {
 
         // The `Name` column should be default aligned
         // The column that contains the context menu button should be default aligned
-        if label.label().starts_with(&i18n("Name")) || label.label().is_empty() {
+        if label.label().starts_with(&i18n("Name")) {
+            label.set_margin_start(10);
             continue;
         }
 

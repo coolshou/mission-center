@@ -4,6 +4,7 @@
         <file preprocess="xml-stripblanks">application-x-executable.svg</file>
         <file preprocess="xml-stripblanks">arrow-circular-top-right-symbolic.svg</file>
         <file preprocess="xml-stripblanks">check-plain-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">cross-small-circle-filled-symbolic.svg</file>
         <file preprocess="xml-stripblanks">details-symbolic.svg</file>
         <file preprocess="xml-stripblanks">edit-symbolic.svg</file>
         <file preprocess="xml-stripblanks">info-symbolic.svg</file>

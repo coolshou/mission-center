@@ -20,10 +20,10 @@
 
 use std::cell::{Cell, RefCell};
 
-use gtk::gdk;
+use gdk::pango::EllipsizeMode;
 use gtk::glib::g_critical;
 use gtk::glib::FileError;
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use gtk::{gdk, glib, prelude::*, subclass::prelude::*};
 
 use crate::apps_page::row_model::{ContentType, RowModel};
 use crate::widgets::ListCell;
@@ -33,18 +33,20 @@ mod icon_cache {
 
     use std::collections::HashMap;
 
+    use gdk::gdk_pixbuf::Pixbuf;
+
     thread_local! {
-        static CACHE: RefCell<HashMap<String, gdk::gdk_pixbuf::Pixbuf>> = RefCell::new(HashMap::new());
+        static CACHE: RefCell<HashMap<String, Pixbuf>> = RefCell::new(HashMap::new());
     }
 
-    pub fn get(name: &str) -> Option<gdk::gdk_pixbuf::Pixbuf> {
+    pub fn get(name: &str) -> Option<Pixbuf> {
         CACHE.with(|cache| {
             let cache = cache.borrow();
             cache.get(name).cloned()
         })
     }
 
-    pub fn set(name: glib::GString, pixbuf: gdk::gdk_pixbuf::Pixbuf) {
+    pub fn set(name: glib::GString, pixbuf: Pixbuf) {
         CACHE.with(|cache| {
             let mut cache = cache.borrow_mut();
             cache.insert(name.into(), pixbuf);
@@ -288,6 +290,8 @@ mod imp {
     impl ObjectImpl for NameCell {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.name.set_ellipsize(EllipsizeMode::Middle);
 
             let _ = self.obj().append(&self.icon);
             let _ = self.obj().append(&self.name);

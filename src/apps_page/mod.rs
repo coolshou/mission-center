@@ -18,20 +18,24 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use adw::glib::translate::from_glib_full;
-use adw::glib::{gobject_ffi, Object};
-use adw::prelude::*;
-use gtk::glib::g_critical;
-use gtk::{gio, glib, subclass::prelude::*, TreeListRow};
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
+use std::fmt::Write;
+
+use adw::prelude::*;
+use arrayvec::ArrayString;
+use glib::translate::from_glib_full;
+use glib::{g_critical, g_warning, gobject_ffi, Object, VariantTy};
+use gtk::{gdk, gio, glib, subclass::prelude::*, TreeListRow};
 
 use magpie_types::apps::icon::Icon;
 use magpie_types::processes::Process;
 
+use crate::app;
 use crate::magpie_client::App;
 use crate::settings;
 
+use crate::i18n::ni18n_f;
 use columns::*;
 use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
@@ -45,14 +49,16 @@ pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 
 
 mod imp {
     use super::*;
-    use adw::gdk;
-    use adw::glib::{g_warning, VariantTy};
 
     #[derive(gtk::CompositeTemplate)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
     pub struct AppsPage {
         #[template_child]
         pub content: TemplateChild<adw::Clamp>,
+        #[template_child]
+        pub h1: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub h2: TemplateChild<gtk::Label>,
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
@@ -79,6 +85,11 @@ mod imp {
 
         pub root_process: Cell<u32>,
         pub app_icons: RefCell<HashMap<u32, String>>,
+        pub selected_item: RefCell<RowModel>,
+
+        pub action_stop: gio::SimpleAction,
+        pub action_force_stop: gio::SimpleAction,
+        pub action_details: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -87,6 +98,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 content: TemplateChild::default(),
+                h1: TemplateChild::default(),
+                h2: TemplateChild::default(),
                 column_view: TemplateChild::default(),
                 name_column: TemplateChild::default(),
                 pid_column: TemplateChild::default(),
@@ -111,6 +124,11 @@ mod imp {
 
                 root_process: Cell::new(1),
                 app_icons: RefCell::new(HashMap::new()),
+                selected_item: RefCell::new(RowModelBuilder::new().build()),
+
+                action_stop: gio::SimpleAction::new("stop", None),
+                action_force_stop: gio::SimpleAction::new("force-stop", None),
+                action_details: gio::SimpleAction::new("details", None),
 
                 use_merged_stats: Cell::new(false),
             }
@@ -155,12 +173,69 @@ mod imp {
                     let anchor_widget = upgrade_weak_ptr(anchor_widget as _);
                     let anchor = this.calculate_anchor_point(&anchor_widget, x, y);
 
-                    select_item(&model, &id);
-                    this.context_menu.set_pointing_to(Some(&anchor));
-                    this.context_menu.popup();
+                    if select_item(&model, &id) {
+                        this.context_menu.set_pointing_to(Some(&anchor));
+                        this.context_menu.popup();
+                    }
                 }
             });
             actions.add_action(&action);
+
+            self.action_stop.connect_activate({
+                let this = this.downgrade();
+                move |_action, entry| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let selected_item = this.selected_item.borrow();
+                    if selected_item.content_type() == ContentType::SectionHeader {
+                        return;
+                    }
+
+                    if let Ok(magpie_client) = app!().sys_info() {
+                        magpie_client.terminate_process(selected_item.pid());
+                    }
+                }
+            });
+            actions.add_action(&self.action_stop);
+
+            self.action_force_stop.connect_activate({
+                let this = this.downgrade();
+                move |_action, entry| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let selected_item = this.selected_item.borrow();
+                    if selected_item.content_type() == ContentType::SectionHeader {
+                        return;
+                    }
+
+                    if let Ok(magpie_client) = app!().sys_info() {
+                        magpie_client.kill_process(selected_item.pid());
+                    }
+                }
+            });
+            actions.add_action(&self.action_force_stop);
+
+            self.action_details.connect_activate({
+                let this = this.downgrade();
+                move |_action, entry| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let selected_item = this.selected_item.borrow();
+                    if selected_item.content_type() == ContentType::SectionHeader {
+                        return;
+                    }
+                }
+            });
+            actions.add_action(&self.action_details);
         }
 
         fn calculate_anchor_point(
@@ -239,8 +314,6 @@ mod imp {
             self.configure_actions();
 
             let settings = settings!();
-
-            self.content.set_maximum_size(i32::MAX);
 
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
@@ -323,9 +396,72 @@ impl AppsPage {
         let tree_list_model = models::tree_list_model(base_model);
         let filter_list_model = models::filter_list_model(tree_list_model);
         let sort_list_model = models::sort_list_model(filter_list_model, &imp.column_view);
+        let selection_model = gtk::SingleSelection::new(Some(sort_list_model));
+        imp.column_view.set_model(Some(&selection_model));
 
-        imp.column_view
-            .set_model(Some(&gtk::SingleSelection::new(Some(sort_list_model))));
+        selection_model.connect_selection_changed({
+            let this = self.downgrade();
+            move |model, index, n_items| {
+                let Some(this) = this.upgrade() else {
+                    return;
+                };
+                let imp = this.imp();
+
+                // GtkSingleSelection is used as the selection model for our tree view which  means
+                // we could use `model.selected_item()` to get the selected item.
+                // However, we might want to support multiple selection in the future.
+                let changed = model.selection_in_range(index, n_items);
+                for i in 0..n_items {
+                    let changed = changed.nth(i);
+                    if model.is_selected(changed) {
+                        let Some(row_model) = model
+                            .item(changed)
+                            .and_then(|i| i.downcast::<TreeListRow>().ok())
+                            .and_then(|row| row.item())
+                            .and_then(|obj| obj.downcast::<RowModel>().ok())
+                        else {
+                            return;
+                        };
+
+                        if row_model.content_type() == ContentType::SectionHeader {
+                            imp.action_stop.set_enabled(false);
+                            imp.action_force_stop.set_enabled(false);
+                            imp.action_details.set_enabled(false);
+
+                            return;
+                        }
+
+                        imp.action_stop.set_enabled(true);
+                        imp.action_force_stop.set_enabled(true);
+                        imp.action_details.set_enabled(true);
+
+                        imp.selected_item.replace(row_model);
+
+                        break;
+                    }
+                }
+            }
+        });
+
+        let mut buffer = ArrayString::<64>::new();
+        let running_apps_len = readings.running_apps.len() as u32;
+        let _ = write!(&mut buffer, "{}", running_apps_len);
+        imp.h1.set_label(&ni18n_f(
+            "{} Running App",
+            "{} Running Apps",
+            running_apps_len,
+            &[buffer.as_str()],
+        ));
+
+        buffer.clear();
+        let running_processes_len = readings.running_processes.len() as u32;
+        let _ = write!(&mut buffer, "{}", running_processes_len);
+        imp.h2.set_label(&ni18n_f(
+            "{} Running Process",
+            "{} Running Processes",
+            running_processes_len,
+            &[buffer.as_str()],
+        ));
 
         update_column_titles(
             &imp.cpu_column,
@@ -358,7 +494,7 @@ impl AppsPage {
             &readings.running_processes,
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
-            imp.apps_section.children(),
+            &imp.apps_section.children(),
             imp.use_merged_stats.get(),
         );
 
@@ -367,6 +503,26 @@ impl AppsPage {
 
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
+
+        let mut buffer = ArrayString::<64>::new();
+        let running_apps_len = readings.running_apps.len() as u32;
+        let _ = write!(&mut buffer, "{}", running_apps_len);
+        imp.h1.set_label(&ni18n_f(
+            "{} Running App",
+            "{} Running Apps",
+            running_apps_len,
+            &[buffer.as_str()],
+        ));
+
+        buffer.clear();
+        let running_processes_len = readings.running_processes.len() as u32;
+        let _ = write!(&mut buffer, "{}", running_processes_len);
+        imp.h2.set_label(&ni18n_f(
+            "{} Running Process",
+            "{} Running Processes",
+            running_processes_len,
+            &[buffer.as_str()],
+        ));
 
         update_column_titles(
             &imp.cpu_column,
@@ -398,7 +554,7 @@ impl AppsPage {
             &readings.running_processes,
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
-            imp.apps_section.children(),
+            &imp.apps_section.children(),
             imp.use_merged_stats.get(),
         );
 
@@ -459,6 +615,16 @@ fn update_apps(
             continue;
         }
 
+        let Some(primary_process) = process_map.get(&primary_pid) else {
+            g_critical!(
+                "MissionCenter::AppsPage",
+                "Failed to find primary PID {} for app {}",
+                primary_pid,
+                app.name
+            );
+            continue;
+        };
+
         let row_model = if let Some(index) = list.find_with_equal_func(|obj| {
             let Some(row_model) = obj.downcast_ref::<RowModel>() else {
                 return false;
@@ -475,18 +641,11 @@ fn update_apps(
                 .content_type(ContentType::App)
                 .id(&app.id)
                 .build();
+            if let Some(process_model) = process_model_map.get(&primary_pid) {
+                row_model.set_children(process_model.children());
+            }
             list.append(&row_model);
             row_model
-        };
-
-        let Some(primary_process) = process_map.get(&primary_pid) else {
-            g_critical!(
-                "MissionCenter::AppsPage",
-                "Failed to find primary PID {} for app {}",
-                primary_pid,
-                app.name
-            );
-            continue;
         };
 
         let usage_stats = if use_merged_stats {
@@ -517,61 +676,6 @@ fn update_apps(
         row_model.set_network_usage(usage_stats.network_usage);
         row_model.set_gpu_usage(usage_stats.gpu_usage);
         row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
-
-        if let Some(process_model) = process_model_map.get(&primary_pid) {
-            let app_children = row_model.children();
-            let process_children = process_model.children();
-
-            let mut to_remove = Vec::with_capacity(app_children.n_items() as _);
-            for i in 0..app_children.n_items() {
-                let Some(app_child_model) = app_children
-                    .item(i)
-                    .and_then(|c| c.downcast::<RowModel>().ok())
-                else {
-                    to_remove.push(i);
-                    continue;
-                };
-
-                if process_children
-                    .find_with_equal_func(|obj| {
-                        let Some(process_child_model) = obj.downcast_ref::<RowModel>() else {
-                            return false;
-                        };
-                        process_child_model.pid() == app_child_model.pid()
-                    })
-                    .is_some()
-                {
-                    continue;
-                }
-
-                to_remove.push(i);
-            }
-            for i in to_remove {
-                app_children.remove(i);
-            }
-
-            for i in 0..process_children.n_items() {
-                let Some(process_child_model) = process_children
-                    .item(i)
-                    .and_then(|c| c.downcast::<RowModel>().ok())
-                else {
-                    continue;
-                };
-
-                if app_children
-                    .find_with_equal_func(|obj| {
-                        let Some(app_child_model) = obj.downcast_ref::<RowModel>() else {
-                            return false;
-                        };
-                        app_child_model.pid() == process_child_model.pid()
-                    })
-                    .is_some()
-                {
-                    continue;
-                }
-                app_children.append(&process_child_model);
-            }
-        }
     }
 }
 
@@ -685,7 +789,7 @@ fn update_processes(
         update_processes(
             process_map,
             child,
-            row_model.children(),
+            &row_model.children(),
             app_icons,
             icon,
             use_merged_stats,
@@ -705,7 +809,7 @@ fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
     obj.downcast::<gtk::Widget>().ok()
 }
 
-fn select_item(model: &gtk::SelectionModel, id: &str) {
+fn select_item(model: &gtk::SelectionModel, id: &str) -> bool {
     for i in 0..model.n_items() {
         if let Some(item) = model
             .item(i)
@@ -713,10 +817,12 @@ fn select_item(model: &gtk::SelectionModel, id: &str) {
             .and_then(|row| row.item())
             .and_then(|obj| obj.downcast::<RowModel>().ok())
         {
-            if item.id() == id {
+            if item.content_type() != ContentType::SectionHeader && item.id() == id {
                 model.select_item(i, false);
-                return;
+                return true;
             }
         }
     }
+
+    false
 }

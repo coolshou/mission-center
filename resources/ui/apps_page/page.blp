@@ -27,7 +27,12 @@ template $AppsPage : Box {
   Adw.Clamp content {
     margin-start: 20;
     margin-end: 20;
+    margin-top: 20;
     margin-bottom: 20;
+
+    maximum-size: 2000;
+    // This number make the page match the size of the Services page
+    tightening-threshold: 559;
 
     child: Box {
       orientation: vertical;
@@ -47,6 +52,8 @@ template $AppsPage : Box {
               "title-1",
             ]
 
+            label: _("5 Applications");
+
             ellipsize: end;
 
             halign: start;
@@ -56,6 +63,8 @@ template $AppsPage : Box {
             styles [
               "faint-text",
             ]
+
+            label: _("134 Processes");
 
             halign: start;
           }
@@ -70,26 +79,8 @@ template $AppsPage : Box {
               "linked"
             ]
 
-            Button start {
-              action-name: "win.selected-svc-start";
-
-              child: Box {
-                spacing: 5;
-
-                halign: center;
-
-                Image {
-                  icon-name: "media-playback-start-symbolic";
-                }
-
-                Label start_label {
-                  label: _("Start");
-                }
-              };
-            }
-
             Button stop {
-              action-name: "win.selected-svc-stop";
+              action-name: "apps-page.stop";
 
               child: Box {
                 spacing: 5;
@@ -100,33 +91,33 @@ template $AppsPage : Box {
                   icon-name: "media-playback-stop-symbolic";
                 }
 
-                Label stop_label {
+                Label start_label {
                   label: _("Stop");
+                }
+              };
+            }
+
+            Button force_stop {
+              action-name: "apps-page.force-stop";
+
+              child: Box {
+                spacing: 5;
+
+                halign: center;
+
+                Image {
+                  icon-name: "cross-small-circle-filled-symbolic";
+                }
+
+                Label stop_label {
+                  label: _("Force Stop");
                 }
               };
             }
           }
 
-          Button restart {
-            action-name: "win.selected-svc-restart";
-
-            child: Box {
-              spacing: 5;
-
-              halign: center;
-
-              Image {
-                icon-name: "media-playlist-repeat-symbolic";
-              }
-
-              Label restart_label {
-                label: _("Restart");
-              }
-            };
-          }
-
           Button status {
-            action-name: "services-page.details";
+            action-name: "apps-page.details";
 
             child: Box {
               spacing: 5;
@@ -222,18 +213,20 @@ template $AppsPage : Box {
 menu context_menu_model {
   section {
     item {
-      label: _("Terminate");
+      action: "apps-page.stop";
+      label: _("Stop");
     }
 
     item {
-      label: _("Force Terminate");
+      action: "apps-page.force-stop";
+      label: _("Force Stop");
     }
   }
 
   section {
     item {
       label: _("Details");
-      action: "services-page.details";
+      action: "apps-page.details";
     }
   }
 }

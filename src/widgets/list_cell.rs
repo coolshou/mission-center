@@ -100,12 +100,12 @@ mod imp {
                 }
 
                 let gesture_handler = {
-                    let weak_self = unsafe {
+                    let weak_row_widget = unsafe {
                         let weak_ref =
-                            Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
-                        gobject_ffi::g_weak_ref_init(weak_ref, this.as_ptr() as *mut _);
+                            Box::into_raw(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
+                        gobject_ffi::g_weak_ref_init(weak_ref, row_widget.as_ptr() as *mut _);
 
-                        weak_ref as *mut _ as u64
+                        weak_ref as u64
                     };
                     let this = this.downgrade();
                     move |x, y| {
@@ -117,7 +117,7 @@ mod imp {
                         let item_name = this.item_id.borrow().as_ref().to_owned();
                         let _ = this.obj().activate_action(
                             this.action_name.borrow().as_ref(),
-                            Some(&Variant::from((item_name, weak_self, x, y))),
+                            Some(&Variant::from((item_name, weak_row_widget, x, y))),
                         );
                     }
                 };

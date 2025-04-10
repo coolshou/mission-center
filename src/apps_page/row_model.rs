@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
 use gtk::{
     gio, glib,
@@ -75,7 +75,7 @@ mod imp {
 
         pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
 
-        pub children: gio::ListStore,
+        pub children: RefCell<gio::ListStore>,
     }
 
     impl Default for RowModel {
@@ -109,7 +109,7 @@ mod imp {
 
                 merged_stats: Cell::new(None),
 
-                children: gio::ListStore::new::<super::RowModel>(),
+                children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
         }
     }
@@ -444,7 +444,11 @@ impl RowModel {
         self.imp().merged_stats.set(Some(stats));
     }
 
-    pub fn children(&self) -> &gio::ListStore {
-        &self.imp().children
+    pub fn children(&self) -> gio::ListStore {
+        self.imp().children.borrow().clone()
+    }
+
+    pub fn set_children(&self, children: gio::ListStore) {
+        self.imp().children.replace(children);
     }
 }
