@@ -51,8 +51,6 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
     pub struct AppsPage {
         #[template_child]
-        pub content: TemplateChild<adw::Clamp>,
-        #[template_child]
         pub h1: TemplateChild<gtk::Label>,
         #[template_child]
         pub h2: TemplateChild<gtk::Label>,
@@ -97,7 +95,6 @@ mod imp {
     impl Default for AppsPage {
         fn default() -> Self {
             Self {
-                content: TemplateChild::default(),
                 h1: TemplateChild::default(),
                 h2: TemplateChild::default(),
                 column_view: TemplateChild::default(),
@@ -162,6 +159,10 @@ mod imp {
             self.parent_constructed();
 
             actions::configure(self);
+
+            self.action_stop.set_enabled(false);
+            self.action_force_stop.set_enabled(false);
+            self.action_details.set_enabled(false);
 
             let settings = settings!();
 
@@ -249,6 +250,7 @@ impl AppsPage {
             models::sort_list_model(filter_list_model, &imp.column_view);
         let selection_model = gtk::SingleSelection::new(Some(sort_list_model));
         imp.column_view.set_model(Some(&selection_model));
+        selection_model.set_selected(u32::MAX);
 
         let _ = imp.row_sorter.set(row_sorter);
 

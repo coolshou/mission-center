@@ -24,13 +24,14 @@ using Adw 1;
 template $AppsPage : Box {
   orientation: vertical;
 
-  Adw.Clamp content {
+  Adw.Clamp {
     margin-start: 20;
     margin-end: 20;
     margin-top: 20;
     margin-bottom: 20;
 
     maximum-size: 2000;
+    // FIXME: Remove this when I understand why the sizes don't match up without it
     // This number make the page match the size of the Services page
     tightening-threshold: 559;
 
@@ -52,8 +53,6 @@ template $AppsPage : Box {
               "title-1",
             ]
 
-            label: _("5 Applications");
-
             ellipsize: end;
 
             halign: start;
@@ -63,8 +62,6 @@ template $AppsPage : Box {
             styles [
               "faint-text",
             ]
-
-            label: _("134 Processes");
 
             halign: start;
           }
@@ -91,7 +88,7 @@ template $AppsPage : Box {
                   icon-name: "media-playback-stop-symbolic";
                 }
 
-                Label start_label {
+                Label {
                   label: _("Stop");
                 }
               };
@@ -109,7 +106,7 @@ template $AppsPage : Box {
                   icon-name: "cross-small-circle-filled-symbolic";
                 }
 
-                Label stop_label {
+                Label {
                   label: _("Force Stop");
                 }
               };
@@ -128,13 +125,11 @@ template $AppsPage : Box {
                 icon-name: "details-symbolic";
               }
 
-              Label details_label {
+              Label {
                 label: _("Details");
               }
             };
           }
-
-
         }
       }
 
@@ -213,13 +208,13 @@ template $AppsPage : Box {
 menu context_menu_model {
   section {
     item {
-      action: "apps-page.stop";
       label: _("Stop");
+      action: "apps-page.stop";
     }
 
     item {
-      action: "apps-page.force-stop";
       label: _("Force Stop");
+      action: "apps-page.force-stop";
     }
   }
 
