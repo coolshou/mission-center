@@ -61,6 +61,10 @@ mod shared_memory;
 #[macro_export]
 macro_rules! label_cell_factory {
     ($property: literal, $setter: expr) => {{
+        label_cell_factory!($property, ContentType::SectionHeader, $setter)
+    }};
+
+    ($property: literal, $skip_content: expr, $setter: expr) => {{
         use gtk::prelude::*;
 
         use crate::apps_page::row_model::{ContentType, RowModel};
@@ -123,7 +127,9 @@ macro_rules! label_cell_factory {
                     .as_ref()
             };
 
-            if model.content_type() == ContentType::SectionHeader {
+            if model.content_type() == ContentType::SectionHeader
+                || model.content_type() == $skip_content
+            {
                 label.set_label("");
                 return;
             }

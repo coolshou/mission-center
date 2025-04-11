@@ -191,7 +191,23 @@ mod imp {
                     }
 
                     if let Ok(magpie_client) = app!().sys_info() {
-                        magpie_client.terminate_process(selected_item.pid());
+                        if selected_item.content_type() == ContentType::App {
+                            let mut pids_to_terminate = vec![];
+                            let primary_process = selected_item.children();
+                            for i in 0..primary_process.n_items() {
+                                let Some(child) = selected_item
+                                    .children()
+                                    .item(i)
+                                    .and_then(|i| i.downcast::<RowModel>().ok())
+                                else {
+                                    continue;
+                                };
+                                pids_to_terminate.push(child.pid());
+                            }
+                            magpie_client.terminate_processes(pids_to_terminate);
+                        } else {
+                            magpie_client.terminate_process(selected_item.pid());
+                        }
                     }
                 }
             });
@@ -211,7 +227,23 @@ mod imp {
                     }
 
                     if let Ok(magpie_client) = app!().sys_info() {
-                        magpie_client.kill_process(selected_item.pid());
+                        if selected_item.content_type() == ContentType::App {
+                            let mut pids_to_terminate = vec![];
+                            let primary_process = selected_item.children();
+                            for i in 0..primary_process.n_items() {
+                                let Some(child) = selected_item
+                                    .children()
+                                    .item(i)
+                                    .and_then(|i| i.downcast::<RowModel>().ok())
+                                else {
+                                    continue;
+                                };
+                                pids_to_terminate.push(child.pid());
+                            }
+                            magpie_client.kill_processes(pids_to_terminate);
+                        } else {
+                            magpie_client.kill_process(selected_item.pid());
+                        }
                     }
                 }
             });
