@@ -24,7 +24,7 @@ use adw::prelude::{IsA, ObjectExt};
 use gtk::glib;
 
 use super::{compare_column_entries_by, sort_order, LabelCell};
-use crate::{apps_page::row_model::ContentType, label_cell_factory};
+use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     label_cell_factory!(

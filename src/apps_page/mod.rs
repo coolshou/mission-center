@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-use std::cell::{Cell, RefCell};
+use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::HashMap;
 use std::fmt::Write;
 
@@ -82,6 +82,7 @@ mod imp {
         pub root_process: Cell<u32>,
         pub app_icons: RefCell<HashMap<u32, String>>,
         pub selected_item: RefCell<RowModel>,
+        pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
 
         pub action_stop: gio::SimpleAction,
         pub action_force_stop: gio::SimpleAction,
@@ -121,6 +122,7 @@ mod imp {
                 root_process: Cell::new(1),
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
+                row_sorter: OnceCell::new(),
 
                 action_stop: gio::SimpleAction::new("stop", None),
                 action_force_stop: gio::SimpleAction::new("force-stop", None),
@@ -423,9 +425,12 @@ impl AppsPage {
         let base_model = models::base_model(&imp.apps_section, &imp.processes_section);
         let tree_list_model = models::tree_list_model(base_model);
         let filter_list_model = models::filter_list_model(tree_list_model);
-        let sort_list_model = models::sort_list_model(filter_list_model, &imp.column_view);
+        let (sort_list_model, row_sorter) =
+            models::sort_list_model(filter_list_model, &imp.column_view);
         let selection_model = gtk::SingleSelection::new(Some(sort_list_model));
         imp.column_view.set_model(Some(&selection_model));
+
+        let _ = imp.row_sorter.set(row_sorter);
 
         selection_model.connect_selection_changed({
             let this = self.downgrade();
@@ -585,6 +590,10 @@ impl AppsPage {
             &imp.apps_section.children(),
             imp.use_merged_stats.get(),
         );
+
+        if let Some(row_sorter) = imp.row_sorter.get() {
+            row_sorter.changed(gtk::SorterChange::Different)
+        }
 
         true
     }

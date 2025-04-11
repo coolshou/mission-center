@@ -73,8 +73,6 @@ mod imp {
         pub max_memory_usage: Cell<u64>,
         pub max_gpu_memory_usage: Cell<u64>,
 
-        pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
-
         pub children: RefCell<gio::ListStore>,
     }
 
@@ -106,8 +104,6 @@ mod imp {
                 max_cpu_usage: Cell::new(0.),
                 max_memory_usage: Cell::new(0),
                 max_gpu_memory_usage: Cell::new(0),
-
-                merged_stats: Cell::new(None),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
@@ -435,14 +431,6 @@ impl RowModel {
         this.imp().content_type.set(content_type);
 
         this
-    }
-
-    pub fn merged_stats(&self) -> Option<crate::magpie_client::ProcessUsageStats> {
-        self.imp().merged_stats.get()
-    }
-
-    pub fn set_merged_stats(&self, stats: crate::magpie_client::ProcessUsageStats) {
-        self.imp().merged_stats.set(Some(stats));
     }
 
     pub fn children(&self) -> gio::ListStore {

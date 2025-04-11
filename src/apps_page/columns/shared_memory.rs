@@ -45,16 +45,8 @@ pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
         };
 
         compare_column_entries_by(lhs, rhs, sort_order(&column_view), |lhs, rhs| {
-            let lhs = if let Some(merged_stats) = lhs.merged_stats() {
-                merged_stats.shared_memory_usage
-            } else {
-                lhs.shared_memory_usage()
-            };
-            let rhs = if let Some(merged_stats) = rhs.merged_stats() {
-                merged_stats.shared_memory_usage
-            } else {
-                rhs.shared_memory_usage()
-            };
+            let lhs = lhs.shared_memory_usage();
+            let rhs = rhs.shared_memory_usage();
 
             lhs.cmp(&rhs)
         })

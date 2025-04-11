@@ -28,7 +28,7 @@ use magpie_types::apps::icon::Icon;
 use magpie_types::apps::App;
 use magpie_types::processes::{Process, ProcessUsageStats};
 
-use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
+use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 pub fn update(
     app_map: &HashMap<String, App>,
@@ -82,6 +82,7 @@ pub fn update(
         } else {
             let row_model = RowModelBuilder::new()
                 .content_type(ContentType::App)
+                .section_type(SectionType::Apps)
                 .id(&app.id)
                 .build();
             list.append(&row_model);

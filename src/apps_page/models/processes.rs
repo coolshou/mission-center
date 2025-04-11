@@ -25,7 +25,7 @@ use gtk::prelude::*;
 
 use magpie_types::processes::Process;
 
-use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder};
+use crate::apps_page::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 pub fn update(
     process_map: &HashMap<u32, Process>,
@@ -82,6 +82,7 @@ pub fn update(
     } else {
         let row_model = RowModelBuilder::new()
             .content_type(ContentType::Process)
+            .section_type(SectionType::Processes)
             .id(&process.pid.to_string())
             .build();
         list.append(&row_model);

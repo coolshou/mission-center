@@ -347,6 +347,7 @@ fn compare_column_entries_by(
         if rhs.section_type() == SectionType::Apps {
             return ord_greater;
         }
+
         if rhs.section_type() == SectionType::Processes {
             return if lhs.content_type() == ContentType::Process {
                 ord_greater
