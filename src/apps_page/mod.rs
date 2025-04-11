@@ -17,7 +17,6 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::fmt::Write;
@@ -27,9 +26,6 @@ use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
 use glib::{g_critical, g_warning, gobject_ffi, Object, VariantTy};
 use gtk::{gdk, gio, glib, subclass::prelude::*, TreeListRow};
-
-use magpie_types::apps::icon::Icon;
-use magpie_types::processes::Process;
 
 use crate::app;
 use crate::magpie_client::App;
@@ -183,7 +179,7 @@ mod imp {
 
             self.action_stop.connect_activate({
                 let this = this.downgrade();
-                move |_action, entry| {
+                move |_action, _| {
                     let Some(this) = this.upgrade() else {
                         return;
                     };
@@ -203,7 +199,7 @@ mod imp {
 
             self.action_force_stop.connect_activate({
                 let this = this.downgrade();
-                move |_action, entry| {
+                move |_action, _| {
                     let Some(this) = this.upgrade() else {
                         return;
                     };
@@ -223,7 +219,7 @@ mod imp {
 
             self.action_details.connect_activate({
                 let this = this.downgrade();
-                move |_action, entry| {
+                move |_action, _| {
                     let Some(this) = this.upgrade() else {
                         return;
                     };
@@ -476,7 +472,7 @@ impl AppsPage {
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
         if let Some(init) = readings.running_processes.get(root_process) {
             for child in &init.children {
-                update_processes(
+                models::update_processes(
                     &readings.running_processes,
                     child,
                     &imp.processes_section.children(),
@@ -489,7 +485,7 @@ impl AppsPage {
         }
         imp.root_process.set(*root_process);
 
-        update_apps(
+        models::update_apps(
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
@@ -537,7 +533,7 @@ impl AppsPage {
         let root_process = imp.root_process.get();
         if let Some(init) = readings.running_processes.get(&root_process) {
             for child in &init.children {
-                update_processes(
+                models::update_processes(
                     &readings.running_processes,
                     child,
                     &imp.processes_section.children(),
@@ -549,7 +545,7 @@ impl AppsPage {
             }
         }
 
-        update_apps(
+        models::update_apps(
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
@@ -564,240 +560,6 @@ impl AppsPage {
     pub fn get_running_apps(&self) -> HashMap<String, App> {
         HashMap::new()
     }
-}
-
-fn update_apps(
-    app_map: &HashMap<String, App>,
-    process_map: &HashMap<u32, Process>,
-    process_model_map: &HashMap<u32, RowModel>,
-    app_icons: &mut HashMap<u32, String>,
-    list: &gio::ListStore,
-    use_merged_stats: bool,
-) {
-    app_icons.clear();
-
-    let mut to_remove = Vec::with_capacity(list.n_items() as _);
-    for i in (0..list.n_items()).rev() {
-        let Some(app) = list.item(i).and_then(|obj| obj.downcast::<RowModel>().ok()) else {
-            to_remove.push(i);
-            continue;
-        };
-
-        if app_map.contains_key(app.id().as_str()) {
-            continue;
-        }
-
-        to_remove.push(i);
-    }
-    for i in to_remove {
-        list.remove(i);
-    }
-
-    for app in app_map.values() {
-        // Find the first process that has any children. This is most likely the root
-        // of the App's process tree.
-        let mut primary_pid = 0;
-        for (index, pid) in app.pids.iter().enumerate() {
-            if let Some(process) = process_map.get(pid) {
-                if process.children.len() > 0 || index == app.pids.len() - 1 {
-                    primary_pid = process.pid;
-                    break;
-                }
-            }
-        }
-
-        if primary_pid == 0 {
-            g_critical!(
-                "MissionCenter::AppsPage",
-                "Failed to find primary PID for app {}",
-                app.name
-            );
-            continue;
-        }
-
-        let Some(primary_process) = process_map.get(&primary_pid) else {
-            g_critical!(
-                "MissionCenter::AppsPage",
-                "Failed to find primary PID {} for app {}",
-                primary_pid,
-                app.name
-            );
-            continue;
-        };
-
-        let row_model = if let Some(index) = list.find_with_equal_func(|obj| {
-            let Some(row_model) = obj.downcast_ref::<RowModel>() else {
-                return false;
-            };
-            row_model.id() == app.id
-        }) {
-            unsafe {
-                list.item(index)
-                    .and_then(|obj| obj.downcast().ok())
-                    .unwrap_unchecked()
-            }
-        } else {
-            let row_model = RowModelBuilder::new()
-                .content_type(ContentType::App)
-                .id(&app.id)
-                .build();
-            if let Some(process_model) = process_model_map.get(&primary_pid) {
-                row_model.set_children(process_model.children());
-            }
-            list.append(&row_model);
-            row_model
-        };
-
-        let usage_stats = if use_merged_stats {
-            primary_process.merged_usage_stats(&process_map)
-        } else {
-            primary_process.usage_stats
-        };
-
-        let icon = app
-            .icon
-            .as_ref()
-            .map(|i| match &i.icon {
-                Some(Icon::Path(p)) => p,
-                Some(Icon::Id(i)) => i,
-                _ => "application-x-executable",
-            })
-            .unwrap_or("application-x-executable");
-
-        app_icons.insert(primary_pid, icon.to_string());
-
-        row_model.set_name(app.name.as_str());
-        row_model.set_icon(icon);
-        row_model.set_pid(primary_pid);
-        row_model.set_cpu_usage(usage_stats.cpu_usage);
-        row_model.set_memory_usage(usage_stats.memory_usage);
-        row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
-        row_model.set_disk_usage(usage_stats.disk_usage);
-        row_model.set_network_usage(usage_stats.network_usage);
-        row_model.set_gpu_usage(usage_stats.gpu_usage);
-        row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
-    }
-}
-
-fn update_processes(
-    process_map: &HashMap<u32, Process>,
-    pid: &u32,
-    list: &gio::ListStore,
-    app_icons: &HashMap<u32, String>,
-    icon: &str,
-    use_merged_stats: bool,
-    models: &mut HashMap<u32, RowModel>,
-) {
-    let Some(process) = process_map.get(&pid) else {
-        return;
-    };
-
-    let pretty_name = if process.exe.is_empty() {
-        if let Some(cmd) = process.cmd.first() {
-            cmd.split_ascii_whitespace()
-                .next()
-                .and_then(|s| s.split('/').last())
-                .unwrap_or(&process.name)
-        } else {
-            &process.name
-        }
-    } else {
-        let exe_name = process.exe.split('/').last().unwrap_or(&process.name);
-        if exe_name.starts_with("wine") {
-            if process.cmd.is_empty() {
-                process.name.as_str()
-            } else {
-                process.cmd[0]
-                    .split("\\")
-                    .last()
-                    .unwrap_or(&process.name)
-                    .split("/")
-                    .last()
-                    .unwrap_or(&process.name)
-            }
-        } else {
-            exe_name
-        }
-    };
-
-    let row_model = if let Some(index) = list.find_with_equal_func(|obj| {
-        let Some(row_model) = obj.downcast_ref::<RowModel>() else {
-            return false;
-        };
-        row_model.pid() == process.pid
-    }) {
-        unsafe {
-            list.item(index)
-                .and_then(|obj| obj.downcast().ok())
-                .unwrap_unchecked()
-        }
-    } else {
-        let row_model = RowModelBuilder::new()
-            .content_type(ContentType::Process)
-            .id(&process.pid.to_string())
-            .build();
-        list.append(&row_model);
-        row_model
-    };
-
-    let prev_children = row_model.children();
-    let mut to_remove = Vec::with_capacity(prev_children.n_items() as _);
-    for i in (0..prev_children.n_items()).rev() {
-        let Some(child) = prev_children
-            .item(i)
-            .and_then(|obj| obj.downcast::<RowModel>().ok())
-        else {
-            to_remove.push(i);
-            continue;
-        };
-
-        if process.children.contains(&child.pid()) {
-            continue;
-        }
-
-        to_remove.push(i);
-    }
-    for i in to_remove {
-        prev_children.remove(i);
-    }
-
-    let merged_usage_stats = process.merged_usage_stats(&process_map);
-    let usage_stats = if use_merged_stats {
-        &merged_usage_stats
-    } else {
-        &process.usage_stats
-    };
-
-    let icon = if let Some(icon) = app_icons.get(&process.pid) {
-        icon.as_str()
-    } else {
-        icon
-    };
-
-    row_model.set_name(pretty_name);
-    row_model.set_icon(icon);
-    row_model.set_pid(process.pid);
-    row_model.set_cpu_usage(usage_stats.cpu_usage);
-    row_model.set_memory_usage(usage_stats.memory_usage);
-    row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
-    row_model.set_disk_usage(usage_stats.disk_usage);
-    row_model.set_network_usage(usage_stats.network_usage);
-    row_model.set_gpu_usage(usage_stats.gpu_usage);
-    row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
-
-    for child in &process.children {
-        update_processes(
-            process_map,
-            child,
-            &row_model.children(),
-            app_icons,
-            icon,
-            use_merged_stats,
-            models,
-        );
-    }
-
-    models.insert(process.pid, row_model);
 }
 
 fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {

@@ -287,6 +287,7 @@ pub struct RowModelBuilder {
     max_gpu_memory_usage: u64,
 }
 
+#[allow(unused)]
 impl RowModelBuilder {
     pub fn new() -> Self {
         Self {
