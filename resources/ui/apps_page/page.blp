@@ -30,10 +30,7 @@ template $AppsPage : Box {
     margin-top: 20;
     margin-bottom: 20;
 
-    maximum-size: 2000;
-    // FIXME: Remove this when I understand why the sizes don't match up without it
-    // This number make the page match the size of the Services page
-    tightening-threshold: 559;
+    maximum-size: 3000;
 
     child: Box {
       orientation: vertical;
@@ -88,7 +85,7 @@ template $AppsPage : Box {
                   icon-name: "media-playback-stop-symbolic";
                 }
 
-                Label {
+                Label stop_label {
                   label: _("Stop");
                 }
               };
@@ -106,7 +103,7 @@ template $AppsPage : Box {
                   icon-name: "cross-small-circle-filled-symbolic";
                 }
 
-                Label {
+                Label force_stop_label{
                   label: _("Force Stop");
                 }
               };
@@ -125,7 +122,7 @@ template $AppsPage : Box {
                 icon-name: "details-symbolic";
               }
 
-              Label {
+              Label details_label {
                 label: _("Details");
               }
             };

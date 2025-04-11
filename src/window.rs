@@ -597,6 +597,7 @@ mod imp {
                         this.header_stack.set_visible(false);
                     }
 
+                    this.apps_page.collapse();
                     this.services_page.collapse();
 
                     if !this.performance_page_active.get() {
@@ -618,6 +619,7 @@ mod imp {
                     this.header_stack.set_visible(true);
                     this.bottom_bar.set_reveal(false);
 
+                    this.apps_page.expand();
                     this.services_page.expand();
 
                     this.split_view.set_collapsed(this.should_hide_sidebar());

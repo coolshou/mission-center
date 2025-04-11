@@ -55,6 +55,12 @@ mod imp {
         #[template_child]
         pub h2: TemplateChild<gtk::Label>,
         #[template_child]
+        pub stop_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub force_stop_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub details_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
         pub name_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -97,6 +103,9 @@ mod imp {
             Self {
                 h1: TemplateChild::default(),
                 h2: TemplateChild::default(),
+                stop_label: TemplateChild::default(),
+                force_stop_label: TemplateChild::default(),
+                details_label: TemplateChild::default(),
                 column_view: TemplateChild::default(),
                 name_column: TemplateChild::default(),
                 pid_column: TemplateChild::default(),
@@ -135,7 +144,23 @@ mod imp {
         }
     }
 
-    impl AppsPage {}
+    impl AppsPage {
+        pub fn collapse(&self) {
+            self.stop_label.set_visible(false);
+            self.force_stop_label.set_visible(false);
+            self.details_label.set_visible(false);
+
+            self.h2.set_visible(false);
+        }
+
+        pub fn expand(&self) {
+            self.stop_label.set_visible(true);
+            self.force_stop_label.set_visible(true);
+            self.details_label.set_visible(true);
+
+            self.h2.set_visible(true);
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for AppsPage {
@@ -428,6 +453,16 @@ impl AppsPage {
         }
 
         true
+    }
+
+    #[inline]
+    pub fn collapse(&self) {
+        self.imp().collapse();
+    }
+
+    #[inline]
+    pub fn expand(&self) {
+        self.imp().expand();
     }
 
     pub fn running_apps(&self) -> HashMap<String, App> {
