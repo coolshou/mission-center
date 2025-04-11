@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-04-10 17:05+0000\n"
+"PO-Revision-Date: 2025-04-11 13:15+0000\n"
 "Last-Translator: Telaneo <post@telaneo.net>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/nb_NO/>\n"
@@ -406,12 +406,10 @@ msgid "Threads"
 msgstr "Tråder"
 
 #: resources/ui/performance_page/cpu_details.blp:139
-#, fuzzy
 msgid "Handles"
-msgstr "Identifikatorer"
+msgstr "Referanser"
 
 #: resources/ui/performance_page/cpu_details.blp:162
-#, fuzzy
 msgid "Up time"
 msgstr "Oppetid"
 
@@ -473,7 +471,6 @@ msgid "Active time"
 msgstr "Tid aktiv"
 
 #: resources/ui/performance_page/disk_details.blp:69
-#, fuzzy
 msgid "Avg. response time"
 msgstr "Gjennomsnittlig svartid"
 
@@ -556,7 +553,6 @@ msgid "Memory speed"
 msgstr "Minnehastighet"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
 msgstr "Videokoding"
 
@@ -602,7 +598,6 @@ msgid "Show Memory Composition"
 msgstr "Vis minnesammensetning"
 
 #: resources/ui/performance_page/memory.blp:189
-#, fuzzy
 msgid "Show Swap Usage"
 msgstr "Vis bruk av swapfil"
 
@@ -615,9 +610,8 @@ msgid "Available"
 msgstr "Tilgjengelig"
 
 #: resources/ui/performance_page/memory_details.blp:119
-#, fuzzy
 msgid "Committed"
-msgstr "Innsendt"
+msgstr "Tildelt"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
@@ -1000,7 +994,6 @@ msgstr ""
 "drivere eller programmer trenger mer minne"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
-#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Disk {} ({})"
 
@@ -1044,9 +1037,8 @@ msgid "GPU {}"
 msgstr "Grafikkenhet {}"
 
 #: src/performance_page/mod.rs:1326
-#, fuzzy
 msgid "GPU"
-msgstr "_Grafikk"
+msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
@@ -1087,7 +1079,6 @@ msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
-#, fuzzy
 msgid "Drive ({})"
 msgstr "Disk {} ({})"
 
@@ -1124,9 +1115,8 @@ msgid "bps"
 msgstr "bits/s"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
