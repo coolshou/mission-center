@@ -103,7 +103,7 @@ mod imp {
                 return result;
             }
 
-            let apps = window.imp().apps_page.get_running_apps();
+            let apps = window.imp().apps_page.running_apps();
 
             for blocker in error.blockers.iter().map(|b| b.clone()) {
                 if let Some(blocking_app) = apps.values().find(|a| a.pids.contains(&blocker.pid)) {

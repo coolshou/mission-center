@@ -21,9 +21,9 @@
 use std::cmp::Ordering;
 use std::fmt::Write;
 
-use adw::prelude::{IsA, ObjectExt};
 use arrayvec::ArrayString;
 use gtk::glib;
+use gtk::prelude::*;
 
 use super::{compare_column_entries_by, sort_order, LabelCell};
 use crate::label_cell_factory;

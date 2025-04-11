@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
 use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::HashMap;
 use std::fmt::Write;
@@ -24,10 +25,9 @@ use std::fmt::Write;
 use adw::prelude::*;
 use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
-use glib::{g_critical, g_warning, gobject_ffi, Object, VariantTy};
-use gtk::{gdk, gio, glib, subclass::prelude::*, TreeListRow};
+use glib::{gobject_ffi, Object};
+use gtk::{gio, glib, subclass::prelude::*, TreeListRow};
 
-use crate::app;
 use crate::magpie_client::App;
 use crate::settings;
 
@@ -35,6 +35,7 @@ use crate::i18n::ni18n_f;
 use columns::*;
 use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
+mod actions;
 mod columns;
 mod models;
 mod row_model;
@@ -74,12 +75,14 @@ mod imp {
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        context_menu: TemplateChild<gtk::PopoverMenu>,
+        pub context_menu: TemplateChild<gtk::PopoverMenu>,
 
         pub apps_section: RowModel,
         pub processes_section: RowModel,
 
         pub root_process: Cell<u32>,
+        pub running_apps: RefCell<HashMap<String, App>>,
+
         pub app_icons: RefCell<HashMap<u32, String>>,
         pub selected_item: RefCell<RowModel>,
         pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
@@ -120,6 +123,8 @@ mod imp {
                     .build(),
 
                 root_process: Cell::new(1),
+                running_apps: RefCell::new(HashMap::new()),
+
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
                 row_sorter: OnceCell::new(),
@@ -133,192 +138,7 @@ mod imp {
         }
     }
 
-    impl AppsPage {
-        fn configure_actions(&self) {
-            let this = self.obj();
-            let this = this.as_ref();
-
-            let actions = gio::SimpleActionGroup::new();
-            this.insert_action_group("apps-page", Some(&actions));
-
-            let action = gio::SimpleAction::new("show-context-menu", Some(VariantTy::TUPLE));
-            action.connect_activate({
-                let this = this.downgrade();
-                move |_action, entry| {
-                    let Some(this) = this.upgrade() else {
-                        return;
-                    };
-                    let this = this.imp();
-
-                    let Some(model) = this.column_view.model().as_ref().cloned() else {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to get model for `show-context-menu` action"
-                        );
-                        return;
-                    };
-
-                    let Some((id, anchor_widget, x, y)) =
-                        entry.and_then(|s| s.get::<(String, u64, f64, f64)>())
-                    else {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to get service name and button from show-context-menu action"
-                        );
-                        return;
-                    };
-
-                    let anchor_widget = upgrade_weak_ptr(anchor_widget as _);
-                    let anchor = this.calculate_anchor_point(&anchor_widget, x, y);
-
-                    if select_item(&model, &id) {
-                        this.context_menu.set_pointing_to(Some(&anchor));
-                        this.context_menu.popup();
-                    }
-                }
-            });
-            actions.add_action(&action);
-
-            self.action_stop.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    let Some(this) = this.upgrade() else {
-                        return;
-                    };
-                    let this = this.imp();
-
-                    let selected_item = this.selected_item.borrow();
-                    if selected_item.content_type() == ContentType::SectionHeader {
-                        return;
-                    }
-
-                    if let Ok(magpie_client) = app!().sys_info() {
-                        if selected_item.content_type() == ContentType::App {
-                            let mut pids_to_terminate = vec![];
-                            let primary_process = selected_item.children();
-                            for i in 0..primary_process.n_items() {
-                                let Some(child) = selected_item
-                                    .children()
-                                    .item(i)
-                                    .and_then(|i| i.downcast::<RowModel>().ok())
-                                else {
-                                    continue;
-                                };
-                                pids_to_terminate.push(child.pid());
-                            }
-                            magpie_client.terminate_processes(pids_to_terminate);
-                        } else {
-                            magpie_client.terminate_process(selected_item.pid());
-                        }
-                    }
-                }
-            });
-            actions.add_action(&self.action_stop);
-
-            self.action_force_stop.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    let Some(this) = this.upgrade() else {
-                        return;
-                    };
-                    let this = this.imp();
-
-                    let selected_item = this.selected_item.borrow();
-                    if selected_item.content_type() == ContentType::SectionHeader {
-                        return;
-                    }
-
-                    if let Ok(magpie_client) = app!().sys_info() {
-                        if selected_item.content_type() == ContentType::App {
-                            let mut pids_to_terminate = vec![];
-                            let primary_process = selected_item.children();
-                            for i in 0..primary_process.n_items() {
-                                let Some(child) = selected_item
-                                    .children()
-                                    .item(i)
-                                    .and_then(|i| i.downcast::<RowModel>().ok())
-                                else {
-                                    continue;
-                                };
-                                pids_to_terminate.push(child.pid());
-                            }
-                            magpie_client.kill_processes(pids_to_terminate);
-                        } else {
-                            magpie_client.kill_process(selected_item.pid());
-                        }
-                    }
-                }
-            });
-            actions.add_action(&self.action_force_stop);
-
-            self.action_details.connect_activate({
-                let this = this.downgrade();
-                move |_action, _| {
-                    let Some(this) = this.upgrade() else {
-                        return;
-                    };
-                    let this = this.imp();
-
-                    let selected_item = this.selected_item.borrow();
-                    if selected_item.content_type() == ContentType::SectionHeader {
-                        return;
-                    }
-                }
-            });
-            actions.add_action(&self.action_details);
-        }
-
-        fn calculate_anchor_point(
-            &self,
-            widget: &Option<gtk::Widget>,
-            x: f64,
-            y: f64,
-        ) -> gdk::Rectangle {
-            let Some(anchor_widget) = widget else {
-                g_warning!(
-                    "MissionCenter::AppsPage",
-                    "Failed to get anchor widget, popup will display in an arbitrary location"
-                );
-                return gdk::Rectangle::new(0, 0, 0, 0);
-            };
-
-            if x > 0. && y > 0. {
-                self.context_menu.set_has_arrow(false);
-
-                match anchor_widget
-                    .compute_point(&*self.obj(), &gtk::graphene::Point::new(x as _, y as _))
-                {
-                    Some(p) => {
-                        gdk::Rectangle::new(p.x().round() as i32, p.y().round() as i32, 1, 1)
-                    }
-                    None => {
-                        g_critical!(
-                            "MissionCenter::AppsPage",
-                            "Failed to compute_point, context menu will not be anchored to mouse position"
-                        );
-                        gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1)
-                    }
-                }
-            } else {
-                self.context_menu.set_has_arrow(true);
-
-                if let Some(bounds) = anchor_widget.compute_bounds(&*self.obj()) {
-                    gdk::Rectangle::new(
-                        bounds.x() as i32,
-                        bounds.y() as i32,
-                        bounds.width() as i32,
-                        bounds.height() as i32,
-                    )
-                } else {
-                    g_warning!(
-                        "MissionCenter::AppsPage",
-                        "Failed to get bounds for menu button, popup will display in an arbitrary location"
-                    );
-                    gdk::Rectangle::new(0, 0, 0, 0)
-                }
-            }
-        }
-    }
+    impl AppsPage {}
 
     #[glib::object_subclass]
     impl ObjectSubclass for AppsPage {
@@ -341,7 +161,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.configure_actions();
+            actions::configure(self);
 
             let settings = settings!();
 
@@ -531,6 +351,11 @@ impl AppsPage {
             imp.use_merged_stats.get(),
         );
 
+        let _ = std::mem::replace(
+            &mut *imp.running_apps.borrow_mut(),
+            std::mem::take(&mut readings.running_apps),
+        );
+
         true
     }
 
@@ -591,6 +416,11 @@ impl AppsPage {
             imp.use_merged_stats.get(),
         );
 
+        let _ = std::mem::replace(
+            &mut *imp.running_apps.borrow_mut(),
+            std::mem::take(&mut readings.running_apps),
+        );
+
         if let Some(row_sorter) = imp.row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
         }
@@ -598,8 +428,8 @@ impl AppsPage {
         true
     }
 
-    pub fn get_running_apps(&self) -> HashMap<String, App> {
-        HashMap::new()
+    pub fn running_apps(&self) -> HashMap<String, App> {
+        self.imp().running_apps.borrow().clone()
     }
 }
 
