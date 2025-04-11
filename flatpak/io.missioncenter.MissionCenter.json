@@ -101,16 +101,6 @@
         "",
         "ln -sf libc.so rootfs-musl/usr/lib/libgcc_s.so",
         "",
-        "# Make GNOME Builder happy",
-        "mkdir -p /app/bin",
-        "mkdir -p /app/lib",
-        "ln -s /app/clang-glibc/bin/clang /app/bin/clang",
-        "ln -s /app/clang-glibc/bin/clang++ /app/bin/clang++",
-        "ln -s /app/clang-glibc/bin/ld.lld /app/bin/lld",
-        "ln -s /app/clang-glibc/lib/$(arch)-unknown-linux-gnu/libc++.so.1 /app/lib/",
-        "ln -s /app/clang-glibc/lib/$(arch)-unknown-linux-gnu/libc++abi.so.1 /app/lib/",
-        "ln -s /app/clang-glibc/lib/$(arch)-unknown-linux-gnu/libunwind.so.1 /app/lib/",
-        "",
         "mv * /app/"
       ],
       "sources": [
