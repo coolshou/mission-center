@@ -37,6 +37,7 @@ use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 mod actions;
 mod columns;
+mod details_dialog;
 mod models;
 mod row_model;
 

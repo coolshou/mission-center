@@ -37,6 +37,7 @@
         <file preprocess="xml-stripblanks">line-solid-net.svg</file>
 
         <file preprocess="xml-stripblanks">ui/apps_page/page.ui</file>
+        <file preprocess="xml-stripblanks">ui/apps_page/details_dialog.ui</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/cpu_details.ui</file>

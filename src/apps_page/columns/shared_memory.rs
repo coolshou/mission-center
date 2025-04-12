@@ -20,21 +20,14 @@
 
 use std::cmp::Ordering;
 
-use gtk::glib;
 use gtk::prelude::*;
 
-use super::{compare_column_entries_by, format_bytes, sort_order, LabelCell};
+pub use super::memory_label_formatter as label_formatter;
+use super::{compare_column_entries_by, sort_order, LabelCell};
 use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
-    label_cell_factory!(
-        "shared-memory-usage",
-        |label: &LabelCell, value: glib::Value| {
-            let shared_memory_usage: u64 = value.get().unwrap();
-            let formatted = format_bytes(shared_memory_usage as _);
-            label.set_label(formatted.as_str());
-        }
-    )
+    label_cell_factory!("shared-memory-usage", label_formatter)
 }
 
 pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {

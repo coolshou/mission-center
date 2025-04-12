@@ -28,15 +28,20 @@ use gtk::prelude::*;
 use crate::apps_page::row_model::{ContentType, RowModel, SectionType};
 use crate::i18n::i18n;
 
+pub use cpu::label_formatter as cpu_label_formatter;
 pub use cpu::list_item_factory as cpu_list_item_factory;
 pub use cpu::sorter as cpu_sorter;
+pub use drive::label_formatter as drive_label_formatter;
 pub use drive::list_item_factory as drive_list_item_factory;
 pub use drive::sorter as drive_sorter;
+pub use gpu::label_formatter as gpu_label_formatter;
 pub use gpu::list_item_factory as gpu_list_item_factory;
 pub use gpu::sorter as gpu_sorter;
+pub use gpu_memory::label_formatter as gpu_memory_label_formatter;
 pub use gpu_memory::list_item_factory as gpu_memory_list_item_factory;
 pub use gpu_memory::sorter as gpu_memory_sorter;
 pub use label_cell::LabelCell;
+pub use memory::label_formatter as memory_label_formatter;
 pub use memory::list_item_factory as memory_list_item_factory;
 pub use memory::sorter as memory_sorter;
 pub use name::list_item_factory as name_list_item_factory;
@@ -44,6 +49,7 @@ pub use name::sorter as name_sorter;
 pub use name_cell::NameCell;
 pub use pid::list_item_factory as pid_list_item_factory;
 pub use pid::sorter as pid_sorter;
+pub use shared_memory::label_formatter as shared_memory_label_formatter;
 pub use shared_memory::list_item_factory as shared_memory_list_item_factory;
 pub use shared_memory::sorter as shared_memory_sorter;
 

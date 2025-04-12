@@ -95,6 +95,11 @@ mod imp {
     impl ObjectImpl for LabelCell {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.label.set_ellipsize(gtk::pango::EllipsizeMode::Middle);
+            self.label.set_hexpand(true);
+            self.label.set_halign(gtk::Align::End);
+
             self.obj().set_child(Some(&self.label));
         }
     }

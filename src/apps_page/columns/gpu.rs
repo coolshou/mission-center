@@ -19,22 +19,15 @@
  */
 
 use std::cmp::Ordering;
-use std::fmt::Write;
 
-use arrayvec::ArrayString;
-use gtk::glib;
 use gtk::prelude::*;
 
+pub use super::cpu_label_formatter as label_formatter;
 use super::{compare_column_entries_by, sort_order, LabelCell};
 use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
-    label_cell_factory!("gpu-usage", |label: &LabelCell, value: glib::Value| {
-        let gpu_usage: f32 = value.get().unwrap();
-        let mut buffer = ArrayString::<128>::new();
-        let _ = write!(&mut buffer, "{}%", gpu_usage.round() as u32);
-        label.set_label(&mut buffer.as_str());
-    })
+    label_cell_factory!("gpu-usage", label_formatter)
 }
 
 pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {

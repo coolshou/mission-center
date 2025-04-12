@@ -209,7 +209,7 @@ mod imp {
                 }
             }
 
-            let display = gtk::gdk::Display::default().unwrap();
+            let display = gdk::Display::default().unwrap();
             let icon_theme = gtk::IconTheme::for_display(&display);
 
             if icon_theme.has_icon(&icon_name) {

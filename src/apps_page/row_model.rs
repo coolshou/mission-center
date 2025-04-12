@@ -20,6 +20,7 @@
 
 use std::cell::{Cell, RefCell};
 
+use crate::i18n::i18n;
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
@@ -250,6 +251,16 @@ pub enum ContentType {
     SectionHeader,
     App,
     Process,
+}
+
+impl From<ContentType> for String {
+    fn from(value: ContentType) -> Self {
+        match value {
+            ContentType::SectionHeader => i18n("Section Header"),
+            ContentType::App => i18n("App"),
+            ContentType::Process => i18n("Process"),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, glib::Enum)]

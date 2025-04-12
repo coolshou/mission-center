@@ -20,16 +20,19 @@
 
 use adw::gdk;
 use adw::glib::g_warning;
+use adw::prelude::AdwDialogExt;
 use gtk::gio;
 use gtk::glib::{g_critical, VariantTy};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
 use crate::app;
-use crate::apps_page::imp::AppsPage as AppsPageImp;
-use crate::apps_page::row_model::{ContentType, RowModel};
-use crate::apps_page::AppsPage;
-use crate::apps_page::{select_item, upgrade_weak_ptr};
+
+use super::details_dialog::DetailsDialog;
+use super::imp::AppsPage as AppsPageImp;
+use super::row_model::{ContentType, RowModel};
+use super::AppsPage;
+use super::{select_item, upgrade_weak_ptr};
 
 pub fn configure(imp: &AppsPageImp) {
     let this = imp.obj();
@@ -129,12 +132,15 @@ pub fn configure(imp: &AppsPageImp) {
             let Some(this) = this.upgrade() else {
                 return;
             };
-            let this = this.imp();
+            let imp = this.imp();
 
-            let selected_item = this.selected_item.borrow();
+            let selected_item = imp.selected_item.borrow();
             if selected_item.content_type() == ContentType::SectionHeader {
                 return;
             }
+
+            let details_dialog = DetailsDialog::new(imp.selected_item.borrow().clone());
+            details_dialog.present(Some(&this));
         }
     });
     actions.add_action(&imp.action_details);
