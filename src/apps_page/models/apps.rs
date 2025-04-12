@@ -36,7 +36,6 @@ pub fn update(
     process_model_map: &HashMap<u32, RowModel>,
     app_icons: &mut HashMap<u32, String>,
     list: &gio::ListStore,
-    use_merged_stats: bool,
 ) {
     app_icons.clear();
 
@@ -122,14 +121,7 @@ pub fn update(
 
         let mut usage_stats = ProcessUsageStats::default();
         for process in &primary_processes {
-            usage_stats.merge(
-                &(if use_merged_stats {
-                    process.merged_usage_stats(&process_map)
-                } else {
-                    process.usage_stats
-                }),
-            );
-
+            usage_stats.merge(&process.merged_usage_stats(&process_map));
             app_icons.insert(process.pid, icon.to_string());
 
             if app_children

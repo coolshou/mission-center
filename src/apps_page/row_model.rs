@@ -43,16 +43,16 @@ mod imp {
         #[property(get = Self::name, set = Self::set_name)]
         pub name: Cell<glib::GString>,
 
-        #[property(get = Self::content_type, type = ContentType, builder(ContentType::SectionHeader))]
+        #[property(get, type = ContentType, builder(ContentType::SectionHeader))]
         pub content_type: Cell<ContentType>,
-        #[property(get = Self::section_type, type = SectionType, builder(SectionType::Apps))]
+        #[property(get, type = SectionType, builder(SectionType::Apps))]
         pub section_type: Cell<SectionType>,
 
-        #[property(get, set = Self::set_cpu_usage)]
+        #[property(get, set)]
         pub cpu_usage: Cell<f32>,
-        #[property(get, set = Self::set_memory_usage)]
+        #[property(get, set)]
         pub memory_usage: Cell<u64>,
-        #[property(get, set = Self::set_shared_memory_usage)]
+        #[property(get, set)]
         pub shared_memory_usage: Cell<u64>,
         #[property(get, set)]
         pub disk_usage: Cell<f32>,
@@ -60,19 +60,8 @@ mod imp {
         pub network_usage: Cell<f32>,
         #[property(get, set)]
         pub gpu_usage: Cell<f32>,
-        #[property(get, set = Self::set_gpu_memory_usage)]
+        #[property(get, set)]
         pub gpu_memory_usage: Cell<u64>,
-
-        #[property(get)]
-        pub cpu_usage_percent: Cell<f32>,
-        #[property(get)]
-        pub memory_usage_percent: Cell<f32>,
-        #[property(get)]
-        pub gpu_memory_usage_percent: Cell<f32>,
-
-        pub max_cpu_usage: Cell<f32>,
-        pub max_memory_usage: Cell<u64>,
-        pub max_gpu_memory_usage: Cell<u64>,
 
         pub children: RefCell<gio::ListStore>,
     }
@@ -97,14 +86,6 @@ mod imp {
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
                 gpu_memory_usage: Cell::new(0),
-
-                cpu_usage_percent: Cell::new(0.),
-                memory_usage_percent: Cell::new(0.),
-                gpu_memory_usage_percent: Cell::new(0.),
-
-                max_cpu_usage: Cell::new(0.),
-                max_memory_usage: Cell::new(0),
-                max_gpu_memory_usage: Cell::new(0),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
@@ -164,58 +145,6 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
-        }
-
-        pub fn set_cpu_usage(&self, cpu_usage: f32) {
-            self.cpu_usage.set(cpu_usage);
-
-            let usage_percent = if self.max_cpu_usage.get() == 0. {
-                0.
-            } else {
-                self.cpu_usage.get() * 100.0 / self.max_cpu_usage.get()
-            };
-
-            self.cpu_usage_percent.set(usage_percent);
-            self.obj().notify_cpu_usage_percent();
-        }
-
-        pub fn set_memory_usage(&self, memory_usage: u64) {
-            self.memory_usage.set(memory_usage);
-
-            let usage_percent = if self.max_memory_usage.get() == 0 {
-                0.
-            } else {
-                (self.memory_usage.get() * 100) as f64 / self.max_memory_usage.get() as f64
-            };
-
-            self.memory_usage_percent.set(usage_percent as f32);
-            self.obj().notify_memory_usage_percent();
-        }
-
-        pub fn set_shared_memory_usage(&self, memory_shared: u64) {
-            self.shared_memory_usage.set(memory_shared);
-            self.obj().notify_shared_memory_usage();
-        }
-
-        pub fn set_gpu_memory_usage(&self, memory_usage: u64) {
-            self.gpu_memory_usage.set(memory_usage);
-
-            let usage_percent = if self.max_gpu_memory_usage.get() == 0 {
-                0.
-            } else {
-                (self.gpu_memory_usage.get() * 100) as f64 / self.max_gpu_memory_usage.get() as f64
-            };
-
-            self.gpu_memory_usage_percent.set(usage_percent as f32);
-            self.obj().notify_gpu_memory_usage_percent();
-        }
-
-        pub fn content_type(&self) -> ContentType {
-            self.content_type.get()
-        }
-
-        pub fn section_type(&self) -> SectionType {
-            self.section_type.get()
         }
     }
 
@@ -288,10 +217,6 @@ pub struct RowModelBuilder {
     network_usage: f32,
     gpu_usage: f32,
     gpu_mem_usage: u64,
-
-    max_cpu_usage: f32,
-    max_memory_usage: u64,
-    max_gpu_memory_usage: u64,
 }
 
 #[allow(unused)]
@@ -315,10 +240,6 @@ impl RowModelBuilder {
             network_usage: 0.,
             gpu_usage: 0.,
             gpu_mem_usage: 0,
-
-            max_cpu_usage: 0.,
-            max_memory_usage: 0,
-            max_gpu_memory_usage: 0,
         }
     }
 
@@ -387,21 +308,6 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn max_cpu_usage(mut self, v: f32) -> Self {
-        self.max_cpu_usage = v;
-        self
-    }
-
-    pub fn max_memory_usage(mut self, v: u64) -> Self {
-        self.max_memory_usage = v;
-        self
-    }
-
-    pub fn max_gpu_memory_usage(mut self, v: u64) -> Self {
-        self.max_gpu_memory_usage = v;
-        self
-    }
-
     pub fn build(self) -> RowModel {
         let this = RowModel::new(self.content_type);
 
@@ -415,17 +321,13 @@ impl RowModelBuilder {
 
             this.section_type.set(self.section_type);
 
-            this.set_cpu_usage(self.cpu_usage);
-            this.set_memory_usage(self.memory_usage);
-            this.set_shared_memory_usage(self.shared_memory_usage);
+            this.cpu_usage.set(self.cpu_usage);
+            this.memory_usage.set(self.memory_usage);
+            this.shared_memory_usage.set(self.shared_memory_usage);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
-            this.set_gpu_memory_usage(self.gpu_mem_usage);
-
-            this.max_cpu_usage.set(self.max_cpu_usage);
-            this.max_memory_usage.set(self.max_memory_usage);
-            this.max_gpu_memory_usage.set(self.max_gpu_memory_usage);
+            this.gpu_memory_usage.set(self.gpu_mem_usage);
         }
 
         this

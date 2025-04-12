@@ -41,10 +41,6 @@ mod details_dialog;
 mod models;
 mod row_model;
 
-pub const CSS_CELL_USAGE_LOW: &[u8] = b"cell { background-color: rgba(246, 211, 45, 0.3); }";
-pub const CSS_CELL_USAGE_MEDIUM: &[u8] = b"cell { background-color: rgba(230, 97, 0, 0.3); }";
-pub const CSS_CELL_USAGE_HIGH: &[u8] = b"cell { background-color: rgba(165, 29, 45, 0.3); }";
-
 mod imp {
     use super::*;
 
@@ -376,7 +372,6 @@ impl AppsPage {
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
             &imp.apps_section.children(),
-            imp.use_merged_stats.get(),
         );
 
         let _ = std::mem::replace(
@@ -441,7 +436,6 @@ impl AppsPage {
             &process_model_map,
             &mut imp.app_icons.borrow_mut(),
             &imp.apps_section.children(),
-            imp.use_merged_stats.get(),
         );
 
         let _ = std::mem::replace(
