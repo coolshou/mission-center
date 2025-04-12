@@ -787,9 +787,9 @@ impl ServicesPage {
                     Some(this) => this,
                     None => {
                         g_critical!(
-                                "MissionCenter::ServicesPage",
-                                "Failed to get ServicesPage instance in `selected_notify` signal"
-                            );
+                            "MissionCenter::ServicesPage",
+                            "Failed to get ServicesPage instance in `selected_notify` signal"
+                        );
                         return;
                     }
                 };

@@ -154,7 +154,7 @@ mod imp {
         }
     }
 
-    impl MissionCenterWindow {        
+    impl MissionCenterWindow {
         fn update_active_page(&self) {
             use glib::g_critical;
 
