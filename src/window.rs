@@ -154,7 +154,7 @@ mod imp {
         }
     }
 
-    impl MissionCenterWindow {
+    impl MissionCenterWindow {        
         fn update_active_page(&self) {
             use glib::g_critical;
 
@@ -769,6 +769,14 @@ impl MissionCenterWindow {
         self.imp()
             .apps_page
             .add_css_class("mission-center-apps-page");
+
+        let ok = self.imp().services_page.set_initial_readings(&mut readings);
+        if !ok {
+            g_critical!(
+                "MissionCenter",
+                "Failed to set initial readings for services page"
+            );
+        }
 
         self.imp()
             .services_page
