@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-04-11 13:15+0000\n"
+"PO-Revision-Date: 2025-04-13 10:03+0000\n"
 "Last-Translator: Telaneo <post@telaneo.net>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/nb_NO/>\n"
@@ -450,6 +450,7 @@ msgid "Cpufreq driver:"
 msgstr "Cpufreq-driver:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
+#, fuzzy
 msgid "Cpufreq governor:"
 msgstr "Cpufreq governor:"
 
