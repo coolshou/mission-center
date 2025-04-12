@@ -26,7 +26,7 @@ use adw::prelude::*;
 use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
 use glib::{gobject_ffi, Object};
-use gtk::{gio, glib, subclass::prelude::*, TreeListRow};
+use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::magpie_client::App;
 use crate::settings;
@@ -293,7 +293,7 @@ impl AppsPage {
                     if model.is_selected(changed) {
                         let Some(row_model) = model
                             .item(changed)
-                            .and_then(|i| i.downcast::<TreeListRow>().ok())
+                            .and_then(|i| i.downcast::<gtk::TreeListRow>().ok())
                             .and_then(|row| row.item())
                             .and_then(|obj| obj.downcast::<RowModel>().ok())
                         else {
@@ -478,7 +478,7 @@ fn select_item(model: &gtk::SelectionModel, id: &str) -> bool {
     for i in 0..model.n_items() {
         if let Some(item) = model
             .item(i)
-            .and_then(|i| i.downcast::<TreeListRow>().ok())
+            .and_then(|i| i.downcast::<gtk::TreeListRow>().ok())
             .and_then(|row| row.item())
             .and_then(|obj| obj.downcast::<RowModel>().ok())
         {
