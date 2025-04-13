@@ -270,55 +270,10 @@ impl AppsPage {
         let filter_list_model = models::filter_list_model(tree_list_model);
         let (sort_list_model, row_sorter) =
             models::sort_list_model(filter_list_model, &imp.column_view);
-        let selection_model = gtk::SingleSelection::new(Some(sort_list_model));
+        let selection_model = models::selection_model(&self, sort_list_model);
         imp.column_view.set_model(Some(&selection_model));
-        selection_model.set_selected(u32::MAX);
 
         let _ = imp.row_sorter.set(row_sorter);
-
-        selection_model.connect_selection_changed({
-            let this = self.downgrade();
-            move |model, index, n_items| {
-                let Some(this) = this.upgrade() else {
-                    return;
-                };
-                let imp = this.imp();
-
-                // GtkSingleSelection is used as the selection model for our tree view which  means
-                // we could use `model.selected_item()` to get the selected item.
-                // However, we might want to support multiple selection in the future.
-                let changed = model.selection_in_range(index, n_items);
-                for i in 0..n_items {
-                    let changed = changed.nth(i);
-                    if model.is_selected(changed) {
-                        let Some(row_model) = model
-                            .item(changed)
-                            .and_then(|i| i.downcast::<gtk::TreeListRow>().ok())
-                            .and_then(|row| row.item())
-                            .and_then(|obj| obj.downcast::<RowModel>().ok())
-                        else {
-                            return;
-                        };
-
-                        if row_model.content_type() == ContentType::SectionHeader {
-                            imp.action_stop.set_enabled(false);
-                            imp.action_force_stop.set_enabled(false);
-                            imp.action_details.set_enabled(false);
-
-                            return;
-                        }
-
-                        imp.action_stop.set_enabled(true);
-                        imp.action_force_stop.set_enabled(true);
-                        imp.action_details.set_enabled(true);
-
-                        imp.selected_item.replace(row_model);
-
-                        break;
-                    }
-                }
-            }
-        });
 
         let mut buffer = ArrayString::<64>::new();
         let running_apps_len = readings.running_apps.len() as u32;
@@ -378,6 +333,9 @@ impl AppsPage {
             &mut *imp.running_apps.borrow_mut(),
             std::mem::take(&mut readings.running_apps),
         );
+
+        // Select the first item in the list
+        selection_model.set_selected(0);
 
         true
     }
