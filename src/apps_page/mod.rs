@@ -22,6 +22,7 @@ use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::HashMap;
 use std::fmt::Write;
 
+use adw::glib::{ParamSpec, Properties, Value};
 use adw::prelude::*;
 use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
@@ -44,7 +45,8 @@ mod row_model;
 mod imp {
     use super::*;
 
-    #[derive(gtk::CompositeTemplate)]
+    #[derive(Properties, gtk::CompositeTemplate)]
+    #[properties(wrapper_type = super::AppsPage)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/page.ui")]
     pub struct AppsPage {
         #[template_child]
@@ -77,6 +79,9 @@ mod imp {
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::PopoverMenu>,
+
+        #[property(get, set)]
+        pub show_column_separators: Cell<bool>,
 
         pub apps_section: RowModel,
         pub processes_section: RowModel,
@@ -114,6 +119,8 @@ mod imp {
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
                 context_menu: TemplateChild::default(),
+
+                show_column_separators: Cell::new(false),
 
                 apps_section: RowModelBuilder::new()
                     .name("Apps")
@@ -179,6 +186,18 @@ mod imp {
     }
 
     impl ObjectImpl for AppsPage {
+        fn properties() -> &'static [ParamSpec] {
+            Self::derived_properties()
+        }
+
+        fn set_property(&self, id: usize, value: &Value, pspec: &ParamSpec) {
+            self.derived_set_property(id, value, pspec)
+        }
+
+        fn property(&self, id: usize, pspec: &ParamSpec) -> Value {
+            self.derived_property(id, pspec)
+        }
+
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -189,6 +208,14 @@ mod imp {
             self.action_details.set_enabled(false);
 
             let settings = settings!();
+
+            settings
+                .bind(
+                    "apps-page-show-column-separators",
+                    &*self.obj(),
+                    "show-column-separators",
+                )
+                .build();
 
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));

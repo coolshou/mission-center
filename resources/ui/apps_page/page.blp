@@ -166,7 +166,7 @@ template $AppsPage : Box {
 
             reorderable: true;
             show-row-separators: false;
-            show-column-separators: false;
+            show-column-separators: bind template.show-column-separators;
 
             ColumnViewColumn name_column {
               title: _("Name");

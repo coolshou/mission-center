@@ -49,7 +49,7 @@ macro_rules! connect_switch_to_setting {
 mod imp {
     use super::*;
 
-    #[derive(gtk::CompositeTemplate)]
+    #[derive(gtk::CompositeTemplate, Default)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/preferences/page.ui")]
     pub struct PreferencesPage {
         #[template_child]
@@ -84,30 +84,8 @@ mod imp {
         pub remember_sorting: TemplateChild<SwitchRow>,
         #[template_child]
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
-    }
-
-    impl Default for PreferencesPage {
-        fn default() -> Self {
-            Self {
-                update_interval: Default::default(),
-                data_points: Default::default(),
-
-                smooth_graphs: Default::default(),
-                sliding_graphs: Default::default(),
-                network_bytes: Default::default(),
-                network_dynamic_scaling: Default::default(),
-                show_cpu: Default::default(),
-                show_memory: Default::default(),
-                show_disks: Default::default(),
-                show_network: Default::default(),
-                show_gpus: Default::default(),
-                show_fans: Default::default(),
-
-                merged_process_stats: Default::default(),
-                remember_sorting: Default::default(),
-                core_count_affects_percentages: Default::default(),
-            }
-        }
+        #[template_child]
+        pub show_column_separators: TemplateChild<SwitchRow>,
     }
 
     impl PreferencesPage {
@@ -231,6 +209,11 @@ mod imp {
                 self.core_count_affects_percentages,
                 "apps-page-core-count-affects-percentages"
             );
+            connect_switch_to_setting!(
+                self,
+                self.show_column_separators,
+                "apps-page-show-column-separators"
+            );
         }
     }
 
@@ -281,6 +264,8 @@ impl PreferencesPage {
             .set_active(settings.boolean("apps-page-remember-sorting"));
         imp.core_count_affects_percentages
             .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
+        imp.show_column_separators
+            .set_active(settings.boolean("apps-page-show-column-separators"));
 
         this
     }
