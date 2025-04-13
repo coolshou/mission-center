@@ -33,7 +33,7 @@ mod imp {
         pub label: gtk::Label,
 
         sig_handler: Cell<Option<glib::SignalHandlerId>>,
-        model: Cell<Option<RowModel>>,
+        model: Cell<glib::WeakRef<RowModel>>,
     }
 
     impl Default for LabelCell {
@@ -42,7 +42,7 @@ mod imp {
                 label: gtk::Label::new(None),
 
                 sig_handler: Cell::new(None),
-                model: Cell::new(None),
+                model: Cell::new(glib::WeakRef::default()),
             }
         }
     }
@@ -56,7 +56,7 @@ mod imp {
         ) {
             let this = self.obj().downgrade();
 
-            self.model.set(Some(model.clone()));
+            self.model.set(model.downgrade());
 
             let sig_handler = model.connect_notify_local(Some(property), {
                 let this = this.clone();
@@ -71,7 +71,7 @@ mod imp {
         }
 
         pub fn unbind(&self) {
-            let Some(model) = self.model.take() else {
+            let Some(model) = self.model.take().upgrade() else {
                 return;
             };
 

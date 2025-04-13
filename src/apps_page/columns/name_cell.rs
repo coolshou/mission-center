@@ -67,8 +67,8 @@ mod imp {
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
         sig_children_changed: Cell<Option<glib::SignalHandlerId>>,
 
-        model: Cell<Option<RowModel>>,
-        expander: RefCell<Option<gtk::TreeExpander>>,
+        model: Cell<glib::WeakRef<RowModel>>,
+        expander: RefCell<glib::WeakRef<gtk::TreeExpander>>,
     }
 
     impl Default for NameCell {
@@ -83,8 +83,8 @@ mod imp {
                 sig_content_type: Cell::new(None),
                 sig_children_changed: Cell::new(None),
 
-                model: Cell::new(None),
-                expander: RefCell::new(None),
+                model: Cell::new(glib::WeakRef::default()),
+                expander: RefCell::new(glib::WeakRef::default()),
             }
         }
     }
@@ -93,8 +93,8 @@ mod imp {
         pub fn bind(&self, model: &RowModel, list_cell: &ListCell, expander: &gtk::TreeExpander) {
             let this = self.obj().downgrade();
 
-            self.model.set(Some(model.clone()));
-            *self.expander.borrow_mut() = Some(expander.clone());
+            self.model.set(model.downgrade());
+            *self.expander.borrow_mut() = expander.downgrade();
 
             let sig_id = model.connect_id_notify({
                 let list_cell = list_cell.downgrade();
@@ -161,8 +161,8 @@ mod imp {
         }
 
         pub fn unbind(&self) {
-            self.expander.replace(None);
-            let Some(model) = self.model.take() else {
+            self.expander.replace(glib::WeakRef::default());
+            let Some(model) = self.model.take().upgrade() else {
                 return;
             };
 
@@ -230,7 +230,7 @@ mod imp {
                     this.set_margin_top(6);
                     this.set_margin_bottom(6);
 
-                    if let Some(expander) = self.expander.borrow().as_ref() {
+                    if let Some(expander) = self.expander.borrow().upgrade() {
                         expander.set_indent_for_icon(false);
                     };
                 }
@@ -253,7 +253,7 @@ mod imp {
                         let _ = this.activate_action("listitem.collapse", None);
                     });
 
-                    if let Some(expander) = self.expander.borrow().as_ref() {
+                    if let Some(expander) = self.expander.borrow().upgrade() {
                         expander.set_indent_for_icon(true);
                     };
                 }
@@ -268,7 +268,7 @@ mod imp {
                     this.set_margin_top(0);
                     this.set_margin_bottom(0);
 
-                    if let Some(expander) = self.expander.borrow().as_ref() {
+                    if let Some(expander) = self.expander.borrow().upgrade() {
                         expander.set_indent_for_icon(true);
                     };
                 }
