@@ -73,8 +73,9 @@ template $AppsPage : Box {
               "linked"
             ]
 
-            Button stop {
+            Button {
               action-name: "apps-page.stop";
+              tooltip-text: _("Stop the selected app");
 
               child: Box {
                 spacing: 5;
@@ -91,8 +92,9 @@ template $AppsPage : Box {
               };
             }
 
-            Button force_stop {
+            Button {
               action-name: "apps-page.force-stop";
+              tooltip-text: _("Force stop the selected app");
 
               child: Box {
                 spacing: 5;
@@ -110,8 +112,9 @@ template $AppsPage : Box {
             }
           }
 
-          Button status {
+          Button {
             action-name: "apps-page.details";
+            tooltip-text: _("Show details of the selected app");
 
             child: Box {
               spacing: 5;
@@ -124,6 +127,27 @@ template $AppsPage : Box {
 
               Label details_label {
                 label: _("Details");
+              }
+            };
+          }
+
+          Button {
+            margin-start: 5;
+
+            action-name: "apps-page.collapse-all";
+            tooltip-text: _("Collapse all apps and processes");
+
+            child: Box {
+              spacing: 5;
+
+              halign: center;
+
+              Image {
+                icon-name: "list-collapse-symbolic";
+              }
+
+              Label collapse_label {
+                label: _("Collapse All");
               }
             };
           }

@@ -56,6 +56,7 @@ mod icon_cache {
 
 mod imp {
     use super::*;
+    use std::time::Duration;
 
     pub struct NameCell {
         icon: gtk::Image,
@@ -246,12 +247,18 @@ mod imp {
                     this.set_margin_bottom(0);
 
                     let this = this.downgrade();
-                    glib::idle_add_local_once(move || {
-                        let Some(this) = this.upgrade() else {
-                            return;
-                        };
-                        let _ = this.activate_action("listitem.collapse", None);
-                    });
+                    glib::timeout_add_local_full(
+                        Duration::from_millis(0),
+                        glib::Priority::HIGH,
+                        move || {
+                            let Some(this) = this.upgrade() else {
+                                return glib::ControlFlow::Break;
+                            };
+                            let _ = this.activate_action("listitem.collapse", None);
+
+                            glib::ControlFlow::Break
+                        },
+                    );
 
                     if let Some(expander) = self.expander.borrow().upgrade() {
                         expander.set_indent_for_icon(true);

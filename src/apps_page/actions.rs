@@ -144,6 +144,56 @@ pub fn configure(imp: &AppsPageImp) {
         }
     });
     actions.add_action(&imp.action_details);
+
+    let action = gio::SimpleAction::new("collapse-all", None);
+    action.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let imp = this.imp();
+
+            let Some(selection_model) = imp
+                .column_view
+                .model()
+                .and_then(|model| model.downcast::<gtk::SingleSelection>().ok())
+            else {
+                g_critical!(
+                    "MissionCenter::AppsPage",
+                    "Failed to get model for `collapse-all` action"
+                );
+                return;
+            };
+
+            let mut count = 0;
+            for i in 0..selection_model.n_items() {
+                let Some(row) = selection_model
+                    .item(i)
+                    .and_then(|item| item.downcast::<gtk::TreeListRow>().ok())
+                else {
+                    return;
+                };
+
+                let Some(row_model) = row.item().and_then(|item| item.downcast::<RowModel>().ok())
+                else {
+                    continue;
+                };
+
+                if row_model.content_type() != ContentType::SectionHeader {
+                    continue;
+                }
+
+                row.set_expanded(false);
+                count += 1;
+
+                if count >= 2 {
+                    break;
+                }
+            }
+        }
+    });
+    actions.add_action(&action);
 }
 
 fn calculate_anchor_point(

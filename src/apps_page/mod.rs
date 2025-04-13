@@ -84,9 +84,10 @@ mod imp {
         pub root_process: Cell<u32>,
         pub running_apps: RefCell<HashMap<String, App>>,
 
+        pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
+
         pub app_icons: RefCell<HashMap<u32, String>>,
         pub selected_item: RefCell<RowModel>,
-        pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
 
         pub action_stop: gio::SimpleAction,
         pub action_force_stop: gio::SimpleAction,
@@ -128,9 +129,10 @@ mod imp {
                 root_process: Cell::new(1),
                 running_apps: RefCell::new(HashMap::new()),
 
+                row_sorter: OnceCell::new(),
+
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
-                row_sorter: OnceCell::new(),
 
                 action_stop: gio::SimpleAction::new("stop", None),
                 action_force_stop: gio::SimpleAction::new("force-stop", None),
