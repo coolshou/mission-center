@@ -78,6 +78,7 @@ pub fn configure(imp: &AppsPageImp) {
     });
     actions.add_action(&action);
 
+    imp.action_stop.set_enabled(false);
     imp.action_stop.connect_activate({
         let this = this.downgrade();
         move |_action, _| {
@@ -102,6 +103,7 @@ pub fn configure(imp: &AppsPageImp) {
     });
     actions.add_action(&imp.action_stop);
 
+    imp.action_force_stop.set_enabled(false);
     imp.action_force_stop.connect_activate({
         let this = this.downgrade();
         move |_action, _| {
@@ -126,6 +128,7 @@ pub fn configure(imp: &AppsPageImp) {
     });
     actions.add_action(&imp.action_force_stop);
 
+    imp.action_details.set_enabled(false);
     imp.action_details.connect_activate({
         let this = this.downgrade();
         move |_action, _| {

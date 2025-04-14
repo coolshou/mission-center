@@ -30,7 +30,6 @@ use glib::{gobject_ffi, Object};
 use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::magpie_client::App;
-use crate::settings;
 
 use crate::i18n::ni18n_f;
 use columns::*;
@@ -41,6 +40,7 @@ mod columns;
 mod details_dialog;
 mod models;
 mod row_model;
+mod settings;
 
 mod imp {
     use super::*;
@@ -203,20 +203,6 @@ mod imp {
 
             actions::configure(self);
 
-            self.action_stop.set_enabled(false);
-            self.action_force_stop.set_enabled(false);
-            self.action_details.set_enabled(false);
-
-            let settings = settings!();
-
-            settings
-                .bind(
-                    "apps-page-show-column-separators",
-                    &*self.obj(),
-                    "show-column-separators",
-                )
-                .build();
-
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
             self.name_column
@@ -255,21 +241,12 @@ mod imp {
             self.gpu_memory_column
                 .set_sorter(Some(&gpu_memory_sorter(&self.column_view)));
 
+            // Make sure to do this after the columns are set up otherwise restoring sorting
+            // won't work
+            settings::configure(self);
+
             let column_view_title = self.column_view.first_child();
             adjust_view_header_alignment(column_view_title);
-
-            self.use_merged_stats
-                .set(settings.boolean("apps-page-merged-process-stats"));
-            settings.connect_changed(Some("apps-page-merged-process-stats"), {
-                let this = self.obj().downgrade();
-                move |settings, _| {
-                    if let Some(this) = this.upgrade() {
-                        this.imp()
-                            .use_merged_stats
-                            .set(settings.boolean("apps-page-merged-process-stats"));
-                    }
-                }
-            });
         }
     }
 

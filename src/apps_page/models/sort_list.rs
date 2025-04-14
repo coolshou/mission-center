@@ -21,11 +21,47 @@
 use gtk::gio;
 use gtk::prelude::*;
 
+use crate::settings;
+
 pub fn model(
     filter_list_model: impl IsA<gio::ListModel>,
     column_view: &gtk::ColumnView,
 ) -> (gtk::SortListModel, gtk::TreeListRowSorter) {
-    let tree_list_sorter = gtk::TreeListRowSorter::new(column_view.sorter());
+    let column_view_sorter = column_view.sorter();
+
+    if let Some(column_view_sorter) = column_view_sorter.as_ref() {
+        column_view_sorter.connect_changed({
+            |sorter, _| {
+                let settings = settings!();
+
+                let Some(sorter) = sorter.downcast_ref::<gtk::ColumnViewSorter>() else {
+                    return;
+                };
+
+                let Some(sorted_column) = sorter.primary_sort_column() else {
+                    return;
+                };
+
+                let Some(sorted_column_id) = sorted_column.id() else {
+                    return;
+                };
+                let _ =
+                    settings.set_string("apps-page-sorting-column-name", sorted_column_id.as_str());
+
+                let sort_order = sorter.primary_sort_order();
+                let _ = settings.set_enum(
+                    "apps-page-sorting-order",
+                    match sort_order {
+                        gtk::SortType::Ascending => gtk::ffi::GTK_SORT_ASCENDING,
+                        gtk::SortType::Descending => gtk::ffi::GTK_SORT_DESCENDING,
+                        _ => gtk::ffi::GTK_SORT_ASCENDING,
+                    },
+                );
+            }
+        });
+    }
+
+    let tree_list_sorter = gtk::TreeListRowSorter::new(column_view_sorter);
     (
         gtk::SortListModel::new(Some(filter_list_model), Some(tree_list_sorter.clone())),
         tree_list_sorter,
