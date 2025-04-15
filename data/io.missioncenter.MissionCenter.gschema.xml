@@ -84,6 +84,11 @@
             <summary>Column sorting is persisted across app restarts</summary>
         </key>
 
+        <key name="apps-page-remember-column-order" type="b">
+            <default>false</default>
+            <summary>Column order is persisted across app restarts</summary>
+        </key>
+
         <key name="apps-page-core-count-affects-percentages" type="b">
             <default>false</default>
             <summary>Show CPU usage for Apps and Processes scaled to the number of available cores</summary>
@@ -107,6 +112,11 @@
         <key name="apps-page-sorting-order" enum="org.gtk.SortType">
             <default>"None"</default>
             <summary>The sorting direction of the Apps page view</summary>
+        </key>
+
+        <key name="apps-page-column-order" type="s">
+            <default>""</default>
+            <summary>The order of columns in the Apps page view</summary>
         </key>
 
 

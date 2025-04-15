@@ -83,6 +83,8 @@ mod imp {
         #[template_child]
         pub remember_sorting: TemplateChild<SwitchRow>,
         #[template_child]
+        pub remember_column_order: TemplateChild<SwitchRow>,
+        #[template_child]
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_column_separators: TemplateChild<SwitchRow>,
@@ -206,6 +208,11 @@ mod imp {
             connect_switch_to_setting!(self, self.remember_sorting, "apps-page-remember-sorting");
             connect_switch_to_setting!(
                 self,
+                self.remember_column_order,
+                "apps-page-remember-column-order"
+            );
+            connect_switch_to_setting!(
+                self,
                 self.core_count_affects_percentages,
                 "apps-page-core-count-affects-percentages"
             );
@@ -262,6 +269,8 @@ impl PreferencesPage {
             .set_active(settings.boolean("apps-page-merged-process-stats"));
         imp.remember_sorting
             .set_active(settings.boolean("apps-page-remember-sorting"));
+        imp.remember_column_order
+            .set_active(settings.boolean("apps-page-remember-column-order"));
         imp.core_count_affects_percentages
             .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
         imp.show_column_separators

@@ -203,6 +203,8 @@ mod imp {
 
             actions::configure(self);
 
+            update_column_order(&self.column_view);
+
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
             self.name_column

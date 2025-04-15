@@ -112,7 +112,12 @@ template $PreferencesPage: Adw.PreferencesPage {
 
     Adw.SwitchRow remember_sorting {
       title: _("Remember Sorting");
-      subtitle: _("Remember the sorting of the app and process list across app restarts");
+      subtitle: _("Persist app and process sorting by column, across app restarts");
+    }
+
+    Adw.SwitchRow remember_column_order {
+      title: _("Remember Column Order");
+      subtitle: _("Persist the order of the columns, across app restarts");
     }
 
     Adw.SwitchRow core_count_affects_percentages {

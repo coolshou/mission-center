@@ -53,6 +53,8 @@ pub use shared_memory::label_formatter as shared_memory_label_formatter;
 pub use shared_memory::list_item_factory as shared_memory_list_item_factory;
 pub use shared_memory::sorter as shared_memory_sorter;
 
+use crate::settings;
+
 mod cpu;
 mod drive;
 mod gpu;
@@ -293,6 +295,75 @@ pub fn update_column_titles(
         let _ = write!(&mut buffer, "{}\n{}%", i18n("GPU Memory"), gpu_mem_usage);
         gpu_memory_column.set_title(Some(buffer.as_str()));
     }
+}
+
+pub fn update_column_order(column_view: &gtk::ColumnView) {
+    let settings = settings!();
+
+    if settings.boolean("apps-page-remember-column-order") {
+        let columns = column_view.columns();
+        let mut all_columns = Vec::new();
+        for i in 0..columns.n_items() {
+            let Some(column) = columns
+                .item(i)
+                .and_then(|c| c.downcast::<gtk::ColumnViewColumn>().ok())
+            else {
+                continue;
+            };
+            all_columns.push(column);
+        }
+        for column in &all_columns {
+            column_view.remove_column(column);
+        }
+
+        let setting_column_order = settings.string("apps-page-column-order");
+        for column_id in setting_column_order.split(';') {
+            let Some((index, column)) = all_columns
+                .iter()
+                .enumerate()
+                .find(|(_, c)| {
+                    let Some(id) = c.id() else {
+                        return false;
+                    };
+                    id == column_id
+                })
+                .map(|(index, c)| (index, c.clone()))
+            else {
+                continue;
+            };
+            all_columns.remove(index);
+            column_view.append_column(&column);
+        }
+
+        for column in all_columns.drain(..) {
+            column_view.append_column(&column);
+        }
+    } else {
+        let _ = settings.set_string("apps-page-column-order", "");
+    }
+
+    column_view
+        .columns()
+        .connect_items_changed(|model, _, _, _| {
+            let settings = settings!();
+
+            let mut order = String::new();
+            for i in 0..model.n_items() {
+                let Some(id) = model
+                    .item(i)
+                    .and_then(|c| c.downcast::<gtk::ColumnViewColumn>().ok())
+                    .and_then(|c| c.id())
+                else {
+                    continue;
+                };
+
+                order.push_str(id.as_str());
+                order.push(';');
+            }
+            order.pop();
+
+            let _ = settings.set_string("apps-page-column-order", order.as_str());
+        });
 }
 
 fn format_bytes(bytes: f32) -> ArrayString<128> {
