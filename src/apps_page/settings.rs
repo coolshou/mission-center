@@ -32,31 +32,38 @@ pub fn configure(imp: &AppsPageImpl) {
         }
     });
 
-    configure_sorting(imp, &settings);
+    configure_sorting(&imp.column_view, &settings);
 }
 
-fn configure_sorting(imp: &AppsPageImpl, settings: &gio::Settings) {
+fn configure_sorting(column_view: &gtk::ColumnView, settings: &gio::Settings) {
     if !settings.boolean("apps-page-remember-sorting") {
         let _ = settings.set_string("apps-page-sorting-column-name", "");
         let _ = settings.set_enum("apps-page-sorting-order", gtk::ffi::GTK_SORT_ASCENDING);
         return;
     }
 
-    let column = settings.string("apps-page-sorting-column-name");
+    let saved_id = settings.string("apps-page-sorting-column-name");
     let order = settings.enum_("apps-page-sorting-order");
-    let column = match column.as_str() {
-        "name" => &imp.name_column,
-        "pid" => &imp.pid_column,
-        "cpu" => &imp.cpu_column,
-        "memory" => &imp.memory_column,
-        "shared_memory" => &imp.shared_memory_column,
-        "drive" => &imp.drive_column,
-        "gpu" => &imp.gpu_usage_column,
-        "gpu_memory" => &imp.gpu_memory_column,
-        _ => {
-            return;
+
+    let columns = column_view.columns();
+    let mut matched_column = None;
+    for i in 0..columns.n_items() {
+        let Some(column) = columns
+            .item(i)
+            .and_then(|i| i.downcast::<gtk::ColumnViewColumn>().ok())
+        else {
+            continue;
+        };
+        let Some(column_id) = column.id() else {
+            continue;
+        };
+
+        if column_id == saved_id.as_str() {
+            matched_column = Some(column);
+            break;
         }
-    };
+    }
+
     let order = match order {
         gtk::ffi::GTK_SORT_ASCENDING => gtk::SortType::Ascending,
         gtk::ffi::GTK_SORT_DESCENDING => gtk::SortType::Descending,
@@ -69,5 +76,5 @@ fn configure_sorting(imp: &AppsPageImpl, settings: &gio::Settings) {
             gtk::SortType::Ascending
         }
     };
-    imp.column_view.sort_by_column(Some(column), order);
+    column_view.sort_by_column(matched_column.as_ref(), order);
 }
