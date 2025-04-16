@@ -68,6 +68,27 @@ template $AppsPage : Box {
           valign: end;
           spacing: 5;
 
+          Button {
+            margin-end: 5;
+
+            action-name: "apps-page.collapse-all";
+            tooltip-text: _("Collapse all apps and processes");
+
+            child: Box {
+              spacing: 5;
+
+              halign: center;
+
+              Image {
+                icon-name: "list-collapse-symbolic";
+              }
+
+              Label collapse_label {
+                label: _("Collapse All");
+              }
+            };
+          }
+
           Box {
             styles [
               "linked"
@@ -127,27 +148,6 @@ template $AppsPage : Box {
 
               Label details_label {
                 label: _("Details");
-              }
-            };
-          }
-
-          Button {
-            margin-start: 5;
-
-            action-name: "apps-page.collapse-all";
-            tooltip-text: _("Collapse all apps and processes");
-
-            child: Box {
-              spacing: 5;
-
-              halign: center;
-
-              Image {
-                icon-name: "list-collapse-symbolic";
-              }
-
-              Label collapse_label {
-                label: _("Collapse All");
               }
             };
           }

@@ -54,6 +54,8 @@ mod imp {
         #[template_child]
         pub h2: TemplateChild<gtk::Label>,
         #[template_child]
+        pub collapse_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub stop_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub force_stop_label: TemplateChild<gtk::Label>,
@@ -106,6 +108,7 @@ mod imp {
             Self {
                 h1: TemplateChild::default(),
                 h2: TemplateChild::default(),
+                collapse_label: TemplateChild::default(),
                 stop_label: TemplateChild::default(),
                 force_stop_label: TemplateChild::default(),
                 details_label: TemplateChild::default(),
@@ -152,6 +155,7 @@ mod imp {
 
     impl AppsPage {
         pub fn collapse(&self) {
+            self.collapse_label.set_visible(false);
             self.stop_label.set_visible(false);
             self.force_stop_label.set_visible(false);
             self.details_label.set_visible(false);
@@ -160,6 +164,7 @@ mod imp {
         }
 
         pub fn expand(&self) {
+            self.collapse_label.set_visible(true);
             self.stop_label.set_visible(true);
             self.force_stop_label.set_visible(true);
             self.details_label.set_visible(true);
