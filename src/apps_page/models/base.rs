@@ -1,6 +1,6 @@
-/* ui/services_page/context_menu_button.blp
+/* apps_page/models/base.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +18,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-using Gtk 4.0;
+use gtk::gio;
 
-template $ContextMenuButton: Box {
-  margin-end: 10;
+use crate::apps_page::row_model::RowModel;
 
-  Button button {
-    styles [
-      "flat",
-    ]
+pub fn model(apps_section: &RowModel, processes_section: &RowModel) -> gio::ListStore {
+    let model = gio::ListStore::new::<RowModel>();
+    model.append(apps_section);
+    model.append(processes_section);
 
-    child: Box {
-      Image {
-        icon-name: "view-more-symbolic";
-      }
-    };
-  }
+    model
 }

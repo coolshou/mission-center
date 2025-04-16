@@ -1,6 +1,6 @@
-/* ui/apps_page/pid_column.blp
+/* apps_page/models/mod.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-using Gtk 4.0;
+pub use apps::update as update_apps;
+pub use base::model as base_model;
+pub use filter_list::model as filter_list_model;
+pub use processes::update as update_processes;
+pub use selection::model as selection_model;
+pub use sort_list::model as sort_list_model;
+pub use tree_list::model as tree_list_model;
 
-template $PidColumn: Box {
-  hexpand: true;
-  vexpand: true;
-
-  Label label {
-    valign: center;
-    vexpand: true;
-    halign: end;
-  }
-}
+mod apps;
+mod base;
+mod filter_list;
+mod processes;
+mod selection;
+mod sort_list;
+mod tree_list;

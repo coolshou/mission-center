@@ -50,7 +50,7 @@ use magpie_types::network::connections_response::ConnectionList;
 pub use magpie_types::network::Connection;
 use magpie_types::processes::processes_response;
 use magpie_types::processes::processes_response::ProcessMap;
-pub use magpie_types::processes::{Process, ProcessUsageStats};
+pub use magpie_types::processes::Process;
 use magpie_types::prost::Message;
 use magpie_types::services::services_response;
 use magpie_types::services::services_response::ServiceList;

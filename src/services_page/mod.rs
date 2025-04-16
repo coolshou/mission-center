@@ -1,6 +1,6 @@
 /* services_page/mod.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,9 @@ use gtk::{
     INVALID_LIST_POSITION,
 };
 
-use context_menu_button::ContextMenuButton;
+use crate::widgets::ContextMenuButton;
+
 use details_dialog::DetailsDialog;
-use list_cell::ListCell;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 
 use crate::{
@@ -43,9 +43,7 @@ use crate::{
     magpie_client::{MagpieClient, Readings},
 };
 
-mod context_menu_button;
 mod details_dialog;
-mod list_cell;
 mod services_list_item;
 
 mod imp {
@@ -257,7 +255,7 @@ mod imp {
                                 ) {
                                     None => {
                                         g_critical!(
-                                            "MissionCenter::AppsPage",
+                                            "MissionCenter::ServicesPage",
                                             "Failed to compute_point, context menu will not be anchored to mouse position"
                                         );
                                         gdk::Rectangle::new(
@@ -587,7 +585,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            ListCell::ensure_type();
             ContextMenuButton::ensure_type();
             ServicesListItem::ensure_type();
             DetailsDialog::ensure_type();
@@ -638,8 +635,6 @@ mod imp {
             self.obj().add_controller(evt_key_press);
 
             if let Some(header) = self.column_view.first_child() {
-                header.add_css_class("app-list-header");
-
                 // Add 10px padding to the left of the first column header to align it with the content
                 if let Some(first_column) = header
                     .first_child()
