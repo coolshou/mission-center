@@ -1,6 +1,6 @@
-/* ui/apps_page/column_header.blp
+/* ui/services_page/context_menu_button.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,24 +20,12 @@
 
 using Gtk 4.0;
 
-template $ColumnHeader: Box {
-  orientation: vertical;
-
-  margin-top: 5;
-  margin-bottom: 5;
-  spacing: 8;
-
-  hexpand: true;
-  vexpand: true;
-
-  Label heading_label {
+template $ContextMenuButton: Box {
+  Button button {
     styles [
-      "title-4"
+      "flat",
     ]
-  }
 
-  Label title_label {
-    valign: center;
-    vexpand: true;
+    icon-name: "view-more-symbolic";
   }
 }

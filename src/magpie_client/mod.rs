@@ -34,7 +34,7 @@ use crate::application::{BASE_INTERVAL, INTERVAL_STEP};
 
 pub use client::{
     App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, Fan, Gpu, Memory, MemoryDevice,
-    Process, ProcessUsageStats, Service, SmartData,
+    Process, Service, SmartData,
 };
 
 macro_rules! cmd_flatpak_host {

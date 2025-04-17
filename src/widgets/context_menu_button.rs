@@ -1,6 +1,6 @@
-/* services_page/context_menu_button.rs
+/* widgets/context_menu_button.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use gtk::{
     glib::{self, gobject_ffi, prelude::*, ParamSpec, Properties, Value, Variant},
     prelude::*,
@@ -30,28 +33,52 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::ContextMenuButton)]
     #[derive(gtk::CompositeTemplate)]
-    #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/services_page/context_menu_button.ui"
-    )]
+    #[template(resource = "/io/missioncenter/MissionCenter/ui/widgets/context_menu_button.ui")]
     pub struct ContextMenuButton {
         #[template_child]
         pub button: TemplateChild<gtk::Button>,
 
-        #[property(name = "item-name", set = Self::set_item_name, type = glib::GString)]
-        _item_name: [u8; 0],
+        #[property(set = Self::set_item_id, type = glib::GString)]
+        item_id: RefCell<Rc<str>>,
+        #[property(set = Self::set_action_name, type = glib::GString)]
+        action_name: RefCell<Rc<str>>,
     }
 
     impl Default for ContextMenuButton {
         fn default() -> Self {
+            let empty_string = Rc::<str>::from("");
             Self {
                 button: TemplateChild::default(),
-                _item_name: [0; 0],
+                item_id: RefCell::new(empty_string.clone()),
+                action_name: RefCell::new(empty_string),
             }
         }
     }
 
     impl ContextMenuButton {
-        pub fn set_item_name(&self, name: &str) {
+        pub fn set_item_id(&self, id: &str) {
+            *self.item_id.borrow_mut() = Rc::<str>::from(id);
+
+            if self.action_name.borrow().is_empty() {
+                return;
+            }
+
+            self.update_action();
+        }
+
+        fn set_action_name(&self, action_name: &str) {
+            *self.action_name.borrow_mut() = Rc::<str>::from(action_name);
+
+            if self.item_id.borrow().is_empty() {
+                return;
+            }
+
+            self.update_action();
+        }
+    }
+
+    impl ContextMenuButton {
+        fn update_action(&self) {
             // Create a weak reference to the object and pass it to the action
             let weak_self = unsafe {
                 let weak_ref = Box::leak(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
@@ -61,9 +88,9 @@ mod imp {
             };
 
             self.button
-                .set_action_name(Some("services-page.show-context-menu"));
+                .set_action_name(Some(self.action_name.borrow().as_ref()));
             self.button.set_action_target_value(Some(&Variant::from((
-                name.to_owned(),
+                self.item_id.borrow().as_ref().to_owned(),
                 weak_self,
                 -1_f64,
                 -1_f64,
