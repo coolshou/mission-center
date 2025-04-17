@@ -1,6 +1,6 @@
 /* ui/apps_page/page.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,229 +19,231 @@
  */
 
 using Gtk 4.0;
+using Adw 1;
 
 template $AppsPage : Box {
   orientation: vertical;
 
-  ScrolledWindow {
-    vexpand: true;
-    hexpand: true;
+  Adw.Clamp {
+    margin-start: 20;
+    margin-end: 20;
+    margin-top: 20;
+    margin-bottom: 20;
 
-    ColumnView column_view {
-      styles [
-        "rich-list",
-        "transparent"
-      ]
+    maximum-size: 3000;
 
-      show-row-separators: false;
-      show-column-separators: true;
+    child: Box {
+      orientation: vertical;
 
-      ColumnViewColumn name_column {
-        resizable: true;
-        expand: true;
+      Box {
+        margin-bottom: 20;
 
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              child: $ListItem {
-                icon: bind (expander.item as <$RowModel>).icon;
-                name: bind (expander.item as <$RowModel>).name;
-                // Needed for the context menu
-                pid: bind (expander.item as <$RowModel>).pid;
+        Box {
+          orientation: vertical;
 
-                content-type: bind (expander.item as <$RowModel>).content-type;
-                show-expander: bind (expander.item as <$RowModel>).show-expander;
-                expanded: bind (expander.item as <$RowModel>).expanded;
+          spacing: 10;
 
-                cpu-usage-percent: bind (expander.item as <$RowModel>).cpu-usage-percent;
-                memory-usage-percent: bind (expander.item as <$RowModel>).memory-usage-percent;
-                gpu-usage-percent: bind (expander.item as <$RowModel>).gpu-usage;
-                gpu-memory-usage-percent: bind (expander.item as <$RowModel>).gpu-memory-usage-percent;
-              };
+          hexpand: true;
+
+          Label h1 {
+            styles [
+              "title-1",
+            ]
+
+            ellipsize: end;
+
+            halign: start;
+          }
+
+          Label h2 {
+            styles [
+              "faint-text",
+            ]
+
+            halign: start;
+          }
+        }
+
+        Box {
+          valign: end;
+          spacing: 5;
+
+          Button {
+            margin-end: 5;
+
+            action-name: "apps-page.collapse-all";
+            tooltip-text: _("Collapse all apps and processes");
+
+            child: Box {
+              spacing: 5;
+
+              halign: center;
+
+              Image {
+                icon-name: "list-collapse-symbolic";
+              }
+
+              Label collapse_label {
+                label: _("Collapse All");
+              }
             };
+          }
+
+          Box {
+            styles [
+              "linked"
+            ]
+
+            Button {
+              action-name: "apps-page.stop";
+              tooltip-text: _("Stop the selected app");
+
+              child: Box {
+                spacing: 5;
+
+                halign: center;
+
+                Image {
+                  icon-name: "media-playback-stop-symbolic";
+                }
+
+                Label stop_label {
+                  label: _("Stop");
+                }
+              };
+            }
+
+            Button {
+              action-name: "apps-page.force-stop";
+              tooltip-text: _("Force stop the selected app");
+
+              child: Box {
+                spacing: 5;
+
+                halign: center;
+
+                Image {
+                  icon-name: "cross-small-circle-filled-symbolic";
+                }
+
+                Label force_stop_label{
+                  label: _("Force Stop");
+                }
+              };
+            }
+          }
+
+          Button {
+            action-name: "apps-page.details";
+            tooltip-text: _("Show details of the selected app");
+
+            child: Box {
+              spacing: 5;
+
+              halign: center;
+
+              Image {
+                icon-name: "details-symbolic";
+              }
+
+              Label details_label {
+                label: _("Details");
+              }
+            };
+          }
+        }
+      }
+
+      Frame {
+        child: ScrolledWindow {
+          hexpand: true;
+          vexpand: true;
+
+          ColumnView column_view {
+            styles [
+              "rich-list"
+            ]
+
+            reorderable: true;
+            show-row-separators: false;
+            show-column-separators: bind template.show-column-separators;
+
+            ColumnViewColumn name_column {
+              id: "name";
+              title: _("Name");
+              expand: true;
+              resizable: false;
+            }
+
+            ColumnViewColumn pid_column {
+              id: "pid";
+              title: _("PID");
+              resizable: true;
+            }
+
+            ColumnViewColumn cpu_column {
+              id: "cpu";
+              title: _("CPU");
+              resizable: true;
+            }
+
+            ColumnViewColumn memory_column {
+              id: "memory";
+              title: _("Memory");
+              resizable: true;
+            }
+
+            ColumnViewColumn shared_memory_column {
+              id: "shared_memory";
+              title: _("Shared\nMemory");
+              resizable: true;
+            }
+
+            ColumnViewColumn drive_column {
+              id: "drive";
+              title: _("Drive");
+              resizable: true;
+            }
+
+            ColumnViewColumn gpu_usage_column {
+              id: "gpu";
+              title: _("GPU");
+              resizable: true;
+            }
+
+            ColumnViewColumn gpu_memory_column {
+              id: "gpu_memory";
+              title: _("GPU Memory");
+              resizable: true;
+            }
           }
         };
       }
+    };
+  }
 
-      ColumnViewColumn pid_column {
-        resizable: true;
-        fixed-width: 90;
+  PopoverMenu context_menu {
+    menu-model: context_menu_model;
+  }
+}
 
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
+menu context_menu_model {
+  section {
+    item {
+      label: _("Stop");
+      action: "apps-page.stop";
+    }
 
-              halign: end;
+    item {
+      label: _("Force Stop");
+      action: "apps-page.force-stop";
+    }
+  }
 
-              child: $PidColumn {
-                value: bind (expander.item as <$RowModel>).pid;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn cpu_column {
-        resizable: true;
-        fixed-width: 90;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "%";
-                value: bind (expander.item as <$RowModel>).cpu-usage;
-                usage-percent: bind (expander.item as <$RowModel>).cpu-usage-percent;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn memory_column {
-        resizable: true;
-        fixed-width: 90;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "B";
-                value: bind (expander.item as <$RowModel>).memory-usage;
-                usage-percent: bind (expander.item as <$RowModel>).memory-usage-percent;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn shared_memory_column {
-        resizable: true;
-        fixed-width: 118;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "B";
-                value: bind (expander.item as <$RowModel>).shared-memory-usage;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn disk_column {
-        resizable: true;
-        fixed-width: 90;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "B/s";
-                value: bind (expander.item as <$RowModel>).disk-usage;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn gpu_usage_column {
-        resizable: true;
-        fixed-width: 90;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "%";
-                value: bind (expander.item as <$RowModel>).gpu-usage;
-                usage-percent: bind (expander.item as <$RowModel>).gpu-usage;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
-
-      ColumnViewColumn gpu_memory_column {
-        resizable: true;
-        fixed-width: 90;
-
-        factory: BuilderListItemFactory {
-          template ListItem {
-            // focusable: false;
-            child: TreeExpander expander {
-              list-row: bind template.item as <ListItem>;
-              hide-expander: true;
-              indent-for-depth: false;
-              indent-for-icon: false;
-
-              halign: end;
-
-              child: $StatColumn {
-                unit: "B";
-                value: bind (expander.item as <$RowModel>).gpu-memory-usage;
-                usage-percent: bind (expander.item as <$RowModel>).gpu-memory-usage-percent;
-                content-type: bind (expander.item as <$RowModel>).content-type;
-              };
-            };
-          }
-        };
-      }
+  section {
+    item {
+      label: _("Details");
+      action: "apps-page.details";
     }
   }
 }

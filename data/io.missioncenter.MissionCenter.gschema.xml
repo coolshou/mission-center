@@ -84,19 +84,39 @@
             <summary>Column sorting is persisted across app restarts</summary>
         </key>
 
+        <key name="apps-page-remember-column-order" type="b">
+            <default>false</default>
+            <summary>Column order is persisted across app restarts</summary>
+        </key>
+
         <key name="apps-page-core-count-affects-percentages" type="b">
             <default>false</default>
             <summary>Show CPU usage for Apps and Processes scaled to the number of available cores</summary>
         </key>
 
+        <key name="apps-page-show-column-separators" type="b">
+            <default>false</default>
+            <summary>Show a separator between each column in the Apps view</summary>
+        </key>
+
         <key name="apps-page-sorting-column" enum="io.missioncenter.AppsPageViewColumn">
             <default>"None"</default>
-            <summary>The column id by which the Apps page view is sorted</summary>
+            <summary>DEPRECATED! NO LONGER IN USE!</summary>
+        </key>
+
+        <key name="apps-page-sorting-column-name" type="s">
+            <default>""</default>
+            <summary>The column name by which the Apps page view is sorted</summary>
         </key>
 
         <key name="apps-page-sorting-order" enum="org.gtk.SortType">
             <default>"None"</default>
             <summary>The sorting direction of the Apps page view</summary>
+        </key>
+
+        <key name="apps-page-column-order" type="s">
+            <default>""</default>
+            <summary>The order of columns in the Apps page view</summary>
         </key>
 
 

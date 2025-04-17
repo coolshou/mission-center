@@ -26,9 +26,9 @@ use std::{
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::{gio, prelude::*};
 
-use crate::i18n::{i18n, i18n_f};
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
+use i18n::{i18n, i18n_f};
 use window::MissionCenterWindow;
 
 mod application;
@@ -38,7 +38,7 @@ mod magpie_client;
 mod performance_page;
 mod preferences;
 mod services_page;
-mod theme_selector;
+mod widgets;
 mod window;
 
 #[macro_export]

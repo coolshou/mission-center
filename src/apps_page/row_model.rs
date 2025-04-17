@@ -1,6 +1,6 @@
-/* apps_page/view_model.rs
+/* apps_page/row_model.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
+use crate::i18n::i18n;
 use gtk::{
     gio, glib,
     glib::{prelude::*, subclass::prelude::*, ParamSpec, Properties, Value},
@@ -31,30 +32,27 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::RowModel)]
     pub struct RowModel {
+        #[property(get = Self::id, set = Self::set_id)]
+        pub id: Cell<glib::GString>,
+
         #[property(get, set)]
         pub pid: Cell<u32>,
 
-        #[property(get = Self::icon, set = Self::set_icon, type = glib::GString)]
+        #[property(get = Self::icon, set = Self::set_icon)]
         pub icon: Cell<glib::GString>,
-        #[property(get = Self::name, set = Self::set_name, type = glib::GString)]
+        #[property(get = Self::name, set = Self::set_name)]
         pub name: Cell<glib::GString>,
-        #[property(get = Self::id, set = Self::set_id, type = glib::GString)]
-        pub id: Cell<glib::GString>,
 
-        #[property(get = Self::content_type, type = ContentType, builder(ContentType::SectionHeader))]
+        #[property(get, type = ContentType, builder(ContentType::SectionHeader))]
         pub content_type: Cell<ContentType>,
-        #[property(get = Self::section_type, type = SectionType, builder(SectionType::Apps))]
+        #[property(get, type = SectionType, builder(SectionType::Apps))]
         pub section_type: Cell<SectionType>,
-        #[property(get, set)]
-        pub show_expander: Cell<bool>,
-        #[property(get, set)]
-        pub expanded: Cell<bool>,
 
-        #[property(get, set = Self::set_cpu_usage)]
+        #[property(get, set)]
         pub cpu_usage: Cell<f32>,
-        #[property(get, set = Self::set_memory_usage)]
+        #[property(get, set)]
         pub memory_usage: Cell<u64>,
-        #[property(get, set = Self::set_shared_memory_usage)]
+        #[property(get, set)]
         pub shared_memory_usage: Cell<u64>,
         #[property(get, set)]
         pub disk_usage: Cell<f32>,
@@ -62,46 +60,24 @@ mod imp {
         pub network_usage: Cell<f32>,
         #[property(get, set)]
         pub gpu_usage: Cell<f32>,
-        #[property(get, set = Self::set_gpu_memory_usage)]
+        #[property(get, set)]
         pub gpu_memory_usage: Cell<u64>,
 
-        #[property(get)]
-        pub cpu_usage_percent: Cell<f32>,
-        #[property(get)]
-        pub memory_usage_percent: Cell<f32>,
-        #[property(get)]
-        pub gpu_memory_usage_percent: Cell<f32>,
-
-        pub max_cpu_usage: Cell<f32>,
-        pub max_memory_usage: Cell<u64>,
-        pub max_gpu_memory_usage: Cell<u64>,
-
-        pub merged_stats: Cell<Option<crate::magpie_client::ProcessUsageStats>>,
-
-        pub children: gio::ListStore,
+        pub children: RefCell<gio::ListStore>,
     }
 
     impl Default for RowModel {
         fn default() -> Self {
             Self {
+                id: Cell::new(glib::GString::default()),
+
                 pid: Cell::new(0),
 
                 icon: Cell::new(glib::GString::default()),
                 name: Cell::new(glib::GString::default()),
-                id: Cell::new(glib::GString::default()),
 
                 content_type: Cell::new(ContentType::SectionHeader),
                 section_type: Cell::new(SectionType::Apps),
-                show_expander: Cell::new(true),
-                // FIXME (Romeo Calota):
-                // This property is only used as a workaround for a weirdness in GTK.
-                // When the property is set to false, the list item will honor it and collapse the
-                // expander. However, when the property is set to true, the list item will ignore it.
-                // This is done to force App entries to initially be collapsed, while retaining
-                // the ability to stay expanded when the user expands them.
-                // Ideally this should be a bidirectional bind with the list item, but there is no
-                // way to know when a user expands or collapses an item.
-                expanded: Cell::new(true),
 
                 cpu_usage: Cell::new(0.),
                 memory_usage: Cell::new(0),
@@ -111,22 +87,30 @@ mod imp {
                 gpu_usage: Cell::new(0.),
                 gpu_memory_usage: Cell::new(0),
 
-                cpu_usage_percent: Cell::new(0.),
-                memory_usage_percent: Cell::new(0.),
-                gpu_memory_usage_percent: Cell::new(0.),
-
-                max_cpu_usage: Cell::new(0.),
-                max_memory_usage: Cell::new(0),
-                max_gpu_memory_usage: Cell::new(0),
-
-                merged_stats: Cell::new(None),
-
-                children: gio::ListStore::new::<super::RowModel>(),
+                children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
         }
     }
 
     impl RowModel {
+        pub fn id(&self) -> glib::GString {
+            let id = self.id.take();
+            let result = id.clone();
+            self.id.set(id);
+
+            result
+        }
+
+        pub fn set_id(&self, id: &str) {
+            let current_id = self.id.take();
+            if current_id == id {
+                self.id.set(current_id);
+                return;
+            }
+
+            self.id.set(glib::GString::from(id));
+        }
+
         pub fn icon(&self) -> glib::GString {
             let icon = self.icon.take();
             let result = icon.clone();
@@ -161,76 +145,6 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
-        }
-
-        pub fn id(&self) -> glib::GString {
-            let id = self.id.take();
-            let result = id.clone();
-            self.id.set(id);
-
-            result
-        }
-
-        pub fn set_id(&self, id: &str) {
-            let current_id = self.id.take();
-            if current_id == id {
-                self.id.set(current_id);
-                return;
-            }
-
-            self.id.set(glib::GString::from(id));
-        }
-
-        pub fn set_cpu_usage(&self, cpu_usage: f32) {
-            self.cpu_usage.set(cpu_usage);
-
-            let usage_percent = if self.max_cpu_usage.get() == 0. {
-                0.
-            } else {
-                self.cpu_usage.get() * 100.0 / self.max_cpu_usage.get()
-            };
-
-            self.cpu_usage_percent.set(usage_percent);
-            self.obj().notify_cpu_usage_percent();
-        }
-
-        pub fn set_memory_usage(&self, memory_usage: u64) {
-            self.memory_usage.set(memory_usage);
-
-            let usage_percent = if self.max_memory_usage.get() == 0 {
-                0.
-            } else {
-                (self.memory_usage.get() * 100) as f64 / self.max_memory_usage.get() as f64
-            };
-
-            self.memory_usage_percent.set(usage_percent as f32);
-            self.obj().notify_memory_usage_percent();
-        }
-
-        pub fn set_shared_memory_usage(&self, memory_shared: u64) {
-            self.shared_memory_usage.set(memory_shared);
-            self.obj().notify_shared_memory_usage();
-        }
-
-        pub fn set_gpu_memory_usage(&self, memory_usage: u64) {
-            self.gpu_memory_usage.set(memory_usage);
-
-            let usage_percent = if self.max_gpu_memory_usage.get() == 0 {
-                0.
-            } else {
-                (self.gpu_memory_usage.get() * 100) as f64 / self.max_gpu_memory_usage.get() as f64
-            };
-
-            self.gpu_memory_usage_percent.set(usage_percent as f32);
-            self.obj().notify_gpu_memory_usage_percent();
-        }
-
-        pub fn content_type(&self) -> ContentType {
-            self.content_type.get()
-        }
-
-        pub fn section_type(&self) -> SectionType {
-            self.section_type.get()
         }
     }
 
@@ -268,6 +182,16 @@ pub enum ContentType {
     Process,
 }
 
+impl From<ContentType> for String {
+    fn from(value: ContentType) -> Self {
+        match value {
+            ContentType::SectionHeader => i18n("Section Header"),
+            ContentType::App => i18n("App"),
+            ContentType::Process => i18n("Process"),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, glib::Enum)]
 #[enum_type(name = "SectionType")]
 pub enum SectionType {
@@ -276,15 +200,15 @@ pub enum SectionType {
 }
 
 pub struct RowModelBuilder {
+    id: glib::GString,
+
     pid: u32,
+
     icon: glib::GString,
     name: glib::GString,
-    id: glib::GString,
 
     content_type: ContentType,
     section_type: SectionType,
-    show_expander: Option<bool>,
-    expanded: bool,
 
     cpu_usage: f32,
     memory_usage: u64,
@@ -293,24 +217,21 @@ pub struct RowModelBuilder {
     network_usage: f32,
     gpu_usage: f32,
     gpu_mem_usage: u64,
-
-    max_cpu_usage: f32,
-    max_memory_usage: u64,
-    max_gpu_memory_usage: u64,
 }
 
+#[allow(unused)]
 impl RowModelBuilder {
     pub fn new() -> Self {
         Self {
+            id: glib::GString::default(),
+
             pid: 0,
+
             icon: "application-x-executable-symbolic".into(),
             name: glib::GString::default(),
-            id: glib::GString::default(),
 
             content_type: ContentType::SectionHeader,
             section_type: SectionType::Apps,
-            show_expander: None,
-            expanded: true,
 
             cpu_usage: 0.,
             memory_usage: 0,
@@ -319,11 +240,12 @@ impl RowModelBuilder {
             network_usage: 0.,
             gpu_usage: 0.,
             gpu_mem_usage: 0,
-
-            max_cpu_usage: 0.,
-            max_memory_usage: 0,
-            max_gpu_memory_usage: 0,
         }
+    }
+
+    pub fn id(mut self, id: &str) -> Self {
+        self.id = id.into();
+        self
     }
 
     pub fn pid(mut self, pid: u32) -> Self {
@@ -341,11 +263,6 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn id(mut self, id: &str) -> Self {
-        self.id = id.into();
-        self
-    }
-
     pub fn content_type(mut self, content_type: ContentType) -> Self {
         self.content_type = content_type;
         self
@@ -353,16 +270,6 @@ impl RowModelBuilder {
 
     pub fn section_type(mut self, section_type: SectionType) -> Self {
         self.section_type = section_type;
-        self
-    }
-
-    pub fn show_expander(mut self, show_expander: bool) -> Self {
-        self.show_expander = Some(show_expander);
-        self
-    }
-
-    pub fn expanded(mut self, expanded: bool) -> Self {
-        self.expanded = expanded;
         self
     }
 
@@ -401,46 +308,26 @@ impl RowModelBuilder {
         self
     }
 
-    pub fn max_cpu_usage(mut self, v: f32) -> Self {
-        self.max_cpu_usage = v;
-        self
-    }
-
-    pub fn max_memory_usage(mut self, v: u64) -> Self {
-        self.max_memory_usage = v;
-        self
-    }
-
-    pub fn max_gpu_memory_usage(mut self, v: u64) -> Self {
-        self.max_gpu_memory_usage = v;
-        self
-    }
-
     pub fn build(self) -> RowModel {
-        let this = RowModel::new(self.content_type, self.show_expander);
+        let this = RowModel::new(self.content_type);
 
         {
             let this = this.imp();
 
+            this.id.set(self.id);
             this.pid.set(self.pid);
             this.icon.set(self.icon);
             this.name.set(self.name);
-            this.id.set(self.id);
 
-            this.expanded.set(self.expanded);
             this.section_type.set(self.section_type);
 
-            this.set_cpu_usage(self.cpu_usage);
-            this.set_memory_usage(self.memory_usage);
-            this.set_shared_memory_usage(self.shared_memory_usage);
+            this.cpu_usage.set(self.cpu_usage);
+            this.memory_usage.set(self.memory_usage);
+            this.shared_memory_usage.set(self.shared_memory_usage);
             this.disk_usage.set(self.disk_usage);
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
-            this.set_gpu_memory_usage(self.gpu_mem_usage);
-
-            this.max_cpu_usage.set(self.max_cpu_usage);
-            this.max_memory_usage.set(self.max_memory_usage);
-            this.max_gpu_memory_usage.set(self.max_gpu_memory_usage);
+            this.gpu_memory_usage.set(self.gpu_mem_usage);
         }
 
         this
@@ -452,52 +339,18 @@ glib::wrapper! {
 }
 
 impl RowModel {
-    pub fn new(content_type: ContentType, show_expander: Option<bool>) -> Self {
-        use gtk::prelude::*;
-
+    pub fn new(content_type: ContentType) -> Self {
         let this: Self = glib::Object::builder().build();
         this.imp().content_type.set(content_type);
-
-        if show_expander.is_none() {
-            glib::idle_add_local_once({
-                let this = this.downgrade();
-                move || {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-
-                    this.set_show_expander(this.children().n_items() > 0);
-                }
-            });
-
-            this.children().connect_items_changed({
-                let this = this.downgrade();
-                move |_, _, _, _| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-
-                    this.set_show_expander(this.children().n_items() > 0);
-                }
-            });
-        } else {
-            this.set_show_expander(show_expander.unwrap());
-        }
 
         this
     }
 
-    pub fn merged_stats(&self) -> Option<crate::magpie_client::ProcessUsageStats> {
-        self.imp().merged_stats.get()
+    pub fn children(&self) -> gio::ListStore {
+        self.imp().children.borrow().clone()
     }
 
-    pub fn set_merged_stats(&self, stats: crate::magpie_client::ProcessUsageStats) {
-        self.imp().merged_stats.set(Some(stats));
-    }
-
-    pub fn children(&self) -> &gio::ListStore {
-        &self.imp().children
+    pub fn set_children(&self, children: gio::ListStore) {
+        self.imp().children.replace(children);
     }
 }
