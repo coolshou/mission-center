@@ -19,16 +19,33 @@
  */
 
 use std::cell::Cell;
+use std::collections::HashMap;
+use std::sync::OnceLock;
 use std::time::Duration;
 
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::glib::ControlFlow;
-use gtk::{gio, glib};
+use gtk::{gdk, gio, glib};
 
 use crate::widgets::ListCell;
 use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
+
+fn special_shortcuts() -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, &'static str>> {
+    static SHORTCUTS: OnceLock<HashMap<gdk::ModifierType, HashMap<gdk::Key, &'static str>>> =
+        OnceLock::new();
+    SHORTCUTS.get_or_init(|| {
+        let mut shortcuts = HashMap::new();
+
+        let mut ctrl_shortcuts = HashMap::new();
+        ctrl_shortcuts.insert(gdk::Key::F, "win.toggle-search");
+        ctrl_shortcuts.insert(gdk::Key::f, "win.toggle-search");
+        shortcuts.insert(gdk::ModifierType::CONTROL_MASK, ctrl_shortcuts);
+
+        shortcuts
+    })
+}
 
 mod imp {
     use super::*;
@@ -221,6 +238,8 @@ mod imp {
 
     impl MissionCenterWindow {
         fn configure_actions(&self) {
+            let app = app!();
+
             let toggle_search =
                 gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
             toggle_search.connect_activate({
@@ -290,6 +309,51 @@ mod imp {
                 action.set_state(&interface_style.to_variant());
             });
             self.obj().add_action(&interface_style);
+
+            let action = gio::SimpleAction::new("select-tab-performance", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+                    this.stack.set_visible_child_name("performance-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-performance", &["<Control>1"]);
+
+            let action = gio::SimpleAction::new("select-tab-apps", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+                    this.stack.set_visible_child_name("apps-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-apps", &["<Control>2"]);
+
+            let action = gio::SimpleAction::new("select-tab-services", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+                    this.stack.set_visible_child_name("services-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-services", &["<Control>3"]);
 
             // Not clear how actions actually become usable, what I know is that they need to be
             // created and configured at object construction otherwise they flat out don't work.
@@ -501,14 +565,34 @@ mod imp {
             let evt_ctrl_key = gtk::EventControllerKey::new();
             evt_ctrl_key.connect_key_pressed({
                 let this = self.obj().downgrade();
-                move |controller, _, _, _| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
-                        if this.services_page_active.get() && this.services_page.dialog_visible() {
-                            controller.forward(&this.services_page.get());
-                        } else {
-                            controller.forward(&this.header_search_entry.get());
+                move |controller, key, _, modifier| {
+                    let Some(this) = this.upgrade() else {
+                        return Propagation::Stop;
+                    };
+                    let imp = this.imp();
+
+                    let special_shortcuts = special_shortcuts();
+                    if let Some(shortcut) = special_shortcuts.get(&modifier) {
+                        if let Some(action_name) = shortcut.get(&key) {
+                            // Only trigger searching if we are in the right tab and in the right
+                            // state
+                            if *action_name == "win.toggle-search" {
+                                if imp.search_button.is_visible() && !imp.search_button.is_active()
+                                {
+                                    let _ = WidgetExt::activate_action(&this, action_name, None);
+                                }
+
+                                return Propagation::Stop;
+                            }
+
+                            let _ = WidgetExt::activate_action(&this, action_name, None);
                         }
+                    }
+
+                    if imp.services_page_active.get() && imp.services_page.dialog_visible() {
+                        controller.forward(&imp.services_page.get());
+                    } else {
+                        controller.forward(&imp.header_search_entry.get());
                     }
 
                     Propagation::Proceed

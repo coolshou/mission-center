@@ -34,11 +34,10 @@ blueprints = custom_target('blueprints',
     'ui/services_page/details_dialog.blp',
 
     'ui/widgets/context_menu_button.blp',
+    'ui/widgets/help_overlay.blp',
     'ui/widgets/theme_selector.blp',
 
     'ui/window.blp',
-
-    'ui/gtk/help-overlay.blp',
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],

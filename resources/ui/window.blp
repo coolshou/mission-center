@@ -112,7 +112,8 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             name: "search-entry";
             child: Adw.Clamp {
               orientation: horizontal;
-              maximum-size: 250;
+              hexpand: true;
+              maximum-size: 400;
               child: SearchEntry header_search_entry {
                 placeholder-text: _("Type a name or PID to search");
               };
@@ -142,6 +143,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
           MenuButton menu_button {
             icon-name: "open-menu-symbolic";
+            tooltip-text: _("Main Menu");
             menu-model: primary_menu;
           }
         }
@@ -226,10 +228,16 @@ menu primary_menu {
       custom: 'theme-selector';
     }
   }
+  
   section {
     item {
       label: _("_Preferences");
       action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.keyboard-shortcuts";
     }
 
     item {

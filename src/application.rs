@@ -302,7 +302,19 @@ impl MissionCenterApplication {
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
-        self.add_action_entries([quit_action, preferences_action, about_action]);
+        let keyboard_shortcuts_action = gio::ActionEntry::builder("keyboard-shortcuts")
+            .activate(move |app: &Self, _, _| app.show_help_overlay())
+            .build();
+
+        self.add_action_entries([
+            quit_action,
+            preferences_action,
+            about_action,
+            keyboard_shortcuts_action,
+        ]);
+
+        self.set_accels_for_action("app.preferences", &["<Control>comma"]);
+        self.set_accels_for_action("app.keyboard-shortcuts", &["<Control>question"]);
     }
 
     fn show_preferences(&self) {
@@ -316,6 +328,20 @@ impl MissionCenterApplication {
 
         let preferences = crate::preferences::PreferencesDialog::new();
         preferences.present(Some(&window));
+    }
+
+    fn show_help_overlay(&self) {
+        let Some(app_window) = self.window() else {
+            return;
+        };
+
+        let builder = gtk::Builder::from_resource(
+            "/io/missioncenter/MissionCenter/ui/widgets/help_overlay.ui",
+        );
+        let dialog = builder
+            .object::<adw::PreferencesDialog>("keyboard_shortcuts")
+            .expect("Failed to get shortcuts window");
+        dialog.present(Some(&app_window));
     }
 
     fn show_about(&self) {
