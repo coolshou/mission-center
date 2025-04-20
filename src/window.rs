@@ -333,8 +333,11 @@ mod imp {
                         Some(this) => this,
                         None => return,
                     };
-                    let this = this.imp();
-                    this.stack.set_visible_child_name("apps-page");
+                    let imp = this.imp();
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+                    imp.stack.set_visible_child_name("apps-page");
                 }
             });
             self.obj().add_action(&action);
@@ -348,12 +351,54 @@ mod imp {
                         Some(this) => this,
                         None => return,
                     };
-                    let this = this.imp();
-                    this.stack.set_visible_child_name("services-page");
+                    let imp = this.imp();
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+                    imp.stack.set_visible_child_name("services-page");
                 }
             });
             self.obj().add_action(&action);
             app.set_accels_for_action("win.select-tab-services", &["<Control>3"]);
+
+            let action =
+                gio::SimpleAction::new_stateful("toggle-sidebar", None, &true.to_variant());
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |action, _| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+
+                    let old_state = imp.split_view.shows_sidebar();
+
+                    let new_state = !old_state;
+                    action.set_state(&new_state.to_variant());
+                    imp.toggle_sidebar_button.set_active(new_state);
+
+                    if old_state != imp.user_hid_sidebar.get() {
+                        if imp.performance_page_active.get() {
+                            if !imp.window_width_below_threshold() {
+                                imp.split_view.set_collapsed(false);
+                            }
+                        } else if new_state == false {
+                            // If the use dismisses the siderbar using the keyboard shortcut, while
+                            // not in the performance page, don't treat it as an intentional action.
+                            return;
+                        }
+
+                        imp.user_hid_sidebar.set(old_state);
+                        imp.obj().notify_user_hid_sidebar();
+                    }
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.toggle-sidebar", &["<Control>T"]);
 
             // Not clear how actions actually become usable, what I know is that they need to be
             // created and configured at object construction otherwise they flat out don't work.
@@ -632,30 +677,6 @@ mod imp {
                                 None,
                             );
                         }
-                    }
-                }
-            });
-
-            // Triggered when user interacts with the sidebar toggle button
-            // via any means (clicking, keyboard shortcut, etc.)
-            self.toggle_sidebar_button.connect_clicked({
-                let this = self.obj().downgrade();
-                move |button| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let user_hid_sidebar = !button.is_active();
-                    if user_hid_sidebar != this.user_hid_sidebar.get() {
-                        this.user_hid_sidebar.set(user_hid_sidebar);
-                        if this.performance_page_active.get() {
-                            if !this.window_width_below_threshold() {
-                                this.split_view.set_collapsed(false);
-                            }
-                        }
-                        this.obj().notify_user_hid_sidebar();
                     }
                 }
             });

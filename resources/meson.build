@@ -34,9 +34,9 @@ blueprints = custom_target('blueprints',
     'ui/services_page/details_dialog.blp',
 
     'ui/widgets/context_menu_button.blp',
-    'ui/widgets/help_overlay.blp',
     'ui/widgets/theme_selector.blp',
 
+    'ui/keyboard_shortcuts.blp',
     'ui/window.blp',
   ),
   output: '.',

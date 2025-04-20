@@ -303,7 +303,7 @@ impl MissionCenterApplication {
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
         let keyboard_shortcuts_action = gio::ActionEntry::builder("keyboard-shortcuts")
-            .activate(move |app: &Self, _, _| app.show_help_overlay())
+            .activate(move |app: &Self, _, _| app.show_keyboard_shortcuts())
             .build();
 
         self.add_action_entries([
@@ -330,13 +330,13 @@ impl MissionCenterApplication {
         preferences.present(Some(&window));
     }
 
-    fn show_help_overlay(&self) {
+    fn show_keyboard_shortcuts(&self) {
         let Some(app_window) = self.window() else {
             return;
         };
 
         let builder = gtk::Builder::from_resource(
-            "/io/missioncenter/MissionCenter/ui/widgets/help_overlay.ui",
+            "/io/missioncenter/MissionCenter/ui/keyboard_shortcuts.ui",
         );
         let dialog = builder
             .object::<adw::PreferencesDialog>("keyboard_shortcuts")
