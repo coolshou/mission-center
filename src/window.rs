@@ -24,7 +24,7 @@ use std::sync::OnceLock;
 use std::time::Duration;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value, WeakRef};
 use gtk::glib::ControlFlow;
 use gtk::{gdk, gio, glib};
 
@@ -32,15 +32,66 @@ use crate::widgets::ListCell;
 use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
 
-fn special_shortcuts() -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, &'static str>> {
-    static SHORTCUTS: OnceLock<HashMap<gdk::ModifierType, HashMap<gdk::Key, &'static str>>> =
-        OnceLock::new();
+fn special_shortcuts(
+) -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>
+{
+    fn toggle_search(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+        let result = imp.search_button.is_visible() && !imp.search_button.is_active();
+        if result {
+            let _ = WidgetExt::activate_action(&window, "win.toggle-search", None);
+        }
+
+        result
+    }
+
+    fn graph_copy(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.performance_page_active();
+        if result {
+            let Some(visible_child) = imp.performance_page.imp().page_stack.visible_child() else {
+                return false;
+            };
+
+            let _ = WidgetExt::activate_action(&visible_child, "graph.copy", None);
+        }
+        result
+    }
+
+    fn graph_summary(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.performance_page_active();
+        if result {
+            let _ = WidgetExt::activate_action(&*imp.performance_page, "graph.summary", None);
+        }
+        result
+    }
+
+    static SHORTCUTS: OnceLock<
+        HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>,
+    > = OnceLock::new();
     SHORTCUTS.get_or_init(|| {
         let mut shortcuts = HashMap::new();
 
-        let mut ctrl_shortcuts = HashMap::new();
-        ctrl_shortcuts.insert(gdk::Key::F, "win.toggle-search");
-        ctrl_shortcuts.insert(gdk::Key::f, "win.toggle-search");
+        let mut ctrl_shortcuts =
+            HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
+        ctrl_shortcuts.insert(gdk::Key::F, toggle_search);
+        ctrl_shortcuts.insert(gdk::Key::f, toggle_search);
+        ctrl_shortcuts.insert(gdk::Key::M, graph_summary);
+        ctrl_shortcuts.insert(gdk::Key::m, graph_summary);
+        ctrl_shortcuts.insert(gdk::Key::C, graph_copy);
+        ctrl_shortcuts.insert(gdk::Key::c, graph_copy);
         shortcuts.insert(gdk::ModifierType::CONTROL_MASK, ctrl_shortcuts);
 
         shortcuts
@@ -618,19 +669,10 @@ mod imp {
 
                     let special_shortcuts = special_shortcuts();
                     if let Some(shortcut) = special_shortcuts.get(&modifier) {
-                        if let Some(action_name) = shortcut.get(&key) {
-                            // Only trigger searching if we are in the right tab and in the right
-                            // state
-                            if *action_name == "win.toggle-search" {
-                                if imp.search_button.is_visible() && !imp.search_button.is_active()
-                                {
-                                    let _ = WidgetExt::activate_action(&this, action_name, None);
-                                }
-
+                        if let Some(action) = shortcut.get(&key) {
+                            if action(this.downgrade()) {
                                 return Propagation::Stop;
                             }
-
-                            let _ = WidgetExt::activate_action(&this, action_name, None);
                         }
                     }
 

@@ -335,9 +335,8 @@ impl MissionCenterApplication {
             return;
         };
 
-        let builder = gtk::Builder::from_resource(
-            "/io/missioncenter/MissionCenter/ui/keyboard_shortcuts.ui",
-        );
+        let builder =
+            gtk::Builder::from_resource("/io/missioncenter/MissionCenter/ui/keyboard_shortcuts.ui");
         let dialog = builder
             .object::<adw::PreferencesDialog>("keyboard_shortcuts")
             .expect("Failed to get shortcuts window");
