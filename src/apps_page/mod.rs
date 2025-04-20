@@ -76,7 +76,7 @@ mod imp {
         #[template_child]
         pub drive_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
-        pub network_column: TemplateChild<gtk::ColumnViewColumn>,
+        pub network_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
@@ -121,7 +121,7 @@ mod imp {
                 memory_column: TemplateChild::default(),
                 shared_memory_column: TemplateChild::default(),
                 drive_column: TemplateChild::default(),
-                network_column: TemplateChild::default(),
+                network_usage_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
                 context_menu: TemplateChild::default(),
