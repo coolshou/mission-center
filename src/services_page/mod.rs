@@ -1,6 +1,6 @@
 /* services_page/mod.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,9 @@ use gtk::{
     INVALID_LIST_POSITION,
 };
 
-use context_menu_button::ContextMenuButton;
+use crate::widgets::ContextMenuButton;
+
 use details_dialog::DetailsDialog;
-use list_cell::ListCell;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
 
 use crate::{
@@ -43,9 +43,7 @@ use crate::{
     magpie_client::{MagpieClient, Readings},
 };
 
-mod context_menu_button;
 mod details_dialog;
-mod list_cell;
 mod services_list_item;
 
 mod imp {
@@ -164,7 +162,7 @@ mod imp {
             unsafe { &*self.details_dialog.as_ptr() }.clone()
         }
 
-        fn actions(&self) -> &Actions {
+        pub fn actions(&self) -> &Actions {
             unsafe { &*self.actions.as_ptr() }
         }
     }
@@ -257,7 +255,7 @@ mod imp {
                                 ) {
                                     None => {
                                         g_critical!(
-                                            "MissionCenter::AppsPage",
+                                            "MissionCenter::ServicesPage",
                                             "Failed to compute_point, context menu will not be anchored to mouse position"
                                         );
                                         gdk::Rectangle::new(
@@ -587,7 +585,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            ListCell::ensure_type();
             ContextMenuButton::ensure_type();
             ServicesListItem::ensure_type();
             DetailsDialog::ensure_type();
@@ -637,50 +634,7 @@ mod imp {
             });
             self.obj().add_controller(evt_key_press);
 
-            let filter_model = self.set_up_filter_model(self.model.clone().into());
-            let selection_model = gtk::SingleSelection::new(Some(filter_model));
-            selection_model.connect_selected_notify({
-                let this = self.obj().downgrade();
-                move |model| {
-                    let selected = match model
-                        .selected_item()
-                        .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
-                    {
-                        Some(list_item) => list_item,
-                        None => {
-                            return;
-                        }
-                    };
-
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => {
-                            g_critical!(
-                                "MissionCenter::ServicesPage",
-                                "Failed to get ServicesPage instance in `selected_notify` signal"
-                            );
-                            return;
-                        }
-                    };
-                    let this = this.imp();
-
-                    if selected.running() {
-                        this.actions().stop.set_enabled(true);
-                        this.actions().start.set_enabled(false);
-                        this.actions().restart.set_enabled(true);
-                    } else {
-                        this.actions().stop.set_enabled(false);
-                        this.actions().start.set_enabled(true);
-                        this.actions().restart.set_enabled(false);
-                    }
-                }
-            });
-
-            self.column_view.set_model(Some(&selection_model));
-
             if let Some(header) = self.column_view.first_child() {
-                header.add_css_class("app-list-header");
-
                 // Add 10px padding to the left of the first column header to align it with the content
                 if let Some(first_column) = header
                     .first_child()
@@ -806,6 +760,53 @@ glib::wrapper! {
 }
 
 impl ServicesPage {
+    pub fn set_initial_readings(&self, _readings: &mut Readings) -> bool {
+        let this = self.imp();
+
+        let filter_model = this.set_up_filter_model(this.model.clone().into());
+        let selection_model = gtk::SingleSelection::new(Some(filter_model));
+        selection_model.connect_selected_notify({
+            let this = this.obj().downgrade();
+            move |model| {
+                let selected = match model
+                    .selected_item()
+                    .and_then(|i| i.downcast_ref::<ServicesListItem>().cloned())
+                {
+                    Some(list_item) => list_item,
+                    None => {
+                        return;
+                    }
+                };
+
+                let this = match this.upgrade() {
+                    Some(this) => this,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::ServicesPage",
+                            "Failed to get ServicesPage instance in `selected_notify` signal"
+                        );
+                        return;
+                    }
+                };
+                let this = this.imp();
+
+                if selected.running() {
+                    this.actions().stop.set_enabled(true);
+                    this.actions().start.set_enabled(false);
+                    this.actions().restart.set_enabled(true);
+                } else {
+                    this.actions().stop.set_enabled(false);
+                    this.actions().start.set_enabled(true);
+                    this.actions().restart.set_enabled(false);
+                }
+            }
+        });
+
+        self.imp().column_view.set_model(Some(&selection_model));
+
+        true
+    }
+
     pub fn dialog_visible(&self) -> bool {
         self.imp().details_dialog_visible.get()
     }

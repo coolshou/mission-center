@@ -1,6 +1,6 @@
-/* ui/apps_page/list_item.blp
+/* apps_page/models/tree_list.rs
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-using Gtk 4.0;
+use gtk::gio;
+use gtk::prelude::*;
 
-template $ListItem: Box {
-  PopoverMenu context_menu {
-    has-arrow: false;
-  }
+use crate::apps_page::row_model::RowModel;
 
-  Image icon {
-  }
-
-  Label name {
-  }
+pub fn model(base_model: impl IsA<gio::ListModel>) -> gtk::TreeListModel {
+    gtk::TreeListModel::new(base_model, false, true, move |model_entry| {
+        let Some(row_model) = model_entry.downcast_ref::<RowModel>() else {
+            return None;
+        };
+        Some(row_model.children().clone().into())
+    })
 }

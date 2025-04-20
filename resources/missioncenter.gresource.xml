@@ -4,12 +4,14 @@
         <file preprocess="xml-stripblanks">application-x-executable.svg</file>
         <file preprocess="xml-stripblanks">arrow-circular-top-right-symbolic.svg</file>
         <file preprocess="xml-stripblanks">check-plain-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">cross-small-circle-filled-symbolic.svg</file>
         <file preprocess="xml-stripblanks">details-symbolic.svg</file>
         <file preprocess="xml-stripblanks">edit-symbolic.svg</file>
         <file preprocess="xml-stripblanks">info-symbolic.svg</file>
-        <file preprocess="xml-stripblanks">list-enable-all-symbolic.svg</file>
-        <file preprocess="xml-stripblanks">list-drag-handle-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">list-collapse-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-disable-all-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">list-drag-handle-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">list-enable-all-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-00-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-25-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-50-symbolic.svg</file>
@@ -35,11 +37,8 @@
         <file preprocess="xml-stripblanks">line-solid-mem.svg</file>
         <file preprocess="xml-stripblanks">line-solid-net.svg</file>
 
-        <file preprocess="xml-stripblanks">ui/apps_page/column_header.ui</file>
-        <file preprocess="xml-stripblanks">ui/apps_page/list_item.ui</file>
         <file preprocess="xml-stripblanks">ui/apps_page/page.ui</file>
-        <file preprocess="xml-stripblanks">ui/apps_page/pid_column.ui</file>
-        <file preprocess="xml-stripblanks">ui/apps_page/stat_column.ui</file>
+        <file preprocess="xml-stripblanks">ui/apps_page/details_dialog.ui</file>
 
         <file preprocess="xml-stripblanks">ui/performance_page/cpu.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/cpu_details.ui</file>
@@ -65,12 +64,12 @@
         <file preprocess="xml-stripblanks">ui/preferences/window.ui</file>
 
         <file preprocess="xml-stripblanks">ui/services_page/page.ui</file>
-        <file preprocess="xml-stripblanks">ui/services_page/context_menu_button.ui</file>
         <file preprocess="xml-stripblanks">ui/services_page/details_dialog.ui</file>
 
-        <file preprocess="xml-stripblanks">ui/theme_selector.ui</file>
-        <file preprocess="xml-stripblanks">ui/window.ui</file>
+        <file preprocess="xml-stripblanks">ui/widgets/context_menu_button.ui</file>
+        <file preprocess="xml-stripblanks">ui/widgets/theme_selector.ui</file>
 
-        <file preprocess="xml-stripblanks">ui/gtk/help-overlay.ui</file>
+        <file preprocess="xml-stripblanks">ui/keyboard_shortcuts.ui</file>
+        <file preprocess="xml-stripblanks">ui/window.ui</file>
     </gresource>
 </gresources>

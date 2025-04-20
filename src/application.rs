@@ -302,7 +302,19 @@ impl MissionCenterApplication {
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
-        self.add_action_entries([quit_action, preferences_action, about_action]);
+        let keyboard_shortcuts_action = gio::ActionEntry::builder("keyboard-shortcuts")
+            .activate(move |app: &Self, _, _| app.show_keyboard_shortcuts())
+            .build();
+
+        self.add_action_entries([
+            quit_action,
+            preferences_action,
+            about_action,
+            keyboard_shortcuts_action,
+        ]);
+
+        self.set_accels_for_action("app.preferences", &["<Control>comma"]);
+        self.set_accels_for_action("app.keyboard-shortcuts", &["<Control>question"]);
     }
 
     fn show_preferences(&self) {
@@ -316,6 +328,40 @@ impl MissionCenterApplication {
 
         let preferences = crate::preferences::PreferencesDialog::new();
         preferences.present(Some(&window));
+    }
+
+    fn show_keyboard_shortcuts(&self) {
+        let Some(app_window) = self.window() else {
+            return;
+        };
+
+        let builder =
+            gtk::Builder::from_resource("/io/missioncenter/MissionCenter/ui/keyboard_shortcuts.ui");
+        let dialog = builder
+            .object::<adw::PreferencesDialog>("keyboard_shortcuts")
+            .expect("Failed to get shortcuts window");
+
+        let select_device = builder
+            .object::<gtk::ShortcutsShortcut>("select_device")
+            .expect("Failed to get select device shortcut");
+
+        // This is a hack to set the label of the shortcut to F1-F10
+        if let Some(ctrl_label) = select_device
+            .first_child()
+            .and_then(|c| c.first_child())
+            .and_then(|c| c.next_sibling())
+            .and_then(|c| c.first_child())
+            .and_then(|c| c.downcast::<gtk::Label>().ok())
+        {
+            ctrl_label.set_label(&"F1");
+            ctrl_label.set_width_request(-1);
+            ctrl_label
+                .next_sibling()
+                .and_then(|c| c.downcast::<gtk::Label>().ok())
+                .and_then(|l| Some(l.set_label("-")));
+        }
+
+        dialog.present(Some(&app_window));
     }
 
     fn show_about(&self) {

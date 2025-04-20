@@ -4,11 +4,8 @@ gnome = import('gnome')
 
 blueprints = custom_target('blueprints',
   input: files(
-    'ui/apps_page/column_header.blp',
-    'ui/apps_page/list_item.blp',
     'ui/apps_page/page.blp',
-    'ui/apps_page/pid_column.blp',
-    'ui/apps_page/stat_column.blp',
+    'ui/apps_page/details_dialog.blp',
 
     'ui/performance_page/cpu.blp',
     'ui/performance_page/cpu_details.blp',
@@ -34,13 +31,13 @@ blueprints = custom_target('blueprints',
     'ui/preferences/window.blp',
 
     'ui/services_page/page.blp',
-    'ui/services_page/context_menu_button.blp',
     'ui/services_page/details_dialog.blp',
 
-    'ui/theme_selector.blp',
-    'ui/window.blp',
+    'ui/widgets/context_menu_button.blp',
+    'ui/widgets/theme_selector.blp',
 
-    'ui/gtk/help-overlay.blp',
+    'ui/keyboard_shortcuts.blp',
+    'ui/window.blp',
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],

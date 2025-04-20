@@ -112,12 +112,22 @@ template $PreferencesPage: Adw.PreferencesPage {
 
     Adw.SwitchRow remember_sorting {
       title: _("Remember Sorting");
-      subtitle: _("Remember the sorting of the app and process list across app restarts");
+      subtitle: _("Persist app and process sorting by column, across app restarts");
+    }
+
+    Adw.SwitchRow remember_column_order {
+      title: _("Remember Column Order");
+      subtitle: _("Persist the order of the columns, across app restarts");
     }
 
     Adw.SwitchRow core_count_affects_percentages {
       title: _("Scale CPU Usage to Core Count");
       subtitle: _("Show CPU usage for Apps and Processes scaled to the number of available cores");
+    }
+
+    Adw.SwitchRow show_column_separators {
+      title: _("Show Column Separators");
+      subtitle: _("Show a separator between each column");
     }
   }
 }
