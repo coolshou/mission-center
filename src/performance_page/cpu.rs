@@ -628,26 +628,26 @@ mod imp {
             format!(
                 r#"CPU
 
-            {}
+    {}
 
-            Base speed:         {}
-            Sockets:            {}
-            Virtual processors: {}
-            Virtualization:     {}
-            Virtual machine:    {}
-            L1 cache:           {}
-            L2 cache:           {}
-            L3 cache:           {}
-            Cpufreq driver:     {}
-            Cpufreq governor:   {}
-            Power preference:   {}
+    Base speed:         {}
+    Sockets:            {}
+    Virtual processors: {}
+    Virtualization:     {}
+    Virtual machine:    {}
+    L1 cache:           {}
+    L2 cache:           {}
+    L3 cache:           {}
+    Cpufreq driver:     {}
+    Cpufreq governor:   {}
+    Power preference:   {}
 
-            Utilization: {}
-            Speed:       {}
-            Processes:   {}
-            Threads:     {}
-            Handles:     {}
-            Up time:     {}"#,
+    Utilization: {}
+    Speed:       {}
+    Processes:   {}
+    Threads:     {}
+    Handles:     {}
+    Up time:     {}"#,
                 self.cpu_name.label(),
                 base_speed,
                 sockets,

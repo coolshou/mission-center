@@ -19,16 +19,84 @@
  */
 
 use std::cell::Cell;
+use std::collections::HashMap;
+use std::sync::OnceLock;
 use std::time::Duration;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value, WeakRef};
 use gtk::glib::ControlFlow;
-use gtk::{gio, glib};
+use gtk::{gdk, gio, glib};
 
 use crate::widgets::ListCell;
 use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
+
+fn special_shortcuts(
+) -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>
+{
+    fn toggle_search(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+        let result = imp.search_button.is_visible() && !imp.search_button.is_active();
+        if result {
+            let _ = WidgetExt::activate_action(&window, "win.toggle-search", None);
+        }
+
+        result
+    }
+
+    fn graph_copy(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.performance_page_active();
+        if result {
+            let Some(visible_child) = imp.performance_page.imp().page_stack.visible_child() else {
+                return false;
+            };
+
+            let _ = WidgetExt::activate_action(&visible_child, "graph.copy", None);
+        }
+        result
+    }
+
+    fn graph_summary(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.performance_page_active();
+        if result {
+            let _ = WidgetExt::activate_action(&*imp.performance_page, "graph.summary", None);
+        }
+        result
+    }
+
+    static SHORTCUTS: OnceLock<
+        HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>,
+    > = OnceLock::new();
+    SHORTCUTS.get_or_init(|| {
+        let mut shortcuts = HashMap::new();
+
+        let mut ctrl_shortcuts =
+            HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
+        ctrl_shortcuts.insert(gdk::Key::F, toggle_search);
+        ctrl_shortcuts.insert(gdk::Key::f, toggle_search);
+        ctrl_shortcuts.insert(gdk::Key::M, graph_summary);
+        ctrl_shortcuts.insert(gdk::Key::m, graph_summary);
+        ctrl_shortcuts.insert(gdk::Key::C, graph_copy);
+        ctrl_shortcuts.insert(gdk::Key::c, graph_copy);
+        shortcuts.insert(gdk::ModifierType::CONTROL_MASK, ctrl_shortcuts);
+
+        shortcuts
+    })
+}
 
 mod imp {
     use super::*;
@@ -221,6 +289,8 @@ mod imp {
 
     impl MissionCenterWindow {
         fn configure_actions(&self) {
+            let app = app!();
+
             let toggle_search =
                 gio::SimpleAction::new_stateful("toggle-search", None, &false.to_variant());
             toggle_search.connect_activate({
@@ -290,6 +360,96 @@ mod imp {
                 action.set_state(&interface_style.to_variant());
             });
             self.obj().add_action(&interface_style);
+
+            let action = gio::SimpleAction::new("select-tab-performance", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let this = this.imp();
+                    this.stack.set_visible_child_name("performance-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-performance", &["<Control>1"]);
+
+            let action = gio::SimpleAction::new("select-tab-apps", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let imp = this.imp();
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+                    imp.stack.set_visible_child_name("apps-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-apps", &["<Control>2"]);
+
+            let action = gio::SimpleAction::new("select-tab-services", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    let imp = this.imp();
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+                    imp.stack.set_visible_child_name("services-page");
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.select-tab-services", &["<Control>3"]);
+
+            let action =
+                gio::SimpleAction::new_stateful("toggle-sidebar", None, &true.to_variant());
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |action, _| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    if imp.summary_mode.get() {
+                        return;
+                    }
+
+                    let old_state = imp.split_view.shows_sidebar();
+
+                    let new_state = !old_state;
+                    action.set_state(&new_state.to_variant());
+                    imp.toggle_sidebar_button.set_active(new_state);
+
+                    if old_state != imp.user_hid_sidebar.get() {
+                        if imp.performance_page_active.get() {
+                            if !imp.window_width_below_threshold() {
+                                imp.split_view.set_collapsed(false);
+                            }
+                        } else if new_state == false {
+                            // If the use dismisses the siderbar using the keyboard shortcut, while
+                            // not in the performance page, don't treat it as an intentional action.
+                            return;
+                        }
+
+                        imp.user_hid_sidebar.set(old_state);
+                        imp.obj().notify_user_hid_sidebar();
+                    }
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.toggle-sidebar", &["<Control>T"]);
 
             // Not clear how actions actually become usable, what I know is that they need to be
             // created and configured at object construction otherwise they flat out don't work.
@@ -501,14 +661,25 @@ mod imp {
             let evt_ctrl_key = gtk::EventControllerKey::new();
             evt_ctrl_key.connect_key_pressed({
                 let this = self.obj().downgrade();
-                move |controller, _, _, _| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
-                        if this.services_page_active.get() && this.services_page.dialog_visible() {
-                            controller.forward(&this.services_page.get());
-                        } else {
-                            controller.forward(&this.header_search_entry.get());
+                move |controller, key, _, modifier| {
+                    let Some(this) = this.upgrade() else {
+                        return Propagation::Stop;
+                    };
+                    let imp = this.imp();
+
+                    let special_shortcuts = special_shortcuts();
+                    if let Some(shortcut) = special_shortcuts.get(&modifier) {
+                        if let Some(action) = shortcut.get(&key) {
+                            if action(this.downgrade()) {
+                                return Propagation::Stop;
+                            }
                         }
+                    }
+
+                    if imp.services_page_active.get() && imp.services_page.dialog_visible() {
+                        controller.forward(&imp.services_page.get());
+                    } else {
+                        controller.forward(&imp.header_search_entry.get());
                     }
 
                     Propagation::Proceed
@@ -548,30 +719,6 @@ mod imp {
                                 None,
                             );
                         }
-                    }
-                }
-            });
-
-            // Triggered when user interacts with the sidebar toggle button
-            // via any means (clicking, keyboard shortcut, etc.)
-            self.toggle_sidebar_button.connect_clicked({
-                let this = self.obj().downgrade();
-                move |button| {
-                    let this = match this.upgrade() {
-                        Some(this) => this,
-                        None => return,
-                    };
-                    let this = this.imp();
-
-                    let user_hid_sidebar = !button.is_active();
-                    if user_hid_sidebar != this.user_hid_sidebar.get() {
-                        this.user_hid_sidebar.set(user_hid_sidebar);
-                        if this.performance_page_active.get() {
-                            if !this.window_width_below_threshold() {
-                                this.split_view.set_collapsed(false);
-                            }
-                        }
-                        this.obj().notify_user_hid_sidebar();
                     }
                 }
             });

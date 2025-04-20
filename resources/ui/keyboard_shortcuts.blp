@@ -1,0 +1,101 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.PreferencesDialog keyboard_shortcuts {
+  title: _("Keyboard Shortcuts");
+
+
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      title: _("Global");
+
+      Box {
+        margin-top: 5;
+        margin-bottom: 5;
+        margin-start: 5;
+
+        orientation: vertical;
+        spacing: 7;
+
+        ShortcutsShortcut {
+          title: _("Show Performance Page");
+          accelerator: "<Control>1";
+        }
+
+        ShortcutsShortcut {
+          title: _("Show Apps Page");
+          accelerator: "<Control>2";
+        }
+
+        ShortcutsShortcut {
+          title: _("Show Services Page");
+          accelerator: "<Control>3";
+        }
+
+        ShortcutsShortcut {
+          title: _("Toggle Sidebar");
+          accelerator: "<Control>T";
+        }
+      }
+    }
+    
+    Adw.PreferencesGroup {
+      title: _("Performance Page");
+
+      Box {
+        margin-top: 5;
+        margin-bottom: 5;
+        margin-start: 5;
+
+        orientation: vertical;
+        spacing: 7;
+
+        ShortcutsShortcut {
+          title: _("Copy Device Information");
+          accelerator: "<Control>C";
+        }
+        
+        ShortcutsShortcut {
+          title: _("Toggle Summary Mode");
+          accelerator: "<Control>M";
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Apps Page");
+
+      Box {
+        margin-top: 5;
+        margin-bottom: 5;
+        margin-start: 5;
+
+        orientation: vertical;
+        spacing: 7;
+
+        ShortcutsShortcut {
+          title: _("Search");
+          accelerator: "<Control>F";
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Services Page");
+
+      Box {
+        margin-top: 5;
+        margin-bottom: 5;
+        margin-start: 5;
+
+        orientation: vertical;
+        spacing: 7;
+
+        ShortcutsShortcut {
+          title: _("Search");
+          accelerator: "<Control>F";
+        }
+      }
+    }
+  }
+}

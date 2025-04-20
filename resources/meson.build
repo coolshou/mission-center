@@ -36,9 +36,8 @@ blueprints = custom_target('blueprints',
     'ui/widgets/context_menu_button.blp',
     'ui/widgets/theme_selector.blp',
 
+    'ui/keyboard_shortcuts.blp',
     'ui/window.blp',
-
-    'ui/gtk/help-overlay.blp',
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
