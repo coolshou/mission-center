@@ -38,7 +38,7 @@ Adw.PreferencesDialog keyboard_shortcuts {
         }
       }
     }
-    
+
     Adw.PreferencesGroup {
       title: _("Performance Page");
 
@@ -54,10 +54,15 @@ Adw.PreferencesDialog keyboard_shortcuts {
           title: _("Copy Device Information");
           accelerator: "<Control>C";
         }
-        
+
         ShortcutsShortcut {
           title: _("Toggle Summary Mode");
           accelerator: "<Control>M";
+        }
+
+        ShortcutsShortcut select_device {
+          title: _("Select a Device");
+          accelerator: "<Control>F10";
         }
       }
     }

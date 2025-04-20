@@ -35,6 +35,60 @@ use crate::{app, magpie_client::Readings, settings};
 fn special_shortcuts(
 ) -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>
 {
+    fn select_device(window: WeakRef<MissionCenterWindow>, index: i32) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.performance_page_active();
+        if result {
+            let row = imp.sidebar.row_at_index(index);
+            imp.sidebar.select_row(row.as_ref());
+        }
+        result
+    }
+
+    fn select_device_1(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 0)
+    }
+
+    fn select_device_2(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 1)
+    }
+
+    fn select_device_3(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 2)
+    }
+
+    fn select_device_4(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 3)
+    }
+
+    fn select_device_5(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 4)
+    }
+
+    fn select_device_6(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 5)
+    }
+
+    fn select_device_7(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 6)
+    }
+
+    fn select_device_8(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 7)
+    }
+
+    fn select_device_9(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 8)
+    }
+
+    fn select_device_10(window: WeakRef<MissionCenterWindow>) -> bool {
+        select_device(window, 9)
+    }
+
     fn toggle_search(window: WeakRef<MissionCenterWindow>) -> bool {
         let Some(window) = window.upgrade() else {
             return false;
@@ -83,6 +137,20 @@ fn special_shortcuts(
     > = OnceLock::new();
     SHORTCUTS.get_or_init(|| {
         let mut shortcuts = HashMap::new();
+
+        let mut no_modifier_shortcuts =
+            HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
+        no_modifier_shortcuts.insert(gdk::Key::F1, select_device_1);
+        no_modifier_shortcuts.insert(gdk::Key::F2, select_device_2);
+        no_modifier_shortcuts.insert(gdk::Key::F3, select_device_3);
+        no_modifier_shortcuts.insert(gdk::Key::F4, select_device_4);
+        no_modifier_shortcuts.insert(gdk::Key::F5, select_device_5);
+        no_modifier_shortcuts.insert(gdk::Key::F6, select_device_6);
+        no_modifier_shortcuts.insert(gdk::Key::F7, select_device_7);
+        no_modifier_shortcuts.insert(gdk::Key::F8, select_device_8);
+        no_modifier_shortcuts.insert(gdk::Key::F9, select_device_9);
+        no_modifier_shortcuts.insert(gdk::Key::F10, select_device_10);
+        shortcuts.insert(gdk::ModifierType::NO_MODIFIER_MASK, no_modifier_shortcuts);
 
         let mut ctrl_shortcuts =
             HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
