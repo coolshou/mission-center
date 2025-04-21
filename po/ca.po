@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-08-02 05:09+0000\n"
+"PO-Revision-Date: 2025-04-13 10:03+0000\n"
 "Last-Translator: Jaime Muñoz Martín <jmmartin_5@outlook.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -104,10 +104,9 @@ msgstr "Consulteu un desglossament de l'ús de recursos per aplicació i procés
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Admet una vista de resum reduïda per a un seguiment senzill"
+msgstr "Admet una vista de resum reduïda per a una supervisió senzilla"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
@@ -140,6 +139,8 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"La supervisió de la GPU d'Intel només és compatible amb les GPU Broadwell i "
+"posteriors. No admet la supervisió de VRAM, energia o temperatura"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -147,6 +148,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Quan utilitzeu el Linux Mint/Cinnamon, és possible que les aplicacions "
+"executades no es mostrin a la secció «Aplicacions» (problema relacionat: "
+"https://github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -178,11 +182,14 @@ msgstr "Quants punts s'han de mostrar a cada gràfic?"
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Si s'ha d'establir el màxim del gràfic com a màxim de la interfície (fals) o "
+"el màxim observat (cert)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -232,54 +239,52 @@ msgstr "Els gràfics de rendiment han de ser suaus o irregulars"
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Mostra la informació de la CPU per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "No s'ha pogut obtenir informació addiciona de la memòria"
+msgstr "Mostra la informació de la memòria per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Mostra la informació del disc per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "Mostra la informació de la xarxa per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Mostra la informació de la GPU per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Mostra la informació del ventilador per defecte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Composició de la memòria"
+msgstr "Mostra el giny de composició de la memòria"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Mostra el gràfic de la memòria d'intercanvi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Mostra el gràfic de codificació/descodificació de la GPU"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "L'ordre de les entrades a la barra lateral de l'aplicació"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Gràfics que s'han d'amagar a la barra lateral de l'aplicació"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -288,9 +293,8 @@ msgstr "CPU"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
-#, fuzzy
 msgid "Utilization over "
-msgstr "Ús superior a {}{}"
+msgstr "Ús superior a "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
@@ -384,7 +388,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Ventilador"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -464,15 +468,13 @@ msgid "Power preference:"
 msgstr "Preferència d'energia:"
 
 #: resources/ui/performance_page/disk.blp:63
-#, fuzzy
 msgid "Active time over "
-msgstr "Temps actiu"
+msgstr "Temps actiu "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
-#, fuzzy
 msgid "Throughput over "
-msgstr "Rendiment"
+msgstr "Rendiment superior a "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
@@ -508,43 +510,37 @@ msgid "Type:"
 msgstr "Tipus:"
 
 #: resources/ui/performance_page/fan.blp:67
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Ús de memòria"
+msgstr "Velocitat del ventilador superior a "
 
 #: resources/ui/performance_page/fan.blp:108
-#, fuzzy
 msgid "Temperature over "
-msgstr "Temperatura"
+msgstr "Temperatura superior a "
 
 #: resources/ui/performance_page/fan_details.blp:51
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Velocitat"
+msgstr "Velocitat del ventilador"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
-#, fuzzy
 msgid "Current Temperature"
-msgstr "Temperatura"
+msgstr "Temperatura actual"
 
 #: resources/ui/performance_page/gpu.blp:114
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Ús de codificació de vídeo"
+msgstr "Ús de codificació/descodificació de vídeo superior a "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Ús de memòria"
+msgstr "Ús de la memòria superior a "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Mostra l'ús de codificació/descodificació"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -559,23 +555,20 @@ msgid "Memory usage"
 msgstr "Ús de memòria"
 
 #: resources/ui/performance_page/gpu_details.blp:208
-#, fuzzy
 msgid "GTT usage"
-msgstr "Ús de la GPU"
+msgstr "Ús del GTT"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
 msgstr "Velocitat de memòria"
 
 #: resources/ui/performance_page/gpu_details.blp:310
-#, fuzzy
 msgid "Video encode"
-msgstr "Codificació/descodificació de vídeo"
+msgstr "Codificació de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:343
-#, fuzzy
 msgid "Video decode"
-msgstr "Codificació/descodificació de vídeo"
+msgstr "Descodificació de vídeo"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -603,22 +596,20 @@ msgid "Memory"
 msgstr "Memòria"
 
 #: resources/ui/performance_page/memory.blp:115
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Ús de memòria"
+msgstr "Ús de la memòria d'intercanvi superior a "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
 msgstr "Composició de la memòria"
 
 #: resources/ui/performance_page/memory.blp:185
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Composició de la memòria"
+msgstr "Mostra la composició de la memòria"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Mostra l'ús d'intercanvi de memòria"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -666,7 +657,7 @@ msgstr "Rebuts"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Received"
-msgstr ""
+msgstr "Total rebut"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -674,7 +665,7 @@ msgstr "Enviats"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Total enviat"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -713,9 +704,8 @@ msgid "IPv6 address:"
 msgstr "Adreça IPv6:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Configuració general"
+msgstr "General"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -726,9 +716,8 @@ msgid "Chart Data Points"
 msgstr "Punts de dades del gràfic"
 
 #: resources/ui/preferences/page.blp:46
-#, fuzzy
 msgid "Performance Page"
-msgstr "Rendiment"
+msgstr "Pàgina de rendiment"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -740,48 +729,47 @@ msgstr "Dibuixa gràfics com a línies suaus en lloc de línies irregulars"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Mostra la velocitat de xarxa en bytes"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Escala els gràfics de xarxa dinàmicament"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Estableix el gràfic de xarxa per escalar dinàmicament amb l'ús real o amb la "
+"velocitat màxima del canal"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Mostra la informació de la CPU"
 
 #: resources/ui/preferences/page.blp:69
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "Composició de la memòria"
+msgstr "Mostra informació de la memòria"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Mostra la informació del disc"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Mostra la informació de la xarxa"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Mostra la informació de la GPU"
 
 #: resources/ui/preferences/page.blp:89
-#, fuzzy
 msgid "Show Fan Information"
-msgstr "Informació del procés i dels usuaris"
+msgstr "Mostra informació dels ventiladors"
 
 #: resources/ui/preferences/page.blp:95
-#, fuzzy
 msgid "App Page"
-msgstr "Configuració de la pàgina de l'aplicació"
+msgstr "Pàgina de l'aplicació"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
@@ -892,26 +880,24 @@ msgid "PID"
 msgstr "PID"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "Habilitat"
+msgstr "Habilita-ho tot"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Desactiva-ho tot"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Restableix als valors per defecte"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
 msgstr "Dispositius"
 
 #: resources/ui/window.blp:70
-#, fuzzy
 msgid "Edit Sidebar"
-msgstr "Commuta la barra lateral"
+msgstr "Edita la barra lateral"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
@@ -1068,16 +1054,15 @@ msgstr "GPU"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Ventilador {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Ventilador"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1115,19 +1100,19 @@ msgstr "{} {}{}B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1135,16 +1120,15 @@ msgstr "No s'ha pogut obtenir informació addiciona de la memòria"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
-#, fuzzy
 msgid "{} {}{}B"
-msgstr "{} {}{}B/s"
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-02-01 12:01+0000\n"
-"Last-Translator: D0735 <D0735@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-04-10 17:05+0000\n"
+"Last-Translator: Peter Dave Hello <hsu@peterdavehello.org>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -28,14 +28,14 @@ msgstr "任務中心"
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
-msgstr ""
-"工作管理員;資源監控器;系統監控器;處理器;進程;效能監控器;CPU;GPU;磁碟;磁碟;記"
-"憶體;網路;使用率;使用率"
+msgstr "工作管理員;資源監控器;系統監控器;處理器;處理程序;效能監控器;CPU;GPU;磁碟;磁碟"
+";記憶體;網路;使用率;使用率"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
+#, fuzzy
 msgid "Mission Center Developers"
-msgstr "任務中心開發者"
+msgstr "Mission Center 開發者"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
@@ -46,6 +46,7 @@ msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr "監控您的 CPU、記憶體、磁碟、網路和 GPU 使用情況"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
+#, fuzzy
 msgid "Features:"
 msgstr "功能："
 
@@ -57,8 +58,8 @@ msgstr "監控整體或每個執行緒的 CPU 使用情況"
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
-msgstr ""
-"檢視系統進程、執行緒和控制代碼數量、運作時間、時脈（基礎及目前）、快取大小"
+msgstr "檢視系統處理程序、執行緒和控制代碼數量、運作時間、時脈（基礎及目前）、快取大"
+"小"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
@@ -95,11 +96,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "檢視應用程式和進程的資源使用詳細資訊"
+msgstr "檢視應用程式和處理程序的資源使用詳細資訊"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "支援以精簡的摘要視圖進行簡單監控"
+msgstr "支援縮小的摘要檢視以進行簡單監控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
@@ -121,7 +122,7 @@ msgstr "限制（目前正在努力克服這些限制）："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr "沒有每個進程的網路使用情況"
+msgstr "沒有每個處理程序的網路使用情況"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
@@ -388,7 +389,7 @@ msgstr "速度"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr "進程"
+msgstr "處理程序"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
@@ -656,7 +657,7 @@ msgstr "連線類型："
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr "SSID："
+msgstr "SSID:"
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
@@ -944,7 +945,7 @@ msgid ""
 msgstr ""
 "使用中（{}B）\n"
 "\n"
-"作業系統和正在值行的應用程式使用的記憶體"
+"作業系統和正在執行的應用程式所使用的記憶體"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -955,9 +956,10 @@ msgid ""
 msgstr ""
 "已修改（{}B）\n"
 "\n"
-"在其他進程可以使用之前，必須先將記憶體內容寫入磁碟"
+"在其他處理程序可以使用之前，必須先將記憶體內容寫入磁碟"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
+#, fuzzy
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1132,7 +1134,7 @@ msgstr "Peter Dave Hello <hsu@peterdavehello.org>"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr "退出"
+msgstr "結束"
 
 #~ msgid "{} {}bps"
 #~ msgstr "{} {}bps"

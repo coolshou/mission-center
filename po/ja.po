@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2024-07-13 12:09+0000\n"
-"Last-Translator: liu liu <tiandeyiqingliupeng@outlook.com>\n"
+"PO-Revision-Date: 2025-04-09 09:06+0000\n"
+"Last-Translator: rainy_sunset <rainy_sunset@users.noreply.hosted.weblate.org>"
+"\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
 "Language: ja\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -138,6 +139,9 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Intel "
+"GPUのモニタリングは、Broadwell以降のGPUにのみ対応しています。また、VRAM、電源"
+"、温度のモニタリングには対応していません"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -145,6 +149,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Linux MintやCinnamonを利用する場合、起動したアプリケーションが "
+"[アプリケーション] 欄に表示されない可能性があります (アップストリームのIssue:"
+" https://github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -222,32 +229,32 @@ msgstr "性能グラフを表すのは平滑グラフとギザギザグラフど
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "デフォルトで CPU 情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr ""
+msgstr "デフォルトでメモリ情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "デフォルトでディスク情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "デフォルトでネットワーク情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "デフォルトでGPU情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "デフォルトでファン情報を表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 #, fuzzy
@@ -256,7 +263,7 @@ msgstr "メモリ構成"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "スワップのグラフを表示する"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
@@ -442,11 +449,11 @@ msgstr "L3キャッシュ:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreqのドライバー:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreqのガバナー:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 #, fuzzy
@@ -534,7 +541,7 @@ msgstr "メモリ使用率"
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "エンコード/デコードの使用状況を表示"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -607,7 +614,7 @@ msgstr "メモリ構成"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "スワップの使用状況を表示"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
@@ -655,7 +662,7 @@ msgstr "受信"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Received"
-msgstr ""
+msgstr "受信した総量"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
@@ -663,7 +670,7 @@ msgstr "送信"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "送信した総量"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
@@ -708,7 +715,7 @@ msgstr "一般"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "更新間隔"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
@@ -721,15 +728,15 @@ msgstr "パフォーマンス"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "滑らかなグラフ"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "ギザギザな線の代わりに、滑らかな線でグラフを描画"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "バイト単位でネットワーク速度を表示"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -743,7 +750,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "CPU情報を表示"
 
 #: resources/ui/preferences/page.blp:69
 #, fuzzy
@@ -752,19 +759,19 @@ msgstr "メモリ構成"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "ディスク情報を表示"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "ネットワーク情報の表示"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "GPU情報を表示"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr ""
+msgstr "ファン情報を表示"
 
 #: resources/ui/preferences/page.blp:95
 #, fuzzy
@@ -789,15 +796,15 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "サービスの詳細"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "状態"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "サービスの現在の状態"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
@@ -807,11 +814,11 @@ msgstr "名前"
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "現在の状態"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
@@ -824,7 +831,7 @@ msgstr "プロセス"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "プロセスとユーザーの情報"
 
 #: resources/ui/services_page/details_dialog.blp:230
 #, fuzzy
@@ -845,35 +852,35 @@ msgstr "該当なし"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "ユーザー"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "グループ"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "ログ"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "開始"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "再起動"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr ""
+msgstr "詳細情報"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
@@ -881,19 +888,19 @@ msgstr "PID"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "すべてを有効にする"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "すべてを無効にする"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "デフォルトの状態に戻す"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr ""
+msgstr "デバイス"
 
 #: resources/ui/window.blp:70
 #, fuzzy
@@ -922,7 +929,7 @@ msgstr "アプリ"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr ""
+msgstr "サービス"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
@@ -934,11 +941,11 @@ msgstr "Mission Center について"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "ドライブ"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPUの使用状況"
 
 #: src/apps_page/mod.rs:1403
 #, fuzzy
@@ -1060,7 +1067,7 @@ msgstr ""
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "ファン"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 #, fuzzy
@@ -1125,11 +1132,11 @@ msgstr ""
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 #, fuzzy
@@ -1138,26 +1145,26 @@ msgstr "{} {}{}B/秒"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} 個のサービスが実行中"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} 個が失敗、サービスは合計 {} 個"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "実行中"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "失敗"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "停止中"
 
 #: src/application.rs:373
 msgid "translator-credits"
