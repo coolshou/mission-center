@@ -70,6 +70,8 @@ mod imp {
         #[property(get, set)]
         summary_mode: Cell<bool>,
 
+        pub action_swap_usage: gio::SimpleAction,
+
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Grid>,
 
@@ -113,6 +115,12 @@ mod imp {
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 memory_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
+
+                action_swap_usage: gio::SimpleAction::new_stateful(
+                    "swap_usage",
+                    None,
+                    &true.to_variant(),
+                ),
 
                 infobar_content: Default::default(),
 
@@ -205,11 +213,8 @@ mod imp {
             });
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new_stateful(
-                "swap_usage",
-                None,
-                &glib::Variant::from(show_swap),
-            );
+            let action = &this.imp().action_swap_usage;
+            action.set_state(&show_swap.to_variant());
             action.connect_activate({
                 let this = this.downgrade();
                 move |action, _| {
@@ -224,24 +229,23 @@ mod imp {
                         .and_then(|v| v.get::<bool>())
                         .unwrap_or(false);
 
-                    this.big_box.set_homogeneous(visible);
-                    this.big_box.set_spacing(if visible { 10 } else { 0 });
                     this.swap_box.set_visible(visible);
                     this.swap_usage_graph.set_visible(visible);
 
                     action.set_state(&glib::Variant::from(visible));
 
-                    settings!()
-                        .set_boolean("performance-page-memory-swap-visible", visible)
-                        .unwrap_or_else(|_| {
-                            g_critical!(
-                                "MissionCenter::PerformancePage",
-                                "Failed to save show swap graph"
-                            );
-                        });
+                    let settings = settings!();
+
+                    // The action might be triggered by setting the state from DConf (or similar)
+                    // Short-circuit if the state is already set
+                    let setting = settings.boolean("performance-page-memory-swap-visible");
+                    if setting != visible {
+                        let _ =
+                            settings.set_boolean("performance-page-memory-swap-visible", visible);
+                    }
                 }
             });
-            actions.add_action(&action);
+            actions.add_action(action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageMemory) {
@@ -280,21 +284,13 @@ mod imp {
             let settings = settings!();
             let show_memory_composition =
                 settings.boolean("performance-page-memory-composition-visible");
-            let show_swap = settings.boolean("performance-page-memory-swap-visible");
 
             this.usage_graph
                 .set_value_range_max(readings.mem_info.mem_total as f32);
             this.swap_usage_graph
                 .set_value_range_max(readings.mem_info.swap_total as f32);
             let t = this.obj().clone();
-            let swap_total = readings.mem_info.swap_total;
 
-            if swap_total == 0 || !show_swap {
-                this.big_box.set_homogeneous(false);
-                this.big_box.set_spacing(0);
-                this.swap_box.set_visible(false);
-                this.swap_usage_graph.set_visible(false);
-            }
             if !show_memory_composition {
                 this.mem_composition_box.set_visible(false);
             }
@@ -345,6 +341,12 @@ mod imp {
                 if total_swap.1.is_empty() { "" } else { "i" }
             ));
 
+            let show_swap = settings!().boolean("performance-page-memory-swap-visible");
+            if !show_swap {
+                this.swap_box.set_visible(false);
+                this.swap_usage_graph.set_visible(false);
+            }
+
             let mem_module_count = readings.mem_devices.len();
             if mem_module_count > 0 {
                 if let Some(sp) = this.speed.get() {
@@ -381,136 +383,141 @@ mod imp {
             let this = this.imp();
             let mem_info = &readings.mem_info;
 
-            {
-                // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
-                let mem_avail = if mem_info.mem_available > mem_info.mem_total {
-                    mem_info.mem_free
-                } else {
-                    mem_info.mem_available
-                };
-                let used = mem_info.mem_total.saturating_sub(mem_avail);
-                let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
-                this.usage_graph.add_data_point(0, mem_info.committed as _);
-                this.usage_graph.add_data_point(1, mem_info.dirty as _);
-                this.usage_graph.add_data_point(2, used as _);
+            // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+            let mem_avail = if mem_info.mem_available > mem_info.mem_total {
+                mem_info.mem_free
+            } else {
+                mem_info.mem_available
+            };
+            let used = mem_info.mem_total.saturating_sub(mem_avail);
+            let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
+            this.usage_graph.add_data_point(0, mem_info.committed as _);
+            this.usage_graph.add_data_point(1, mem_info.dirty as _);
+            this.usage_graph.add_data_point(2, used as _);
 
-                let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
-                this.swap_usage_graph.add_data_point(0, swap_used as _);
+            let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
+            this.swap_usage_graph.add_data_point(0, swap_used as _);
 
-                this.mem_composition.update_memory_information(mem_info);
+            this.mem_composition.update_memory_information(mem_info);
 
-                let used = crate::to_human_readable(used as _, 1024.);
-                if let Some(iu) = this.in_use.get() {
-                    iu.set_text(&format!(
-                        "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
-                    ));
-                }
+            let used = crate::to_human_readable(used as _, 1024.);
+            if let Some(iu) = this.in_use.get() {
+                iu.set_text(&format!(
+                    "{:.2} {}{}B",
+                    used.0,
+                    used.1,
+                    if used.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
-                let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
-                if let Some(av) = this.available.get() {
-                    av.set_text(&format!(
-                        "{:.2} {}{}B",
-                        available.0,
-                        available.1,
-                        if available.1.is_empty() { "" } else { "i" }
-                    ));
-                }
+            let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
+            if let Some(av) = this.available.get() {
+                av.set_text(&format!(
+                    "{:.2} {}{}B",
+                    available.0,
+                    available.1,
+                    if available.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
-                let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
-                if let Some(cm) = this.committed.get() {
-                    cm.set_text(&format!(
-                        "{:.2} {}{}B",
-                        committed.0,
-                        committed.1,
-                        if committed.1.is_empty() { "" } else { "i" }
-                    ));
-                }
+            let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
+            if let Some(cm) = this.committed.get() {
+                cm.set_text(&format!(
+                    "{:.2} {}{}B",
+                    committed.0,
+                    committed.1,
+                    if committed.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
-                let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
-                if let Some(ch) = this.cached.get() {
-                    ch.set_text(&format!(
-                        "{:.2} {}{}B",
-                        cached.0,
-                        cached.1,
-                        if cached.1.is_empty() { "" } else { "i" }
-                    ));
-                }
+            let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
+            if let Some(ch) = this.cached.get() {
+                ch.set_text(&format!(
+                    "{:.2} {}{}B",
+                    cached.0,
+                    cached.1,
+                    if cached.1.is_empty() { "" } else { "i" }
+                ));
+            }
 
-                let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
+            if mem_info.swap_total == 0 {
+                this.action_swap_usage.set_enabled(false);
+
+                this.swap_box.set_visible(false);
+                this.swap_usage_graph.set_visible(false);
+
                 if let Some(sa) = this.swap_available.get() {
-                    if swap_available.0 > 0. {
-                        sa.set_visible(true);
-                        sa.set_text(&format!(
-                            "{:.2} {}{}B",
-                            swap_available.0,
-                            swap_available.1,
-                            if swap_available.1.is_empty() { "" } else { "i" }
-                        ));
-                    } else {
-                        sa.set_visible(false);
-                    }
+                    sa.set_visible(false);
                 }
 
-                if swap_available.0 > 0. {
-                    let swap_used = crate::to_human_readable(
-                        mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
-                        1024.,
-                    );
-                    if let Some(su) = this.swap_used.get() {
-                        su.set_visible(true);
-                        su.set_text(&format!(
-                            "{:.2} {}{}B",
-                            swap_used.0,
-                            swap_used.1,
-                            if swap_used.1.is_empty() { "" } else { "i" }
-                        ));
-                    }
-                } else if let Some(su) = this.swap_used.get() {
+                if let Some(su) = this.swap_used.get() {
                     su.set_visible(false);
                 }
-
-                let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
-                let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
-                let standby = crate::to_human_readable(standby as _, 1024.);
-
-                if let Some(l) = this.tt_label_in_use.get() {
-                    l.set_text(&format!(
+            } else {
+                let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
+                if let Some(sa) = this.swap_available.get() {
+                    sa.set_visible(true);
+                    sa.set_text(&format!(
                         "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
-                    ))
+                        swap_available.0,
+                        swap_available.1,
+                        if swap_available.1.is_empty() { "" } else { "i" }
+                    ));
                 }
 
-                if let Some(l) = this.tt_label_modified.get() {
-                    l.set_text(&format!(
+                let swap_used = crate::to_human_readable(
+                    mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
+                    1024.,
+                );
+                if let Some(su) = this.swap_used.get() {
+                    su.set_visible(true);
+                    su.set_text(&format!(
                         "{:.2} {}{}B",
-                        dirty.0,
-                        dirty.1,
-                        if dirty.1.is_empty() { "" } else { "i" }
-                    ))
+                        swap_used.0,
+                        swap_used.1,
+                        if swap_used.1.is_empty() { "" } else { "i" }
+                    ));
                 }
+            }
 
-                if let Some(l) = this.tt_label_standby.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        standby.0,
-                        standby.1,
-                        if standby.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
+            let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
+            let standby = crate::to_human_readable(standby as _, 1024.);
 
-                if let Some(l) = this.tt_label_free.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        free.0,
-                        free.1,
-                        if free.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            if let Some(l) = this.tt_label_in_use.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    used.0,
+                    used.1,
+                    if used.1.is_empty() { "" } else { "i" }
+                ))
+            }
+
+            if let Some(l) = this.tt_label_modified.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    dirty.0,
+                    dirty.1,
+                    if dirty.1.is_empty() { "" } else { "i" }
+                ))
+            }
+
+            if let Some(l) = this.tt_label_standby.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    standby.0,
+                    standby.1,
+                    if standby.1.is_empty() { "" } else { "i" }
+                ))
+            }
+
+            if let Some(l) = this.tt_label_free.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    free.0,
+                    free.1,
+                    if free.1.is_empty() { "" } else { "i" }
+                ))
             }
 
             true
@@ -912,23 +919,23 @@ impl PerformancePageMemory {
             }
         });
 
-        fn set_hidden(this: &PerformancePageMemory, settings: &gio::Settings) {
-            let visible = settings.boolean("performance-page-memory-swap-visible");
-
-            let this = this.imp();
-
-            this.big_box.set_homogeneous(visible);
-            this.big_box.set_spacing(if visible { 10 } else { 0 });
-            this.swap_box.set_visible(visible);
-            this.swap_usage_graph.set_visible(visible);
-            this.mem_box.set_has_tooltip(true);
-        }
-
         settings.connect_changed(Some("performance-page-memory-swap-visible"), {
             let this = this.downgrade();
             move |settings, _| {
-                if let Some(this) = this.upgrade() {
-                    set_hidden(&this, settings);
+                let Some(this) = this.upgrade() else {
+                    return;
+                };
+                let setting = settings.boolean("performance-page-memory-swap-visible");
+                let action_state = this
+                    .imp()
+                    .action_swap_usage
+                    .state()
+                    .and_then(|v| v.get::<bool>())
+                    .unwrap_or(false);
+
+                // Short-circuit if the state is already set
+                if setting != action_state {
+                    let _ = WidgetExt::activate_action(&this, "graph.swap_usage", None);
                 }
             }
         });
