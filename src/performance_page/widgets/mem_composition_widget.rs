@@ -1,6 +1,6 @@
 /* performance_page/widgets/mem_composition_widget.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,9 +203,9 @@ mod imp {
             let mem_info = self.mem_info.get();
 
             let total = if mem_info.mem_total > 0 {
-                mem_info.mem_total as f32
+                mem_info.mem_total
             } else {
-                1.
+                1
             };
 
             let base_color = self.base_color.get();
@@ -224,18 +224,24 @@ mod imp {
             tooltip_texts.clear();
 
             // Used memory
-            let used = mem_info.mem_total.saturating_sub(mem_info.mem_available) as f32;
+            // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+            let mem_avail = if mem_info.mem_available > mem_info.mem_total {
+                mem_info.mem_free
+            } else {
+                mem_info.mem_available
+            };
+            let used = total.saturating_sub(mem_avail);
             let x = self.render_bar(
                 snapshot,
                 0.,
-                (width * (used / total)).trunc(),
+                (width * (used as f32 / total as f32)).trunc(),
                 height,
                 &stroke,
                 &stroke_color,
                 Some(&fill_color),
             );
 
-            let used_hr = crate::to_human_readable(used, 1024.);
+            let used_hr = crate::to_human_readable(used as _, 1024.);
             tooltip_texts.push((
                 x,
                 i18n_f(
@@ -251,7 +257,7 @@ mod imp {
 
             // Dirty memory
             let modified = mem_info.dirty as f32;
-            let bar_width = (width * (modified / total)).trunc();
+            let bar_width = (width * (modified / total as f32)).trunc();
             let new_x = self.render_bar(
                 snapshot,
                 x.trunc(),
@@ -280,8 +286,8 @@ mod imp {
             ));
 
             // Stand-by memory
-            let standby = total - (used + mem_info.mem_free as f32);
-            let bar_width = (width * (standby / total)).trunc();
+            let standby = total.saturating_sub(used + mem_info.mem_free);
+            let bar_width = (width * (standby as f32 / total as f32)).trunc();
 
             let new_x =
                 self.render_bar(snapshot, x, bar_width, height, &stroke, &stroke_color, None);
@@ -294,7 +300,7 @@ mod imp {
 
             let x = new_x;
 
-            let standby_hr = crate::to_human_readable(standby, 1024.);
+            let standby_hr = crate::to_human_readable(standby as _, 1024.);
             tooltip_texts.push((
                 x,
                 i18n_f(
@@ -316,7 +322,7 @@ mod imp {
                 ),
             ));
 
-            gtk::prelude::SnapshotExt::pop(snapshot);
+            SnapshotExt::pop(snapshot);
 
             self.draw_outline(snapshot, &bounds, &stroke_color);
 

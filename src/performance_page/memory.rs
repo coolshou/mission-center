@@ -1,6 +1,6 @@
 /* performance_page/memory.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -382,7 +382,13 @@ mod imp {
             let mem_info = &readings.mem_info;
 
             {
-                let used = mem_info.mem_total.saturating_sub(mem_info.mem_available);
+                // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+                let mem_avail = if mem_info.mem_available > mem_info.mem_total {
+                    mem_info.mem_free
+                } else {
+                    mem_info.mem_available
+                };
+                let used = mem_info.mem_total.saturating_sub(mem_avail);
                 let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
                 this.usage_graph.add_data_point(0, mem_info.committed as _);
                 this.usage_graph.add_data_point(1, mem_info.dirty as _);

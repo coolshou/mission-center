@@ -1,7 +1,6 @@
 /* performance_page/view_models
  *
- * Copyright 2024 Romeo Calota
- * Copyright 2024 jojo2357
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,7 +192,7 @@ mod imp {
                     settings!()
                         .set_string("performance-selected-page", page_name)
                         .unwrap_or_else(|_| {
-                            glib::g_warning!(
+                            g_warning!(
                                 "MissionCenter::PerformancePage",
                                 "Failed to set performance-selected-page setting"
                             );
@@ -957,7 +956,7 @@ mod imp {
                         settings
                             .set_string("performance-sidebar-order", sidebar_order)
                             .unwrap_or_else(|_| {
-                                glib::g_warning!(
+                                g_warning!(
                                     "MissionCenter::PerformancePage",
                                     "Failed to set performance-sidebar-order setting"
                                 );
@@ -1936,12 +1935,18 @@ mod imp {
                         result &= page.update_readings(readings);
                     }
                     Pages::Memory((summary, page)) => {
-                        let total_raw = readings.mem_info.mem_total;
+                        let mem_info = &readings.mem_info;
+                        let total_raw = mem_info.mem_total;
                         let total = crate::to_human_readable(total_raw as _, 1024.);
-                        let used_raw = readings
-                            .mem_info
-                            .mem_total
-                            .saturating_sub(readings.mem_info.mem_available);
+
+                        // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+                        let mem_avail = if mem_info.mem_available > mem_info.mem_total {
+                            mem_info.mem_free
+                        } else {
+                            mem_info.mem_available
+                        };
+
+                        let used_raw = total_raw.saturating_sub(mem_avail);
                         let graph_widget = summary.graph_widget();
                         graph_widget.set_data_points(data_points);
                         graph_widget.set_smooth_graphs(smooth);
@@ -2549,7 +2554,7 @@ impl PerformancePage {
         settings
             .set_string("performance-sidebar-order", "")
             .unwrap_or_else(|_| {
-                glib::g_warning!(
+                g_warning!(
                     "MissionCenter::PerformancePage",
                     "Failed to set performance-selected-page setting"
                 );
@@ -2557,7 +2562,7 @@ impl PerformancePage {
         settings
             .set_string("performance-sidebar-hidden-graphs", "")
             .unwrap_or_else(|_| {
-                glib::g_warning!(
+                g_warning!(
                     "MissionCenter::PerformancePage",
                     "Failed to set performance-sidebar-hidden-graphs setting"
                 );
