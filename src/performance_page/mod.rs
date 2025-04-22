@@ -1038,7 +1038,6 @@ mod imp {
                 graph_widget.set_data_set_count(2);
                 graph_widget.set_filled(0, false);
                 graph_widget.set_dashed(0, true);
-                graph_widget.set_scaling(GraphWidget::auto_scaling());
             }
 
             summary.set_heading(i18n("Memory"));
