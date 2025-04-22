@@ -1,6 +1,6 @@
 /* performance_page/memory.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,21 +43,23 @@ mod imp {
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
+        pub grid_graphs: TemplateChild<gtk::Grid>,
+        #[template_child]
+        pub max_graph_ram: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
         pub mem_composition: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
-        pub mem_composition_box: TemplateChild<gtk::Box>,
+        pub box_mem_composition: TemplateChild<gtk::Box>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
         #[template_child]
-        pub big_box: TemplateChild<gtk::Box>,
+        pub box_swap_space: TemplateChild<gtk::Box>,
         #[template_child]
-        pub swap_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub mem_box: TemplateChild<gtk::Box>,
+        pub box_system_memory: TemplateChild<gtk::Box>,
         #[template_child]
         pub swap_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
@@ -69,6 +71,8 @@ mod imp {
         memory_color: Cell<gtk::gdk::RGBA>,
         #[property(get, set)]
         summary_mode: Cell<bool>,
+
+        pub action_swap_usage: gio::SimpleAction,
 
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Grid>,
@@ -99,20 +103,27 @@ mod imp {
             Self {
                 total_ram: Default::default(),
                 toast_overlay: Default::default(),
+                grid_graphs: Default::default(),
+                max_graph_ram: Default::default(),
                 usage_graph: Default::default(),
                 graph_max_duration: Default::default(),
                 mem_composition: Default::default(),
-                mem_composition_box: Default::default(),
+                box_mem_composition: Default::default(),
                 context_menu: Default::default(),
-                big_box: Default::default(),
-                swap_box: Default::default(),
-                mem_box: Default::default(),
+                box_swap_space: Default::default(),
+                box_system_memory: Default::default(),
                 swap_usage_graph: Default::default(),
                 total_swap: Default::default(),
 
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 memory_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
+
+                action_swap_usage: gio::SimpleAction::new_stateful(
+                    "swap_usage",
+                    None,
+                    &true.to_variant(),
+                ),
 
                 infobar_content: Default::default(),
 
@@ -146,6 +157,23 @@ mod imp {
     }
 
     impl PerformancePageMemory {
+        fn set_swap_space_graph_visible(&self, visible: bool) {
+            if let Some(grid_layout_manager) = self.grid_graphs.layout_manager() {
+                if let Ok(layout_child) = grid_layout_manager
+                    .layout_child(&*self.box_system_memory)
+                    .downcast::<gtk::GridLayoutChild>()
+                {
+                    if visible {
+                        layout_child.set_row_span(12);
+                    } else {
+                        layout_child.set_row_span(20);
+                    }
+                }
+            }
+
+            self.box_swap_space.set_visible(visible);
+        }
+
         fn configure_actions(this: &super::PerformancePageMemory) {
             use gtk::glib::*;
             let actions = gio::SimpleActionGroup::new();
@@ -182,7 +210,7 @@ mod imp {
                     };
                     let this = this.imp();
 
-                    let mem_composition = &this.mem_composition_box;
+                    let mem_composition = &this.box_mem_composition;
 
                     let visible = !action
                         .state()
@@ -205,11 +233,8 @@ mod imp {
             });
             actions.add_action(&action);
 
-            let action = gio::SimpleAction::new_stateful(
-                "swap_usage",
-                None,
-                &glib::Variant::from(show_swap),
-            );
+            let action = &this.imp().action_swap_usage;
+            action.set_state(&show_swap.to_variant());
             action.connect_activate({
                 let this = this.downgrade();
                 move |action, _| {
@@ -224,24 +249,21 @@ mod imp {
                         .and_then(|v| v.get::<bool>())
                         .unwrap_or(false);
 
-                    this.big_box.set_homogeneous(visible);
-                    this.big_box.set_spacing(if visible { 10 } else { 0 });
-                    this.swap_box.set_visible(visible);
-                    this.swap_usage_graph.set_visible(visible);
-
                     action.set_state(&glib::Variant::from(visible));
+                    this.set_swap_space_graph_visible(visible);
 
-                    settings!()
-                        .set_boolean("performance-page-memory-swap-visible", visible)
-                        .unwrap_or_else(|_| {
-                            g_critical!(
-                                "MissionCenter::PerformancePage",
-                                "Failed to save show swap graph"
-                            );
-                        });
+                    let settings = settings!();
+
+                    // The action might be triggered by setting the state from DConf (or similar)
+                    // Short-circuit if the state is already set
+                    let setting = settings.boolean("performance-page-memory-swap-visible");
+                    if setting != visible {
+                        let _ =
+                            settings.set_boolean("performance-page-memory-swap-visible", visible);
+                    }
                 }
             });
-            actions.add_action(&action);
+            actions.add_action(action);
         }
 
         fn configure_context_menu(this: &super::PerformancePageMemory) {
@@ -280,23 +302,17 @@ mod imp {
             let settings = settings!();
             let show_memory_composition =
                 settings.boolean("performance-page-memory-composition-visible");
-            let show_swap = settings.boolean("performance-page-memory-swap-visible");
 
             this.usage_graph
                 .set_value_range_max(readings.mem_info.mem_total as f32);
+            this.usage_graph
+                .set_minimum_upper_bound(readings.mem_info.mem_total as f32);
             this.swap_usage_graph
                 .set_value_range_max(readings.mem_info.swap_total as f32);
             let t = this.obj().clone();
-            let swap_total = readings.mem_info.swap_total;
 
-            if swap_total == 0 || !show_swap {
-                this.big_box.set_homogeneous(false);
-                this.big_box.set_spacing(0);
-                this.swap_box.set_visible(false);
-                this.swap_usage_graph.set_visible(false);
-            }
             if !show_memory_composition {
-                this.mem_composition_box.set_visible(false);
+                this.box_mem_composition.set_visible(false);
             }
 
             if let Some(legend_commited) = this.legend_commited.get() {
@@ -337,6 +353,7 @@ mod imp {
                 total_mem.1,
                 if total_mem.1.is_empty() { "" } else { "i" }
             ));
+            this.max_graph_ram.set_text(this.total_ram.label().as_str());
             let total_swap = crate::to_human_readable(readings.mem_info.swap_total as _, 1024.);
             this.total_swap.set_text(&format!(
                 "{:.2} {}{}B",
@@ -344,6 +361,11 @@ mod imp {
                 total_swap.1,
                 if total_swap.1.is_empty() { "" } else { "i" }
             ));
+
+            let show_swap = settings!().boolean("performance-page-memory-swap-visible");
+            if !show_swap {
+                this.set_swap_space_graph_visible(false);
+            }
 
             let mem_module_count = readings.mem_devices.len();
             if mem_module_count > 0 {
@@ -381,63 +403,86 @@ mod imp {
             let this = this.imp();
             let mem_info = &readings.mem_info;
 
-            {
-                let used = mem_info
-                    .mem_total
-                    .saturating_sub(mem_info.mem_available + mem_info.dirty);
-                let dirty = mem_info.mem_total.saturating_sub(mem_info.mem_available);
-                let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
-                this.usage_graph.add_data_point(0, mem_info.committed as _);
-                this.usage_graph.add_data_point(1, dirty as _);
-                this.usage_graph.add_data_point(2, used as _);
+            // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+            let mem_avail = if mem_info.mem_available > mem_info.mem_total {
+                mem_info.mem_free
+            } else {
+                mem_info.mem_available
+            };
+            let used = mem_info.mem_total.saturating_sub(mem_avail);
+            let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
+            this.usage_graph.add_data_point(0, mem_info.committed as _);
+            this.usage_graph.add_data_point(1, mem_info.dirty as _);
+            this.usage_graph.add_data_point(2, used as _);
 
-                let swap_used = mem_info.swap_total - mem_info.swap_free;
-                this.swap_usage_graph.add_data_point(0, swap_used as _);
+            let max_ram = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
+            this.max_graph_ram.set_text(&format!(
+                "{:.2} {}{}B",
+                max_ram.0,
+                max_ram.1,
+                if max_ram.1.is_empty() { "" } else { "i" }
+            ));
 
-                this.mem_composition.update_memory_information(mem_info);
+            let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
+            this.swap_usage_graph.add_data_point(0, swap_used as _);
 
-                let used = crate::to_human_readable(used as _, 1024.);
-                if let Some(iu) = this.in_use.get() {
-                    iu.set_text(&format!(
-                        "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
-                    ));
+            this.mem_composition.update_memory_information(mem_info);
+
+            let used = crate::to_human_readable(used as _, 1024.);
+            if let Some(iu) = this.in_use.get() {
+                iu.set_text(&format!(
+                    "{:.2} {}{}B",
+                    used.0,
+                    used.1,
+                    if used.1.is_empty() { "" } else { "i" }
+                ));
+            }
+
+            let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
+            if let Some(av) = this.available.get() {
+                av.set_text(&format!(
+                    "{:.2} {}{}B",
+                    available.0,
+                    available.1,
+                    if available.1.is_empty() { "" } else { "i" }
+                ));
+            }
+
+            let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
+            if let Some(cm) = this.committed.get() {
+                cm.set_text(&format!(
+                    "{:.2} {}{}B",
+                    committed.0,
+                    committed.1,
+                    if committed.1.is_empty() { "" } else { "i" }
+                ));
+            }
+
+            let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
+            if let Some(ch) = this.cached.get() {
+                ch.set_text(&format!(
+                    "{:.2} {}{}B",
+                    cached.0,
+                    cached.1,
+                    if cached.1.is_empty() { "" } else { "i" }
+                ));
+            }
+
+            if mem_info.swap_total == 0 {
+                this.action_swap_usage.set_enabled(false);
+                this.set_swap_space_graph_visible(false);
+
+                if let Some(sa) = this.swap_available.get() {
+                    sa.set_visible(false);
                 }
 
-                let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
-                if let Some(av) = this.available.get() {
-                    av.set_text(&format!(
-                        "{:.2} {}{}B",
-                        available.0,
-                        available.1,
-                        if available.1.is_empty() { "" } else { "i" }
-                    ));
+                if let Some(su) = this.swap_used.get() {
+                    su.set_visible(false);
                 }
-
-                let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
-                if let Some(cm) = this.committed.get() {
-                    cm.set_text(&format!(
-                        "{:.2} {}{}B",
-                        committed.0,
-                        committed.1,
-                        if committed.1.is_empty() { "" } else { "i" }
-                    ));
-                }
-
-                let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
-                if let Some(ch) = this.cached.get() {
-                    ch.set_text(&format!(
-                        "{:.2} {}{}B",
-                        cached.0,
-                        cached.1,
-                        if cached.1.is_empty() { "" } else { "i" }
-                    ));
-                }
-
+            } else {
                 let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
                 if let Some(sa) = this.swap_available.get() {
+                    sa.set_visible(true);
                     sa.set_text(&format!(
                         "{:.2} {}{}B",
                         swap_available.0,
@@ -447,10 +492,11 @@ mod imp {
                 }
 
                 let swap_used = crate::to_human_readable(
-                    (mem_info.swap_total - mem_info.swap_free) as _,
+                    mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
                     1024.,
                 );
                 if let Some(su) = this.swap_used.get() {
+                    su.set_visible(true);
                     su.set_text(&format!(
                         "{:.2} {}{}B",
                         swap_used.0,
@@ -458,46 +504,46 @@ mod imp {
                         if swap_used.1.is_empty() { "" } else { "i" }
                     ));
                 }
+            }
 
-                let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
-                let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
-                let standby = crate::to_human_readable(standby as _, 1024.);
+            let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
+            let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
+            let standby = crate::to_human_readable(standby as _, 1024.);
 
-                if let Some(l) = this.tt_label_in_use.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            if let Some(l) = this.tt_label_in_use.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    used.0,
+                    used.1,
+                    if used.1.is_empty() { "" } else { "i" }
+                ))
+            }
 
-                if let Some(l) = this.tt_label_modified.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        dirty.0,
-                        dirty.1,
-                        if dirty.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            if let Some(l) = this.tt_label_modified.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    dirty.0,
+                    dirty.1,
+                    if dirty.1.is_empty() { "" } else { "i" }
+                ))
+            }
 
-                if let Some(l) = this.tt_label_standby.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        standby.0,
-                        standby.1,
-                        if standby.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            if let Some(l) = this.tt_label_standby.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    standby.0,
+                    standby.1,
+                    if standby.1.is_empty() { "" } else { "i" }
+                ))
+            }
 
-                if let Some(l) = this.tt_label_free.get() {
-                    l.set_text(&format!(
-                        "{:.2} {}{}B",
-                        free.0,
-                        free.1,
-                        if free.1.is_empty() { "" } else { "i" }
-                    ))
-                }
+            if let Some(l) = this.tt_label_free.get() {
+                l.set_text(&format!(
+                    "{:.2} {}{}B",
+                    free.0,
+                    free.1,
+                    if free.1.is_empty() { "" } else { "i" }
+                ))
             }
 
             true
@@ -642,7 +688,7 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
 
-            self.mem_box.connect_query_tooltip({
+            self.box_system_memory.connect_query_tooltip({
                 let this = self.obj().downgrade();
                 move |_, _, _, _, tooltip| {
                     let this = match this.upgrade() {
@@ -860,6 +906,7 @@ impl PerformancePageMemory {
             this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.swap_usage_graph
                 .set_expected_animation_ticks(delay as u32);
+            this.usage_graph.set_scaling(GraphWidget::auto_scaling());
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
@@ -899,23 +946,23 @@ impl PerformancePageMemory {
             }
         });
 
-        fn set_hidden(this: &PerformancePageMemory, settings: &gio::Settings) {
-            let visible = settings.boolean("performance-page-memory-swap-visible");
-
-            let this = this.imp();
-
-            this.big_box.set_homogeneous(visible);
-            this.big_box.set_spacing(if visible { 10 } else { 0 });
-            this.swap_box.set_visible(visible);
-            this.swap_usage_graph.set_visible(visible);
-            this.mem_box.set_has_tooltip(true);
-        }
-
         settings.connect_changed(Some("performance-page-memory-swap-visible"), {
             let this = this.downgrade();
             move |settings, _| {
-                if let Some(this) = this.upgrade() {
-                    set_hidden(&this, settings);
+                let Some(this) = this.upgrade() else {
+                    return;
+                };
+                let setting = settings.boolean("performance-page-memory-swap-visible");
+                let action_state = this
+                    .imp()
+                    .action_swap_usage
+                    .state()
+                    .and_then(|v| v.get::<bool>())
+                    .unwrap_or(false);
+
+                // Short-circuit if the state is already set
+                if setting != action_state {
+                    let _ = WidgetExt::activate_action(&this, "graph.swap_usage", None);
                 }
             }
         });
