@@ -147,7 +147,7 @@ mod imp {
                             });
                     }
                 });
-                
+
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
                 window.set_maximized(settings.boolean("is-maximized"));
