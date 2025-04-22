@@ -78,6 +78,8 @@ mod imp {
         #[property(get, set)]
         only_scale_up: Cell<bool>,
         #[property(get, set)]
+        minimum_upper_bound: Cell<f32>,
+        #[property(get, set)]
         grid_visible: Cell<bool>,
         #[property(get, set)]
         scroll: Cell<bool>,
@@ -117,6 +119,7 @@ mod imp {
                 value_range_max: Cell::new(100.),
                 scaling: Cell::new(NO_SCALING),
                 only_scale_up: Cell::new(false),
+                minimum_upper_bound: Cell::new(f32::NAN),
                 grid_visible: Cell::new(true),
                 scroll: Cell::new(false),
                 smooth_graphs: Cell::new(false),
@@ -806,6 +809,11 @@ impl GraphWidget {
         if max_y > self.value_range_min() {
             if (max_y < self.value_range_max()) && self.only_scale_up() {
                 return;
+            }
+
+            let minimum_upper_bound = self.minimum_upper_bound();
+            if minimum_upper_bound.is_normal() && max_y < minimum_upper_bound {
+                max_y = minimum_upper_bound;
             }
 
             self.set_value_range_max(max_y);

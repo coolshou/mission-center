@@ -1,6 +1,6 @@
 /* ui/performance_page/memory.blp
  *
- * Copyright 2023 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,13 +53,17 @@ template $PerformancePageMemory: Box {
   }
 
   Adw.ToastOverlay toast_overlay {
-    child: Box big_box {
-      orientation: vertical;
-      homogeneous: true;
+    child: Grid grid_graphs {
       margin-bottom: 10;
-      spacing: 10;
+      row-spacing: 10;
 
-      Box mem_box {
+      Box box_system_memory {
+        layout {
+          column: '0';
+          row: '0';
+          row-span: 12;
+        }
+
         orientation: vertical;
 
         has-tooltip: true;
@@ -82,12 +86,10 @@ template $PerformancePageMemory: Box {
             valign: start;
           }
 
-          Label {
+          Label max_graph_ram {
             styles [
               "caption",
             ]
-
-            label: bind total_ram.label;
           }
         }
 
@@ -101,70 +103,23 @@ template $PerformancePageMemory: Box {
           data-set-count: 3;
           scroll: true;
         }
-        PopoverMenu context_menu {
-          has-arrow: false;
-          menu-model: context_menu_model;
-        }
       }
 
-      Grid {
-        orientation: vertical;
-
-        Box {
-          layout {
-            column: '0';
-            row: '0';
-            row-span: 10;
-          }
-
-          orientation: vertical;
-          Box swap_box {
-            Label {
-              styles [
-                "caption",
-              ]
-              label: _("Swap usage over ");
-            }
-            Label {
-              styles [
-                "caption",
-              ]
-
-              hexpand: true;
-              halign: start;
-              valign: start;
-
-              label: bind graph_max_duration.label;
-            }
-            Label total_swap {
-              styles [
-                "caption",
-              ]
-            }
-          }
-
-          $GraphWidget swap_usage_graph {
-            vexpand: true;
-            hexpand: true;
-
-            width-request: 100;
-
-            base-color: bind template.memory-color;
-            data-set-count: 1;
-            scroll: true;
-          }
+      Box box_swap_space {
+        layout {
+          column: '0';
+          row: '12';
+          row-span: 8;
         }
 
-        Box mem_composition_box {
-          layout {
-            column: '0';
-            row: '10';
+        orientation: vertical;
+        Box {
+          Label {
+            styles [
+              "caption",
+            ]
+            label: _("Swap usage over ");
           }
-
-          margin-top: 10;
-
-          orientation: vertical;
-
           Label {
             styles [
               "caption",
@@ -173,20 +128,65 @@ template $PerformancePageMemory: Box {
             hexpand: true;
             halign: start;
             valign: start;
-            label: _("Memory composition");
+
+            label: bind graph_max_duration.label;
           }
-
-          $MemoryCompositionWidget mem_composition {
-            width-request: 100;
-            height-request: 25;
-
-            vexpand: true;
-
-            base-color: bind template.base-color;
+          Label total_swap {
+            styles [
+              "caption",
+            ]
           }
+        }
+
+        $GraphWidget swap_usage_graph {
+          vexpand: true;
+          hexpand: true;
+
+          width-request: 100;
+
+          base-color: bind template.memory-color;
+          data-set-count: 1;
+          scroll: true;
+        }
+      }
+
+      Box box_mem_composition {
+        layout {
+          column: '0';
+          row: '20';
+          row-span: '1';
+        }
+
+        margin-top: 10;
+
+        orientation: vertical;
+
+        Label {
+          styles [
+            "caption",
+          ]
+
+          hexpand: true;
+          halign: start;
+          valign: start;
+          label: _("Memory composition");
+        }
+
+        $MemoryCompositionWidget mem_composition {
+          width-request: 100;
+          height-request: 25;
+
+          vexpand: true;
+
+          base-color: bind template.base-color;
         }
       }
     };
+  }
+
+  PopoverMenu context_menu {
+    has-arrow: false;
+    menu-model: context_menu_model;
   }
 }
 
