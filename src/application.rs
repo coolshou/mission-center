@@ -133,6 +133,10 @@ mod imp {
                             });
                     }
                 });
+
+                window
+                    .set_default_size(settings.int("window-width"), settings.int("window-height"));
+
                 window.connect_maximized_notify({
                     move |window| {
                         let settings = settings!();
@@ -148,8 +152,6 @@ mod imp {
                     }
                 });
 
-                window
-                    .set_default_size(settings.int("window-width"), settings.int("window-height"));
                 window.set_maximized(settings.boolean("is-maximized"));
 
                 sys_info.set_core_count_affects_percentages(
