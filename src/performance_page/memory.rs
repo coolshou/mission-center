@@ -45,6 +45,8 @@ mod imp {
         #[template_child]
         pub grid_graphs: TemplateChild<gtk::Grid>,
         #[template_child]
+        pub max_graph_ram: TemplateChild<gtk::Label>,
+        #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
@@ -102,6 +104,7 @@ mod imp {
                 total_ram: Default::default(),
                 toast_overlay: Default::default(),
                 grid_graphs: Default::default(),
+                max_graph_ram: Default::default(),
                 usage_graph: Default::default(),
                 graph_max_duration: Default::default(),
                 mem_composition: Default::default(),
@@ -348,6 +351,7 @@ mod imp {
                 total_mem.1,
                 if total_mem.1.is_empty() { "" } else { "i" }
             ));
+            this.max_graph_ram.set_text(this.total_ram.label().as_str());
             let total_swap = crate::to_human_readable(readings.mem_info.swap_total as _, 1024.);
             this.total_swap.set_text(&format!(
                 "{:.2} {}{}B",
@@ -408,6 +412,14 @@ mod imp {
             this.usage_graph.add_data_point(0, mem_info.committed as _);
             this.usage_graph.add_data_point(1, mem_info.dirty as _);
             this.usage_graph.add_data_point(2, used as _);
+
+            let max_ram = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
+            this.max_graph_ram.set_text(&format!(
+                "{:.2} {}{}B",
+                max_ram.0,
+                max_ram.1,
+                if max_ram.1.is_empty() { "" } else { "i" }
+            ));
 
             let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
             this.swap_usage_graph.add_data_point(0, swap_used as _);
@@ -892,6 +904,7 @@ impl PerformancePageMemory {
             this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.swap_usage_graph
                 .set_expected_animation_ticks(delay as u32);
+            this.usage_graph.set_scaling(GraphWidget::auto_scaling());
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
