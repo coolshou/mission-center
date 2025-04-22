@@ -43,21 +43,21 @@ mod imp {
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
+        pub grid_graphs: TemplateChild<gtk::Grid>,
+        #[template_child]
         pub usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
         pub graph_max_duration: TemplateChild<gtk::Label>,
         #[template_child]
         pub mem_composition: TemplateChild<MemoryCompositionWidget>,
         #[template_child]
-        pub mem_composition_box: TemplateChild<gtk::Box>,
+        pub box_mem_composition: TemplateChild<gtk::Box>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::Popover>,
         #[template_child]
-        pub big_box: TemplateChild<gtk::Box>,
+        pub box_swap_space: TemplateChild<gtk::Box>,
         #[template_child]
-        pub swap_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub mem_box: TemplateChild<gtk::Box>,
+        pub box_system_memory: TemplateChild<gtk::Box>,
         #[template_child]
         pub swap_usage_graph: TemplateChild<GraphWidget>,
         #[template_child]
@@ -101,14 +101,14 @@ mod imp {
             Self {
                 total_ram: Default::default(),
                 toast_overlay: Default::default(),
+                grid_graphs: Default::default(),
                 usage_graph: Default::default(),
                 graph_max_duration: Default::default(),
                 mem_composition: Default::default(),
-                mem_composition_box: Default::default(),
+                box_mem_composition: Default::default(),
                 context_menu: Default::default(),
-                big_box: Default::default(),
-                swap_box: Default::default(),
-                mem_box: Default::default(),
+                box_swap_space: Default::default(),
+                box_system_memory: Default::default(),
                 swap_usage_graph: Default::default(),
                 total_swap: Default::default(),
 
@@ -154,6 +154,23 @@ mod imp {
     }
 
     impl PerformancePageMemory {
+        fn set_swap_space_graph_visible(&self, visible: bool) {
+            if let Some(grid_layout_manager) = self.grid_graphs.layout_manager() {
+                if let Ok(layout_child) = grid_layout_manager
+                    .layout_child(&*self.box_system_memory)
+                    .downcast::<gtk::GridLayoutChild>()
+                {
+                    if visible {
+                        layout_child.set_row_span(12);
+                    } else {
+                        layout_child.set_row_span(20);
+                    }
+                }
+            }
+
+            self.box_swap_space.set_visible(visible);
+        }
+
         fn configure_actions(this: &super::PerformancePageMemory) {
             use gtk::glib::*;
             let actions = gio::SimpleActionGroup::new();
@@ -190,7 +207,7 @@ mod imp {
                     };
                     let this = this.imp();
 
-                    let mem_composition = &this.mem_composition_box;
+                    let mem_composition = &this.box_mem_composition;
 
                     let visible = !action
                         .state()
@@ -229,10 +246,8 @@ mod imp {
                         .and_then(|v| v.get::<bool>())
                         .unwrap_or(false);
 
-                    this.swap_box.set_visible(visible);
-                    this.swap_usage_graph.set_visible(visible);
-
                     action.set_state(&glib::Variant::from(visible));
+                    this.set_swap_space_graph_visible(visible);
 
                     let settings = settings!();
 
@@ -292,7 +307,7 @@ mod imp {
             let t = this.obj().clone();
 
             if !show_memory_composition {
-                this.mem_composition_box.set_visible(false);
+                this.box_mem_composition.set_visible(false);
             }
 
             if let Some(legend_commited) = this.legend_commited.get() {
@@ -343,8 +358,7 @@ mod imp {
 
             let show_swap = settings!().boolean("performance-page-memory-swap-visible");
             if !show_swap {
-                this.swap_box.set_visible(false);
-                this.swap_usage_graph.set_visible(false);
+                this.set_swap_space_graph_visible(false);
             }
 
             let mem_module_count = readings.mem_devices.len();
@@ -442,9 +456,7 @@ mod imp {
 
             if mem_info.swap_total == 0 {
                 this.action_swap_usage.set_enabled(false);
-
-                this.swap_box.set_visible(false);
-                this.swap_usage_graph.set_visible(false);
+                this.set_swap_space_graph_visible(false);
 
                 if let Some(sa) = this.swap_available.get() {
                     sa.set_visible(false);
@@ -662,7 +674,7 @@ mod imp {
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
 
-            self.mem_box.connect_query_tooltip({
+            self.box_system_memory.connect_query_tooltip({
                 let this = self.obj().downgrade();
                 move |_, _, _, _, tooltip| {
                     let this = match this.upgrade() {
