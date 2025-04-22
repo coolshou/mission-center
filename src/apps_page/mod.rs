@@ -241,6 +241,11 @@ mod imp {
             self.drive_column
                 .set_sorter(Some(&drive_sorter(&self.column_view)));
 
+            self.network_usage_column
+                .set_factory(Some(&network_list_item_factory()));
+            self.network_usage_column
+                .set_sorter(Some(&network_sorter(&self.column_view)));
+
             self.gpu_usage_column
                 .set_factory(Some(&gpu_list_item_factory()));
             self.gpu_usage_column

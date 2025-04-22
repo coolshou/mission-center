@@ -52,6 +52,8 @@ mod imp {
         #[template_child]
         drives: TemplateChild<LabelCell>,
         #[template_child]
+        network: TemplateChild<LabelCell>,
+        #[template_child]
         gpu: TemplateChild<LabelCell>,
         #[template_child]
         gpu_memory: TemplateChild<LabelCell>,
@@ -72,6 +74,7 @@ mod imp {
                 memory: TemplateChild::default(),
                 shared_memory: TemplateChild::default(),
                 drives: TemplateChild::default(),
+                network: TemplateChild::default(),
                 gpu: TemplateChild::default(),
                 gpu_memory: TemplateChild::default(),
 
@@ -129,6 +132,10 @@ mod imp {
             drive_label_formatter(&*self.drives, model.disk_usage().into());
             self.drives
                 .bind(&*model, "disk-usage", drive_label_formatter);
+
+            network_label_formatter(&*self.network, model.network_usage().into());
+            self.network
+                .bind(&*model, "network-usage", network_label_formatter);
 
             gpu_label_formatter(&*self.gpu, model.gpu_usage().into());
             self.gpu.bind(&*model, "gpu-usage", gpu_label_formatter);

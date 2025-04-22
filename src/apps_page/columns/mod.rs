@@ -47,6 +47,9 @@ pub use memory::sorter as memory_sorter;
 pub use name::list_item_factory as name_list_item_factory;
 pub use name::sorter as name_sorter;
 pub use name_cell::NameCell;
+pub use network::label_formatter as network_label_formatter;
+pub use network::list_item_factory as network_list_item_factory;
+pub use network::sorter as network_sorter;
 pub use pid::list_item_factory as pid_list_item_factory;
 pub use pid::sorter as pid_sorter;
 pub use shared_memory::label_formatter as shared_memory_label_formatter;
@@ -63,6 +66,7 @@ mod label_cell;
 mod memory;
 mod name;
 mod name_cell;
+mod network;
 mod pid;
 mod shared_memory;
 
