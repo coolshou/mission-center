@@ -65,7 +65,7 @@
       "name": "build-tools",
       "buildsystem": "simple",
       "build-commands": [
-        "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
+        "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-20.04-*.tar.zst && rm ../ubuntu-20.04-*.tar.zst",
         "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-*.tar.zst && rm ../alpine-*.tar.zst",
         "",
         "rm -rf rootfs-glibc/usr/share/vim/vimfiles",
@@ -323,18 +323,6 @@
               "type": "shell",
               "commands": [
                 "cd nvtop-* && find ../subprojects/magpie/platform-linux/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
-              ]
-            },
-            {
-              "type": "archive",
-              "url": "https://github.com/raboof/nethogs/archive/refs/tags/v0.8.8.tar.gz",
-              "sha256": "111ade20cc545e8dfd7ce4e293bd6b31cd1678a989b6a730bd2fa2acc6254818",
-              "dest": "nethogs-0.8.8"
-            },
-            {
-              "type": "shell",
-              "commands": [
-                "cd nethogs-* && find ../subprojects/magpie/platform-linux/3rdparty/nethogs/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
               ]
             },
             {
