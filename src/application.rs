@@ -345,7 +345,7 @@ impl MissionCenterApplication {
             .object::<gtk::ShortcutsShortcut>("select_device")
             .expect("Failed to get select device shortcut");
 
-        // This is a hack to set the label of the shortcut to F1-F10
+        // This is a hack to set the label of the shortcut to from 'Ctrl + F10' to 'F1 .. F10'
         if let Some(ctrl_label) = select_device
             .first_child()
             .and_then(|c| c.first_child())
@@ -358,7 +358,7 @@ impl MissionCenterApplication {
             ctrl_label
                 .next_sibling()
                 .and_then(|c| c.downcast::<gtk::Label>().ok())
-                .and_then(|l| Some(l.set_label("-")));
+                .and_then(|l| Some(l.set_label("..")));
         }
 
         dialog.present(Some(&app_window));

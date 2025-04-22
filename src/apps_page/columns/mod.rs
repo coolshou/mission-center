@@ -18,12 +18,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cmp::Ordering;
-use std::fmt::Write;
-
 use arrayvec::ArrayString;
 use gtk::glib;
 use gtk::prelude::*;
+use std::cmp::Ordering;
+use std::fmt::Write;
 
 use crate::apps_page::row_model::{ContentType, RowModel, SectionType};
 use crate::i18n::i18n;
@@ -245,14 +244,22 @@ pub fn update_column_titles(
     cpu_column.set_title(Some(buffer.as_str()));
 
     buffer.clear();
-    let mut memory_used = readings
-        .mem_info
-        .mem_total
-        .saturating_sub(readings.mem_info.mem_available);
-    if memory_used == 0 {
-        memory_used = readings.mem_info.mem_total - readings.mem_info.mem_free;
-    }
-    let memory_usage = memory_used as f32 * 100. / readings.mem_info.mem_total as f32;
+
+    let mem_total = if readings.mem_info.mem_total > 0 {
+        readings.mem_info.mem_total
+    } else {
+        1
+    };
+
+    // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
+    let mem_avail = if readings.mem_info.mem_available > readings.mem_info.mem_total {
+        readings.mem_info.mem_free
+    } else {
+        readings.mem_info.mem_available
+    };
+
+    let memory_used = mem_total.saturating_sub(mem_avail);
+    let memory_usage = memory_used as f32 * 100. / mem_total as f32;
     let memory_usage = memory_usage.round() as u32;
     let _ = write!(&mut buffer, "{}\n{}%", i18n("Memory"), memory_usage);
     memory_column.set_title(Some(buffer.as_str()));
