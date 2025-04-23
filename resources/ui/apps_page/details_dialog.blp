@@ -69,7 +69,7 @@ template $AppsPageDetailsDialog: Adw.Dialog {
               Label {
                 hexpand: true;
                 halign: start;
-                label: _("ID");
+                label: _("PID");
               }
 
               Label id {
@@ -106,6 +106,33 @@ template $AppsPageDetailsDialog: Adw.Dialog {
                 ]
 
                 ellipsize: middle;
+                hexpand: true;
+                halign: end;
+                label: _("N/A");
+              }
+            };
+          }
+
+          Adw.PreferencesRow {
+            activatable: false;
+
+            child: Box {
+              height-request: 50;
+              margin-start: 12;
+              margin-end: 12;
+              spacing: 12;
+
+              Label {
+                hexpand: true;
+                halign: start;
+                label: _("Command Line");
+              }
+
+              Label command_line {
+                styles [
+                  "dim-label",
+                ]
+
                 hexpand: true;
                 halign: end;
                 label: _("N/A");

@@ -144,6 +144,7 @@ pub fn update(
 
         row_model.set_name(app.name.as_str());
         row_model.set_icon(icon);
+        row_model.set_command_line(app.command.as_str());
         row_model.set_cpu_usage(usage_stats.cpu_usage);
         row_model.set_memory_usage(usage_stats.memory_usage);
         row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);

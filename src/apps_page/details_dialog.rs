@@ -42,6 +42,8 @@ mod imp {
         id: TemplateChild<gtk::Label>,
         #[template_child]
         kind: TemplateChild<gtk::Label>,
+        #[template_child]
+        command_line: TemplateChild<gtk::Label>,
 
         #[template_child]
         cpu: TemplateChild<LabelCell>,
@@ -67,7 +69,8 @@ mod imp {
 
                 id: TemplateChild::default(),
                 kind: TemplateChild::default(),
-
+                command_line: Default::default(),
+                
                 cpu: TemplateChild::default(),
                 memory: TemplateChild::default(),
                 shared_memory: TemplateChild::default(),
@@ -111,6 +114,9 @@ mod imp {
 
             let content_type: String = model.content_type().into();
             self.kind.set_label(&content_type);
+
+            let cli: String = model.command_line().into();
+            self.command_line.set_label(&cli);
 
             cpu_label_formatter(&*self.cpu, model.cpu_usage().into());
             self.cpu.bind(&*model, "cpu-usage", cpu_label_formatter);
