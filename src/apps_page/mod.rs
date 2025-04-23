@@ -425,6 +425,12 @@ impl AppsPage {
         if let Some(row_sorter) = imp.row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
         }
+        
+        if let Some((_, process)) = readings.running_processes.iter().nth(0) {
+            if process.usage_stats.network_error.is_some() {
+                imp.network_usage_column.set_visible(false);
+            }
+        }
 
         true
     }
