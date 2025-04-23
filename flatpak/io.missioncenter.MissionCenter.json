@@ -65,7 +65,7 @@
       "name": "build-tools",
       "buildsystem": "simple",
       "build-commands": [
-        "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-20.04-*.tar.zst && rm ../ubuntu-20.04-*.tar.zst",
+        "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
         "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-*.tar.zst && rm ../alpine-*.tar.zst",
         "",
         "rm -rf rootfs-glibc/usr/share/vim/vimfiles",
@@ -294,12 +294,12 @@
           "buildsystem": "simple",
           "build-commands": [
             "rm -rf subprojects/magpie/target",
-            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/ && cp -ar nethogs-* subprojects/magpie/target/release/build/native/",
+            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-glibc:/opt/rust -b /app/clang-glibc:/opt/clang -b $PWD:/build-dir -R /app/rootfs-glibc /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/clang/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup env CC=clang env CXX=clang++ env CFLAGS=-flto env CXXFLAGS=-flto cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-glibc",
             "",
             "rm -rf subprojects/magpie/target",
-            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/ && cp -ar nethogs-* subprojects/magpie/target/release/build/native/",
+            "mkdir -p subprojects/magpie/target/release/build/native && cp -ar nvtop-* subprojects/magpie/target/release/build/native/",
             "/app/bin/proot -b /app/rust-toolchain-musl:/opt/rust -b /app/clang-musl:/opt/clang -b $PWD:/build-dir -R /app/rootfs-musl /bin/sh -c 'cd /build-dir/subprojects/magpie && env PATH=/opt/rust/cargo/bin:/opt/clang/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin env RUSTUP_HOME=/opt/rust/rustup env CC=clang env CXX=clang++ cargo build --offline --release --features=skip-codegen'",
             "install -v -p -m 755 subprojects/magpie/target/release/magpie /app/bin/missioncenter-magpie-musl",
             "",

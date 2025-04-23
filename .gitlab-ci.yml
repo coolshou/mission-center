@@ -68,7 +68,6 @@ check-fmt:
   script:
     - ./support/check-cargo-fmt.sh
     - echo $CI_MERGE_REQUEST_LABELS
-  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
