@@ -574,7 +574,7 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/cmake/cmake-0.1.54.crate",
+    "url": "https://static.crates.io/crates/cmake/cmake-0.1.53.crate",
     "sha256": "e24a03c8b52922d68a1589ad61032f2c1aa5a8158d2aa0d93c6e9534944bbad6",
     "dest": "cargo/vendor/cmake-0.1.53"
   },
