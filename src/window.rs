@@ -44,7 +44,9 @@ fn special_shortcuts(
         let result = window.performance_page_active();
         if result {
             let row = imp.sidebar.row_at_index(index);
-            imp.sidebar.select_row(row.as_ref());
+            if row.is_some() {
+                imp.sidebar.select_row(row.as_ref());
+            }
         }
         result
     }
