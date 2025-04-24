@@ -70,7 +70,7 @@ mod imp {
                 id: TemplateChild::default(),
                 kind: TemplateChild::default(),
                 command_line: Default::default(),
-                
+
                 cpu: TemplateChild::default(),
                 memory: TemplateChild::default(),
                 shared_memory: TemplateChild::default(),

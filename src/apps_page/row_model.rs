@@ -91,7 +91,7 @@ mod imp {
                 gpu_memory_usage: Cell::new(0),
 
                 command_line: Cell::new(Default::default()),
-                
+
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
         }
