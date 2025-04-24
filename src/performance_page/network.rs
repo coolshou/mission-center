@@ -405,7 +405,7 @@ mod imp {
             if let Some(max_bitrate) = this.max_bitrate.get() {
                 if let Some(max_speed) = connection.max_speed_bytes_ps {
                     let (val, unit, dec_to_display) =
-                        crate::to_human_readable(max_speed as f32, 1024.);
+                        crate::to_human_readable(max_speed as f32 * byte_coeff, 1024.);
 
                     max_bitrate.set_text(
                         format!(
