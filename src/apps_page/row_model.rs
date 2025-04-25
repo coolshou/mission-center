@@ -63,6 +63,9 @@ mod imp {
         #[property(get, set)]
         pub gpu_memory_usage: Cell<u64>,
 
+        #[property(get = Self::command_line, set = Self::set_command_line)]
+        pub command_line: Cell<glib::GString>,
+
         pub children: RefCell<gio::ListStore>,
     }
 
@@ -86,6 +89,8 @@ mod imp {
                 network_usage: Cell::new(0.),
                 gpu_usage: Cell::new(0.),
                 gpu_memory_usage: Cell::new(0),
+
+                command_line: Cell::new(Default::default()),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
             }
@@ -145,6 +150,24 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn command_line(&self) -> glib::GString {
+            let command_line = self.command_line.take();
+            let result = command_line.clone();
+            self.command_line.set(command_line);
+
+            result
+        }
+
+        pub fn set_command_line(&self, command_line: &str) {
+            let current_command_line = self.command_line.take();
+            if current_command_line == command_line {
+                self.command_line.set(current_command_line);
+                return;
+            }
+
+            self.command_line.set(glib::GString::from(command_line));
         }
     }
 
