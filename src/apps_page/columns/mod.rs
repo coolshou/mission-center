@@ -233,6 +233,7 @@ pub fn update_column_titles(
     cpu_column: &gtk::ColumnViewColumn,
     memory_column: &gtk::ColumnViewColumn,
     drive_column: &gtk::ColumnViewColumn,
+    network_column: &gtk::ColumnViewColumn,
     gpu_usage_column: &gtk::ColumnViewColumn,
     gpu_memory_column: &gtk::ColumnViewColumn,
     readings: &crate::magpie_client::Readings,
@@ -277,6 +278,28 @@ pub fn update_column_titles(
         let _ = write!(&mut buffer, "{}\n{}%", i18n("Drive"), drive_usage);
     }
     drive_column.set_title(Some(buffer.as_str()));
+
+    buffer.clear();
+    if readings.running_processes.is_empty() {
+        let _ = write!(&mut buffer, "{}\n0", i18n("Network"));
+    } else {
+        let mut sum = 0.;
+        for proc in readings.running_processes.values() {
+            sum += proc.usage_stats.network_usage.round();
+        }
+
+        let (val, unit, dec_to_display) =
+            crate::to_human_readable(sum, 1024.);
+
+        // TODO hook into settings
+        let data_per_time = "B/s";
+
+        let _ = write!(&mut buffer, "{}\n{}{}",
+                       i18n("Network"),
+                       format!("{0:.2$} {1}", val, unit, dec_to_display),
+                       data_per_time);
+    }
+    network_column.set_title(Some(buffer.as_str()));
 
     buffer.clear();
     if readings.gpus.is_empty() {
