@@ -123,9 +123,11 @@ pub fn update(
         icon
     };
 
+    let command_line = process.cmd.join(" ");
+
     row_model.set_name(pretty_name);
     row_model.set_icon(icon);
-    row_model.set_command_line(process.exe.as_str());
+    row_model.set_command_line(command_line);
     row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);
     row_model.set_memory_usage(usage_stats.memory_usage);
