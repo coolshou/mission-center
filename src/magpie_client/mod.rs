@@ -36,7 +36,7 @@ pub use client::{
     App, Client, Connection, Cpu, Disk, DiskKind, ErrorEjectFailed, Fan, Gpu, Memory, MemoryDevice,
     Process, Service, SmartData,
 };
-use magpie_types::processes::processes_response::process_map::NetworkError;
+use magpie_types::processes::processes_response::process_map::NethogsNetworkError;
 
 macro_rules! cmd_flatpak_host {
     ($cmd: expr) => {{
@@ -115,7 +115,7 @@ pub struct Readings {
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
 
-    pub network_status: Option<NetworkError>,
+    pub network_status: Option<NethogsNetworkError>,
 
     pub services: HashMap<String, Service>,
 }
