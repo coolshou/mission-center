@@ -305,8 +305,6 @@ mod imp {
 
             this.usage_graph
                 .set_value_range_max(readings.mem_info.mem_total as f32);
-            this.usage_graph
-                .set_minimum_upper_bound(readings.mem_info.mem_total as f32);
             this.swap_usage_graph
                 .set_value_range_max(readings.mem_info.swap_total as f32);
             let t = this.obj().clone();
@@ -906,7 +904,6 @@ impl PerformancePageMemory {
             this.usage_graph.set_expected_animation_ticks(delay as u32);
             this.swap_usage_graph
                 .set_expected_animation_ticks(delay as u32);
-            this.usage_graph.set_scaling(GraphWidget::auto_scaling());
         }
         update_refresh_rate_sensitive_labels(&this, settings);
 
