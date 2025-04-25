@@ -49,7 +49,7 @@ use magpie_types::network::connections_response;
 use magpie_types::network::connections_response::ConnectionList;
 pub use magpie_types::network::Connection;
 use magpie_types::processes::processes_response;
-use magpie_types::processes::processes_response::process_map::NethogsNetworkError;
+use magpie_types::processes::processes_response::process_map::NetworkStatsError;
 use magpie_types::processes::processes_response::ProcessMap;
 pub use magpie_types::processes::Process;
 use magpie_types::prost::Message;
@@ -812,7 +812,7 @@ impl Client {
         )
     }
 
-    pub fn processes(&self) -> (HashMap<u32, Process>, Option<NethogsNetworkError>) {
+    pub fn processes(&self) -> (HashMap<u32, Process>, Option<NetworkStatsError>) {
         let mut socket = self.socket.borrow_mut();
 
         let response = make_request(
@@ -822,7 +822,7 @@ impl Client {
         )
         .and_then(|response| response.body);
 
-        let (mut processes, nethogs_network_error) = parse_response!(
+        let (mut processes, network_stats_error) = parse_response!(
             response,
             ResponseBody::Processes,
             ProcessesResponse::Processes,
@@ -830,7 +830,7 @@ impl Client {
             |mut processes: ProcessMap| {
                 (
                     std::mem::take(&mut processes.processes),
-                    std::mem::take(&mut processes.nethogs_network_error),
+                    std::mem::take(&mut processes.network_stats_error),
                 )
             }
         );
@@ -846,7 +846,7 @@ impl Client {
             process.usage_stats.cpu_usage /= factor;
         }
 
-        (processes, nethogs_network_error)
+        (processes, network_stats_error)
     }
 
     pub fn apps(&self) -> HashMap<String, App> {
