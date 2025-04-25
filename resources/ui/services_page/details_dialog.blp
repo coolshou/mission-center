@@ -38,6 +38,7 @@ template $DetailsDialog: Adw.Dialog {
       ScrolledWindow {
         hscrollbar-policy: never;
         propagate-natural-height: true;
+        propagate-natural-width: true;
 
         child: Box {
           margin-start: 20;
@@ -55,6 +56,7 @@ template $DetailsDialog: Adw.Dialog {
             description: _("The current state of the service");
 
             header-suffix: Box {
+              margin-start: 24;
               spacing: 5;
 
               valign: end;
