@@ -42,10 +42,14 @@ pub fn update(
 
     let pretty_name = if process.exe.is_empty() {
         if let Some(cmd) = process.cmd.first() {
-            cmd.split_ascii_whitespace()
+            let mut cmd = cmd.split_ascii_whitespace()
                 .next()
                 .and_then(|s| s.split('/').last())
-                .unwrap_or(&process.name)
+                .unwrap_or(&process.name);
+            if let Some(s) = cmd.strip_suffix(':') {
+                cmd = s;
+            }
+            cmd
         } else {
             &process.name
         }
