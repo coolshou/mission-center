@@ -115,7 +115,7 @@ pub struct Readings {
     pub running_apps: HashMap<String, App>,
     pub running_processes: HashMap<u32, Process>,
 
-    pub network_status: Option<NetworkStatsError>,
+    pub network_stats_error: Option<NetworkStatsError>,
 
     pub services: HashMap<String, Service>,
 }
@@ -133,7 +133,7 @@ impl Readings {
 
             running_apps: HashMap::new(),
             running_processes: HashMap::new(),
-            network_status: None,
+            network_stats_error: None,
 
             services: HashMap::new(),
         }
@@ -520,10 +520,10 @@ impl MagpieClient {
         let magpie = Client::new();
         magpie.start();
 
-        let (running_processes, network_status) = magpie.processes();
+        let (running_processes, network_stats_error) = magpie.processes();
         let mut readings = Readings {
             running_processes,
-            network_status,
+            network_stats_error,
             running_apps: magpie.apps(),
             disks_info: magpie.disks_info(),
             gpus: magpie.gpus(),
@@ -553,7 +553,7 @@ impl MagpieClient {
                 gpus: std::mem::take(&mut readings.gpus),
                 running_apps: std::mem::take(&mut readings.running_apps),
                 running_processes: std::mem::take(&mut readings.running_processes),
-                network_status: std::mem::take(&mut readings.network_status),
+                network_stats_error: std::mem::take(&mut readings.network_stats_error),
                 services: std::mem::take(&mut readings.services),
             };
 
@@ -588,7 +588,7 @@ impl MagpieClient {
             let loop_start = std::time::Instant::now();
 
             let timer = std::time::Instant::now();
-            (readings.running_processes, readings.network_status) = magpie.processes();
+            (readings.running_processes, readings.network_stats_error) = magpie.processes();
             g_debug!(
                 "MissionCenter::Perf",
                 "Process load load took: {:?}",
@@ -681,7 +681,7 @@ impl MagpieClient {
                     gpus: std::mem::take(&mut readings.gpus),
                     running_apps: std::mem::take(&mut readings.running_apps),
                     running_processes: std::mem::take(&mut readings.running_processes),
-                    network_status: std::mem::take(&mut readings.network_status),
+                    network_stats_error: std::mem::take(&mut readings.network_stats_error),
                     services: std::mem::take(&mut readings.services),
                 };
 

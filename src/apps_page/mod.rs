@@ -428,7 +428,7 @@ impl AppsPage {
             row_sorter.changed(gtk::SorterChange::Different)
         }
 
-        if readings.network_status.is_some() {
+        if readings.network_stats_error.is_some() {
             imp.network_usage_column.set_visible(false);
         }
 
