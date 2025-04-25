@@ -134,6 +134,19 @@ fn special_shortcuts(
         result
     }
 
+    fn show_details(window: WeakRef<MissionCenterWindow>) -> bool {
+        let Some(window) = window.upgrade() else {
+            return false;
+        };
+        let imp = window.imp();
+
+        let result = window.apps_page_active();
+        if result {
+            let _ = WidgetExt::activate_action(&*imp.apps_page, "apps-page.details", None);
+        }
+        result
+    }
+
     static SHORTCUTS: OnceLock<
         HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>,
     > = OnceLock::new();
@@ -162,6 +175,8 @@ fn special_shortcuts(
         ctrl_shortcuts.insert(gdk::Key::m, graph_summary);
         ctrl_shortcuts.insert(gdk::Key::C, graph_copy);
         ctrl_shortcuts.insert(gdk::Key::c, graph_copy);
+        ctrl_shortcuts.insert(gdk::Key::I, show_details);
+        ctrl_shortcuts.insert(gdk::Key::i, show_details);
         shortcuts.insert(gdk::ModifierType::CONTROL_MASK, ctrl_shortcuts);
 
         shortcuts
