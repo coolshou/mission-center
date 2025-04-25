@@ -28,6 +28,8 @@ use super::columns::*;
 use super::row_model::{ContentType, RowModel};
 
 mod imp {
+    use adw::PreferencesRow;
+    use gtk::prelude::WidgetExt;
     use super::*;
 
     #[derive(gtk::CompositeTemplate)]
@@ -42,6 +44,8 @@ mod imp {
         id: TemplateChild<gtk::Label>,
         #[template_child]
         kind: TemplateChild<gtk::Label>,
+        #[template_child]
+        command_line_row: TemplateChild<PreferencesRow>,
         #[template_child]
         command_line: TemplateChild<gtk::Label>,
 
@@ -69,6 +73,7 @@ mod imp {
 
                 id: TemplateChild::default(),
                 kind: TemplateChild::default(),
+                command_line_row: Default::default(),
                 command_line: Default::default(),
 
                 cpu: TemplateChild::default(),
@@ -117,6 +122,8 @@ mod imp {
 
             let cli: String = model.command_line().into();
             self.command_line.set_label(&cli);
+            
+            self.command_line_row.set_visible(!cli.is_empty());
 
             cpu_label_formatter(&*self.cpu, model.cpu_usage().into());
             self.cpu.bind(&*model, "cpu-usage", cpu_label_formatter);

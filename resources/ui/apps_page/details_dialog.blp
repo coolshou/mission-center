@@ -113,7 +113,7 @@ template $AppsPageDetailsDialog: Adw.Dialog {
             };
           }
 
-          Adw.PreferencesRow {
+          Adw.PreferencesRow command_line_row {
             activatable: false;
 
             child: Box {
@@ -133,6 +133,7 @@ template $AppsPageDetailsDialog: Adw.Dialog {
                   "dim-label",
                 ]
 
+                wrap-mode: word;
                 hexpand: true;
                 halign: end;
                 label: _("N/A");
