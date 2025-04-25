@@ -288,16 +288,18 @@ pub fn update_column_titles(
             sum += proc.usage_stats.network_usage.round();
         }
 
-        let (val, unit, dec_to_display) =
-            crate::to_human_readable(sum, 1024.);
+        let (val, unit, dec_to_display) = crate::to_human_readable(sum, 1024.);
 
         // TODO hook into settings
         let data_per_time = "B/s";
 
-        let _ = write!(&mut buffer, "{}\n{}{}",
-                       i18n("Network"),
-                       format!("{0:.2$} {1}", val, unit, dec_to_display),
-                       data_per_time);
+        let _ = write!(
+            &mut buffer,
+            "{}\n{}{}",
+            i18n("Network"),
+            format!("{0:.2$} {1}", val, unit, dec_to_display),
+            data_per_time
+        );
     }
     network_column.set_title(Some(buffer.as_str()));
 
