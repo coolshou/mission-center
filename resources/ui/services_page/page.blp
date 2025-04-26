@@ -145,8 +145,6 @@ template $ServicesPage : Box {
               }
             };
           }
-
-
         }
       }
 
@@ -241,18 +239,6 @@ template $ServicesPage : Box {
                     ellipsize: middle;
 
                     label: bind (template.item as <$ServicesListItem>).description;
-                  };
-                }
-              };
-            }
-
-            ColumnViewColumn menu_column {
-              title: _(" \n ");
-              factory: BuilderListItemFactory {
-                template ListItem {
-                  child: $ContextMenuButton {
-                    action-name: "services-page.show-context-menu";
-                    item-id: bind (template.item as <$ServicesListItem>).name;
                   };
                 }
               };
