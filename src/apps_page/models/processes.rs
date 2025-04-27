@@ -42,10 +42,15 @@ pub fn update(
 
     let pretty_name = if process.exe.is_empty() {
         if let Some(cmd) = process.cmd.first() {
-            cmd.split_ascii_whitespace()
+            let mut cmd = cmd
+                .split_ascii_whitespace()
                 .next()
                 .and_then(|s| s.split('/').last())
-                .unwrap_or(&process.name)
+                .unwrap_or(&process.name);
+            if let Some(s) = cmd.strip_suffix(':') {
+                cmd = s;
+            }
+            cmd
         } else {
             &process.name
         }
@@ -123,8 +128,11 @@ pub fn update(
         icon
     };
 
+    let command_line = process.cmd.join(" ");
+
     row_model.set_name(pretty_name);
     row_model.set_icon(icon);
+    row_model.set_command_line(command_line);
     row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);
     row_model.set_memory_usage(usage_stats.memory_usage);

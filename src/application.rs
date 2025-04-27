@@ -137,6 +137,23 @@ mod imp {
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
+                window.connect_maximized_notify({
+                    move |window| {
+                        let settings = settings!();
+                        settings
+                            .set_boolean("is-maximized", window.is_maximized())
+                            .unwrap_or_else(|err| {
+                                g_critical!(
+                                    "MissionCenter",
+                                    "Failed to save window maximization: {}",
+                                    err
+                                );
+                            });
+                    }
+                });
+
+                window.set_maximized(settings.boolean("is-maximized"));
+
                 sys_info.set_core_count_affects_percentages(
                     settings.boolean("apps-page-core-count-affects-percentages"),
                 );
