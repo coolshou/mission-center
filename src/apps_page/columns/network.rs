@@ -27,7 +27,7 @@ use super::{compare_column_entries_by, format_bytes, sort_order, LabelCell};
 use crate::label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
-    label_cell_factory!("network_usage", label_formatter)
+    label_cell_factory!("network-usage", label_formatter)
 }
 
 pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
