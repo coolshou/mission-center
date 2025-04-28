@@ -34,13 +34,15 @@ template $DetailsDialog: Adw.Dialog {
       };
     }
 
-    Adw.Clamp {
-      ScrolledWindow {
-        hscrollbar-policy: never;
-        propagate-natural-height: true;
-        propagate-natural-width: true;
+    ScrolledWindow {
+      hscrollbar-policy: never;
+      propagate-natural-height: true;
+      propagate-natural-width: true;
 
-        child: Box {
+      Adw.Clamp {
+        maximum-size: 2000;
+
+        Box {
           margin-start: 20;
           margin-end: 20;
           margin-top: 20;
@@ -346,7 +348,7 @@ template $DetailsDialog: Adw.Dialog {
               };
             }
           }
-        };
+        }
       }
     }
   }
