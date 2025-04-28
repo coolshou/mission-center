@@ -1,6 +1,6 @@
 /* services_page/details_dialog.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::{cell::Cell, num::NonZeroU32};
+use std::cell::{Cell, OnceCell};
+use std::num::NonZeroU32;
 
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
@@ -66,6 +67,8 @@ mod imp {
         #[template_child]
         logs_buffer: TemplateChild<gtk::TextBuffer>,
 
+        pub list_item: OnceCell<ServicesListItem>,
+
         #[property(get, set)]
         pub enabled: Cell<bool>,
 
@@ -96,6 +99,8 @@ mod imp {
                 logs_expander: TemplateChild::default(),
                 logs_buffer: TemplateChild::default(),
 
+                list_item: OnceCell::new(),
+
                 enabled: Cell::new(false),
 
                 copy_logs_button: gtk::Button::new(),
@@ -109,13 +114,7 @@ mod imp {
 
     impl DetailsDialog {
         fn list_item(&self) -> ServicesListItem {
-            unsafe {
-                self.obj()
-                    .data::<ServicesListItem>("list-item")
-                    .map(|li| li.as_ref())
-                    .cloned()
-                    .unwrap()
-            }
+            unsafe { self.list_item.get().unwrap_unchecked().clone() }
         }
     }
 
@@ -345,10 +344,13 @@ glib::wrapper! {
 }
 
 impl DetailsDialog {
-    pub fn new() -> Self {
-        glib::Object::builder()
+    pub fn new(list_item: ServicesListItem) -> Self {
+        let this: Self = glib::Object::builder()
             .property("follows-content-size", true)
-            .build()
+            .build();
+        let _ = this.imp().list_item.set(list_item);
+
+        this
     }
 }
 

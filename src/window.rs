@@ -761,12 +761,7 @@ mod imp {
                         }
                     }
 
-                    if imp.services_page_active.get() && imp.services_page.dialog_visible() {
-                        controller.forward(&imp.services_page.get());
-                    } else {
-                        controller.forward(&imp.header_search_entry.get());
-                    }
-
+                    controller.forward(&imp.header_search_entry.get());
                     Propagation::Proceed
                 }
             });
