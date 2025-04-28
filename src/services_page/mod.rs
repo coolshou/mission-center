@@ -20,7 +20,7 @@
 
 use std::cell::Cell;
 
-use adw::{glib::Propagation, prelude::AdwDialogExt};
+use adw::prelude::AdwDialogExt;
 use gtk::{
     gdk, gio,
     glib::{
@@ -31,8 +31,6 @@ use gtk::{
     subclass::prelude::*,
     INVALID_LIST_POSITION,
 };
-
-use crate::widgets::ContextMenuButton;
 
 use details_dialog::DetailsDialog;
 use services_list_item::{ServicesListItem, ServicesListItemBuilder};
@@ -120,9 +118,6 @@ mod imp {
         #[template_child]
         context_menu: TemplateChild<gtk::PopoverMenu>,
 
-        details_dialog: Cell<Option<DetailsDialog>>,
-        pub details_dialog_visible: Cell<bool>,
-
         pub model: gio::ListStore,
         pub actions: Cell<Actions>,
     }
@@ -144,9 +139,6 @@ mod imp {
                 description_column: TemplateChild::default(),
                 context_menu: TemplateChild::default(),
 
-                details_dialog: Cell::new(None),
-                details_dialog_visible: Cell::new(false),
-
                 model: gio::ListStore::new::<ServicesListItem>(),
                 actions: Cell::new(Actions {
                     start: gio::SimpleAction::new("selected-svc-start", None),
@@ -158,10 +150,6 @@ mod imp {
     }
 
     impl ServicesPage {
-        fn details_dialog(&self) -> Option<DetailsDialog> {
-            unsafe { &*self.details_dialog.as_ptr() }.clone()
-        }
-
         pub fn actions(&self) -> &Actions {
             unsafe { &*self.actions.as_ptr() }
         }
@@ -194,7 +182,7 @@ mod imp {
 
             self.h2.set_visible(true);
 
-            self.name_column.set_fixed_width(300);
+            self.name_column.set_fixed_width(400);
             self.name_column.set_expand(false);
             self.name_column.set_resizable(true);
             self.description_column.set_visible(true);
@@ -356,13 +344,8 @@ mod imp {
                 move |_action, _| {
                     match find_selected_item(this.clone()) {
                         Some((this, item)) => {
-                            this.imp().details_dialog().map(move |d| {
-                                this.imp().details_dialog_visible.set(true);
-                                unsafe {
-                                    d.set_data("list-item", item);
-                                }
-                                d.present(Some(&this));
-                            });
+                            let dialog = DetailsDialog::new(item);
+                            dialog.present(Some(&this));
                         }
                         None => {
                             g_critical!(
@@ -585,7 +568,6 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            ContextMenuButton::ensure_type();
             ServicesListItem::ensure_type();
             DetailsDialog::ensure_type();
 
@@ -613,26 +595,7 @@ mod imp {
                     .set_menu_model(Some(&gio::MenuModel::from(menu)));
             }
 
-            self.details_dialog.set(Some(DetailsDialog::new()));
-
             self.configure_actions();
-
-            let evt_key_press = gtk::EventControllerKey::new();
-            evt_key_press.connect_key_pressed({
-                let this = self.obj().downgrade();
-                move |_, key, _, _| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
-
-                        if key == gdk::Key::Escape {
-                            this.details_dialog().map(|d| d.force_close());
-                        }
-                    }
-
-                    Propagation::Proceed
-                }
-            });
-            self.obj().add_controller(evt_key_press);
 
             if let Some(header) = self.column_view.first_child() {
                 // Add 10px padding to the left of the first column header to align it with the content
@@ -805,10 +768,6 @@ impl ServicesPage {
         self.imp().column_view.set_model(Some(&selection_model));
 
         true
-    }
-
-    pub fn dialog_visible(&self) -> bool {
-        self.imp().details_dialog_visible.get()
     }
 
     #[inline]
