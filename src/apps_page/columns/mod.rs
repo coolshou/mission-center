@@ -405,11 +405,11 @@ pub fn update_column_order(column_view: &gtk::ColumnView) {
 fn format_bytes(bytes: f32) -> ArrayString<128> {
     let mut buffer = ArrayString::<128>::new();
 
-    let (v, unit, _) = crate::to_human_readable(bytes, 1024.);
+    let (v, unit, precision) = crate::to_human_readable(bytes, 1024.);
     if unit.is_empty() {
-        let _ = write!(&mut buffer, "{} B", v.round() as u32);
+        let _ = write!(&mut buffer, "{0:.1$} B", v, precision);
     } else {
-        let _ = write!(&mut buffer, "{} {}iB", v.round() as u32, unit);
+        let _ = write!(&mut buffer, "{0:.1$} {2}iB", v, precision, unit);
     }
 
     buffer
