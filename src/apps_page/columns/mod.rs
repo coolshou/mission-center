@@ -46,6 +46,9 @@ pub use memory::sorter as memory_sorter;
 pub use name::list_item_factory as name_list_item_factory;
 pub use name::sorter as name_sorter;
 pub use name_cell::NameCell;
+pub use network::label_formatter as network_label_formatter;
+pub use network::list_item_factory as network_list_item_factory;
+pub use network::sorter as network_sorter;
 pub use pid::list_item_factory as pid_list_item_factory;
 pub use pid::sorter as pid_sorter;
 pub use shared_memory::label_formatter as shared_memory_label_formatter;
@@ -62,6 +65,7 @@ mod label_cell;
 mod memory;
 mod name;
 mod name_cell;
+mod network;
 mod pid;
 mod shared_memory;
 
@@ -229,6 +233,7 @@ pub fn update_column_titles(
     cpu_column: &gtk::ColumnViewColumn,
     memory_column: &gtk::ColumnViewColumn,
     drive_column: &gtk::ColumnViewColumn,
+    network_column: &gtk::ColumnViewColumn,
     gpu_usage_column: &gtk::ColumnViewColumn,
     gpu_memory_column: &gtk::ColumnViewColumn,
     readings: &crate::magpie_client::Readings,
@@ -273,6 +278,30 @@ pub fn update_column_titles(
         let _ = write!(&mut buffer, "{}\n{}%", i18n("Drive"), drive_usage);
     }
     drive_column.set_title(Some(buffer.as_str()));
+
+    buffer.clear();
+    if readings.running_processes.is_empty() {
+        let _ = write!(&mut buffer, "{}\n0", i18n("Network"));
+    } else {
+        let mut sum = 0.;
+        for proc in readings.running_processes.values() {
+            sum += proc.usage_stats.network_usage.round();
+        }
+
+        let (val, unit, dec_to_display) = crate::to_human_readable(sum, 1024.);
+
+        // TODO hook into settings
+        let data_per_time = "B/s";
+
+        let _ = write!(
+            &mut buffer,
+            "{}\n{}{}",
+            i18n("Network"),
+            format!("{0:.2$} {1}", val, unit, dec_to_display),
+            data_per_time
+        );
+    }
+    network_column.set_title(Some(buffer.as_str()));
 
     buffer.clear();
     if readings.gpus.is_empty() {
@@ -376,11 +405,11 @@ pub fn update_column_order(column_view: &gtk::ColumnView) {
 fn format_bytes(bytes: f32) -> ArrayString<128> {
     let mut buffer = ArrayString::<128>::new();
 
-    let (v, unit, _) = crate::to_human_readable(bytes, 1024.);
+    let (v, unit, precision) = crate::to_human_readable(bytes, 1024.);
     if unit.is_empty() {
-        let _ = write!(&mut buffer, "{} B", v.round() as u32);
+        let _ = write!(&mut buffer, "{0:.1$} B", v, precision);
     } else {
-        let _ = write!(&mut buffer, "{} {}iB", v.round() as u32, unit);
+        let _ = write!(&mut buffer, "{0:.1$} {2}iB", v, precision, unit);
     }
 
     buffer

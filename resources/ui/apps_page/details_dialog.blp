@@ -262,11 +262,36 @@ template $AppsPageDetailsDialog: Adw.Dialog {
                 margin-end: 12;
                 spacing: 12;
 
-                Label {
-                  hexpand: true;
-                  halign: start;
-                  label: _("GPU");
-                }
+              Label {
+                hexpand: true;
+                halign: start;
+                label: _("Network");
+              }
+
+              $LabelCell network {
+                styles [
+                  "dim-label",
+                ]
+
+                hexpand: true;
+              }
+            };
+          }
+
+          Adw.PreferencesRow {
+            activatable: false;
+
+            child: Box {
+              height-request: 50;
+              margin-start: 12;
+              margin-end: 12;
+              spacing: 12;
+
+              Label {
+                hexpand: true;
+                halign: start;
+                label: _("GPU");
+              }
 
                 $LabelCell gpu {
                   styles [

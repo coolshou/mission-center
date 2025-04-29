@@ -76,6 +76,8 @@ mod imp {
         #[template_child]
         pub drive_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
+        pub network_usage_column: TemplateChild<gtk::ColumnViewColumn>,
+        #[template_child]
         pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
@@ -119,6 +121,7 @@ mod imp {
                 memory_column: TemplateChild::default(),
                 shared_memory_column: TemplateChild::default(),
                 drive_column: TemplateChild::default(),
+                network_usage_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
                 context_menu: TemplateChild::default(),
@@ -238,6 +241,11 @@ mod imp {
             self.drive_column
                 .set_sorter(Some(&drive_sorter(&self.column_view)));
 
+            self.network_usage_column
+                .set_factory(Some(&network_list_item_factory()));
+            self.network_usage_column
+                .set_sorter(Some(&network_sorter(&self.column_view)));
+
             self.gpu_usage_column
                 .set_factory(Some(&gpu_list_item_factory()));
             self.gpu_usage_column
@@ -312,6 +320,7 @@ impl AppsPage {
             &imp.cpu_column,
             &imp.memory_column,
             &imp.drive_column,
+            &imp.network_usage_column,
             &imp.gpu_usage_column,
             &imp.gpu_memory_column,
             readings,
@@ -380,6 +389,7 @@ impl AppsPage {
             &imp.cpu_column,
             &imp.memory_column,
             &imp.drive_column,
+            &imp.network_usage_column,
             &imp.gpu_usage_column,
             &imp.gpu_memory_column,
             readings,
@@ -416,6 +426,10 @@ impl AppsPage {
 
         if let Some(row_sorter) = imp.row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
+        }
+
+        if readings.network_stats_error.is_some() {
+            imp.network_usage_column.set_visible(false);
         }
 
         true

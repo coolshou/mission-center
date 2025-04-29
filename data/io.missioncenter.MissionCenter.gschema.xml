@@ -11,9 +11,11 @@
         <value nick="Pid" value="1"/>
         <value nick="Cpu" value="2"/>
         <value nick="Memory" value="3"/>
-        <value nick="Disk" value="4"/>
-        <value nick="Gpu" value="5"/>
-        <value nick="GpuMem" value="6"/>
+        <value nick="SharedMemory" value="4"/>
+        <value nick="Disk" value="5"/>
+        <value nick="Network" value="6"/>
+        <value nick="Gpu" value="7"/>
+        <value nick="GpuMem" value="8"/>
         <value nick="None" value="255"/>
     </enum>
 
