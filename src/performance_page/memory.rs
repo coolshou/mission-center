@@ -31,6 +31,7 @@ use super::{
 use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
+    use crate::DataType;
     use super::*;
 
     #[derive(Properties)]
@@ -299,7 +300,7 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            let settings = settings!();
+            let settings = &settings!();
             let show_memory_composition =
                 settings.boolean("performance-page-memory-composition-visible");
 
@@ -344,23 +345,14 @@ mod imp {
                 None
             });
 
-            let total_mem = crate::to_human_readable(readings.mem_info.mem_total as _, 1024.);
-            this.total_ram.set_text(&format!(
-                "{:.2} {}{}B",
-                total_mem.0,
-                total_mem.1,
-                if total_mem.1.is_empty() { "" } else { "i" }
-            ));
-            this.max_graph_ram.set_text(this.total_ram.label().as_str());
-            let total_swap = crate::to_human_readable(readings.mem_info.swap_total as _, 1024.);
-            this.total_swap.set_text(&format!(
-                "{:.2} {}{}B",
-                total_swap.0,
-                total_swap.1,
-                if total_swap.1.is_empty() { "" } else { "i" }
-            ));
+            let total_mem = crate::to_human_readable_nice_cached(readings.mem_info.mem_total as _, &DataType::MemoryBytes, settings);
+            this.total_ram.set_text(&total_mem);
+            this.max_graph_ram.set_text(&total_mem);
+            
+            let total_swap = crate::to_human_readable_nice_cached(readings.mem_info.swap_total as _, &DataType::MemoryBytes, settings);
+            this.total_swap.set_text(&total_swap);
 
-            let show_swap = settings!().boolean("performance-page-memory-swap-visible");
+            let show_swap = settings.boolean("performance-page-memory-swap-visible");
             if !show_swap {
                 this.set_swap_space_graph_visible(false);
             }
@@ -413,57 +405,32 @@ mod imp {
             this.usage_graph.add_data_point(1, mem_info.dirty as _);
             this.usage_graph.add_data_point(2, used as _);
 
-            let max_ram = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
-            this.max_graph_ram.set_text(&format!(
-                "{:.2} {}{}B",
-                max_ram.0,
-                max_ram.1,
-                if max_ram.1.is_empty() { "" } else { "i" }
-            ));
+            let max_ram = crate::to_human_readable_nice(this.usage_graph.value_range_max(), &DataType::MemoryBytes);
+            this.max_graph_ram.set_text(&max_ram);
 
             let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
             this.swap_usage_graph.add_data_point(0, swap_used as _);
 
             this.mem_composition.update_memory_information(mem_info);
 
-            let used = crate::to_human_readable(used as _, 1024.);
+            let used = crate::to_human_readable_nice(used as _, &DataType::MemoryBytes);
             if let Some(iu) = this.in_use.get() {
-                iu.set_text(&format!(
-                    "{:.2} {}{}B",
-                    used.0,
-                    used.1,
-                    if used.1.is_empty() { "" } else { "i" }
-                ));
+                iu.set_text(&used);
             }
 
-            let available = crate::to_human_readable(mem_info.mem_available as _, 1024.);
+            let available = crate::to_human_readable_nice(mem_info.mem_available as _, &DataType::MemoryBytes);
             if let Some(av) = this.available.get() {
-                av.set_text(&format!(
-                    "{:.2} {}{}B",
-                    available.0,
-                    available.1,
-                    if available.1.is_empty() { "" } else { "i" }
-                ));
+                av.set_text(&available);
             }
 
-            let committed = crate::to_human_readable(mem_info.committed as _, 1024.);
+            let committed = crate::to_human_readable_nice(mem_info.committed as _, &DataType::MemoryBytes);
             if let Some(cm) = this.committed.get() {
-                cm.set_text(&format!(
-                    "{:.2} {}{}B",
-                    committed.0,
-                    committed.1,
-                    if committed.1.is_empty() { "" } else { "i" }
-                ));
+                cm.set_text(&committed);
             }
 
-            let cached = crate::to_human_readable(mem_info.cached as _, 1024.);
+            let cached = crate::to_human_readable_nice(mem_info.cached as _, &DataType::MemoryBytes);
             if let Some(ch) = this.cached.get() {
-                ch.set_text(&format!(
-                    "{:.2} {}{}B",
-                    cached.0,
-                    cached.1,
-                    if cached.1.is_empty() { "" } else { "i" }
-                ));
+                ch.set_text(&cached);
             }
 
             if mem_info.swap_total == 0 {
@@ -478,70 +445,40 @@ mod imp {
                     su.set_visible(false);
                 }
             } else {
-                let swap_available = crate::to_human_readable(mem_info.swap_total as _, 1024.);
+                let swap_available = crate::to_human_readable_nice(mem_info.swap_total as _, &DataType::MemoryBytes);
                 if let Some(sa) = this.swap_available.get() {
                     sa.set_visible(true);
-                    sa.set_text(&format!(
-                        "{:.2} {}{}B",
-                        swap_available.0,
-                        swap_available.1,
-                        if swap_available.1.is_empty() { "" } else { "i" }
-                    ));
+                    sa.set_text(&swap_available);
                 }
 
-                let swap_used = crate::to_human_readable(
+                let swap_used = crate::to_human_readable_nice(
                     mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
-                    1024.,
+                    &DataType::MemoryBytes,
                 );
                 if let Some(su) = this.swap_used.get() {
                     su.set_visible(true);
-                    su.set_text(&format!(
-                        "{:.2} {}{}B",
-                        swap_used.0,
-                        swap_used.1,
-                        if swap_used.1.is_empty() { "" } else { "i" }
-                    ));
+                    su.set_text(&swap_used);
                 }
             }
 
-            let free = crate::to_human_readable(mem_info.mem_free as _, 1024.);
-            let dirty = crate::to_human_readable(mem_info.dirty as _, 1024.);
-            let standby = crate::to_human_readable(standby as _, 1024.);
+            let free = crate::to_human_readable_nice(mem_info.mem_free as _, &DataType::MemoryBytes);
+            let dirty = crate::to_human_readable_nice(mem_info.dirty as _, &DataType::MemoryBytes);
+            let standby = crate::to_human_readable_nice(standby as _, &DataType::MemoryBytes);
 
             if let Some(l) = this.tt_label_in_use.get() {
-                l.set_text(&format!(
-                    "{:.2} {}{}B",
-                    used.0,
-                    used.1,
-                    if used.1.is_empty() { "" } else { "i" }
-                ))
+                l.set_text(&used)
             }
 
             if let Some(l) = this.tt_label_modified.get() {
-                l.set_text(&format!(
-                    "{:.2} {}{}B",
-                    dirty.0,
-                    dirty.1,
-                    if dirty.1.is_empty() { "" } else { "i" }
-                ))
+                l.set_text(&dirty)
             }
 
             if let Some(l) = this.tt_label_standby.get() {
-                l.set_text(&format!(
-                    "{:.2} {}{}B",
-                    standby.0,
-                    standby.1,
-                    if standby.1.is_empty() { "" } else { "i" }
-                ))
+                l.set_text(&standby)
             }
 
             if let Some(l) = this.tt_label_free.get() {
-                l.set_text(&format!(
-                    "{:.2} {}{}B",
-                    free.0,
-                    free.1,
-                    if free.1.is_empty() { "" } else { "i" }
-                ))
+                l.set_text(&free)
             }
 
             true

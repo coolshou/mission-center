@@ -34,6 +34,7 @@ use crate::{application::INTERVAL_STEP, i18n::*, settings};
 mod imp {
     use super::*;
     use magpie_types::gpus::OpenGlVariant;
+    use crate::DataType;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageGpu)]
@@ -438,11 +439,10 @@ mod imp {
                     .set_visible(true);
                 self.infobar_content.clock_speed_max().set_visible(true);
 
-                let cs_max = crate::to_human_readable(max_clock_speed as f32 * 1_000_000., 1000.);
-
+                let max_label = crate::to_human_readable_nice(max_clock_speed as f32 * 1_000_000., &DataType::Hertz);
                 self.infobar_content
                     .clock_speed_max()
-                    .set_text(&format!("{0:.2$} {1}Hz", cs_max.0, cs_max.1, cs_max.2));
+                    .set_text(&max_label);
             } else {
                 self.infobar_content
                     .clock_speed_separator()
@@ -453,14 +453,11 @@ mod imp {
             if let Some(clock_speed) = gpu.clock_speed_mhz {
                 clock_speed_available = true;
 
-                let clock_speed = crate::to_human_readable(clock_speed as f32 * 1_000_000., 1000.);
+                let clock_label = crate::to_human_readable_nice(clock_speed as f32 * 1_000_000., &DataType::Hertz);
 
                 self.infobar_content
                     .clock_speed_current()
-                    .set_text(&format!(
-                        "{0:.2$} {1}Hz",
-                        clock_speed.0, clock_speed.1, clock_speed.2
-                    ));
+                    .set_text(&clock_label);
             }
 
             self.infobar_content
@@ -476,11 +473,8 @@ mod imp {
                     .set_visible(true);
                 self.infobar_content.power_draw_max().set_visible(true);
 
-                let power_limit = crate::to_human_readable(power_limit, 1000.);
-                self.infobar_content.power_draw_max().set_text(&format!(
-                    "{0:.2$} {1}W",
-                    power_limit.0, power_limit.1, power_limit.2
-                ));
+                let power_limit = crate::to_human_readable_nice(power_limit, &DataType::Watts);
+                self.infobar_content.power_draw_max().set_text(&power_limit);
             } else {
                 self.infobar_content
                     .power_draw_separator()
@@ -491,11 +485,8 @@ mod imp {
             if let Some(power_draw) = gpu.power_draw_watts {
                 power_draw_available = true;
 
-                let power_draw = crate::to_human_readable(power_draw, 1000.);
-                self.infobar_content.power_draw_current().set_text(&format!(
-                    "{0:.2$} {1}W",
-                    power_draw.0, power_draw.1, power_draw.2
-                ));
+                let power_draw = crate::to_human_readable_nice(power_draw, &DataType::Watts);
+                self.infobar_content.power_draw_current().set_text(&power_draw);
             }
 
             self.infobar_content
@@ -512,18 +503,7 @@ mod imp {
 
                 if let Some(total_memory) = gpu.total_memory {
                     let total_memory = total_memory as f32;
-                    let total_memory_hr = crate::to_human_readable(total_memory, 1024.);
-                    let total_memory_str = format!(
-                        "{0:.2$} {1}{3}B",
-                        total_memory_hr.0,
-                        total_memory_hr.1,
-                        total_memory_hr.2,
-                        if total_memory_hr.1.is_empty() {
-                            ""
-                        } else {
-                            "i"
-                        },
-                    );
+                    let total_memory_str = crate::to_human_readable_nice(total_memory, &DataType::MemoryBytes);
 
                     this.usage_graph_memory
                         .set_scaling(GraphWidget::no_scaling());
@@ -550,17 +530,10 @@ mod imp {
                     this.usage_graph_memory
                         .add_data_point(0, used_memory as f32);
 
-                    let used_memory =
-                        crate::to_human_readable(gpu.used_memory.unwrap_or(0) as f32, 1024.);
+                    let used_memory = crate::to_human_readable_nice(gpu.used_memory.unwrap_or(0) as f32, &DataType::MemoryBytes);
                     this.infobar_content
                         .memory_usage_current()
-                        .set_text(&format!(
-                            "{0:.2$} {1}{3}B",
-                            used_memory.0,
-                            used_memory.1,
-                            used_memory.2,
-                            if used_memory.1.is_empty() { "" } else { "i" },
-                        ));
+                        .set_text(&used_memory);
                 } else {
                     this.infobar_content.set_used_memory_valid(false);
 
@@ -581,14 +554,7 @@ mod imp {
                 has_memory_info: &mut bool,
             ) {
                 if let Some(total_shared_memory) = gpu.total_shared_memory {
-                    let total_gtt = crate::to_human_readable(total_shared_memory as f32, 1024.);
-                    let total_gtt = format!(
-                        "{0:.2$} {1}{3}B",
-                        total_gtt.0,
-                        total_gtt.1,
-                        total_gtt.2,
-                        if total_gtt.1.is_empty() { "" } else { "i" },
-                    );
+                    let total_gtt = crate::to_human_readable_nice(total_shared_memory as f32, &DataType::MemoryBytes);
 
                     this.usage_graph_memory.set_dashed(1, true);
                     this.usage_graph_memory.set_filled(1, false);
@@ -629,22 +595,11 @@ mod imp {
                         .shared_memory_usage_title()
                         .set_text(&i18n("Shared Memory Usage"));
 
-                    let used_shared_mem_str =
-                        crate::to_human_readable(used_shared_memory as f32, 1024.);
+                    let used_shared_mem_str = crate::to_human_readable_nice(used_shared_memory as f32, &DataType::MemoryBytes);
 
                     this.infobar_content
                         .shared_mem_usage_current()
-                        .set_text(&format!(
-                            "{0:.2$} {1}{3}B",
-                            used_shared_mem_str.0,
-                            used_shared_mem_str.1,
-                            used_shared_mem_str.2,
-                            if used_shared_mem_str.1.is_empty() {
-                                ""
-                            } else {
-                                "i"
-                            },
-                        ));
+                        .set_text(&used_shared_mem_str);
                 } else {
                     this.infobar_content.set_used_shared_memory_valid(false);
 
@@ -686,10 +641,10 @@ mod imp {
                     .set_visible(true);
                 self.infobar_content.memory_speed_max().set_visible(true);
 
-                let ms_max = crate::to_human_readable(max_memory_speed as f32 * 1_000_000., 1000.);
+                let ms_max = crate::to_human_readable_nice(max_memory_speed as f32 * 1_000_000., &DataType::Hertz);
                 self.infobar_content
                     .memory_speed_max()
-                    .set_text(&format!("{0:.2$} {1}Hz", ms_max.0, ms_max.1, ms_max.2));
+                    .set_text(&ms_max);
             } else {
                 self.infobar_content
                     .memory_speed_separator()
@@ -700,14 +655,10 @@ mod imp {
             if let Some(memory_speed) = gpu.memory_speed_mhz {
                 memory_speed_available = true;
 
-                let memory_speed =
-                    crate::to_human_readable(memory_speed as f32 * 1_000_000., 1000.);
+                let memory_speed =crate::to_human_readable_nice(memory_speed as f32 * 1_000_000., &DataType::Hertz);
                 self.infobar_content
                     .memory_speed_current()
-                    .set_text(&format!(
-                        "{0:.2$} {1}Hz",
-                        memory_speed.0, memory_speed.1, memory_speed.2
-                    ));
+                    .set_text(&memory_speed);
             }
 
             self.infobar_content

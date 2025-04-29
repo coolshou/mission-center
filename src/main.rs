@@ -22,10 +22,10 @@ use std::{
     path::{Path, PathBuf},
     sync::{Arc, OnceLock},
 };
-
+use std::cmp::PartialEq;
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
 use gtk::{gio, prelude::*};
-
+use gtk::gio::Settings;
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use i18n::{i18n, i18n_f};
@@ -199,48 +199,123 @@ pub fn to_human_readable_time(seconds: u64) -> String {
     }
 }
 
-pub fn to_human_readable_adv(
-    value: f32,
-    divisor: f32,
-    min_type: usize,
-) -> (f32, &'static str, usize) {
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum DataType {
+    MemoryBytes,
+    DriveBytes,
+    DriveBytesPerSecond,
+    NetworkBytes,
+    NetworkBytesPerSecond,
+    Hertz,
+    Watts,
+}
+
+fn data_type_setting_name(data_type: &DataType) -> &'static str {
+    match data_type {
+        DataType::MemoryBytes => { "memory" }
+        DataType::DriveBytes => { "drive" }
+        DataType::DriveBytesPerSecond => { "drive" }
+        DataType::NetworkBytes => { "network" }
+        DataType::NetworkBytesPerSecond => { "network" }
+        DataType::Hertz => {
+            panic!("Hertz data type not supported yet");
+        }
+        DataType::Watts => {
+            panic!("Watts data type not supported yet");
+        }
+    }
+}
+
+pub fn to_human_readable_adv_str(
+    value_bytes: f32,
+    use_bytes: bool,
+    use_binary: bool,
+    per_second: bool,
+    unit_label: &str,
+    min_exponent: usize,
+) -> String {
     const UNITS: [&'static str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
-    let mut index = 0;
-    let mut value = value;
+    let divisor = if use_binary {
+        1024.
+    } else {
+        1000.
+    };
+
+    let (mut value, label) = if use_bytes {
+        (value_bytes, if per_second { "/s" } else { "" })
+    } else {
+        (value_bytes * 8., if per_second { "ps" } else { "" })
+    };
+
+    let mut exponent = 0;
 
     // Only display bit/byte values in the given range or higher, not individual bits/bytes
     // This sacrifices some precision for the sake of readability
-    if divisor == 1024. {
-        while index < min_type {
-            value /= divisor;
-            index += 1;
-        }
+    while exponent < min_exponent {
+        value /= divisor;
+        exponent += 1;
     }
 
-    while value >= divisor && index < UNITS.len() - 1 {
+    while value >= divisor && exponent < UNITS.len() - 1 {
         value /= divisor;
-        index += 1;
+        exponent += 1;
     }
 
     // Calculate number of decimals to display
     // Only display fractional values for bit/byte numbers in the defined range and bigger
     // This sacrifices some precision for the sake of readability
-    let mut dec_to_display = 0;
-    if index > min_type || (divisor == 1000.) {
-        if value < 100.0 {
-            dec_to_display = 1
-        }
+    let dec_to_display = if exponent > min_exponent {
         if value < 10.0 {
-            dec_to_display = 2
+            2
+        } else if value < 100.0 {
+            1
+        } else {
+            0
         }
-    }
+    } else {
+        0
+    };
 
-    (value, UNITS[index], dec_to_display)
+    format!("{0:.1$} {2}{3}{4}{5}", value, dec_to_display, UNITS[exponent], if use_binary { "i" } else { "" }, unit_label, label)
 }
 
-pub fn to_human_readable(value: f32, divisor: f32) -> (f32, &'static str, usize) {
-    to_human_readable_adv(value, divisor, 1)
+pub fn to_human_readable_nice(
+    value_bytes: f32,
+    data_type: &DataType
+) -> String {
+    to_human_readable_nice_cached(value_bytes, data_type, &settings!())
+}
+
+pub fn to_human_readable_nice_cached(
+    value_bytes: f32,
+    data_type: &DataType,
+    settings: &Settings,
+) -> String {
+    let label = match data_type {
+        DataType::Hertz => { "Hz" }
+        DataType::Watts => { "W" }
+        _ => {
+            let bytes = settings.boolean(&format!("performance-page-{}-use-bytes", data_type_setting_name(&data_type)));
+            return to_human_readable_adv_str(
+                value_bytes,
+                bytes,
+                settings.boolean(&format!("performance-page-{}-use-binary", data_type_setting_name(&data_type))),
+                *data_type == DataType::NetworkBytesPerSecond || *data_type == DataType::DriveBytesPerSecond,
+                if bytes { "B" } else { "b" },
+                1,
+            )
+        }
+    };
+    
+    to_human_readable_adv_str(
+        value_bytes,
+        true,
+        false,
+        false,
+        label,
+        0,
+    )
 }
 
 pub fn show_error_dialog_and_exit(message: &str) -> ! {

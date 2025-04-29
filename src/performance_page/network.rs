@@ -30,6 +30,7 @@ use super::{widgets::GraphWidget, PageExt};
 use crate::{application::INTERVAL_STEP, i18n::*};
 
 mod imp {
+    use crate::DataType;
     use super::*;
 
     #[derive(Properties)]
@@ -352,11 +353,8 @@ mod imp {
             this.usage_graph
                 .add_data_point(1, connection.rx_rate_bytes_ps);
 
-            let data_per_time = this.obj().unit_per_second_label();
-            let byte_coeff = this.obj().byte_conversion_factor();
-
-            let send_speed = connection.tx_rate_bytes_ps * byte_coeff;
-            let rec_speed = connection.rx_rate_bytes_ps * byte_coeff;
+            let send_speed = connection.tx_rate_bytes_ps;
+            let rec_speed = connection.rx_rate_bytes_ps;
 
             if let Some(wireless_info) = &connection.wireless_connection {
                 if let Some(ssid) = this.ssid.get() {
@@ -394,9 +392,7 @@ mod imp {
                     frequency.set_text(&wireless_info.frequency_mhz.as_ref().map_or(
                         i18n("Unknown"),
                         |freq| {
-                            let (freq, unit, dec_to_display) =
-                                crate::to_human_readable(*freq as f32 * 1000. * 1000., 1000.);
-                            format!("{0:.2$} {1}Hz", freq, unit, dec_to_display)
+                            crate::to_human_readable_nice(*freq as f32 * 1_000_000., &DataType::Hertz)
                         },
                     ));
                 }
@@ -404,16 +400,11 @@ mod imp {
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
                 if let Some(max_speed) = connection.max_speed_bytes_ps {
-                    let (val, unit, dec_to_display) =
-                        crate::to_human_readable(max_speed as f32 * byte_coeff, 1024.);
+                    let max_label =
+                        crate::to_human_readable_nice(max_speed as f32, &DataType::NetworkBytesPerSecond);
 
                     max_bitrate.set_text(
-                        format!(
-                            "{}{}",
-                            format!("{0:.2$} {1}", val, unit, dec_to_display),
-                            data_per_time
-                        )
-                        .as_str(),
+                        max_label.as_str(),
                     );
 
                     max_bitrate.set_visible(true);
@@ -422,54 +413,26 @@ mod imp {
                 }
             }
 
-            let max_y = crate::to_human_readable(this.usage_graph.value_range_max(), 1024.);
-            this.max_y.set_text(&format!(
-                "{} {}{}",
-                &format!("{0:.1$}", max_y.0, max_y.2),
-                &format!("{}", max_y.1),
-                &data_per_time,
-            ));
+            let max_y = crate::to_human_readable_nice(this.usage_graph.value_range_max(), &DataType::NetworkBytesPerSecond);
+            this.max_y.set_text(&max_y);
 
-            let speed_send_info = crate::to_human_readable(send_speed, 1024.);
+            let speed_send_info = crate::to_human_readable_nice(send_speed, &DataType::NetworkBytesPerSecond);
             if let Some(speed_send) = this.speed_send.get() {
-                speed_send.set_text(&format!(
-                    "{} {}{}",
-                    &format!("{0:.1$}", speed_send_info.0, speed_send_info.2),
-                    &format!("{}", speed_send_info.1),
-                    &data_per_time,
-                ));
+                speed_send.set_text(&speed_send_info);
             }
-            let speed_recv_info = crate::to_human_readable(rec_speed, 1024.);
+            
+            let speed_recv_info = crate::to_human_readable_nice(rec_speed, &DataType::NetworkBytesPerSecond);
             if let Some(speed_recv) = this.speed_recv.get() {
-                speed_recv.set_text(&format!(
-                    "{} {}{}",
-                    &format!("{0:.1$}", speed_recv_info.0, speed_recv_info.2),
-                    &format!("{}", speed_recv_info.1),
-                    &data_per_time,
-                ));
+                speed_recv.set_text(&speed_recv_info);
             }
 
-            let sent = crate::to_human_readable(connection.tx_total_bytes as f32, 1024.);
+            let sent = crate::to_human_readable_nice(connection.tx_total_bytes as f32, &DataType::NetworkBytes);
             if let Some(total_sent) = this.total_sent.get() {
-                total_sent.set_text(&i18n_f(
-                    "{} {}{}B",
-                    &[
-                        &format!("{0:.1$}", sent.0, sent.2),
-                        &format!("{}", sent.1),
-                        if sent.1.is_empty() { "" } else { "i" },
-                    ],
-                ));
+                total_sent.set_text(&sent);
             }
-            let received = crate::to_human_readable(connection.rx_total_bytes as f32, 1024.);
+            let received = crate::to_human_readable_nice(connection.rx_total_bytes as f32, &DataType::NetworkBytes);
             if let Some(total_recv) = this.total_recv.get() {
-                total_recv.set_text(&i18n_f(
-                    "{} {}{}B",
-                    &[
-                        &format!("{0:.1$}", received.0, received.2),
-                        &format!("{}", received.1),
-                        if received.1.is_empty() { "" } else { "i" },
-                    ],
-                ));
+                total_recv.set_text(&received);
             }
 
             if let Some(hw_address) = this.hw_address.get() {
@@ -932,29 +895,5 @@ impl PerformancePageNetwork {
 
     pub fn use_bytes(&self) -> bool {
         self.imp().use_bytes.get()
-    }
-
-    pub fn unit_per_second_label(&self) -> String {
-        if self.use_bytes() {
-            i18n("B/s")
-        } else {
-            i18n("bps")
-        }
-    }
-
-    pub fn bit_conversion_factor(&self) -> f32 {
-        if self.use_bytes() {
-            1. / 8.
-        } else {
-            1.
-        }
-    }
-
-    pub fn byte_conversion_factor(&self) -> f32 {
-        if self.use_bytes() {
-            1.
-        } else {
-            8.
-        }
     }
 }

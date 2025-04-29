@@ -68,7 +68,7 @@ const MK_TO_0_C: i32 = -273150;
 
 mod imp {
     use std::marker::PhantomData;
-
+    use crate::DataType;
     use super::*;
 
     // GNOME color palette: Blue 4
@@ -1937,7 +1937,7 @@ mod imp {
                     Pages::Memory((summary, page)) => {
                         let mem_info = &readings.mem_info;
                         let total_raw = mem_info.mem_total;
-                        let total = crate::to_human_readable(total_raw as _, 1024.);
+                        let total = crate::to_human_readable_nice(total_raw as _, &DataType::MemoryBytes);
 
                         // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
                         let mem_avail = if mem_info.mem_available > mem_info.mem_total {
@@ -1954,11 +1954,11 @@ mod imp {
                         graph_widget.set_expected_animation_ticks(delay);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
-                        let used = crate::to_human_readable(used_raw as _, 1024.);
+                        let used = crate::to_human_readable_nice(used_raw as _, &DataType::MemoryBytes);
 
                         summary.set_info1(format!(
-                            "{0:.2$} {1}iB/{3:.5$} {4}iB",
-                            used.0, used.1, used.2, total.0, total.1, total.2
+                            "{} {}",
+                            used, total,
                         ));
                         summary.set_info2(format!(
                             "{}%",
@@ -2082,31 +2082,24 @@ mod imp {
                                 graph_widget.add_data_point(0, network_connection.tx_rate_bytes_ps);
                                 graph_widget.add_data_point(1, network_connection.rx_rate_bytes_ps);
 
-                                let data_per_time = page.unit_per_second_label();
-                                let byte_coeff = page.byte_conversion_factor();
+                                let send_speed = network_connection.tx_rate_bytes_ps;
+                                let rec_speed = network_connection.rx_rate_bytes_ps;
 
-                                let send_speed = network_connection.tx_rate_bytes_ps * byte_coeff;
-                                let rec_speed = network_connection.rx_rate_bytes_ps * byte_coeff;
-
-                                let sent_speed = crate::to_human_readable(send_speed, 1024.);
-                                let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
+                                let sent_speed = crate::to_human_readable_nice(send_speed, &DataType::NetworkBytesPerSecond);
+                                let rect_speeed = crate::to_human_readable_nice(rec_speed, &DataType::NetworkBytesPerSecond);
 
                                 summary.set_info1(i18n_f(
-                                    "{}: {} {}{}",
+                                    "{}: {}",
                                     &[
                                         "S",
-                                        &format!("{0:.1$}", sent_speed.0, sent_speed.2),
-                                        &format!("{}", sent_speed.1),
-                                        &*data_per_time,
+                                        &sent_speed,
                                     ],
                                 ));
                                 summary.set_info2(i18n_f(
-                                    "{}: {} {}{}",
+                                    "{}: {}",
                                     &[
                                         "R",
-                                        &format!("{0:.1$}", rect_speeed.0, rect_speeed.2),
-                                        &format!("{}", rect_speeed.1),
-                                        &*data_per_time,
+                                        &rect_speeed,
                                     ],
                                 ));
 
