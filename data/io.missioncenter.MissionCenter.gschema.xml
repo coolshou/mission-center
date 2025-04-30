@@ -75,9 +75,9 @@
             <summary>Whether or not to use bits or bytes (default) for memory</summary>
         </key>
 
-        <key name="performance-page-memory-use-binary" type="b">
-            <default>true</default>
-            <summary>Whether or not to use base-10 or base-2 (default) for memory</summary>
+        <key name="performance-page-memory-use-base2" type="b">
+            <default>false</default>
+            <summary>Whether or not to use base-10 (default) or base-2 for memory</summary>
         </key>
 
         <key name="performance-page-drive-use-bytes" type="b">
@@ -85,7 +85,7 @@
             <summary>Whether or not to use bits or bytes (default) for drive speed + size</summary>
         </key>
 
-        <key name="performance-page-drive-use-binary" type="b">
+        <key name="performance-page-drive-use-base2" type="b">
             <default>true</default>
             <summary>Whether or not to use base-10 or base-2 (default) for drive speed + size</summary>
         </key>
@@ -95,7 +95,7 @@
             <summary>Whether or not to use bits (default) or Bytes for network speed</summary>
         </key>
 
-        <key name="performance-page-network-use-binary" type="b">
+        <key name="performance-page-network-use-base2" type="b">
             <default>false</default>
             <summary>Whether or not to use base-10 (default) or base-2 for network speed</summary>
         </key>

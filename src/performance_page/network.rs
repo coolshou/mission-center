@@ -1,6 +1,6 @@
 /* performance_page/network.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@ use gtk::{gio, glib, prelude::*};
 use magpie_types::network::{Connection, ConnectionKind};
 
 use super::{widgets::GraphWidget, PageExt};
-use crate::{application::INTERVAL_STEP, i18n::*};
+use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
-    use crate::DataType;
     use super::*;
+    use crate::DataType;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageNetwork)]
@@ -348,6 +348,8 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
+            let settings = &settings!();
+
             this.usage_graph
                 .add_data_point(0, connection.tx_rate_bytes_ps);
             this.usage_graph
@@ -392,7 +394,11 @@ mod imp {
                     frequency.set_text(&wireless_info.frequency_mhz.as_ref().map_or(
                         i18n("Unknown"),
                         |freq| {
-                            crate::to_human_readable_nice(*freq as f32 * 1_000_000., &DataType::Hertz)
+                            crate::to_human_readable_nice(
+                                *freq as f32 * 1_000_000.,
+                                &DataType::Hertz,
+                                settings,
+                            )
                         },
                     ));
                 }
@@ -400,12 +406,13 @@ mod imp {
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
                 if let Some(max_speed) = connection.max_speed_bytes_ps {
-                    let max_label =
-                        crate::to_human_readable_nice(max_speed as f32, &DataType::NetworkBytesPerSecond);
-
-                    max_bitrate.set_text(
-                        max_label.as_str(),
+                    let max_label = crate::to_human_readable_nice(
+                        max_speed as f32,
+                        &DataType::NetworkBytesPerSecond,
+                        settings,
                     );
+
+                    max_bitrate.set_text(max_label.as_str());
 
                     max_bitrate.set_visible(true);
                 } else {
@@ -413,24 +420,44 @@ mod imp {
                 }
             }
 
-            let max_y = crate::to_human_readable_nice(this.usage_graph.value_range_max(), &DataType::NetworkBytesPerSecond);
+            let max_y = crate::to_human_readable_nice(
+                this.usage_graph.value_range_max(),
+                &DataType::NetworkBytesPerSecond,
+                settings,
+            );
             this.max_y.set_text(&max_y);
 
-            let speed_send_info = crate::to_human_readable_nice(send_speed, &DataType::NetworkBytesPerSecond);
+            let speed_send_info = crate::to_human_readable_nice(
+                send_speed,
+                &DataType::NetworkBytesPerSecond,
+                settings,
+            );
             if let Some(speed_send) = this.speed_send.get() {
                 speed_send.set_text(&speed_send_info);
             }
-            
-            let speed_recv_info = crate::to_human_readable_nice(rec_speed, &DataType::NetworkBytesPerSecond);
+
+            let speed_recv_info = crate::to_human_readable_nice(
+                rec_speed,
+                &DataType::NetworkBytesPerSecond,
+                settings,
+            );
             if let Some(speed_recv) = this.speed_recv.get() {
                 speed_recv.set_text(&speed_recv_info);
             }
 
-            let sent = crate::to_human_readable_nice(connection.tx_total_bytes as f32, &DataType::NetworkBytes);
+            let sent = crate::to_human_readable_nice(
+                connection.tx_total_bytes as f32,
+                &DataType::NetworkBytes,
+                settings,
+            );
             if let Some(total_sent) = this.total_sent.get() {
                 total_sent.set_text(&sent);
             }
-            let received = crate::to_human_readable_nice(connection.rx_total_bytes as f32, &DataType::NetworkBytes);
+            let received = crate::to_human_readable_nice(
+                connection.rx_total_bytes as f32,
+                &DataType::NetworkBytes,
+                settings,
+            );
             if let Some(total_recv) = this.total_recv.get() {
                 total_recv.set_text(&received);
             }

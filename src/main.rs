@@ -17,18 +17,18 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+use application::MissionCenterApplication;
+use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
+use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
+use gtk::gio::Settings;
+use gtk::{gio, prelude::*};
+use i18n::{i18n, i18n_f};
+use std::cmp::PartialEq;
 use std::{
     env,
     path::{Path, PathBuf},
     sync::{Arc, OnceLock},
 };
-use std::cmp::PartialEq;
-use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
-use gtk::{gio, prelude::*};
-use gtk::gio::Settings;
-use application::MissionCenterApplication;
-use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
-use i18n::{i18n, i18n_f};
 use window::MissionCenterWindow;
 
 mod application;
@@ -212,11 +212,11 @@ pub enum DataType {
 
 fn data_type_setting_name(data_type: &DataType) -> &'static str {
     match data_type {
-        DataType::MemoryBytes => { "memory" }
-        DataType::DriveBytes => { "drive" }
-        DataType::DriveBytesPerSecond => { "drive" }
-        DataType::NetworkBytes => { "network" }
-        DataType::NetworkBytesPerSecond => { "network" }
+        DataType::MemoryBytes => "memory",
+        DataType::DriveBytes => "drive",
+        DataType::DriveBytesPerSecond => "drive",
+        DataType::NetworkBytes => "network",
+        DataType::NetworkBytesPerSecond => "network",
         DataType::Hertz => {
             panic!("Hertz data type not supported yet");
         }
@@ -236,11 +236,7 @@ pub fn to_human_readable_adv_str(
 ) -> String {
     const UNITS: [&'static str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
-    let divisor = if use_binary {
-        1024.
-    } else {
-        1000.
-    };
+    let divisor = if use_binary { 1024. } else { 1000. };
 
     let (mut value, label) = if use_bytes {
         (value_bytes, if per_second { "/s" } else { "" })
@@ -277,45 +273,46 @@ pub fn to_human_readable_adv_str(
         0
     };
 
-    format!("{0:.1$} {2}{3}{4}{5}", value, dec_to_display, UNITS[exponent], if use_binary { "i" } else { "" }, unit_label, label)
+    format!(
+        "{0:.1$} {2}{3}{4}{5}",
+        value,
+        dec_to_display,
+        UNITS[exponent],
+        if use_binary { "i" } else { "" },
+        unit_label,
+        label
+    )
 }
 
 pub fn to_human_readable_nice(
-    value_bytes: f32,
-    data_type: &DataType
-) -> String {
-    to_human_readable_nice_cached(value_bytes, data_type, &settings!())
-}
-
-pub fn to_human_readable_nice_cached(
     value_bytes: f32,
     data_type: &DataType,
     settings: &Settings,
 ) -> String {
     let label = match data_type {
-        DataType::Hertz => { "Hz" }
-        DataType::Watts => { "W" }
+        DataType::Hertz => "Hz",
+        DataType::Watts => "W",
         _ => {
-            let bytes = settings.boolean(&format!("performance-page-{}-use-bytes", data_type_setting_name(&data_type)));
+            let bytes = settings.boolean(&format!(
+                "performance-page-{}-use-bytes",
+                data_type_setting_name(&data_type)
+            ));
             return to_human_readable_adv_str(
                 value_bytes,
                 bytes,
-                settings.boolean(&format!("performance-page-{}-use-binary", data_type_setting_name(&data_type))),
-                *data_type == DataType::NetworkBytesPerSecond || *data_type == DataType::DriveBytesPerSecond,
+                settings.boolean(&format!(
+                    "performance-page-{}-use-base2",
+                    data_type_setting_name(&data_type)
+                )),
+                *data_type == DataType::NetworkBytesPerSecond
+                    || *data_type == DataType::DriveBytesPerSecond,
                 if bytes { "B" } else { "b" },
                 1,
-            )
+            );
         }
     };
-    
-    to_human_readable_adv_str(
-        value_bytes,
-        true,
-        false,
-        false,
-        label,
-        0,
-    )
+
+    to_human_readable_adv_str(value_bytes, true, false, false, label, 0)
 }
 
 pub fn show_error_dialog_and_exit(message: &str) -> ! {

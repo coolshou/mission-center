@@ -67,9 +67,9 @@ trait PageExt {
 const MK_TO_0_C: i32 = -273150;
 
 mod imp {
-    use std::marker::PhantomData;
-    use crate::DataType;
     use super::*;
+    use crate::DataType;
+    use std::marker::PhantomData;
 
     // GNOME color palette: Blue 4
     const CPU_BASE_COLOR: [u8; 3] = [0x1c, 0x71, 0xd8];
@@ -1937,7 +1937,11 @@ mod imp {
                     Pages::Memory((summary, page)) => {
                         let mem_info = &readings.mem_info;
                         let total_raw = mem_info.mem_total;
-                        let total = crate::to_human_readable_nice(total_raw as _, &DataType::MemoryBytes);
+                        let total = crate::to_human_readable_nice(
+                            total_raw as _,
+                            &DataType::MemoryBytes,
+                            &settings,
+                        );
 
                         // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
                         let mem_avail = if mem_info.mem_available > mem_info.mem_total {
@@ -1954,12 +1958,13 @@ mod imp {
                         graph_widget.set_expected_animation_ticks(delay);
                         graph_widget.add_data_point(0, readings.mem_info.committed as _);
                         graph_widget.add_data_point(1, used_raw as _);
-                        let used = crate::to_human_readable_nice(used_raw as _, &DataType::MemoryBytes);
+                        let used = crate::to_human_readable_nice(
+                            used_raw as _,
+                            &DataType::MemoryBytes,
+                            &settings,
+                        );
 
-                        summary.set_info1(format!(
-                            "{} {}",
-                            used, total,
-                        ));
+                        summary.set_info1(format!("{} {}", used, total,));
                         summary.set_info2(format!(
                             "{}%",
                             ((used_raw as f32 / total_raw as f32) * 100.).round()
@@ -2085,23 +2090,19 @@ mod imp {
                                 let send_speed = network_connection.tx_rate_bytes_ps;
                                 let rec_speed = network_connection.rx_rate_bytes_ps;
 
-                                let sent_speed = crate::to_human_readable_nice(send_speed, &DataType::NetworkBytesPerSecond);
-                                let rect_speeed = crate::to_human_readable_nice(rec_speed, &DataType::NetworkBytesPerSecond);
+                                let sent_speed = crate::to_human_readable_nice(
+                                    send_speed,
+                                    &DataType::NetworkBytesPerSecond,
+                                    &settings,
+                                );
+                                let rect_speeed = crate::to_human_readable_nice(
+                                    rec_speed,
+                                    &DataType::NetworkBytesPerSecond,
+                                    &settings,
+                                );
 
-                                summary.set_info1(i18n_f(
-                                    "{}: {}",
-                                    &[
-                                        "S",
-                                        &sent_speed,
-                                    ],
-                                ));
-                                summary.set_info2(i18n_f(
-                                    "{}: {}",
-                                    &[
-                                        "R",
-                                        &rect_speeed,
-                                    ],
-                                ));
+                                summary.set_info1(i18n_f("{}: {}", &["S", &sent_speed]));
+                                summary.set_info2(i18n_f("{}: {}", &["R", &rect_speeed]));
 
                                 result &= page.update_readings(network_connection);
                             } else {

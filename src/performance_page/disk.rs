@@ -34,8 +34,8 @@ use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
 use super::PageExt;
 
 mod imp {
-    use crate::{settings, DataType};
     use super::*;
+    use crate::{settings, DataType};
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -251,9 +251,9 @@ mod imp {
 
             if let Some(capacity) = this.capacity.get() {
                 let cap = disk.capacity_bytes;
-                
+
                 capacity.set_text(&if cap > 0 {
-                    crate::to_human_readable_nice_cached(cap as f32, &DataType::MemoryBytes, settings)
+                    crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
                     i18n("Unknown")
                 });
@@ -263,7 +263,7 @@ mod imp {
                 let cap = disk.capacity_bytes;
 
                 formatted.set_text(&if cap > 0 {
-                    crate::to_human_readable_nice_cached(cap as f32, &DataType::MemoryBytes, settings)
+                    crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
                     i18n("Unknown")
                 });
@@ -386,7 +386,11 @@ mod imp {
                 this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
 
-            this.max_y.set_text(&crate::to_human_readable_nice_cached(this.disk_transfer_rate_graph.value_range_max(), &DataType::DriveBytesPerSecond, settings));
+            this.max_y.set_text(&crate::to_human_readable_nice(
+                this.disk_transfer_rate_graph.value_range_max(),
+                &DataType::DriveBytesPerSecond,
+                settings,
+            ));
 
             this.usage_graph.add_data_point(0, disk.busy_percent);
 
@@ -401,21 +405,37 @@ mod imp {
             this.disk_transfer_rate_graph
                 .add_data_point(0, disk.rx_speed_bytes_ps as f32);
             if let Some(read_speed) = this.read_speed.get() {
-                read_speed.set_text(&crate::to_human_readable_nice_cached(disk.rx_speed_bytes_ps as f32, &DataType::DriveBytesPerSecond, settings));
+                read_speed.set_text(&crate::to_human_readable_nice(
+                    disk.rx_speed_bytes_ps as f32,
+                    &DataType::DriveBytesPerSecond,
+                    settings,
+                ));
             }
 
             if let Some(total_read) = this.total_read.get() {
-                total_read.set_text(&crate::to_human_readable_nice_cached(disk.rx_bytes_total as f32, &DataType::DriveBytes, settings));
+                total_read.set_text(&crate::to_human_readable_nice(
+                    disk.rx_bytes_total as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                ));
             }
 
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.tx_speed_bytes_ps as f32);
             if let Some(write_speed) = this.write_speed.get() {
-                write_speed.set_text(&crate::to_human_readable_nice_cached(disk.tx_speed_bytes_ps as f32, &DataType::DriveBytesPerSecond, settings));
+                write_speed.set_text(&crate::to_human_readable_nice(
+                    disk.tx_speed_bytes_ps as f32,
+                    &DataType::DriveBytesPerSecond,
+                    settings,
+                ));
             }
 
             if let Some(total_write) = this.total_write.get() {
-                total_write.set_text(&crate::to_human_readable_nice_cached(disk.tx_bytes_total as f32, &DataType::DriveBytes, settings));
+                total_write.set_text(&crate::to_human_readable_nice(
+                    disk.tx_bytes_total as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                ));
             }
 
             true

@@ -288,14 +288,10 @@ pub fn update_column_titles(
             sum += proc.usage_stats.network_usage.round();
         }
 
-        let label = crate::to_human_readable_nice_cached(sum, &DataType::NetworkBytesPerSecond, &settings!());
+        let label =
+            crate::to_human_readable_nice(sum, &DataType::NetworkBytesPerSecond, &settings!());
 
-        let _ = write!(
-            &mut buffer,
-            "{}\n{}",
-            i18n("Network"),
-            label
-        );
+        let _ = write!(&mut buffer, "{}\n{}", i18n("Network"), label);
     }
     network_column.set_title(Some(buffer.as_str()));
 
@@ -396,7 +392,7 @@ pub fn update_column_order(column_view: &gtk::ColumnView) {
 
             let _ = settings.set_string("apps-page-column-order", order.as_str());
         });
-} 
+}
 
 fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {
     column_view

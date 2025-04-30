@@ -28,8 +28,8 @@ use super::{widgets::GraphWidget, PageExt};
 use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
-    use crate::DataType;
     use super::*;
+    use crate::DataType;
 
     const GRAPH_SELECTION_OVERALL: i32 = 1;
     const GRAPH_SELECTION_ALL: i32 = 2;
@@ -359,11 +359,11 @@ mod imp {
                     sockets.set_text(&i18n("Unknown"));
                 }
             }
-            
+
             let settings = settings!();
 
             let l1_cache_size = if let Some(size) = static_cpu_info.l1_combined_cache_bytes {
-                crate::to_human_readable_nice_cached(size as f32, &DataType::MemoryBytes, &settings)
+                crate::to_human_readable_nice(size as f32, &DataType::MemoryBytes, &settings)
             } else {
                 i18n("N/A")
             };
@@ -372,7 +372,7 @@ mod imp {
             }
 
             let l2_cache_size = if let Some(size) = static_cpu_info.l2_cache_bytes {
-                crate::to_human_readable_nice_cached(size as f32, &DataType::MemoryBytes, &settings)
+                crate::to_human_readable_nice(size as f32, &DataType::MemoryBytes, &settings)
             } else {
                 i18n("N/A")
             };
@@ -381,7 +381,7 @@ mod imp {
             }
 
             let l3_cache_size = if let Some(size) = static_cpu_info.l3_cache_bytes {
-                crate::to_human_readable_nice_cached(size as f32, &DataType::MemoryBytes, &settings)
+                crate::to_human_readable_nice(size as f32, &DataType::MemoryBytes, &settings)
             } else {
                 i18n("N/A")
             };
@@ -390,7 +390,7 @@ mod imp {
             }
 
             let _ = if let Some(size) = static_cpu_info.l4_cache_bytes {
-                crate::to_human_readable_nice_cached(size as f32, &DataType::MemoryBytes, &settings)
+                crate::to_human_readable_nice(size as f32, &DataType::MemoryBytes, &settings)
             } else {
                 i18n("N/A")
             };

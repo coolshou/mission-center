@@ -31,8 +31,8 @@ use super::{
 use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
-    use crate::DataType;
     use super::*;
+    use crate::DataType;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageMemory)]
@@ -345,11 +345,19 @@ mod imp {
                 None
             });
 
-            let total_mem = crate::to_human_readable_nice_cached(readings.mem_info.mem_total as _, &DataType::MemoryBytes, settings);
+            let total_mem = crate::to_human_readable_nice(
+                readings.mem_info.mem_total as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
             this.total_ram.set_text(&total_mem);
             this.max_graph_ram.set_text(&total_mem);
-            
-            let total_swap = crate::to_human_readable_nice_cached(readings.mem_info.swap_total as _, &DataType::MemoryBytes, settings);
+
+            let total_swap = crate::to_human_readable_nice(
+                readings.mem_info.swap_total as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
             this.total_swap.set_text(&total_swap);
 
             let show_swap = settings.boolean("performance-page-memory-swap-visible");
@@ -393,6 +401,8 @@ mod imp {
             let this = this.imp();
             let mem_info = &readings.mem_info;
 
+            let settings = &settings!();
+
             // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
             let mem_avail = if mem_info.mem_available > mem_info.mem_total {
                 mem_info.mem_free
@@ -405,7 +415,18 @@ mod imp {
             this.usage_graph.add_data_point(1, mem_info.dirty as _);
             this.usage_graph.add_data_point(2, used as _);
 
-            let max_ram = crate::to_human_readable_nice(this.usage_graph.value_range_max(), &DataType::MemoryBytes);
+            let total_mem = crate::to_human_readable_nice(
+                readings.mem_info.mem_total as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
+            this.total_ram.set_text(&total_mem);
+
+            let max_ram = crate::to_human_readable_nice(
+                this.usage_graph.value_range_max(),
+                &DataType::MemoryBytes,
+                settings,
+            );
             this.max_graph_ram.set_text(&max_ram);
 
             let swap_used = mem_info.swap_total.saturating_sub(mem_info.swap_free);
@@ -413,22 +434,34 @@ mod imp {
 
             this.mem_composition.update_memory_information(mem_info);
 
-            let used = crate::to_human_readable_nice(used as _, &DataType::MemoryBytes);
+            let used = crate::to_human_readable_nice(used as _, &DataType::MemoryBytes, settings);
             if let Some(iu) = this.in_use.get() {
                 iu.set_text(&used);
             }
 
-            let available = crate::to_human_readable_nice(mem_info.mem_available as _, &DataType::MemoryBytes);
+            let available = crate::to_human_readable_nice(
+                mem_info.mem_available as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
             if let Some(av) = this.available.get() {
                 av.set_text(&available);
             }
 
-            let committed = crate::to_human_readable_nice(mem_info.committed as _, &DataType::MemoryBytes);
+            let committed = crate::to_human_readable_nice(
+                mem_info.committed as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
             if let Some(cm) = this.committed.get() {
                 cm.set_text(&committed);
             }
 
-            let cached = crate::to_human_readable_nice(mem_info.cached as _, &DataType::MemoryBytes);
+            let cached = crate::to_human_readable_nice(
+                mem_info.cached as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
             if let Some(ch) = this.cached.get() {
                 ch.set_text(&cached);
             }
@@ -445,7 +478,11 @@ mod imp {
                     su.set_visible(false);
                 }
             } else {
-                let swap_available = crate::to_human_readable_nice(mem_info.swap_total as _, &DataType::MemoryBytes);
+                let swap_available = crate::to_human_readable_nice(
+                    mem_info.swap_total as _,
+                    &DataType::MemoryBytes,
+                    settings,
+                );
                 if let Some(sa) = this.swap_available.get() {
                     sa.set_visible(true);
                     sa.set_text(&swap_available);
@@ -454,6 +491,7 @@ mod imp {
                 let swap_used = crate::to_human_readable_nice(
                     mem_info.swap_total.saturating_sub(mem_info.swap_free) as _,
                     &DataType::MemoryBytes,
+                    settings,
                 );
                 if let Some(su) = this.swap_used.get() {
                     su.set_visible(true);
@@ -461,9 +499,18 @@ mod imp {
                 }
             }
 
-            let free = crate::to_human_readable_nice(mem_info.mem_free as _, &DataType::MemoryBytes);
-            let dirty = crate::to_human_readable_nice(mem_info.dirty as _, &DataType::MemoryBytes);
-            let standby = crate::to_human_readable_nice(standby as _, &DataType::MemoryBytes);
+            let free = crate::to_human_readable_nice(
+                mem_info.mem_free as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
+            let dirty = crate::to_human_readable_nice(
+                mem_info.dirty as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
+            let standby =
+                crate::to_human_readable_nice(standby as _, &DataType::MemoryBytes, settings);
 
             if let Some(l) = this.tt_label_in_use.get() {
                 l.set_text(&used)
