@@ -46,7 +46,39 @@ macro_rules! connect_switch_to_setting {
     };
 }
 
+macro_rules! connect_radios_to_setting {
+    ($this: expr, $falsy_radio: expr, $truthy_radio: expr, $setting: literal) => {
+        $falsy_radio.set_group(Some($truthy_radio.downcast_ref::<CheckButton>().unwrap()));
+        
+        $falsy_radio.connect_active_notify({
+            move |switch_row| {
+                if let Err(e) = settings!().set_boolean($setting, !switch_row.is_active()) {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set {} setting: {}",
+                        $setting,
+                        e
+                    );
+                }
+            }
+        });
+        $truthy_radio.connect_active_notify({
+            move |switch_row| {
+                if let Err(e) = settings!().set_boolean($setting, switch_row.is_active()) {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set {} setting: {}",
+                        $setting,
+                        e
+                    );
+                }
+            }
+        });
+    };
+}
+
 mod imp {
+    use gtk::CheckButton;
     use super::*;
 
     #[derive(gtk::CompositeTemplate, Default)]
@@ -61,8 +93,6 @@ mod imp {
         pub smooth_graphs: TemplateChild<SwitchRow>,
         #[template_child]
         pub sliding_graphs: TemplateChild<SwitchRow>,
-        #[template_child]
-        pub network_bytes: TemplateChild<SwitchRow>,
         #[template_child]
         pub network_dynamic_scaling: TemplateChild<SwitchRow>,
         #[template_child]
@@ -88,6 +118,15 @@ mod imp {
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_column_separators: TemplateChild<SwitchRow>,
+        
+        #[template_child]
+        pub network_base2: TemplateChild<CheckButton>,
+        #[template_child]
+        pub network_base10: TemplateChild<CheckButton>,
+        #[template_child]
+        pub network_bits: TemplateChild<CheckButton>,
+        #[template_child]
+        pub network_bytes: TemplateChild<CheckButton>,
     }
 
     impl PreferencesPage {
@@ -185,11 +224,6 @@ mod imp {
             connect_switch_to_setting!(self, self.sliding_graphs, "performance-sliding-graphs");
             connect_switch_to_setting!(
                 self,
-                self.network_bytes,
-                "performance-page-network-use-bytes"
-            );
-            connect_switch_to_setting!(
-                self,
                 self.network_dynamic_scaling,
                 "performance-page-network-dynamic-scaling"
             );
@@ -221,6 +255,20 @@ mod imp {
                 self.show_column_separators,
                 "apps-page-show-column-separators"
             );
+            
+            connect_radios_to_setting!(
+                self,
+                self.network_base10,
+                self.network_base2,
+                "performance-page-network-use-binary"
+            );
+            
+            connect_radios_to_setting!(
+                self,
+                self.network_bits,
+                self.network_bytes,
+                "performance-page-network-use-bytes"
+            );
         }
     }
 
@@ -248,8 +296,6 @@ impl PreferencesPage {
             .set_active(settings.boolean("performance-smooth-graphs"));
         imp.sliding_graphs
             .set_active(settings.boolean("performance-sliding-graphs"));
-        imp.network_bytes
-            .set_active(settings.boolean("performance-page-network-use-bytes"));
         imp.network_dynamic_scaling
             .set_active(settings.boolean("performance-page-network-dynamic-scaling"));
         imp.show_cpu
@@ -275,6 +321,11 @@ impl PreferencesPage {
             .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
         imp.show_column_separators
             .set_active(settings.boolean("apps-page-show-column-separators"));
+        
+        imp.network_base10.set_active(!settings.boolean("performance-page-network-use-binary"));
+        imp.network_base2.set_active(settings.boolean("performance-page-network-use-binary"));
+        imp.network_bits.set_active(!settings.boolean("performance-page-network-use-bytes"));
+        imp.network_bytes.set_active(settings.boolean("performance-page-network-use-bytes"));
 
         this
     }

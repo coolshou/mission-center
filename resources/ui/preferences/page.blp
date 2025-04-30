@@ -55,11 +55,6 @@ template $PreferencesPage: Adw.PreferencesPage {
       subtitle: _("Animate graphs (may negatively impact performance)");
     }
 
-    Adw.SwitchRow network_bytes {
-      title: _("Show Network Speed In Bytes");
-      subtitle: _("Whether or not to use bits (default) or Bytes for network speed");
-    }
-
     Adw.SwitchRow network_dynamic_scaling {
       title: _("Scale Network Graphs Dynamically");
       subtitle: _("Set network graph to scale dynamically with actual usage or with channel max speed");
@@ -128,6 +123,49 @@ template $PreferencesPage: Adw.PreferencesPage {
     Adw.SwitchRow show_column_separators {
       title: _("Show Column Separators");
       subtitle: _("Show a separator between each column");
+    }
+  }
+
+  Adw.PreferencesGroup {
+    title: _("Global Units");
+
+    Adw.ActionRow {
+      title: _("Network Usage Base");
+
+      CheckButton network_base2 {
+        label: _("Base 2");
+      }
+
+      CheckButton network_base10 {
+        label: _("Base 10");
+      }
+    }
+
+    Adw.ActionRow {
+      title: _("Network Usage Unit");
+
+      CheckButton network_bits {
+        label: _("bits");
+      }
+
+      CheckButton network_bytes {
+        label: _("Bytes");
+      }
+    }
+
+    Adw.ActionRow {
+      title: _("Drive Unit");
+
+      Adw.ToggleGroup drive_unit {
+        Adw.Toggle {
+          tooltip: _("Use Base 10 For Drive");
+          name: _("Base 10");
+        }
+        Adw.Toggle {
+          tooltip: _("Use Base 2 For Drive");
+          name: _("Base 2");
+        }
+      }
     }
   }
 }
