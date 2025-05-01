@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-05-01 00:23+0000\n"
+"PO-Revision-Date: 2025-05-01 08:59+0000\n"
 "Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
@@ -177,8 +177,8 @@ msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Wie oft die daten der Benutzeroberfläche aktualisiert werden (Inkremente von "
-"50 millisekunden)"
+"Wie oft die Daten der Benutzeroberfläche aktualisiert werden (Inkremente von "
+"50ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
@@ -207,7 +207,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts"
+msgstr "Spaltensortierung wird nach Programmneustarts beibehalten"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
