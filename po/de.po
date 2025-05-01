@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
 "PO-Revision-Date: 2025-05-01 08:59+0000\n"
-"Last-Translator: Aircraft192 <finnwiggers2006@gmail.com>\n"
+"Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -718,7 +718,7 @@ msgstr "Aktualisierungsintervall"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Diagramm-Datenpunkte"
+msgstr "Datenpunkte im Graphen"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
@@ -941,7 +941,7 @@ msgstr "Laufwerk"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr "GPU-Nutzung"
+msgstr "GPU-Auslastung"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
