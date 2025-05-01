@@ -65,8 +65,8 @@
       "name": "build-tools",
       "buildsystem": "simple",
       "build-commands": [
-        "mkdir rootfs-glibc && cd rootfs-glibc && tar xf ../ubuntu-14.04-*.tar.zst && rm ../ubuntu-14.04-*.tar.zst",
-        "mkdir rootfs-musl && cd rootfs-musl && tar xf ../alpine-*.tar.zst && rm ../alpine-*.tar.zst",
+        "mkdir rootfs-glibc && cd rootfs-glibc && (tar xf ../ubuntu-14.04-*.tar.zst || true) && rm ../ubuntu-14.04-*.tar.zst",
+        "mkdir rootfs-musl && cd rootfs-musl && (tar xf ../alpine-*.tar.zst || true) && rm ../alpine-*.tar.zst",
         "",
         "rm -rf rootfs-glibc/usr/share/vim/vimfiles",
         "cp -ar clang-glibc/cmake/usr rootfs-glibc/",
