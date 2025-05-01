@@ -11,6 +11,7 @@ stages:
 
 .shared:
   checkout_submodule:
+    - apt-get install -y git
     - sed -i 's/= ..\/gng.git/= https:\/\/gitlab.com\/mission-center-devs\/gng.git/g' .gitmodules
     - git submodule update --init --recursive
 
@@ -20,7 +21,6 @@ stages:
     - echo 'deb http://archive.ubuntu.com/ubuntu plucky-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://archive.ubuntu.com/ubuntu plucky-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y git
 
   setup_apt_ports:
     - rm -rf /etc/apt/sources.list.d
@@ -28,7 +28,6 @@ stages:
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports plucky-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports plucky-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y git
 
   setup_apt_focal:
     - rm -rf /etc/apt/sources.list.d
@@ -36,7 +35,6 @@ stages:
     - echo 'deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y git
 
   setup_apt_focal_ports:
     - rm -rf /etc/apt/sources.list.d
@@ -44,7 +42,6 @@ stages:
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse' >> /etc/apt/sources.list
     - echo 'deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
-    - apt-get install -y git
 
   install_rust:
     - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
@@ -55,8 +52,7 @@ stages:
     - export PATH="$HOME/.cargo/bin:$PATH"
 
   install_flatpak:
-    - dnf upgrade --refresh -y
-    - dnf install -y flatpak flatpak-builder
+    - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.gnome.Platform//48 org.gnome.Sdk//48
 
@@ -112,10 +108,10 @@ build-job-arm:
 flatpak-job-x86:
   stage: package-build
   interruptible: true
-  image: fedora:42
   tags:
     - saas-linux-large-amd64
   before_script:
+    - !reference [ ".shared", "setup_apt" ]
     - !reference [ ".shared", "install_flatpak" ]
     - !reference [ ".shared", "checkout_submodule" ]
   script:
@@ -131,10 +127,10 @@ flatpak-job-x86:
 flatpak-job-arm:
   stage: package-build
   interruptible: true
-  image: fedora:42
   tags:
     - saas-linux-large-arm64
   before_script:
+    - !reference [ ".shared", "setup_apt_ports" ]
     - !reference [ ".shared", "install_flatpak" ]
     - !reference [ ".shared", "checkout_submodule" ]
   script:
