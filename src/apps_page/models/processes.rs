@@ -66,7 +66,8 @@ pub fn update(
                     .unwrap_or(&process.name)
                     .split("/")
                     .last()
-                    .unwrap_or(&process.name).trim()
+                    .unwrap_or(&process.name)
+                    .trim()
             }
         } else {
             exe_name.trim()
