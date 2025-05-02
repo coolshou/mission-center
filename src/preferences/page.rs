@@ -46,6 +46,31 @@ macro_rules! connect_switch_to_setting {
     };
 }
 
+macro_rules! connect_toggle_pair_to_setting {
+    ($this: expr, $toggle_group: expr, $toggle_truthy: expr, $setting: literal) => {
+        $toggle_group.connect_notify_local(Some("active"), {
+            let toggle_truthy = $toggle_truthy.downgrade();
+            move |toggle_group, _| {
+                let Some(toggle_truthy) = toggle_truthy.upgrade() else {
+                    return;
+                };
+
+                let active_index = toggle_group.active();
+                let active_toggle = toggle_group.toggle(active_index);
+                let truthy_active = active_toggle.as_ref() == Some(&toggle_truthy);
+                if let Err(e) = settings!().set_boolean($setting, truthy_active) {
+                    gtk::glib::g_critical!(
+                        "MissionCenter::Preferences",
+                        "Failed to set {} setting: {}",
+                        $setting,
+                        e
+                    );
+                }
+            }
+        });
+    };
+}
+
 mod imp {
     use super::*;
 
@@ -61,8 +86,6 @@ mod imp {
         pub smooth_graphs: TemplateChild<SwitchRow>,
         #[template_child]
         pub sliding_graphs: TemplateChild<SwitchRow>,
-        #[template_child]
-        pub network_bytes: TemplateChild<SwitchRow>,
         #[template_child]
         pub network_dynamic_scaling: TemplateChild<SwitchRow>,
         #[template_child]
@@ -88,6 +111,43 @@ mod imp {
         pub core_count_affects_percentages: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_column_separators: TemplateChild<SwitchRow>,
+
+        #[template_child]
+        pub toggle_group_memory_unit: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_memory_unit_bits: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_memory_unit_bytes: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_group_memory_base: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_memory_base_2: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_memory_base_10: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_group_drive_unit: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_drive_unit_bits: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_drive_unit_bytes: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_group_drive_base: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_drive_base_2: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_drive_base_10: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_group_net_unit: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_net_unit_bits: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_net_unit_bytes: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_group_net_base: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub toggle_net_base_2: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub toggle_net_base_10: TemplateChild<adw::Toggle>,
     }
 
     impl PreferencesPage {
@@ -185,11 +245,6 @@ mod imp {
             connect_switch_to_setting!(self, self.sliding_graphs, "performance-sliding-graphs");
             connect_switch_to_setting!(
                 self,
-                self.network_bytes,
-                "performance-page-network-use-bytes"
-            );
-            connect_switch_to_setting!(
-                self,
                 self.network_dynamic_scaling,
                 "performance-page-network-dynamic-scaling"
             );
@@ -221,6 +276,43 @@ mod imp {
                 self.show_column_separators,
                 "apps-page-show-column-separators"
             );
+
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_memory_unit,
+                self.toggle_memory_unit_bytes,
+                "performance-page-memory-use-bytes"
+            );
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_memory_base,
+                self.toggle_memory_base_2,
+                "performance-page-memory-use-base2"
+            );
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_drive_unit,
+                self.toggle_drive_unit_bytes,
+                "performance-page-drive-use-bytes"
+            );
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_drive_base,
+                self.toggle_drive_base_2,
+                "performance-page-drive-use-base2"
+            );
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_net_unit,
+                self.toggle_net_unit_bytes,
+                "performance-page-network-use-bytes"
+            );
+            connect_toggle_pair_to_setting!(
+                self,
+                self.toggle_group_net_base,
+                self.toggle_net_base_2,
+                "performance-page-network-use-base2"
+            );
         }
     }
 
@@ -248,8 +340,6 @@ impl PreferencesPage {
             .set_active(settings.boolean("performance-smooth-graphs"));
         imp.sliding_graphs
             .set_active(settings.boolean("performance-sliding-graphs"));
-        imp.network_bytes
-            .set_active(settings.boolean("performance-page-network-use-bytes"));
         imp.network_dynamic_scaling
             .set_active(settings.boolean("performance-page-network-dynamic-scaling"));
         imp.show_cpu
@@ -275,6 +365,19 @@ impl PreferencesPage {
             .set_active(settings.boolean("apps-page-core-count-affects-percentages"));
         imp.show_column_separators
             .set_active(settings.boolean("apps-page-show-column-separators"));
+
+        imp.toggle_group_memory_unit
+            .set_active(!settings.boolean("performance-page-memory-use-bytes") as u32);
+        imp.toggle_group_memory_base
+            .set_active(settings.boolean("performance-page-memory-use-base2") as u32);
+        imp.toggle_group_drive_unit
+            .set_active(!settings.boolean("performance-page-drive-use-bytes") as u32);
+        imp.toggle_group_drive_base
+            .set_active(!settings.boolean("performance-page-drive-use-base2") as u32);
+        imp.toggle_group_net_unit
+            .set_active(settings.boolean("performance-page-network-use-bytes") as u32);
+        imp.toggle_group_net_base
+            .set_active(!settings.boolean("performance-page-network-use-base2") as u32);
 
         this
     }

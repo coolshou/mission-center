@@ -23,8 +23,8 @@ use std::cmp::Ordering;
 use gtk::glib;
 use gtk::prelude::*;
 
-use super::{compare_column_entries_by, format_bytes, sort_order, LabelCell};
-use crate::label_cell_factory;
+use super::{compare_column_entries_by, sort_order, LabelCell};
+use crate::{label_cell_factory, settings, DataType};
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     label_cell_factory!("network-usage", label_formatter)
@@ -49,7 +49,12 @@ pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
 
 pub fn label_formatter(label: &LabelCell, value: glib::Value) {
     let network_usage: f32 = value.get().unwrap();
-    let mut formatted = format_bytes(network_usage);
-    formatted.push_str("/s");
-    label.set_label(formatted.as_str());
+    label.set_label(
+        crate::to_human_readable_nice(
+            network_usage,
+            &DataType::NetworkBytesPerSecond,
+            &settings!(),
+        )
+        .as_str(),
+    );
 }

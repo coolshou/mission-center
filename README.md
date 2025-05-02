@@ -199,8 +199,8 @@ Install the required Flatpak runtimes and SDKs:
 flatpak install -y \
     org.freedesktop.Platform//24.08 \
     org.freedesktop.Sdk//24.08 \
-    org.gnome.Platform//47 \
-    org.gnome.Sdk//47
+    org.gnome.Platform//48 \
+    org.gnome.Sdk//48
 ```
 
 Finally build a Flatpak package:
