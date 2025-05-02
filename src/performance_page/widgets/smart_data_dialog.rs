@@ -1,6 +1,6 @@
 /* services_page/details_dialog.rs
  *
- * Copyright 2024 Mission Center Devs
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,13 @@ use gtk::{Align, ColumnViewColumn};
 use magpie_types::disks::smart_data::{Ata, Nvme};
 use magpie_types::disks::{smart_data, SmartData};
 
-use crate::i18n::*;
+use crate::{i18n::*, settings};
 
 use super::SmartDialogRow;
 
 mod imp {
     use super::*;
+    use crate::DataType;
 
     #[derive(Default, gtk::CompositeTemplate)]
     #[template(
@@ -194,6 +195,7 @@ mod imp {
         }
 
         fn apply_nvme_smart_data(&self, result: Nvme) {
+            let settings = &settings!();
             self.sata_data.set_visible(false);
             self.nvme_data.set_visible(true);
 
@@ -216,27 +218,23 @@ mod imp {
             }
 
             if let Some(total_data_read) = result.total_data_read {
-                let data_read = crate::to_human_readable(total_data_read as f32, 1024.);
-                self.data_read.set_text(&format!(
-                    "{0:.2$} {1}{3}B",
-                    data_read.0,
-                    data_read.1,
-                    data_read.2,
-                    if data_read.1.is_empty() { "" } else { "i" },
-                ));
+                let data_read = crate::to_human_readable_nice(
+                    total_data_read as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                );
+                self.data_read.set_text(&data_read);
             } else {
                 self.data_read.set_text(&i18n("N/A"));
             }
 
             if let Some(total_data_written) = result.total_data_written {
-                let data_written = crate::to_human_readable(total_data_written as f32, 1024.);
-                self.data_written.set_text(&format!(
-                    "{0:.2$} {1}{3}B",
-                    data_written.0,
-                    data_written.1,
-                    data_written.2,
-                    if data_written.1.is_empty() { "" } else { "i" },
-                ));
+                let data_written = crate::to_human_readable_nice(
+                    total_data_written as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                );
+                self.data_written.set_text(&data_written);
             } else {
                 self.data_written.set_text(&i18n("N/A"));
             }
