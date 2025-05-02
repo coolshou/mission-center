@@ -119,14 +119,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/app-rummage/app-rummage-0.2.7.crate",
-    "sha256": "1321031f83546d8c1c81840700838c47e1fbf8eba93c393f2821573624b296f0",
-    "dest": "cargo/vendor/app-rummage-0.2.7"
+    "url": "https://static.crates.io/crates/app-rummage/app-rummage-0.2.8.crate",
+    "sha256": "f7cf4a36e3d8472069f903731cc01939194d125930cdeb0f49326bf3f57e4424",
+    "dest": "cargo/vendor/app-rummage-0.2.8"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"1321031f83546d8c1c81840700838c47e1fbf8eba93c393f2821573624b296f0\", \"files\": {}}",
-    "dest": "cargo/vendor/app-rummage-0.2.7",
+    "contents": "{\"package\": \"f7cf4a36e3d8472069f903731cc01939194d125930cdeb0f49326bf3f57e4424\", \"files\": {}}",
+    "dest": "cargo/vendor/app-rummage-0.2.8",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1497,14 +1497,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/libc/libc-0.2.169.crate",
-    "sha256": "b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a",
-    "dest": "cargo/vendor/libc-0.2.169"
+    "url": "https://static.crates.io/crates/libc/libc-0.2.172.crate",
+    "sha256": "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa",
+    "dest": "cargo/vendor/libc-0.2.172"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a\", \"files\": {}}",
-    "dest": "cargo/vendor/libc-0.2.169",
+    "contents": "{\"package\": \"d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa\", \"files\": {}}",
+    "dest": "cargo/vendor/libc-0.2.172",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1765,6 +1765,19 @@
     "type": "inline",
     "contents": "{\"package\": \"71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46\", \"files\": {}}",
     "dest": "cargo/vendor/nix-0.29.0",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/nix/nix-0.30.0.crate",
+    "sha256": "537bc3c4a347b87fd52ac6c03a02ab1302962cfd93373c5d7a112cdc337854cc",
+    "dest": "cargo/vendor/nix-0.30.0"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"537bc3c4a347b87fd52ac6c03a02ab1302962cfd93373c5d7a112cdc337854cc\", \"files\": {}}",
+    "dest": "cargo/vendor/nix-0.30.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {

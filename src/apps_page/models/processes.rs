@@ -50,15 +50,15 @@ pub fn update(
             if let Some(s) = cmd.strip_suffix(':') {
                 cmd = s;
             }
-            cmd
+            cmd.trim()
         } else {
-            &process.name
+            process.name.trim()
         }
     } else {
         let exe_name = process.exe.split('/').last().unwrap_or(&process.name);
         if exe_name.starts_with("wine") {
             if process.cmd.is_empty() {
-                process.name.as_str()
+                process.name.trim()
             } else {
                 process.cmd[0]
                     .split("\\")
@@ -67,9 +67,10 @@ pub fn update(
                     .split("/")
                     .last()
                     .unwrap_or(&process.name)
+                    .trim()
             }
         } else {
-            exe_name
+            exe_name.trim()
         }
     };
 
