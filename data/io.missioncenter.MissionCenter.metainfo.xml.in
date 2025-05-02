@@ -34,23 +34,27 @@
             <li>Monitor system fans</li>
             <li>See a breakdown of resource usage by app and process</li>
             <li>Supports a minified summary view for simple monitoring</li>
-            <li>Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage</li>
+            <li>Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource
+                usage
+            </li>
             <li>Uses GTK4 and Libadwaita</li>
             <li>Written in Rust</li>
         </ul>
         <p>Limitations (there is ongoing work to overcome all of these):</p>
         <ul>
-            <li>No per-process network usage</li>
-            <li>GPU support is experimental</li>
-            <li>Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring</li>
-            <li>When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)</li>
+            <li>Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power,
+                or temperature monitoring
+            </li>
+            <li>When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section
+                (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
+            </li>
         </ul>
         <p>Comments, suggestions, bug reports and contributions welcome</p>
     </description>
 
     <branding>
-      <color type="primary" scheme_preference="light">#91b3c3</color>
-      <color type="primary" scheme_preference="dark">#071f2b</color>
+        <color type="primary" scheme_preference="light">#91b3c3</color>
+        <color type="primary" scheme_preference="dark">#071f2b</color>
     </branding>
 
     <screenshots>
@@ -64,7 +68,8 @@
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-disk.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-ethernet.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-ethernet.png
+            </image>
         </screenshot>
         <screenshot>
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-wifi.png</image>
@@ -79,21 +84,97 @@
             <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-apps.png</image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-services.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-services.png
+            </image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-cpu-dark.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-cpu-dark.png
+            </image>
         </screenshot>
         <screenshot>
-            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-disk-dark.png</image>
+            <image>https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-disk-dark.png
+            </image>
         </screenshot>
     </screenshots>
 
-    <content_rating type="oars-1.1" />
+    <content_rating type="oars-1.1"/>
     <translation type="gettext">missioncenter</translation>
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
+        <release version="1.0.0" date="2025-05-02">
+            <description translate="no">
+                <p>Major Changes:</p>
+                <ul>
+                    <li>Complete refactor of the Gatherer, now called Magpie</li>
+                    <li>Magpie available as a standalone set of libraries and executable; can be used by other
+                        monitoring solutions
+                    </li>
+                    <li>Show SMART data for SATA and NVMe devices</li>
+                    <li>Allow ejecting removable storage devices (optical disks, USB thumb drives, etc.)
+                    </li>
+                    <li>Per-process network usage (see
+                        https://gitlab.com/mission-center-devs/mission-center/-/wikis/Home/Nethogs)
+                    </li>
+                    <li>Redesigned Apps Page with more information available for each app and process</li>
+                </ul>
+                <p>Noteworthy changes</p>
+                <ul>
+                    <li>A new option to make graphs, in the Performance Page, glide smoothly</li>
+                    <li>Visual and functional improvements in the Memory view</li>
+                    <li>Enabled all NVTOP supported GPUs including RaspberryPi (see
+                        https://github.com/Syllo/nvtop?tab=readme-ov-file#gpu-support)
+                    </li>
+                    <li>Right sidebar in the Performance page is now more consistent between devices</li>
+                    <li>Support for keyboard shortcuts</li>
+                    <li>Show maximum bitrate for all network interfaces</li>
+                    <li>Removed a bunch of unsafe code from the main app</li>
+                    <li>Lower overall memory usage</li>
+                    <li>Lower overall CPU usage</li>
+                    <li>Improved overall responsiveness of the app and minimized time deviations between refresh cycles
+
+                    </li>
+                    <li>Enable full LTO for AppImage, Flatpak and Snap builds</li>
+                </ul>
+                <p>Bug fixes:</p>
+                <ul>
+                    <li>Missing memory composition graph after update to libadwaita 1.7</li>
+                    <li>Service details window to narrow after update to libadwaita 1.7</li>
+                    <li>Integer overflow when copying large files to/from slower storage devices</li>
+                    <li>Gatherer stops responding after a period of time</li>
+                    <li>Don't call `lsblk` to figure out if a drive has the root partition</li>
+                    <li>Fixed memory leak that would occur on some OS/HW combinations</li>
+                    <li>Don't target a specific CPU architecture variant when building Magpie</li>
+                    <li>Fix GPU encoding/decoding graphs misrepresenting the type of workload</li>
+                </ul>
+                <p>Translation updates</p>
+                <ul>
+                    <li>Catalan by Jaime Muñoz Martín</li>
+                    <li>Chinese (Simplified Han script) by Zhang Peng</li>
+                    <li>Chinese (Traditional Han script) by jhihyulin, D0735, Peter Dave Hello</li>
+                    <li>Czech by pavelbo</li>
+                    <li>Dutch by philip.goto</li>
+                    <li>Estonian by Priit Jõerüüt, Indrek Haav</li>
+                    <li>Finnish by Ricky-Tigg</li>
+                    <li>French by europa91m DenisMARCQ, Louis-Simon</li>
+                    <li>Galician by Espasant3</li>
+                    <li>German by Aircraft192, Lauritz, Tieste, ItsGamerik</li>
+                    <li>Hebrew by yarons</li>
+                    <li>Italian by beppeilgommista, ppasserini, svlmrc</li>
+                    <li>Japanese by rainy_sunset</li>
+                    <li>Korean by darkcircle.0426</li>
+                    <li>Norwegian Bokmål by ovl-1, Telaneo</li>
+                    <li>Polish by keloH</li>
+                    <li>Portuguese by hugok79</li>
+                    <li>Spanish by Espasant3</li>
+                    <li>Tamil by anishprabu.t</li>
+                </ul>
+                <p>For a more detailed set of release notes see:
+                    https://gitlab.com/mission-center-devs/mission-center/-/wikis/Release-Notes/v1.0.0
+                </p>
+            </description>
+        </release>
+
         <release version="0.6.2" date="2024-10-27">
             <description translate="no">
                 <ul>
@@ -102,7 +183,9 @@
                     <li>Fix a crash that occurs when running on an older processor</li>
                     <li>Fix device selection in the sidebar jumping to the next available item by itself</li>
                     <li>Show all detected fans in the system, even if the lack an identifying label</li>
-                    <li>Add `mission-center-window`, `mission-center-performance-page`, `mission-center-apps-page` and `mission-center-services-page` CSS classes to allow some user customizations</li>
+                    <li>Add `mission-center-window`, `mission-center-performance-page`, `mission-center-apps-page` and
+                        `mission-center-services-page` CSS classes to allow some user customizations
+                    </li>
                     <li>Fix sidebar symbolic icon being too small</li>
                     <li>Minor styling improvements in the Apps and Services pages</li>
                 </ul>
@@ -124,7 +207,8 @@
             <description translate="no">
                 <p>Features:</p>
                 <ul>
-                    <li>Add a new Fan Page that monitors system fans and reports RPM, PWM and temperature information</li>
+                    <li>Add a new Fan Page that monitors system fans and reports RPM, PWM and temperature information
+                    </li>
                     <li>Add support for hiding and rearranging devices in the Performance sidebar</li>
                     <li>Overhaul the Memory Page to convey more information</li>
                     <li>Update GPU page UI to better reflect what aspects of the GPU can be monitored</li>
@@ -291,13 +375,18 @@
                 <ul>
                     <li>Add an option, to the context menu, to show kernel times, in the CPU graphs</li>
                     <li>Add CPU temperature, where possible</li>
-                    <li>Implement smarter rounding and display precision of values throughout the app by QwertyChouskie</li>
+                    <li>Implement smarter rounding and display precision of values throughout the app by
+                        QwertyChouskie
+                    </li>
                     <li>Use metainfo instead of appdata for application metadata by David Guglielmi</li>
                 </ul>
                 <p>Fixes:</p>
                 <ul>
-                    <li>Fixed a regression where natively installed browsers were not showing up in the apps list on Fedora</li>
-                    <li>Fixed a regression where Flatpak apps were not showing up in the apps list on ArchLinux Plasma</li>
+                    <li>Fixed a regression where natively installed browsers were not showing up in the apps list on
+                        Fedora
+                    </li>
+                    <li>Fixed a regression where Flatpak apps were not showing up in the apps list on ArchLinux Plasma
+                    </li>
                     <li>Fixed a bug where the Maps app desktop file wasn't being parsed correctly</li>
                     <li>Moved some performance related logs to g_debug to prevent spamming of system logs</li>
                 </ul>
@@ -322,7 +411,8 @@
         <release version="0.3.1" date="2023-08-22">
             <description translate="no">
                 <ul>
-                    <li>Hotfix release to fix a bug that caused the app to not display any information for some users</li>
+                    <li>Hotfix release to fix a bug that caused the app to not display any information for some users
+                    </li>
                 </ul>
             </description>
         </release>
