@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-01-05 00:07+0000\n"
-"Last-Translator: Lauritz Tieste <lauritz6000000@gmail.com>\n"
+"PO-Revision-Date: 2025-05-01 08:59+0000\n"
+"Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -177,8 +177,8 @@ msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Wie schnell sollen die Daten geholt und die Benutzeroberfläche aktualisiert "
-"werden? (in 50ms-Schritten)"
+"Wie oft die Daten der Benutzeroberfläche aktualisiert werden (Inkremente von "
+"50ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
@@ -195,6 +195,8 @@ msgstr ""
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Ob das Graphmaximum dem Interfacemaximum (false) oder dem beobachteten "
+"Maximum (true) angepasst werden soll"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
@@ -205,7 +207,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
-msgstr "Sortierung von Spalten ist persistent zwischen Programmneustarts"
+msgstr "Spaltensortierung wird nach Programmneustarts beibehalten"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
@@ -716,7 +718,7 @@ msgstr "Aktualisierungsintervall"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr "Diagramm-Datenpunkte"
+msgstr "Datenpunkte im Graphen"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
@@ -939,7 +941,7 @@ msgstr "Laufwerk"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr "GPU-Nutzung"
+msgstr "GPU-Auslastung"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
@@ -1065,9 +1067,8 @@ msgid "Fan"
 msgstr "Lüfter"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
-#, fuzzy
 msgid "{}: {} {}{}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1125,15 +1126,15 @@ msgstr "Abrufen zusätzlicher Speicherinformationen fehlgeschlagen"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr "{} {}{} B"
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
