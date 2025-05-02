@@ -401,30 +401,75 @@ impl MissionCenterApplication {
             .copyright("© 2024 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
-            .release_notes(
-                r#"<ul><li>Add a new Fan Page that monitors system fans and reports RPM, PWM and temperature information</li>
-<li>Add support for hiding and rearranging devices in the Performance sidebar</li>
-<li>Overhaul the Memory Page to convey more information</li>
-<li>Update GPU page UI to better reflect what aspects of the GPU can be monitored</li>
-<li>Add GTT information to the GPU page (AMD only)</li>
-<li>Add network total data transfer information to the Network Page</li>
-<li>Show application icons for processes that belong to a known application</li>
-<li>Switch to AdwDialog for the About and Preferences dialogs</li>
-<li>Update NVTOP for better GPU support</li>
-<li>Initial support for Snap</li>
-<li>Update to latest GNOME (47) Platform for all supported packaging formats</li>
-<li>Add support for `zenpower` when monitoring AMD CPU temperature</li>
-<li>Fix a seeming CPU usage spike when the app starts</li>
-<li>Improved app detection</li>
-<li>Supress some network device related errors that were flooding the SystemD journal</li>
-<li>Hide CPU frequency governor and power preference information when not supported</li>
-<li>Update CPU frequency governor and power preference information while the app is running</li>
-<li>Add an option to use bytes instead of bits for network data transfer information</li>
-<li>Add support for more device types in the Network Page</li>
-<li>Detect SystemD more reliably using D-Bus instead of searching for a library on disk</li>
-<li>Fix a memory leak that occurred when filtering apps and processes</li>
-<li>Clean up graph labels to be more consistent across different pages</li></ul>"#,
-            )
+            .release_notes(r#"
+<p>Major Changes:</p>
+<ul>
+    <li>Complete refactor of the Gatherer, now called Magpie</li>
+    <li>Magpie available as a standalone set of libraries and executable; can be used by other
+        monitoring solutions
+    </li>
+    <li>Show SMART data for SATA and NVMe devices</li>
+    <li>Allow ejecting removable storage devices (optical disks, USB thumb drives, etc.)
+    </li>
+    <li>Per-process network usage (see
+        https://gitlab.com/mission-center-devs/mission-center/-/wikis/Home/Nethogs)
+    </li>
+    <li>Redesigned Apps Page with more information available for each app and process</li>
+</ul>
+<p>Noteworthy changes</p>
+<ul>
+    <li>A new option to make graphs, in the Performance Page, glide smoothly</li>
+    <li>Visual and functional improvements in the Memory view</li>
+    <li>Enabled all NVTOP supported GPUs including RaspberryPi (see
+        https://github.com/Syllo/nvtop?tab=readme-ov-file#gpu-support)
+    </li>
+    <li>Right sidebar in the Performance page is now more consistent between devices</li>
+    <li>Support for keyboard shortcuts</li>
+    <li>Show maximum bitrate for all network interfaces</li>
+    <li>Removed a bunch of unsafe code from the main app</li>
+    <li>Lower overall memory usage</li>
+    <li>Lower overall CPU usage</li>
+    <li>Improved overall responsiveness of the app and minimized time deviations between refresh cycles
+
+    </li>
+    <li>Enable full LTO for AppImage, Flatpak and Snap builds</li>
+</ul>
+<p>Bug fixes:</p>
+<ul>
+    <li>Missing memory composition graph after update to libadwaita 1.7</li>
+    <li>Service details window to narrow after update to libadwaita 1.7</li>
+    <li>Integer overflow when copying large files to/from slower storage devices</li>
+    <li>Gatherer stops responding after a period of time</li>
+    <li>Don't call `lsblk` to figure out if a drive has the root partition</li>
+    <li>Fixed memory leak that would occur on some OS/HW combinations</li>
+    <li>Don't target a specific CPU architecture variant when building Magpie</li>
+    <li>Fix GPU encoding/decoding graphs misrepresenting the type of workload</li>
+</ul>
+<p>Translation updates</p>
+<ul>
+    <li>Catalan by Jaime Muñoz Martín</li>
+    <li>Chinese (Simplified Han script) by Zhang Peng</li>
+    <li>Chinese (Traditional Han script) by jhihyulin, D0735, Peter Dave Hello</li>
+    <li>Czech by pavelbo</li>
+    <li>Dutch by philip.goto</li>
+    <li>Estonian by Priit Jõerüüt, Indrek Haav</li>
+    <li>Finnish by Ricky-Tigg</li>
+    <li>French by europa91m DenisMARCQ, Louis-Simon</li>
+    <li>Galician by Espasant3</li>
+    <li>German by Aircraft192, Lauritz, Tieste, ItsGamerik</li>
+    <li>Hebrew by yarons</li>
+    <li>Italian by beppeilgommista, ppasserini, svlmrc</li>
+    <li>Japanese by rainy_sunset</li>
+    <li>Korean by darkcircle.0426</li>
+    <li>Norwegian Bokmål by ovl-1, Telaneo</li>
+    <li>Polish by keloH</li>
+    <li>Portuguese by hugok79</li>
+    <li>Spanish by Espasant3</li>
+    <li>Tamil by anishprabu.t</li>
+</ul>
+<p>For a more detailed set of release notes see:
+    https://gitlab.com/mission-center-devs/mission-center/-/wikis/Release-Notes/v1.0.0
+</p>"#)
             .build();
 
         about.add_credit_section(
