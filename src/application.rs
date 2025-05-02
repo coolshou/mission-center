@@ -426,6 +426,7 @@ impl MissionCenterApplication {
     <li>Right sidebar in the Performance page is now more consistent between devices</li>
     <li>Support for keyboard shortcuts</li>
     <li>Show maximum bitrate for all network interfaces</li>
+    <li>Allow customizing units for memory, disk and network usage</li>
     <li>Removed a bunch of unsafe code from the main app</li>
     <li>Lower overall memory usage</li>
     <li>Lower overall CPU usage</li>
