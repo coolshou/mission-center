@@ -1127,7 +1127,7 @@ mod imp {
                 Some(DiskKind::Optical) => i18n("Optical"),
                 Some(DiskKind::Floppy) => i18n("Floppy"),
                 Some(DiskKind::ThumbDrive) => i18n("Thumb Drive"),
-                None => i18n("Unknown"),
+                None => i18n("Drive"),
             };
 
             if index.is_some() {
