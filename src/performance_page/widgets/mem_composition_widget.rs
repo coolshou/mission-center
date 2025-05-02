@@ -36,9 +36,11 @@ use magpie_types::memory::Memory;
 
 use super::GRAPH_RADIUS;
 use crate::i18n::i18n_f;
+use crate::settings;
 
 mod imp {
     use super::*;
+    use crate::DataType;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::MemoryCompositionWidget)]
@@ -185,6 +187,8 @@ mod imp {
         }
 
         fn render(&self, snapshot: &Snapshot, width: f32, height: f32, scale_factor: f64) {
+            let settings = &settings!();
+
             let texture = gdk::Texture::for_pixbuf(
                 &self.generate_pattern(scale_factor as f32, self.base_color.get()),
             );
@@ -241,17 +245,13 @@ mod imp {
                 Some(&fill_color),
             );
 
-            let used_hr = crate::to_human_readable(used as _, 1024.);
+            let used_hr =
+                crate::to_human_readable_nice(used as _, &DataType::MemoryBytes, settings);
             tooltip_texts.push((
                 x,
                 i18n_f(
                     "In use ({}B)\n\nMemory used by the operating system and running applications",
-                    &[&format!(
-                        "{:.2} {}{}",
-                        used_hr.0,
-                        used_hr.1,
-                        if used_hr.1.is_empty() { "" } else { "i" }
-                    )],
+                    &[&used_hr],
                 ),
             ));
 
@@ -276,12 +276,13 @@ mod imp {
 
             let x = new_x;
 
-            let modified_hr = crate::to_human_readable(modified, 1024.);
+            let modified_hr =
+                crate::to_human_readable_nice(modified, &DataType::MemoryBytes, settings);
             tooltip_texts.push((
                 x,
                 i18n_f(
                     "Modified ({}B)\n\nMemory whose contents must be written to disk before it can be used by another process",
-                    &[&format!("{:.2} {}{}", modified_hr.0, modified_hr.1, if modified_hr.1.is_empty() { "" } else { "i" })],
+                    &[&modified_hr],
                 )
             ));
 
@@ -300,12 +301,13 @@ mod imp {
 
             let x = new_x;
 
-            let standby_hr = crate::to_human_readable(standby as _, 1024.);
+            let standby_hr =
+                crate::to_human_readable_nice(standby as _, &DataType::MemoryBytes, &settings!());
             tooltip_texts.push((
                 x,
                 i18n_f(
                     "Standby ({}B)\n\nMemory that contains cached data and code that is not actively in use",
-                    &[&format!("{:.2} {}{}", standby_hr.0, standby_hr.1, if standby_hr.1.is_empty() { "" } else { "i" })],
+                    &[&standby_hr],
                 )
             ));
 
@@ -313,12 +315,12 @@ mod imp {
             let free = mem_info.mem_free as f32;
             self.render_bar(snapshot, x, 1., height, &stroke, &stroke_color, None);
 
-            let free_hr = crate::to_human_readable(free, 1024.);
+            let free_hr = crate::to_human_readable_nice(free, &DataType::MemoryBytes, settings);
             tooltip_texts.push((
                 width + 1.,
                 i18n_f(
                     "Free ({}B)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
-                    &[&format!("{:.2} {}{}", free_hr.0, free_hr.1, if free_hr.1.is_empty() { "" } else { "i" })],
+                    &[&free_hr],
                 ),
             ));
 

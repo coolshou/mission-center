@@ -17,7 +17,7 @@ textdistance = "1.0"
 [dependencies.adw]
 package = "libadwaita"
 version = "0.7"
-features = ["v1_6"]
+features = ["v1_7"]
 
 [dependencies.gettext-rs]
 version = "0.7"

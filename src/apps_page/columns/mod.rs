@@ -55,7 +55,7 @@ pub use shared_memory::label_formatter as shared_memory_label_formatter;
 pub use shared_memory::list_item_factory as shared_memory_list_item_factory;
 pub use shared_memory::sorter as shared_memory_sorter;
 
-use crate::settings;
+use crate::{settings, DataType};
 
 mod cpu;
 mod drive;
@@ -288,18 +288,10 @@ pub fn update_column_titles(
             sum += proc.usage_stats.network_usage.round();
         }
 
-        let (val, unit, dec_to_display) = crate::to_human_readable(sum, 1024.);
+        let label =
+            crate::to_human_readable_nice(sum, &DataType::NetworkBytesPerSecond, &settings!());
 
-        // TODO hook into settings
-        let data_per_time = "B/s";
-
-        let _ = write!(
-            &mut buffer,
-            "{}\n{}{}",
-            i18n("Network"),
-            format!("{0:.2$} {1}", val, unit, dec_to_display),
-            data_per_time
-        );
+        let _ = write!(&mut buffer, "{}\n{}", i18n("Network"), label);
     }
     network_column.set_title(Some(buffer.as_str()));
 
@@ -400,19 +392,6 @@ pub fn update_column_order(column_view: &gtk::ColumnView) {
 
             let _ = settings.set_string("apps-page-column-order", order.as_str());
         });
-}
-
-fn format_bytes(bytes: f32) -> ArrayString<128> {
-    let mut buffer = ArrayString::<128>::new();
-
-    let (v, unit, precision) = crate::to_human_readable(bytes, 1024.);
-    if unit.is_empty() {
-        let _ = write!(&mut buffer, "{0:.1$} B", v, precision);
-    } else {
-        let _ = write!(&mut buffer, "{0:.1$} {2}iB", v, precision, unit);
-    }
-
-    buffer
 }
 
 fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {

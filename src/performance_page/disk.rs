@@ -35,6 +35,7 @@ use super::PageExt;
 
 mod imp {
     use super::*;
+    use crate::{settings, DataType};
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -217,6 +218,7 @@ mod imp {
                 });
 
             let this = this.imp();
+            let settings = &settings!();
 
             let _ = this.raw_disk_id.set(disk.id.clone());
 
@@ -249,32 +251,22 @@ mod imp {
 
             if let Some(capacity) = this.capacity.get() {
                 let cap = disk.capacity_bytes;
-                if cap > 0 {
-                    let cap = crate::to_human_readable(cap as f32, 1024.);
-                    capacity.set_text(&format!(
-                        "{:.2} {}{}B",
-                        cap.0,
-                        cap.1,
-                        if cap.1.is_empty() { "" } else { "i" }
-                    ));
+
+                capacity.set_text(&if cap > 0 {
+                    crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
-                    capacity.set_text(&i18n("Unknown"));
-                }
+                    i18n("Unknown")
+                });
             }
 
             if let Some(formatted) = this.formatted.get() {
-                let capacity = disk.capacity_bytes;
-                if capacity > 0 {
-                    let capacity = crate::to_human_readable(capacity as f32, 1024.);
-                    formatted.set_text(&format!(
-                        "{:.2} {}{}B",
-                        capacity.0,
-                        capacity.1,
-                        if capacity.1.is_empty() { "" } else { "i" }
-                    ));
+                let cap = disk.capacity_bytes;
+
+                formatted.set_text(&if cap > 0 {
+                    crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
-                    formatted.set_text(&i18n("Unknown"));
-                }
+                    i18n("Unknown")
+                });
             }
 
             let is_system_disk = if disk.is_system {
@@ -383,6 +375,7 @@ mod imp {
             disk: &Disk,
         ) -> bool {
             let this = this.imp();
+            let settings = &settings!();
 
             if index.is_some() {
                 this.disk_id.set_text(&i18n_f(
@@ -393,16 +386,10 @@ mod imp {
                 this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
 
-            let max_y =
-                crate::to_human_readable(this.disk_transfer_rate_graph.value_range_max(), 1024.);
-            let i = if max_y.1.is_empty() { "" } else { "i" };
-            this.max_y.set_text(&i18n_f(
-                "{} {}{}B/s",
-                &[
-                    &format!("{}", max_y.0.round()),
-                    &format!("{}", max_y.1),
-                    &format!("{}", i),
-                ],
+            this.max_y.set_text(&crate::to_human_readable_nice(
+                this.disk_transfer_rate_graph.value_range_max(),
+                &DataType::DriveBytesPerSecond,
+                settings,
             ));
 
             this.usage_graph.add_data_point(0, disk.busy_percent);
@@ -417,30 +404,38 @@ mod imp {
 
             this.disk_transfer_rate_graph
                 .add_data_point(0, disk.rx_speed_bytes_ps as f32);
-            let rsp = crate::to_human_readable(disk.rx_speed_bytes_ps as f32, 1024.);
-            let i = if rsp.1.is_empty() { "" } else { "i" };
             if let Some(read_speed) = this.read_speed.get() {
-                read_speed.set_text(&format!("{0:.2$} {1}{3}B/s", rsp.0, rsp.1, rsp.2, i,));
+                read_speed.set_text(&crate::to_human_readable_nice(
+                    disk.rx_speed_bytes_ps as f32,
+                    &DataType::DriveBytesPerSecond,
+                    settings,
+                ));
             }
 
-            let trd = crate::to_human_readable(disk.rx_bytes_total as f32, 1024.);
-            let i = if trd.1.is_empty() { "" } else { "i" };
             if let Some(total_read) = this.total_read.get() {
-                total_read.set_text(&format!("{0:.2$} {1}{3}B", trd.0, trd.1, trd.2, i,));
+                total_read.set_text(&crate::to_human_readable_nice(
+                    disk.rx_bytes_total as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                ));
             }
 
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.tx_speed_bytes_ps as f32);
-            let wsp = crate::to_human_readable(disk.tx_speed_bytes_ps as f32, 1024.);
-            let i = if wsp.1.is_empty() { "" } else { "i" };
             if let Some(write_speed) = this.write_speed.get() {
-                write_speed.set_text(&format!("{0:.2$} {1}{3}B/s", wsp.0, wsp.1, wsp.2, i,));
+                write_speed.set_text(&crate::to_human_readable_nice(
+                    disk.tx_speed_bytes_ps as f32,
+                    &DataType::DriveBytesPerSecond,
+                    settings,
+                ));
             }
 
-            let twt = crate::to_human_readable(disk.tx_bytes_total as f32, 1024.);
-            let i = if twt.1.is_empty() { "" } else { "i" };
             if let Some(total_write) = this.total_write.get() {
-                total_write.set_text(&format!("{0:.2$} {1}{3}B", twt.0, twt.1, twt.2, i,));
+                total_write.set_text(&crate::to_human_readable_nice(
+                    disk.tx_bytes_total as f32,
+                    &DataType::DriveBytes,
+                    settings,
+                ));
             }
 
             true
