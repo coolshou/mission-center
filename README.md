@@ -4,7 +4,7 @@
 
 Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](https://missioncenter.io/)
 
-![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png)
+![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu.png)
 
 ## Features
 
@@ -14,7 +14,8 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 * See a breakdown how the memory is being used by the system
 * Monitor Disk utilization and transfer rates
 * Monitor network utilization and transfer speeds
-* See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds and
+* See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds
+  and
   frequency, hardware address, IP address
 * Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered by the popular
   NVTOP project
@@ -29,8 +30,8 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 
 Please note there is ongoing work to overcome all of these.
 
-* No per-process network usage ([#3](https://gitlab.com/mission-center-devs/mission-center/-/issues/3))
-* GPU support is experimental
+* Per-process network monitoring requires manual setup,
+  see [this page](https://gitlab.com/mission-center-devs/mission-center/-/wikis/Home/Nethogs) for more information.
 * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature
   monitoring.
 * When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream
@@ -41,9 +42,9 @@ themes).
 
 ## Installing
 
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8198461967/artifacts/raw/MissionCenter-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="x86_64" width=200/></a>
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/8198461968/artifacts/raw/MissionCenter-aarch64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="ARM64" width=200/></a>
-<a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/9906491703/artifacts/raw/MissionCenter_v1.0.0-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="x86_64" width=200/></a>
+<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/9906491710/artifacts/raw/MissionCenter_v1.0.0-aarch64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="ARM64" width=200/></a>
+<a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://flathub.org/api/badge?svg&locale=en" width=200/></a>
 <a href="https://snapcraft.io/mission-center"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
 
 Also available from https://portable-linux-apps.github.io/apps/mission-center.html
@@ -116,6 +117,9 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 * libadwaita
 
 **Build instructions**
+
+Note: A native build requires, at least, GTK 4.18 and libadwaita 1.7. That means ArchLinux >= 20250501, Fedora >= 42,
+Ubuntu >= 25.04.
 
 ```bash
 # On Ubuntu 25.04 all dependencies, except for the Rust toolchain, can be installed with:
