@@ -195,7 +195,8 @@ mod imp {
             self.copy_logs_button.set_halign(gtk::Align::End);
             self.copy_logs_button.add_css_class("flat");
             self.copy_logs_button.set_icon_name("edit-copy-symbolic");
-            self.copy_logs_button.set_tooltip_text(Some(&i18n("Copy logs to clipboard")));
+            self.copy_logs_button
+                .set_tooltip_text(Some(&i18n("Copy logs to clipboard")));
 
             self.copy_logs_button.connect_clicked({
                 let this = self.obj().downgrade();
