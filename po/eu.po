@@ -8,18 +8,21 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-05-07 15:02+0000\n"
+"Last-Translator: Ibai Oihanguren Sala <ibaios@disroot.org>\n"
+"Language-Team: Basque <https://hosted.weblate.org/projects/mission-center/"
+"mission-center/eu/>\n"
 "Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:3
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
 msgid "Mission Center"
-msgstr ""
+msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:10
 msgid ""
@@ -254,7 +257,7 @@ msgstr ""
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
 msgid "CPU"
-msgstr ""
+msgstr "PUZa"
 
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
@@ -264,24 +267,25 @@ msgstr ""
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
 #: resources/ui/performance_page/gpu.blp:130
+#, fuzzy
 msgid "100%"
-msgstr ""
+msgstr "% 100"
 
 #: resources/ui/performance_page/cpu.blp:105
 msgid "Change G_raph To"
-msgstr ""
+msgstr "Aldatu g_rafikoa hona"
 
 #: resources/ui/performance_page/cpu.blp:108
 msgid "Overall U_tilization"
-msgstr ""
+msgstr "_Erabilera orokorra"
 
 #: resources/ui/performance_page/cpu.blp:113
 msgid "Logical _Processors"
-msgstr ""
+msgstr "_Prozesadore logikoak"
 
 #: resources/ui/performance_page/cpu.blp:119
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "Erakutsi nukleoaren denborak"
 
 #: resources/ui/performance_page/cpu.blp:126
 #: resources/ui/performance_page/disk.blp:147
@@ -290,7 +294,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:196
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr ""
+msgstr "Grafikoaren _laburpen ikuspegia"
 
 #: resources/ui/performance_page/cpu.blp:131
 #: resources/ui/performance_page/disk.blp:152
@@ -299,7 +303,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:201
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr ""
+msgstr "_Ikuspegia"
 
 #: resources/ui/performance_page/cpu.blp:134
 #: resources/ui/performance_page/disk.blp:155
@@ -308,7 +312,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:204
 #: resources/ui/performance_page/network.blp:113
 msgid "CP_U"
-msgstr ""
+msgstr "P_UZa"
 
 #: resources/ui/performance_page/cpu.blp:139
 #: resources/ui/performance_page/disk.blp:160
@@ -317,7 +321,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:209
 #: resources/ui/performance_page/network.blp:118
 msgid "_Memory"
-msgstr ""
+msgstr "_Memoria"
 
 #: resources/ui/performance_page/cpu.blp:144
 #: resources/ui/performance_page/disk.blp:165
@@ -326,7 +330,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Diskoa"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -335,7 +339,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:219
 #: resources/ui/performance_page/network.blp:128
 msgid "_Network"
-msgstr ""
+msgstr "_Sarea"
 
 #: resources/ui/performance_page/cpu.blp:154
 #: resources/ui/performance_page/disk.blp:175
@@ -344,7 +348,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:224
 #: resources/ui/performance_page/network.blp:133
 msgid "_GPU"
-msgstr ""
+msgstr "_GPUa"
 
 #: resources/ui/performance_page/cpu.blp:159
 #: resources/ui/performance_page/disk.blp:180
@@ -353,7 +357,7 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:229
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Haizagailua"
 
 #: resources/ui/performance_page/cpu.blp:167
 #: resources/ui/performance_page/disk.blp:188
@@ -361,28 +365,28 @@ msgstr ""
 #: resources/ui/performance_page/memory.blp:237
 #: resources/ui/performance_page/network.blp:151
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopiatu"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:43
 msgid "Utilization"
-msgstr ""
+msgstr "Erabilera"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
-msgstr ""
+msgstr "Abiadura"
 
 #: resources/ui/performance_page/cpu_details.blp:95 src/apps_page/mod.rs:569
 msgid "Processes"
-msgstr ""
+msgstr "Prozesuak"
 
 #: resources/ui/performance_page/cpu_details.blp:117
 msgid "Threads"
-msgstr ""
+msgstr "Hariak"
 
 #: resources/ui/performance_page/cpu_details.blp:139
 msgid "Handles"
-msgstr ""
+msgstr "Identifikatzaileak"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
@@ -390,47 +394,47 @@ msgstr ""
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
-msgstr ""
+msgstr "Oinarriko abiadura:"
 
 #: resources/ui/performance_page/cpu_details.blp:199
 msgid "Sockets:"
-msgstr ""
+msgstr "Socketak:"
 
 #: resources/ui/performance_page/cpu_details.blp:213
 msgid "Virtual processors:"
-msgstr ""
+msgstr "Prozesadore birtualak:"
 
 #: resources/ui/performance_page/cpu_details.blp:227
 msgid "Virtualization:"
-msgstr ""
+msgstr "Birtualizazioa:"
 
 #: resources/ui/performance_page/cpu_details.blp:241
 msgid "Virtual machine:"
-msgstr ""
+msgstr "Makina birtuala:"
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr ""
+msgstr "L1 cachea:"
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr ""
+msgstr "L2 cachea:"
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr ""
+msgstr "L3 cachea:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq kontrolatzailea:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq gobernadorea:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr ""
+msgstr "Energia hobespenak:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
@@ -451,28 +455,28 @@ msgstr ""
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
-msgstr ""
+msgstr "Irakurtze-abiadura"
 
 #: resources/ui/performance_page/disk_details.blp:137
 msgid "Write speed"
-msgstr ""
+msgstr "Idazte-abiadura"
 
 #: resources/ui/performance_page/disk_details.blp:162
 msgid "Capacity:"
-msgstr ""
+msgstr "Edukiera:"
 
 #: resources/ui/performance_page/disk_details.blp:176
 msgid "Formatted:"
-msgstr ""
+msgstr "Formateatuta:"
 
 #: resources/ui/performance_page/disk_details.blp:190
 msgid "System disk:"
-msgstr ""
+msgstr "Sistemako diskoa:"
 
 #: resources/ui/performance_page/disk_details.blp:204
 #: resources/ui/performance_page/memory_details.blp:260
 msgid "Type:"
-msgstr ""
+msgstr "Mota:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
@@ -484,15 +488,15 @@ msgstr ""
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
-msgstr ""
+msgstr "Haizagailuaren abiadura"
 
 #: resources/ui/performance_page/fan_details.blp:82
 msgid "PWM %"
-msgstr ""
+msgstr "PWM %"
 
 #: resources/ui/performance_page/fan_details.blp:108
 msgid "Current Temperature"
-msgstr ""
+msgstr "Uneko tenperatura"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
@@ -509,23 +513,23 @@ msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
-msgstr ""
+msgstr "Ordulariaren abiadura"
 
 #: resources/ui/performance_page/gpu_details.blp:110
 msgid "Power draw"
-msgstr ""
+msgstr "Energia kontsumoa"
 
 #: resources/ui/performance_page/gpu_details.blp:154
 msgid "Memory usage"
-msgstr ""
+msgstr "Memoriaren erabilera"
 
 #: resources/ui/performance_page/gpu_details.blp:208
 msgid "GTT usage"
-msgstr ""
+msgstr "GTT erabilera"
 
 #: resources/ui/performance_page/gpu_details.blp:254
 msgid "Memory speed"
-msgstr ""
+msgstr "Memoriaren abiadura"
 
 #: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
@@ -537,28 +541,28 @@ msgstr ""
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
-msgstr ""
+msgstr "Tenperatura"
 
 #: resources/ui/performance_page/gpu_details.blp:393
 msgid "OpenGL version:"
-msgstr ""
+msgstr "OpenGL bertsioa:"
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Vulkan version:"
-msgstr ""
+msgstr "Vulkan bertsioa:"
 
 #: resources/ui/performance_page/gpu_details.blp:421
 msgid "PCI Express speed:"
-msgstr ""
+msgstr "PCI Express abiadura:"
 
 #: resources/ui/performance_page/gpu_details.blp:435
 msgid "PCI bus address:"
-msgstr ""
+msgstr "PCI bus helbidea:"
 
 #: resources/ui/performance_page/memory.blp:40 src/apps_page/mod.rs:1373
 #: src/performance_page/mod.rs:1026
 msgid "Memory"
-msgstr ""
+msgstr "Memoria"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
@@ -566,87 +570,87 @@ msgstr ""
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
-msgstr ""
+msgstr "Memoriaren konposaketa"
 
 #: resources/ui/performance_page/memory.blp:185
 msgid "Show Memory Composition"
-msgstr ""
+msgstr "Erakutsi memoriaren konposaketa"
 
 #: resources/ui/performance_page/memory.blp:189
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Erakutsi trukatze-espazioaren erabilera"
 
 #: resources/ui/performance_page/memory_details.blp:57
 msgid "In use"
-msgstr ""
+msgstr "Erabiltzen"
 
 #: resources/ui/performance_page/memory_details.blp:82
 msgid "Available"
-msgstr ""
+msgstr "Erabilgarri"
 
 #: resources/ui/performance_page/memory_details.blp:119
 msgid "Committed"
-msgstr ""
+msgstr "Konprometituta"
 
 #: resources/ui/performance_page/memory_details.blp:143
 msgid "Cached"
-msgstr ""
+msgstr "Cacheratuta"
 
 #: resources/ui/performance_page/memory_details.blp:171
 msgid "Swap used"
-msgstr ""
+msgstr "Erabilitako trukatze-espazioa"
 
 #: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap available"
-msgstr ""
+msgstr "Trukatze-espazio erabilgarria"
 
 #: resources/ui/performance_page/memory_details.blp:218
 msgid "Speed:"
-msgstr ""
+msgstr "Abiadura:"
 
 #: resources/ui/performance_page/memory_details.blp:232
 msgid "Slots used:"
-msgstr ""
+msgstr "Erabilitako artekak:"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Form factor:"
-msgstr ""
+msgstr "Forma faktorea:"
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr ""
+msgstr "Sareko e_zarpenak"
 
 #: resources/ui/performance_page/network_details.blp:55
 msgid "Receive"
-msgstr ""
+msgstr "Jasotzen"
 
 #: resources/ui/performance_page/network_details.blp:78
 msgid "Total Received"
-msgstr ""
+msgstr "Jasotakoak guztira"
 
 #: resources/ui/performance_page/network_details.blp:114
 msgid "Send"
-msgstr ""
+msgstr "Bidaltzen"
 
 #: resources/ui/performance_page/network_details.blp:137
 msgid "Total Sent"
-msgstr ""
+msgstr "Bidalitakoak guztira"
 
 #: resources/ui/performance_page/network_details.blp:162
 msgid "Interface name:"
-msgstr ""
+msgstr "Interfazearen izena:"
 
 #: resources/ui/performance_page/network_details.blp:176
 msgid "Connection type:"
-msgstr ""
+msgstr "Konexio mota:"
 
 #: resources/ui/performance_page/network_details.blp:191
 msgid "SSID:"
-msgstr ""
+msgstr "SSIDa:"
 
 #: resources/ui/performance_page/network_details.blp:206
 msgid "Signal strength:"
-msgstr ""
+msgstr "Seinalearen sendotasuna:"
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
@@ -654,39 +658,39 @@ msgstr ""
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
-msgstr ""
+msgstr "Maiztasuna:"
 
 #: resources/ui/performance_page/network_details.blp:250
 msgid "Hardware address:"
-msgstr ""
+msgstr "Hardware helbidea:"
 
 #: resources/ui/performance_page/network_details.blp:364
 msgid "IPv4 address:"
-msgstr ""
+msgstr "IPv4 helbidea:"
 
 #: resources/ui/performance_page/network_details.blp:378
 msgid "IPv6 address:"
-msgstr ""
+msgstr "IPv6 helbidea:"
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr ""
+msgstr "Orokorra"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "Eguneratze-tartea"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
-msgstr ""
+msgstr "Grafikoetako datu-puntuak"
 
 #: resources/ui/preferences/page.blp:46
 msgid "Performance Page"
-msgstr ""
+msgstr "Errendimenduaren orria"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Grafiko leunak"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
@@ -694,11 +698,11 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
-msgstr ""
+msgstr "Erakutsi sareko abiadura bytetan"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Eskalatu sareko grafikoak dinamikoki"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
@@ -708,31 +712,31 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Erakutsi PUZaren informazioa"
 
 #: resources/ui/preferences/page.blp:69
 msgid "Show Memory Information"
-msgstr ""
+msgstr "Erakutsi memoriaren informazioa"
 
 #: resources/ui/preferences/page.blp:74
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Erakutsi diskoen informazioa"
 
 #: resources/ui/preferences/page.blp:79
 msgid "Show Network Information"
-msgstr ""
+msgstr "Erakutsi sarearen informazioa"
 
 #: resources/ui/preferences/page.blp:84
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Erakutsi GPUaren informazioa"
 
 #: resources/ui/preferences/page.blp:89
 msgid "Show Fan Information"
-msgstr ""
+msgstr "Erakutsi haizagailuaren informazioa"
 
 #: resources/ui/preferences/page.blp:95
 msgid "App Page"
-msgstr ""
+msgstr "Aplikazioen orria"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
