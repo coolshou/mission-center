@@ -72,6 +72,7 @@ template $DetailsDialog: Adw.Dialog {
 
                 Button start {
                   action-name: "win.selected-svc-start";
+                  tooltip-text: _("Start service");
 
                   child: Box {
                     spacing: 5;
@@ -86,6 +87,7 @@ template $DetailsDialog: Adw.Dialog {
 
                 Button stop {
                   action-name: "win.selected-svc-stop";
+                  tooltip-text: _("Stop service");
 
                   child: Box {
                     spacing: 5;
@@ -101,6 +103,7 @@ template $DetailsDialog: Adw.Dialog {
 
               Button restart {
                 action-name: "win.selected-svc-restart";
+                tooltip-text: _("Restart service");
 
                 child: Box {
                   spacing: 5;

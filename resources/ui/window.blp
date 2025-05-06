@@ -140,12 +140,14 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
             action-name: "win.toggle-search";
             icon-name: "system-search-symbolic";
             visible: bind template.search-button-visible;
+            tooltip-text: _("Search");
           }
 
           MenuButton menu_button {
             icon-name: "open-menu-symbolic";
             tooltip-text: _("Main Menu");
             menu-model: primary_menu;
+            primary: true;
           }
         }
       }
