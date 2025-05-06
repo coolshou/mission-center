@@ -24,7 +24,7 @@ use std::sync::OnceLock;
 use std::time::Duration;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value, WeakRef};
+use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
 use gtk::glib::ControlFlow;
 use gtk::{gdk, gio, glib};
 
@@ -33,12 +33,8 @@ use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
 
 fn special_shortcuts(
-) -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>
-{
-    fn select_device(window: WeakRef<MissionCenterWindow>, index: i32) -> bool {
-        let Some(window) = window.upgrade() else {
-            return false;
-        };
+) -> &'static HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(&MissionCenterWindow) -> bool>> {
+    fn select_device(window: &MissionCenterWindow, index: i32) -> bool {
         let imp = window.imp();
 
         let result = window.performance_page_active();
@@ -51,63 +47,57 @@ fn special_shortcuts(
         result
     }
 
-    fn select_device_1(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_1(window: &MissionCenterWindow) -> bool {
         select_device(window, 0)
     }
 
-    fn select_device_2(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_2(window: &MissionCenterWindow) -> bool {
         select_device(window, 1)
     }
 
-    fn select_device_3(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_3(window: &MissionCenterWindow) -> bool {
         select_device(window, 2)
     }
 
-    fn select_device_4(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_4(window: &MissionCenterWindow) -> bool {
         select_device(window, 3)
     }
 
-    fn select_device_5(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_5(window: &MissionCenterWindow) -> bool {
         select_device(window, 4)
     }
 
-    fn select_device_6(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_6(window: &MissionCenterWindow) -> bool {
         select_device(window, 5)
     }
 
-    fn select_device_7(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_7(window: &MissionCenterWindow) -> bool {
         select_device(window, 6)
     }
 
-    fn select_device_8(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_8(window: &MissionCenterWindow) -> bool {
         select_device(window, 7)
     }
 
-    fn select_device_9(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_9(window: &MissionCenterWindow) -> bool {
         select_device(window, 8)
     }
 
-    fn select_device_10(window: WeakRef<MissionCenterWindow>) -> bool {
+    fn select_device_10(window: &MissionCenterWindow) -> bool {
         select_device(window, 9)
     }
 
-    fn toggle_search(window: WeakRef<MissionCenterWindow>) -> bool {
-        let Some(window) = window.upgrade() else {
-            return false;
-        };
+    fn toggle_search(window: &MissionCenterWindow) -> bool {
         let imp = window.imp();
         let result = imp.search_button.is_visible() && !imp.search_button.is_active();
         if result {
-            let _ = WidgetExt::activate_action(&window, "win.toggle-search", None);
+            let _ = WidgetExt::activate_action(window, "win.toggle-search", None);
         }
 
         result
     }
 
-    fn graph_copy(window: WeakRef<MissionCenterWindow>) -> bool {
-        let Some(window) = window.upgrade() else {
-            return false;
-        };
+    fn graph_copy(window: &MissionCenterWindow) -> bool {
         let imp = window.imp();
 
         let result = window.performance_page_active();
@@ -121,10 +111,7 @@ fn special_shortcuts(
         result
     }
 
-    fn graph_summary(window: WeakRef<MissionCenterWindow>) -> bool {
-        let Some(window) = window.upgrade() else {
-            return false;
-        };
+    fn graph_summary(window: &MissionCenterWindow) -> bool {
         let imp = window.imp();
 
         let result = window.performance_page_active();
@@ -134,27 +121,76 @@ fn special_shortcuts(
         result
     }
 
-    fn show_details(window: WeakRef<MissionCenterWindow>) -> bool {
-        let Some(window) = window.upgrade() else {
-            return false;
-        };
+    fn ctrl_l(window: &MissionCenterWindow) -> bool {
+        let imp = window.imp();
+        if window.apps_page_active() {
+            let _ = WidgetExt::activate_action(&*imp.apps_page, "apps-page.collapse-all", None);
+            return true;
+        } else if window.services_page_active() {
+            let _ = WidgetExt::activate_action(&*imp.services_page, "win.selected-svc-start", None);
+            return true;
+        }
+
+        false
+    }
+
+    fn crl_e(window: &MissionCenterWindow) -> bool {
+        let imp = window.imp();
+
+        if window.apps_page_active() {
+            let _ = WidgetExt::activate_action(&*imp.apps_page, "apps-page.stop", None);
+            return true;
+        } else if window.services_page_active() {
+            let _ = WidgetExt::activate_action(&*imp.services_page, "win.selected-svc-stop", None);
+            return true;
+        }
+
+        false
+    }
+
+    fn apps_force_stop(window: &MissionCenterWindow) -> bool {
         let imp = window.imp();
 
         let result = window.apps_page_active();
         if result {
+            let _ = WidgetExt::activate_action(&*imp.apps_page, "apps-page.force-stop", None);
+        }
+        result
+    }
+
+    fn ctrl_i(window: &MissionCenterWindow) -> bool {
+        let imp = window.imp();
+
+        if window.apps_page_active() {
             let _ = WidgetExt::activate_action(&*imp.apps_page, "apps-page.details", None);
+            return true;
+        } else if window.services_page_active() {
+            let _ = WidgetExt::activate_action(&*imp.services_page, "services-page.details", None);
+            return true;
+        }
+
+        false
+    }
+
+    fn services_restart(window: &MissionCenterWindow) -> bool {
+        let imp = window.imp();
+
+        let result = window.services_page_active();
+        if result {
+            let _ =
+                WidgetExt::activate_action(&*imp.services_page, "win.selected-svc-restart", None);
         }
         result
     }
 
     static SHORTCUTS: OnceLock<
-        HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>>,
+        HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(&MissionCenterWindow) -> bool>>,
     > = OnceLock::new();
     SHORTCUTS.get_or_init(|| {
         let mut shortcuts = HashMap::new();
 
         let mut no_modifier_shortcuts =
-            HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
+            HashMap::<gdk::Key, fn(&MissionCenterWindow) -> bool>::new();
         no_modifier_shortcuts.insert(gdk::Key::F1, select_device_1);
         no_modifier_shortcuts.insert(gdk::Key::F2, select_device_2);
         no_modifier_shortcuts.insert(gdk::Key::F3, select_device_3);
@@ -167,16 +203,23 @@ fn special_shortcuts(
         no_modifier_shortcuts.insert(gdk::Key::F10, select_device_10);
         shortcuts.insert(gdk::ModifierType::NO_MODIFIER_MASK, no_modifier_shortcuts);
 
-        let mut ctrl_shortcuts =
-            HashMap::<gdk::Key, fn(WeakRef<MissionCenterWindow>) -> bool>::new();
+        let mut ctrl_shortcuts = HashMap::<gdk::Key, fn(&MissionCenterWindow) -> bool>::new();
         ctrl_shortcuts.insert(gdk::Key::F, toggle_search);
         ctrl_shortcuts.insert(gdk::Key::f, toggle_search);
         ctrl_shortcuts.insert(gdk::Key::M, graph_summary);
         ctrl_shortcuts.insert(gdk::Key::m, graph_summary);
         ctrl_shortcuts.insert(gdk::Key::C, graph_copy);
         ctrl_shortcuts.insert(gdk::Key::c, graph_copy);
-        ctrl_shortcuts.insert(gdk::Key::I, show_details);
-        ctrl_shortcuts.insert(gdk::Key::i, show_details);
+        ctrl_shortcuts.insert(gdk::Key::L, ctrl_l);
+        ctrl_shortcuts.insert(gdk::Key::l, ctrl_l);
+        ctrl_shortcuts.insert(gdk::Key::E, crl_e);
+        ctrl_shortcuts.insert(gdk::Key::e, crl_e);
+        ctrl_shortcuts.insert(gdk::Key::X, apps_force_stop);
+        ctrl_shortcuts.insert(gdk::Key::x, apps_force_stop);
+        ctrl_shortcuts.insert(gdk::Key::I, ctrl_i);
+        ctrl_shortcuts.insert(gdk::Key::i, ctrl_i);
+        ctrl_shortcuts.insert(gdk::Key::R, services_restart);
+        ctrl_shortcuts.insert(gdk::Key::r, services_restart);
         shortcuts.insert(gdk::ModifierType::CONTROL_MASK, ctrl_shortcuts);
 
         shortcuts
@@ -755,7 +798,7 @@ mod imp {
                     let special_shortcuts = special_shortcuts();
                     if let Some(shortcut) = special_shortcuts.get(&modifier) {
                         if let Some(action) = shortcut.get(&key) {
-                            if action(this.downgrade()) {
+                            if action(&this) {
                                 return Propagation::Stop;
                             }
                         }

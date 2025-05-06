@@ -1,6 +1,6 @@
 /* magpie_client/client.rs
  *
- * Copyright 2025 Romeo Calota
+ * Copyright 2025 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
