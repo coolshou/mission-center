@@ -324,6 +324,13 @@ mod imp {
                     .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
             }
 
+            if let (Some(max_pcie_gen), Some(max_pcie_lanes)) = (gpu.max_pcie_gen, gpu.max_pcie_lanes) {
+                this.infobar_content.set_max_pcie_info_visible(true);
+                this.infobar_content
+                    .max_pcie_speed()
+                    .set_text(&format!("PCIe Gen {} x{} ", max_pcie_gen, max_pcie_lanes));
+            }
+
             this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
 
             true
@@ -351,6 +358,7 @@ mod imp {
             this.update_memory_speed(gpu, settings);
             this.update_video_encode_decode(gpu);
             this.update_temperature(gpu);
+            this.update_pcie(gpu);
 
             // The usage graph is `homogeneous: true`, so we need to hide the container if all
             // contained graphs are hidden so that the usage graph expands to fill the available
@@ -378,10 +386,11 @@ mod imp {
 
     {}
 
-    OpenGL version:    {}
-    Vulkan version:    {}
-    PCI Express speed: {}
-    PCI bus address:   {}
+    OpenGL version:        {}
+    Vulkan version:        {}
+    PCI Express speed:     {}
+    Max PCI Express speed: {}
+    PCI bus address:       {}
 
     Utilization:   {}
     Memory usage:  {} / {}
@@ -396,8 +405,9 @@ mod imp {
                 self.infobar_content.opengl_version().label(),
                 self.infobar_content.vulkan_version().label(),
                 self.infobar_content.pcie_speed().label(),
-                self.infobar_content.utilization().label(),
+                self.infobar_content.max_pcie_speed().label(),
                 self.infobar_content.pci_addr().label(),
+                self.infobar_content.utilization().label(),
                 self.infobar_content.memory_usage_current().label(),
                 self.infobar_content.memory_usage_max().label(),
                 self.infobar_content.shared_mem_usage_current().label(),
@@ -749,6 +759,18 @@ mod imp {
                     .set_text(&format!("{} °C", temp.round() as i32));
             } else {
                 self.infobar_content.box_temp().set_visible(false);
+            }
+        }
+
+        fn update_pcie(&self, gpu: &Gpu) {
+            if let (Some(pcie_gen), Some(pcie_lanes)) = (gpu.pcie_gen, gpu.pcie_lanes) {
+                self.infobar_content.set_pcie_info_visible(true);
+                self.infobar_content
+                    .pcie_speed()
+                    .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
+                if let (Some(max_pcie_gen), Some(max_pcie_lanes)) = (gpu.max_pcie_gen, gpu.max_pcie_lanes) {
+                    self.infobar_content.set_max_pcie_info_visible(!(max_pcie_gen == pcie_gen && max_pcie_lanes == pcie_lanes))
+                }
             }
         }
     }
