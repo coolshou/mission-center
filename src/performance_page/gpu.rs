@@ -324,7 +324,9 @@ mod imp {
                     .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
             }
 
-            if let (Some(max_pcie_gen), Some(max_pcie_lanes)) = (gpu.max_pcie_gen, gpu.max_pcie_lanes) {
+            if let (Some(max_pcie_gen), Some(max_pcie_lanes)) =
+                (gpu.max_pcie_gen, gpu.max_pcie_lanes)
+            {
                 this.infobar_content.set_max_pcie_info_visible(true);
                 this.infobar_content
                     .max_pcie_speed()
@@ -768,8 +770,12 @@ mod imp {
                 self.infobar_content
                     .pcie_speed()
                     .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
-                if let (Some(max_pcie_gen), Some(max_pcie_lanes)) = (gpu.max_pcie_gen, gpu.max_pcie_lanes) {
-                    self.infobar_content.set_max_pcie_info_visible(!(max_pcie_gen == pcie_gen && max_pcie_lanes == pcie_lanes))
+                if let (Some(max_pcie_gen), Some(max_pcie_lanes)) =
+                    (gpu.max_pcie_gen, gpu.max_pcie_lanes)
+                {
+                    self.infobar_content.set_max_pcie_info_visible(
+                        !(max_pcie_gen == pcie_gen && max_pcie_lanes == pcie_lanes),
+                    )
                 }
             }
         }
