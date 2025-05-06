@@ -75,6 +75,7 @@ template $ServicesPage : Box {
 
             Button start {
               action-name: "win.selected-svc-start";
+              tooltip-text: _("Start the selected service");
 
               child: Box {
                 spacing: 5;
@@ -93,6 +94,7 @@ template $ServicesPage : Box {
 
             Button stop {
               action-name: "win.selected-svc-stop";
+              tooltip-text: _("Stop the selected service");
 
               child: Box {
                 spacing: 5;
@@ -112,6 +114,7 @@ template $ServicesPage : Box {
 
           Button restart {
             action-name: "win.selected-svc-restart";
+            tooltip-text: _("Restart the selected service");
 
             child: Box {
               spacing: 5;
@@ -130,6 +133,7 @@ template $ServicesPage : Box {
 
           Button status {
             action-name: "services-page.details";
+            tooltip-text: _("Show details of the selected service");
 
             child: Box {
               spacing: 5;

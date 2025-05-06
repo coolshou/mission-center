@@ -254,3 +254,7 @@ Comments, suggestions, bug reports and contributions are welcome.
 
 This program is released under the terms of the GNU General Public License (GNU GPL) version 3. You can find a copy of
 the license in the file COPYING.
+
+## Code of Conduct
+
+Mission Center follows the GNOME Code of Conduct. All communications in project spaces are expected to follow it.
