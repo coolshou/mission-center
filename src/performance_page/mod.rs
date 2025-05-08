@@ -2233,7 +2233,9 @@ mod imp {
                                 graph_widget.set_do_animation(sliding);
                                 graph_widget.set_expected_animation_ticks(delay);
                                 graph_widget.add_data_point(0, fan.rpm as f32);
-                                if let Some(temp_name) = &fan.temp_name {
+                                if let Some(fan_name) = &fan.fan_label {
+                                    summary.set_info1(fan_name.as_str());
+                                } else if let Some(temp_name) = &fan.temp_name {
                                     summary.set_info1(temp_name.as_str());
                                 }
 
