@@ -30,7 +30,8 @@ use magpie_types::disks::{smart_data, SmartData};
 
 use crate::{i18n::*, settings};
 
-use super::SmartDialogRow;
+use super::SmartSataDialogRow;
+use super::SmartNvmeDialogRow;
 
 mod imp {
     use super::*;
@@ -42,25 +43,32 @@ mod imp {
     )]
     pub struct SmartDataDialog {
         #[template_child]
-        pub column_view: TemplateChild<gtk::ColumnView>,
+        pub sata_column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
-        pub id_column: TemplateChild<ColumnViewColumn>,
+        pub sata_id_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub attribute_column: TemplateChild<ColumnViewColumn>,
+        pub sata_attribute_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub value_column: TemplateChild<ColumnViewColumn>,
+        pub sata_value_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub normalized_column: TemplateChild<ColumnViewColumn>,
+        pub sata_normalized_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub threshold_column: TemplateChild<ColumnViewColumn>,
+        pub sata_threshold_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub worst_column: TemplateChild<ColumnViewColumn>,
+        pub sata_worst_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub type_column: TemplateChild<ColumnViewColumn>,
+        pub sata_type_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub updates_column: TemplateChild<ColumnViewColumn>,
+        pub sata_updates_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
-        pub assessment_column: TemplateChild<ColumnViewColumn>,
+        pub sata_assessment_column: TemplateChild<ColumnViewColumn>,
+        
+        #[template_child]
+        pub nvme_column_view: TemplateChild<gtk::ColumnView>,
+        #[template_child]
+        pub nvme_name_column: TemplateChild<ColumnViewColumn>,
+        #[template_child]
+        pub nvme_value_column: TemplateChild<ColumnViewColumn>,
 
         #[template_child]
         pub powered_on: TemplateChild<gtk::Label>,
@@ -72,37 +80,6 @@ mod imp {
         pub sata_data: TemplateChild<gtk::ScrolledWindow>,
         #[template_child]
         pub nvme_data: TemplateChild<gtk::ScrolledWindow>,
-
-        #[template_child]
-        pub avail_spare: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub spare_thresh: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub percent_used: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub data_read: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub data_written: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub ctrl_busy_minutes: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub power_cycles: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub unsafe_shutdowns: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub media_errors: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub num_err_log_entries: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub temp_sensors: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub wctemp: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub cctemp: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub warning_temp_time: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub critical_temp_time: TemplateChild<gtk::Label>,
     }
 
     impl SmartDataDialog {
@@ -141,7 +118,7 @@ mod imp {
             let mut rows = Vec::new();
 
             for parsed_result in ata_smart_data.attributes {
-                let new_row = SmartDialogRow::new(
+                let new_row = SmartSataDialogRow::new(
                     parsed_result.id as u8,
                     parsed_result.name,
                     parsed_result.value,
@@ -165,26 +142,26 @@ mod imp {
 
             let rows: gio::ListStore = rows.into_iter().collect();
 
-            let column_view: gtk::ColumnView = self.column_view.get();
-            let id_col: ColumnViewColumn = self.id_column.get();
-            let att_col: ColumnViewColumn = self.attribute_column.get();
-            let val_col: ColumnViewColumn = self.value_column.get();
-            let nor_col: ColumnViewColumn = self.normalized_column.get();
-            let thr_col: ColumnViewColumn = self.threshold_column.get();
-            let wor_col: ColumnViewColumn = self.worst_column.get();
-            let typ_col: ColumnViewColumn = self.type_column.get();
-            let upd_col: ColumnViewColumn = self.updates_column.get();
-            let ass_col: ColumnViewColumn = self.assessment_column.get();
+            let column_view: gtk::ColumnView = self.sata_column_view.get();
+            let id_col: ColumnViewColumn = self.sata_id_column.get();
+            let att_col: ColumnViewColumn = self.sata_attribute_column.get();
+            let val_col: ColumnViewColumn = self.sata_value_column.get();
+            let nor_col: ColumnViewColumn = self.sata_normalized_column.get();
+            let thr_col: ColumnViewColumn = self.sata_threshold_column.get();
+            let wor_col: ColumnViewColumn = self.sata_worst_column.get();
+            let typ_col: ColumnViewColumn = self.sata_type_column.get();
+            let upd_col: ColumnViewColumn = self.sata_updates_column.get();
+            let ass_col: ColumnViewColumn = self.sata_assessment_column.get();
 
-            Self::setup_column_factory(id_col, Align::Start, |mi| mi.smart_id().to_string());
-            Self::setup_column_factory(att_col, Align::Start, |mi| mi.attribute().to_string());
-            Self::setup_column_factory(val_col, Align::Start, |mi| mi.value().to_string());
-            Self::setup_column_factory(nor_col, Align::Start, |mi| mi.normalized().to_string());
-            Self::setup_column_factory(thr_col, Align::Start, |mi| mi.threshold().to_string());
-            Self::setup_column_factory(wor_col, Align::Start, |mi| mi.worst().to_string());
-            Self::setup_column_factory(typ_col, Align::Start, |mi| mi.typee().to_string());
-            Self::setup_column_factory(upd_col, Align::Start, |mi| mi.updates().to_string());
-            Self::setup_column_factory(ass_col, Align::Start, |mi| mi.assessment().to_string());
+            Self::setup_sata_column_factory(id_col, Align::Start, |mi| mi.smart_id().to_string());
+            Self::setup_sata_column_factory(att_col, Align::Start, |mi| mi.attribute().to_string());
+            Self::setup_sata_column_factory(val_col, Align::Start, |mi| mi.value().to_string());
+            Self::setup_sata_column_factory(nor_col, Align::Start, |mi| mi.normalized().to_string());
+            Self::setup_sata_column_factory(thr_col, Align::Start, |mi| mi.threshold().to_string());
+            Self::setup_sata_column_factory(wor_col, Align::Start, |mi| mi.worst().to_string());
+            Self::setup_sata_column_factory(typ_col, Align::Start, |mi| mi.typee().to_string());
+            Self::setup_sata_column_factory(upd_col, Align::Start, |mi| mi.updates().to_string());
+            Self::setup_sata_column_factory(ass_col, Align::Start, |mi| mi.assessment().to_string());
 
             let sort_model = gtk::SortListModel::builder()
                 .model(&rows)
@@ -199,121 +176,113 @@ mod imp {
             self.sata_data.set_visible(false);
             self.nvme_data.set_visible(true);
 
-            if let Some(percent_used) = result.percent_used {
-                self.percent_used.set_text(&format!("{}%", percent_used));
-            } else {
-                self.percent_used.set_text(&i18n("N/A"));
-            }
+            let mut rows = [
+                SmartNvmeDialogRow::new(i18n("Percent Used"), if let Some(percent_used) = result.percent_used {
+                    format!("{}%", percent_used)
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Available Spare"), if let Some(avail_spare) = result.avail_spare {
+                    avail_spare.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Spare Threshold"), if let Some(spare_thresh) = result.spare_thresh {
+                    spare_thresh.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Total Data Read"), if let Some(total_data_read) = result.total_data_read {
+                    crate::to_human_readable_nice(
+                        total_data_read as f32,
+                        &DataType::DriveBytes,
+                        settings,
+                    )
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Total Data Written"), if let Some(total_data_written) = result.total_data_written {
+                    crate::to_human_readable_nice(
+                        total_data_written as f32,
+                        &DataType::DriveBytes,
+                        settings,
+                    )
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Warning Temp Time"), if let Some(warning_temp_time) = result.warn_composite_temp_time {
+                    crate::to_human_readable_time(warning_temp_time as u64)
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Critical Temp Time"), if let Some(critical_temp_time) = result.crit_composite_temp_time {
+                    crate::to_human_readable_time(critical_temp_time as u64)
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Control Busy Time"), if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                    crate::to_human_readable_time(ctrl_busy_minutes)
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Warning Temperature"), if let Some(wctemp) = result.warn_composite_temp_thresh {
+                    i18n_f("{} °C", &[&format!("{}", wctemp - 273)])
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Critical Temperature"), if let Some(cctemp) = result.crit_composite_temp_thresh {
+                    i18n_f("{} °C", &[&format!("{}", cctemp - 273)])
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Temps"), format!("{:?}", result.temp_sensors)),
+                SmartNvmeDialogRow::new(i18n("Unsafe Shutdowns"), if let Some(unsafe_shutdowns) = result.unsafe_shutdowns {
+                    unsafe_shutdowns.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Media Errors"), if let Some(media_errors) = result.media_errors {
+                    media_errors.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Number Error Log Entries"), if let Some(num_err_log_entries) = result.num_err_log_entries {
+                    num_err_log_entries.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Power Cycles"), if let Some(power_cycles) = result.power_cycles {
+                    power_cycles.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+                SmartNvmeDialogRow::new(i18n("Control Busy Time"), if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                    ctrl_busy_minutes.to_string()
+                } else {
+                    i18n("N/A")
+                }),
+            ];
 
-            if let Some(avail_spare) = result.avail_spare {
-                self.avail_spare.set_text(&avail_spare.to_string());
-            } else {
-                self.avail_spare.set_text(&i18n("N/A"));
-            }
+            let rows: gio::ListStore = rows.into_iter().collect();
 
-            if let Some(spare_thresh) = result.spare_thresh {
-                self.spare_thresh.set_text(&spare_thresh.to_string());
-            } else {
-                self.spare_thresh.set_text(&i18n("N/A"));
-            }
+            let column_view: gtk::ColumnView = self.nvme_column_view.get();
+            let id_col: ColumnViewColumn = self.nvme_name_column.get();
+            let att_col: ColumnViewColumn = self.nvme_value_column.get();
 
-            if let Some(total_data_read) = result.total_data_read {
-                let data_read = crate::to_human_readable_nice(
-                    total_data_read as f32,
-                    &DataType::DriveBytes,
-                    settings,
-                );
-                self.data_read.set_text(&data_read);
-            } else {
-                self.data_read.set_text(&i18n("N/A"));
-            }
+            Self::setup_nvme_column_factory(id_col, Align::Start, |mi| mi.label().to_string());
+            Self::setup_nvme_column_factory(att_col, Align::Start, |mi| mi.value().to_string());
 
-            if let Some(total_data_written) = result.total_data_written {
-                let data_written = crate::to_human_readable_nice(
-                    total_data_written as f32,
-                    &DataType::DriveBytes,
-                    settings,
-                );
-                self.data_written.set_text(&data_written);
-            } else {
-                self.data_written.set_text(&i18n("N/A"));
-            }
+            let sort_model = gtk::SortListModel::builder()
+                .model(&rows)
+                .sorter(&column_view.sorter().unwrap())
+                .build();
 
-            if let Some(warning_temp_time) = result.warn_composite_temp_time {
-                self.warning_temp_time
-                    .set_text(crate::to_human_readable_time(warning_temp_time as u64).as_str());
-            } else {
-                self.warning_temp_time.set_text(&i18n("N/A"));
-            }
-
-            if let Some(critical_temp_time) = result.crit_composite_temp_time {
-                self.critical_temp_time
-                    .set_text(crate::to_human_readable_time(critical_temp_time as u64).as_str());
-            } else {
-                self.critical_temp_time.set_text(&i18n("N/A"));
-            }
-
-            if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
-                self.ctrl_busy_minutes
-                    .set_text(crate::to_human_readable_time(ctrl_busy_minutes).as_str());
-            } else {
-                self.ctrl_busy_minutes.set_text(&i18n("N/A"));
-            }
-
-            if let Some(wctemp) = result.warn_composite_temp_thresh {
-                self.wctemp
-                    .set_text(&i18n_f("{} °C", &[&format!("{}", wctemp - 273)]));
-            } else {
-                self.wctemp.set_text(&i18n("N/A"));
-            }
-
-            if let Some(cctemp) = result.crit_composite_temp_thresh {
-                self.cctemp
-                    .set_text(&i18n_f("{} °C", &[&format!("{}", cctemp - 273)]));
-            } else {
-                self.cctemp.set_text(&i18n("N/A"));
-            }
-
-            self.temp_sensors
-                .set_text(&format!("{:?}", result.temp_sensors));
-
-            if let Some(unsafe_shutdowns) = result.unsafe_shutdowns {
-                self.unsafe_shutdowns
-                    .set_text(&unsafe_shutdowns.to_string());
-            } else {
-                self.unsafe_shutdowns.set_text(&i18n("N/A"));
-            }
-
-            if let Some(media_errors) = result.media_errors {
-                self.media_errors.set_text(&media_errors.to_string());
-            } else {
-                self.media_errors.set_text(&i18n("N/A"));
-            }
-
-            if let Some(num_err_log_entries) = result.num_err_log_entries {
-                self.num_err_log_entries
-                    .set_text(&num_err_log_entries.to_string());
-            } else {
-                self.num_err_log_entries.set_text(&i18n("N/A"));
-            }
-
-            if let Some(power_cycles) = result.power_cycles {
-                self.power_cycles.set_text(&power_cycles.to_string());
-            } else {
-                self.power_cycles.set_text(&i18n("N/A"));
-            }
-
-            if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
-                self.ctrl_busy_minutes
-                    .set_text(&ctrl_busy_minutes.to_string());
-            } else {
-                self.ctrl_busy_minutes.set_text(&i18n("N/A"));
-            }
+            column_view.set_model(Some(&gtk::SingleSelection::new(Some(sort_model))));
         }
 
-        fn setup_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E)
+        fn setup_sata_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E)
         where
-            E: Fn(SmartDialogRow) -> String + 'static,
+            E: Fn(SmartSataDialogRow) -> String + 'static,
         {
             let factory_id_col = gtk::SignalListItemFactory::new();
             factory_id_col.connect_setup(move |_factory, list_item| {
@@ -334,7 +303,60 @@ mod imp {
 
                 let model_item = match cell
                     .item()
-                    .and_then(|i| i.downcast::<SmartDialogRow>().ok())
+                    .and_then(|i| i.downcast::<SmartSataDialogRow>().ok())
+                {
+                    Some(model_item) => model_item,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain SmartDialogRow item from GtkColumnViewCell"
+                        );
+                        return;
+                    }
+                };
+
+                let label_object = match cell.child().and_then(|c| c.downcast::<gtk::Label>().ok())
+                {
+                    Some(label) => label,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain child GtkLabel from GtkColumnViewCell"
+                        );
+                        return;
+                    }
+                };
+
+                label_object.set_label(&extract(model_item));
+            });
+
+            id_col.set_factory(Some(&factory_id_col));
+        }
+
+        fn setup_nvme_column_factory<'a, E>(id_col: ColumnViewColumn, alignment: Align, extract: E)
+        where
+            E: Fn(SmartNvmeDialogRow) -> String + 'static,
+        {
+            let factory_id_col = gtk::SignalListItemFactory::new();
+            factory_id_col.connect_setup(move |_factory, list_item| {
+                let cell = list_item.downcast_ref::<gtk::ColumnViewCell>().unwrap();
+                cell.set_child(Some(&gtk::Label::builder().halign(alignment).build()));
+            });
+            factory_id_col.connect_bind(move |_factory, list_item| {
+                let cell = match list_item.downcast_ref::<gtk::ColumnViewCell>() {
+                    Some(cell) => cell,
+                    None => {
+                        g_critical!(
+                            "MissionCenter::SMARTDialog",
+                            "Failed to obtain GtkColumnViewCell from list item"
+                        );
+                        return;
+                    }
+                };
+
+                let model_item = match cell
+                    .item()
+                    .and_then(|i| i.downcast::<SmartNvmeDialogRow>().ok())
                 {
                     Some(model_item) => model_item,
                     None => {
