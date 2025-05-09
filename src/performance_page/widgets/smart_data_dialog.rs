@@ -30,8 +30,8 @@ use magpie_types::disks::{smart_data, SmartData};
 
 use crate::{i18n::*, settings};
 
-use super::SmartSataDialogRow;
 use super::SmartNvmeDialogRow;
+use super::SmartSataDialogRow;
 
 mod imp {
     use super::*;
@@ -62,7 +62,7 @@ mod imp {
         pub sata_updates_column: TemplateChild<ColumnViewColumn>,
         #[template_child]
         pub sata_assessment_column: TemplateChild<ColumnViewColumn>,
-        
+
         #[template_child]
         pub nvme_column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
@@ -156,12 +156,16 @@ mod imp {
             Self::setup_sata_column_factory(id_col, Align::Start, |mi| mi.smart_id().to_string());
             Self::setup_sata_column_factory(att_col, Align::Start, |mi| mi.attribute().to_string());
             Self::setup_sata_column_factory(val_col, Align::Start, |mi| mi.value().to_string());
-            Self::setup_sata_column_factory(nor_col, Align::Start, |mi| mi.normalized().to_string());
+            Self::setup_sata_column_factory(nor_col, Align::Start, |mi| {
+                mi.normalized().to_string()
+            });
             Self::setup_sata_column_factory(thr_col, Align::Start, |mi| mi.threshold().to_string());
             Self::setup_sata_column_factory(wor_col, Align::Start, |mi| mi.worst().to_string());
             Self::setup_sata_column_factory(typ_col, Align::Start, |mi| mi.typee().to_string());
             Self::setup_sata_column_factory(upd_col, Align::Start, |mi| mi.updates().to_string());
-            Self::setup_sata_column_factory(ass_col, Align::Start, |mi| mi.assessment().to_string());
+            Self::setup_sata_column_factory(ass_col, Align::Start, |mi| {
+                mi.assessment().to_string()
+            });
 
             let sort_model = gtk::SortListModel::builder()
                 .model(&rows)
@@ -177,90 +181,135 @@ mod imp {
             self.nvme_data.set_visible(true);
 
             let mut rows = [
-                SmartNvmeDialogRow::new(i18n("Percent Used"), if let Some(percent_used) = result.percent_used {
-                    format!("{}%", percent_used)
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Available Spare"), if let Some(avail_spare) = result.avail_spare {
-                    avail_spare.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Spare Threshold"), if let Some(spare_thresh) = result.spare_thresh {
-                    spare_thresh.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Total Data Read"), if let Some(total_data_read) = result.total_data_read {
-                    crate::to_human_readable_nice(
-                        total_data_read as f32,
-                        &DataType::DriveBytes,
-                        settings,
-                    )
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Total Data Written"), if let Some(total_data_written) = result.total_data_written {
-                    crate::to_human_readable_nice(
-                        total_data_written as f32,
-                        &DataType::DriveBytes,
-                        settings,
-                    )
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Warning Temp Time"), if let Some(warning_temp_time) = result.warn_composite_temp_time {
-                    crate::to_human_readable_time(warning_temp_time as u64)
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Critical Temp Time"), if let Some(critical_temp_time) = result.crit_composite_temp_time {
-                    crate::to_human_readable_time(critical_temp_time as u64)
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Control Busy Time"), if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
-                    crate::to_human_readable_time(ctrl_busy_minutes)
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Warning Temperature"), if let Some(wctemp) = result.warn_composite_temp_thresh {
-                    i18n_f("{} °C", &[&format!("{}", wctemp - 273)])
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Critical Temperature"), if let Some(cctemp) = result.crit_composite_temp_thresh {
-                    i18n_f("{} °C", &[&format!("{}", cctemp - 273)])
-                } else {
-                    i18n("N/A")
-                }),
+                SmartNvmeDialogRow::new(
+                    i18n("Percent Used"),
+                    if let Some(percent_used) = result.percent_used {
+                        format!("{}%", percent_used)
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Available Spare"),
+                    if let Some(avail_spare) = result.avail_spare {
+                        avail_spare.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Spare Threshold"),
+                    if let Some(spare_thresh) = result.spare_thresh {
+                        spare_thresh.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Total Data Read"),
+                    if let Some(total_data_read) = result.total_data_read {
+                        crate::to_human_readable_nice(
+                            total_data_read as f32,
+                            &DataType::DriveBytes,
+                            settings,
+                        )
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Total Data Written"),
+                    if let Some(total_data_written) = result.total_data_written {
+                        crate::to_human_readable_nice(
+                            total_data_written as f32,
+                            &DataType::DriveBytes,
+                            settings,
+                        )
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Warning Temp Time"),
+                    if let Some(warning_temp_time) = result.warn_composite_temp_time {
+                        crate::to_human_readable_time(warning_temp_time as u64)
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Critical Temp Time"),
+                    if let Some(critical_temp_time) = result.crit_composite_temp_time {
+                        crate::to_human_readable_time(critical_temp_time as u64)
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Control Busy Time"),
+                    if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                        crate::to_human_readable_time(ctrl_busy_minutes)
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Warning Temperature"),
+                    if let Some(wctemp) = result.warn_composite_temp_thresh {
+                        i18n_f("{} °C", &[&format!("{}", wctemp - 273)])
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Critical Temperature"),
+                    if let Some(cctemp) = result.crit_composite_temp_thresh {
+                        i18n_f("{} °C", &[&format!("{}", cctemp - 273)])
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
                 SmartNvmeDialogRow::new(i18n("Temps"), format!("{:?}", result.temp_sensors)),
-                SmartNvmeDialogRow::new(i18n("Unsafe Shutdowns"), if let Some(unsafe_shutdowns) = result.unsafe_shutdowns {
-                    unsafe_shutdowns.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Media Errors"), if let Some(media_errors) = result.media_errors {
-                    media_errors.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Number Error Log Entries"), if let Some(num_err_log_entries) = result.num_err_log_entries {
-                    num_err_log_entries.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Power Cycles"), if let Some(power_cycles) = result.power_cycles {
-                    power_cycles.to_string()
-                } else {
-                    i18n("N/A")
-                }),
-                SmartNvmeDialogRow::new(i18n("Control Busy Time"), if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
-                    ctrl_busy_minutes.to_string()
-                } else {
-                    i18n("N/A")
-                }),
+                SmartNvmeDialogRow::new(
+                    i18n("Unsafe Shutdowns"),
+                    if let Some(unsafe_shutdowns) = result.unsafe_shutdowns {
+                        unsafe_shutdowns.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Media Errors"),
+                    if let Some(media_errors) = result.media_errors {
+                        media_errors.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Number Error Log Entries"),
+                    if let Some(num_err_log_entries) = result.num_err_log_entries {
+                        num_err_log_entries.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Power Cycles"),
+                    if let Some(power_cycles) = result.power_cycles {
+                        power_cycles.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
+                SmartNvmeDialogRow::new(
+                    i18n("Control Busy Time"),
+                    if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
+                        ctrl_busy_minutes.to_string()
+                    } else {
+                        i18n("N/A")
+                    },
+                ),
             ];
 
             let rows: gio::ListStore = rows.into_iter().collect();

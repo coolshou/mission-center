@@ -142,12 +142,12 @@ template $SmartDataDialog: Adw.Dialog {
       }
 
       ScrolledWindow nvme_data {
-        hscrollbar-policy: never;
         propagate-natural-height: true;
 
         ColumnView nvme_column_view {
           ColumnViewColumn nvme_name_column {
             title: _("Attribute");
+            expand: true;
 
             factory: SignalListItemFactory {};
           }
@@ -161,7 +161,6 @@ template $SmartDataDialog: Adw.Dialog {
       }
 
       ScrolledWindow sata_data {
-        hscrollbar-policy: never;
         propagate-natural-height: true;
 
         ColumnView sata_column_view {
@@ -173,6 +172,7 @@ template $SmartDataDialog: Adw.Dialog {
 
           ColumnViewColumn sata_attribute_column {
             title: _("Attribute");
+            expand: true;
 
             factory: SignalListItemFactory {};
           }

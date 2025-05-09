@@ -65,10 +65,7 @@ glib::wrapper! {
 }
 
 impl SmartNvmeDialogRow {
-    pub fn new(
-        label: String,
-        value: String,
-    ) -> Self {
+    pub fn new(label: String, value: String) -> Self {
         glib::Object::builder()
             .property("label", label)
             .property("value", value)
