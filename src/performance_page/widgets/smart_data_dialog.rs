@@ -180,7 +180,7 @@ mod imp {
             self.sata_data.set_visible(false);
             self.nvme_data.set_visible(true);
 
-            let mut rows = [
+            let rows = [
                 SmartNvmeDialogRow::new(
                     i18n("Percent Used"),
                     if let Some(percent_used) = result.percent_used {

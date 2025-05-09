@@ -18,10 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
-
-use crate::i18n::{i18n, i18n_f};
-use crate::performance_page::MK_TO_0_C;
 use gtk::subclass::prelude::WidgetImpl;
 use gtk::{
     glib,
