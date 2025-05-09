@@ -65,7 +65,9 @@ check-fmt:
   before_script:
     - !reference [ ".shared", "setup_apt" ]
     - !reference [ ".shared", "install_rust" ]
+    - !reference [ ".shared", "checkout_submodule" ]
   script:
+    - git reset --hard HEAD
     - ./support/check-cargo-fmt.sh
     - echo $CI_MERGE_REQUEST_LABELS
   rules:
