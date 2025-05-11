@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-05-06 00:03+0000\n"
-"Last-Translator: taijuin Lee <taijuin@gmail.com>\n"
+"PO-Revision-Date: 2025-05-12 08:01+0000\n"
+"Last-Translator: Angel Sherry <yohaneshiro@vivaldi.net>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -577,7 +577,7 @@ msgstr "記憶體"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr "記憶體使用率 "
+msgstr "交換空間使用率 "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
