@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-05-07 15:02+0000\n"
+"PO-Revision-Date: 2025-05-13 05:18+0000\n"
 "Last-Translator: Ibai Oihanguren Sala <ibaios@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/eu/>\n"
@@ -29,49 +29,55 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Ataza kudeatzailea;Baliabideen monitorea;Sistemaren "
+"monitorea;Prozesadorea;Prozesuak;Errendimenduaren "
+"monitorea;PUZ;GPU;Diskoa;Memoria;Sarea;Erabilera"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:5
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:7
 msgid "Mission Center Developers"
-msgstr ""
+msgstr "Mission Centerren garatzaileak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
-msgstr ""
+msgstr "Monitorizatu sistemako baliabideen erabilera"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Monitor your CPU, Memory, Disk, Network and GPU usage"
 msgstr ""
+"Monitorizatu PUZaren, memoriaren, diskoaren, sarearen eta GPUaren erabilerak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
-msgstr ""
+msgstr "Eginbideak:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
+msgstr "Monitorizatu PUZaren erabilera, orokorrean eta hari bakoitzeko"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
+"Ikusi sistemaren prozesu, hari eta kontroladore kopuruak, denbora aktiboa, "
+"ordulariaren abiadura (oinarrikoa eta unekoa), cache tamainak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
-msgstr ""
+msgstr "Monitorizatu RAM eta trukatze-espazioaren erabilera"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
-msgstr ""
+msgstr "Ikusi sistemak egiten duen memoriaren erabileraren banaketa"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
-msgstr ""
+msgstr "Monitorizatu disko erabilera eta transferentzia tasak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
-msgstr ""
+msgstr "Monitorizatu sarearen erabilera eta transferentzia abiadurak"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
@@ -79,16 +85,21 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
+"Ikusi sareko interfazeen informazioa, hala nola sareko txartelaren izena, "
+"konexio mota (Wi-Fi edo Ethernet), haririk gabeko abiadura eta maiztasuna, "
+"hardware helbidea, IP helbidea"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
+"Monitorizatu GPUaren erabilera orokorra, bideo kodetze/deskodetze erabilera, "
+"memoriaren erabilera eta energia kontsumoa, NVTOP proiektu ezagunari esker"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr ""
+msgstr "Ikusi baliabideen erabilera xehatua, aplikazio eta prozesuka"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
@@ -102,11 +113,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
-msgstr ""
+msgstr "GTK4 eta Libadwaita darabilzki"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:38
 msgid "Written in Rust"
-msgstr ""
+msgstr "Rust erabilita idatzia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
@@ -330,7 +341,7 @@ msgstr "_Memoria"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr "_Diskoa"
+msgstr "_Unitatea"
 
 #: resources/ui/performance_page/cpu.blp:149
 #: resources/ui/performance_page/disk.blp:170
@@ -756,45 +767,45 @@ msgstr ""
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Zerbitzuaren xehetasunak"
 
 #: resources/ui/services_page/details_dialog.blp:54
 msgid "State"
-msgstr ""
+msgstr "Egoera"
 
 #: resources/ui/services_page/details_dialog.blp:55
 msgid "The current state of the service"
-msgstr ""
+msgstr "Zerbitzuaren uneko egoera"
 
 #: resources/ui/services_page/details_dialog.blp:127
 #: resources/ui/services_page/page.blp:168 src/apps_page/mod.rs:1355
 msgid "Name"
-msgstr ""
+msgstr "Izena"
 
 #: resources/ui/services_page/details_dialog.blp:157
 #: resources/ui/services_page/page.blp:223
 msgid "Description"
-msgstr ""
+msgstr "Deskribapena"
 
 #: resources/ui/services_page/details_dialog.blp:187
 msgid "Status"
-msgstr ""
+msgstr "Egoera"
 
 #: resources/ui/services_page/details_dialog.blp:206
 msgid "Enabled"
-msgstr ""
+msgstr "Gaituta"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Process"
-msgstr ""
+msgstr "Prozesua"
 
 #: resources/ui/services_page/details_dialog.blp:214
 msgid "Process and user information"
-msgstr ""
+msgstr "Prozesuaren eta erabiltzailearen informazioa"
 
 #: resources/ui/services_page/details_dialog.blp:230
 msgid "Process ID"
-msgstr ""
+msgstr "Prozesuaren IDa"
 
 #: resources/ui/services_page/details_dialog.blp:243
 #: resources/ui/services_page/details_dialog.blp:275
@@ -806,125 +817,125 @@ msgstr ""
 #: src/services_page/details_dialog.rs:259
 #: src/services_page/details_dialog.rs:267
 msgid "N/A"
-msgstr ""
+msgstr "E/A"
 
 #: resources/ui/services_page/details_dialog.blp:262
 msgid "User"
-msgstr ""
+msgstr "Erabiltzailea"
 
 #: resources/ui/services_page/details_dialog.blp:294
 msgid "Group"
-msgstr ""
+msgstr "Taldea"
 
 #: resources/ui/services_page/details_dialog.blp:319
 msgid "Logs"
-msgstr ""
+msgstr "Erregistroak"
 
 #: resources/ui/services_page/page.blp:89
 #: resources/ui/services_page/page.blp:274
 msgid "Start"
-msgstr ""
+msgstr "Abiarazi"
 
 #: resources/ui/services_page/page.blp:107
 #: resources/ui/services_page/page.blp:279
 msgid "Stop"
-msgstr ""
+msgstr "Gelditu"
 
 #: resources/ui/services_page/page.blp:126
 #: resources/ui/services_page/page.blp:284
 msgid "Restart"
-msgstr ""
+msgstr "Berrabiarazi"
 
 #: resources/ui/services_page/page.blp:144
 #: resources/ui/services_page/page.blp:291 src/services_page/mod.rs:703
 msgid "Details"
-msgstr ""
+msgstr "Xehetasunak"
 
 #: resources/ui/services_page/page.blp:206 src/apps_page/mod.rs:1361
 msgid "PID"
-msgstr ""
+msgstr "PIDa"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "Gaitu guztiak"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Ezgaitu guztiak"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Berrezarri lehenetsiak"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr ""
+msgstr "Gailuak"
 
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
-msgstr ""
+msgstr "Editatu alboko barra"
 
 #: resources/ui/window.blp:94
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Erakutsi/ezkutatu alboko barra"
 
 #: resources/ui/window.blp:117
 msgid "Type a name or PID to search"
-msgstr ""
+msgstr "Idatzi izena edo PIDa bilatzeko"
 
 #: resources/ui/window.blp:173
 msgid "Loading..."
-msgstr ""
+msgstr "Kargatzen..."
 
 #: resources/ui/window.blp:187
 msgid "Performance"
-msgstr ""
+msgstr "Errendimendua"
 
 #: resources/ui/window.blp:199 src/apps_page/mod.rs:562
 msgid "Apps"
-msgstr ""
+msgstr "Aplikazioak"
 
 #: resources/ui/window.blp:207
 msgid "Services"
-msgstr ""
+msgstr "Zerbitzuak"
 
 #: resources/ui/window.blp:226
 msgid "_Preferences"
-msgstr ""
+msgstr "_Hobespenak"
 
 #: resources/ui/window.blp:231
 msgid "_About MissionCenter"
-msgstr ""
+msgstr "Mission Centerri _buruz"
 
 #: src/apps_page/mod.rs:1379 src/performance_page/mod.rs:1101
 msgid "Drive"
-msgstr ""
+msgstr "Unitatea"
 
 #: src/apps_page/mod.rs:1393
 msgid "GPU Usage"
-msgstr ""
+msgstr "GPU erabilera"
 
 #: src/apps_page/mod.rs:1403
 msgid "GPU Mem"
-msgstr ""
+msgstr "GPU memoria"
 
 #. ContentType::App
 #: src/apps_page/list_item.rs:373
 msgid "Stop Application"
-msgstr ""
+msgstr "Gelditu aplikazioa"
 
 #: src/apps_page/list_item.rs:373
 msgid "Force Stop Application"
-msgstr ""
+msgstr "Behartu aplikazioa gelditzera"
 
 #. ContentType::Process
 #: src/apps_page/list_item.rs:377
 msgid "Stop Process"
-msgstr ""
+msgstr "Gelditu prozesua"
 
 #: src/apps_page/list_item.rs:377
 msgid "Force Stop Process"
-msgstr ""
+msgstr "Behartu prozesua gelditzera"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:248
 msgid ""
@@ -932,6 +943,9 @@ msgid ""
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
+"Erabiltzen ({}B)\n"
+"\n"
+"Sistema eragileak eta martxan dauden aplikazioek erabilitako memoria"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:283
 msgid ""
@@ -940,6 +954,10 @@ msgid ""
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
+"Aldatuta ({}B)\n"
+"\n"
+"Beste prozesu batek erabili aurretik bere edukia diskoan idatzi beharra "
+"dagoen memoria"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:307
 msgid ""
@@ -947,6 +965,10 @@ msgid ""
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
+"Zain ({}B)\n"
+"\n"
+"Une honetan aktiboki erabiltzen ari ez diren datu eta kode cacheratuak "
+"dituen memoria"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:320
 msgid ""
@@ -955,34 +977,39 @@ msgid ""
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
+"Erabilgarri ({}B)\n"
+"\n"
+"Une honetan erabiltzen ari ez den memoria; sistema eragileak, "
+"kontrolatzaileek edo aplikazioek memoria gehiago behar dutenean erabiliko "
+"dena"
 
 #: src/performance_page/mod.rs:1097 src/performance_page/disk.rs:278
 msgid "Drive {} ({})"
-msgstr ""
+msgstr "Unitatea {} ({})"
 
 #: src/performance_page/mod.rs:1124
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: src/performance_page/mod.rs:1125
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: src/performance_page/mod.rs:1126
 msgid "NVMe"
-msgstr ""
+msgstr "NVMe"
 
 #: src/performance_page/mod.rs:1127
 msgid "eMMC"
-msgstr ""
+msgstr "eMMC"
 
 #: src/performance_page/mod.rs:1128
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/performance_page/mod.rs:1129
 msgid "Optical"
-msgstr ""
+msgstr "Optikoa"
 
 #: src/performance_page/mod.rs:1130 src/performance_page/cpu.rs:325
 #: src/performance_page/cpu.rs:349 src/performance_page/cpu.rs:357
@@ -993,27 +1020,27 @@ msgstr ""
 #: src/performance_page/network.rs:520 src/performance_page/network.rs:570
 #: src/performance_page/network.rs:606
 msgid "Unknown"
-msgstr ""
+msgstr "Ezezaguna"
 
 #: src/performance_page/mod.rs:1324
 msgid "GPU {}"
-msgstr ""
+msgstr "GPUa {}"
 
 #: src/performance_page/mod.rs:1326
 msgid "GPU"
-msgstr ""
+msgstr "GPUa"
 
 #: src/performance_page/mod.rs:1416
 msgid "Fan {}"
-msgstr ""
+msgstr "Haizagailua {}"
 
 #: src/performance_page/mod.rs:1418
 msgid "Fan"
-msgstr ""
+msgstr "Haizagailua"
 
 #: src/performance_page/mod.rs:1905 src/performance_page/mod.rs:1914
 msgid "{}: {} {}{}"
-msgstr ""
+msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
@@ -1021,37 +1048,37 @@ msgstr ""
 
 #: src/performance_page/cpu.rs:344 src/performance_page/disk.rs:247
 msgid "Yes"
-msgstr ""
+msgstr "Bai"
 
 #: src/performance_page/cpu.rs:346 src/performance_page/disk.rs:249
 msgid "No"
-msgstr ""
+msgstr "Ez"
 
 #: src/performance_page/cpu.rs:976 src/performance_page/gpu.rs:938
 #: src/performance_page/memory.rs:858
 msgid "{} second{}"
-msgstr ""
+msgstr "{} segundo{}"
 
 #: src/performance_page/cpu.rs:987 src/performance_page/gpu.rs:949
 #: src/performance_page/memory.rs:869
 msgid "{} minute{} "
-msgstr ""
+msgstr "{} minutu{} "
 
 #: src/performance_page/disk.rs:206
 msgid "Disk {} ({})"
-msgstr ""
+msgstr "Diskoa {} ({})"
 
 #: src/performance_page/disk.rs:210 src/performance_page/disk.rs:282
 msgid "Drive ({})"
-msgstr ""
+msgstr "Unitatea ({})"
 
 #: src/performance_page/disk.rs:289
 msgid "{} {}{}B/s"
-msgstr ""
+msgstr "{} {}{}B/s"
 
 #: src/performance_page/fan.rs:289
 msgid "{}"
-msgstr ""
+msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
@@ -1059,11 +1086,12 @@ msgstr ""
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
-msgstr ""
+msgstr "% {}"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
+#, fuzzy
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
@@ -1071,19 +1099,19 @@ msgstr ""
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:984
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: src/performance_page/network.rs:498 src/performance_page/network.rs:509
 msgid "{} {}{}B"
-msgstr ""
+msgstr "{} {}{}B"
 
 #: src/services_page/mod.rs:638
 msgid "{} Running Services"
-msgstr ""
+msgstr "{} zerbitzu martxan"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
@@ -1092,21 +1120,21 @@ msgstr ""
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
 msgid "Running"
-msgstr ""
+msgstr "Martxan"
 
 #: src/services_page/details_dialog.rs:238
 #: src/services_page/details_dialog.rs:309
 msgid "Failed"
-msgstr ""
+msgstr "Huts eginda"
 
 #: src/services_page/details_dialog.rs:240
 #: src/services_page/details_dialog.rs:311
 msgid "Stopped"
-msgstr ""
+msgstr "Geldituta"
 
 #: src/application.rs:373
 msgid "translator-credits"
-msgstr ""
+msgstr "Ibai Oihanguren Sala"
 
 #: src/main.rs:139
 msgid "_Quit"
