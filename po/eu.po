@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-14 20:54+0300\n"
-"PO-Revision-Date: 2025-05-13 05:18+0000\n"
+"PO-Revision-Date: 2025-05-14 02:47+0000\n"
 "Last-Translator: Ibai Oihanguren Sala <ibaios@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/eu/>\n"
@@ -104,12 +104,15 @@ msgstr "Ikusi baliabideen erabilera xehatua, aplikazio eta prozesuka"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
 msgstr ""
+"Laburpen ikuspegi minimizatua eskuragarri dago monitorizatze sinplea egiteko"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
+"Hardware azelerazio bidezko errendatzea darabil grafiko guztientzako, "
+"PUZaren eta bestelako baliabideen erabilera murrizteko"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid "Uses GTK4 and Libadwaita"
@@ -121,21 +124,23 @@ msgstr "Rust erabilita idatzia"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr ""
+msgstr "Mugak (arazo hauei konponbidea emateko lanean gabiltza):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "No per-process network usage"
-msgstr ""
+msgstr "Ez dago sarearen erabilera prozesuka ikusteko modurik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "GPU support is experimental"
-msgstr ""
+msgstr "GPUaren sostengua esperimentala da"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Intelen GPU monitorizatzeak Broadwell edo GPU berriagoak soilik onartzen "
+"ditu; ez du VRAM, energia edo tenperatura monitorizatzeko sostengurik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
@@ -143,127 +148,143 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Linux Mint/Cinnamon erabiltzean, baliteke abiarazitako aplikazioak ez "
+"azaltzea \"Aplikazioak\" atalean (Upstream issue: https://github.com/"
+"linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
+"Iruzkinak, iradokizunak, arazoen txostenak eta ekarpenak gogo onez jasotzen "
+"ditugu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:31
 msgid "Which page is shown on application startup"
-msgstr ""
+msgstr "Aplikazioa abiatzean zer orri azalduko den"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:38
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "ZAHARKITUA! EZ DA GEHIAGO ERABILTZEN!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:44
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
+"Zer maiztasunekin freskatuko diren datuak, eta eguneratuko den interfazea "
+"(50ms-ko tarteetan)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:50
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Zenbat puntu erakutsi behar dira grafiko bakoitzean?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:55
 #: resources/ui/preferences/page.blp:55
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"Sarearen abiadura adierazteko bitak (lehenetsia) edo byteak erabili behar "
+"diren"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:60
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Grafikoaren goreneko balioa interfazearen puntu gorenarekin bat etorri behar "
+"den (faltsua) edo ikusgai dagoen puntu gorenarekin (egiazkoa)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:65
 #: resources/ui/preferences/page.blp:99
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Guraso prozesuen eta ume prozesuen estatistikak banaka edo gorantz batuta "
+"erakutsi behar diren"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "Column sorting is persisted across app restarts"
 msgstr ""
+"Zutabeen ordenatze irizpideak aplikazioa berrabiaraztean ere mantenduko dira"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 #: resources/ui/preferences/page.blp:109
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Erakutsi aplikazio eta prozesuek erabilitako PUZa nukleo erabilgarri "
+"kopurura eskalatuta"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "The column id by which the Apps page view is sorted"
-msgstr ""
+msgstr "Aplikazioen orriko ikuspegia ordenatzeko erabiliko den zutabearen IDa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Aplikazioen orriko ikuspegia ordenatzeko noranzkoa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:92
 msgid "Which graph is shown on the CPU performance page"
-msgstr ""
+msgstr "Zer grafiko erakutsiko den PUZaren errendimendu orrian"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:97
 msgid "Show kernel times in the CPU graphs"
-msgstr ""
+msgstr "Erakutsi nukleoaren denborak PUZaren grafikoetan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:102
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr ""
+msgstr "Zer orri erakutsiko den aplikazioa abiaraztean, errendimendu fitxan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:108
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Errendimendu grafikoak leunak edo koskadunak izan behar diren"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:113
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Erakutsi PUZaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:118
 #: resources/ui/preferences/page.blp:70
 msgid "Show memory information by default"
-msgstr ""
+msgstr "Erakutsi memoriaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:123
 #: resources/ui/preferences/page.blp:75
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Erakutsi diskoaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:128
 #: resources/ui/preferences/page.blp:80
 msgid "Show network information by default"
-msgstr ""
+msgstr "Erakutsi sarearen informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:133
 #: resources/ui/preferences/page.blp:85
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Erakutsi GPUaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:138
 #: resources/ui/preferences/page.blp:90
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Erakutsi haizagailuaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:143
 msgid "Show the mem composition widget"
-msgstr ""
+msgstr "Erakutsi memoriaren konposaketa widgeta"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:148
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Erakutsi trukatze-espazioaren grafikoa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:153
 msgid "Show the gpu encode-decode graph graph"
-msgstr ""
+msgstr "Erakutsi GPUaren kodetze/deskodetze grafikoa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:158
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Aplikazioaren alboko barrako sarreren ordena"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:163
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Aplikazioaren alboko barratik ezkutatu beharreko grafikoak"
 
 #: resources/ui/performance_page/cpu.blp:44 src/apps_page/mod.rs:1367
 #: src/performance_page/mod.rs:969
@@ -273,12 +294,11 @@ msgstr "PUZa"
 #: resources/ui/performance_page/cpu.blp:62
 #: resources/ui/performance_page/gpu.blp:71
 msgid "Utilization over "
-msgstr ""
+msgstr "Erabilera muga gainditua: "
 
 #: resources/ui/performance_page/cpu.blp:77
 #: resources/ui/performance_page/gpu.blp:85
 #: resources/ui/performance_page/gpu.blp:130
-#, fuzzy
 msgid "100%"
 msgstr "% 100"
 
@@ -401,7 +421,7 @@ msgstr "Identifikatzaileak"
 
 #: resources/ui/performance_page/cpu_details.blp:162
 msgid "Up time"
-msgstr ""
+msgstr "Denbora martxan"
 
 #: resources/ui/performance_page/cpu_details.blp:185
 msgid "Base Speed:"
@@ -449,20 +469,20 @@ msgstr "Energia hobespenak:"
 
 #: resources/ui/performance_page/disk.blp:63
 msgid "Active time over "
-msgstr ""
+msgstr "Denbora aktiboaren muga gainditua: "
 
 #: resources/ui/performance_page/disk.blp:104
 #: resources/ui/performance_page/network.blp:60
 msgid "Throughput over "
-msgstr ""
+msgstr "Errendimendu muga gainditua: "
 
 #: resources/ui/performance_page/disk_details.blp:46
 msgid "Active time"
-msgstr ""
+msgstr "Denbora aktiboa"
 
 #: resources/ui/performance_page/disk_details.blp:69
 msgid "Avg. response time"
-msgstr ""
+msgstr "Batez besteko erantzute denbora"
 
 #: resources/ui/performance_page/disk_details.blp:105
 msgid "Read speed"
@@ -491,11 +511,11 @@ msgstr "Mota:"
 
 #: resources/ui/performance_page/fan.blp:67
 msgid "Fan speed over "
-msgstr ""
+msgstr "Haizagailuaren abiadura muga gainditua: "
 
 #: resources/ui/performance_page/fan.blp:108
 msgid "Temperature over "
-msgstr ""
+msgstr "Tenperatura muga gainditua: "
 
 #: resources/ui/performance_page/fan_details.blp:51
 msgid "Fan Speed"
@@ -511,16 +531,16 @@ msgstr "Uneko tenperatura"
 
 #: resources/ui/performance_page/gpu.blp:114
 msgid "Video encode/decode utilization over "
-msgstr ""
+msgstr "Bideo kodetze/deskodetze erabileraren muga gainditua: "
 
 #: resources/ui/performance_page/gpu.blp:156
 #: resources/ui/performance_page/memory.blp:71
 msgid "Memory usage over "
-msgstr ""
+msgstr "Memoriaren erabilera muga gainditua: "
 
 #: resources/ui/performance_page/gpu.blp:199
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Erakutsi kodetze/deskodetze erabilera"
 
 #: resources/ui/performance_page/gpu_details.blp:65
 msgid "Clock Speed"
@@ -544,11 +564,11 @@ msgstr "Memoriaren abiadura"
 
 #: resources/ui/performance_page/gpu_details.blp:310
 msgid "Video encode"
-msgstr ""
+msgstr "Bideo kodetzea"
 
 #: resources/ui/performance_page/gpu_details.blp:343
 msgid "Video decode"
-msgstr ""
+msgstr "Bideo deskodetzea"
 
 #: resources/ui/performance_page/gpu_details.blp:368
 msgid "Temperature"
@@ -577,7 +597,7 @@ msgstr "Memoria"
 
 #: resources/ui/performance_page/memory.blp:115
 msgid "Swap usage over "
-msgstr ""
+msgstr "Trukatze-espazioaren erabilera muga gainditua: "
 
 #: resources/ui/performance_page/memory.blp:158
 msgid "Memory composition"
@@ -665,7 +685,7 @@ msgstr "Seinalearen sendotasuna:"
 
 #: resources/ui/performance_page/network_details.blp:221
 msgid "Maximum Bitrate:"
-msgstr ""
+msgstr "Bit tasa maximoa:"
 
 #: resources/ui/performance_page/network_details.blp:236
 msgid "Frequency:"
@@ -705,7 +725,7 @@ msgstr "Grafiko leunak"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Marraztu grafikoak lerro leun gisa, koskadun lerro gisa beharrean"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Show Network Speed In Bytes"
@@ -720,6 +740,8 @@ msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Eskalatu sarearen grafikoa dinamikoki uneko erabileraren edo kanalaren "
+"abiadura maximoaren arabera"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
@@ -751,19 +773,21 @@ msgstr "Aplikazioen orria"
 
 #: resources/ui/preferences/page.blp:98
 msgid "Merge Process Stats"
-msgstr ""
+msgstr "Batu prozesuen estatistikak"
 
 #: resources/ui/preferences/page.blp:103
 msgid "Remember Sorting"
-msgstr ""
+msgstr "Gogoratu ordenatze irizpideak"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Remember the sorting of the app and process list across app restarts"
 msgstr ""
+"Gogoratu aplikazio eta prozesuen zerrendetako ordenatze irizpideak "
+"aplikazioa berrabiarazten denean"
 
 #: resources/ui/preferences/page.blp:108
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Eskalatu PUZaren erabilera nukleo kopurura"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
@@ -1044,7 +1068,7 @@ msgstr "{}: {} {}{}"
 
 #: src/performance_page/cpu.rs:337 src/performance_page/gpu.rs:459
 msgid "Unsupported"
-msgstr ""
+msgstr "Sostengu gabea"
 
 #: src/performance_page/cpu.rs:344 src/performance_page/disk.rs:247
 msgid "Yes"
@@ -1082,20 +1106,19 @@ msgstr "{}"
 
 #: src/performance_page/fan.rs:292 src/performance_page/fan.rs:395
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:296
 msgid "{}%"
 msgstr "% {}"
 
 #: src/performance_page/fan.rs:329 src/performance_page/fan.rs:384
-#, fuzzy
 msgid "{} °C"
 msgstr "{} °C"
 
 #: src/performance_page/memory.rs:770
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Huts egin du memoriaren informazio gehigarria eskuratzean"
 
 #: src/performance_page/network.rs:405 src/performance_page/network.rs:982
 msgid "B/s"
@@ -1115,7 +1138,7 @@ msgstr "{} zerbitzu martxan"
 
 #: src/services_page/mod.rs:643
 msgid "{} failed services out of a total of {}"
-msgstr ""
+msgstr "{} zerbitzuk huts egin dute, guztirako {} zerbitzuetatik"
 
 #: src/services_page/details_dialog.rs:236
 #: src/services_page/details_dialog.rs:307
@@ -1138,4 +1161,4 @@ msgstr "Ibai Oihanguren Sala"
 
 #: src/main.rs:139
 msgid "_Quit"
-msgstr ""
+msgstr "_Irten"
