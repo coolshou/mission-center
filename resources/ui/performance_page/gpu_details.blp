@@ -555,6 +555,24 @@ template $GpuDetails: Box {
         }
       }
 
+      Label max_pcie_speed_label {
+        visible: bind template.max_pcie_info_visible;
+
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Max PCI Express speed:");
+
+        ellipsize: middle;
+
+        layout {
+          column: '0';
+          row: '3';
+        }
+      }
+
       Label {
         styles [
           "caption",
@@ -567,7 +585,7 @@ template $GpuDetails: Box {
 
         layout {
           column: '0';
-          row: '3';
+          row: '4';
         }
       }
 
@@ -612,7 +630,9 @@ template $GpuDetails: Box {
         }
       }
 
-      Label pci_addr {
+      Label max_pcie_speed {
+        visible: bind template.max_pcie_info_visible;
+
         styles [
           "caption",
         ]
@@ -622,6 +642,19 @@ template $GpuDetails: Box {
         layout {
           column: '1';
           row: '3';
+        }
+      }
+
+      Label pci_addr {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+
+        layout {
+          column: '1';
+          row: '4';
         }
       }
     }
