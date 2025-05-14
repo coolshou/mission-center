@@ -2,7 +2,6 @@
 <component type="desktop">
     <id>io.missioncenter.MissionCenter</id>
     <name>Mission Center</name>
-    <developer_name>Mission Center Developers</developer_name>
     <developer id="io.missioncenter">
         <name>Mission Center Developers</name>
     </developer>
@@ -16,7 +15,7 @@
 
     <summary>Monitor system resource usage</summary>
     <description>
-        <p>Monitor your CPU, Memory, Disk, Network and GPU usage</p>
+        <p>Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per app and process breakdown of these statistics</p>
         <p>Features:</p>
         <ul>
             <li>Monitor overall or per-thread CPU usage</li>

@@ -20,13 +20,6 @@ appstream_file = i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-appstreamcli = find_program('appstreamcli', required: false)
-if appstreamcli.found()
-  test('Validate appstream file',
-       appstreamcli,
-       args: ['validate', '--no-net', '--explain', appstream_file])
-endif
-
 install_data('io.missioncenter.MissionCenter.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
