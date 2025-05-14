@@ -33,8 +33,8 @@ mod imp {
     use super::*;
 
     #[derive(Default, Properties)]
-    #[properties(wrapper_type = super::SmartDialogRow)]
-    pub struct SmartDialogRow {
+    #[properties(wrapper_type = super::SmartSataDialogRow)]
+    pub struct SmartSataDialogRow {
         #[property(get, set)]
         pub smart_id: Cell<u8>,
         #[property(get, set)]
@@ -55,30 +55,30 @@ mod imp {
         pub assessment: OnceCell<String>,
     }
 
-    impl SmartDialogRow {}
+    impl SmartSataDialogRow {}
 
     #[glib::object_subclass]
-    impl ObjectSubclass for SmartDialogRow {
-        const NAME: &'static str = "SmartDialogRow";
+    impl ObjectSubclass for SmartSataDialogRow {
+        const NAME: &'static str = "SmartSataDialogRow";
         type ParentType = glib::Object;
-        type Type = super::SmartDialogRow;
+        type Type = super::SmartSataDialogRow;
     }
 
     #[glib::derived_properties]
-    impl ObjectImpl for SmartDialogRow {
+    impl ObjectImpl for SmartSataDialogRow {
         fn constructed(&self) {
             self.parent_constructed();
         }
     }
 
-    impl WidgetImpl for SmartDialogRow {}
+    impl WidgetImpl for SmartSataDialogRow {}
 }
 
 glib::wrapper! {
-    pub struct SmartDialogRow(ObjectSubclass<imp::SmartDialogRow>);
+    pub struct SmartSataDialogRow(ObjectSubclass<imp::SmartSataDialogRow>);
 }
 
-impl SmartDialogRow {
+impl SmartSataDialogRow {
     pub fn new(
         id: u8,
         attribute: String,
