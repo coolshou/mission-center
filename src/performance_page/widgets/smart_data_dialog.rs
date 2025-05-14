@@ -134,7 +134,20 @@ mod imp {
                         0 => i18n("Online"),
                         _ => i18n("Offline"),
                     },
-                    &i18n("Unknown"),
+                    // thanks GDU: https://gitlab.gnome.org/GNOME/gnome-disk-utility/-/blob/5ad540d4afe46f112174baeb9818c1eda64f2cc0/src/disks/gdu-ata-smart-dialog.c#L680
+                    &if parsed_result.value > 0
+                        && parsed_result.threshold > 0
+                        && parsed_result.value <= parsed_result.threshold
+                    {
+                        i18n("FAILING")
+                    } else if parsed_result.worst > 0
+                        && parsed_result.threshold > 0
+                        && parsed_result.worst <= parsed_result.threshold
+                    {
+                        i18n("Failed in the past")
+                    } else {
+                        i18n("Ok")
+                    },
                 );
 
                 rows.push(new_row);
