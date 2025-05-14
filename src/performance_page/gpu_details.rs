@@ -81,6 +81,10 @@ mod imp {
         #[template_child]
         pub pcie_speed: TemplateChild<gtk::Label>,
         #[template_child]
+        pub max_pcie_speed_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub max_pcie_speed: TemplateChild<gtk::Label>,
+        #[template_child]
         pub pci_addr: TemplateChild<gtk::Label>,
 
         #[template_child]
@@ -133,6 +137,8 @@ mod imp {
         show_shared_separator: PhantomData<bool>,
         #[property(get, set)]
         pcie_info_visible: Cell<bool>,
+        #[property(get, set)]
+        max_pcie_info_visible: Cell<bool>,
     }
 
     impl Default for GpuDetails {
@@ -161,6 +167,8 @@ mod imp {
                 vulkan_version: TemplateChild::default(),
                 pcie_speed_label: TemplateChild::default(),
                 pcie_speed: TemplateChild::default(),
+                max_pcie_speed_label: TemplateChild::default(),
+                max_pcie_speed: TemplateChild::default(),
                 pci_addr: TemplateChild::default(),
 
                 box_temp: TemplateChild::default(),
@@ -187,6 +195,7 @@ mod imp {
                 shared_memory_available: PhantomData,
                 show_shared_separator: PhantomData,
                 pcie_info_visible: Cell::new(true),
+                max_pcie_info_visible: Cell::new(true),
             }
         }
     }
@@ -394,6 +403,14 @@ impl GpuDetails {
 
     pub fn pcie_speed(&self) -> &gtk::Label {
         &self.imp().pcie_speed
+    }
+
+    pub fn max_pcie_speed_label(&self) -> &gtk::Label {
+        &self.imp().max_pcie_speed_label
+    }
+
+    pub fn max_pcie_speed(&self) -> &gtk::Label {
+        &self.imp().max_pcie_speed
     }
 
     pub fn pci_addr(&self) -> &gtk::Label {
