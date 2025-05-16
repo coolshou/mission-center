@@ -500,12 +500,6 @@ mod imp {
                     };
 
                 connection_status_label.set_text(&conn_status);
-
-                println!(
-                    "{:?} ({:?})",
-                    connection.state,
-                    ConnectionState::try_from(connection.state)
-                );
             }
 
             true
