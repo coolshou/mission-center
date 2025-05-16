@@ -212,7 +212,8 @@ pub enum DataType {
 
 fn data_type_setting_name(data_type: &DataType) -> &'static str {
     match data_type {
-        DataType::MemoryBytes => "memory",
+        // because we biffed it. see https://gitlab.com/mission-center-devs/mission-center/-/issues/385
+        DataType::MemoryBytes => "memory2",
         DataType::DriveBytes => "drive",
         DataType::DriveBytesPerSecond => "drive",
         DataType::NetworkBytes => "network",
