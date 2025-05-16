@@ -30,7 +30,7 @@ use crate::app;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 
-use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
+use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog, SmartFailureDialog};
 use super::PageExt;
 
 mod imp {
@@ -322,18 +322,13 @@ mod imp {
                             return;
                         };
 
-                        let dialogue = Dialog::builder()
-                            .title(i18n("Failed to get SMART data"))
-                            .default_widget(this.obj().upcast_ref::<gtk::Widget>())
-                            .build();
-
-                        dialogue.display();
-
-                        /*if let Some(smart_data) = magpie.smart_data(disk_id.clone()) {
+                        if let Some(smart_data) = magpie.smart_data(disk_id.clone()) {
                             let dialog = SmartDataDialog::new(smart_data);
                             dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         } else {
-                        };*/
+                            let dialogue = SmartFailureDialog::new();
+                            dialogue.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                        };
                     }
                 });
             }
