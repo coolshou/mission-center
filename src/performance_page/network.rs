@@ -30,9 +30,9 @@ use super::{widgets::GraphWidget, PageExt};
 use crate::{application::INTERVAL_STEP, i18n::*, settings};
 
 mod imp {
-    use magpie_types::network::ConnectionState;
     use super::*;
     use crate::DataType;
+    use magpie_types::network::ConnectionState;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageNetwork)]
@@ -485,22 +485,27 @@ mod imp {
 
             if let Some(connection_status_label) = this.connection_status_label.get() {
                 // translators: see NMDeviceState https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceState
-                let conn_status = match ConnectionState::try_from(connection.state).unwrap_or_default() {
-                    ConnectionState::Unknown => i18n("Unknown"),
-                    ConnectionState::Failed => i18n("Failed"),
-                    ConnectionState::Disconnected => i18n("Disconnected"),
-                    ConnectionState::Disconnecting => i18n("Disconnecting"),
-                    ConnectionState::Connected => i18n("Connected"),
-                    ConnectionState::Connecting => i18n("Connecting"),
-                    ConnectionState::ConfiguringIp => i18n("Configuring"),
-                    ConnectionState::NeedsAuth => i18n("Waiting for auth"),
-                    ConnectionState::Unavailable => i18n("Unavailable"),
-                    ConnectionState::Loading => i18n("Loading"),
-                };
+                let conn_status =
+                    match ConnectionState::try_from(connection.state).unwrap_or_default() {
+                        ConnectionState::Unknown => i18n("Unknown"),
+                        ConnectionState::Failed => i18n("Failed"),
+                        ConnectionState::Disconnected => i18n("Disconnected"),
+                        ConnectionState::Disconnecting => i18n("Disconnecting"),
+                        ConnectionState::Connected => i18n("Connected"),
+                        ConnectionState::Connecting => i18n("Connecting"),
+                        ConnectionState::ConfiguringIp => i18n("Configuring"),
+                        ConnectionState::NeedsAuth => i18n("Waiting for auth"),
+                        ConnectionState::Unavailable => i18n("Unavailable"),
+                        ConnectionState::Loading => i18n("Loading"),
+                    };
 
                 connection_status_label.set_text(&conn_status);
-                
-                println!("{:?} ({:?})", connection.state, ConnectionState::try_from(connection.state));
+
+                println!(
+                    "{:?} ({:?})",
+                    connection.state,
+                    ConnectionState::try_from(connection.state)
+                );
             }
 
             true
