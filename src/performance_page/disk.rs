@@ -34,9 +34,9 @@ use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
 use super::PageExt;
 
 mod imp {
-    use adw::Dialog;
     use super::*;
     use crate::{settings, DataType};
+    use adw::Dialog;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -322,14 +322,13 @@ mod imp {
                             return;
                         };
 
-
                         let dialogue = Dialog::builder()
                             .title(i18n("Failed to get SMART data"))
                             .default_widget(this.obj().upcast_ref::<gtk::Widget>())
                             .build();
-                        
+
                         dialogue.display();
-                        
+
                         /*if let Some(smart_data) = magpie.smart_data(disk_id.clone()) {
                             let dialog = SmartDataDialog::new(smart_data);
                             dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
