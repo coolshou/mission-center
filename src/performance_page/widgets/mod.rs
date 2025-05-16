@@ -23,9 +23,9 @@ pub use graph_widget::GraphWidget;
 pub use mem_composition_widget::MemoryCompositionWidget;
 pub use sidebar_drop_hint::SidebarDropHint;
 pub use smart_data_dialog::SmartDataDialog;
+pub use smart_failure_dialog::SmartFailureDialog;
 pub use smart_nvme_dialog_row::SmartNvmeDialogRow;
 pub use smart_sata_dialog_row::SmartSataDialogRow;
-pub use smart_failure_dialog::SmartFailureDialog;
 
 const GRAPH_RADIUS: f32 = 7.;
 
@@ -35,6 +35,6 @@ mod graph_widget;
 mod mem_composition_widget;
 mod sidebar_drop_hint;
 mod smart_data_dialog;
+mod smart_failure_dialog;
 mod smart_nvme_dialog_row;
 mod smart_sata_dialog_row;
-mod smart_failure_dialog;

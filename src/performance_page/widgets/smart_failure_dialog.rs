@@ -32,20 +32,15 @@ mod imp {
     #[template(
         resource = "/io/missioncenter/MissionCenter/ui/performance_page/disk_smart_failure_dialog.ui"
     )]
-    pub struct SmartFailureDialog {
-    }
+    pub struct SmartFailureDialog {}
 
     impl SmartFailureDialog {
-        pub fn update_model(&self) {
-            
-        }
+        pub fn update_model(&self) {}
     }
 
     impl Default for SmartFailureDialog {
         fn default() -> Self {
-            Self {
-                
-            }
+            Self {}
         }
     }
 
