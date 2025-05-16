@@ -262,7 +262,7 @@ mod imp {
             if let Some(formatted) = this.formatted.get() {
                 let cap = disk.formatted_bytes;
 
-                formatted.set_text(&if cap > 0 {
+                formatted.set_text(&if let Some(cap) = cap {
                     crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
                     i18n("Unknown")
