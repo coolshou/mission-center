@@ -281,13 +281,13 @@ mod imp {
                 self,
                 self.toggle_group_memory_unit,
                 self.toggle_memory_unit_bytes,
-                "performance-page-memory-use-bytes"
+                "performance-page-memory2-use-bytes"
             );
             connect_toggle_pair_to_setting!(
                 self,
                 self.toggle_group_memory_base,
                 self.toggle_memory_base_2,
-                "performance-page-memory-use-base2"
+                "performance-page-memory2-use-base2"
             );
             connect_toggle_pair_to_setting!(
                 self,
@@ -367,9 +367,9 @@ impl PreferencesPage {
             .set_active(settings.boolean("apps-page-show-column-separators"));
 
         imp.toggle_group_memory_unit
-            .set_active(!settings.boolean("performance-page-memory-use-bytes") as u32);
+            .set_active(!settings.boolean("performance-page-memory2-use-bytes") as u32);
         imp.toggle_group_memory_base
-            .set_active(settings.boolean("performance-page-memory-use-base2") as u32);
+            .set_active(settings.boolean("performance-page-memory2-use-base2") as u32);
         imp.toggle_group_drive_unit
             .set_active(!settings.boolean("performance-page-drive-use-bytes") as u32);
         imp.toggle_group_drive_base
