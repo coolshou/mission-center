@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 20:40+0000\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
 "PO-Revision-Date: 2024-08-12 05:09+0000\n"
 "Last-Translator: Abdullah Albaroty <albaroty@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
@@ -184,7 +184,7 @@ msgid "Whether or not to use bits or bytes (default) for memory"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-msgid "Whether or not to use base-10 (default) or base-2 for memory"
+msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
@@ -1447,6 +1447,7 @@ msgid "App"
 msgstr ""
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
+#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] ""
@@ -1457,6 +1458,7 @@ msgstr[4] ""
 msgstr[5] ""
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
+#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] ""
@@ -1486,14 +1488,17 @@ msgid "Stopped"
 msgstr ""
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr ""
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr ""
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
+#, rust-format
 msgid "{} sectors"
 msgstr ""
 
@@ -1501,22 +1506,12 @@ msgstr ""
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr ""
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-msgid "Kill All"
-msgstr ""
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
+#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1524,6 +1519,7 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
+#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1532,6 +1528,7 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
+#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1539,6 +1536,7 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
+#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1547,6 +1545,7 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1657,10 +1656,12 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
 msgstr ""
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
 msgstr ""
 
@@ -1709,11 +1710,13 @@ msgid "Thumb Drive"
 msgstr ""
 
 #: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
 msgstr ""
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr ""
 
@@ -1723,10 +1726,12 @@ msgid "Fan"
 msgstr ""
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr ""
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr ""
 
@@ -1737,11 +1742,13 @@ msgstr ""
 
 #: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
 #: src/performance_page/gpu.rs:870
+#, rust-format
 msgid "{} second{}"
 msgstr ""
 
 #: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
 #: src/performance_page/gpu.rs:881
+#, rust-format
 msgid "{} minute{} "
 msgstr ""
 
@@ -1750,15 +1757,18 @@ msgid "Getting additional memory information failed"
 msgstr ""
 
 #: src/performance_page/mod.rs:1135
+#, rust-format
 msgid "{} {} ({})"
 msgstr ""
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
 msgstr ""
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
+#, rust-format
 msgid "{}: {}"
 msgstr ""
 
@@ -1780,55 +1790,68 @@ msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
+#, rust-format
 msgid "{} year"
 msgstr ""
 
 #: src/main.rs:101
+#, rust-format
 msgid "{} years"
 msgstr ""
 
 #: src/main.rs:108
+#, rust-format
 msgid "{} month"
 msgstr ""
 
 #: src/main.rs:110
+#, rust-format
 msgid "{} months"
 msgstr ""
 
 #: src/main.rs:117
+#, rust-format
 msgid "{} day"
 msgstr ""
 
 #: src/main.rs:119
+#, rust-format
 msgid "{} days"
 msgstr ""
 
 #: src/main.rs:126
+#, rust-format
 msgid "{} hour"
 msgstr ""
 
 #: src/main.rs:128
+#, rust-format
 msgid "{} hours"
 msgstr ""
 
 #: src/main.rs:135
+#, rust-format
 msgid "{} minute"
 msgstr ""
 
 #: src/main.rs:137
+#, rust-format
 msgid "{} minutes"
 msgstr ""
 
 #: src/main.rs:144
+#, rust-format
 msgid "{} second"
 msgstr ""
 
 #: src/main.rs:146
+#, rust-format
 msgid "{} seconds"
 msgstr ""
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:183
+#, rust-format
 msgid "{}, {} and {}"
 msgstr ""
 
@@ -1836,6 +1859,7 @@ msgstr ""
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
 msgstr ""
 
@@ -1843,7 +1867,7 @@ msgstr ""
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:328
+#: src/main.rs:329
 msgid "_Quit"
 msgstr ""
 

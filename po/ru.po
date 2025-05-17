@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 20:40+0000\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
 "PO-Revision-Date: 2024-09-16 06:06+0000\n"
 "Last-Translator: Aleksandr Melman <alexmelman88@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
@@ -197,7 +197,7 @@ msgstr "Использовать ли для скорости сети биты 
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 #, fuzzy
-msgid "Whether or not to use base-10 (default) or base-2 for memory"
+msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
@@ -1489,7 +1489,7 @@ msgid "App"
 msgstr "Приложения"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "Запущенные службы: {}"
@@ -1497,7 +1497,7 @@ msgstr[1] "Запущенные службы: {}"
 msgstr[2] "Запущенные службы: {}"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "Запущенные службы: {}"
@@ -1524,15 +1524,17 @@ msgid "Stopped"
 msgstr "Остановленная"
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr "Запущенные службы: {}"
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr "Сбой в работе служб: {} из {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} sectors"
 msgstr "{} секунда{}"
 
@@ -1540,23 +1542,12 @@ msgstr "{} секунда{}"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr "{} °C"
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
-msgid "Kill All"
-msgstr "Отключить все"
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
+#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1567,6 +1558,7 @@ msgstr ""
 "Память, используемая операционной системой и запущенными приложениями"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
+#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1579,6 +1571,7 @@ msgstr ""
 "сможет быть использована другим процессом"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
+#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1589,6 +1582,7 @@ msgstr ""
 "Память, содержащая кэшированные данные и код, которые активно не используются"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
+#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1602,6 +1596,7 @@ msgstr ""
 "потребуется больше памяти"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1713,10 +1708,12 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
 msgstr "Диск {} ({})"
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
 msgstr "Накопитель ({})"
 
@@ -1767,11 +1764,13 @@ msgid "Thumb Drive"
 msgstr "Накопитель"
 
 #: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
 msgstr "Накопитель {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr "Вентилятор {}"
 
@@ -1781,10 +1780,12 @@ msgid "Fan"
 msgstr "Вентилятор"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr "{} об/мин"
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr "{}%"
 
@@ -1795,11 +1796,13 @@ msgstr "Не поддерживается"
 
 #: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
 #: src/performance_page/gpu.rs:870
+#, rust-format
 msgid "{} second{}"
 msgstr "{} секунда{}"
 
 #: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
 #: src/performance_page/gpu.rs:881
+#, rust-format
 msgid "{} minute{} "
 msgstr "{} минута{} "
 
@@ -1808,17 +1811,18 @@ msgid "Getting additional memory information failed"
 msgstr "Не удалось получить дополнительную информацию о памяти"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} {} ({})"
 msgstr "{} {}{}Б"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
 msgstr "ГП {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}: {}"
 msgstr "{}: {} {}{}"
 
@@ -1841,61 +1845,68 @@ msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
+#, rust-format
 msgid "{} year"
 msgstr ""
 
 #: src/main.rs:101
+#, rust-format
 msgid "{} years"
 msgstr ""
 
 #: src/main.rs:108
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} month"
 msgstr "{} минута{} "
 
 #: src/main.rs:110
+#, rust-format
 msgid "{} months"
 msgstr ""
 
 #: src/main.rs:117
+#, rust-format
 msgid "{} day"
 msgstr ""
 
 #: src/main.rs:119
+#, rust-format
 msgid "{} days"
 msgstr ""
 
 #: src/main.rs:126
+#, rust-format
 msgid "{} hour"
 msgstr ""
 
 #: src/main.rs:128
+#, rust-format
 msgid "{} hours"
 msgstr ""
 
 #: src/main.rs:135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minute"
 msgstr "{} минута{} "
 
 #: src/main.rs:137
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minutes"
 msgstr "{} минута{} "
 
 #: src/main.rs:144
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} second"
 msgstr "{} секунда{}"
 
 #: src/main.rs:146
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} seconds"
 msgstr "{} секунда{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:183
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}, {} and {}"
 msgstr "{}: {} {}{}"
 
@@ -1903,6 +1914,7 @@ msgstr "{}: {} {}{}"
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
 msgstr ""
 
@@ -1910,7 +1922,7 @@ msgstr ""
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:328
+#: src/main.rs:329
 msgid "_Quit"
 msgstr "_Выйти"
 
@@ -1919,6 +1931,14 @@ msgid "translator-credits"
 msgstr ""
 "Ivan Maslikhov <qustioof@gmail.com>\n"
 "Aleksandr Melman <alexmelman88@gmail.com>"
+
+#, fuzzy
+#~ msgid "Whether or not to use base-10 (default) or base-2 for memory"
+#~ msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+
+#, fuzzy
+#~ msgid "Kill All"
+#~ msgstr "Отключить все"
 
 #~ msgid "No per-process network usage"
 #~ msgstr "Отсутствие использования сети для каждого процесса"
