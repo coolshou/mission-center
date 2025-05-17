@@ -30,7 +30,7 @@ use magpie_types::fan::Fan;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::{PageExt, MK_TO_0_C};
-
+use crate::to_short_human_readable_time;
 use super::widgets::GraphWidget;
 
 mod imp {
@@ -498,30 +498,7 @@ impl PerformancePageFan {
 
             let this = this.imp();
 
-            let mins = graph_max_duration / 60;
-            let seconds_to_string = format!(
-                "{} second{}",
-                graph_max_duration % 60,
-                if (graph_max_duration % 60) != 1 {
-                    "s"
-                } else {
-                    ""
-                }
-            );
-            let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
-            let time_string = &*format!(
-                "{}{}",
-                if mins > 0 {
-                    mins_to_string
-                } else {
-                    "".to_string()
-                },
-                if graph_max_duration % 60 > 0 {
-                    seconds_to_string
-                } else {
-                    "".to_string()
-                }
-            );
+            let time_string = &to_short_human_readable_time(graph_max_duration);
 
             this.speed_graph_max_duration.set_text(time_string);
             this.speed_graph.set_data_points(data_points);

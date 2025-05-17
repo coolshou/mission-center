@@ -28,7 +28,7 @@ use super::{
     widgets::{GraphWidget, MemoryCompositionWidget},
     PageExt,
 };
-use crate::{application::INTERVAL_STEP, i18n::*, settings};
+use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
 
 mod imp {
     use super::*;
@@ -538,6 +538,13 @@ mod imp {
                 l.set_text(&free)
             }
 
+            let total_swap = crate::to_human_readable_nice(
+                readings.mem_info.swap_total as _,
+                &DataType::MemoryBytes,
+                settings,
+            );
+            this.total_swap.set_text(&total_swap);
+
             true
         }
 
@@ -859,35 +866,7 @@ impl PerformancePageMemory {
             let graph_max_duration =
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
-            let mins = graph_max_duration / 60;
-            let seconds_to_string = &i18n_f(
-                "{} second{}",
-                &[
-                    &format!("{}", graph_max_duration % 60),
-                    if (graph_max_duration % 60) != 1 {
-                        "s"
-                    } else {
-                        ""
-                    },
-                ],
-            );
-            let mins_to_string = &i18n_f(
-                "{} minute{} ",
-                &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }],
-            );
-            this.graph_max_duration.set_text(&*format!(
-                "{}{}",
-                if mins > 0 {
-                    mins_to_string.clone()
-                } else {
-                    "".to_string()
-                },
-                if graph_max_duration % 60 > 0 {
-                    seconds_to_string.clone()
-                } else {
-                    "".to_string()
-                }
-            ));
+            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
 
             this.usage_graph.set_data_points(data_points);
             this.swap_usage_graph.set_data_points(data_points);

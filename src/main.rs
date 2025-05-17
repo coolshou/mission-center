@@ -30,6 +30,7 @@ use std::{
     sync::{Arc, OnceLock},
 };
 use window::MissionCenterWindow;
+use crate::i18n::ni18n_f;
 
 mod application;
 mod apps_page;
@@ -86,7 +87,7 @@ pub fn is_flatpak() -> bool {
 }
 
 // tysm gdu
-pub fn to_human_readable_time(seconds: u64) -> String {
+pub fn to_long_human_readable_time(seconds: u64) -> String {
     const USEC_PER_YEAR: u64 = 60 * 60 * 6 * 1461; // ((60 * 60 * 24) as f32 * 365.25);
     const USEC_PER_MONTH: u64 = 60 * 30 * 1461; // ((60 * 60 * 24) as f32 * 365.25 / 12.0);
     const USEC_PER_DAY: u64 = 60 * 60 * 24;
@@ -196,6 +197,26 @@ pub fn to_human_readable_time(seconds: u64) -> String {
         seconds_str.to_string()
     } else {
         i18n("Less than a minute")
+    }
+}
+
+pub fn to_short_human_readable_time(seconds: u32) -> String {
+    let mins = seconds / 60;
+    let seconds = seconds % 60;
+    
+    let seconds_string = ni18n_f(
+        "{} second",
+        "{} seconds",
+        seconds,
+        &[&seconds.to_string()]
+    );
+    
+    let mins_string = ni18n_f("{} minute", "{} minutes", mins, &[&(mins).to_string()]);
+    
+    if mins > 0 {
+        format!("{} {}", mins_string, seconds_string)
+    } else {
+        format!("{}", seconds_string)
     }
 }
 

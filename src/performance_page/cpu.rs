@@ -25,7 +25,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use super::{widgets::GraphWidget, PageExt};
-use crate::{application::INTERVAL_STEP, i18n::*, settings};
+use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
 
 mod imp {
     use super::*;
@@ -967,36 +967,8 @@ impl PerformancePageCpu {
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration =
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
-
-            let mins = graph_max_duration / 60;
-            let seconds_to_string = &i18n_f(
-                "{} second{}",
-                &[
-                    &format!("{}", graph_max_duration % 60),
-                    if (graph_max_duration % 60) != 1 {
-                        "s"
-                    } else {
-                        ""
-                    },
-                ],
-            );
-            let mins_to_string = &i18n_f(
-                "{} minute{} ",
-                &[&format!("{:}", mins), if mins > 1 { "s" } else { "" }],
-            );
-            this.graph_max_duration.set_text(&*format!(
-                "{}{}",
-                if mins > 0 {
-                    mins_to_string.clone()
-                } else {
-                    "".to_string()
-                },
-                if graph_max_duration % 60 > 0 {
-                    seconds_to_string.clone()
-                } else {
-                    "".to_string()
-                }
-            ));
+            
+            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
 
             let widgets = this.graph_widgets.take();
             for graph_widget in &widgets {
