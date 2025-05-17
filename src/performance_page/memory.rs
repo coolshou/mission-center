@@ -373,7 +373,14 @@ mod imp {
                     }
                 }
                 if let Some(su) = this.slots_used.get() {
-                    su.set_text(&format!("{}", mem_module_count));
+                    if readings.mem_info.max_devices > 0 {
+                        su.set_text(&format!(
+                            "{} of {}",
+                            mem_module_count, readings.mem_info.max_devices
+                        ));
+                    } else {
+                        su.set_text(&format!("{}", mem_module_count));
+                    }
                 }
                 if let Some(ff) = this.form_factor.get() {
                     if readings.mem_devices[0].form_factor != "" {
