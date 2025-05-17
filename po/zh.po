@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 20:40+0000\n"
-"PO-Revision-Date: 2025-02-22 14:02+0000\n"
-"Last-Translator: ZhangPeng <scbeta@qq.com>\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"PO-Revision-Date: 2025-05-06 00:03+0000\n"
+"Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hans/>\n"
 "Language: zh\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -29,8 +29,10 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
-"任务管理器;资源监控器;系统监控器;处理器;进程管理;性能监控器;CPU;GPU;磁盘;磁"
-"盘;内存;网络;使用率;利用率"
+"Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;任务管理器;"
+"资源监视器;系统监视器;处理器;进程管理;性能监视器;光盘;磁盘;硬盘;固态;内存;网"
+"络;使用率;利用率;"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -45,7 +47,7 @@ msgstr "监控系统资源使用情况"
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
-msgstr "监控您的CPU、内存、硬盘、网络和GPU使用情况"
+msgstr "监控您的处理器、内存、硬盘、网络和显卡使用情况"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -53,7 +55,7 @@ msgstr "功能："
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "监控整体或每个核心的CPU使用情况"
+msgstr "监控整体或每个线程处理器使用情况"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid ""
@@ -65,7 +67,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "监控 RAM 和 Swap 使用情況"
+msgstr "监控内存和交换空间使用情況"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -85,16 +87,16 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"查看网络接口信息，如网卡名称、连接类型（Wi-Fi 或 Ethernet）、无线速度和频率、"
-"硬件地址、IP 地址"
+"查看网络接口信息，如网卡名称、连接类型（Wi-Fi 或以太网）、无线速度和频率、硬"
+"件地址、IP 地址"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"监控GPU整体使用情况，视频编码器和解码器使用情况，内存使用情况和功耗，由受欢迎"
-"项目NVTOP提供支持"
+"监控显卡整体使用情况，视频编码器和解码器使用情况，内存使用情况和功耗，由受欢"
+"迎项目 NVTOP 提供支持"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 #, fuzzy
@@ -103,7 +105,7 @@ msgstr "监控系统资源使用情况"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "查看应用程序和进程的资源使用详细信息"
+msgstr "查看应用和进程的资源使用详细信息"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
@@ -113,7 +115,7 @@ msgstr "支持缩小的摘要视图以进行简单监控"
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
-msgstr "对所有图形使用硬件加速渲染，以减少 CPU 和整体资源使用量"
+msgstr "对所有图形使用硬件加速渲染，以减少处理器和整体资源占用"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Uses GTK4 and Libadwaita"
@@ -132,7 +134,7 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"Intel GPU 监控仅支持 Broadwell 及更高版本的 GPU;并且不支持 VRAM、电源或温度监"
+"英特尔显卡监控仅支持 Broadwell 及更高版本的显卡；并且不支持显存、电源或温度监"
 "控"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
@@ -146,7 +148,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "欢迎提供评论、建议、bug报告和贡献"
+msgstr "欢迎提供评论、建议、缺陷报告和贡献"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Which page is shown on application startup"
@@ -170,7 +172,7 @@ msgstr "已废弃！不再使用！"
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "刷新数据和 UI 的速度应该多快（以 50 毫秒为增量）"
+msgstr "刷新数据和用户界面的速度应该多快（以 50 毫秒为增量）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "How many points should be displayed on each chart?"
@@ -183,7 +185,7 @@ msgstr "是否使用位（默认）或字节来表示网络速度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 #, fuzzy
-msgid "Whether or not to use base-10 (default) or base-2 for memory"
+msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr "是否使用位（默认）或字节来表示网络速度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
@@ -214,7 +216,7 @@ msgstr "是将图形最大值设置为接口最大值 （false） 还是观察�
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
 msgid "Parent and child process stats are shown individually or merged upwards"
-msgstr "分别显示或合并显示父进程和子进程的状态信息"
+msgstr "分别显示或合并显示父进程和子进程的统计信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
@@ -229,7 +231,7 @@ msgstr "列排序在应用程序重新启动后保持不变"
 #: resources/ui/preferences/page.blp:120
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
-msgstr "显示按可用内核数缩放的应用和进程的 CPU 使用率"
+msgstr "显示按可用核心数缩放的应用和进程的处理器占用"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
@@ -238,24 +240,24 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 #, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "应用程序页面视图排序所依据的列id"
+msgstr "应用页面视图排序所依据的列标识符"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
-msgstr "应用程序页面视图的排序方向"
+msgstr "应用页面视图的排序方向"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
 #, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "应用程序页面视图的排序方向"
+msgstr "应用页面视图的排序方向"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
-msgstr "在CPU性能页面上展示哪个图表"
+msgstr "在处理器性能页面上展示哪个图表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:162
 msgid "Show kernel times in the CPU graphs"
-msgstr "在CPU图形中显示内核时钟"
+msgstr "在处理器图表中显示内核时钟"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:167
 msgid "Which page is shown on application startup, in the performance tab"
@@ -263,17 +265,17 @@ msgstr "在性能标签下，应用程序启动时展示的页面"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:173
 msgid "Should performance graphs be smooth or jagged"
-msgstr "性能图应该是平滑的还是锯齿状的"
+msgstr "性能图表应该是平滑的还是锯齿状的"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
 #, fuzzy
 msgid "Should graphs be animated"
-msgstr "性能图应该是平滑的还是锯齿状的"
+msgstr "性能图表应该是平滑的还是锯齿状的"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr "默认显示 CPU 信息"
+msgstr "默认显示处理器信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:188
 #: resources/ui/preferences/page.blp:71
@@ -293,7 +295,7 @@ msgstr "默认显示网络信息"
 #: data/io.missioncenter.MissionCenter.gschema.xml:203
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr "默认显示 GPU 信息"
+msgstr "默认显示显卡信息"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:208
 #: resources/ui/preferences/page.blp:95
@@ -306,12 +308,12 @@ msgstr "显示内存组成小部件"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 msgid "Show the swap graph"
-msgstr "显示交换空间图形"
+msgstr "显示交换空间图表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
 #, fuzzy
 msgid "Show the gpu encode-decode graph"
-msgstr "显示 gpu 编码-解码图形"
+msgstr "显示显卡编解码图表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
 msgid "The ordering of entries in the application sidebar"
@@ -319,7 +321,7 @@ msgstr "应用程序侧边栏中的条目顺序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr "应该隐藏在应用程序侧边栏中的图表"
+msgstr "在应用程序侧边栏中应隐藏的图表"
 
 #: resources/ui/apps_page/details_dialog.blp:76
 #: resources/ui/apps_page/page.blp:180 resources/ui/services_page/page.blp:209
@@ -354,7 +356,7 @@ msgstr "PID"
 #: src/performance_page/cpu.rs:386 src/performance_page/cpu.rs:395
 #: src/performance_page/network.rs:470 src/performance_page/network.rs:478
 msgid "N/A"
-msgstr "无法获取"
+msgstr "N/A"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
@@ -375,7 +377,7 @@ msgstr "资源"
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
 #: src/apps_page/columns/mod.rs:244 src/performance_page/mod.rs:979
 msgid "CPU"
-msgstr "CPU"
+msgstr "处理器"
 
 #: resources/ui/apps_page/details_dialog.blp:193
 #: resources/ui/apps_page/page.blp:192
@@ -406,14 +408,14 @@ msgstr "网络(_N)"
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
 #: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
 msgid "GPU"
-msgstr "GPU"
+msgstr "显卡"
 
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
 #, fuzzy
 msgid "GPU Memory"
-msgstr "GPU内存"
+msgstr "显卡内存"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
@@ -523,7 +525,7 @@ msgstr "进程与用户信息"
 
 #: resources/ui/services_page/details_dialog.blp:237
 msgid "Process ID"
-msgstr "进程ID"
+msgstr "进程 ID"
 
 #: resources/ui/services_page/details_dialog.blp:269
 msgid "User"
@@ -625,27 +627,27 @@ msgstr "虚拟机："
 
 #: resources/ui/performance_page/cpu_details.blp:255
 msgid "L1 cache:"
-msgstr "L1 缓存："
+msgstr "一级缓存："
 
 #: resources/ui/performance_page/cpu_details.blp:269
 msgid "L2 cache:"
-msgstr "L2 缓存："
+msgstr "二级缓存："
 
 #: resources/ui/performance_page/cpu_details.blp:283
 msgid "L3 cache:"
-msgstr "L3 缓存："
+msgstr "三级缓存："
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr "Cpufreq驱动:"
+msgstr "Cpufreq 驱动："
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr "Cpufreq调频策略:"
+msgstr "Cpufreq 调频策略："
 
 #: resources/ui/performance_page/cpu_details.blp:325
 msgid "Power preference:"
-msgstr "电源偏好："
+msgstr "电源首选项："
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
@@ -668,18 +670,18 @@ msgstr "功率消耗"
 #: src/performance_page/gpu.rs:555
 #, fuzzy
 msgid "Memory Usage"
-msgstr "专用GPU内存"
+msgstr "显存占用"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:632
 #, fuzzy
 msgid "Shared Memory Usage"
-msgstr "专用GPU内存"
+msgstr "显存占用"
 
 #: resources/ui/performance_page/gpu_details.blp:332
 #, fuzzy
 msgid "Memory Speed"
-msgstr "内存速度"
+msgstr "显存速度"
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Video encode"
@@ -721,7 +723,7 @@ msgstr "内存使用率 - 最近 "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
-msgstr "交换空间使用率 - 最近 "
+msgstr "交换空间占用 - 最近 "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
@@ -733,7 +735,7 @@ msgstr "显示内存组成"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr "显示交换空间使用情况"
+msgstr "显示交换空间占用"
 
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/gpu.blp:215
@@ -742,7 +744,7 @@ msgstr "显示交换空间使用情况"
 #: resources/ui/performance_page/network.blp:105
 #: resources/ui/performance_page/disk.blp:182
 msgid "Graph _Summary View"
-msgstr "图表总览(_S)"
+msgstr "图表总览视图(_S)"
 
 #: resources/ui/performance_page/memory.blp:212
 #: resources/ui/performance_page/gpu.blp:220
@@ -760,7 +762,7 @@ msgstr "视图(_V)"
 #: resources/ui/performance_page/network.blp:113
 #: resources/ui/performance_page/disk.blp:190
 msgid "CP_U"
-msgstr "CPU(_U)"
+msgstr "处理器(_U)"
 
 #: resources/ui/performance_page/memory.blp:220
 #: resources/ui/performance_page/gpu.blp:228
@@ -796,7 +798,7 @@ msgstr "网络(_N)"
 #: resources/ui/performance_page/network.blp:133
 #: resources/ui/performance_page/disk.blp:210
 msgid "_GPU"
-msgstr "GPU(_G)"
+msgstr "显卡(_G)"
 
 #: resources/ui/performance_page/memory.blp:240
 #: resources/ui/performance_page/gpu.blp:248
@@ -827,12 +829,12 @@ msgstr "写入速度"
 #: resources/ui/performance_page/disk_details.blp:130
 #, fuzzy
 msgid "Total Read"
-msgstr "收到总数"
+msgstr "收到总计"
 
 #: resources/ui/performance_page/disk_details.blp:159
 #, fuzzy
 msgid "Total Written"
-msgstr "发送总数"
+msgstr "发送总计"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -876,15 +878,15 @@ msgstr "视频编码/解码使用率 - 最近 "
 
 #: resources/ui/performance_page/gpu.blp:208
 msgid "Show Encode/Decode Usage"
-msgstr "显示编码/解码使用情况"
+msgstr "显示编码/解码占用"
 
 #: resources/ui/performance_page/cpu.blp:106
 msgid "Change G_raph To"
-msgstr "更改图表为(_r)"
+msgstr "更改图表为(_R)"
 
 #: resources/ui/performance_page/cpu.blp:109
 msgid "Overall U_tilization"
-msgstr "整体使用率(_t)"
+msgstr "整体使用率(_T)"
 
 #: resources/ui/performance_page/cpu.blp:114
 msgid "Logical _Processors"
@@ -996,7 +998,7 @@ msgstr "吞吐量 - 最近 "
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
-msgstr "网络设置(_t)"
+msgstr "网络设置(_T)"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
@@ -1020,11 +1022,11 @@ msgstr "发送"
 
 #: resources/ui/performance_page/network_details.blp:130
 msgid "Total Received"
-msgstr "收到总数"
+msgstr "收到总计"
 
 #: resources/ui/performance_page/network_details.blp:159
 msgid "Total Sent"
-msgstr "发送总数"
+msgstr "发送总计"
 
 #: resources/ui/performance_page/network_details.blp:184
 msgid "Interface name:"
@@ -1100,7 +1102,7 @@ msgstr "尺寸规格："
 
 #: resources/ui/preferences/page.blp:6
 msgid "General"
-msgstr "一般"
+msgstr "常规"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -1116,11 +1118,11 @@ msgstr "性能页面"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr "平滑图形"
+msgstr "平滑图表"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "将图形绘制为平滑线而不是锯齿状线"
+msgstr "将图表绘制为平滑线而不是锯齿状线"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
@@ -1132,17 +1134,17 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr "动态缩放网络图形"
+msgstr "动态缩放网络图表"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
-msgstr "将网络图形设置为根据实际使用情况或通道最大速度动态扩展"
+msgstr "将网络图表设置为根据实际使用情况或通道最大速度动态缩放"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr "显示 CPU 信息"
+msgstr "显示处理器信息"
 
 #: resources/ui/preferences/page.blp:70
 msgid "Show Memory Information"
@@ -1158,7 +1160,7 @@ msgstr "显示网络信息"
 
 #: resources/ui/preferences/page.blp:88
 msgid "Show GPU Information"
-msgstr "显示 GPU 信息"
+msgstr "显示显卡信息"
 
 #: resources/ui/preferences/page.blp:94
 msgid "Show Fan Information"
@@ -1166,20 +1168,20 @@ msgstr "显示风扇信息"
 
 #: resources/ui/preferences/page.blp:101
 msgid "App Page"
-msgstr "“应用”页面"
+msgstr "应用页面"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Merge Process Stats"
-msgstr "合并进程状态信息"
+msgstr "合并进程统计"
 
 #: resources/ui/preferences/page.blp:109
 msgid "Remember Sorting"
-msgstr "保存排序状态"
+msgstr "记住排序"
 
 #: resources/ui/preferences/page.blp:110
 #, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
-msgstr "保存应用程序重新启动后对应用程序和进程列表排序状态"
+msgstr "记住应用和进程列表的排序状态"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
@@ -1188,11 +1190,11 @@ msgstr ""
 #: resources/ui/preferences/page.blp:115
 #, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr "保存应用程序重新启动后对应用程序和进程列表排序状态"
+msgstr "记住应用和进程列表的排序状态"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
-msgstr "CPU使用率按核心数量缩放"
+msgstr "将处理器占用缩放至核心数"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
@@ -1209,7 +1211,7 @@ msgstr ""
 #: resources/ui/preferences/page.blp:133
 #, fuzzy
 msgid "Memory Usage Unit"
-msgstr "专用GPU内存"
+msgstr "显存占用"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
@@ -1232,7 +1234,7 @@ msgstr ""
 #: resources/ui/preferences/page.blp:152
 #, fuzzy
 msgid "Memory Usage Base"
-msgstr "专用GPU内存"
+msgstr "显存占用"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
@@ -1316,7 +1318,7 @@ msgstr "性能页面"
 #: resources/ui/keyboard_shortcuts.blp:26
 #, fuzzy
 msgid "Show Apps Page"
-msgstr "“应用”页面"
+msgstr "应用页面"
 
 #: resources/ui/keyboard_shortcuts.blp:31
 #, fuzzy
@@ -1344,7 +1346,7 @@ msgstr ""
 #: resources/ui/keyboard_shortcuts.blp:71
 #, fuzzy
 msgid "Apps Page"
-msgstr "“应用”页面"
+msgstr "应用页面"
 
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
@@ -1421,7 +1423,7 @@ msgstr ""
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
-msgstr "加载中..."
+msgstr "加载中…"
 
 #: resources/ui/window.blp:192
 msgid "Performance"
@@ -1437,7 +1439,7 @@ msgstr "服务"
 
 #: resources/ui/window.blp:237
 msgid "_Preferences"
-msgstr "偏好设置(_P)"
+msgstr "首选项(_P)"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
@@ -1458,13 +1460,13 @@ msgid "App"
 msgstr "应用"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "{} 项服务正在运行"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "{} 项服务正在运行"
@@ -1489,15 +1491,17 @@ msgid "Stopped"
 msgstr "已停止"
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr "{} 项服务正在运行"
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
-msgstr "{} 个失败的服务，共 {} 个"
+msgstr "{} 项失败的服务，共 {} 项服务"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} sectors"
 msgstr "{} 秒{}"
 
@@ -1505,23 +1509,12 @@ msgstr "{} 秒{}"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr "{} °C"
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
-msgid "Kill All"
-msgstr "全部禁用"
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
+#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1529,9 +1522,10 @@ msgid ""
 msgstr ""
 "使用中（{}B）\n"
 "\n"
-"被系统和正在运行的应用程序使用的内存"
+"被操作系统和运行中应用程序使用的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
+#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1540,9 +1534,10 @@ msgid ""
 msgstr ""
 "已修改（{}B）\n"
 "\n"
-"在其他进程可以使用之前，必须先将内存中的内容写入磁盘"
+"被其它进程使用前必须将内容写入磁盘的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
+#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1550,9 +1545,10 @@ msgid ""
 msgstr ""
 "备用（{}B）\n"
 "\n"
-"包含未使用的缓存数据和代码的内存"
+"包含未活跃使用缓存数据和代码的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
+#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1561,9 +1557,10 @@ msgid ""
 msgstr ""
 "空闲（{}B）\n"
 "\n"
-"当操作系统、驱动程序或应用程序需要更多内存时，优先重新分配的未使用的内存"
+"当操作系统、驱动程序或应用程序需要更多内存时，优先重新分配的当前未使用内存"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1625,7 +1622,7 @@ msgstr ""
 #: src/performance_page/widgets/smart_data_dialog.rs:222
 #, fuzzy
 msgid "Total Data Read"
-msgstr "收到总数"
+msgstr "收到总计"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
@@ -1675,12 +1672,14 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
-msgstr "磁盘 {} ({})"
+msgstr "磁盘 {}（{}）"
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
-msgstr "驱动器 ({})"
+msgstr "驱动器（{}）"
 
 #: src/performance_page/disk.rs:273 src/performance_page/cpu.rs:346
 msgid "Yes"
@@ -1729,11 +1728,13 @@ msgid "Thumb Drive"
 msgstr "驱动器"
 
 #: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
-msgstr "驱动器 {} ({})"
+msgstr "驱动器 {}（{}）"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr "风扇 {}"
 
@@ -1743,10 +1744,12 @@ msgid "Fan"
 msgstr "风扇"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr "{}%"
 
@@ -1757,30 +1760,33 @@ msgstr "不支持"
 
 #: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
 #: src/performance_page/gpu.rs:870
+#, rust-format
 msgid "{} second{}"
 msgstr "{} 秒{}"
 
 #: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
 #: src/performance_page/gpu.rs:881
+#, rust-format
 msgid "{} minute{} "
 msgstr "{} 分钟{} "
 
 #: src/performance_page/memory.rs:397
 msgid "Getting additional memory information failed"
-msgstr "获取扩展内存信息失败"
+msgstr "获取额外内存信息失败"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} {} ({})"
-msgstr "{} {}{}字节"
+msgstr "{} {}{}B"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
-msgstr "GPU {}"
+msgstr "显卡 {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}: {}"
 msgstr "{}: {} {}{}"
 
@@ -1803,61 +1809,68 @@ msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
+#, rust-format
 msgid "{} year"
 msgstr ""
 
 #: src/main.rs:101
+#, rust-format
 msgid "{} years"
 msgstr ""
 
 #: src/main.rs:108
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} month"
 msgstr "{} 分钟{} "
 
 #: src/main.rs:110
+#, rust-format
 msgid "{} months"
 msgstr ""
 
 #: src/main.rs:117
+#, rust-format
 msgid "{} day"
 msgstr ""
 
 #: src/main.rs:119
+#, rust-format
 msgid "{} days"
 msgstr ""
 
 #: src/main.rs:126
+#, rust-format
 msgid "{} hour"
 msgstr ""
 
 #: src/main.rs:128
+#, rust-format
 msgid "{} hours"
 msgstr ""
 
 #: src/main.rs:135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minute"
 msgstr "{} 分钟{} "
 
 #: src/main.rs:137
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minutes"
 msgstr "{} 分钟{} "
 
 #: src/main.rs:144
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} second"
 msgstr "{} 秒{}"
 
 #: src/main.rs:146
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} seconds"
 msgstr "{} 秒{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:183
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}, {} and {}"
 msgstr "{}: {} {}{}"
 
@@ -1865,6 +1878,7 @@ msgstr "{}: {} {}{}"
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
 msgstr ""
 
@@ -1872,7 +1886,7 @@ msgstr ""
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:328
+#: src/main.rs:329
 msgid "_Quit"
 msgstr "退出(_Q)"
 
@@ -1880,31 +1894,32 @@ msgstr "退出(_Q)"
 msgid "translator-credits"
 msgstr ""
 "NS nsfoxer <muwuren@gmail.com>\n"
-"张鹏 <scbeta@qq.com>"
+"张鹏 <scbeta@qq.com>\n"
+"lumingzh <lumingzh@qq.com>"
 
 #~ msgid "No per-process network usage"
 #~ msgstr "没有单个进程网络使用情况"
 
 #~ msgid "GPU support is experimental"
-#~ msgstr "GPU支持是实验性的"
+#~ msgstr "显卡支持是实验性的"
 
 #~ msgid "PWM %"
 #~ msgstr "PWM %"
 
 #~ msgid "GTT usage"
-#~ msgstr "共享GPU内存"
+#~ msgstr "GTT 占用"
 
 #~ msgid "Show Network Speed In Bytes"
-#~ msgstr "显示网络速度（以字节为单位）"
+#~ msgstr "显示网络速度（字节）"
 
 #~ msgid "GPU Usage"
-#~ msgstr "GPU使用率"
+#~ msgstr "显卡占用"
 
 #~ msgid "Stop Application"
-#~ msgstr "关闭应用"
+#~ msgstr "停止应用程序"
 
 #~ msgid "Force Stop Application"
-#~ msgstr "强制关闭应用"
+#~ msgstr "强制停止应用程序"
 
 #~ msgid "{} {}{}B/s"
 #~ msgstr "{} {}{}B/秒"
@@ -1913,10 +1928,10 @@ msgstr ""
 #~ msgstr "{}"
 
 #~ msgid "B/s"
-#~ msgstr "字节/秒"
+#~ msgstr "B/s"
 
 #~ msgid "bps"
-#~ msgstr "位/秒"
+#~ msgstr "bps"
 
 #~ msgid "{} {}bps"
 #~ msgstr "{} {}b/秒"

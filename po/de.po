@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 20:40+0000\n"
-"PO-Revision-Date: 2025-05-01 08:59+0000\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"PO-Revision-Date: 2025-05-06 00:03+0000\n"
 "Last-Translator: ItsGamerik <erschmia@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
@@ -63,11 +63,11 @@ msgid ""
 "current), cache sizes"
 msgstr ""
 "Überwachen Sie Systemprozesse, Threads, Anzahl der Handles, Betriebszeit, "
-"Taktfrequenz (Sowohl basis- als auch aktueller Takt) und Cache-Größen"
+"Taktfrequenz (Sowohl Basis- als auch aktueller Takt) und Cache-Größen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "Überwachen Sie die Auslastung von Arbeitsspeicher und Swap"
+msgstr "Überwachen Sie die Auslastung von Arbeits- und Auslagerungsspeicher"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -109,8 +109,7 @@ msgstr "Resourcennutzung überwachen"
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
 msgstr ""
-"Eine Aufschlüsselung der Ressourcennutzung nach Anwendung und Prozess "
-"anzeigen"
+"Zusammenfassung der Ressourcennutzung nach Anwendung und Prozess anzeigen"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
@@ -200,7 +199,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 #, fuzzy
-msgid "Whether or not to use base-10 (default) or base-2 for memory"
+msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr ""
 "Ob Bits (Standard) oder Bytes als Einheit für Netzwerkgeschwindigkeit "
 "verwendet werden sollen"
@@ -249,12 +248,12 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr "Spaltensortierung wird nach Programmneustarts beibehalten"
+msgstr "Spaltensortierung wird über Neustarts der Anwendung hinweg beibehalten"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
 #, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Spaltensortierung wird nach Programmneustarts beibehalten"
+msgstr "Spaltensortierung wird über Neustarts der Anwendung hinweg beibehalten"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -464,7 +463,7 @@ msgstr ""
 #: resources/ui/services_page/page.blp:109
 #: resources/ui/services_page/page.blp:269
 msgid "Stop"
-msgstr "Stopp"
+msgstr "Beenden"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
@@ -1229,7 +1228,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
-msgstr "CPU-Auslastung mit der Kernanzahl skalieren"
+msgstr "CPU-Auslastung nach Kernanzahl skalieren"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
@@ -1391,7 +1390,7 @@ msgstr ""
 #: resources/ui/keyboard_shortcuts.blp:92
 #, fuzzy
 msgid "Stop App or Process"
-msgstr "Prozess stoppen"
+msgstr "Prozess beenden"
 
 #: resources/ui/keyboard_shortcuts.blp:97
 #, fuzzy
@@ -1495,14 +1494,14 @@ msgid "App"
 msgstr "Apps"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "{} Aktive Dienste"
 msgstr[1] "{} Aktive Dienste"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "{} Aktive Dienste"
@@ -1525,18 +1524,20 @@ msgstr "Fehlgeschlagen"
 #: src/services_page/details_dialog.rs:239
 #: src/services_page/details_dialog.rs:308
 msgid "Stopped"
-msgstr "Gestoppt"
+msgstr "Beendet"
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr "{} Aktive Dienste"
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr "{} fehlgeschlagene Dienste von insgesamt {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} sectors"
 msgstr "{} Sekunde{}"
 
@@ -1544,23 +1545,12 @@ msgstr "{} Sekunde{}"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr "{} °C"
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
-msgid "Kill All"
-msgstr "Alle Deaktivieren"
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
+#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1571,6 +1561,7 @@ msgstr ""
 "Speicher, der vom Betriebssystem und den laufenden Anwendungen genutzt wird"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
+#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1583,6 +1574,7 @@ msgstr ""
 "von einem anderen Prozess verwendet werden kann"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
+#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1594,6 +1586,7 @@ msgstr ""
 "genutzt wird"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
+#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1607,6 +1600,7 @@ msgstr ""
 "Speicher benötigen"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1718,10 +1712,12 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
 msgstr "Datenträger {} ({})"
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
 msgstr "Laufwerk ({})"
 
@@ -1772,11 +1768,13 @@ msgid "Thumb Drive"
 msgstr "Laufwerk"
 
 #: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
 msgstr "Laufwerk {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr "Lüfter {}"
 
@@ -1786,10 +1784,12 @@ msgid "Fan"
 msgstr "Lüfter"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr "{}%"
 
@@ -1800,11 +1800,13 @@ msgstr "Nicht unterstützt"
 
 #: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
 #: src/performance_page/gpu.rs:870
+#, rust-format
 msgid "{} second{}"
 msgstr "{} Sekunde{}"
 
 #: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
 #: src/performance_page/gpu.rs:881
+#, rust-format
 msgid "{} minute{} "
 msgstr "{} Minute{} "
 
@@ -1813,17 +1815,18 @@ msgid "Getting additional memory information failed"
 msgstr "Abrufen zusätzlicher Speicherinformationen fehlgeschlagen"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} {} ({})"
 msgstr "{} {}{}B"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}: {}"
 msgstr "{}: {} {}{}"
 
@@ -1846,61 +1849,68 @@ msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
+#, rust-format
 msgid "{} year"
 msgstr ""
 
 #: src/main.rs:101
+#, rust-format
 msgid "{} years"
 msgstr ""
 
 #: src/main.rs:108
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} month"
 msgstr "{} Minute{} "
 
 #: src/main.rs:110
+#, rust-format
 msgid "{} months"
 msgstr ""
 
 #: src/main.rs:117
+#, rust-format
 msgid "{} day"
 msgstr ""
 
 #: src/main.rs:119
+#, rust-format
 msgid "{} days"
 msgstr ""
 
 #: src/main.rs:126
+#, rust-format
 msgid "{} hour"
 msgstr ""
 
 #: src/main.rs:128
+#, rust-format
 msgid "{} hours"
 msgstr ""
 
 #: src/main.rs:135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minute"
 msgstr "{} Minute{} "
 
 #: src/main.rs:137
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} minutes"
 msgstr "{} Minute{} "
 
 #: src/main.rs:144
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} second"
 msgstr "{} Sekunde{}"
 
 #: src/main.rs:146
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} seconds"
 msgstr "{} Sekunde{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:183
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}, {} and {}"
 msgstr "{}: {} {}{}"
 
@@ -1908,6 +1918,7 @@ msgstr "{}: {} {}{}"
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
 msgstr ""
 
@@ -1915,7 +1926,7 @@ msgstr ""
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:328
+#: src/main.rs:329
 msgid "_Quit"
 msgstr "_Beenden"
 
@@ -1923,7 +1934,7 @@ msgstr "_Beenden"
 msgid "translator-credits"
 msgstr ""
 "TecCheck <mcteccy@protonmail.com>\n"
-"Philipp Kiemle <philipp.kiemle@gmail.com>\n"
+"Philipp Kiemle <l10n@prly.mozmail.com>\n"
 "Finn Wiggers <aircraft192@gmail.com>"
 
 #~ msgid "No per-process network usage"
@@ -1931,6 +1942,9 @@ msgstr ""
 
 #~ msgid "GPU support is experimental"
 #~ msgstr "GPU-Unterstützung ist experimentell"
+
+#~ msgid "PWM %"
+#~ msgstr "PWM %"
 
 #~ msgid "GTT usage"
 #~ msgstr "GTT-Nutzung"
@@ -1942,7 +1956,7 @@ msgstr ""
 #~ msgstr "GPU-Auslastung"
 
 #~ msgid "Stop Application"
-#~ msgstr "Anwendung stoppen"
+#~ msgstr "Anwendung beenden"
 
 #~ msgid "Force Stop Application"
 #~ msgstr "Beenden der Anwendung erzwingen"
