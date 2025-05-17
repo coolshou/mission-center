@@ -374,9 +374,12 @@ mod imp {
                 }
                 if let Some(su) = this.slots_used.get() {
                     if readings.mem_info.max_devices > 0 {
-                        su.set_text(&format!(
+                        su.set_text(&i18n_f(
                             "{} of {}",
-                            mem_module_count, readings.mem_info.max_devices
+                            &[
+                                &format!("{}", mem_module_count),
+                                &format!("{}", readings.mem_info.max_devices),
+                            ],
                         ));
                     } else {
                         su.set_text(&format!("{}", mem_module_count));
