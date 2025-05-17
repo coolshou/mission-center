@@ -23,6 +23,7 @@ resources/ui/performance_page/memory_info_tooltip.blp
 resources/ui/performance_page/fan_details.blp
 resources/ui/performance_page/fan.blp
 resources/ui/performance_page/disk_smart_data_dialog.blp
+resources/ui/performance_page/disk_smart_failure_dialog.blp
 resources/ui/performance_page/network.blp
 resources/ui/performance_page/disk.blp
 resources/ui/performance_page/network_details.blp
