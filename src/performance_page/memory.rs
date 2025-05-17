@@ -866,7 +866,8 @@ impl PerformancePageMemory {
             let graph_max_duration =
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
-            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
+            this.graph_max_duration
+                .set_text(&to_short_human_readable_time(graph_max_duration));
 
             this.usage_graph.set_data_points(data_points);
             this.swap_usage_graph.set_data_points(data_points);

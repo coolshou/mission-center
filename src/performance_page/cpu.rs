@@ -967,8 +967,9 @@ impl PerformancePageCpu {
             let delay = settings.uint64("app-update-interval-u64");
             let graph_max_duration =
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
-            
-            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
+
+            this.graph_max_duration
+                .set_text(&to_short_human_readable_time(graph_max_duration));
 
             let widgets = this.graph_widgets.take();
             for graph_widget in &widgets {

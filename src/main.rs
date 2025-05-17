@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+use crate::i18n::ni18n_f;
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
@@ -30,7 +31,6 @@ use std::{
     sync::{Arc, OnceLock},
 };
 use window::MissionCenterWindow;
-use crate::i18n::ni18n_f;
 
 mod application;
 mod apps_page;
@@ -203,16 +203,11 @@ pub fn to_long_human_readable_time(seconds: u64) -> String {
 pub fn to_short_human_readable_time(seconds: u32) -> String {
     let mins = seconds / 60;
     let seconds = seconds % 60;
-    
-    let seconds_string = ni18n_f(
-        "{} second",
-        "{} seconds",
-        seconds,
-        &[&seconds.to_string()]
-    );
-    
+
+    let seconds_string = ni18n_f("{} second", "{} seconds", seconds, &[&seconds.to_string()]);
+
     let mins_string = ni18n_f("{} minute", "{} minutes", mins, &[&(mins).to_string()]);
-    
+
     if mins > 0 {
         format!("{} {}", mins_string, seconds_string)
     } else {

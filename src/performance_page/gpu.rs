@@ -30,7 +30,9 @@ use magpie_types::gpus::Gpu;
 use magpie_types::gpus::OpenGlVariant;
 
 use super::{widgets::GraphWidget, GpuDetails, PageExt};
-use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time, DataType};
+use crate::{
+    application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time, DataType,
+};
 
 mod imp {
     use super::*;
@@ -865,7 +867,8 @@ impl PerformancePageGpu {
             let graph_max_duration =
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
-            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
+            this.graph_max_duration
+                .set_text(&to_short_human_readable_time(graph_max_duration));
 
             this.graph_utilization.set_data_points(data_points);
             this.graph_utilization.set_smooth_graphs(smooth);

@@ -26,9 +26,9 @@ use gtk::{gio, glib, prelude::*};
 
 use magpie_types::disks::{Disk, DiskKind};
 
-use crate::{app, to_short_human_readable_time};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
+use crate::{app, to_short_human_readable_time};
 
 use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
 use super::PageExt;
@@ -669,8 +669,9 @@ impl PerformancePageDisk {
                 (((delay as f64) * INTERVAL_STEP) * (data_points as f64)).round() as u32;
 
             let this = this.imp();
-            
-            this.graph_max_duration.set_text(&to_short_human_readable_time(graph_max_duration));
+
+            this.graph_max_duration
+                .set_text(&to_short_human_readable_time(graph_max_duration));
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
             this.usage_graph.set_do_animation(sliding);
