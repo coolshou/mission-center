@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-17 06:53+0300\n"
-"PO-Revision-Date: 2023-08-20 08:49+0000\n"
+"PO-Revision-Date: 2025-05-18 08:59+0000\n"
 "Last-Translator: Romeo Calota <mail@romeocalota.me>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -30,6 +30,9 @@ msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
+"Task manager;Manager de sarcini; Monitor de resurse; Monitor de sistem; "
+"Procesor; Procese; Monitor de performanță; CPU; GPU; Disc; Memorie; Rețea; "
+"Utilizare"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -103,9 +106,8 @@ msgstr ""
 "proiect NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Monitorizarea utilizării resurselor de sistem"
+msgstr "Monitorizarea ventilatoarelor din sistem"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -116,13 +118,12 @@ msgid "Supports a minified summary view for simple monitoring"
 msgstr "Permite o vizualizare rezumat minimizată pentru monitorizare simplă"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Utilizarea randării folosind OpenGL pentru toate graficele cu scopul de a "
-"reduce utilizarea procesorului si a resurselor din sistem"
+"Utilizarea randării folosind accelerare hardware pentru toate graficele cu "
+"scopul de a reduce utilizarea procesorului si a resurselor din sistem"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Uses GTK4 and Libadwaita"
@@ -141,6 +142,9 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Unitățile de procesare grafică de la Intel au support doar de la generația "
+"Broadwell; și nu au suport pentru monitorizarea memoriei video, puterii "
+"consumate sau a temperaturii"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid ""
@@ -148,6 +152,9 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"În Linux Mint aplicațiile lansate s-ar putea să nu apară in lista de "
+"aplicații (problemă raportată aici: https://github.com/linuxmint/cinnamon/"
+"issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -156,102 +163,112 @@ msgstr ""
 "binevenite"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
-#, fuzzy
 msgid "Which page is shown on application startup"
-msgstr ""
-"Care pagină este afișată la pornirea aplicației, în fila de performanță"
+msgstr "Care pagină este afișată la pornirea aplicației"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Nume interfață:"
+msgstr "Stilul interfeței grafice"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
 msgstr ""
+"Dacă se vrea a se folosi varianta întunecată sau luminoasă a interfeței "
+"grafice"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr ""
+msgstr "NU MAI ESTE UTILIZAT!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:64
-#, fuzzy
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
 "Cât de repede ar trebui să fie reîmprospătate datele și interfața grafică "
-"actualizată"
+"actualizată (incrementări a câte 50ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "How many points should be displayed on each chart?"
-msgstr ""
+msgstr "Câte puncte să fie afișate pe fiecare grafic?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
+msgstr "A se folosi biți sau octeți (implicit) pentru valorile memoriei"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
+msgstr "A se folosi baza 10 sau baza 2 (implicit) pentru valorile memoriei"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
+"A se folosi biți sau octeți (implicit) pentru viteza și mărimea discurilor"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
+"A se folosi baza 10 sau baza 2 (implicit) pentru viteza și mărimea discurilor"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"A se folosi biți (implicit) sau octeți pentru viteza de transfer prin rețea"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
+"A se folosi baza 10 (implicit) sau baza 2 pentru viteza de transfer prin "
+"rețea"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"A se seta maximul graficului la maximul interfeței de rețea (fals) sau la "
+"maximul observat (adevarat)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
+"Statisticile proceselor sunt afișate individual sau fiecare părinte include "
+"valorile copiilor săi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr ""
+msgstr "Sortarea coloanelor este reținută pentru rulările următoare"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
 msgid "Column order is persisted across app restarts"
-msgstr ""
+msgstr "Ordinea coloanelor este reținută pentru rulările următoare"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"A se afișa utilizarea procesorului pentru aplicații și procese scalat la "
+"numărul de nuclee"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
 msgstr ""
+"A se afișa separatoare între coloanele din lista de aplicații și procese"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
-msgstr ""
+msgstr "Numele coloanei după care sunt sortate aplicațiile și procesele"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
-msgstr ""
+msgstr "Direcția de sortare a applicațiilor și a proceselor"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
 msgid "The order of columns in the Apps page view"
-msgstr ""
+msgstr "Ordinea coloanelor din pagina de aplicații"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -260,6 +277,8 @@ msgstr "Care grafic este afișat pe pagina de performanță a procesorului"
 #: data/io.missioncenter.MissionCenter.gschema.xml:162
 msgid "Show kernel times in the CPU graphs"
 msgstr ""
+"Afișează timpii petrecuți in nucleul sistemului de operare pe graficele "
+"procesorului"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:167
 msgid "Which page is shown on application startup, in the performance tab"
@@ -268,67 +287,66 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:173
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Să fie curbate sau zimțate graficele de performanță"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
 msgid "Should graphs be animated"
-msgstr ""
+msgstr "Să fie graficele animate"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Afișează informațiile despre procesor în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:188
 #: resources/ui/preferences/page.blp:71
 msgid "Show memory information by default"
-msgstr ""
+msgstr "Afișează informațiile despre memorie în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:193
 #: resources/ui/preferences/page.blp:77
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Afișează informațiile despre unitățile de stocare în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:198
 #: resources/ui/preferences/page.blp:83
 msgid "Show network information by default"
-msgstr ""
+msgstr "Afișează informațiile despre interfețele de rețea în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:203
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Afișează informațiile despre procesoare grafice în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:208
 #: resources/ui/preferences/page.blp:95
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Afișează informațiile despre ventilatoare în mod implicit"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:213
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Compoziție memorie"
+msgstr "Afișează graficul de composiție a memorier"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Afișează graficul pentru memoria swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
 msgid "Show the gpu encode-decode graph"
-msgstr ""
+msgstr "Afișează graficul pentru codare și decodare video"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Ordinea elementelor în bara laterală principală"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Graficele ascunse din bara laterală principală"
 
 #: resources/ui/apps_page/details_dialog.blp:76
 #: resources/ui/apps_page/page.blp:180 resources/ui/services_page/page.blp:209
 msgid "PID"
-msgstr ""
+msgstr "PID"
 
 #: resources/ui/apps_page/details_dialog.blp:87
 #: resources/ui/apps_page/details_dialog.blp:115
@@ -362,18 +380,16 @@ msgstr "Nu se aplică"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "Tip:"
+msgstr "Tip"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "Linie de comandă"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Utilizare memorie"
+msgstr "Utilizare resurse"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -389,72 +405,67 @@ msgid "Memory"
 msgstr "Memorie"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Memorie"
+msgstr "Memorie Partajată"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
-msgstr "Disc"
+msgstr "Discuri"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_Rețea"
+msgstr "Rețea"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
 #: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
-#, fuzzy
 msgid "GPU"
-msgstr "Proce_sor grafic"
+msgstr "Procesor grafic"
 
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "Procesor grafic {}"
+msgstr "Memorie grafică"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Restrânge toate aplicațiile și procesele"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Restrânge toate"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Oprește aplicația selectată"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
 #: resources/ui/services_page/page.blp:269
 msgid "Stop"
-msgstr ""
+msgstr "Oprește"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Oprește forțat aplicația selectată"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
 msgid "Force Stop"
-msgstr ""
+msgstr "Oprește forțat"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Afișează detaliile aplicației selectate"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
 #: resources/ui/services_page/page.blp:281 src/services_page/mod.rs:592
 msgid "Details"
-msgstr ""
+msgstr "Detalii"
 
 #. The `Name` column should be default aligned
 #. The column that contains the context menu button should be default aligned
@@ -462,126 +473,123 @@ msgstr ""
 #: resources/ui/services_page/details_dialog.blp:134
 #: resources/ui/services_page/page.blp:170 src/apps_page/columns/mod.rs:212
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "Memorie"
+msgstr ""
+"Memorie\n"
+"Paratjată"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
 msgid "Drive"
-msgstr ""
+msgstr "Disc"
 
 #: resources/ui/services_page/details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Detaliile servicilui"
 
 #: resources/ui/services_page/details_dialog.blp:57
 msgid "State"
-msgstr ""
+msgstr "Stare"
 
 #: resources/ui/services_page/details_dialog.blp:58
 msgid "The current state of the service"
-msgstr ""
+msgstr "Starea actuală a serviciului"
 
 #: resources/ui/services_page/details_dialog.blp:75
 msgid "Start service"
-msgstr ""
+msgstr "Pornește serviciu"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "Procese"
+msgstr "Oprește serviciu"
 
 #: resources/ui/services_page/details_dialog.blp:106
 msgid "Restart service"
-msgstr ""
+msgstr "Repornește serviciu"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
-#, fuzzy
 msgid "Description"
-msgstr "Fără descriere"
+msgstr "Descriere"
 
 #: resources/ui/services_page/details_dialog.blp:194
 msgid "Status"
-msgstr ""
+msgstr "Stare"
 
 #: resources/ui/services_page/details_dialog.blp:213
 msgid "Enabled"
-msgstr ""
+msgstr "Permis"
 
 #: resources/ui/services_page/details_dialog.blp:220
 #: src/apps_page/row_model.rs:213
-#, fuzzy
 msgid "Process"
-msgstr "Procese"
+msgstr "Proces"
 
 #: resources/ui/services_page/details_dialog.blp:221
 msgid "Process and user information"
-msgstr ""
+msgstr "Informații despre proces și utilizator"
 
 #: resources/ui/services_page/details_dialog.blp:237
-#, fuzzy
 msgid "Process ID"
-msgstr "Procese"
+msgstr "Identificator proces"
 
 #: resources/ui/services_page/details_dialog.blp:269
 msgid "User"
-msgstr ""
+msgstr "Utilizator"
 
 #: resources/ui/services_page/details_dialog.blp:301
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: resources/ui/services_page/details_dialog.blp:326
 msgid "Logs"
-msgstr ""
+msgstr "Jurnal"
 
 #: resources/ui/services_page/page.blp:78
 msgid "Start the selected service"
-msgstr ""
+msgstr "Pornește serviciul selectat"
 
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
 msgid "Start"
-msgstr ""
+msgstr "Pornește"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
-msgstr ""
+msgstr "Oprește serviciul selectat"
 
 #: resources/ui/services_page/page.blp:117
 msgid "Restart the selected service"
-msgstr ""
+msgstr "Repornește serviciul selectat"
 
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
 msgid "Restart"
-msgstr ""
+msgstr "Repornește"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "Afișează detalii despre serviciul selectat"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "Urmează stilul sistemului"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "Stil luminos"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Stil întunecat"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -642,20 +650,19 @@ msgstr "Cache L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:297
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Driver cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:311
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Regulator cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Preferințe"
+msgstr "Preferință putere:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Evacuare nereușită"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
