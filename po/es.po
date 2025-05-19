@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-17 06:53+0300\n"
-"PO-Revision-Date: 2025-05-19 09:03+0000\n"
+"PO-Revision-Date: 2025-05-20 05:46+0000\n"
 "Last-Translator: Jack Nolddor <movil.jacknolddor@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -827,14 +827,12 @@ msgid "Write speed"
 msgstr "Velocidad de escritura"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Total recibido"
+msgstr "Lectura total"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Total enviado"
+msgstr "Escritura total"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -918,7 +916,7 @@ msgstr "Velocidad del ventilador"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "Porcentaje de PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -934,7 +932,7 @@ msgstr "Temperatura máxima "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Datos SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
@@ -951,7 +949,7 @@ msgstr "Salud del disco"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "Estado de la prueba SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
@@ -998,7 +996,7 @@ msgstr "Con_figuración de red"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Mostrar datos SMART"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
@@ -1177,22 +1175,19 @@ msgid "Remember Sorting"
 msgstr "Recordar el orden"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
 msgstr ""
-"Recordar el orden de la lista de aplicaciones y procesos al reiniciar la "
-"aplicación"
+"Mantener la ordenación de las aplicaciones y procesos, incluso después de "
+"reiniciar la aplicación"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
 msgstr "Recordar el orden de las columnas"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
 msgstr ""
-"Recordar el orden de la lista de aplicaciones y procesos al reiniciar la "
-"aplicación"
+"Mantener el orden de las columnas, incluso después de reiniciar la aplicación"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
@@ -1272,11 +1267,11 @@ msgstr "Base del uso de disco"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Usar base 10 para unidades de disco"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Usar base 2 para unidades de disco"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
@@ -1284,11 +1279,11 @@ msgstr "Unidad del uso de la red"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Usar bytes como unidad de medida para interfaces de red"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Usar bits como unidad de medida para interfaces de red"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
@@ -1296,11 +1291,11 @@ msgstr "Base del uso de la red"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Usar base 10 para interfaces de red"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Usar base 2 para interfaces de red"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
@@ -1337,7 +1332,7 @@ msgstr "Conmutar la barra lateral"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "Seleccionar un dispositivo"
 
 #: resources/ui/keyboard_shortcuts.blp:71
 msgid "Apps Page"
@@ -1402,9 +1397,8 @@ msgid "Type a name or PID to search"
 msgstr "Escriba un nombre o PID para buscar"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "Mostrar información del disco"
+msgstr "Mostrar u ocultar información del dispositivo"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
@@ -1444,9 +1438,8 @@ msgid "Section Header"
 msgstr ""
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
-msgstr "Aplicaciones"
+msgstr "Aplicación"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
 #, fuzzy, rust-format
@@ -1464,7 +1457,7 @@ msgstr[1] "{} Servicios en ejecución"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Copiar logs al portapapeles"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
@@ -1492,9 +1485,9 @@ msgid "{} failed services out of a total of {}"
 msgstr "{} servicios fallidos de un total de {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} sectors"
-msgstr "{} segundo{}"
+msgstr "{} sectores"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
@@ -1582,11 +1575,11 @@ msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "En línea"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "Desconectado"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
@@ -1594,7 +1587,7 @@ msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "Falló en el pasado"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
