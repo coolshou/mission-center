@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-17 06:53+0300\n"
-"PO-Revision-Date: 2025-03-19 03:59+0000\n"
+"PO-Revision-Date: 2025-05-18 08:59+0000\n"
 "Last-Translator: Indrek Haav <indrek.haav@hotmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -41,12 +41,12 @@ msgid "Monitor system resource usage"
 msgstr "Jälgi oma arvuti või seadme ressursikasutust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
 msgstr ""
-"Jälgi protsessori, mälu, andmekandja, võrgu ja graafikaprotsessori kasutust"
+"Jälgi protsessori, mälu, andmekandja, võrgu ja graafikaprotsessori kasutust "
+"koos rakenduse- ja protsessipõhise ülevaatega"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -100,9 +100,8 @@ msgstr ""
 "projekti abil"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Jälgi oma arvuti või seadme ressursikasutust"
+msgstr "Jälgi süsteemi ventilaatoreid"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -160,9 +159,8 @@ msgid "Which page is shown on application startup"
 msgstr "Millist lehte rakenduse käivitamisel kuvada"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Võrguliidese nimi:"
+msgstr "Võrguliidese stiil"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
@@ -186,34 +184,33 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Mitut punkti igal graafikul kuvada?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
+msgstr "Kas kasutada mälu jaoks bitte või baite (vaikimisi)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
+msgstr "Kas kasutada mälu jaoks kümnend- või kahendsüsteemi (vaikimisi)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
+msgstr "Kas kasutada kettamahu ja kiiruse jaoks bitte või baite (vaikimisi)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
-msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
+msgstr ""
+"Kas kasutada kettamahu ja kiiruse jaoks kümnend- või kahendsüsteemi "
+"(vaikimisi)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
-msgstr "Kas kasutada võrguühenduse kiiruse jaoks bitte (vaikimisi) või baite"
+msgstr ""
+"Kas kasutada võrguühenduse kiiruse jaoks kümnend- (vaikimisi) või "
+"kahendsüsteemi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -234,9 +231,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "Veergude järjestamine säilib pärast rakenduse taaskäivitamist"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Veergude järjestamine säilib pärast rakenduse taaskäivitamist"
+msgstr "Veergude järjestus säilib pärast rakenduse taaskäivitamist"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -251,18 +247,16 @@ msgid "Show a separator between each column in the Apps view"
 msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "Veeru tunnus, mille alusel rakenduste vaate leht on järjestatud"
+msgstr "Veeru nimi, mille alusel rakenduste vaate leht on järjestatud"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "Rakenduste vaate lehe järjestamise suund"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "Rakenduste vaate lehe järjestamise suund"
+msgstr "Rakenduste vaate lehe veergude järjekord"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -281,9 +275,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "Kas jõudluse graafikud peaks olema sujuvad või sakilised"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Kas jõudluse graafikud peaks olema sujuvad või sakilised"
+msgstr "Kas graafikud peaks olema animeeritud"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -324,7 +317,6 @@ msgid "Show the swap graph"
 msgstr "Kuva saaleala graafikut"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "Kuva graafikaprotsessori kodeerimise-dekodeerimise graafikut"
 
@@ -373,18 +365,16 @@ msgstr "-"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "Tüüp:"
+msgstr "Tüüp"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
 msgstr ""
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Mälukasutus"
+msgstr "Ressursikasutus"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -400,21 +390,18 @@ msgid "Memory"
 msgstr "Mälu"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Mälu"
+msgstr "Jagatud mälu"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
-msgstr "Andmekandja"
+msgstr "Andmekandjad"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_Võrk"
+msgstr "Võrk"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -426,7 +413,6 @@ msgstr "Graafikaprotsessor"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
 msgstr "GPU mälu"
 
@@ -453,7 +439,6 @@ msgid "Force stop the selected app"
 msgstr ""
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
 msgstr "Tapa protsess"
 
@@ -476,11 +461,12 @@ msgid "Name"
 msgstr "Nimi"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "Mälu"
+msgstr ""
+"Jagatud\n"
+"mälu"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -500,19 +486,16 @@ msgid "The current state of the service"
 msgstr "Teenuse hetkeseisund"
 
 #: resources/ui/services_page/details_dialog.blp:75
-#, fuzzy
 msgid "Start service"
-msgstr "Teenused"
+msgstr "Käivita teenus"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "Teenused"
+msgstr "Peata teenus"
 
 #: resources/ui/services_page/details_dialog.blp:106
-#, fuzzy
 msgid "Restart service"
-msgstr "Taaskäivita"
+msgstr "Taaskäivita teenus"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
@@ -675,24 +658,20 @@ msgid "Clock Speed"
 msgstr "Taktsagedus"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "Voolutarve"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:555
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Mälukasutus"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:632
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Mälukasutus"
+msgstr "Jagatud mälu kasutus"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Mälu kiirus"
 
@@ -721,9 +700,8 @@ msgid "PCI Express speed:"
 msgstr "PCI Express kiirus:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "PCI Express kiirus:"
+msgstr "Maksimaalne PCI Express kiirus:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -840,14 +818,12 @@ msgid "Write speed"
 msgstr "Kirjutamiskiirus"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Kokku vastu võetud"
+msgstr "Kokku loetud"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Kokku saadetud"
+msgstr "Kokku kirjutatud"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -977,19 +953,16 @@ msgid "Value"
 msgstr ""
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Vormindatud:"
+msgstr "Normaliseeritud"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "Lõimed"
+msgstr "Lävi"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
@@ -1478,18 +1451,18 @@ msgid "App"
 msgstr "Rakendused"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} töötavat teenust"
-msgstr[1] "{} töötavat teenust"
+msgstr[0] "{} töötav rakendus"
+msgstr[1] "{} töötavat rakendust"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} töötavat teenust"
-msgstr[1] "{} töötavat teenust"
+msgstr[0] "{} töötav protsess"
+msgstr[1] "{} töötavat protsessi"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
@@ -1789,7 +1762,7 @@ msgstr "{} sekund{}"
 
 #: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
 #: src/performance_page/gpu.rs:881
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} minute{} "
 msgstr "{} minut[} "
 
@@ -1842,9 +1815,9 @@ msgid "{} years"
 msgstr ""
 
 #: src/main.rs:108
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} month"
-msgstr "{} minut[} "
+msgstr "{} kuu"
 
 #: src/main.rs:110
 #, rust-format
@@ -1872,14 +1845,14 @@ msgid "{} hours"
 msgstr ""
 
 #: src/main.rs:135
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} minute"
-msgstr "{} minut[} "
+msgstr "{} minut"
 
 #: src/main.rs:137
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} minutes"
-msgstr "{} minut[} "
+msgstr "{} minutit"
 
 #: src/main.rs:144
 #, fuzzy, rust-format
