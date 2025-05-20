@@ -17,7 +17,6 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-use crate::i18n::ni18n_f;
 use application::MissionCenterApplication;
 use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
@@ -31,6 +30,7 @@ use std::{
     sync::{Arc, OnceLock},
 };
 use window::MissionCenterWindow;
+
 use crate::i18n::ni18n_f;
 
 mod application;
