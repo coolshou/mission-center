@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-20 05:46+0000\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"PO-Revision-Date: 2025-05-21 06:58+0000\n"
 "Last-Translator: Jack Nolddor <movil.jacknolddor@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -415,7 +415,7 @@ msgstr "Red"
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
-#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:355
+#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
 msgid "GPU"
 msgstr "GPU"
 
@@ -671,12 +671,12 @@ msgid "Power Draw"
 msgstr "Consumo de energía"
 
 #: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:557
+#: src/performance_page/gpu.rs:555
 msgid "Memory Usage"
 msgstr "Uso de memoria"
 
 #: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:634
+#: src/performance_page/gpu.rs:632
 msgid "Shared Memory Usage"
 msgstr "Uso de memoria compartida"
 
@@ -939,9 +939,8 @@ msgid "Last Updated"
 msgstr "Última actualización"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Consumo de energía"
+msgstr "Encendido"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
@@ -984,17 +983,6 @@ msgstr "Actualizaciones"
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
 msgstr "Evaluación"
-
-#: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
-#, fuzzy
-msgid "Failed To Get SMART Data"
-msgstr "Mostrar datos SMART"
-
-#: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
-msgid ""
-"There was a problem fetching SMART data. Try running from the command line "
-"to get more information."
-msgstr ""
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1440,7 +1428,6 @@ msgid "_Keyboard Shortcuts"
 msgstr ""
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
 msgstr "_Acerca de Mission Center"
 
@@ -1453,14 +1440,14 @@ msgid "App"
 msgstr "Aplicación"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "{} Servicios en ejecución"
 msgstr[1] "{} Servicios en ejecución"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "{} Servicios en ejecución"
@@ -1486,14 +1473,17 @@ msgid "Stopped"
 msgstr "Detenido"
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr "{} Servicios en ejecución"
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr "{} servicios fallidos de un total de {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
+#, rust-format
 msgid "{} sectors"
 msgstr "{} sectores"
 
@@ -1501,26 +1491,14 @@ msgstr "{} sectores"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr "{} °C"
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
-msgid "Kill All"
-msgstr "Desactivar todo"
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
+#, rust-format
 msgid ""
-"In use ({})\n"
+"In use ({}B)\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
@@ -1529,9 +1507,9 @@ msgstr ""
 "Memoria usada por el sistema operativo y las aplicaciones en ejecución"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
+#, rust-format
 msgid ""
-"Modified ({})\n"
+"Modified ({}B)\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
@@ -1542,9 +1520,9 @@ msgstr ""
 "por otro proceso"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
+#, rust-format
 msgid ""
-"Standby ({})\n"
+"Standby ({}B)\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
@@ -1553,9 +1531,9 @@ msgstr ""
 "Memoria que contiene datos en caché y código que no se usa activamente"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
+#, rust-format
 msgid ""
-"Free ({})\n"
+"Free ({}B)\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
@@ -1567,18 +1545,19 @@ msgstr ""
 "más memoria"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
-#: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
-#: src/performance_page/disk.rs:269 src/performance_page/disk.rs:297
-#: src/performance_page/disk.rs:456 src/performance_page/cpu.rs:316
+#: src/performance_page/disk.rs:237 src/performance_page/disk.rs:258
+#: src/performance_page/disk.rs:268 src/performance_page/disk.rs:296
+#: src/performance_page/disk.rs:454 src/performance_page/cpu.rs:316
 #: src/performance_page/cpu.rs:327 src/performance_page/cpu.rs:351
-#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:561
-#: src/performance_page/memory.rs:792 src/performance_page/mod.rs:1391
-#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:247
-#: src/performance_page/gpu.rs:303 src/performance_page/network.rs:262
+#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:551
+#: src/performance_page/memory.rs:782 src/performance_page/mod.rs:1391
+#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:245
+#: src/performance_page/gpu.rs:301 src/performance_page/network.rs:262
 #: src/performance_page/network.rs:367 src/performance_page/network.rs:395
 #: src/performance_page/network.rs:495 src/performance_page/network.rs:531
 msgid "Unknown"
@@ -1653,9 +1632,8 @@ msgid "Warning Temperature"
 msgstr "Temperatura actual"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "Temperatura actual"
+msgstr "Temperatura crítica"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
@@ -1677,66 +1655,69 @@ msgstr ""
 msgid "Power Cycles"
 msgstr ""
 
-#: src/performance_page/disk.rs:228
+#: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
 msgstr "Disco {} ({})"
 
-#: src/performance_page/disk.rs:232 src/performance_page/disk.rs:388
+#: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
 msgstr "Unidad ({})"
 
-#: src/performance_page/disk.rs:274 src/performance_page/cpu.rs:346
+#: src/performance_page/disk.rs:273 src/performance_page/cpu.rs:346
 msgid "Yes"
 msgstr "Sí"
 
-#: src/performance_page/disk.rs:276 src/performance_page/cpu.rs:348
+#: src/performance_page/disk.rs:275 src/performance_page/cpu.rs:348
 msgid "No"
 msgstr "No"
 
-#: src/performance_page/disk.rs:285 src/performance_page/mod.rs:1121
+#: src/performance_page/disk.rs:284 src/performance_page/mod.rs:1121
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/disk.rs:286 src/performance_page/mod.rs:1122
+#: src/performance_page/disk.rs:285 src/performance_page/mod.rs:1122
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/disk.rs:287 src/performance_page/mod.rs:1123
+#: src/performance_page/disk.rs:286 src/performance_page/mod.rs:1123
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/disk.rs:288 src/performance_page/mod.rs:1124
+#: src/performance_page/disk.rs:287 src/performance_page/mod.rs:1124
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
-#, fuzzy
+#: src/performance_page/disk.rs:288 src/performance_page/mod.rs:1125
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
-#: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
+#: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1126
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/disk.rs:291 src/performance_page/mod.rs:1127
+#: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1127
 msgid "Optical"
 msgstr "Óptico"
 
-#: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
+#: src/performance_page/disk.rs:291 src/performance_page/mod.rs:1128
 msgid "Floppy"
 msgstr ""
 
-#: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
+#: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1129
 #, fuzzy
 msgid "Thumb Drive"
 msgstr "Disco"
 
-#: src/performance_page/disk.rs:384
+#: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
 msgstr "Unidad {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr "Ventilador {}"
 
@@ -1746,116 +1727,149 @@ msgid "Fan"
 msgstr "Ventilador"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr "{}%"
 
 #: src/performance_page/fan.rs:337 src/performance_page/cpu.rs:339
-#: src/performance_page/gpu.rs:318
+#: src/performance_page/gpu.rs:316
 msgid "Unsupported"
 msgstr "No soportado"
 
-#: src/performance_page/memory.rs:378
-msgid "{} of {}"
-msgstr ""
+#: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
+#: src/performance_page/gpu.rs:870
+#, rust-format
+msgid "{} second{}"
+msgstr "{} segundo{}"
 
-#: src/performance_page/memory.rs:400
+#: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
+#: src/performance_page/gpu.rs:881
+#, rust-format
+msgid "{} minute{} "
+msgstr "{} minuto{} "
+
+#: src/performance_page/memory.rs:397
 msgid "Getting additional memory information failed"
 msgstr "Error al obtener información adicional de la memoria"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{} {} ({})"
 msgstr "{} {}{}B"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
-#: src/performance_page/gpu.rs:353
+#: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
+#, fuzzy, rust-format
 msgid "{}: {}"
 msgstr "{}: {} {}{}"
 
-#: src/performance_page/gpu.rs:285
+#: src/performance_page/gpu.rs:283
 #, fuzzy
 msgid "Video encode/decode"
 msgstr "Codificación del vídeo"
 
-#: src/performance_page/gpu.rs:576
+#: src/performance_page/gpu.rs:574
 #, fuzzy
 msgid "Total Memory"
 msgstr "Memoria"
 
-#: src/performance_page/gpu.rs:606
+#: src/performance_page/gpu.rs:604
 msgid "Dedicated and shared memory usage over "
 msgstr ""
 
-#: src/performance_page/gpu.rs:651
+#: src/performance_page/gpu.rs:649
 msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
+#, rust-format
 msgid "{} year"
-msgid_plural "{} years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "{} año"
 
-#: src/main.rs:103
-#, fuzzy
+#: src/main.rs:101
+#, rust-format
+msgid "{} years"
+msgstr "{} años"
+
+#: src/main.rs:108
+#, fuzzy, rust-format
 msgid "{} month"
-msgid_plural "{} months"
-msgstr[0] "{} minuto{} "
-msgstr[1] "{} minuto{} "
+msgstr "{} minuto{} "
 
-#: src/main.rs:107
+#: src/main.rs:110
+#, rust-format
+msgid "{} months"
+msgstr "{} meses"
+
+#: src/main.rs:117
+#, rust-format
 msgid "{} day"
-msgid_plural "{} days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "{} día"
 
-#: src/main.rs:111
+#: src/main.rs:119
+#, rust-format
+msgid "{} days"
+msgstr "{} días"
+
+#: src/main.rs:126
+#, rust-format
 msgid "{} hour"
-msgid_plural "{} hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "{} hora"
 
-#: src/main.rs:115 src/main.rs:180
-#, fuzzy
+#: src/main.rs:128
+#, rust-format
+msgid "{} hours"
+msgstr "{} horas"
+
+#: src/main.rs:135
+#, fuzzy, rust-format
 msgid "{} minute"
-msgid_plural "{} minutes"
-msgstr[0] "{:} minuto"
-msgstr[1] "{:} minuto"
+msgstr "{:} minuto"
 
-#: src/main.rs:119 src/main.rs:178
-#, fuzzy
+#: src/main.rs:137
+#, fuzzy, rust-format
+msgid "{} minutes"
+msgstr "{:} minuto"
+
+#: src/main.rs:144
+#, fuzzy, rust-format
 msgid "{} second"
-msgid_plural "{} seconds"
-msgstr[0] "{} segundo{}"
-msgstr[1] "{} segundo{}"
+msgstr "{} segundo{}"
+
+#: src/main.rs:146
+#, fuzzy, rust-format
+msgid "{} seconds"
+msgstr "{} segundo{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:155
-#, fuzzy
+#: src/main.rs:183
+#, fuzzy, rust-format
 msgid "{}, {} and {}"
 msgstr "{}: {} {}{}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:158 src/main.rs:161 src/main.rs:164
+#: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
-msgstr ""
+msgstr "{} y {}"
 
-#: src/main.rs:170
+#: src/main.rs:198
 msgid "Less than a minute"
-msgstr ""
+msgstr "Menos de un minuto"
 
-#: src/main.rs:316
+#: src/main.rs:329
 msgid "_Quit"
 msgstr "_Salir"
 
@@ -1863,25 +1877,15 @@ msgstr "_Salir"
 msgid "translator-credits"
 msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 
-#~ msgid "{} second{}"
-#~ msgstr "{} segundo{}"
-
-#~ msgid "{} minute{} "
-#~ msgstr "{} minuto{} "
-
-#, fuzzy
-#~ msgid "{} minutes"
-#~ msgstr "{:} minuto"
-
-#, fuzzy
-#~ msgid "{} seconds"
-#~ msgstr "{} segundo{}"
-
 #, fuzzy
 #~ msgid "Whether or not to use base-10 (default) or base-2 for memory"
 #~ msgstr ""
 #~ "Si se deben utilizar o no bits (predeterminado) o bytes para la velocidad "
 #~ "de la red"
+
+#, fuzzy
+#~ msgid "Kill All"
+#~ msgstr "Desactivar todo"
 
 #~ msgid "No per-process network usage"
 #~ msgstr "Sin uso de red por proceso"
