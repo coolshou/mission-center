@@ -31,6 +31,7 @@ use std::{
     sync::{Arc, OnceLock},
 };
 use window::MissionCenterWindow;
+use crate::i18n::ni18n_f;
 
 mod application;
 mod apps_page;
@@ -94,58 +95,28 @@ pub fn to_long_human_readable_time(seconds: u64) -> String {
     const USEC_PER_HOUR: u64 = 60 * 60;
     const USEC_PER_MINUTE: u64 = 60;
 
-    pub fn years_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} year", &[&timestr])
-        } else {
-            i18n_f("{} years", &[&timestr])
-        }
+    pub fn years_to_string(time: u32) -> String {
+        ni18n_f("{} year", "{} years", time, &[&time.to_string()])
     }
 
-    pub fn months_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} month", &[&timestr])
-        } else {
-            i18n_f("{} months", &[&timestr])
-        }
+    pub fn months_to_string(time: u32) -> String {
+        ni18n_f("{} month", "{} months", time, &[&time.to_string()])
     }
 
-    pub fn days_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} day", &[&timestr])
-        } else {
-            i18n_f("{} days", &[&timestr])
-        }
+    pub fn days_to_string(time: u32) -> String {
+        ni18n_f("{} day", "{} days", time, &[&time.to_string()])
     }
 
-    pub fn hours_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} hour", &[&timestr])
-        } else {
-            i18n_f("{} hours", &[&timestr])
-        }
+    pub fn hours_to_string(time: u32) -> String {
+        ni18n_f("{} hour", "{} hours", time, &[&time.to_string()])
     }
 
-    pub fn minutes_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} minute", &[&timestr])
-        } else {
-            i18n_f("{} minutes", &[&timestr])
-        }
+    pub fn minutes_to_string(time: u32) -> String {
+        ni18n_f("{} minute", "{} minutes", time, &[&time.to_string()])
     }
 
-    pub fn seconds_to_string(time: u64) -> String {
-        let timestr = time.to_string();
-        if time == 1 {
-            i18n_f("{} second", &[&timestr])
-        } else {
-            i18n_f("{} seconds", &[&timestr])
-        }
+    pub fn seconds_to_string(time: u32) -> String {
+        ni18n_f("{} second", "{} seconds", time, &[&time.to_string()])
     }
 
     let mut t = seconds;
@@ -166,17 +137,17 @@ pub fn to_long_human_readable_time(seconds: u64) -> String {
 
     let seconds = t;
 
-    let string3 = years_to_string(years);
+    let string3 = years_to_string(years as u32);
     let years_str = string3.as_str();
-    let string2 = months_to_string(months);
+    let string2 = months_to_string(months as u32);
     let months_str = string2.as_str();
-    let string1 = days_to_string(days);
+    let string1 = days_to_string(days as u32);
     let days_str = string1.as_str();
-    let string = hours_to_string(hours);
+    let string = hours_to_string(hours as u32);
     let hours_str = string.as_str();
-    let string4 = minutes_to_string(minutes);
+    let string4 = minutes_to_string(minutes as u32);
     let minutes_str = string4.as_str();
-    let string5 = seconds_to_string(seconds);
+    let string5 = seconds_to_string(seconds as u32);
     let seconds_str = string5.as_str();
 
     if years > 0 {
