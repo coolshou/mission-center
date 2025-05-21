@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-04-13 10:03+0000\n"
+"PO-Revision-Date: 2025-05-22 17:01+0000\n"
 "Last-Translator: Jaime Muñoz Martín <jmmartin_5@outlook.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -42,11 +42,12 @@ msgid "Monitor system resource usage"
 msgstr "Superviseu l'ús dels recursos del sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
-msgstr "Superviseu l'ús de la CPU, la memòria, el disc, la xarxa i la GPU"
+msgstr ""
+"Superviseu l'ús de la CPU, memòria, disc, xarxa i GPU, acompanyat d'un "
+"desglossament per aplicació i procés d'aquestes estadístiques"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -101,9 +102,8 @@ msgstr ""
 "projecte NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Superviseu l'ús dels recursos del sistema"
+msgstr "Superviseu els ventiladors del sistema"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -162,13 +162,12 @@ msgid "Which page is shown on application startup"
 msgstr "Quina pàgina es mostra a l'inici de l'aplicació"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Nom de la interfície:"
+msgstr "Estil de la interfície"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Si s'ha d'utilitzar un estil d'interfície clar o fosc"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
@@ -188,94 +187,87 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Quants punts s'han de mostrar a cada gràfic?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+msgstr "Si s'han d'utilitzar bits o bytes (per defecte) per a la memòria"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+msgstr "Si s'ha d'utilitzar la base 10 o base 2 (per defecte) per a la memòria"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+"Si s'han d'utilitzar bits o bytes (per defecte) per a la velocitat + mida de "
+"la unitat"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+"Si s'ha d'utilitzar la base 10 o base 2 (per defecte) per a la velocitat + "
+"mida de la unitat"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+"Si s'han d'utilitzar bits (per defecte) o bytes per a la velocitat de la "
+"xarxa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"Si s'utilitza o no bits (per defecte) o bytes per a la velocitat de la xarxa"
+"Si s'ha d'utilitzar la base 10 (per defecte) o base 2 per a la velocitat de "
+"la xarxa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
-"Si s'ha d'establir el màxim del gràfic com a màxim de la interfície (fals) o "
-"el màxim observat (cert)"
+"Si s'ha d'establir el màxim del gràfic al màxim de la interfície (fals) o al "
+"màxim observat (cert)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Les estadístiques dels processos dels pares i dels fills es mostren "
-"individualment o es fusionen cap amunt"
+"Les estadístiques dels processos pare i fill es mostren individualment o es "
+"fusionen cap amunt"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr "L'ordenació de columnes es manté durant els reinicis de l'aplicació"
+msgstr "L'ordenació per columnes es manté després de reiniciar l'aplicació"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "L'ordenació de columnes es manté durant els reinicis de l'aplicació"
+msgstr "L'ordre de les columnes es manté després de reiniciar l'aplicació"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Mostra l'ús de la CPU per a aplicacions i processos escalat al nombre de "
-"nuclis disponibles"
+"Mostra l'ús de la CPU per a aplicacions i processos escalats segons el "
+"nombre de nuclis disponibles"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Mostra un separador entre cada columna a la vista d'aplicacions"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr ""
-"L'ID de columna pel qual s'ordena la visualització de la pàgina d'aplicacions"
+msgstr "El nom de la columna pel qual s'ordena la vista de pàgina d'aplicacions"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
-msgstr "La direcció d'ordenació de la vista de la pàgina d'aplicacions"
+msgstr "La direcció d'ordenació de la vista de pàgina d'aplicacions"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "La direcció d'ordenació de la vista de la pàgina d'aplicacions"
+msgstr "L'ordre de les columnes a la vista de pàgina d'aplicacions"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Quin gràfic es mostra a la pàgina de rendiment de la CPU"
+msgstr "Quin gràfic es mostra a la pàgina de rendiment de la CPU?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:162
 msgid "Show kernel times in the CPU graphs"
@@ -288,12 +280,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:173
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Els gràfics de rendiment han de ser suaus o irregulars"
+msgstr "Els gràfics de rendiment han de ser suaus o irregulars?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Els gràfics de rendiment han de ser suaus o irregulars"
+msgstr "Els gràfics haurien de ser animats?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -334,7 +325,6 @@ msgid "Show the swap graph"
 msgstr "Mostra el gràfic de la memòria d'intercanvi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "Mostra el gràfic de codificació/descodificació de la GPU"
 
@@ -383,18 +373,16 @@ msgstr "N/D"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "Tipus:"
+msgstr "Tipus"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "Línia d'ordres"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Recursos"
+msgstr "Ús de recursos"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -410,21 +398,18 @@ msgid "Memory"
 msgstr "Memòria"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Memòria"
+msgstr "Memòria compartida"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
-msgstr "Unitat"
+msgstr "Unitats"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_Xarxa"
+msgstr "Xarxa"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -436,21 +421,20 @@ msgstr "GPU"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "Mem GPU"
+msgstr "Memòria de la GPU"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Replega totes les aplicacions i processos"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Replega-ho tot"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Atura l'aplicació seleccionada"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -460,16 +444,15 @@ msgstr "Atura"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Força l'aturada de l'aplicació seleccionada"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "Força l'aturada del procés"
+msgstr "Força l'aturada"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Mostra els detalls de l'aplicació seleccionada"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
@@ -486,11 +469,12 @@ msgid "Name"
 msgstr "Nom"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "Memòria"
+msgstr ""
+"Memòria\n"
+"compartida"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -510,19 +494,16 @@ msgid "The current state of the service"
 msgstr "Estat actual del servei"
 
 #: resources/ui/services_page/details_dialog.blp:75
-#, fuzzy
 msgid "Start service"
-msgstr "Serveis"
+msgstr "Inicia el servei"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "Serveis"
+msgstr "Atura el servei"
 
 #: resources/ui/services_page/details_dialog.blp:106
-#, fuzzy
 msgid "Restart service"
-msgstr "Reinicia"
+msgstr "Reinicia el servei"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
@@ -564,7 +545,7 @@ msgstr "Registres"
 
 #: resources/ui/services_page/page.blp:78
 msgid "Start the selected service"
-msgstr ""
+msgstr "Inicia el servei seleccionat"
 
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
@@ -573,11 +554,11 @@ msgstr "Inicia"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
-msgstr ""
+msgstr "Atura el servei seleccionat"
 
 #: resources/ui/services_page/page.blp:117
 msgid "Restart the selected service"
-msgstr ""
+msgstr "Reinicia el servei seleccionat"
 
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
@@ -586,22 +567,22 @@ msgstr "Reinicia"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "Mostra els detalls del servei seleccionat"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "Segueix l'estil del sistema"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "Estil clar"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Estil fosc"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -674,35 +655,31 @@ msgstr "Preferència d'energia:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "No s'ha pogut expulsar"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Finalitza"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
 msgstr "Velocitat del rellotge"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "Consum d'energia"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Ús de memòria"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Ús de memòria"
+msgstr "Ús de memòria compartida"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Velocitat de memòria"
 
@@ -731,9 +708,8 @@ msgid "PCI Express speed:"
 msgstr "Velocitat PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "Velocitat PCI Express:"
+msgstr "Velocitat màxima del PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -850,14 +826,12 @@ msgid "Write speed"
 msgstr "Velocitat d'escriptura"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Total rebut"
+msgstr "Total llegit"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Total enviat"
+msgstr "Total escrit"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -921,19 +895,19 @@ msgstr "Mostra els temps del nucli"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "En ús:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "Modificat:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "En repòs:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "Lliure:"
 
 #: resources/ui/performance_page/fan_details.blp:59
 msgid "Fan Speed"
@@ -941,7 +915,7 @@ msgstr "Velocitat del ventilador"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "Percentatge de PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -957,72 +931,69 @@ msgstr "Temperatura superior a "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Dades SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Última actualització"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Consum d'energia"
+msgstr "Encès"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Salut de la unitat"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "Estat de la prova SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "Atribut"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Normal"
+msgstr "Normalitzat"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "Fils"
+msgstr "Llindar"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "El pitjor"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
-#, fuzzy
 msgid "Updates"
-msgstr "Velocitat d'actualització"
+msgstr "Actualitzacions"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Avaluació"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "No s'han pogut obtenir les dades SMART"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"Hi ha hagut un problema en obtenir les dades SMART. Proveu d'executar-ho des "
+"de la línia d'ordres per obtenir més informació."
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1035,11 +1006,11 @@ msgstr "Con_figuració de xarxa"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Mostra les dades SMART"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Expulsa el disc"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1159,11 +1130,11 @@ msgstr "Dibuixa gràfics com a línies suaus en lloc de línies irregulars"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Gràfics lliscants"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "Anima els gràfics (pot afectar negativament el rendiment)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1214,22 +1185,18 @@ msgid "Remember Sorting"
 msgstr "Recorda l'ordenació"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
 msgstr ""
-"Recorda l'ordenació de l'aplicació i la llista de processos durant els "
-"reinicis de l'aplicació"
+"Mantén l'ordre d'aplicacions i processos per columna, després de reiniciar "
+"l'aplicació"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "Recorda l'ordre de les columnes"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr ""
-"Recorda l'ordenació de l'aplicació i la llista de processos durant els "
-"reinicis de l'aplicació"
+msgstr "Mantén l'ordre de les columnes, després de reiniciar l'aplicació"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
@@ -1237,195 +1204,181 @@ msgstr "Escala l'ús de la CPU al recompte de nuclis"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "Mostra els separadors de columna"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "Mostra un separador entre cada columna"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
-msgstr ""
+msgstr "Unitats globals"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "Ús de memòria"
+msgstr "Unitat d'ús de memòria"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Utilitza bytes com a unitat de mesura per a la memòria"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "Bytes"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Utilitza bits com a unitat de mesura per a la memòria"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "Bits"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "Ús de memòria"
+msgstr "Base d'ús de memòria"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "Utilitza la base 10 per a la memòria"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "Base 10"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "Utilitza la base 2 per a la memòria"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "Base 2"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "Unitat d'ús de la unitat"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Utilitza els bytes com a unitat de mesura per a les unitats de disc"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Utilitza els bits com a unitat de mesura per a les unitats de disc"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Base d'ús de la unitat"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Utilitza la base 10 per a les unitats de disc"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Utilitza la base 2 per a les unitats de disc"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "Unitat d'ús de xarxa"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Utilitza bytes com a unitat de mesura per a les interfícies de xarxa"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Utilitza bits com a unitat de mesura per a les interfícies de xarxa"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Base d'ús de la xarxa"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Utilitza la base 10 per a les interfícies de xarxa"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Utilitza la base 2 per a les interfícies de xarxa"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Dreceres de teclat"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "Pàgina de rendiment"
+msgstr "Mostra la pàgina de rendiment"
 
 #: resources/ui/keyboard_shortcuts.blp:26
-#, fuzzy
 msgid "Show Apps Page"
-msgstr "Pàgina de l'aplicació"
+msgstr "Mostra la pàgina d'aplicacions"
 
 #: resources/ui/keyboard_shortcuts.blp:31
-#, fuzzy
 msgid "Show Services Page"
-msgstr "Serveis"
+msgstr "Mostra la pàgina de serveis"
 
 #: resources/ui/keyboard_shortcuts.blp:36 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
 msgstr "Commuta la barra lateral"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "Mostra la informació del disc"
+msgstr "Copia la informació del dispositiu"
 
 #: resources/ui/keyboard_shortcuts.blp:59
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "Commuta la barra lateral"
+msgstr "Commuta el mode resum"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "Seleccioneu un dispositiu"
 
 #: resources/ui/keyboard_shortcuts.blp:71
-#, fuzzy
 msgid "Apps Page"
-msgstr "Pàgina de l'aplicació"
+msgstr "Pàgina d'aplicacions"
 
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "Cerca"
 
 #: resources/ui/keyboard_shortcuts.blp:92
-#, fuzzy
 msgid "Stop App or Process"
-msgstr "Atura el procés"
+msgstr "Atura l'aplicació o el procés"
 
 #: resources/ui/keyboard_shortcuts.blp:97
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "Força l'aturada del procés"
+msgstr "Forçar l'aturada d'una aplicació o procés"
 
 #: resources/ui/keyboard_shortcuts.blp:102
 #: resources/ui/keyboard_shortcuts.blp:140
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "Mostra el quadre de diàleg dels detalls"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "Serveis"
+msgstr "Pàgina de serveis"
 
 #: resources/ui/keyboard_shortcuts.blp:125
-#, fuzzy
 msgid "Start Service"
-msgstr "Serveis"
+msgstr "Inicia el servei"
 
 #: resources/ui/keyboard_shortcuts.blp:130
-#, fuzzy
 msgid "Stop Service"
-msgstr "Serveis"
+msgstr "Atura el servei"
 
 #: resources/ui/keyboard_shortcuts.blp:135
-#, fuzzy
 msgid "Restart Service"
-msgstr "Reinicia"
+msgstr "Reinicia el servei"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1452,13 +1405,12 @@ msgid "Type a name or PID to search"
 msgstr "Escriviu un nom o un PID per cercar"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "Mostra la informació del disc"
+msgstr "Commuta la informació del dispositiu"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "Menú principal"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1482,39 +1434,35 @@ msgstr "_Preferències"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Dreceres del teclat"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
-msgstr "_Quant al MissionCenter"
+msgstr "_Quant al Mission Center"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
-msgstr ""
+msgstr "Capçalera de secció"
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
-msgstr "Aplicacions"
+msgstr "Aplicació"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} serveis en execució"
-msgstr[1] "{} serveis en execució"
+msgstr[0] "{} aplicació en execució"
+msgstr[1] "{} aplicacions en execució"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} serveis en execució"
-msgstr[1] "{} serveis en execució"
+msgstr[0] "{} procés en execució"
+msgstr[1] "{} processos en execució"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Copia els registres al porta-retalls"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
@@ -1540,9 +1488,8 @@ msgid "{} failed services out of a total of {}"
 msgstr "{} serveis fallits d'un total de {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
 msgid "{} sectors"
-msgstr "{} segon{}"
+msgstr "{} sectors"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
@@ -1553,68 +1500,64 @@ msgstr "{} °C"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:164
 msgid "Close"
-msgstr ""
+msgstr "Tanca"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:165
 msgid "Retry"
-msgstr ""
+msgstr "Reintenta"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
 msgid "Kill All"
-msgstr "Desactiva-ho tot"
+msgstr "Finalitza-ho tot"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"En ús ({}B)\n"
+"En ús ({})\n"
 "\n"
-"Memòria utilitzada pel sistema operatiu i aplicacions en execució"
+"Memòria utilitzada pel sistema operatiu i les aplicacions en execució"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Modificada ({}B)\n"
+"Modificada ({})\n"
 "\n"
 "Memòria el contingut de la qual s'ha d'escriure al disc abans que pugui ser "
 "utilitzat per un altre procés"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"En espera ({}B)\n"
+"En espera ({})\n"
 "\n"
-"Memòria que conté dades a la memòria cau i codi que no s'utilitza activament"
+"Memòria que conté dades emmagatzemades a la memòria cau i codi que no "
+"s'utilitza activament"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Allibera ({}B)\n"
+"Lliure ({})\n"
 "\n"
-"Memòria que no s'utilitza actualment i que es reutilitzarà primer quan el "
+"Memòria que no està en ús actualment i que es reutilitzarà primer quan el "
 "sistema operatiu, els controladors o les aplicacions necessitin més memòria"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 msgid "{} ago"
-msgstr ""
+msgstr "Fa {}"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
@@ -1632,96 +1575,92 @@ msgstr "Desconegut"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "Pre-fallida"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "Antic-Edat"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "En línia"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "Fora de línia"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "FALLANT"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "Ha fallat en el passat"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "D'acord"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:198
 msgid "Percent Used"
-msgstr ""
+msgstr "Percentatge utilitzat"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
-msgstr "Disponible"
+msgstr "Recanvi disponible"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr ""
+msgstr "Llindar de recanvi"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
-#, fuzzy
 msgid "Total Data Read"
-msgstr "Total rebut"
+msgstr "Lectura total de dades"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
-msgstr ""
+msgstr "Dades totals escrites"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:246
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "Temps d'advertència de temperatura"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:254
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "Temps de temperatura crítica"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:262
 #: src/performance_page/widgets/smart_data_dialog.rs:319
 msgid "Control Busy Time"
-msgstr ""
+msgstr "Control del temps ocupat"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "Temperatura actual"
+msgstr "Temperatura d'advertència"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "Temperatura actual"
+msgstr "Temperatura crítica"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
-msgstr ""
+msgstr "Temps"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:287
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "Aturades insegures"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:295
 msgid "Media Errors"
-msgstr ""
+msgstr "Errors de mitjans"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:303
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "Entrades del registre d'errors numèrics"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:311
 msgid "Power Cycles"
-msgstr ""
+msgstr "Cicles de potència"
 
 #: src/performance_page/disk.rs:228
 msgid "Disk {} ({})"
@@ -1756,9 +1695,8 @@ msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
 #: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
 msgid "iSCSI"
@@ -1770,12 +1708,11 @@ msgstr "Òptic"
 
 #: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
 msgid "Floppy"
-msgstr ""
+msgstr "Disquet"
 
 #: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
-#, fuzzy
 msgid "Thumb Drive"
-msgstr "Unitat"
+msgstr "Unitat USB"
 
 #: src/performance_page/disk.rs:384
 msgid "Drive {} ({})"
@@ -1806,16 +1743,15 @@ msgstr "No compatible"
 
 #: src/performance_page/memory.rs:378
 msgid "{} of {}"
-msgstr ""
+msgstr "{} de {}"
 
 #: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "No s'ha pogut obtenir informació addiciona de la memòria"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
 msgid "{} {} ({})"
-msgstr "{} {}{}B"
+msgstr "{} {} ({})"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:353
@@ -1823,83 +1759,76 @@ msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
 msgid "{}: {}"
-msgstr "{}: {} {}{}"
+msgstr "{}: {}"
 
 #: src/performance_page/gpu.rs:285
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Codificació de vídeo"
+msgstr "Codificació/descodificació de vídeo"
 
 #: src/performance_page/gpu.rs:576
-#, fuzzy
 msgid "Total Memory"
-msgstr "Memòria"
+msgstr "Memòria total"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Ús de memòria dedicada i compartida "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "Memòria compartida total"
 
 #: src/main.rs:99
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} any"
+msgstr[1] "{} anys"
 
 #: src/main.rs:103
-#, fuzzy
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] "{} minut{} "
-msgstr[1] "{} minut{} "
+msgstr[0] "{} mes"
+msgstr[1] "{} mesos"
 
 #: src/main.rs:107
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} dia"
+msgstr[1] "{} dies"
 
 #: src/main.rs:111
 msgid "{} hour"
 msgid_plural "{} hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} hora"
+msgstr[1] "{} hores"
 
 #: src/main.rs:115 src/main.rs:180
-#, fuzzy
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] "{} minut{} "
-msgstr[1] "{} minut{} "
+msgstr[0] "{} minut"
+msgstr[1] "{} minuts"
 
 #: src/main.rs:119 src/main.rs:178
-#, fuzzy
 msgid "{} second"
 msgid_plural "{} seconds"
-msgstr[0] "{} segon{}"
-msgstr[1] "{} segon{}"
+msgstr[0] "{} segon"
+msgstr[1] "{} segons"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
-#, fuzzy
 msgid "{}, {} and {}"
-msgstr "{}: {} {}{}"
+msgstr "{}, {} i {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:158 src/main.rs:161 src/main.rs:164
 msgid "{} and {}"
-msgstr ""
+msgstr "{} i {}"
 
 #: src/main.rs:170
 msgid "Less than a minute"
-msgstr ""
+msgstr "Menys d'un minut"
 
 #: src/main.rs:316
 msgid "_Quit"
