@@ -29,8 +29,9 @@ function install-snap() {
 
 export HOME=/root
 export TERM=xterm
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/lib/gcc/$(arch)-linux-gnu/9"
+export PATH="/root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/lib/gcc/$(arch)-linux-gnu/9"
 export LD_LIBRARY_PATH="/usr/lib/gcc/$(arch)-linux-gnu/9"
+export SNAPCRAFT_VERSION="8.9.1"
 
 apt-get update
 
@@ -38,33 +39,28 @@ ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
 DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 dpkg-reconfigure --frontend noninteractive tzdata
 
-apt-get install -y curl ca-certificates jq squashfs-tools
-apt-get install -y snapd sudo locales
+apt-get install -y sudo locales curl ca-certificates jq squashfs-tools build-essential git python3-pygit2 python3-pip libxml2-dev libxslt1-dev python3-venv libapt-pkg-dev libgit2-dev cargo pkg-config libssl-dev libyaml-dev xdelta3 python3-apt execstack
 locale-gen en_US.UTF-8
 
+cd
+git clone https://github.com/canonical/snapcraft.git
+cd snapcraft && git checkout $SNAPCRAFT_VERSION && git submodule update --init --recursive
+make setup
+uv build
+cd dist && pip install ./snapcraft-$SNAPCRAFT_VERSION-py3-none-any.whl --break-system-packages
+cd
+
 # Adapted from https://raw.githubusercontent.com/snapcore/snapcraft/master/docker/Dockerfile
+apt-get install -y snapd
 install-snap core20
 install-snap core24
 install-snap gtk-common-themes
 install-snap gnome-3-38-2004
-install-snap snapcraft
-
-unlink /snap/snapcraft/current/usr/bin/python3
-ln -s /snap/snapcraft/current/usr/bin/python3.* /snap/snapcraft/current/usr/bin/python3
-echo /snap/snapcraft/current/lib/python3.*/site-packages >> /snap/snapcraft/current/usr/lib/python3/dist-packages/site-packages.pth
-
-mkdir -p /snap/bin
-echo "#!/bin/sh" > /snap/bin/snapcraft
-snap_version="$(awk '/^version:/{print $2}' /snap/snapcraft/current/meta/snap.yaml | tr -d \')" && echo "export SNAP_VERSION=\"$snap_version\"" >> /snap/bin/snapcraft
-echo 'exec "$SNAP/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
-chmod +x /snap/bin/snapcraft
 
 export LANG="en_US.UTF-8"
 export LANGUAGE="en_US:en"
 export LC_ALL="en_US.UTF-8"
-export PATH="/snap/bin:/snap/snapcraft/current/usr/bin:$PATH"
-export SNAP="/snap/snapcraft/current"
-export SNAP_NAME="snapcraft"
+export PATH="/snap/bin:$PATH"
 export SNAP_ARCH="$(arch)"
 
 cd $SRC_PATH && snapcraft

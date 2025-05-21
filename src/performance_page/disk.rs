@@ -30,12 +30,13 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::{app, to_short_human_readable_time};
 
-use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
+use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog, SmartFailureDialog};
 use super::PageExt;
 
 mod imp {
     use super::*;
     use crate::{settings, DataType};
+    use adw::Dialog;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -321,12 +322,13 @@ mod imp {
                             return;
                         };
 
-                        let Some(smart_data) = magpie.smart_data(disk_id.clone()) else {
-                            return;
+                        if let Some(smart_data) = magpie.smart_data(disk_id.clone()) {
+                            let dialog = SmartDataDialog::new(smart_data);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                        } else {
+                            let dialogue = SmartFailureDialog::new();
+                            dialogue.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         };
-
-                        let dialog = SmartDataDialog::new(smart_data);
-                        dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                     }
                 });
             }

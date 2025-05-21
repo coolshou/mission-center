@@ -1,4 +1,4 @@
-/* services_page/details_dialog.rs
+/* services_page/widgets/eject_failure_dialog.rs
  *
  * Copyright 2024 Mission Center Devs
  *

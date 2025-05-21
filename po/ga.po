@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-21 06:23+0000\n"
-"PO-Revision-Date: 2024-10-01 11:44+0000\n"
+"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"PO-Revision-Date: 2025-05-19 09:03+0000\n"
 "Last-Translator: Aindriú Mac Giolla Eoin <aindriu80@gmail.com>\n"
 "Language-Team: Irish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ga/>\n"
@@ -16,9 +16,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : (n>2 && n<7) ? 2 :"
-"(n>6 && n<11) ? 3 : 4;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"Plural-Forms: nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : (n>2 && n<7) ? 2 :("
+"n>6 && n<11) ? 3 : 4;\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -40,10 +40,9 @@ msgstr "Forbróirí Ionad Misean"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor system resource usage"
-msgstr "Monatóireacht ar úsáid acmhainní"
+msgstr "Monatóireacht a dhéanamh ar úsáid acmhainní córais"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
@@ -102,9 +101,8 @@ msgstr ""
 "tionscadal tóir NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Monatóireacht ar úsáid acmhainní"
+msgstr "lucht leanúna an chórais monatóireachta"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -163,13 +161,12 @@ msgid "Which page is shown on application startup"
 msgstr "Cén leathanach a thaispeántar ar thosú feidhmchlár"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Ainm comhéadain:"
+msgstr "Stíl Chomhéadain"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Más chóir stíl comhéadain éadrom nó dorcha a úsáid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
@@ -189,46 +186,35 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Cé mhéad pointe ba chóir a thaispeáint ar gach cairt?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+msgstr "Cibé acu giotán nó beart a úsáid (réamhshocrú) don chuimhne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+msgstr "Cibé acu bonn-10 nó bonn-2 (réamhshocraithe) a úsáid don chuimhne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+"Cibé acu giotán nó beart (réamhshocraithe) le haghaidh luas + méid an "
+"tiomántáin"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+"Cibé acu bonn-10 nó bonn-2 (réamhshocraithe) a úsáid le haghaidh luas + méid "
+"an tiomántáin"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+"Cibé acu giotán (réamhshocraithe) nó beartáin a úsáid le haghaidh luas líonra"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
-"Bearta do luas líonra"
+"Cibé acu bonn-10 (réamhshocraithe) nó bonn-2 a úsáid le haghaidh luas líonra"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -246,12 +232,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr "Tá sórtáil colún leanúnach ar fud atosaithe aipeanna"
+msgstr "Leanann sórtáil colún ar aghaidh trasna atosaithe aipeanna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Tá sórtáil colún leanúnach ar fud atosaithe aipeanna"
+msgstr "Coinnítear ord na gcolún ar feadh atosaithe an aip"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -263,21 +248,19 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Taispeáin deighilteoir idir gach colún san amharc Aipeanna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
 msgstr "An id colún trína ndéantar amharc leathanaigh na hAipeanna a shórtáil"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
-msgstr "An treo sórtála d'amharc an leathanaigh aipeanna"
+msgstr "Treo sórtála radhairc leathanaigh na nAipeanna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "An treo sórtála d'amharc an leathanaigh aipeanna"
+msgstr "Ord na gcolún san amharc leathanaigh Aipeanna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -294,12 +277,11 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:173
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Ar chóir go mbeadh graif fheidhmíochta réidh nó caite"
+msgstr "Ar cheart go mbeadh graif feidhmíochta réidh nó garbh"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Ar chóir go mbeadh graif fheidhmíochta réidh nó caite"
+msgstr "Ar cheart graif a bheochan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -340,7 +322,6 @@ msgid "Show the swap graph"
 msgstr "Taispeáin an graf babhtála"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "Taispeáin an graf ionchódai-díchódaithe gpu"
 
@@ -389,18 +370,16 @@ msgstr "N/A"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "Cineál:"
+msgstr "Cineál"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "Líne Orduithe"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Úsáid cuimhne"
+msgstr "Úsáid Acmhainní"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -416,47 +395,43 @@ msgid "Memory"
 msgstr "Cuimhne"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Cuimhne"
+msgstr "Cuimhne Chomhroinnte"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
-msgstr "Tiomáint"
+msgstr "Tiomántáin"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_Líonra"
+msgstr "Líonra"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
-#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:355
+#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
 msgid "GPU"
 msgstr "GPU"
 
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
 msgstr "Cuimhne GPU"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Thit gach aip agus próiseas"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Cill Gach"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Stop an aip roghnaithe"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -466,16 +441,15 @@ msgstr "Stad"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Stop fórsa an aip roghnaithe"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "Próiseas Stad Fórsa"
+msgstr "Stop Fórsa"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Taispeáin sonraí an aip roghnaithe"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
@@ -492,11 +466,12 @@ msgid "Name"
 msgstr "Ainm"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "Cuimhne"
+msgstr ""
+"Cuimhne\n"
+"Chomhroinnte"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -516,19 +491,16 @@ msgid "The current state of the service"
 msgstr "Staid reatha na seirbhíse"
 
 #: resources/ui/services_page/details_dialog.blp:75
-#, fuzzy
 msgid "Start service"
-msgstr "Seirbhísí"
+msgstr "Tosaigh an tseirbhís"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "Seirbhísí"
+msgstr "Stad tseirbhís"
 
 #: resources/ui/services_page/details_dialog.blp:106
-#, fuzzy
 msgid "Restart service"
-msgstr "Athosaigh"
+msgstr "Atosaigh an tseirbhís"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
@@ -570,7 +542,7 @@ msgstr "Logaí"
 
 #: resources/ui/services_page/page.blp:78
 msgid "Start the selected service"
-msgstr ""
+msgstr "Tosaigh an tseirbhís roghnaithe"
 
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
@@ -579,11 +551,11 @@ msgstr "Tosaigh"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
-msgstr ""
+msgstr "Stop an tseirbhís roghnaithe"
 
 #: resources/ui/services_page/page.blp:117
 msgid "Restart the selected service"
-msgstr ""
+msgstr "Athosaigh an tseirbhís roghnaithe"
 
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
@@ -592,22 +564,22 @@ msgstr "Athosaigh"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "Taispeáin sonraí na seirbhíse roghnaithe"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "Lean stíl an chórais"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "Stíl éadrom"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Stíl dorcha"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -680,41 +652,37 @@ msgstr "Rogha cumhachta:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Theip ar Easghabháil"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Maraigh"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
 msgstr "Luas Clog"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
-msgstr "Tarraingt cumhachta"
+msgstr "Tarraingt Cumhachta"
 
 #: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:557
-#, fuzzy
+#: src/performance_page/gpu.rs:555
 msgid "Memory Usage"
-msgstr "Úsáid cuimhne"
+msgstr "Úsáid Cuimhne"
 
 #: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:634
-#, fuzzy
+#: src/performance_page/gpu.rs:632
 msgid "Shared Memory Usage"
-msgstr "Úsáid cuimhne"
+msgstr "Úsáid Chomhroinnte Cuimhne"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Luas cuimhne"
 
 #: resources/ui/performance_page/gpu_details.blp:407
 msgid "Video encode"
-msgstr "Ionchódú físeán"
+msgstr "Ionchódú físe"
 
 #: resources/ui/performance_page/gpu_details.blp:453
 msgid "Video decode"
@@ -737,9 +705,8 @@ msgid "PCI Express speed:"
 msgstr "Luas PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "Luas PCI Express:"
+msgstr "Uasluas PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -856,14 +823,12 @@ msgid "Write speed"
 msgstr "Luas scríobh"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Iomlán a Fhaightear"
+msgstr "Léamh Iomlán"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Iomlán Seolta"
+msgstr "Iomlán Scríofa"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -927,19 +892,19 @@ msgstr "Taispeáin Kernel Amanna"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "In Úsáid:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "Athraithe:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "Fuireachas:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "Saor in aisce:"
 
 #: resources/ui/performance_page/fan_details.blp:59
 msgid "Fan Speed"
@@ -947,7 +912,7 @@ msgstr "Luas Gaothráin"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "Céatadán PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -963,61 +928,57 @@ msgstr "Teocht os cionn "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Sonraí Cliste"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Nuashonrú Deiridh"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Tarraingt cumhachta"
+msgstr "Cumhachtaithe Ar"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Sláinte Tiomána"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "Stádas Tástála SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "tréith"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "Luach"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Formáidithe:"
+msgstr "Gnáthaithe"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "Snáitheanna"
+msgstr "Tairseach"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "Is measa"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
 msgid "Updates"
-msgstr ""
+msgstr "Nuashonruithe"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Measúnú"
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1030,11 +991,11 @@ msgstr "Socrui_the Líonra"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Taispeáin Sonraí SMART"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Easchur Diosca"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1050,7 +1011,7 @@ msgstr "Seol"
 
 #: resources/ui/performance_page/network_details.blp:130
 msgid "Total Received"
-msgstr "Iomlán a Fhaightear"
+msgstr "Iomlán Faighte"
 
 #: resources/ui/performance_page/network_details.blp:159
 msgid "Total Sent"
@@ -1058,7 +1019,7 @@ msgstr "Iomlán Seolta"
 
 #: resources/ui/performance_page/network_details.blp:184
 msgid "Interface name:"
-msgstr "Ainm comhéadain:"
+msgstr "Ainm an chomhéadain:"
 
 #: resources/ui/performance_page/network_details.blp:198
 msgid "Connection type:"
@@ -1142,7 +1103,7 @@ msgstr "Pointí Sonraí Cairt"
 
 #: resources/ui/preferences/page.blp:46 resources/ui/keyboard_shortcuts.blp:43
 msgid "Performance Page"
-msgstr "Leathanach feidhmíochta"
+msgstr "Leathanach Feidhmíochta"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -1154,11 +1115,11 @@ msgstr "Tarraing graif mar líne réidh in ionad líne ghearrtha"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Graif sleamhnáin"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "Graif a bheochan (d'fhéadfadh tionchar diúltach ar fheidhmíoch"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1198,7 +1159,7 @@ msgstr "Taispeáin Faisnéis Gaothráin"
 
 #: resources/ui/preferences/page.blp:101
 msgid "App Page"
-msgstr "Leathanach Aip"
+msgstr "Leathanach na hAipe"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Merge Process Stats"
@@ -1209,20 +1170,18 @@ msgid "Remember Sorting"
 msgstr "Cuimhnigh Sórtá"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
 msgstr ""
-"Cuimhnigh ar shórtáil an aip agus an liosta próisis thar aththosaigh an aip"
+"Sórtáil aipeanna agus próiseas de réir colúin a choinneáil ar siúl, trasna "
+"atosaithe aipeanna"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "Cuimhnigh ar Ordú Colún"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr ""
-"Cuimhnigh ar shórtáil an aip agus an liosta próisis thar aththosaigh an aip"
+msgstr "Coinnigh ord na gcolún, trasna atosaithe aipeanna"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
@@ -1230,195 +1189,181 @@ msgstr "Scála Úsáid LAP go dtí Chomhaire"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "Taispeáin Deighilteoirí Colún"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "Taispeáin deighilteoir idir gach colún"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
-msgstr ""
+msgstr "Aonaid Domhanda"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "Úsáid cuimhne"
+msgstr "Aonad Úsáide Cuimhne"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Úsáid Bytes mar Aonad Tomhais don Chuimhne"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "Bytes"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Úsáid Giotáin mar Aonad Tomhais don Chuimhne"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "Giotáin"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "Úsáid cuimhne"
+msgstr "Bonn Úsáide Cuimhne"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "Úsáid Bonn 10 le haghaidh Cuimhne"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "Bonn 10"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "Úsáid Bonn 2 le haghaidh Cuimhne"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "Bonn 2"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "Aonad Úsáide Tiomána"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Úsáid Bytes mar Aonad Tomhais do Tiomántáin Diosca"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Úsáid Giotáin mar Aonad Tomhais do Tiomántáin Diosca"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Bonn Úsáide Tiomána"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Úsáid Base 10 le haghaidh Tiomántáin Diosca"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Úsáid Bonn 2 do Tiomántáin Diosca"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "Aonad Úsáide Líonra"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Úsáid Bytes mar Aonad Tomhais le haghaidh Comhéadain Líonra"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Úsáid Giotáin mar Aonad Tomhais le haghaidh Comhéadain Líonra"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Bonn Úsáide Líonra"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Úsáid Bonn 10 le haghaidh Comhéadain Líonra"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Úsáid Bonn 2 le haghaidh Comhéadain Líonra"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Aicearraí Méarchlár"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "Domhanda"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "Leathanach feidhmíochta"
+msgstr "Taispeáin Leathanach Feidhmíochta"
 
 #: resources/ui/keyboard_shortcuts.blp:26
-#, fuzzy
 msgid "Show Apps Page"
-msgstr "Leathanach Aip"
+msgstr "Taispeáin Leathanach na nAipeanna"
 
 #: resources/ui/keyboard_shortcuts.blp:31
-#, fuzzy
 msgid "Show Services Page"
-msgstr "Seirbhísí"
+msgstr "Taispeáin Leathanach na Seirbhísí"
 
 #: resources/ui/keyboard_shortcuts.blp:36 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
-msgstr "Scoránaigh Barra Taoibh"
+msgstr "Barra Taobh a Athraigh"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "Taispeáin Faisnéis Diosca"
+msgstr "Cóipeáil Faisnéis Gléas"
 
 #: resources/ui/keyboard_shortcuts.blp:59
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "Scoránaigh Barra Taoibh"
+msgstr "Mód Achoimre a Athrú"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "Roghnaigh Gléas"
 
 #: resources/ui/keyboard_shortcuts.blp:71
-#, fuzzy
 msgid "Apps Page"
-msgstr "Leathanach Aip"
+msgstr "Leathanach na nAipeanna"
 
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "Cuardaigh"
 
 #: resources/ui/keyboard_shortcuts.blp:92
-#, fuzzy
 msgid "Stop App or Process"
 msgstr "Próiseas Stad"
 
 #: resources/ui/keyboard_shortcuts.blp:97
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "Próiseas Stad Fórsa"
+msgstr "Stop Éigeantach Aip nó Próiseas"
 
 #: resources/ui/keyboard_shortcuts.blp:102
 #: resources/ui/keyboard_shortcuts.blp:140
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "Taispeáin Dialóg Sonraí"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "Seirbhísí"
+msgstr "Leathanach Seirbhísí"
 
 #: resources/ui/keyboard_shortcuts.blp:125
-#, fuzzy
 msgid "Start Service"
-msgstr "Seirbhísí"
+msgstr "Tosaigh Seirbhís"
 
 #: resources/ui/keyboard_shortcuts.blp:130
-#, fuzzy
 msgid "Stop Service"
-msgstr "Seirbhísí"
+msgstr "Stop Seirbhís"
 
 #: resources/ui/keyboard_shortcuts.blp:135
-#, fuzzy
 msgid "Restart Service"
-msgstr "Athosaigh"
+msgstr "Atosaigh an tSeirbhís"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1445,13 +1390,12 @@ msgid "Type a name or PID to search"
 msgstr "Clóscríobh ainm nó PID chun cuardach a dhéanamh"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "Taispeáin Faisnéis Diosca"
+msgstr "Faisnéis Gléas a Athrú"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "Príomh-roghchlár"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1475,45 +1419,43 @@ msgstr "_Roghanna"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Aicearraí Méarchláir"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
 msgstr "_Maidir le MissionCenter"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
-msgstr ""
+msgstr "Ceannteideal Rannóg"
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
-msgstr "Aipeanna"
+msgstr "Aip"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
+#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} Seirbhísí Reatha"
-msgstr[1] "{} Seirbhísí Reatha"
-msgstr[2] "{} Seirbhísí Reatha"
-msgstr[3] "{} Seirbhísí Reatha"
-msgstr[4] "{} Seirbhísí Reatha"
+msgstr[0] "{} Aip Rith"
+msgstr[1] "{} Aipeanna atá ag rith"
+msgstr[2] "{} Aipeanna atá ag rith"
+msgstr[3] "{} Aipeanna atá ag rith"
+msgstr[4] "{} Aipeanna atá ag rith"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
+#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} Seirbhísí Reatha"
-msgstr[1] "{} Seirbhísí Reatha"
-msgstr[2] "{} Seirbhísí Reatha"
-msgstr[3] "{} Seirbhísí Reatha"
-msgstr[4] "{} Seirbhísí Reatha"
+msgstr[0] "{} Próiseas Rith"
+msgstr[1] "{} Próisis Reatha"
+msgstr[2] "{} Próisis Reatha"
+msgstr[3] "{} Próisis Reatha"
+msgstr[4] "{} Próisis Reatha"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Cóipeáil logaí chuig gear"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
@@ -1531,39 +1473,30 @@ msgid "Stopped"
 msgstr "Stopa"
 
 #: src/services_page/mod.rs:530
+#, rust-format
 msgid "{} Running Services"
 msgstr "{} Seirbhísí Reatha"
 
 #: src/services_page/mod.rs:535
+#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr "{} theip ar sheirbhísí as iomlán de {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
+#, rust-format
 msgid "{} sectors"
-msgstr "{} an dara {}"
+msgstr "{} earnáil"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
+#, rust-format
 msgid "{} °C"
 msgstr "{}° C"
 
-#: src/performance_page/widgets/eject_failure_dialog.rs:164
-msgid "Close"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:165
-msgid "Retry"
-msgstr ""
-
-#: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
-msgid "Kill All"
-msgstr "Díchumasaigh Gach"
-
 #: src/performance_page/widgets/mem_composition_widget.rs:253
+#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1574,6 +1507,7 @@ msgstr ""
 "Cuimhne a úsáideann an córas oibriúcháin agus feidhmchláir"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
+#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1586,6 +1520,7 @@ msgstr ""
 "le próiseas eile"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
+#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1597,6 +1532,7 @@ msgstr ""
 "gníomhach"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
+#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1610,18 +1546,19 @@ msgstr ""
 "na feidhmchláir"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
+#, rust-format
 msgid "{} ago"
-msgstr ""
+msgstr "{} ó shin"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:237 src/performance_page/disk.rs:258
 #: src/performance_page/disk.rs:268 src/performance_page/disk.rs:296
 #: src/performance_page/disk.rs:454 src/performance_page/cpu.rs:316
 #: src/performance_page/cpu.rs:327 src/performance_page/cpu.rs:351
-#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:561
-#: src/performance_page/memory.rs:792 src/performance_page/mod.rs:1391
-#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:247
-#: src/performance_page/gpu.rs:303 src/performance_page/network.rs:262
+#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:551
+#: src/performance_page/memory.rs:782 src/performance_page/mod.rs:1391
+#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:245
+#: src/performance_page/gpu.rs:301 src/performance_page/network.rs:262
 #: src/performance_page/network.rs:367 src/performance_page/network.rs:395
 #: src/performance_page/network.rs:495 src/performance_page/network.rs:531
 msgid "Unknown"
@@ -1629,102 +1566,100 @@ msgstr "Anaithnid"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "Réamh-Teip"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "Seanaois"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "Ar Líne"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "As líne"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "AG TEIP"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "Theip ar an am atá caite"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "Ceart go leor"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:198
 msgid "Percent Used"
-msgstr ""
+msgstr "Céatadán Úsá"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
-msgstr "Ar fáil"
+msgstr "Spártha atá ar Fáil"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr ""
+msgstr "Tairseach breise"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
-#, fuzzy
 msgid "Total Data Read"
-msgstr "Iomlán a Fhaightear"
+msgstr "Iomlán na Sonraí Léite"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
-msgstr ""
+msgstr "Sonraí Iomlán Scríofa"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:246
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "Am Teochta Rabhadh"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:254
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "Am Teochta Criticiúil"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:262
 #: src/performance_page/widgets/smart_data_dialog.rs:319
 msgid "Control Busy Time"
-msgstr ""
+msgstr "Rialú Am Gnóthach"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "Teocht Reatha"
+msgstr "Teocht Rabhaidh"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "Teocht Reatha"
+msgstr "Teocht Chriticiúil"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
-msgstr ""
+msgstr "Time's"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:287
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "Dúnadh neamhshábhá"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:295
 msgid "Media Errors"
-msgstr ""
+msgstr "Earráidí Meán"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:303
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "Iontrálacha Logála Earráide Líon"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:311
 msgid "Power Cycles"
-msgstr ""
+msgstr "Timthriallta Cumhachta"
 
 #: src/performance_page/disk.rs:227
+#, rust-format
 msgid "Disk {} ({})"
 msgstr "Diosca {} ({})"
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
+#, rust-format
 msgid "Drive ({})"
 msgstr "Tiomántán ({})"
 
@@ -1753,9 +1688,8 @@ msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/disk.rs:288 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
 #: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1126
 msgid "iSCSI"
@@ -1767,19 +1701,20 @@ msgstr "Optúil"
 
 #: src/performance_page/disk.rs:291 src/performance_page/mod.rs:1128
 msgid "Floppy"
-msgstr ""
+msgstr "Diosca bog"
 
 #: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1129
-#, fuzzy
 msgid "Thumb Drive"
-msgstr "Tiomáint"
+msgstr "Tiomántán Ordóg"
 
 #: src/performance_page/disk.rs:382
+#, rust-format
 msgid "Drive {} ({})"
 msgstr "Tiomáint {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
+#, rust-format
 msgid "Fan {}"
 msgstr "Gaothráin {}"
 
@@ -1789,140 +1724,147 @@ msgid "Fan"
 msgstr "Gaothráin"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
+#, rust-format
 msgid "{} RPM"
 msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:285
+#, rust-format
 msgid "{}%"
 msgstr "{}%"
 
 #: src/performance_page/fan.rs:337 src/performance_page/cpu.rs:339
-#: src/performance_page/gpu.rs:318
+#: src/performance_page/gpu.rs:316
 msgid "Unsupported"
 msgstr "Gan tacaíocht"
 
-#: src/performance_page/memory.rs:378
-msgid "{} of {}"
-msgstr ""
+#: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
+#: src/performance_page/gpu.rs:870
+#, rust-format
+msgid "{} second{}"
+msgstr "{} soicind {}"
 
-#: src/performance_page/memory.rs:400
+#: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
+#: src/performance_page/gpu.rs:881
+#, rust-format
+msgid "{} minute{} "
+msgstr "{} nóiméad {} "
+
+#: src/performance_page/memory.rs:397
 msgid "Getting additional memory information failed"
 msgstr "Theip ar eolas cuimhne breise a fháil"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
+#, rust-format
 msgid "{} {} ({})"
 msgstr "{} {} {} B"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
-#: src/performance_page/gpu.rs:353
+#: src/performance_page/gpu.rs:351
+#, rust-format
 msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
+#, rust-format
 msgid "{}: {}"
-msgstr "{}: {} {} {}"
+msgstr "{}: {}"
 
-#: src/performance_page/gpu.rs:285
-#, fuzzy
+#: src/performance_page/gpu.rs:283
 msgid "Video encode/decode"
-msgstr "Ionchódú físeán"
+msgstr "Ionchódú/díchódú físe"
 
-#: src/performance_page/gpu.rs:576
-#, fuzzy
+#: src/performance_page/gpu.rs:574
 msgid "Total Memory"
-msgstr "Cuimhne"
+msgstr "Cuimhne Iomlán"
 
-#: src/performance_page/gpu.rs:606
+#: src/performance_page/gpu.rs:604
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Úsáid cuimhne tiomnaithe agus roinnte "
 
-#: src/performance_page/gpu.rs:651
+#: src/performance_page/gpu.rs:649
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "Cuimhne roinnte iomlán"
 
-#: src/main.rs:100
+#: src/main.rs:99
+#, rust-format
 msgid "{} year"
-msgstr ""
+msgstr "{} bliain"
 
-#: src/main.rs:102
+#: src/main.rs:101
+#, rust-format
 msgid "{} years"
-msgstr ""
+msgstr "{} blianta"
 
-#: src/main.rs:109
-#, fuzzy
+#: src/main.rs:108
+#, rust-format
 msgid "{} month"
-msgstr "{} nóiméad {} "
+msgstr "{} mí"
 
-#: src/main.rs:111
+#: src/main.rs:110
+#, rust-format
 msgid "{} months"
-msgstr ""
+msgstr "{} míonna"
 
-#: src/main.rs:118
+#: src/main.rs:117
+#, rust-format
 msgid "{} day"
-msgstr ""
+msgstr "{} lá"
 
-#: src/main.rs:120
+#: src/main.rs:119
+#, rust-format
 msgid "{} days"
-msgstr ""
+msgstr "{} laethanta"
 
-#: src/main.rs:127
+#: src/main.rs:126
+#, rust-format
 msgid "{} hour"
-msgstr ""
+msgstr "{} uair an chloig"
 
-#: src/main.rs:129
+#: src/main.rs:128
+#, rust-format
 msgid "{} hours"
-msgstr ""
+msgstr "{} uaireanta"
 
-#: src/main.rs:136 src/main.rs:209
-#, fuzzy
+#: src/main.rs:135
+#, rust-format
 msgid "{} minute"
-msgid_plural "{} minutes"
-msgstr[0] "{} nóiméad {} "
-msgstr[1] "{} nóiméad {} "
-msgstr[2] "{} nóiméad {} "
-msgstr[3] "{} nóiméad {} "
-msgstr[4] "{} nóiméad {} "
+msgstr "{} nóiméad"
 
-#: src/main.rs:138
-#, fuzzy
+#: src/main.rs:137
+#, rust-format
 msgid "{} minutes"
-msgstr "{} nóiméad {} "
+msgstr "{} nóiméid"
 
-#: src/main.rs:145 src/main.rs:207
-#, fuzzy
+#: src/main.rs:144
+#, rust-format
 msgid "{} second"
-msgid_plural "{} seconds"
-msgstr[0] "{} an dara {}"
-msgstr[1] "{} an dara {}"
-msgstr[2] "{} an dara {}"
-msgstr[3] "{} an dara {}"
-msgstr[4] "{} an dara {}"
+msgstr "{} soicind"
 
-#: src/main.rs:147
-#, fuzzy
+#: src/main.rs:146
+#, rust-format
 msgid "{} seconds"
-msgstr "{} an dara {}"
+msgstr "{} soicindí"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:184
-#, fuzzy
+#: src/main.rs:183
+#, rust-format
 msgid "{}, {} and {}"
-msgstr "{}: {} {} {}"
+msgstr "{}, {} agus {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:187 src/main.rs:190 src/main.rs:193
+#: src/main.rs:186 src/main.rs:189 src/main.rs:192
+#, rust-format
 msgid "{} and {}"
-msgstr ""
+msgstr "{} agus {}"
 
-#: src/main.rs:199
+#: src/main.rs:198
 msgid "Less than a minute"
-msgstr ""
+msgstr "Níos lú ná nóiméad"
 
-#: src/main.rs:345
+#: src/main.rs:329
 msgid "_Quit"
 msgstr "_Scoir"
 
@@ -1930,17 +1872,15 @@ msgstr "_Scoir"
 msgid "translator-credits"
 msgstr "creidmheasanna aistritheora"
 
-#~ msgid "{} second{}"
-#~ msgstr "{} an dara {}"
-
-#~ msgid "{} minute{} "
-#~ msgstr "{} nóiméad {} "
-
 #, fuzzy
 #~ msgid "Whether or not to use base-10 (default) or base-2 for memory"
 #~ msgstr ""
 #~ "Cibé acu an n-úsáidfear nó nach n-úsáidfear giotán (réamhshocraithe) nó "
 #~ "Bearta do luas líonra"
+
+#, fuzzy
+#~ msgid "Kill All"
+#~ msgstr "Díchumasaigh Gach"
 
 #~ msgid "No per-process network usage"
 #~ msgstr "Gan aon úsáid líonra in aghaidh an phróisis"

@@ -189,10 +189,9 @@ package-build-job-arm:
 snap-job-x86:
   stage: package
   interruptible: true
+  image: ubuntu:24.04
   before_script:
-    - !reference [ ".shared", "setup_apt" ]
-
-    - apt-get install -y curl ca-certificates
+    - apt-get update && apt-get install -y curl ca-certificates
   script:
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cd ../..
@@ -211,12 +210,11 @@ snap-job-x86:
 snap-job-arm:
   stage: package
   interruptible: true
+  image: ubuntu:24.04
   tags:
     - saas-linux-medium-arm64
   before_script:
-    - !reference [ ".shared", "setup_apt_ports" ]
-
-    - apt-get install -y curl ca-certificates
+    - apt-get update && apt-get install -y curl ca-certificates
   script:
 
     - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
