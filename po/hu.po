@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"POT-Creation-Date: 2025-05-21 06:23+0000\n"
 "PO-Revision-Date: 2024-04-15 03:01+0000\n"
 "Last-Translator: Fionn <mehafo3499@adstam.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
@@ -413,7 +413,7 @@ msgstr "_Hálózat"
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
-#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
+#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:355
 #, fuzzy
 msgid "GPU"
 msgstr "_Videókártya"
@@ -676,13 +676,13 @@ msgid "Power Draw"
 msgstr "Teljesítményfogyasztás"
 
 #: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:555
+#: src/performance_page/gpu.rs:557
 #, fuzzy
 msgid "Memory Usage"
 msgstr "Memóriahasználat"
 
 #: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:632
+#: src/performance_page/gpu.rs:634
 #, fuzzy
 msgid "Shared Memory Usage"
 msgstr "Memóriahasználat"
@@ -1486,14 +1486,12 @@ msgid "App"
 msgstr "Alkalmazások"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] ""
 msgstr[1] ""
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] ""
@@ -1519,17 +1517,15 @@ msgid "Stopped"
 msgstr ""
 
 #: src/services_page/mod.rs:530
-#, rust-format
 msgid "{} Running Services"
 msgstr ""
 
 #: src/services_page/mod.rs:535
-#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr ""
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} sectors"
 msgstr "{} másodperc{}"
 
@@ -1537,12 +1533,22 @@ msgstr "{} másodperc{}"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
-#, rust-format
 msgid "{} °C"
 msgstr ""
 
+#: src/performance_page/widgets/eject_failure_dialog.rs:164
+msgid "Close"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:165
+msgid "Retry"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:166
+msgid "Kill All"
+msgstr ""
+
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1553,7 +1559,6 @@ msgstr ""
 "A működési rendszer és a futó alkalmazások által használt memória"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1566,7 +1571,6 @@ msgstr ""
 "folyamat használni tudja"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1578,7 +1582,6 @@ msgstr ""
 "aktív használatban van"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1592,7 +1595,6 @@ msgstr ""
 "alkalmazások több memóriára van szükségük"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
-#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1601,10 +1603,10 @@ msgstr ""
 #: src/performance_page/disk.rs:268 src/performance_page/disk.rs:296
 #: src/performance_page/disk.rs:454 src/performance_page/cpu.rs:316
 #: src/performance_page/cpu.rs:327 src/performance_page/cpu.rs:351
-#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:551
-#: src/performance_page/memory.rs:782 src/performance_page/mod.rs:1391
-#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:245
-#: src/performance_page/gpu.rs:301 src/performance_page/network.rs:262
+#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:561
+#: src/performance_page/memory.rs:792 src/performance_page/mod.rs:1391
+#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:247
+#: src/performance_page/gpu.rs:303 src/performance_page/network.rs:262
 #: src/performance_page/network.rs:367 src/performance_page/network.rs:395
 #: src/performance_page/network.rs:495 src/performance_page/network.rs:531
 msgid "Unknown"
@@ -1703,12 +1705,11 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
-#, rust-format
 msgid "Disk {} ({})"
 msgstr "Lemez {} ({})"
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
-#, fuzzy, rust-format
+#, fuzzy
 msgid "Drive ({})"
 msgstr "Lemez {} ({})"
 
@@ -1758,13 +1759,12 @@ msgid "Thumb Drive"
 msgstr ""
 
 #: src/performance_page/disk.rs:382
-#, fuzzy, rust-format
+#, fuzzy
 msgid "Drive {} ({})"
 msgstr "Lemez {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
-#, rust-format
 msgid "Fan {}"
 msgstr ""
 
@@ -1774,149 +1774,134 @@ msgid "Fan"
 msgstr ""
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
-#, rust-format
 msgid "{} RPM"
 msgstr ""
 
 #: src/performance_page/fan.rs:285
-#, rust-format
 msgid "{}%"
 msgstr ""
 
 #: src/performance_page/fan.rs:337 src/performance_page/cpu.rs:339
-#: src/performance_page/gpu.rs:316
+#: src/performance_page/gpu.rs:318
 msgid "Unsupported"
 msgstr "Nem támogatott"
 
-#: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
-#: src/performance_page/gpu.rs:870
-#, rust-format
-msgid "{} second{}"
-msgstr "{} másodperc{}"
+#: src/performance_page/memory.rs:378
+msgid "{} of {}"
+msgstr ""
 
-#: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
-#: src/performance_page/gpu.rs:881
-#, rust-format
-msgid "{} minute{} "
-msgstr "{} perc{} "
-
-#: src/performance_page/memory.rs:397
+#: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "A további memóriainformációk lekérése sikertelen volt"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} {} ({})"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
-#: src/performance_page/gpu.rs:351
-#, rust-format
+#: src/performance_page/gpu.rs:353
 msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{}: {}"
 msgstr "{}: {} {}bit per másodperc"
 
-#: src/performance_page/gpu.rs:283
+#: src/performance_page/gpu.rs:285
 #, fuzzy
 msgid "Video encode/decode"
 msgstr "Videókódolás/dekódolás"
 
-#: src/performance_page/gpu.rs:574
+#: src/performance_page/gpu.rs:576
 #, fuzzy
 msgid "Total Memory"
 msgstr "Memória"
 
-#: src/performance_page/gpu.rs:604
+#: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
 msgstr ""
 
-#: src/performance_page/gpu.rs:649
+#: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
 msgstr ""
 
-#: src/main.rs:99
-#, rust-format
+#: src/main.rs:100
 msgid "{} year"
 msgstr ""
 
-#: src/main.rs:101
-#, rust-format
+#: src/main.rs:102
 msgid "{} years"
 msgstr ""
 
-#: src/main.rs:108
-#, fuzzy, rust-format
+#: src/main.rs:109
+#, fuzzy
 msgid "{} month"
 msgstr "{} perc{} "
 
-#: src/main.rs:110
-#, rust-format
+#: src/main.rs:111
 msgid "{} months"
 msgstr ""
 
-#: src/main.rs:117
-#, rust-format
+#: src/main.rs:118
 msgid "{} day"
 msgstr ""
 
-#: src/main.rs:119
-#, rust-format
+#: src/main.rs:120
 msgid "{} days"
 msgstr ""
 
-#: src/main.rs:126
-#, rust-format
+#: src/main.rs:127
 msgid "{} hour"
 msgstr ""
 
-#: src/main.rs:128
-#, rust-format
+#: src/main.rs:129
 msgid "{} hours"
 msgstr ""
 
-#: src/main.rs:135
-#, fuzzy, rust-format
+#: src/main.rs:136 src/main.rs:209
+#, fuzzy
 msgid "{} minute"
-msgstr "{} perc{} "
+msgid_plural "{} minutes"
+msgstr[0] "{} perc{} "
+msgstr[1] "{} perc{} "
 
-#: src/main.rs:137
-#, fuzzy, rust-format
+#: src/main.rs:138
+#, fuzzy
 msgid "{} minutes"
 msgstr "{} perc{} "
 
-#: src/main.rs:144
-#, fuzzy, rust-format
+#: src/main.rs:145 src/main.rs:207
+#, fuzzy
 msgid "{} second"
-msgstr "{} másodperc{}"
+msgid_plural "{} seconds"
+msgstr[0] "{} másodperc{}"
+msgstr[1] "{} másodperc{}"
 
-#: src/main.rs:146
-#, fuzzy, rust-format
+#: src/main.rs:147
+#, fuzzy
 msgid "{} seconds"
 msgstr "{} másodperc{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:183
-#, fuzzy, rust-format
+#: src/main.rs:184
+#, fuzzy
 msgid "{}, {} and {}"
 msgstr "{}: {} {}bit per másodperc"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:186 src/main.rs:189 src/main.rs:192
-#, rust-format
+#: src/main.rs:187 src/main.rs:190 src/main.rs:193
 msgid "{} and {}"
 msgstr ""
 
-#: src/main.rs:198
+#: src/main.rs:199
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:329
+#: src/main.rs:345
 msgid "_Quit"
 msgstr ""
 
@@ -1925,6 +1910,12 @@ msgid "translator-credits"
 msgstr ""
 "Kovács Bálint-Hunor <kovacsbalinthunor13@gmail.com>, Fionn "
 "<mehafo3499@adstam.com>"
+
+#~ msgid "{} second{}"
+#~ msgstr "{} másodperc{}"
+
+#~ msgid "{} minute{} "
+#~ msgstr "{} perc{} "
 
 #~ msgid "No per-process network usage"
 #~ msgstr "Nincs folyamatonkénti hálózathasználat"

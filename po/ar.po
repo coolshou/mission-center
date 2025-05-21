@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"POT-Creation-Date: 2025-05-21 06:23+0000\n"
 "PO-Revision-Date: 2024-08-12 05:09+0000\n"
 "Last-Translator: Abdullah Albaroty <albaroty@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
@@ -399,7 +399,7 @@ msgstr "_الشبكة"
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
-#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
+#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:355
 msgid "GPU"
 msgstr ""
 
@@ -657,13 +657,13 @@ msgid "Power Draw"
 msgstr "استهلاك الطاقة"
 
 #: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:555
+#: src/performance_page/gpu.rs:557
 #, fuzzy
 msgid "Memory Usage"
 msgstr "استخدام الذاكرة"
 
 #: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:632
+#: src/performance_page/gpu.rs:634
 #, fuzzy
 msgid "Shared Memory Usage"
 msgstr "استخدام الذاكرة"
@@ -1447,7 +1447,6 @@ msgid "App"
 msgstr ""
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] ""
@@ -1458,7 +1457,6 @@ msgstr[4] ""
 msgstr[5] ""
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] ""
@@ -1488,17 +1486,14 @@ msgid "Stopped"
 msgstr ""
 
 #: src/services_page/mod.rs:530
-#, rust-format
 msgid "{} Running Services"
 msgstr ""
 
 #: src/services_page/mod.rs:535
-#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr ""
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, rust-format
 msgid "{} sectors"
 msgstr ""
 
@@ -1506,12 +1501,22 @@ msgstr ""
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
-#, rust-format
 msgid "{} °C"
 msgstr ""
 
+#: src/performance_page/widgets/eject_failure_dialog.rs:164
+msgid "Close"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:165
+msgid "Retry"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:166
+msgid "Kill All"
+msgstr ""
+
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, rust-format
 msgid ""
 "In use ({}B)\n"
 "\n"
@@ -1519,7 +1524,6 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, rust-format
 msgid ""
 "Modified ({}B)\n"
 "\n"
@@ -1528,7 +1532,6 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, rust-format
 msgid ""
 "Standby ({}B)\n"
 "\n"
@@ -1536,7 +1539,6 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, rust-format
 msgid ""
 "Free ({}B)\n"
 "\n"
@@ -1545,7 +1547,6 @@ msgid ""
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
-#, rust-format
 msgid "{} ago"
 msgstr ""
 
@@ -1554,10 +1555,10 @@ msgstr ""
 #: src/performance_page/disk.rs:268 src/performance_page/disk.rs:296
 #: src/performance_page/disk.rs:454 src/performance_page/cpu.rs:316
 #: src/performance_page/cpu.rs:327 src/performance_page/cpu.rs:351
-#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:551
-#: src/performance_page/memory.rs:782 src/performance_page/mod.rs:1391
-#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:245
-#: src/performance_page/gpu.rs:301 src/performance_page/network.rs:262
+#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:561
+#: src/performance_page/memory.rs:792 src/performance_page/mod.rs:1391
+#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:247
+#: src/performance_page/gpu.rs:303 src/performance_page/network.rs:262
 #: src/performance_page/network.rs:367 src/performance_page/network.rs:395
 #: src/performance_page/network.rs:495 src/performance_page/network.rs:531
 msgid "Unknown"
@@ -1656,12 +1657,10 @@ msgid "Power Cycles"
 msgstr ""
 
 #: src/performance_page/disk.rs:227
-#, rust-format
 msgid "Disk {} ({})"
 msgstr ""
 
 #: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
-#, rust-format
 msgid "Drive ({})"
 msgstr ""
 
@@ -1710,13 +1709,11 @@ msgid "Thumb Drive"
 msgstr ""
 
 #: src/performance_page/disk.rs:382
-#, rust-format
 msgid "Drive {} ({})"
 msgstr ""
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
-#, rust-format
 msgid "Fan {}"
 msgstr ""
 
@@ -1726,148 +1723,133 @@ msgid "Fan"
 msgstr ""
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
-#, rust-format
 msgid "{} RPM"
 msgstr ""
 
 #: src/performance_page/fan.rs:285
-#, rust-format
 msgid "{}%"
 msgstr ""
 
 #: src/performance_page/fan.rs:337 src/performance_page/cpu.rs:339
-#: src/performance_page/gpu.rs:316
+#: src/performance_page/gpu.rs:318
 msgid "Unsupported"
 msgstr ""
 
-#: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
-#: src/performance_page/gpu.rs:870
-#, rust-format
-msgid "{} second{}"
+#: src/performance_page/memory.rs:378
+msgid "{} of {}"
 msgstr ""
 
-#: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
-#: src/performance_page/gpu.rs:881
-#, rust-format
-msgid "{} minute{} "
-msgstr ""
-
-#: src/performance_page/memory.rs:397
+#: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr ""
 
 #: src/performance_page/mod.rs:1135
-#, rust-format
 msgid "{} {} ({})"
 msgstr ""
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
-#: src/performance_page/gpu.rs:351
-#, rust-format
+#: src/performance_page/gpu.rs:353
 msgid "GPU {}"
 msgstr ""
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, rust-format
 msgid "{}: {}"
 msgstr ""
 
-#: src/performance_page/gpu.rs:283
+#: src/performance_page/gpu.rs:285
 msgid "Video encode/decode"
 msgstr ""
 
-#: src/performance_page/gpu.rs:574
+#: src/performance_page/gpu.rs:576
 #, fuzzy
 msgid "Total Memory"
 msgstr "الذاكرة"
 
-#: src/performance_page/gpu.rs:604
+#: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
 msgstr ""
 
-#: src/performance_page/gpu.rs:649
+#: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
 msgstr ""
 
-#: src/main.rs:99
-#, rust-format
+#: src/main.rs:100
 msgid "{} year"
 msgstr ""
 
-#: src/main.rs:101
-#, rust-format
+#: src/main.rs:102
 msgid "{} years"
 msgstr ""
 
-#: src/main.rs:108
-#, rust-format
+#: src/main.rs:109
 msgid "{} month"
 msgstr ""
 
-#: src/main.rs:110
-#, rust-format
+#: src/main.rs:111
 msgid "{} months"
 msgstr ""
 
-#: src/main.rs:117
-#, rust-format
+#: src/main.rs:118
 msgid "{} day"
 msgstr ""
 
-#: src/main.rs:119
-#, rust-format
+#: src/main.rs:120
 msgid "{} days"
 msgstr ""
 
-#: src/main.rs:126
-#, rust-format
+#: src/main.rs:127
 msgid "{} hour"
 msgstr ""
 
-#: src/main.rs:128
-#, rust-format
+#: src/main.rs:129
 msgid "{} hours"
 msgstr ""
 
-#: src/main.rs:135
-#, rust-format
+#: src/main.rs:136 src/main.rs:209
 msgid "{} minute"
-msgstr ""
+msgid_plural "{} minutes"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
-#: src/main.rs:137
-#, rust-format
+#: src/main.rs:138
 msgid "{} minutes"
 msgstr ""
 
-#: src/main.rs:144
-#, rust-format
+#: src/main.rs:145 src/main.rs:207
 msgid "{} second"
-msgstr ""
+msgid_plural "{} seconds"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
-#: src/main.rs:146
-#, rust-format
+#: src/main.rs:147
 msgid "{} seconds"
 msgstr ""
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:183
-#, rust-format
+#: src/main.rs:184
 msgid "{}, {} and {}"
 msgstr ""
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:186 src/main.rs:189 src/main.rs:192
-#, rust-format
+#: src/main.rs:187 src/main.rs:190 src/main.rs:193
 msgid "{} and {}"
 msgstr ""
 
-#: src/main.rs:198
+#: src/main.rs:199
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:329
+#: src/main.rs:345
 msgid "_Quit"
 msgstr ""
 
