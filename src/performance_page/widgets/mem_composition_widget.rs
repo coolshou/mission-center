@@ -250,7 +250,7 @@ mod imp {
             tooltip_texts.push((
                 x,
                 i18n_f(
-                    "In use ({}B)\n\nMemory used by the operating system and running applications",
+                    "In use ({})\n\nMemory used by the operating system and running applications",
                     &[&used_hr],
                 ),
             ));
@@ -281,7 +281,7 @@ mod imp {
             tooltip_texts.push((
                 x,
                 i18n_f(
-                    "Modified ({}B)\n\nMemory whose contents must be written to disk before it can be used by another process",
+                    "Modified ({})\n\nMemory whose contents must be written to disk before it can be used by another process",
                     &[&modified_hr],
                 )
             ));
@@ -306,7 +306,7 @@ mod imp {
             tooltip_texts.push((
                 x,
                 i18n_f(
-                    "Standby ({}B)\n\nMemory that contains cached data and code that is not actively in use",
+                    "Standby ({})\n\nMemory that contains cached data and code that is not actively in use",
                     &[&standby_hr],
                 )
             ));
@@ -319,7 +319,7 @@ mod imp {
             tooltip_texts.push((
                 width + 1.,
                 i18n_f(
-                    "Free ({}B)\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
+                    "Free ({})\n\nMemory that is not currently in use, and that will be repurposed first when the operating system, drivers, or applications need more memory",
                     &[&free_hr],
                 ),
             ));

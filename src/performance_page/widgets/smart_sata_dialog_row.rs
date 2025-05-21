@@ -98,7 +98,7 @@ impl SmartSataDialogRow {
                 "value",
                 &match units {
                     0 => i18n("N/A"),
-                    2 => crate::to_human_readable_time(pretty as u64 / 1000),
+                    2 => crate::to_long_human_readable_time(pretty as u64 / 1000),
                     3 => i18n_f("{} sectors", &[&format!("{}", pretty)]),
                     4 => i18n_f(
                         "{} °C",
