@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-19 09:03+0000\n"
+"PO-Revision-Date: 2025-05-22 17:01+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
@@ -974,15 +974,16 @@ msgid "Assessment"
 msgstr "Posouzení"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
-#, fuzzy
 msgid "Failed To Get SMART Data"
-msgstr "Zobrazit data ze SMART"
+msgstr "Nepodařilo se získat data ze SMART"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"Došlo k problému při získávání dat ze SMART diagnostiky. Zkuste spustit z "
+"příkazového řádku a získat tak více informací."
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1490,19 +1491,17 @@ msgstr "{} °C"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:164
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:165
 msgid "Retry"
-msgstr ""
+msgstr "Zkusit znovu"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
 msgid "Kill All"
-msgstr "Zakázat vše"
+msgstr "Vynutit ukončení všeho"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
@@ -1510,10 +1509,9 @@ msgid ""
 msgstr ""
 "Využitá ({}B)\n"
 "\n"
-"Paměť využitá systémem a běžícími aplikacemi"
+"Paměť využitá operačním systémem a běžícími aplikacemi"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
 msgid ""
 "Modified ({})\n"
 "\n"
@@ -1525,7 +1523,6 @@ msgstr ""
 "Paměť, jejíž obsah je třeba před použitím jiným procesem zapsat na disk"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
@@ -1536,7 +1533,6 @@ msgstr ""
 "Paměť, která obsahuje data a kód v mezipaměti, které nejsou aktivně používány"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
 msgid ""
 "Free ({})\n"
 "\n"
@@ -1545,8 +1541,9 @@ msgid ""
 msgstr ""
 "Volná ({}B)\n"
 "\n"
-"Paměť která se aktuálně nevyužívá a která bude opětovně využita v okamžiku "
-"kdy operační systém, ovladače či aplikace budou potřebovat více paměti"
+"Paměť která v tuto chvíli není využívána a která bude opětovně využita v "
+"okamžiku kdy operační systém, ovladače či aplikace budou potřebovat více "
+"paměti"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 msgid "{} ago"
@@ -1736,7 +1733,7 @@ msgstr "Nepodporovaná"
 
 #: src/performance_page/memory.rs:378
 msgid "{} of {}"
-msgstr ""
+msgstr "{} z {}"
 
 #: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
@@ -1772,52 +1769,46 @@ msgid "Total Shared Memory"
 msgstr "Celkem sdílené paměti"
 
 #: src/main.rs:99
-#, fuzzy
 msgid "{} year"
 msgid_plural "{} years"
 msgstr[0] "{} rok"
-msgstr[1] "{} rok"
-msgstr[2] "{} rok"
+msgstr[1] "{} roky"
+msgstr[2] "{} let"
 
 #: src/main.rs:103
-#, fuzzy
 msgid "{} month"
 msgid_plural "{} months"
 msgstr[0] "{} měsíc"
-msgstr[1] "{} měsíc"
-msgstr[2] "{} měsíc"
+msgstr[1] "{} měsíce"
+msgstr[2] "{} měsíců"
 
 #: src/main.rs:107
-#, fuzzy
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} den"
-msgstr[1] "{} den"
-msgstr[2] "{} den"
+msgstr[1] "{} dny"
+msgstr[2] "{} dnů"
 
 #: src/main.rs:111
-#, fuzzy
 msgid "{} hour"
 msgid_plural "{} hours"
 msgstr[0] "{} hodina"
-msgstr[1] "{} hodina"
-msgstr[2] "{} hodina"
+msgstr[1] "{} hodiny"
+msgstr[2] "{} hodin"
 
 #: src/main.rs:115 src/main.rs:180
-#, fuzzy
 msgid "{} minute"
 msgid_plural "{} minutes"
 msgstr[0] "{} minuta"
-msgstr[1] "{} minuta"
-msgstr[2] "{} minuta"
+msgstr[1] "{} minuty"
+msgstr[2] "{} minut"
 
 #: src/main.rs:119 src/main.rs:178
-#, fuzzy
 msgid "{} second"
 msgid_plural "{} seconds"
 msgstr[0] "{} sekunda"
-msgstr[1] "{} sekunda"
-msgstr[2] "{} sekunda"
+msgstr[1] "{} sekundy"
+msgstr[2] "{} sekund"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
