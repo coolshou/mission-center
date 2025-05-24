@@ -381,76 +381,43 @@ impl MissionCenterApplication {
             .copyright("© 2024 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
-            .release_notes(r#"
-<p>Major Changes:</p>
+            .release_notes(r#"<p>Noteworthy changes:</p>
 <ul>
-    <li>Complete refactor of the Gatherer, now called Magpie</li>
-    <li>Magpie available as a standalone set of libraries and executable; can be used by other
-        monitoring solutions
-    </li>
-    <li>Show SMART data for SATA and NVMe devices</li>
-    <li>Allow ejecting removable storage devices (optical disks, USB thumb drives, etc.)
-    </li>
-    <li>Per-process network usage (see
-        https://gitlab.com/mission-center-devs/mission-center/-/wikis/Home/Nethogs)
-    </li>
-    <li>Redesigned Apps Page with more information available for each app and process</li>
+    <li>Refactor SMART dialog design</li>
 </ul>
-<p>Noteworthy changes</p>
+<p>Minor features:</p>
 <ul>
-    <li>A new option to make graphs, in the Performance Page, glide smoothly</li>
-    <li>Visual and functional improvements in the Memory view</li>
-    <li>Enabled all NVTOP supported GPUs including RaspberryPi (see
-        https://github.com/Syllo/nvtop?tab=readme-ov-file#gpu-support)
-    </li>
-    <li>Right sidebar in the Performance page is now more consistent between devices</li>
-    <li>Support for keyboard shortcuts</li>
-    <li>Show maximum bitrate for all network interfaces</li>
-    <li>Allow customizing units for memory, disk and network usage</li>
-    <li>Removed a bunch of unsafe code from the main app</li>
-    <li>Lower overall memory usage</li>
-    <li>Lower overall CPU usage</li>
-    <li>Improved overall responsiveness of the app and minimized time deviations between refresh cycles
-
-    </li>
-    <li>Enable full LTO for AppImage, Flatpak and Snap builds</li>
+    <li>Show an error when the app cannot read SMART data</li>
+    <li>Show total number of available RAM slots</li>
+    <li>Try to show drive SMART status more accuratly</li>
+    <li>Show maximum PCIe speed if availble and differs from the current one</li>
+    <li>Add extra keyboard shortcuts for controlling services and apps in their respective pages</li>
 </ul>
 <p>Bug fixes:</p>
 <ul>
-    <li>Missing memory composition graph after update to libadwaita 1.7</li>
-    <li>Service details window to narrow after update to libadwaita 1.7</li>
-    <li>Integer overflow when copying large files to/from slower storage devices</li>
-    <li>Gatherer stops responding after a period of time</li>
-    <li>Don't call `lsblk` to figure out if a drive has the root partition</li>
-    <li>Fixed memory leak that would occur on some OS/HW combinations</li>
-    <li>Don't target a specific CPU architecture variant when building Magpie</li>
-    <li>Fix GPU encoding/decoding graphs misrepresenting the type of workload</li>
+    <li>Fix CPU name for LoongArch</li>
+    <li>Fix application failing to open because of missing settings key</li>
+    <li>Fix incorrect Formatted value for disks</li>
+    <li>Change memory default base to 2</li>
+    <li>Update and fix translations templates</li>
+    <li>Try to use the fan name as the summary, if available, and fall back to temperature name, if not</li>
+    <li>Fix application name in the About window</li>
+    <li>Keep order of unit toggles in the Preferences window consistent</li>
 </ul>
 <p>Translation updates</p>
 <ul>
-    <li>Catalan by Jaime Muñoz Martín</li>
-    <li>Chinese (Simplified Han script) by Zhang Peng</li>
-    <li>Chinese (Traditional Han script) by jhihyulin, D0735, Peter Dave Hello</li>
-    <li>Czech by pavelbo</li>
-    <li>Dutch by philip.goto</li>
-    <li>Estonian by Priit Jõerüüt, Indrek Haav</li>
-    <li>Finnish by Ricky-Tigg</li>
-    <li>French by europa91m DenisMARCQ, Louis-Simon</li>
-    <li>Galician by Espasant3</li>
-    <li>German by Aircraft192, Lauritz, Tieste, ItsGamerik</li>
-    <li>Hebrew by yarons</li>
-    <li>Italian by beppeilgommista, ppasserini, svlmrc</li>
-    <li>Japanese by rainy_sunset</li>
-    <li>Korean by darkcircle.0426</li>
-    <li>Norwegian Bokmål by ovl-1, Telaneo</li>
-    <li>Polish by keloH</li>
-    <li>Portuguese by hugok79</li>
-    <li>Spanish by Espasant3</li>
-    <li>Tamil by anishprabu.t</li>
-</ul>
-<p>For a more detailed set of release notes see:
-    https://gitlab.com/mission-center-devs/mission-center/-/wikis/Release-Notes/v1.0.0
-</p>"#)
+    <li>Basque by Ibai Oihanguren Sala</li>
+    <li>Bulgarian by Venelin Stoykov</li>
+    <li>Chinese (Simplified Han script) by flywater</li>
+    <li>Chinese (Traditional Han script) by Taijuin Lee, Angel Sherry</li>
+    <li>Czech by Pavel Borecki</li>
+    <li>Estonian by Indrek Haav</li>
+    <li>German by Philipp Kiemle, ItsGamerik</li>
+    <li>Indonesian by ilhamfauzan</li>
+    <li>Irish by Aindriú Mac Giolla Eoin</li>
+    <li>Romanian by Romeo Calota</li>
+    <li>Spanish by Jack Nolddor</li>
+</ul>"#)
             .build();
 
         about.add_credit_section(
