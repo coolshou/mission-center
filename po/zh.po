@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-06 00:03+0000\n"
+"PO-Revision-Date: 2025-05-25 23:01+0000\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hans/>\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;任务管理器;"
 "资源监视器;系统监视器;处理器;进程管理;性能监视器;光盘;磁盘;硬盘;固态;内存;网"
-"络;使用率;利用率;"
+"络;占用;使用率;利用率;"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -43,11 +43,11 @@ msgid "Monitor system resource usage"
 msgstr "监控系统资源使用情况"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
-msgstr "监控您的处理器、内存、硬盘、网络和显卡使用情况"
+msgstr "监控您的处理器、内存、硬盘、网络和显卡使用情况，同时附上每个应用和进程对这些"
+"信息的分解统计"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -99,9 +99,8 @@ msgstr ""
 "迎项目 NVTOP 提供支持"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "监控系统资源使用情况"
+msgstr "监控系统风扇"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -155,13 +154,12 @@ msgid "Which page is shown on application startup"
 msgstr "应用程序启动时显示的页面"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "接口名称："
+msgstr "界面风格"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "是否应使用亮色或暗色界面风格"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
@@ -179,34 +177,29 @@ msgid "How many points should be displayed on each chart?"
 msgstr "每个图表上应该显示多少个点？"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为内存使用位或字节（默认）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为内存使用 10 进制或 2 进制（默认）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为驱动器速度和大小使用位或字节（默认）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为驱动器速度和大小使用 10 进制或 2 进制（默认）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为网络速度使用位（默认）或字节"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
-msgstr "是否使用位（默认）或字节来表示网络速度"
+msgstr "是否为网络速度使用 10 进制（默认）或 2 进制"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -223,7 +216,6 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "列排序在应用程序重新启动后保持不变"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
 msgstr "列排序在应用程序重新启动后保持不变"
 
@@ -235,21 +227,19 @@ msgstr "显示按可用核心数缩放的应用和进程的处理器占用"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "在应用视图中每列之间显示分隔符"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "应用页面视图排序所依据的列标识符"
+msgstr "应用页面视图排序所依据的列名称"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "应用页面视图的排序方向"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "应用页面视图的排序方向"
+msgstr "应用页面视图中列的排序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -268,9 +258,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "性能图表应该是平滑的还是锯齿状的"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "性能图表应该是平滑的还是锯齿状的"
+msgstr "图表应是动画化的"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -311,7 +300,6 @@ msgid "Show the swap graph"
 msgstr "显示交换空间图表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "显示显卡编解码图表"
 
@@ -360,18 +348,16 @@ msgstr "N/A"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "类型："
+msgstr "类型"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "命令行"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "资源"
+msgstr "资源占用"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -387,21 +373,18 @@ msgid "Memory"
 msgstr "内存"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "内存"
+msgstr "共享内存"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
 msgstr "驱动器"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "网络(_N)"
+msgstr "网络"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -413,21 +396,20 @@ msgstr "显卡"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "显卡内存"
+msgstr "显存"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "折叠所有应用和进程"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "全部折叠"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "停止选中的应用"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -437,16 +419,15 @@ msgstr "停止"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "强制停止选中的应用"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "强制停止进程"
+msgstr "强制停止"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "显示选中应用的详情"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
@@ -463,11 +444,12 @@ msgid "Name"
 msgstr "名称"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "内存"
+msgstr ""
+"共享\n"
+"内存"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -487,19 +469,16 @@ msgid "The current state of the service"
 msgstr "服务当前状态"
 
 #: resources/ui/services_page/details_dialog.blp:75
-#, fuzzy
 msgid "Start service"
-msgstr "服务"
+msgstr "启动服务"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "服务"
+msgstr "停止服务"
 
 #: resources/ui/services_page/details_dialog.blp:106
-#, fuzzy
 msgid "Restart service"
-msgstr "重启"
+msgstr "重启服务"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
@@ -541,7 +520,7 @@ msgstr "日志"
 
 #: resources/ui/services_page/page.blp:78
 msgid "Start the selected service"
-msgstr ""
+msgstr "启动选中的服务"
 
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
@@ -550,11 +529,11 @@ msgstr "启动"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
-msgstr ""
+msgstr "停止选中的服务"
 
 #: resources/ui/services_page/page.blp:117
 msgid "Restart the selected service"
-msgstr ""
+msgstr "重启选中的服务"
 
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
@@ -563,22 +542,22 @@ msgstr "重启"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "显示选中服务的详情"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "跟随系统样式"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "亮色风格"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "暗色风格"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -651,35 +630,31 @@ msgstr "电源首选项："
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "弹出失败"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "杀死"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
 msgstr "时钟速度"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
-msgstr "功率消耗"
+msgstr "功耗"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "显存占用"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "显存占用"
+msgstr "共享内存占用"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "显存速度"
 
@@ -708,9 +683,8 @@ msgid "PCI Express speed:"
 msgstr "PCI Express 速度："
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "PCI Express 速度："
+msgstr "PCI Express 最大速度："
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -719,7 +693,7 @@ msgstr "PCI 总线地址："
 #: resources/ui/performance_page/memory.blp:76
 #: resources/ui/performance_page/gpu.blp:162
 msgid "Memory usage over "
-msgstr "内存使用率 - 最近 "
+msgstr "内存占用 - 最近 "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
@@ -827,14 +801,12 @@ msgid "Write speed"
 msgstr "写入速度"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "收到总计"
+msgstr "读取总计"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "发送总计"
+msgstr "写入总计"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -898,19 +870,19 @@ msgstr "显示内核时钟"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "使用中："
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "已修改："
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "待机中："
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "空闲中："
 
 #: resources/ui/performance_page/fan_details.blp:59
 msgid "Fan Speed"
@@ -918,7 +890,7 @@ msgstr "风扇速度"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "PWM 百分比"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -934,72 +906,67 @@ msgstr "温度 - 最近 "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Smart 数据"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "上次更新"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "功率消耗"
+msgstr "通电时间"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "驱动器健康"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "SMART 测试状态"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "属性"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "值"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "正常"
+msgstr "标准化"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "线程"
+msgstr "阈值"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "最差"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
-#, fuzzy
 msgid "Updates"
-msgstr "更新速度"
+msgstr "更新"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "评估"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "获取 SMART 数据失败"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
-msgstr ""
+msgstr "获取 SMART 数据存在困难。请尝试从命令行运行以获取更多信息。"
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1012,11 +979,11 @@ msgstr "网络设置(_T)"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "显示 SMART 数据"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "弹出磁盘"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1136,11 +1103,11 @@ msgstr "将图表绘制为平滑线而不是锯齿状线"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "滑动图表"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "图表动画化（可能对性能有负面影响）"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1189,18 +1156,16 @@ msgid "Remember Sorting"
 msgstr "记住排序"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
-msgstr "记住应用和进程列表的排序状态"
+msgstr "在应用重启间记住应用和进程列表的排序状态"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "记住列排序"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr "记住应用和进程列表的排序状态"
+msgstr "在应用重启间记住列表的排序状态"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
@@ -1208,195 +1173,181 @@ msgstr "将处理器占用缩放至核心数"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "显示列分隔符"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "在每列间显示分隔符"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
-msgstr ""
+msgstr "全局单位"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "显存占用"
+msgstr "内存占用单位"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "为内存使用字节作为测量单位"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "字节"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "为内存使用位作为测量单位"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "位"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "显存占用"
+msgstr "内存占用进制"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "为内存使用 10 进制"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "10 进制"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "为内存使用 2 进制"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "2 进制"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "驱动器占用单位"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "为磁盘驱动器使用字节作为测量单位"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "为磁盘驱动器使用位作为测量单位"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "驱动器占用进制"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "为磁盘驱动器使用 10 进制"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "为磁盘驱动器使用 2 进制"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "网络占用单位"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "为网络接口使用字节作为测量单位"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "为网络接口使用位作为测量单位"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "网络占用进制"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "为网络接口使用 10 进制"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "为网络接口使用 2 进制"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "键盘快捷键"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "全局"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "性能页面"
+msgstr "显示性能页面"
 
 #: resources/ui/keyboard_shortcuts.blp:26
-#, fuzzy
 msgid "Show Apps Page"
-msgstr "应用页面"
+msgstr "显示应用页面"
 
 #: resources/ui/keyboard_shortcuts.blp:31
-#, fuzzy
 msgid "Show Services Page"
-msgstr "服务"
+msgstr "显示服务页面"
 
 #: resources/ui/keyboard_shortcuts.blp:36 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
 msgstr "切换侧边栏"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "显示磁盘信息"
+msgstr "复制设备信息"
 
 #: resources/ui/keyboard_shortcuts.blp:59
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "切换侧边栏"
+msgstr "切换摘要模式"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "选择设备"
 
 #: resources/ui/keyboard_shortcuts.blp:71
-#, fuzzy
 msgid "Apps Page"
 msgstr "应用页面"
 
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: resources/ui/keyboard_shortcuts.blp:92
-#, fuzzy
 msgid "Stop App or Process"
-msgstr "停止进程"
+msgstr "停止应用或进程"
 
 #: resources/ui/keyboard_shortcuts.blp:97
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "强制停止进程"
+msgstr "强制停止应用或进程"
 
 #: resources/ui/keyboard_shortcuts.blp:102
 #: resources/ui/keyboard_shortcuts.blp:140
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "显示详情对话框"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "服务"
+msgstr "服务页面"
 
 #: resources/ui/keyboard_shortcuts.blp:125
-#, fuzzy
 msgid "Start Service"
-msgstr "服务"
+msgstr "启动服务"
 
 #: resources/ui/keyboard_shortcuts.blp:130
-#, fuzzy
 msgid "Stop Service"
-msgstr "服务"
+msgstr "停止服务"
 
 #: resources/ui/keyboard_shortcuts.blp:135
-#, fuzzy
 msgid "Restart Service"
-msgstr "重启"
+msgstr "重启服务"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1423,13 +1374,12 @@ msgid "Type a name or PID to search"
 msgstr "输入名称或 PID 进行搜索"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "显示磁盘信息"
+msgstr "切换设备信息"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "主菜单"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1453,37 +1403,33 @@ msgstr "首选项(_P)"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "键盘快捷键(_K)"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
 msgstr "关于任务中心(_A)"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
-msgstr ""
+msgstr "节标头"
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
 msgstr "应用"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} 项服务正在运行"
+msgstr[0] "{} 个应用正在运行"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} 项服务正在运行"
+msgstr[0] "{} 个进程正在运行"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "复制日志到剪贴板"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
@@ -1509,9 +1455,8 @@ msgid "{} failed services out of a total of {}"
 msgstr "{} 项失败的服务，共 {} 项服务"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
 msgid "{} sectors"
-msgstr "{} 秒{}"
+msgstr "{} 扇区"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
@@ -1522,66 +1467,61 @@ msgstr "{} °C"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:164
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:165
 msgid "Retry"
-msgstr ""
+msgstr "重试"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
 msgid "Kill All"
-msgstr "全部禁用"
+msgstr "全部杀死"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"使用中（{}B）\n"
+"使用中（{}）\n"
 "\n"
 "被操作系统和运行中应用程序使用的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"已修改（{}B）\n"
+"已修改（{}）\n"
 "\n"
 "被其它进程使用前必须将内容写入磁盘的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"备用（{}B）\n"
+"待机（{}）\n"
 "\n"
 "包含未活跃使用缓存数据和代码的内存"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"空闲（{}B）\n"
+"空闲（{}）\n"
 "\n"
 "当操作系统、驱动程序或应用程序需要更多内存时，优先重新分配的当前未使用内存"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 msgid "{} ago"
-msgstr ""
+msgstr "{} 前"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
@@ -1599,96 +1539,92 @@ msgstr "未知"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "预失效"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "老化"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "在线"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "离线"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "即将故障"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "历史曾失效"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "正常"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:198
 msgid "Percent Used"
-msgstr ""
+msgstr "使用百分比"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
-msgstr "可用"
+msgstr "可用备用块"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr ""
+msgstr "备用块阈值"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
-#, fuzzy
 msgid "Total Data Read"
-msgstr "收到总计"
+msgstr "数据读取总计"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
-msgstr ""
+msgstr "数据写入总计"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:246
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "过热警告时间"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:254
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "温度临界时间"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:262
 #: src/performance_page/widgets/smart_data_dialog.rs:319
 msgid "Control Busy Time"
-msgstr ""
+msgstr "主控繁忙时间"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "当前温度"
+msgstr "警告温度"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "当前温度"
+msgstr "临界温度"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
-msgstr ""
+msgstr "温度"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:287
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "不安全关机"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:295
 msgid "Media Errors"
-msgstr ""
+msgstr "媒体错误"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:303
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "错误日志条目数量"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:311
 msgid "Power Cycles"
-msgstr ""
+msgstr "通电周期"
 
 #: src/performance_page/disk.rs:228
 msgid "Disk {} ({})"
@@ -1723,9 +1659,8 @@ msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
 #: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
 msgid "iSCSI"
@@ -1737,12 +1672,11 @@ msgstr "光驱"
 
 #: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
 msgid "Floppy"
-msgstr ""
+msgstr "软盘"
 
 #: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
-#, fuzzy
 msgid "Thumb Drive"
-msgstr "驱动器"
+msgstr "U 盘"
 
 #: src/performance_page/disk.rs:384
 msgid "Drive {} ({})"
@@ -1773,16 +1707,15 @@ msgstr "不支持"
 
 #: src/performance_page/memory.rs:378
 msgid "{} of {}"
-msgstr ""
+msgstr "{} 共 {}"
 
 #: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "获取额外内存信息失败"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
 msgid "{} {} ({})"
-msgstr "{} {}{}B"
+msgstr "{} {} ({})"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:353
@@ -1790,77 +1723,70 @@ msgid "GPU {}"
 msgstr "显卡 {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
 msgid "{}: {}"
-msgstr "{}: {} {}{}"
+msgstr "{}: {}"
 
 #: src/performance_page/gpu.rs:285
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "视频编码"
+msgstr "视频编码/解码"
 
 #: src/performance_page/gpu.rs:576
-#, fuzzy
 msgid "Total Memory"
-msgstr "内存"
+msgstr "显存总计"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "独立和共享内存占用 - 最近 "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "共享内存总计"
 
 #: src/main.rs:99
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
+msgstr[0] "{} 年"
 
 #: src/main.rs:103
-#, fuzzy
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] "{} 分钟{} "
+msgstr[0] "{} 月"
 
 #: src/main.rs:107
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] ""
+msgstr[0] "{} 天"
 
 #: src/main.rs:111
 msgid "{} hour"
 msgid_plural "{} hours"
-msgstr[0] ""
+msgstr[0] "{} 小时"
 
 #: src/main.rs:115 src/main.rs:180
-#, fuzzy
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] "{} 分钟{} "
+msgstr[0] "{} 分钟"
 
 #: src/main.rs:119 src/main.rs:178
-#, fuzzy
 msgid "{} second"
 msgid_plural "{} seconds"
-msgstr[0] "{} 秒{}"
+msgstr[0] "{} 秒"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
-#, fuzzy
 msgid "{}, {} and {}"
-msgstr "{}: {} {}{}"
+msgstr "{}, {} 另 {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:158 src/main.rs:161 src/main.rs:164
 msgid "{} and {}"
-msgstr ""
+msgstr "{} 另 {}"
 
 #: src/main.rs:170
 msgid "Less than a minute"
-msgstr ""
+msgstr "少于 1 分钟"
 
 #: src/main.rs:316
 msgid "_Quit"
