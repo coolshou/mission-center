@@ -84,11 +84,11 @@ mod imp {
 
     impl SmartDataDialog {
         pub fn update_model(&self, data: SmartData) {
-            let powered_on_nice = crate::to_human_readable_time(data.powered_on_seconds);
+            let powered_on_nice = crate::to_long_human_readable_time(data.powered_on_seconds);
             self.powered_on.set_text(&powered_on_nice);
 
             if let Ok(since_the_epoch) = SystemTime::now().duration_since(UNIX_EPOCH) {
-                let last_updated_nice = crate::to_human_readable_time(
+                let last_updated_nice = crate::to_long_human_readable_time(
                     since_the_epoch.as_secs_f32() as u64 - data.last_update_time,
                 );
                 self.last_updated
@@ -245,7 +245,7 @@ mod imp {
                 SmartNvmeDialogRow::new(
                     i18n("Warning Temp Time"),
                     if let Some(warning_temp_time) = result.warn_composite_temp_time {
-                        crate::to_human_readable_time(warning_temp_time as u64)
+                        crate::to_long_human_readable_time(warning_temp_time as u64)
                     } else {
                         i18n("N/A")
                     },
@@ -253,7 +253,7 @@ mod imp {
                 SmartNvmeDialogRow::new(
                     i18n("Critical Temp Time"),
                     if let Some(critical_temp_time) = result.crit_composite_temp_time {
-                        crate::to_human_readable_time(critical_temp_time as u64)
+                        crate::to_long_human_readable_time(critical_temp_time as u64)
                     } else {
                         i18n("N/A")
                     },
@@ -261,7 +261,7 @@ mod imp {
                 SmartNvmeDialogRow::new(
                     i18n("Control Busy Time"),
                     if let Some(ctrl_busy_minutes) = result.ctrl_busy_minutes {
-                        crate::to_human_readable_time(ctrl_busy_minutes)
+                        crate::to_long_human_readable_time(ctrl_busy_minutes)
                     } else {
                         i18n("N/A")
                     },

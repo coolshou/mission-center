@@ -101,6 +101,56 @@
     <launchable type="desktop-id">io.missioncenter.MissionCenter.desktop</launchable>
 
     <releases>
+        <release version="1.0.2" date="2025-05-25">
+            <description translate="no">
+                <ul>
+                    <li>Fix a crash that occurs on some systems due to an integer overflow</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="1.0.1" date="2025-05-24">
+            <description translate="no">
+                <p>Noteworthy changes:</p>
+                <ul>
+                    <li>Refactor SMART dialog design</li>
+                </ul>
+                <p>Minor features:</p>
+                <ul>
+                    <li>Show an error when the app cannot read SMART data</li>
+                    <li>Show total number of available RAM slots</li>
+                    <li>Try to show drive SMART status more accuratly</li>
+                    <li>Show maximum PCIe speed if availble and differs from the current one</li>
+                    <li>Add extra keyboard shortcuts for controlling services and apps in their respective pages</li>
+                </ul>
+                <p>Bug fixes:</p>
+                <ul>
+                    <li>Fix CPU name for LoongArch</li>
+                    <li>Fix application failing to open because of missing settings key</li>
+                    <li>Fix incorrect Formatted value for disks</li>
+                    <li>Change memory default base to 2</li>
+                    <li>Update and fix translations templates</li>
+                    <li>Try to use the fan name as the summary, if available, and fall back to temperature name, if not</li>
+                    <li>Fix application name in the About window</li>
+                    <li>Keep order of unit toggles in the Preferences window consistent</li>
+                </ul>
+                <p>Translation updates</p>
+                <ul>
+                    <li>Basque by Ibai Oihanguren Sala</li>
+                    <li>Bulgarian by Venelin Stoykov</li>
+                    <li>Chinese (Simplified Han script) by flywater</li>
+                    <li>Chinese (Traditional Han script) by Taijuin Lee, Angel Sherry</li>
+                    <li>Czech by Pavel Borecki</li>
+                    <li>Estonian by Indrek Haav</li>
+                    <li>German by Philipp Kiemle, ItsGamerik</li>
+                    <li>Indonesian by ilhamfauzan</li>
+                    <li>Irish by Aindriú Mac Giolla Eoin</li>
+                    <li>Romanian by Romeo Calota</li>
+                    <li>Spanish by Jack Nolddor</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="1.0.0" date="2025-05-02">
             <description translate="no">
                 <p>Major Changes:</p>

@@ -83,10 +83,6 @@ fn special_shortcuts(
         select_device(window, 8)
     }
 
-    fn select_device_10(window: &MissionCenterWindow) -> bool {
-        select_device(window, 9)
-    }
-
     fn toggle_search(window: &MissionCenterWindow) -> bool {
         let imp = window.imp();
         let result = imp.search_button.is_visible() && !imp.search_button.is_active();
@@ -200,7 +196,6 @@ fn special_shortcuts(
         no_modifier_shortcuts.insert(gdk::Key::F7, select_device_7);
         no_modifier_shortcuts.insert(gdk::Key::F8, select_device_8);
         no_modifier_shortcuts.insert(gdk::Key::F9, select_device_9);
-        no_modifier_shortcuts.insert(gdk::Key::F10, select_device_10);
         shortcuts.insert(gdk::ModifierType::NO_MODIFIER_MASK, no_modifier_shortcuts);
 
         let mut ctrl_shortcuts = HashMap::<gdk::Key, fn(&MissionCenterWindow) -> bool>::new();
@@ -578,6 +573,20 @@ mod imp {
             });
             self.obj().add_action(&action);
             app.set_accels_for_action("win.toggle-sidebar", &["<Control>T"]);
+
+            let action = gio::SimpleAction::new("close", None);
+            action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_, _| {
+                    let this = match this.upgrade() {
+                        Some(this) => this,
+                        None => return,
+                    };
+                    this.close();
+                }
+            });
+            self.obj().add_action(&action);
+            app.set_accels_for_action("win.close", &["<Control>W"]);
 
             // Not clear how actions actually become usable, what I know is that they need to be
             // created and configured at object construction otherwise they flat out don't work.

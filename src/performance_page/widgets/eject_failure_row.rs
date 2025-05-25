@@ -1,4 +1,4 @@
-/* apps_page/view_model.rs
+/* apps_page/widgets/eject_failure_row.rs
  *
  * Copyright 2024 Mission Center Devs
  *

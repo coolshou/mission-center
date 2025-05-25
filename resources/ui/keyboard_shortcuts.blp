@@ -18,6 +18,31 @@ Adw.PreferencesDialog keyboard_shortcuts {
         spacing: 7;
 
         ShortcutsShortcut {
+          title: _("Open Menu");
+          accelerator: "F10";
+        }
+
+        ShortcutsShortcut {
+          title: _("Close Window");
+          accelerator: "<Control>Q";
+        }
+
+        ShortcutsShortcut {
+          title: _("Close Window");
+          accelerator: "<Control>W";
+        }
+
+        ShortcutsShortcut {
+          title: _("Open Preferences");
+          accelerator: "<Control>comma";
+        }
+
+        ShortcutsShortcut {
+          title: _("Show Keyboard Shortcuts");
+          accelerator: "<Control>question";
+        }
+
+        ShortcutsShortcut {
           title: _("Show Performance Page");
           accelerator: "<Control>1";
         }
@@ -60,9 +85,9 @@ Adw.PreferencesDialog keyboard_shortcuts {
           accelerator: "<Control>M";
         }
 
-        ShortcutsShortcut select_device {
+        ShortcutsShortcut {
           title: _("Select a Device");
-          accelerator: "<Control>F10";
+          accelerator: "F1...F9";
         }
       }
     }

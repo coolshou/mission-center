@@ -373,11 +373,11 @@ impl PreferencesPage {
         imp.toggle_group_drive_unit
             .set_active(!settings.boolean("performance-page-drive-use-bytes") as u32);
         imp.toggle_group_drive_base
-            .set_active(!settings.boolean("performance-page-drive-use-base2") as u32);
+            .set_active(settings.boolean("performance-page-drive-use-base2") as u32);
         imp.toggle_group_net_unit
-            .set_active(settings.boolean("performance-page-network-use-bytes") as u32);
+            .set_active(!settings.boolean("performance-page-network-use-bytes") as u32);
         imp.toggle_group_net_base
-            .set_active(!settings.boolean("performance-page-network-use-base2") as u32);
+            .set_active(settings.boolean("performance-page-network-use-base2") as u32);
 
         this
     }
