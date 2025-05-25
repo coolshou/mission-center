@@ -244,6 +244,40 @@ menu context_menu_model {
       label: _("Force Stop");
       action: "apps-page.force-stop";
     }
+
+    submenu {
+      label: _("Send Signal");
+
+      item {
+        label: _("Suspend (STOP)");
+        action: "apps-page.suspend";
+      }
+
+      item {
+        label: _("Continue (CONT)");
+        action: "apps-page.continue";
+      }
+
+      item {
+        label: _("Hangup (HUP)");
+        action: "apps-page.hangup";
+      }
+
+      item {
+        label: _("Interrupt (INT)");
+        action: "apps-page.interrupt";
+      }
+
+      item {
+        label: _("Terminate (TERM)");
+        action: "apps-page.stop";
+      }
+
+      item {
+        label: _("Kill (KILL)");
+        action: "apps-page.force-stop";
+      }
+    }
   }
 
   section {

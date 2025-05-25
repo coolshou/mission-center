@@ -100,6 +100,10 @@ mod imp {
 
         pub action_stop: gio::SimpleAction,
         pub action_force_stop: gio::SimpleAction,
+        pub action_suspend: gio::SimpleAction,
+        pub action_continue: gio::SimpleAction,
+        pub action_hangup: gio::SimpleAction,
+        pub action_interrupt: gio::SimpleAction,
         pub action_details: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
@@ -149,6 +153,10 @@ mod imp {
 
                 action_stop: gio::SimpleAction::new("stop", None),
                 action_force_stop: gio::SimpleAction::new("force-stop", None),
+                action_suspend: gio::SimpleAction::new("suspend", None),
+                action_continue: gio::SimpleAction::new("continue", None),
+                action_hangup: gio::SimpleAction::new("hangup", None),
+                action_interrupt: gio::SimpleAction::new("interrupt", None),
                 action_details: gio::SimpleAction::new("details", None),
 
                 use_merged_stats: Cell::new(false),

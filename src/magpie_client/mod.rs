@@ -86,6 +86,10 @@ enum Message {
     UpdateCoreCountAffectsPercentages(bool),
     TerminateProcesses(Vec<Pid>),
     KillProcesses(Vec<Pid>),
+    InterruptProcesses(Vec<Pid>),
+    HangupProcesses(Vec<Pid>),
+    ContinueProcesses(Vec<Pid>),
+    SuspendProcesses(Vec<Pid>),
     GetServiceLogs(String, Option<NonZeroU32>),
     StartService(String),
     StopService(String),
@@ -263,6 +267,74 @@ impl MagpieClient {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error sending KillProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn interrupt_process(&self, pid: u32) {
+        self.interrupt_processes(vec![pid]);
+    }
+
+    pub fn interrupt_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::InterruptProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending InterruptProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn hangup_process(&self, pid: u32) {
+        self.hangup_processes(vec![pid]);
+    }
+
+    pub fn hangup_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::HangupProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending HangupProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn continue_process(&self, pid: u32) {
+        self.continue_processes(vec![pid]);
+    }
+
+    pub fn continue_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::ContinueProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending ContinueProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn suspend_process(&self, pid: u32) {
+        self.suspend_processes(vec![pid]);
+    }
+
+    pub fn suspend_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::SuspendProcesses(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending SuspendProcesses to gatherer: {e}",
                 );
             }
             _ => {}
@@ -461,6 +533,18 @@ impl MagpieClient {
                 }
                 Message::KillProcesses(pids) => {
                     magpie.kill_processes(pids);
+                }
+                Message::InterruptProcesses(pids) => {
+                    magpie.interrupt_processes(pids);
+                }
+                Message::HangupProcesses(pids) => {
+                    magpie.hangup_processes(pids);
+                }
+                Message::ContinueProcesses(pids) => {
+                    magpie.continue_processes(pids);
+                }
+                Message::SuspendProcesses(pids) => {
+                    magpie.suspend_processes(pids);
                 }
                 Message::StartService(name) => {
                     magpie.start_service(name);

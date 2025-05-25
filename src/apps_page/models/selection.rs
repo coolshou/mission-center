@@ -51,6 +51,10 @@ pub fn model(
         if row_model.content_type() == ContentType::SectionHeader {
             imp.action_stop.set_enabled(false);
             imp.action_force_stop.set_enabled(false);
+            imp.action_suspend.set_enabled(false);
+            imp.action_continue.set_enabled(false);
+            imp.action_hangup.set_enabled(false);
+            imp.action_interrupt.set_enabled(false);
             imp.action_details.set_enabled(false);
 
             return;
@@ -58,6 +62,10 @@ pub fn model(
 
         imp.action_stop.set_enabled(true);
         imp.action_force_stop.set_enabled(true);
+        imp.action_suspend.set_enabled(true);
+        imp.action_continue.set_enabled(true);
+        imp.action_hangup.set_enabled(true);
+        imp.action_interrupt.set_enabled(true);
         imp.action_details.set_enabled(true);
 
         imp.selected_item.replace(row_model);
