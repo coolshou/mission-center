@@ -2240,7 +2240,7 @@ mod imp {
                                 }
 
                                 if let Some(index) = index {
-                                    summary.set_heading(i18n_f("Fan {}", &[&format!("{}", index)]));
+                                    summary.set_heading(i18n_f("Fan {}", &[&index.to_string()]));
                                 } else {
                                     summary.set_heading(i18n("Fan"));
                                 }

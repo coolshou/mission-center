@@ -1,6 +1,6 @@
 name: mission-center
 base: core20
-version: '1.0.0'
+version: '1.0.2'
 summary: Monitor your CPU, Memory, Disk, Network and GPU usage
 description: |
   Features:
@@ -19,8 +19,6 @@ description: |
    * Uses GTK4 and Libadwaita
    * Written in Rust
   Limitations (there is ongoing work to overcome all of these):
-   * No per-process network usage
-   * GPU support is experimental
    * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring
    * When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
 grade: stable

@@ -26,16 +26,17 @@ use gtk::{gio, glib, prelude::*};
 
 use magpie_types::disks::{Disk, DiskKind};
 
-use crate::app;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
+use crate::{app, to_short_human_readable_time};
 
-use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog};
+use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog, SmartFailureDialog};
 use super::PageExt;
 
 mod imp {
     use super::*;
     use crate::{settings, DataType};
+    use adw::Dialog;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -321,12 +322,13 @@ mod imp {
                             return;
                         };
 
-                        let Some(smart_data) = magpie.smart_data(disk_id.clone()) else {
-                            return;
+                        if let Some(smart_data) = magpie.smart_data(disk_id.clone()) {
+                            let dialog = SmartDataDialog::new(smart_data);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
+                        } else {
+                            let dialogue = SmartFailureDialog::new();
+                            dialogue.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         };
-
-                        let dialog = SmartDataDialog::new(smart_data);
-                        dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                     }
                 });
             }
@@ -670,30 +672,8 @@ impl PerformancePageDisk {
 
             let this = this.imp();
 
-            let mins = graph_max_duration / 60;
-            let seconds_to_string = format!(
-                "{} second{}",
-                graph_max_duration % 60,
-                if (graph_max_duration % 60) != 1 {
-                    "s"
-                } else {
-                    ""
-                }
-            );
-            let mins_to_string = format!("{:} minute{} ", mins, if mins > 1 { "s" } else { "" });
-            this.graph_max_duration.set_text(&*format!(
-                "{}{}",
-                if mins > 0 {
-                    mins_to_string
-                } else {
-                    "".to_string()
-                },
-                if graph_max_duration % 60 > 0 {
-                    seconds_to_string
-                } else {
-                    "".to_string()
-                }
-            ));
+            this.graph_max_duration
+                .set_text(&to_short_human_readable_time(graph_max_duration));
             this.usage_graph.set_data_points(data_points);
             this.usage_graph.set_smooth_graphs(smooth);
             this.usage_graph.set_do_animation(sliding);

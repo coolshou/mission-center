@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-17 06:53+0300\n"
+"POT-Creation-Date: 2025-05-21 06:25+0000\n"
 "PO-Revision-Date: 2024-06-11 21:00+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/mission-center/"
@@ -401,7 +401,7 @@ msgstr "नेटवर्क (_N)"
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
 #: src/apps_page/columns/mod.rs:317 src/performance_page/mod.rs:1396
-#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:353
+#: src/performance_page/mod.rs:2166 src/performance_page/gpu.rs:355
 msgid "GPU"
 msgstr "GPU"
 
@@ -662,13 +662,13 @@ msgid "Power Draw"
 msgstr "ऊर्जा खपत"
 
 #: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:555
+#: src/performance_page/gpu.rs:557
 #, fuzzy
 msgid "Memory Usage"
 msgstr "मेमोरी उपयोग"
 
 #: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:632
+#: src/performance_page/gpu.rs:634
 #, fuzzy
 msgid "Shared Memory Usage"
 msgstr "मेमोरी उपयोग"
@@ -993,6 +993,16 @@ msgstr "अद्यतन गति"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
+msgstr ""
+
+#: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
+msgid "Failed To Get SMART Data"
+msgstr ""
+
+#: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
+msgid ""
+"There was a problem fetching SMART data. Try running from the command line "
+"to get more information."
 msgstr ""
 
 #: resources/ui/performance_page/network.blp:61
@@ -1473,14 +1483,14 @@ msgid "App"
 msgstr "ऐप्स"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "{} चालू सेवाएं"
 msgstr[1] "{} चालू सेवाएं"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "{} चालू सेवाएं"
@@ -1506,17 +1516,15 @@ msgid "Stopped"
 msgstr "रुका हुआ"
 
 #: src/services_page/mod.rs:530
-#, rust-format
 msgid "{} Running Services"
 msgstr "{} चालू सेवाएं"
 
 #: src/services_page/mod.rs:535
-#, rust-format
 msgid "{} failed services out of a total of {}"
 msgstr "कुल {} में से {} सेवाएं विफल रहीं"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} sectors"
 msgstr "{} सेकंड{}"
 
@@ -1524,14 +1532,25 @@ msgstr "{} सेकंड{}"
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
-#, rust-format
 msgid "{} °C"
 msgstr ""
 
+#: src/performance_page/widgets/eject_failure_dialog.rs:164
+msgid "Close"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:165
+msgid "Retry"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:166
+msgid "Kill All"
+msgstr ""
+
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, rust-format
+#, fuzzy
 msgid ""
-"In use ({}B)\n"
+"In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
@@ -1540,9 +1559,9 @@ msgstr ""
 "ऑपरेटिंग सिस्टम और चालू अनुप्रयोग द्वारा उपयोग की जाने वाली मेमोरी"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, rust-format
+#, fuzzy
 msgid ""
-"Modified ({}B)\n"
+"Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
@@ -1553,9 +1572,9 @@ msgstr ""
 "लिखा जाना चाहिए"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, rust-format
+#, fuzzy
 msgid ""
-"Standby ({}B)\n"
+"Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
@@ -1564,9 +1583,9 @@ msgstr ""
 "मेमोरी जिसमें कैश्ड डेटा और कोड होता है जो सक्रिय रूप से उपयोग में नहीं होता है"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, rust-format
+#, fuzzy
 msgid ""
-"Free ({}B)\n"
+"Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
@@ -1577,19 +1596,18 @@ msgstr ""
 "को अधिक मेमोरी की आवश्यकता होने पर पहले पुन: उपयोग किया जाएगा"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
-#, rust-format
 msgid "{} ago"
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
-#: src/performance_page/disk.rs:237 src/performance_page/disk.rs:258
-#: src/performance_page/disk.rs:268 src/performance_page/disk.rs:296
-#: src/performance_page/disk.rs:454 src/performance_page/cpu.rs:316
+#: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
+#: src/performance_page/disk.rs:269 src/performance_page/disk.rs:297
+#: src/performance_page/disk.rs:456 src/performance_page/cpu.rs:316
 #: src/performance_page/cpu.rs:327 src/performance_page/cpu.rs:351
-#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:551
-#: src/performance_page/memory.rs:782 src/performance_page/mod.rs:1391
-#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:245
-#: src/performance_page/gpu.rs:301 src/performance_page/network.rs:262
+#: src/performance_page/cpu.rs:359 src/performance_page/memory.rs:561
+#: src/performance_page/memory.rs:792 src/performance_page/mod.rs:1391
+#: src/performance_page/mod.rs:1401 src/performance_page/gpu.rs:247
+#: src/performance_page/gpu.rs:303 src/performance_page/network.rs:262
 #: src/performance_page/network.rs:367 src/performance_page/network.rs:395
 #: src/performance_page/network.rs:495 src/performance_page/network.rs:531
 msgid "Unknown"
@@ -1687,70 +1705,66 @@ msgstr ""
 msgid "Power Cycles"
 msgstr ""
 
-#: src/performance_page/disk.rs:227
-#, rust-format
+#: src/performance_page/disk.rs:228
 msgid "Disk {} ({})"
 msgstr "डिस्क {} ({})"
 
-#: src/performance_page/disk.rs:231 src/performance_page/disk.rs:386
-#, rust-format
+#: src/performance_page/disk.rs:232 src/performance_page/disk.rs:388
 msgid "Drive ({})"
 msgstr "ड्राइव ({})"
 
-#: src/performance_page/disk.rs:273 src/performance_page/cpu.rs:346
+#: src/performance_page/disk.rs:274 src/performance_page/cpu.rs:346
 msgid "Yes"
 msgstr "हां"
 
-#: src/performance_page/disk.rs:275 src/performance_page/cpu.rs:348
+#: src/performance_page/disk.rs:276 src/performance_page/cpu.rs:348
 msgid "No"
 msgstr "नहीं"
 
-#: src/performance_page/disk.rs:284 src/performance_page/mod.rs:1121
+#: src/performance_page/disk.rs:285 src/performance_page/mod.rs:1121
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/disk.rs:285 src/performance_page/mod.rs:1122
+#: src/performance_page/disk.rs:286 src/performance_page/mod.rs:1122
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/disk.rs:286 src/performance_page/mod.rs:1123
+#: src/performance_page/disk.rs:287 src/performance_page/mod.rs:1123
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/disk.rs:287 src/performance_page/mod.rs:1124
+#: src/performance_page/disk.rs:288 src/performance_page/mod.rs:1124
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/disk.rs:288 src/performance_page/mod.rs:1125
+#: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
 #, fuzzy
 msgid "SD"
 msgstr "SSD"
 
-#: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1126
+#: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1127
+#: src/performance_page/disk.rs:291 src/performance_page/mod.rs:1127
 msgid "Optical"
 msgstr "ऑप्टिकल"
 
-#: src/performance_page/disk.rs:291 src/performance_page/mod.rs:1128
+#: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
 msgid "Floppy"
 msgstr ""
 
-#: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1129
+#: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
 #, fuzzy
 msgid "Thumb Drive"
 msgstr "ड्राइव"
 
-#: src/performance_page/disk.rs:382
-#, rust-format
+#: src/performance_page/disk.rs:384
 msgid "Drive {} ({})"
 msgstr "ड्राइव {} ({})"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
-#, rust-format
 msgid "Fan {}"
 msgstr ""
 
@@ -1760,155 +1774,136 @@ msgid "Fan"
 msgstr ""
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
-#, rust-format
 msgid "{} RPM"
 msgstr ""
 
 #: src/performance_page/fan.rs:285
-#, rust-format
 msgid "{}%"
 msgstr ""
 
 #: src/performance_page/fan.rs:337 src/performance_page/cpu.rs:339
-#: src/performance_page/gpu.rs:316
+#: src/performance_page/gpu.rs:318
 msgid "Unsupported"
 msgstr "असमर्थित"
 
-#: src/performance_page/cpu.rs:973 src/performance_page/memory.rs:861
-#: src/performance_page/gpu.rs:870
-#, rust-format
-msgid "{} second{}"
-msgstr "{} सेकंड{}"
+#: src/performance_page/memory.rs:378
+msgid "{} of {}"
+msgstr ""
 
-#: src/performance_page/cpu.rs:984 src/performance_page/memory.rs:872
-#: src/performance_page/gpu.rs:881
-#, rust-format
-msgid "{} minute{} "
-msgstr "{} मिनट{} "
-
-#: src/performance_page/memory.rs:397
+#: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "अतिरिक्त मेमोरी जानकारी प्राप्त करना विफल रहा"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{} {} ({})"
 msgstr "{} {}{}B/s"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
-#: src/performance_page/gpu.rs:351
-#, rust-format
+#: src/performance_page/gpu.rs:353
 msgid "GPU {}"
 msgstr "GPU {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy, rust-format
+#, fuzzy
 msgid "{}: {}"
 msgstr "{}: {} {}bps"
 
-#: src/performance_page/gpu.rs:283
+#: src/performance_page/gpu.rs:285
 #, fuzzy
 msgid "Video encode/decode"
 msgstr "वीडियो एन्कोड/डीकोड"
 
-#: src/performance_page/gpu.rs:574
+#: src/performance_page/gpu.rs:576
 #, fuzzy
 msgid "Total Memory"
 msgstr "मेमोरी"
 
-#: src/performance_page/gpu.rs:604
+#: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
 msgstr ""
 
-#: src/performance_page/gpu.rs:649
+#: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
 msgstr ""
 
 #: src/main.rs:99
-#, rust-format
 msgid "{} year"
-msgstr ""
+msgid_plural "{} years"
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/main.rs:101
-#, rust-format
-msgid "{} years"
-msgstr ""
-
-#: src/main.rs:108
-#, fuzzy, rust-format
+#: src/main.rs:103
+#, fuzzy
 msgid "{} month"
-msgstr "{} मिनट{} "
+msgid_plural "{} months"
+msgstr[0] "{} मिनट{} "
+msgstr[1] "{} मिनट{} "
 
-#: src/main.rs:110
-#, rust-format
-msgid "{} months"
-msgstr ""
-
-#: src/main.rs:117
-#, rust-format
+#: src/main.rs:107
 msgid "{} day"
-msgstr ""
+msgid_plural "{} days"
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/main.rs:119
-#, rust-format
-msgid "{} days"
-msgstr ""
-
-#: src/main.rs:126
-#, rust-format
+#: src/main.rs:111
 msgid "{} hour"
-msgstr ""
+msgid_plural "{} hours"
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/main.rs:128
-#, rust-format
-msgid "{} hours"
-msgstr ""
-
-#: src/main.rs:135
-#, fuzzy, rust-format
+#: src/main.rs:115 src/main.rs:180
+#, fuzzy
 msgid "{} minute"
-msgstr "{} मिनट{} "
+msgid_plural "{} minutes"
+msgstr[0] "{} मिनट{} "
+msgstr[1] "{} मिनट{} "
 
-#: src/main.rs:137
-#, fuzzy, rust-format
-msgid "{} minutes"
-msgstr "{} मिनट{} "
-
-#: src/main.rs:144
-#, fuzzy, rust-format
+#: src/main.rs:119 src/main.rs:178
+#, fuzzy
 msgid "{} second"
-msgstr "{} सेकंड{}"
-
-#: src/main.rs:146
-#, fuzzy, rust-format
-msgid "{} seconds"
-msgstr "{} सेकंड{}"
+msgid_plural "{} seconds"
+msgstr[0] "{} सेकंड{}"
+msgstr[1] "{} सेकंड{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:183
-#, fuzzy, rust-format
+#: src/main.rs:155
+#, fuzzy
 msgid "{}, {} and {}"
 msgstr "{}: {} {}bps"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:186 src/main.rs:189 src/main.rs:192
-#, rust-format
+#: src/main.rs:158 src/main.rs:161 src/main.rs:164
 msgid "{} and {}"
 msgstr ""
 
-#: src/main.rs:198
+#: src/main.rs:170
 msgid "Less than a minute"
 msgstr ""
 
-#: src/main.rs:329
+#: src/main.rs:316
 msgid "_Quit"
 msgstr "बंद करें (_Q)"
 
 #: src/application.rs:398
 msgid "translator-credits"
 msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
+
+#, fuzzy
+#~ msgid "{} minutes"
+#~ msgstr "{} मिनट{} "
+
+#, fuzzy
+#~ msgid "{} seconds"
+#~ msgstr "{} सेकंड{}"
+
+#~ msgid "{} second{}"
+#~ msgstr "{} सेकंड{}"
+
+#~ msgid "{} minute{} "
+#~ msgstr "{} मिनट{} "
 
 #~ msgid "No per-process network usage"
 #~ msgstr "कोई प्रति-प्रक्रिया नेटवर्क उपयोग नहीं"

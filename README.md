@@ -21,10 +21,9 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
   NVTOP project
 * See a breakdown of resource usage by app and process
 * Supports a minified summary view for simple monitoring
-* Use OpenGL rendering for all the graphs in an effort to reduce CPU and overall resource usage
+* Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage
 * Uses GTK4 and Libadwaita
 * Written in Rust
-* Flatpak first
 
 ## Limitations
 
@@ -42,10 +41,10 @@ themes).
 
 ## Installing
 
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/9906491703/artifacts/raw/MissionCenter_v1.0.0-x86_64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="x86_64" width=200/></a>
-<a href="https://gitlab.com/mission-center-devs/mission-center/-/jobs/9906491710/artifacts/raw/MissionCenter_v1.0.0-aarch64.AppImage"><img src="https://raw.githubusercontent.com/AppImage/docs.appimage.org/master/source/_static/img/download-appimage-banner.svg" alt="ARM64" width=200/></a>
-<a href="https://flathub.org/apps/io.missioncenter.MissionCenter"><img src="https://flathub.org/api/badge?svg&locale=en" width=200/></a>
-<a href="https://snapcraft.io/mission-center"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
+[AppImage (x86_64)](https://gitlab.com/mission-center-devs/mission-center/-/jobs/10144675634/artifacts/raw/MissionCenter_v1.0.2-x86_64.AppImage)  
+[AppImage (ARM64)](https://gitlab.com/mission-center-devs/mission-center/-/jobs/10144675636/artifacts/raw/MissionCenter_v1.0.2-aarch64.AppImage)  
+[Flatpak](https://flathub.org/apps/io.missioncenter.MissionCenter)  
+[Snap](https://snapcraft.io/mission-center)
 
 Also available from https://portable-linux-apps.github.io/apps/mission-center.html
 
