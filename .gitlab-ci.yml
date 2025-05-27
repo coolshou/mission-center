@@ -3,7 +3,7 @@ spec:
     BUILD_FLATPAK:
       default: false
       type: boolean
-    PROTABLE_TARBALL:
+    PORTABLE_TARBALL:
       default: false
       type: boolean
     BUILD_APPIMAGE:
@@ -180,7 +180,7 @@ package-build-job-x86:
       - 'logs.txt'
       - 'portable-x86_64.tar.gz'
   rules:
-    - if: "'false' == '$[[ inputs.PROTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
+    - if: "'false' == '$[[ inputs.PORTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
     - !reference [ ".shared", "ready_to_merge" ]
     - when: never
 
@@ -202,7 +202,7 @@ package-build-job-arm:
       - 'logs.txt'
       - 'portable-aarch64.tar.gz'
   rules:
-    - if: "'false' == '$[[ inputs.PROTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
+    - if: "'false' == '$[[ inputs.PORTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
     - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-x86:
@@ -213,7 +213,7 @@ snap-job-x86:
 
     - apt-get install -y curl ca-certificates
   script:
-    - if [[ ! -z "$PROTABLE_TARBALL" ]]; then curl -LO $PROTABLE_TARBALL; fi
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cd ../..
 
     - SRC_PATH=$PWD bash support/create-snap.sh
@@ -238,7 +238,7 @@ snap-job-arm:
     - apt-get install -y curl ca-certificates
   script:
 
-    - if [[ ! -z "$PROTABLE_TARBALL" ]]; then curl -LO $PROTABLE_TARBALL; fi
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-aarch64.tar.gz && cd ../..
 
     - SRC_PATH=$PWD bash support/create-snap.sh
@@ -261,7 +261,7 @@ appimage-job-x86:
 
     - apt-get install -y curl ca-certificates
   script:
-    - if [[ ! -z "$PROTABLE_TARBALL" ]]; then curl -LO $PROTABLE_TARBALL; fi
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-x86_64.tar.gz && cd ..
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
@@ -286,7 +286,7 @@ appimage-job-arm:
 
     - apt-get install -y curl ca-certificates
   script:
-    - if [[ ! -z "$PROTABLE_TARBALL" ]]; then curl -LO $PROTABLE_TARBALL; fi
+    - if [[ ! -z "$PORTABLE_TARBALL" ]]; then curl -LO $PORTABLE_TARBALL; fi
     - cd appimage && /usr/bin/tar xf ../portable-aarch64.tar.gz && cd ..
 
     - RECEIPE_PATH=$PWD/appimage APPDIR_PATH=$PWD/appimage bash support/create-appimage.sh
