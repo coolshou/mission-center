@@ -226,41 +226,10 @@ template $DiskDetails: Box {
       }
     }
 
-    Box {
-      visible: bind template.rotation_visible;
-
-      layout {
-        column: '1';
-        row: '3';
-      }
-
-      orientation: vertical;
-      spacing: 3;
-      width-request: 100;
-      margin-top: 7;
-
-      Label {
-        styles [
-          "caption",
-        ]
-
-        halign: start;
-        label: _("Rotation Rate");
-      }
-
-      Label rotation_rate {
-        styles [
-          "title-4",
-        ]
-
-        halign: start;
-      }
-    }
-
     Label {
       layout {
         column: '1';
-        row: '4';
+        row: '3';
       }
 
       margin-top: 20;
@@ -276,7 +245,7 @@ template $DiskDetails: Box {
     Label {
       layout {
         column: '1';
-        row: '5';
+        row: '4';
       }
 
        styles [
@@ -290,7 +259,7 @@ template $DiskDetails: Box {
     Label {
       layout {
         column: '1';
-        row: '6';
+        row: '5';
       }
 
       styles [
@@ -304,7 +273,7 @@ template $DiskDetails: Box {
     Label {
       layout {
         column: '1';
-        row: '7';
+        row: '6';
       }
 
       styles [
@@ -320,7 +289,7 @@ template $DiskDetails: Box {
 
       layout {
         column: '1';
-        row: '8';
+        row: '7';
       }
 
       styles [
@@ -336,7 +305,7 @@ template $DiskDetails: Box {
 
       layout {
         column: '1';
-        row: '9';
+        row: '8';
       }
 
       styles [
@@ -347,10 +316,26 @@ template $DiskDetails: Box {
       label: _("Serial:");
     }
 
+    Label {
+      visible: bind template.rotation_visible;
+
+      layout {
+        column: '1';
+         row: '9';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("Rotation Rate");
+    }
+
     Label capacity {
       layout {
         column: '3';
-        row: '4';
+        row: '3';
       }
 
       styles [
@@ -364,7 +349,7 @@ template $DiskDetails: Box {
     Label formatted {
       layout {
         column: '3';
-        row: '5';
+        row: '4';
       }
 
       styles [
@@ -377,7 +362,7 @@ template $DiskDetails: Box {
     Label system_disk {
       layout {
         column: '3';
-        row: '6';
+        row: '5';
       }
 
       styles [
@@ -390,7 +375,7 @@ template $DiskDetails: Box {
     Label disk_type {
       layout {
         column: '3';
-        row: '7';
+        row: '6';
       }
 
       styles [
@@ -405,7 +390,7 @@ template $DiskDetails: Box {
 
       layout {
         column: '3';
-        row: '8';
+        row: '7';
       }
 
       styles [
@@ -420,7 +405,22 @@ template $DiskDetails: Box {
 
       layout {
         column: '3';
-        row: '9';
+        row: '8';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+
+    Label rotation_rate {
+      visible: bind template.rotation_visible;
+
+      layout {
+        column: '3';
+         row: '9';
       }
 
       styles [
