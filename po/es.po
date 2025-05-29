@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-17 06:53+0300\n"
-"PO-Revision-Date: 2025-05-28 03:11+0000\n"
+"PO-Revision-Date: 2025-05-29 22:37+0000\n"
 "Last-Translator: Jack Nolddor <movil.jacknolddor@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -445,11 +445,11 @@ msgstr "Detener"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr "Detener forzosamente la aplicación seleccionada"
+msgstr "Forzar el cierre de la aplicación seleccionada"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
 msgid "Force Stop"
-msgstr "Detener forzosamente"
+msgstr "Forzar cierre"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
@@ -1547,7 +1547,7 @@ msgstr ""
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 #, rust-format
 msgid "{} ago"
-msgstr ""
+msgstr "hace {}"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:237 src/performance_page/disk.rs:258
