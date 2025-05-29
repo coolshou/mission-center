@@ -194,8 +194,8 @@ mod imp {
                 used_shared_memory_valid: Cell::new(false),
                 shared_memory_available: PhantomData,
                 show_shared_separator: PhantomData,
-                pcie_info_visible: Cell::new(true),
-                max_pcie_info_visible: Cell::new(true),
+                pcie_info_visible: Cell::new(false),
+                max_pcie_info_visible: Cell::new(false),
             }
         }
     }
