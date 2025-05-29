@@ -129,12 +129,12 @@ mod imp {
                 show_column_separators: Cell::new(false),
 
                 apps_section: RowModelBuilder::new()
-                    .name("Apps")
+                    .name(&i18n("Apps"))
                     .content_type(ContentType::SectionHeader)
                     .section_type(SectionType::Apps)
                     .build(),
                 processes_section: RowModelBuilder::new()
-                    .name("Processes")
+                    .name(&i18n("Processes"))
                     .content_type(ContentType::SectionHeader)
                     .section_type(SectionType::Processes)
                     .build(),
