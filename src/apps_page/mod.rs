@@ -31,7 +31,7 @@ use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::magpie_client::App;
 
-use crate::i18n::ni18n_f;
+use crate::i18n::{i18n, ni18n_f};
 use columns::*;
 use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
