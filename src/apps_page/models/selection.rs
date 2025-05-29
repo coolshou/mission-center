@@ -55,6 +55,8 @@ pub fn model(
             imp.action_continue.set_enabled(false);
             imp.action_hangup.set_enabled(false);
             imp.action_interrupt.set_enabled(false);
+            imp.action_user_one.set_enabled(false);
+            imp.action_user_two.set_enabled(false);
             imp.action_details.set_enabled(false);
 
             return;
@@ -66,6 +68,8 @@ pub fn model(
         imp.action_continue.set_enabled(true);
         imp.action_hangup.set_enabled(true);
         imp.action_interrupt.set_enabled(true);
+        imp.action_user_one.set_enabled(true);
+        imp.action_user_two.set_enabled(true);
         imp.action_details.set_enabled(true);
 
         imp.selected_item.replace(row_model);

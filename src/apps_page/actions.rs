@@ -228,6 +228,56 @@ pub fn configure(imp: &AppsPageImp) {
     });
     actions.add_action(&imp.action_interrupt);
 
+    imp.action_user_one.set_enabled(false);
+    imp.action_user_one.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let this = this.imp();
+
+            let selected_item = this.selected_item.borrow();
+            if selected_item.content_type() == ContentType::SectionHeader {
+                return;
+            }
+
+            if let Ok(magpie_client) = app!().sys_info() {
+                if selected_item.content_type() == ContentType::App {
+                    magpie_client.signal_user_one_processes(app_pids(&*selected_item));
+                } else {
+                    magpie_client.signal_user_one_process(selected_item.pid());
+                }
+            }
+        }
+    });
+    actions.add_action(&imp.action_user_one);
+
+    imp.action_user_two.set_enabled(false);
+    imp.action_user_two.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let this = this.imp();
+
+            let selected_item = this.selected_item.borrow();
+            if selected_item.content_type() == ContentType::SectionHeader {
+                return;
+            }
+
+            if let Ok(magpie_client) = app!().sys_info() {
+                if selected_item.content_type() == ContentType::App {
+                    magpie_client.signal_user_two_processes(app_pids(&*selected_item));
+                } else {
+                    magpie_client.signal_user_two_process(selected_item.pid());
+                }
+            }
+        }
+    });
+    actions.add_action(&imp.action_user_two);
+
     imp.action_details.set_enabled(false);
     imp.action_details.connect_activate({
         let this = this.downgrade();

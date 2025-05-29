@@ -87,6 +87,8 @@ enum Message {
     TerminateProcesses(Vec<Pid>),
     KillProcesses(Vec<Pid>),
     InterruptProcesses(Vec<Pid>),
+    User1Processes(Vec<Pid>),
+    User2Processes(Vec<Pid>),
     HangupProcesses(Vec<Pid>),
     ContinueProcesses(Vec<Pid>),
     SuspendProcesses(Vec<Pid>),
@@ -284,6 +286,40 @@ impl MagpieClient {
                 g_critical!(
                     "MissionCenter::SysInfo",
                     "Error sending InterruptProcesses to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn user_signal_one_process(&self, pid: u32) {
+        self.user_signal_one_processes(vec![pid]);
+    }
+
+    pub fn user_signal_one_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::User1Processes(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending User1Processes to gatherer: {e}",
+                );
+            }
+            _ => {}
+        }
+    }
+
+    #[inline(always)]
+    pub fn user_signal_two_process(&self, pid: u32) {
+        self.user_signal_two_processes(vec![pid]);
+    }
+
+    pub fn user_signal_two_processes(&self, pids: Vec<u32>) {
+        match self.sender.send(Message::User2Processes(pids)) {
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::SysInfo",
+                    "Error sending User2Processes to gatherer: {e}",
                 );
             }
             _ => {}
@@ -545,6 +581,12 @@ impl MagpieClient {
                 }
                 Message::SuspendProcesses(pids) => {
                     magpie.suspend_processes(pids);
+                }
+                Message::User1Processes(pids) => {
+                    magpie.signal_user_one_processes(pids);
+                }
+                Message::User2Processes(pids) => {
+                    magpie.signal_user_two_processes(pids);
                 }
                 Message::StartService(name) => {
                     magpie.start_service(name);

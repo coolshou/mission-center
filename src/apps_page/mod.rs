@@ -104,6 +104,8 @@ mod imp {
         pub action_continue: gio::SimpleAction,
         pub action_hangup: gio::SimpleAction,
         pub action_interrupt: gio::SimpleAction,
+        pub action_user_one: gio::SimpleAction,
+        pub action_user_two: gio::SimpleAction,
         pub action_details: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
@@ -157,6 +159,8 @@ mod imp {
                 action_continue: gio::SimpleAction::new("continue", None),
                 action_hangup: gio::SimpleAction::new("hangup", None),
                 action_interrupt: gio::SimpleAction::new("interrupt", None),
+                action_user_one: gio::SimpleAction::new("user-one", None),
+                action_user_two: gio::SimpleAction::new("user-two", None),
                 action_details: gio::SimpleAction::new("details", None),
 
                 use_merged_stats: Cell::new(false),

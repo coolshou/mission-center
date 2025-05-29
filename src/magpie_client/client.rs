@@ -971,6 +971,44 @@ impl Client {
         )
     }
 
+    pub fn signal_user_one_processes(&self, pids: Vec<u32>) {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_signal_user_one_processes(pids),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Processes,
+            ProcessesResponse::TermKill,
+            ProcessesResponse::Error,
+            |_| {}
+        )
+    }
+
+    pub fn signal_user_two_processes(&self, pids: Vec<u32>) {
+        let mut socket = self.socket.borrow_mut();
+
+        let response = make_request(
+            ipc::req_signal_user_two_processes(pids),
+            &mut socket,
+            self.socket_addr.as_ref(),
+        )
+        .and_then(|response| response.body);
+
+        parse_response!(
+            response,
+            ResponseBody::Processes,
+            ProcessesResponse::TermKill,
+            ProcessesResponse::Error,
+            |_| {}
+        )
+    }
+
     pub fn hangup_processes(&self, pids: Vec<u32>) {
         let mut socket = self.socket.borrow_mut();
 
