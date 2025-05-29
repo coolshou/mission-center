@@ -336,7 +336,6 @@ mod imp {
                 });
             }
 
-            println!("{:?}, {:?}", disk.serial_number, disk.id);
             if let Some(serial) = &disk.serial_number {
                 this.infobar_content.serial_number().set_text(serial);
                 this.infobar_content.set_serial_number_visible(true);
