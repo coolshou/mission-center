@@ -35,8 +35,8 @@ use super::PageExt;
 
 mod imp {
     use super::*;
+    use crate::performance_page::disk_details::DiskDetails;
     use crate::{settings, DataType};
-    use adw::Dialog;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
@@ -72,20 +72,7 @@ mod imp {
         summary_mode: Cell<bool>,
 
         #[property(get = Self::infobar_content, type = Option<gtk::Widget>)]
-        pub infobar_content: OnceCell<gtk::Box>,
-
-        pub active_time: OnceCell<gtk::Label>,
-        pub avg_response_time: OnceCell<gtk::Label>,
-        pub legend_read: OnceCell<gtk::Picture>,
-        pub read_speed: OnceCell<gtk::Label>,
-        pub total_read: OnceCell<gtk::Label>,
-        pub legend_write: OnceCell<gtk::Picture>,
-        pub write_speed: OnceCell<gtk::Label>,
-        pub total_write: OnceCell<gtk::Label>,
-        pub capacity: OnceCell<gtk::Label>,
-        pub formatted: OnceCell<gtk::Label>,
-        pub system_disk: OnceCell<gtk::Label>,
-        pub disk_type: OnceCell<gtk::Label>,
+        pub infobar_content: DiskDetails,
 
         pub raw_disk_id: OnceCell<String>,
     }
@@ -108,20 +95,7 @@ mod imp {
                 base_color: Cell::new(gtk::gdk::RGBA::new(0.0, 0.0, 0.0, 1.0)),
                 summary_mode: Cell::new(false),
 
-                infobar_content: Default::default(),
-
-                active_time: Default::default(),
-                avg_response_time: Default::default(),
-                legend_read: Default::default(),
-                read_speed: Default::default(),
-                total_read: Default::default(),
-                legend_write: Default::default(),
-                write_speed: Default::default(),
-                total_write: Default::default(),
-                capacity: Default::default(),
-                formatted: Default::default(),
-                system_disk: Default::default(),
-                disk_type: Default::default(),
+                infobar_content: DiskDetails::new(),
 
                 raw_disk_id: Default::default(),
             }
@@ -142,7 +116,7 @@ mod imp {
         }
 
         fn infobar_content(&self) -> Option<gtk::Widget> {
-            self.infobar_content.get().map(|ic| ic.clone().into())
+            Some(self.infobar_content.clone().upcast())
         }
     }
 
@@ -241,62 +215,56 @@ mod imp {
             this.disk_transfer_rate_graph.set_dashed(1, true);
             this.disk_transfer_rate_graph.set_filled(1, false);
 
-            if let Some(legend_read) = this.legend_read.get() {
-                legend_read
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
-            }
-            if let Some(legend_write) = this.legend_write.get() {
-                legend_write
-                    .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
-            }
+            this.infobar_content
+                .legend_read()
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-disk.svg"));
+            this.infobar_content
+                .legend_write()
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-disk.svg"));
 
-            if let Some(capacity) = this.capacity.get() {
-                let cap = disk.capacity_bytes;
+            let cap = disk.capacity_bytes;
+            this.infobar_content.capacity().set_text(&if cap > 0 {
+                crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
+            } else {
+                i18n("Unknown")
+            });
 
-                capacity.set_text(&if cap > 0 {
+            let cap = disk.formatted_bytes;
+            this.infobar_content
+                .formatted()
+                .set_text(&if let Some(cap) = cap {
                     crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
                 } else {
                     i18n("Unknown")
                 });
-            }
-
-            if let Some(formatted) = this.formatted.get() {
-                let cap = disk.formatted_bytes;
-
-                formatted.set_text(&if let Some(cap) = cap {
-                    crate::to_human_readable_nice(cap as f32, &DataType::MemoryBytes, settings)
-                } else {
-                    i18n("Unknown")
-                });
-            }
 
             let is_system_disk = if disk.is_system {
                 i18n("Yes")
             } else {
                 i18n("No")
             };
-            if let Some(system_disk) = this.system_disk.get() {
-                system_disk.set_text(&is_system_disk);
-            }
+            this.infobar_content.system_disk().set_text(&is_system_disk);
 
-            if let Some(disk_type) = this.disk_type.get() {
-                if let Some(disk_kind) = disk.kind.and_then(|k| k.try_into().ok()) {
-                    let disk_type_str = match disk_kind {
-                        DiskKind::Hdd => i18n("HDD"),
-                        DiskKind::Ssd => i18n("SSD"),
-                        DiskKind::NvMe => i18n("NVMe"),
-                        DiskKind::EMmc => i18n("eMMC"),
-                        DiskKind::Sd => i18n("SD"),
-                        DiskKind::IScsi => i18n("iSCSI"),
-                        DiskKind::Optical => i18n("Optical"),
-                        DiskKind::Floppy => i18n("Floppy"),
-                        DiskKind::ThumbDrive => i18n("Thumb Drive"),
-                    };
-                    disk_type.set_text(&disk_type_str);
-                } else {
-                    disk_type.set_text(&i18n("Unknown"));
-                };
-            }
+            this.infobar_content
+                .disk_type()
+                .set_text(
+                    &if let Some(disk_kind) = disk.kind.and_then(|k| k.try_into().ok()) {
+                        let disk_type_str = match disk_kind {
+                            DiskKind::Hdd => i18n("HDD"),
+                            DiskKind::Ssd => i18n("SSD"),
+                            DiskKind::NvMe => i18n("NVMe"),
+                            DiskKind::EMmc => i18n("eMMC"),
+                            DiskKind::Sd => i18n("SD"),
+                            DiskKind::IScsi => i18n("iSCSI"),
+                            DiskKind::Optical => i18n("Optical"),
+                            DiskKind::Floppy => i18n("Floppy"),
+                            DiskKind::ThumbDrive => i18n("Thumb Drive"),
+                        };
+                        disk_type_str
+                    } else {
+                        i18n("Unknown")
+                    },
+                );
 
             if disk.smart_interface.is_some() {
                 this.description.set_margin_top(0);
@@ -368,6 +336,21 @@ mod imp {
                 });
             }
 
+            println!("{:?}, {:?}", disk.serial_number, disk.id);
+            if let Some(serial) = &disk.serial_number {
+                this.infobar_content.serial_number().set_text(serial);
+                this.infobar_content.set_serial_number_visible(true);
+            } else {
+                this.infobar_content.set_serial_number_visible(false);
+            }
+
+            if let Some(wwn) = &disk.world_wide_name {
+                this.infobar_content.wwn().set_text(wwn);
+                this.infobar_content.set_wwn_visible(true);
+            } else {
+                this.infobar_content.set_wwn_visible(false);
+            }
+
             true
         }
 
@@ -396,49 +379,58 @@ mod imp {
 
             this.usage_graph.add_data_point(0, disk.busy_percent);
 
-            if let Some(active_time) = this.active_time.get() {
-                active_time.set_text(&format!("{}%", disk.busy_percent.round() as u8));
+            this.infobar_content
+                .active_time()
+                .set_text(&format!("{}%", disk.busy_percent.round() as u8));
+
+            if let Some(rotation_rate) = disk.rotation_rate {
+                this.infobar_content
+                    .rotation_rate()
+                    .set_text(&i18n_f("{} RPM", &[&rotation_rate.to_string()]));
+                this.infobar_content.set_rotation_visible(true);
+            } else {
+                this.infobar_content.set_rotation_visible(false);
             }
 
-            if let Some(avg_response_time) = this.avg_response_time.get() {
-                avg_response_time.set_text(&format!("{:.2} ms", disk.response_time_ms));
-            }
+            this.infobar_content
+                .avg_response_time()
+                .set_text(&format!("{:.2} ms", disk.response_time_ms));
 
             this.disk_transfer_rate_graph
                 .add_data_point(0, disk.rx_speed_bytes_ps as f32);
-            if let Some(read_speed) = this.read_speed.get() {
-                read_speed.set_text(&crate::to_human_readable_nice(
+            this.infobar_content
+                .read_speed()
+                .set_text(&crate::to_human_readable_nice(
                     disk.rx_speed_bytes_ps as f32,
                     &DataType::DriveBytesPerSecond,
                     settings,
                 ));
-            }
 
-            if let Some(total_read) = this.total_read.get() {
-                total_read.set_text(&crate::to_human_readable_nice(
+            this.infobar_content
+                .total_read()
+                .set_text(&crate::to_human_readable_nice(
                     disk.rx_bytes_total as f32,
                     &DataType::DriveBytes,
                     settings,
                 ));
-            }
 
             this.disk_transfer_rate_graph
                 .add_data_point(1, disk.tx_speed_bytes_ps as f32);
-            if let Some(write_speed) = this.write_speed.get() {
-                write_speed.set_text(&crate::to_human_readable_nice(
+            this.infobar_content
+                .write_speed()
+                .set_text(&crate::to_human_readable_nice(
                     disk.tx_speed_bytes_ps as f32,
                     &DataType::DriveBytesPerSecond,
                     settings,
                 ));
-            }
 
-            if let Some(total_write) = this.total_write.get() {
-                total_write.set_text(&crate::to_human_readable_nice(
+            this.infobar_content
+                .total_write()
+                .set_text(&crate::to_human_readable_nice(
                     disk.tx_bytes_total as f32,
                     &DataType::DriveBytes,
                     settings,
                 ));
-            }
 
             true
         }
@@ -453,9 +445,6 @@ mod imp {
         }
 
         fn data_summary(&self) -> String {
-            let unknown = i18n("Unknown");
-            let unknown = unknown.as_str();
-
             format!(
                 r#"{}
 
@@ -474,46 +463,16 @@ mod imp {
     Average response time: {}"#,
                 self.disk_id.label(),
                 self.model.label(),
-                self.capacity
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.formatted
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.system_disk
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.disk_type
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.read_speed
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.total_read
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.write_speed
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.total_write
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.active_time
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
-                self.avg_response_time
-                    .get()
-                    .map(|l| l.label())
-                    .unwrap_or(unknown.into()),
+                self.infobar_content.capacity().label(),
+                self.infobar_content.formatted().label(),
+                self.infobar_content.system_disk().label(),
+                self.infobar_content.disk_type().label(),
+                self.infobar_content.read_speed().label(),
+                self.infobar_content.total_read().label(),
+                self.infobar_content.write_speed().label(),
+                self.infobar_content.total_write().label(),
+                self.infobar_content.active_time().label(),
+                self.infobar_content.avg_response_time().label(),
             )
         }
     }
@@ -554,77 +513,6 @@ mod imp {
 
             Self::configure_actions(&this);
             Self::configure_context_menu(&this);
-
-            let sidebar_content_builder = gtk::Builder::from_resource(
-                "/io/missioncenter/MissionCenter/ui/performance_page/disk_details.ui",
-            );
-
-            let _ = self.infobar_content.set(
-                sidebar_content_builder
-                    .object::<gtk::Box>("root")
-                    .expect("Could not find `root` object in details pane"),
-            );
-
-            let _ = self.active_time.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("active_time")
-                    .expect("Could not find `active_time` object in details pane"),
-            );
-            let _ = self.avg_response_time.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("avg_response_time")
-                    .expect("Could not find `avg_response_time` object in details pane"),
-            );
-            let _ = self.legend_read.set(
-                sidebar_content_builder
-                    .object::<gtk::Picture>("legend_read")
-                    .expect("Could not find `legend_read` object in details pane"),
-            );
-            let _ = self.read_speed.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("read_speed")
-                    .expect("Could not find `read_speed` object in details pane"),
-            );
-            let _ = self.total_read.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("total_read")
-                    .expect("Could not find `total_read` object in details pane"),
-            );
-            let _ = self.legend_write.set(
-                sidebar_content_builder
-                    .object::<gtk::Picture>("legend_write")
-                    .expect("Could not find `legend_write` object in details pane"),
-            );
-            let _ = self.write_speed.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("write_speed")
-                    .expect("Could not find `write_speed` object in details pane"),
-            );
-            let _ = self.total_write.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("total_write")
-                    .expect("Could not find `write_total` object in details pane"),
-            );
-            let _ = self.capacity.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("capacity")
-                    .expect("Could not find `capacity` object in details pane"),
-            );
-            let _ = self.formatted.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("formatted")
-                    .expect("Could not find `formatted` object in details pane"),
-            );
-            let _ = self.system_disk.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("system_disk")
-                    .expect("Could not find `system_disk` object in details pane"),
-            );
-            let _ = self.disk_type.set(
-                sidebar_content_builder
-                    .object::<gtk::Label>("disk_type")
-                    .expect("Could not find `disk_type` object in details pane"),
-            );
         }
     }
 
@@ -641,17 +529,11 @@ glib::wrapper! {
 
 impl PageExt for PerformancePageDisk {
     fn infobar_collapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(10)));
+        self.imp().infobar_content.set_margin_top(10);
     }
 
     fn infobar_uncollapsed(&self) {
-        self.imp()
-            .infobar_content
-            .get()
-            .and_then(|ic| Some(ic.set_margin_top(65)));
+        self.imp().infobar_content.set_margin_top(65);
     }
 }
 

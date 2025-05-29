@@ -20,7 +20,7 @@
 
 using Gtk 4.0;
 
-Box root {
+template $DiskDetails: Box {
   margin-top: 65;
   margin-bottom: 10;
   orientation: vertical;
@@ -198,6 +198,37 @@ Box root {
     }
 
     Box {
+      visible: bind template.rotation_visible;
+
+      layout {
+        column: '1';
+        row: '3';
+      }
+
+      orientation: vertical;
+      spacing: 3;
+      width-request: 100;
+      margin-top: 7;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Rotation Rate");
+      }
+
+      Label rotation_rate {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+      }
+    }
+
+    Box {
       layout {
         column: '3';
         row: '2';
@@ -284,6 +315,38 @@ Box root {
       label: _("Type:");
     }
 
+    Label {
+      visible: bind template.serial_number_visible;
+
+      layout {
+        column: '1';
+        row: '7';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("WWN:");
+    }
+
+    Label {
+      visible: bind template.wwn_visible;
+
+      layout {
+        column: '1';
+        row: '8';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      label: _("Serial:");
+    }
+
     Label capacity {
       layout {
         column: '3';
@@ -328,6 +391,36 @@ Box root {
       layout {
         column: '3';
         row: '6';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+
+    Label wwn {
+      visible: bind template.wwn_visible;
+
+      layout {
+        column: '3';
+        row: '7';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+    }
+
+    Label serial_number {
+      visible: bind template.serial_number_visible;
+
+      layout {
+        column: '3';
+        row: '8';
       }
 
       styles [

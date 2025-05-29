@@ -42,6 +42,7 @@ use widgets::{GraphWidget, SidebarDropHint};
 
 mod cpu;
 mod disk;
+mod disk_details;
 mod fan;
 mod gpu;
 mod gpu_details;
