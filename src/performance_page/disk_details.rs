@@ -57,7 +57,7 @@ mod imp {
         pub system_disk: TemplateChild<gtk::Label>,
         #[template_child]
         pub disk_type: TemplateChild<gtk::Label>,
-        
+
         #[template_child]
         pub wwn: TemplateChild<gtk::Label>,
         #[template_child]
