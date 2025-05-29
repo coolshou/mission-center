@@ -378,7 +378,7 @@ impl MissionCenterApplication {
             .translator_credits(i18n("translator-credits"))
             .version(VERSION)
             .issue_url("https://gitlab.com/mission-center-devs/mission-center/-/issues")
-            .copyright("© 2024 Mission Center Developers")
+            .copyright("© 2024-2025 Mission Center Developers")
             .license_type(gtk::License::Gpl30)
             .website("https://missioncenter.io")
             .release_notes(r#"<p>Noteworthy changes:</p>
