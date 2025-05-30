@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-27 09:02+0000\n"
+"PO-Revision-Date: 2025-05-31 10:03+0000\n"
 "Last-Translator: Ibai Oihanguren Sala <ibaios@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/eu/>\n"
@@ -253,7 +253,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Erakutsi bereizleak Aplikazioak ikuspegiko zutabeen artean"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -993,6 +993,8 @@ msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"Arazo bat egon da SMART datuak eskuratzean. Exekutatu komando lerrotik "
+"informazio gehiago eskuratzeko."
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1243,24 +1245,20 @@ msgid "Memory Usage Base"
 msgstr "Memoriaren erabilera oinarria"
 
 #: resources/ui/preferences/page.blp:159
-#, fuzzy
 msgid "Use Base 10 for Memory"
 msgstr "Erabili 10 oinarria memoriarentzat"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
-#, fuzzy
 msgid "Base 10"
 msgstr "10 oinarria"
 
 #: resources/ui/preferences/page.blp:164
-#, fuzzy
 msgid "Use Base 2 for Memory"
 msgstr "Erabili 2 oinarria memoriarentzat"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
-#, fuzzy
 msgid "Base 2"
 msgstr "2 oinarria"
 
