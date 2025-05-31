@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-29 22:37+0000\n"
+"PO-Revision-Date: 2025-05-31 10:03+0000\n"
 "Last-Translator: Telaneo <post@telaneo.net>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/nb_NO/>\n"
@@ -1276,23 +1276,23 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Bruk 10-tallsystemet for disker"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Bruk 2-tallsystemet for disker"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "Enhet for nettverksbruk"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Bruk byte som måleenhet for nettverksgrensesnitt"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Bruk bit som måleenhet for nettverksgrensesnitt"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
@@ -1324,18 +1324,16 @@ msgid "Show Apps Page"
 msgstr "Vis programside"
 
 #: resources/ui/keyboard_shortcuts.blp:31
-#, fuzzy
 msgid "Show Services Page"
-msgstr "Tjenester"
+msgstr "Vis tjenesteside"
 
 #: resources/ui/keyboard_shortcuts.blp:36 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
 msgstr "Vis eller skjul sidepanelet"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "Vis diskinformasjon"
+msgstr "Kopier enhetsinformasjon"
 
 #: resources/ui/keyboard_shortcuts.blp:59
 #, fuzzy
@@ -1344,7 +1342,7 @@ msgstr "Vis eller skjul sidepanelet"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "Velg en enhet"
 
 #: resources/ui/keyboard_shortcuts.blp:71
 msgid "Apps Page"
@@ -1353,42 +1351,36 @@ msgstr "Programside"
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "Søk"
 
 #: resources/ui/keyboard_shortcuts.blp:92
-#, fuzzy
 msgid "Stop App or Process"
-msgstr "Stopp prosessen"
+msgstr "Stopp programmet eller prosessen"
 
 #: resources/ui/keyboard_shortcuts.blp:97
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "Tving prosessen til å stoppe"
+msgstr "Tving programmet eller prosessen til å stoppe"
 
 #: resources/ui/keyboard_shortcuts.blp:102
 #: resources/ui/keyboard_shortcuts.blp:140
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "Vis detaljer-dialogboksen"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "Tjenester"
+msgstr "Tjenesteside"
 
 #: resources/ui/keyboard_shortcuts.blp:125
-#, fuzzy
 msgid "Start Service"
-msgstr "Tjenester"
+msgstr "Start tjeneste"
 
 #: resources/ui/keyboard_shortcuts.blp:130
-#, fuzzy
 msgid "Stop Service"
-msgstr "Tjenester"
+msgstr "Stop tjeneste"
 
 #: resources/ui/keyboard_shortcuts.blp:135
-#, fuzzy
 msgid "Restart Service"
-msgstr "Start på nytt"
+msgstr "Start tjeneste på nytt"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1415,13 +1407,12 @@ msgid "Type a name or PID to search"
 msgstr "Skriv navn eller PID for å søke"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "Vis diskinformasjon"
+msgstr "Vis/skjul diskinformasjon"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "Hovedmeny"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1445,21 +1436,19 @@ msgstr "_Innstillinger"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Tastatursnarveier"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
-msgstr "_Om"
+msgstr "_Om Mission Center"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
 msgstr ""
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
-msgstr "Programmer"
+msgstr "Program"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
 msgid "{} Running App"
@@ -1468,15 +1457,14 @@ msgstr[0] "{} Kjørende program"
 msgstr[1] "{} Kjørende programmer"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} Kjørende tjenester"
+msgstr[0] "{} Kjørende tjeneste"
 msgstr[1] "{} Kjørende tjenester"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Kopier logger til utklippstavlen"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
@@ -1502,9 +1490,8 @@ msgid "{} failed services out of a total of {}"
 msgstr "{} feilende tjenester av totalt {}"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
 msgid "{} sectors"
-msgstr "{} sekund{}"
+msgstr "{} sektorer"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
@@ -1515,11 +1502,11 @@ msgstr "{} °C"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:164
 msgid "Close"
-msgstr ""
+msgstr "Lukk"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:165
 msgid "Retry"
-msgstr ""
+msgstr "Prøv på nytt"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
 #, fuzzy
@@ -1527,56 +1514,52 @@ msgid "Kill All"
 msgstr "Deaktiver alle"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Brukt ({}B)\n"
+"I bruk ({})\n"
 "\n"
 "Minne i bruk av operativsystemet og kjørende programmer"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Endret ({}B)\n"
+"Endret ({})\n"
 "\n"
 "Minne med innhold som må skrives til disk før det kan brukes av en annen "
 "prosess"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"På vent ({}B)\n"
+"På vent ({})\n"
 "\n"
 "Minne som inneholder hurtiglagret data og kode som ikke aktivt er i bruk"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Ledig ({}B)\n"
+"Ledig ({})\n"
 "\n"
 "Minne som ikke er i bruk nå, og som vil bli omfordelt når operativsystemet, "
 "drivere eller programmer trenger mer minne"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 msgid "{} ago"
-msgstr ""
+msgstr "{} siden"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
@@ -1618,11 +1601,11 @@ msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:198
 msgid "Percent Used"
-msgstr ""
+msgstr "Prosent i bruk"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
 #, fuzzy
@@ -1690,9 +1673,8 @@ msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
 #: src/performance_page/disk.rs:232 src/performance_page/disk.rs:388
-#, fuzzy
 msgid "Drive ({})"
-msgstr "Disk {} ({})"
+msgstr "Disk ({})"
 
 #: src/performance_page/disk.rs:274 src/performance_page/cpu.rs:346
 msgid "Yes"
@@ -1719,9 +1701,8 @@ msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
 #: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
 msgid "iSCSI"
@@ -1733,12 +1714,11 @@ msgstr "Optisk"
 
 #: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
 msgid "Floppy"
-msgstr ""
+msgstr "Diskett"
 
 #: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
-#, fuzzy
 msgid "Thumb Drive"
-msgstr "Stasjon"
+msgstr "USB-minnepinne"
 
 #: src/performance_page/disk.rs:384
 msgid "Drive {} ({})"
@@ -1769,16 +1749,15 @@ msgstr "Ikke støttet"
 
 #: src/performance_page/memory.rs:378
 msgid "{} of {}"
-msgstr ""
+msgstr "{} av {}"
 
 #: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "Mer informasjon om minne kunne ikke hentes"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
 msgid "{} {} ({})"
-msgstr "{} {}{}B"
+msgstr "{} {} ({})"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:353
@@ -1786,19 +1765,17 @@ msgid "GPU {}"
 msgstr "Grafikkenhet {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
 msgid "{}: {}"
-msgstr "{}: {} {}{}"
+msgstr "{}: {}"
 
 #: src/performance_page/gpu.rs:285
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "Videokoding"
+msgstr "Videokoding- og dekoding"
 
 #: src/performance_page/gpu.rs:576
 #, fuzzy
 msgid "Total Memory"
-msgstr "Minne"
+msgstr "Totalt minne"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
@@ -1811,58 +1788,54 @@ msgstr ""
 #: src/main.rs:99
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} år"
+msgstr[1] "{} år"
 
 #: src/main.rs:103
-#, fuzzy
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] "{} minutt{} "
-msgstr[1] "{} minutt{} "
+msgstr[0] "{} måned{}"
+msgstr[1] "{} måneder{}"
 
 #: src/main.rs:107
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} dag"
+msgstr[1] "{} dager"
 
 #: src/main.rs:111
 msgid "{} hour"
 msgid_plural "{} hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} time"
+msgstr[1] "{} timer"
 
 #: src/main.rs:115 src/main.rs:180
-#, fuzzy
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] "{} minutt{} "
-msgstr[1] "{} minutt{} "
+msgstr[0] "{} minutt{}"
+msgstr[1] "{} minutter{}"
 
 #: src/main.rs:119 src/main.rs:178
-#, fuzzy
 msgid "{} second"
 msgid_plural "{} seconds"
 msgstr[0] "{} sekund{}"
-msgstr[1] "{} sekund{}"
+msgstr[1] "{} sekunder{}"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
-#, fuzzy
 msgid "{}, {} and {}"
-msgstr "{}: {} {}{}"
+msgstr "{}, {} og {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:158 src/main.rs:161 src/main.rs:164
 msgid "{} and {}"
-msgstr ""
+msgstr "{} og {}"
 
 #: src/main.rs:170
 msgid "Less than a minute"
-msgstr ""
+msgstr "Mindre enn ett minutt"
 
 #: src/main.rs:316
 msgid "_Quit"
