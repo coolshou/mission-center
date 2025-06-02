@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-06-02 02:08+0000\n"
+"PO-Revision-Date: 2025-06-03 18:04+0000\n"
 "Last-Translator: therealmate <hellogaming91@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/hu/>\n"
@@ -28,27 +28,29 @@ msgstr "Küldetésközpont"
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
-msgstr "Feladatkezelő;Erőforrásfigyelő;Rendszerfigyelő;Processzor;Folyamatok;Teljesítményfigyelő;CPU;GPU;Lemez;Merevlemez;Memória;Hálózat;Kihasználtság;Kihasználtság"
+msgstr ""
+"Feladatkezelő;Erőforrásfigyelő;Rendszerfigyelő;Processzor;Folyamatok;Teljesítményfigyelő;CPU;GPU;Videókártya;Lemez;Merevlemez;Memória;Hálózat;Kihasználtság"
+""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
-msgstr "Mission Center Fejlesztők"
+msgstr "A Mission Center fejlesztői"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor system resource usage"
-msgstr "Rendszer erőforrás-használat figyelése"
+msgstr "Rendszererőforrás-használat figyelése"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
 msgstr ""
-"Tekintse meg a CPU, Memória, Lemez, Hálózat és GPU kihasználtságát, "
+"Tekintse meg a processzor, memória, lemez, hálózat és GPU kihasználtságát, "
 "alkalmazásonként és folyamatonként bontott statisztikákkal együtt"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
-msgstr "Jellemzők:"
+msgstr "Funkciók:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor overall or per-thread CPU usage"
@@ -64,7 +66,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "A RAM és a Swap használatának felügyelete"
+msgstr "A RAM és a cserehely használatának felügyelete"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -100,7 +102,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid "Monitor system fans"
-msgstr "Ventillátorok figyelése"
+msgstr "Ventilátorok figyelése"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -118,8 +120,8 @@ msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Hardveres gyorsítás használata az összes grafikonhoz a CPU és az általános "
-"erőforrás-használat csökkentése érdekében"
+"Hardveres gyorsítás használata az összes grafikonhoz a processzor és az "
+"általános erőforrás-használat csökkentése érdekében"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Uses GTK4 and Libadwaita"
@@ -247,8 +249,8 @@ msgstr "Az oszlopok sorrendje megmarad az alkalmazás újraindítása után is"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Az alkalmazások és folyamatok CPU-használatának megjelenítése, a "
-"rendelkezésre álló magok számához igazítva"
+"Alkalmazások és folyamatok CPU-használatának megjelenítése, a rendelkezésre "
+"álló magok számához igazítva"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
@@ -325,7 +327,7 @@ msgstr "Memória-összetétel widget megjelenítése"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 msgid "Show the swap graph"
-msgstr "Swap grafikon megjelenítése"
+msgstr "Cserehely grafikon megjelenítése"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
 msgid "Show the gpu encode-decode graph"
@@ -662,7 +664,7 @@ msgstr "Nem sikerült eltávolítani"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr "Leállít"
+msgstr "Megszakítás"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
@@ -725,7 +727,7 @@ msgstr "Memóriahasználat az elmúlt "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
-msgstr "Swaphasználat az elmúlt "
+msgstr "Cserehelyhasználat az elmúlt "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
@@ -737,7 +739,7 @@ msgstr "Memória-összetétel megjelenítése"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr "Swaphasználat megjelenítése"
+msgstr "Cserehelyhasználat megjelenítése"
 
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/gpu.blp:215
@@ -809,7 +811,7 @@ msgstr "_Videókártya"
 #: resources/ui/performance_page/network.blp:138
 #: resources/ui/performance_page/disk.blp:215
 msgid "_Fan"
-msgstr "_Ventillátor"
+msgstr "_Ventilátor"
 
 #: resources/ui/performance_page/memory.blp:248
 #: resources/ui/performance_page/gpu.blp:256
@@ -914,7 +916,7 @@ msgstr "Szabad:"
 
 #: resources/ui/performance_page/fan_details.blp:59
 msgid "Fan Speed"
-msgstr "Ventillátor sebesség"
+msgstr "Ventilátor sebesség"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
@@ -926,7 +928,7 @@ msgstr "Jelenlegi hőmérséklet"
 
 #: resources/ui/performance_page/fan.blp:61
 msgid "Fan speed over "
-msgstr "Ventillátor sebesség az elmúlt "
+msgstr "Ventilátor sebesség az elmúlt "
 
 #: resources/ui/performance_page/fan.blp:112
 msgid "Temperature over "
@@ -1089,11 +1091,11 @@ msgstr "Gyorsítótárazott"
 
 #: resources/ui/performance_page/memory_details.blp:190
 msgid "Swap used"
-msgstr "Használt swap"
+msgstr "Használt cserehely"
 
 #: resources/ui/performance_page/memory_details.blp:221
 msgid "Swap available"
-msgstr "Elérhető swap"
+msgstr "Elérhető cserehely"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Speed:"
@@ -1153,7 +1155,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr "CPU információk megjelenítése"
+msgstr "Processzor-információk megjelenítése"
 
 #: resources/ui/preferences/page.blp:70
 msgid "Show Memory Information"
@@ -1173,7 +1175,7 @@ msgstr "GPU információk megjelenítése"
 
 #: resources/ui/preferences/page.blp:94
 msgid "Show Fan Information"
-msgstr "Ventillátor információk megjelenítése"
+msgstr "Ventilátor információk megjelenítése"
 
 #: resources/ui/preferences/page.blp:101
 msgid "App Page"
@@ -1203,7 +1205,7 @@ msgstr "Az oszlopok sorrendje megmarad az alkalmazás újraindítása után is"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
-msgstr "A CPU használat skálázza a magok számához"
+msgstr "A CPU-használat skálázza a magok számához"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
@@ -1515,7 +1517,7 @@ msgstr "Újrapróbálás"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
 msgid "Kill All"
-msgstr "Összes leállítása"
+msgstr "Összes megszakítása"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
 msgid ""
@@ -1728,12 +1730,12 @@ msgstr "Meghajtó {} ({})"
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1504
 #: src/performance_page/mod.rs:2243
 msgid "Fan {}"
-msgstr "Ventillátor {}"
+msgstr "Ventilátor {}"
 
 #: src/performance_page/fan.rs:276 src/performance_page/mod.rs:1506
 #: src/performance_page/mod.rs:2245
 msgid "Fan"
-msgstr "Ventillátor"
+msgstr "Ventilátor"
 
 #: src/performance_page/fan.rs:280 src/performance_page/fan.rs:315
 msgid "{} RPM"
