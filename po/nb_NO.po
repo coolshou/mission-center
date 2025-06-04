@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-06-02 02:08+0000\n"
+"PO-Revision-Date: 2025-06-05 00:02+0000\n"
 "Last-Translator: Telaneo <post@telaneo.net>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/nb_NO/>\n"
@@ -186,7 +186,7 @@ msgstr "Om du vil bruke bits eller byte (standard) for minne"
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr ""
-"Om du vil bruke 10-tallsystemet eller 2-tallsystemet (standard) for minne"
+"Om 10-tallsystemet eller 2-tallsystemet (standard) skal brukes for minne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
@@ -197,7 +197,7 @@ msgstr ""
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Om du vil bruke 10-tallsystemet eller 2-tallsystemet (standard) for "
+"Om 10-tallsystemet eller 2-tallsystemet (standard) skal brukes for "
 "diskhastighet- og størrelse"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
@@ -207,13 +207,15 @@ msgstr "Om du vil bruke bits (standard) eller byte for nettverkshastighet"
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"Om du vil bruke 10-tallsystemet (standard) eller 2-tallsystemet for "
+"Om bruke 10-tallsystemet (standard) eller 2-tallsystemet skal brukes for "
 "nettverkshastighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Om grafen skal toppe ut utifra grensesnittets maksgrense (av) elller utifra "
+"det høyeste som har blitt observert (på)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
@@ -647,7 +649,7 @@ msgstr "Kunne ikke løse ut"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Deaktiver"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
@@ -903,7 +905,7 @@ msgstr "Viftehastighet"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "PWM-prosent"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -919,7 +921,7 @@ msgstr "Temperatur over "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "S.M.A.R.T.-data"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
@@ -931,11 +933,11 @@ msgstr "Skrudd på"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Disktilstand"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "S.M.A.R.T.-teststatus"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
@@ -952,18 +954,16 @@ msgid "ID"
 msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Normal"
+msgstr "Normalisert"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "Tråder"
+msgstr "Terskel"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "På sitt verste"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
 msgid "Updates"
@@ -971,7 +971,7 @@ msgstr "Oppdateringer"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Vurdering"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
@@ -1226,9 +1226,8 @@ msgid "Bits"
 msgstr "Bits"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "Minnebruk"
+msgstr "Tallsystem for minnebruk"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
@@ -1250,7 +1249,7 @@ msgstr "2-tallsystemet"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "Enhet for disker"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
@@ -1262,7 +1261,7 @@ msgstr "Bruk bits som måleenhet for disker"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Tallsystem for disker"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
@@ -1286,28 +1285,27 @@ msgstr "Bruk bit som måleenhet for nettverksgrensesnitt"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Tallsystem for nettverk"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Bruk 10-tallsystemet for nettverksgrensesnitt"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Bruk 2-tallsystemet for nettverksgrensensitt"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tastatursnarveier"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "Ytelsesside"
+msgstr "Vis ytelsessiden"
 
 #: resources/ui/keyboard_shortcuts.blp:26
 msgid "Show Apps Page"
@@ -1326,9 +1324,8 @@ msgid "Copy Device Information"
 msgstr "Kopier enhetsinformasjon"
 
 #: resources/ui/keyboard_shortcuts.blp:59
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "Vis eller skjul sidepanelet"
+msgstr "Vis eller skjul sidepanelene"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
@@ -1434,7 +1431,7 @@ msgstr "_Om Mission Center"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
-msgstr ""
+msgstr "Seksjonsoverskrift"
 
 #: src/apps_page/row_model.rs:212
 msgid "App"
@@ -1499,7 +1496,6 @@ msgid "Retry"
 msgstr "Prøv på nytt"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
 msgid "Kill All"
 msgstr "Deaktiver alle"
 
@@ -1567,27 +1563,27 @@ msgstr "Ukjent"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "Tyder på feil"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "Tyder på alder"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "På"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "Av"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "SVIKTENDE"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "Har tidligere sviktet"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
@@ -1598,65 +1594,61 @@ msgid "Percent Used"
 msgstr "Prosent i bruk"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
-msgstr "Tilgjengelig"
+msgstr "Tilgjengelig i reserve"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr ""
+msgstr "Terskel for reserve"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
-#, fuzzy
 msgid "Total Data Read"
-msgstr "Totalt mottatt"
+msgstr "Total mengde data lest"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
-msgstr ""
+msgstr "Total mengde data skrevet"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:246
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "Tid tilbrakt over advarselstemperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:254
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "Tid tilbrakt over kritisk temperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:262
 #: src/performance_page/widgets/smart_data_dialog.rs:319
 msgid "Control Busy Time"
-msgstr ""
+msgstr "Tid kontrolleren har vært opptatt"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "Gjeldende temperatur"
+msgstr "Advarselstemperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "Gjeldende temperatur"
+msgstr "Kritisk temperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
-msgstr ""
+msgstr "Temperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:287
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "Antall ganger skrudd av utrygt"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:295
 msgid "Media Errors"
-msgstr ""
+msgstr "Mediafeil"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:303
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "Antall oppføringer i feilmeldingsloggen"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:311
 msgid "Power Cycles"
-msgstr ""
+msgstr "Antall ganger skrudd av og på"
 
 #: src/performance_page/disk.rs:228
 msgid "Disk {} ({})"
@@ -1763,17 +1755,16 @@ msgid "Video encode/decode"
 msgstr "Videokoding- og dekoding"
 
 #: src/performance_page/gpu.rs:576
-#, fuzzy
 msgid "Total Memory"
 msgstr "Totalt minne"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Dedikert og delt minnebruk over "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "Totalt delt minne"
 
 #: src/main.rs:99
 msgid "{} year"
