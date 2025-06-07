@@ -28,15 +28,13 @@ use magpie_types::disks::{Disk, DiskKind};
 
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-use crate::{app, to_short_human_readable_time};
+use crate::{app, settings, to_short_human_readable_time, DataType};
 
 use super::widgets::{EjectFailureDialog, GraphWidget, SmartDataDialog, SmartFailureDialog};
 use super::PageExt;
 
 mod imp {
     use super::*;
-    use crate::{settings, DataType};
-    use adw::Dialog;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageDisk)]
