@@ -169,7 +169,7 @@ mod imp {
 
                 let tooltip_texts = this.imp().tooltip_texts.take();
 
-                let x = x as f32 * this.scale_factor() as f32;
+                let x = x as f32;
                 let mut text_pos = tooltip_texts.len() - 1;
                 for (i, (pos, _)) in tooltip_texts.iter().enumerate().rev() {
                     if x <= *pos {
