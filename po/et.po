@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-22 17:01+0000\n"
+"PO-Revision-Date: 2025-05-27 09:02+0000\n"
 "Last-Translator: Indrek Haav <indrek.haav@hotmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/et/>\n"
@@ -1766,7 +1766,7 @@ msgstr "Mälu kokku"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Sihtotstarbelise ja jagatud mälu kasutus perioodil "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
