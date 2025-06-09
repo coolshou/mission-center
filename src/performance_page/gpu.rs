@@ -324,6 +324,8 @@ mod imp {
                 this.infobar_content
                     .pcie_speed()
                     .set_text(&format!("PCIe Gen {} x{} ", pcie_gen, pcie_lanes));
+            } else {
+                this.infobar_content.set_pcie_info_visible(false);
             }
 
             if let (Some(max_pcie_gen), Some(max_pcie_lanes)) =
@@ -333,6 +335,8 @@ mod imp {
                 this.infobar_content
                     .max_pcie_speed()
                     .set_text(&format!("PCIe Gen {} x{} ", max_pcie_gen, max_pcie_lanes));
+            } else {
+                this.infobar_content.set_max_pcie_info_visible(false);
             }
 
             this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
@@ -778,7 +782,12 @@ mod imp {
                     self.infobar_content.set_max_pcie_info_visible(
                         !(max_pcie_gen == pcie_gen && max_pcie_lanes == pcie_lanes),
                     )
+                } else {
+                    self.infobar_content.set_max_pcie_info_visible(false);
                 }
+            } else {
+                self.infobar_content.set_pcie_info_visible(false);
+                self.infobar_content.set_max_pcie_info_visible(false);
             }
         }
     }

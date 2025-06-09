@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-17 06:53+0300\n"
-"PO-Revision-Date: 2025-05-21 06:58+0000\n"
+"PO-Revision-Date: 2025-05-29 22:37+0000\n"
 "Last-Translator: Jack Nolddor <movil.jacknolddor@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/es/>\n"
@@ -445,11 +445,11 @@ msgstr "Detener"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr "Detener forzosamente la aplicación seleccionada"
+msgstr "Forzar el cierre de la aplicación seleccionada"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
 msgid "Force Stop"
-msgstr "Detener forzosamente"
+msgstr "Forzar cierre"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
@@ -719,7 +719,7 @@ msgstr "Dirección del bus PCI:"
 #: resources/ui/performance_page/memory.blp:76
 #: resources/ui/performance_page/gpu.blp:162
 msgid "Memory usage over "
-msgstr "Consumo de memoria superior a "
+msgstr "Consumo de memoria durante "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
@@ -862,7 +862,7 @@ msgstr "Tipo:"
 #: resources/ui/performance_page/gpu.blp:72
 #: resources/ui/performance_page/cpu.blp:63
 msgid "Utilization over "
-msgstr "Uso superior a "
+msgstr "Uso durante "
 
 #: resources/ui/performance_page/gpu.blp:86
 #: resources/ui/performance_page/gpu.blp:135
@@ -924,7 +924,7 @@ msgstr "Temperatura actual"
 
 #: resources/ui/performance_page/fan.blp:61
 msgid "Fan speed over "
-msgstr "Velocidad del ventilador superior "
+msgstr "Velocidad del ventilador durante "
 
 #: resources/ui/performance_page/fan.blp:112
 msgid "Temperature over "
@@ -987,7 +987,7 @@ msgstr "Evaluación"
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
 msgid "Throughput over "
-msgstr "Rendimiento superior a "
+msgstr "Rendimiento durante "
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
@@ -1425,7 +1425,7 @@ msgstr "_Preferencias"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "Atajos de _Teclado"
 
 #: resources/ui/window.blp:247
 msgid "_About Mission Center"
@@ -1440,18 +1440,18 @@ msgid "App"
 msgstr "Aplicación"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} Servicios en ejecución"
-msgstr[1] "{} Servicios en ejecución"
+msgstr[0] "{} Aplicación en ejecución"
+msgstr[1] "{} Aplicaciones en ejecución"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} Servicios en ejecución"
-msgstr[1] "{} Servicios en ejecución"
+msgstr[0] "{} Proceso en ejecución"
+msgstr[1] "{} Procesos en ejecución"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
@@ -1547,7 +1547,7 @@ msgstr ""
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 #, rust-format
 msgid "{} ago"
-msgstr ""
+msgstr "hace {}"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:237 src/performance_page/disk.rs:258
@@ -1785,7 +1785,7 @@ msgstr "Memoria"
 
 #: src/performance_page/gpu.rs:604
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Uso de memoria dedicada y compartida durante "
 
 #: src/performance_page/gpu.rs:649
 msgid "Total Shared Memory"
