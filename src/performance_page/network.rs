@@ -32,6 +32,7 @@ use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readab
 mod imp {
     use super::*;
     use crate::DataType;
+    use magpie_types::network::ConnectionState;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::PerformancePageNetwork)]
@@ -71,6 +72,7 @@ mod imp {
         pub total_recv: OnceCell<gtk::Label>,
         pub interface_name_label: OnceCell<gtk::Label>,
         pub connection_type_label: OnceCell<gtk::Label>,
+        pub connection_status_label: OnceCell<gtk::Label>,
         pub ssid: OnceCell<gtk::Label>,
         pub signal_strength: OnceCell<gtk::Image>,
         pub max_bitrate: OnceCell<gtk::Label>,
@@ -111,6 +113,7 @@ mod imp {
                 total_recv: Default::default(),
                 interface_name_label: Default::default(),
                 connection_type_label: Default::default(),
+                connection_status_label: Default::default(),
                 ssid: Default::default(),
                 signal_strength: Default::default(),
                 max_bitrate: Default::default(),
@@ -480,6 +483,25 @@ mod imp {
                 }
             }
 
+            if let Some(connection_status_label) = this.connection_status_label.get() {
+                // translators: see NMDeviceState https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceState
+                let conn_status =
+                    match ConnectionState::try_from(connection.state).unwrap_or_default() {
+                        ConnectionState::Unknown => i18n("Unknown"),
+                        ConnectionState::Failed => i18n("Failed"),
+                        ConnectionState::Disconnected => i18n("Disconnected"),
+                        ConnectionState::Disconnecting => i18n("Disconnecting"),
+                        ConnectionState::Connected => i18n("Connected"),
+                        ConnectionState::Connecting => i18n("Connecting"),
+                        ConnectionState::ConfiguringIp => i18n("Configuring"),
+                        ConnectionState::NeedsAuth => i18n("Waiting for auth"),
+                        ConnectionState::Unavailable => i18n("Unavailable"),
+                        ConnectionState::Loading => i18n("Loading"),
+                    };
+
+                connection_status_label.set_text(&conn_status);
+            }
+
             true
         }
 
@@ -651,6 +673,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("connection_type_label")
                     .expect("Could not find `connection_type_label` object in details pane"),
+            );
+            let _ = self.connection_status_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("connection_status_label")
+                    .expect("Could not find `connection_status_label` object in details pane"),
             );
             let _ = self.ssid.set(
                 sidebar_content_builder
