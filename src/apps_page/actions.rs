@@ -244,9 +244,9 @@ pub fn configure(imp: &AppsPageImp) {
 
             if let Ok(magpie_client) = app!().sys_info() {
                 if selected_item.content_type() == ContentType::App {
-                    magpie_client.signal_user_one_processes(app_pids(&*selected_item));
+                    magpie_client.user_signal_one_processes(app_pids(&*selected_item));
                 } else {
-                    magpie_client.signal_user_one_process(selected_item.pid());
+                    magpie_client.user_signal_one_process(selected_item.pid());
                 }
             }
         }
@@ -269,9 +269,9 @@ pub fn configure(imp: &AppsPageImp) {
 
             if let Ok(magpie_client) = app!().sys_info() {
                 if selected_item.content_type() == ContentType::App {
-                    magpie_client.signal_user_two_processes(app_pids(&*selected_item));
+                    magpie_client.user_signal_two_processes(app_pids(&*selected_item));
                 } else {
-                    magpie_client.signal_user_two_process(selected_item.pid());
+                    magpie_client.user_signal_two_process(selected_item.pid());
                 }
             }
         }
