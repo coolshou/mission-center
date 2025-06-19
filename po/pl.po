@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-01-03 10:07+0000\n"
+"PO-Revision-Date: 2025-06-13 09:04+0000\n"
 "Last-Translator: Michał Połtyn <weblate.org@poltyn.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -42,13 +42,12 @@ msgid "Monitor system resource usage"
 msgstr "Monitoruj wykorzystanie zasobów systemowych"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
 msgstr ""
-"Monitoruj wykorzystanie procesora, pamięci, dysku, sieci i procesora "
-"graficznego"
+"Monitoruj zużycie CPU, pamięci, dysku, sieci i GPU ze szczegółowym podziałem "
+"tych statystyk na aplikacje i procesy"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -103,9 +102,8 @@ msgstr ""
 "przez popularny projekt NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Monitoruj wykorzystanie zasobów systemowych"
+msgstr "Monitoruj wiatraki systemowe"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -164,13 +162,12 @@ msgid "Which page is shown on application startup"
 msgstr "Która strona jest pokazywana po uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Nazwa interfejsu:"
+msgstr "Styl interfejsu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Czy program ma używać jasnego czy ciemnego interfejsu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
@@ -248,7 +245,6 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "Sortowanie kolumn jest zachowywane po ponownym uruchomieniu aplikacji"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
 msgstr "Sortowanie kolumn jest zachowywane po ponownym uruchomieniu aplikacji"
 
