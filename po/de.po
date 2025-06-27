@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-06-27 10:52+0000\n"
+"PO-Revision-Date: 2025-06-28 13:06+0000\n"
 "Last-Translator: Real Tehreal <tehreal@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/de/>\n"
@@ -288,7 +288,7 @@ msgstr "Geglättete oder ungegättete Leistungsgraphen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
 msgid "Should graphs be animated"
-msgstr "Graphen animiert darstellen"
+msgstr "Diagramme animiert darstellen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -477,7 +477,7 @@ msgid ""
 "Shared\n"
 "Memory"
 msgstr ""
-"Geteilter\n"
+"Gemeinsamer\n"
 "Arbeitsspeicher"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
