@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-06-11 13:01+0000\n"
-"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
+"PO-Revision-Date: 2025-06-29 17:01+0000\n"
+"Last-Translator: Klinton_ <korstanjequinten@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -185,10 +185,8 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Hoeveel punten moeten er elke grafiek worden weergegeven?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+msgstr "Of  bits of bytes (standaard) gebruikt moeten worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 #, fuzzy
