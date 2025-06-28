@@ -186,13 +186,11 @@ msgstr "Hoeveel punten moeten er elke grafiek worden weergegeven?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "Of  bits of bytes (standaard) gebruikt moeten worden voor geheugen"
+msgstr "Of bits of bytes (standaard) gebruikt moeten worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+msgstr "Of bits of bytes (standaard) gebruikt moeten worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 #, fuzzy
