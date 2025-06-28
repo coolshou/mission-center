@@ -190,20 +190,20 @@ msgstr "Of bits of bytes (standaard) gebruikt moeten worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Of bits of bytes (standaard) gebruikt moeten worden voor geheugen"
+msgstr "Of base-10 of base-2 (standaard) gebruikt moet worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of bits of bytes (standaard) gebruikt moet worden voor schijf snelheid + "
+"grootte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of base-10 of base-2 (standaard) gebruikt moet worden voor schijf snelheid + "
+"grootte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
@@ -211,10 +211,9 @@ msgstr ""
 "Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of base-10 (standaard) of base-20 gebruikt moet worden voor netwerksnelheid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -236,10 +235,8 @@ msgstr ""
 "Kolomsortering wordt onthouden als de applicatie opnieuw opgestart wordt"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr ""
-"Kolomsortering wordt onthouden als de applicatie opnieuw opgestart wordt"
+msgstr "Kolomvolgorde word onthouden bij herstarten van applicatie"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -251,21 +248,19 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Laat een scheidingsteken zien tussen elke kolom in de Apps weergave"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "De (ID van de) kolom waarop de applicatielijst gesorteerd wordt"
+msgstr "De naam van de kolom waarop de applicatielijst gesorteerd wordt"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "De sorteerrichting van de applicatielijst"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "De sorteerrichting van de applicatielijst"
+msgstr "De volgorde van de kolommen in de Apps weergave"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -286,9 +281,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
+msgstr "Moeten grafieken geanimeerd worden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -386,9 +380,8 @@ msgid "Command Line"
 msgstr ""
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Bronnen"
+msgstr "Bron gebruik"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -404,9 +397,8 @@ msgid "Memory"
 msgstr "Geheugen"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Geheugen"
+msgstr "Gedeeld Geheugen"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 msgid "Drives"
@@ -428,21 +420,20 @@ msgstr "Grafische kaart"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "GPU-geh"
+msgstr "GPU-geheugen"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Alle apps en processen inklappen"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Alles inklappen"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Stop de geselecteerde app"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
