@@ -189,7 +189,7 @@ msgstr "Usar Bytes (padrão) ou bits para memória"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Usar base 10 ou base 2  (padrão) para memória"
+msgstr "Usar base 10 ou base 2 (padrão) para memória"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 #, fuzzy
