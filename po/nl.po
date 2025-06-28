@@ -433,7 +433,7 @@ msgstr "Alles inklappen"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr "Geselecteerde app stoppen"
+msgstr "Geselecteerde app afsluiten"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -443,11 +443,11 @@ msgstr "Stop"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr "Geselecteerde app geforceerd stoppen"
+msgstr "Geselecteerde app geforceerd afsluiten"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
 msgid "Force Stop"
-msgstr "Geforceerd stoppen"
+msgstr "Geforceerd afsluiten"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
@@ -583,7 +583,7 @@ msgstr ""
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Donkere stijl"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -656,7 +656,7 @@ msgstr "Vermogens­voorkeur:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Uitwerpen gefaald"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
@@ -667,21 +667,18 @@ msgid "Clock Speed"
 msgstr "Kloksnelheid"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "Stroomverbruik"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Geheugengebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Geheugengebruik"
+msgstr "Gedeeld geheugengebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:332
 #, fuzzy
@@ -713,9 +710,8 @@ msgid "PCI Express speed:"
 msgstr "PCI-Express-snelheid:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "PCI-Express-snelheid:"
+msgstr "Max PCI Express snelheid:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -832,14 +828,12 @@ msgid "Write speed"
 msgstr "Schrijfsnelheid"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Totaal ontvangen"
+msgstr "Totaal gelezen"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Totaal verzonden"
+msgstr "Totaal geschreven"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -903,7 +897,7 @@ msgstr "Toon kernel-tijden"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "In gebruik:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
@@ -923,7 +917,7 @@ msgstr "Ventilator­snelheid"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "PWM Percentage"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -939,24 +933,23 @@ msgstr "Temperatuur tegen "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Smart Gegevens"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Laatst Bijgewerkt"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Stroomverbruik"
+msgstr "Ingeschakeld"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Schijf Gezondheid"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "SMART-Teststatus"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
@@ -994,7 +987,7 @@ msgstr "Beoordeling"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "SMART Gegevens Ophalen Gefaald"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
@@ -1013,11 +1006,11 @@ msgstr "Netwerk_instellingen"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Toon SMART Gegevens"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Schijf Uitwerpen"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1137,11 +1130,11 @@ msgstr "Teken grafieken als een vloeiende lĳn in plaats van een gekartelde lĳn
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Vloeiende Grafieken"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "Grafieken animeren (kan negatief effect hebben op prestaties)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1200,7 +1193,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "Onthoud kolom volgorde"
 
 #: resources/ui/preferences/page.blp:115
 #, fuzzy
