@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-06-11 13:01+0000\n"
-"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
+"PO-Revision-Date: 2025-06-29 17:01+0000\n"
+"Last-Translator: Klinton_ <korstanjequinten@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -185,29 +185,25 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Hoeveel punten moeten er elke grafiek worden weergegeven?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+msgstr "Of bits of bytes (standaard) gebruikt moeten worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+msgstr "Of base-10 of base-2 (standaard) gebruikt moet worden voor geheugen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of bits of bytes (standaard) gebruikt moet worden voor schijf snelheid + "
+"grootte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of base-10 of base-2 (standaard) gebruikt moet worden voor schijf snelheid + "
+"grootte"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
@@ -215,10 +211,9 @@ msgstr ""
 "Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"Of bits (standaard) of bytes moeten worden gebruikt voor de netwerk­snelheid"
+"Of base-10 (standaard) of base-20 gebruikt moet worden voor netwerksnelheid"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -240,10 +235,8 @@ msgstr ""
 "Kolomsortering wordt onthouden als de applicatie opnieuw opgestart wordt"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr ""
-"Kolomsortering wordt onthouden als de applicatie opnieuw opgestart wordt"
+msgstr "Kolomvolgorde word onthouden bij herstarten van applicatie"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -255,21 +248,19 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Laat een scheidingsteken zien tussen elke kolom in de Apps weergave"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "De (ID van de) kolom waarop de applicatielijst gesorteerd wordt"
+msgstr "De naam van de kolom waarop de applicatielijst gesorteerd wordt"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "De sorteerrichting van de applicatielijst"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "De sorteerrichting van de applicatielijst"
+msgstr "De volgorde van de kolommen in de Apps weergave"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -290,9 +281,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Of prestatie­grafieken vloeiend of gekarteld moeten zĳn"
+msgstr "Moeten grafieken geanimeerd worden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -390,9 +380,8 @@ msgid "Command Line"
 msgstr ""
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Bronnen"
+msgstr "Bron gebruik"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -408,9 +397,8 @@ msgid "Memory"
 msgstr "Geheugen"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Geheugen"
+msgstr "Gedeeld Geheugen"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 msgid "Drives"
@@ -432,21 +420,20 @@ msgstr "Grafische kaart"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "GPU-geh"
+msgstr "GPU-geheugen"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Alle apps en processen inklappen"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Alles inklappen"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Geselecteerde app afsluiten"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -456,12 +443,11 @@ msgstr "Stop"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Geselecteerde app geforceerd afsluiten"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "Proces geforceerd afsluiten"
+msgstr "Geforceerd afsluiten"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
@@ -597,7 +583,7 @@ msgstr ""
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Donkere stijl"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
@@ -670,7 +656,7 @@ msgstr "Vermogens­voorkeur:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Uitwerpen gefaald"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
@@ -681,21 +667,18 @@ msgid "Clock Speed"
 msgstr "Kloksnelheid"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "Stroomverbruik"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Geheugengebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Geheugengebruik"
+msgstr "Gedeeld geheugengebruik"
 
 #: resources/ui/performance_page/gpu_details.blp:332
 #, fuzzy
@@ -727,9 +710,8 @@ msgid "PCI Express speed:"
 msgstr "PCI-Express-snelheid:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "PCI-Express-snelheid:"
+msgstr "Max PCI Express snelheid:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -846,14 +828,12 @@ msgid "Write speed"
 msgstr "Schrijfsnelheid"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Totaal ontvangen"
+msgstr "Totaal gelezen"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Totaal verzonden"
+msgstr "Totaal geschreven"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -917,7 +897,7 @@ msgstr "Toon kernel-tijden"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "In gebruik:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
@@ -937,7 +917,7 @@ msgstr "Ventilator­snelheid"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "PWM Percentage"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -953,24 +933,23 @@ msgstr "Temperatuur tegen "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Smart Gegevens"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Laatst Bijgewerkt"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Stroomverbruik"
+msgstr "Ingeschakeld"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Schijf Gezondheid"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "SMART-Teststatus"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
@@ -1008,7 +987,7 @@ msgstr "Beoordeling"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "SMART Gegevens Ophalen Gefaald"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
@@ -1027,11 +1006,11 @@ msgstr "Netwerk_instellingen"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Toon SMART Gegevens"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Schijf Uitwerpen"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1151,11 +1130,11 @@ msgstr "Teken grafieken als een vloeiende lĳn in plaats van een gekartelde lĳn
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Vloeiende Grafieken"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "Grafieken animeren (kan negatief effect hebben op prestaties)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1214,7 +1193,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "Onthoud kolom volgorde"
 
 #: resources/ui/preferences/page.blp:115
 #, fuzzy
