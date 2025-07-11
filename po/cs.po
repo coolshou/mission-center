@@ -67,7 +67,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "Sledujte využití operační paměti a swap"
+msgstr "Sledujte využití operační paměti a prostoru swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -312,7 +312,7 @@ msgstr "Zobrazit prvek týkající se skladby využití paměti"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 msgid "Show the swap graph"
-msgstr "Zobrazit graf odkládacího prostoru"
+msgstr "Zobrazit graf prostoru swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
 msgid "Show the gpu encode-decode graph"
@@ -724,7 +724,7 @@ msgstr "Zobrazit skladbu využití paměti"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr "Zobrazit využití odkládacího prostoru"
+msgstr "Zobrazit využití prostoru swap"
 
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/gpu.blp:215
@@ -1076,11 +1076,11 @@ msgstr "V mezipaměti"
 
 #: resources/ui/performance_page/memory_details.blp:190
 msgid "Swap used"
-msgstr "Využití odkládacího prostoru"
+msgstr "Využití prostoru swap"
 
 #: resources/ui/performance_page/memory_details.blp:221
 msgid "Swap available"
-msgstr "Odkládací prostor"
+msgstr "Dostupný swap"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Speed:"
