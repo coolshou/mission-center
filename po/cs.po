@@ -1076,7 +1076,7 @@ msgstr "V mezipaměti"
 
 #: resources/ui/performance_page/memory_details.blp:190
 msgid "Swap used"
-msgstr "Využití prostoru swap"
+msgstr "Použitý swap"
 
 #: resources/ui/performance_page/memory_details.blp:221
 msgid "Swap available"
