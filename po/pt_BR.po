@@ -193,7 +193,7 @@ msgstr "Usar base 10 ou base 2 (padrão) para memória"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr "Usar bits (padrão) ou Bytes para velocidade e tamanho do dispositivo"
+msgstr "Usar bits (padrão) ou bytes para velocidade e tamanho do dispositivo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid ""
@@ -227,7 +227,6 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "A ordem das colunas é mantida entre reinicializações do aplicativo"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
 msgstr "A ordem das colunas é mantida entre reinicializações do aplicativo"
 
@@ -315,7 +314,6 @@ msgid "Show the swap graph"
 msgstr "Mostrar o gráfico de swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "Mostrar o gráfico de codificação-decodificação da GPU"
 
@@ -412,7 +410,6 @@ msgstr "GPU"
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
 msgstr "Memória da GPU"
 
@@ -658,13 +655,11 @@ msgid "Clock Speed"
 msgstr "Velocidade do Clock"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "Consumo de energia"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Uso de memória"
 
@@ -674,7 +669,6 @@ msgid "Shared Memory Usage"
 msgstr "Uso de memória compartilhada"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Velocidade da memória"
 
@@ -1180,7 +1174,6 @@ msgid "Remember Sorting"
 msgstr "Lembrar Ordenação"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
 msgstr ""
 "Lembrar ordenação da lista de aplicativos e processos entre reinicializações "
@@ -1433,7 +1426,6 @@ msgid "_Keyboard Shortcuts"
 msgstr "_Atalhos do teclado"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
 msgstr "_Sobre o Central de Missões"
 
@@ -1508,7 +1500,6 @@ msgid "Kill All"
 msgstr "Matar tudo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
@@ -1531,7 +1522,6 @@ msgstr ""
 "por outro processo"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
@@ -1606,7 +1596,6 @@ msgid "Percent Used"
 msgstr "Percentagem usada"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
 msgstr "Disponível"
 
@@ -1764,7 +1753,6 @@ msgid "{}: {}"
 msgstr "{}: {}"
 
 #: src/performance_page/gpu.rs:285
-#, fuzzy
 msgid "Video encode/decode"
 msgstr "Codificação de vídeo"
 
@@ -1819,7 +1807,7 @@ msgstr[1] "{} segundos"
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
 msgid "{}, {} and {}"
-msgstr "{}: {} e  {}"
+msgstr "{}: {} e {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
@@ -1840,7 +1828,8 @@ msgstr "_Sair"
 msgid "translator-credits"
 msgstr ""
 "Tiago Lucas Flach https://github.com/tiagoFlach\n"
-"Thiago de Mendonça Mildemberger https://github.com/tmildemberger"
+"Thiago de Mendonça Mildemberger https://github.com/tmildemberger\n"
+"David Oliveira https://github.com/Mark-B97"
 
 #, fuzzy
 #~ msgid "{} minutes"
