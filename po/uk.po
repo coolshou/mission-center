@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2024-06-11 21:00+0000\n"
-"Last-Translator: Box5 <box5sht@gmail.com>\n"
+"PO-Revision-Date: 2025-07-20 22:03+0000\n"
+"Last-Translator: Ethermidate <disterion@ukr.net>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/uk/>\n"
 "Language: uk\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -162,9 +162,8 @@ msgid "Which page is shown on application startup"
 msgstr "Яку сторінку відображати при запуску програми"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Ім'я інтерфейсу:"
+msgstr "Стиль інтерфейсу"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
@@ -173,7 +172,7 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "DEPRECATED! NO LONGER IN USE!"
-msgstr "Більше не використовується!"
+msgstr "ЗАСТАРІЛО! БІЛЬШЕ НЕ ВИКОРИСТОВУЄТЬСЯ!"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:64
 msgid ""
@@ -286,7 +285,7 @@ msgstr "Показувати графіки продуктивності згл�
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Показувати інформацію процесора за замовчуванням"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:188
 #: resources/ui/preferences/page.blp:71
@@ -297,22 +296,22 @@ msgstr "Не вдалося отримати додаткову інформац
 #: data/io.missioncenter.MissionCenter.gschema.xml:193
 #: resources/ui/preferences/page.blp:77
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Показувати інформацію диска за замовчуванням"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:198
 #: resources/ui/preferences/page.blp:83
 msgid "Show network information by default"
-msgstr ""
+msgstr "Показувати інформацію мережі за замовчуванням"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:203
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Показувати інформацію графічного процесора за замовчуванням"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:208
 #: resources/ui/preferences/page.blp:95
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Показувати інформацію вентилятора за замовчуванням"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:213
 #, fuzzy
@@ -372,18 +371,16 @@ msgstr "Недоступно"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "Тип:"
+msgstr "Тип"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "Командний рядок"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "Використання пам'яті"
+msgstr "Використання ресурсів"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -399,9 +396,8 @@ msgid "Memory"
 msgstr "Пам'ять"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "Пам'ять"
+msgstr "Спільна пам'ять"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 #, fuzzy
@@ -411,9 +407,8 @@ msgstr "Накопичувач"
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_Мережа"
+msgstr "Мережа"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -431,15 +426,15 @@ msgstr "Пам'ять ГП"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Згорнути всі програми та процеси"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "Згорнути все"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Зупинити вибрану програму"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -449,16 +444,15 @@ msgstr "Зупинити"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Примусово зупинити вибрану програму"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "Примусово зупинити процес"
+msgstr "Примусова зупинка"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Показати деталі вибраної програми"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
@@ -475,11 +469,12 @@ msgid "Name"
 msgstr "Назва"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "Пам'ять"
+msgstr ""
+"Спільна\n"
+"Пам'ять"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
