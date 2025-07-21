@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-07-20 22:03+0000\n"
+"PO-Revision-Date: 2025-07-23 00:01+0000\n"
 "Last-Translator: jonnysemon <jonnysemon@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
@@ -158,9 +158,8 @@ msgid "Which page is shown on application startup"
 msgstr "الصفحة التي تظهر عند بدء تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "اسم الواجهة:"
+msgstr "اسم الواجهة"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
@@ -228,9 +227,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "يستمر فرز الأعمدة عبر عمليات إعادة تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "يستمر فرز الأعمدة عبر عمليات إعادة تشغيل التطبيق"
+msgstr "يستمر ترتيب الأعمدة عبر عمليات إعادة تشغيل التطبيق"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -244,18 +242,16 @@ msgid "Show a separator between each column in the Apps view"
 msgstr "أظهر فاصل بين كل عمود في عرض التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "العمود الذي يتم من خلاله ترتيب عرض صفحة التطبيقات"
+msgstr "اسم العمود الذي يتم من خلاله فرز عرض صفحة التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "اتجاه الترتيب لعرض صفحة التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "اتجاه الترتيب لعرض صفحة التطبيقات"
+msgstr "ترتيب الأعمدة في عرض صفحة التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -364,18 +360,16 @@ msgstr "غير متوفر"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "النوع:"
+msgstr "النوع"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
 msgstr "سطر الأوامر"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "استخدام الذاكرة"
+msgstr "استخدام الموارد"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -391,9 +385,8 @@ msgid "Memory"
 msgstr "الذاكرة"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "الذاكرة"
+msgstr "الذاكرة المشتركة"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 msgid "Drives"
@@ -402,9 +395,8 @@ msgstr "الأقراص"
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_الشبكة"
+msgstr "الشبكة"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -464,11 +456,12 @@ msgid "Name"
 msgstr "الاسم"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "الذاكرة"
+msgstr ""
+"الذاكرة\n"
+"المشتركة"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -660,24 +653,20 @@ msgid "Clock Speed"
 msgstr "سرعة الميقاتية"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "استهلاك الطاقة"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "استخدام الذاكرة"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "استخدام الذاكرة"
+msgstr "استخدام الذاكرة المشتركة"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "سرعة الذاكرة"
 
@@ -706,9 +695,8 @@ msgid "PCI Express speed:"
 msgstr "سرعة PCI القصوى:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "سرعة PCI القصوى:"
+msgstr "سرعة PCI Express القصوى:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -717,20 +705,19 @@ msgstr "عنوان ناقل PCI:"
 #: resources/ui/performance_page/memory.blp:76
 #: resources/ui/performance_page/gpu.blp:162
 msgid "Memory usage over "
-msgstr "استخدام الذاكرة على "
+msgstr "استخدام الذاكرة فوق "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
-msgstr "استخدام الذاكرة اﻹبدال على "
+msgstr "استخدام الذاكرة اﻹبدال فوق "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
 msgstr "تكوين الذاكرة"
 
 #: resources/ui/performance_page/memory.blp:196
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "تكوين الذاكرة"
+msgstr "أظهر تكوين الذاكرة"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
@@ -860,9 +847,8 @@ msgstr "النوع:"
 
 #: resources/ui/performance_page/gpu.blp:72
 #: resources/ui/performance_page/cpu.blp:63
-#, fuzzy
 msgid "Utilization over "
-msgstr "الاستخدام"
+msgstr "الاستخدام فوق "
 
 #: resources/ui/performance_page/gpu.blp:86
 #: resources/ui/performance_page/gpu.blp:135
@@ -872,7 +858,7 @@ msgstr "100%"
 
 #: resources/ui/performance_page/gpu.blp:119
 msgid "Video encode/decode utilization over "
-msgstr "ترميز/فك ترميز استعمال الفيديو على "
+msgstr "ترميز/فك ترميز استعمال الفيديو فوق "
 
 #: resources/ui/performance_page/gpu.blp:208
 msgid "Show Encode/Decode Usage"
@@ -911,28 +897,24 @@ msgid "Free:"
 msgstr "خالي:"
 
 #: resources/ui/performance_page/fan_details.blp:59
-#, fuzzy
 msgid "Fan Speed"
-msgstr "السرعة"
+msgstr "سرعة المروحة"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
 msgstr "نسبة PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
-#, fuzzy
 msgid "Current Temperature"
-msgstr "الحرارة"
+msgstr "درجة الحرارة الحالية"
 
 #: resources/ui/performance_page/fan.blp:61
-#, fuzzy
 msgid "Fan speed over "
-msgstr "استخدام الذاكرة"
+msgstr "سرعة المروحة فوق "
 
 #: resources/ui/performance_page/fan.blp:112
-#, fuzzy
 msgid "Temperature over "
-msgstr "الحرارة"
+msgstr "الحرارة فوق "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
@@ -943,9 +925,8 @@ msgid "Last Updated"
 msgstr "آخر تحديث"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "استهلاك الطاقة"
+msgstr "مُشغّل"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
@@ -970,14 +951,12 @@ msgid "ID"
 msgstr "معرّف"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "تنسيق:"
+msgstr "تنسيق"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "الخيوط"
+msgstr "الحدّ"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
@@ -1005,9 +984,8 @@ msgstr ""
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
-#, fuzzy
 msgid "Throughput over "
-msgstr "الناتج"
+msgstr "الناتج فوق "
 
 #: resources/ui/performance_page/network.blp:144
 msgid "Network Se_ttings"
@@ -1022,9 +1000,8 @@ msgid "Eject Disk"
 msgstr "أخرج القرص"
 
 #: resources/ui/performance_page/disk.blp:99
-#, fuzzy
 msgid "Active time over "
-msgstr "وقت النشاط"
+msgstr "وقت النشاط فوق "
 
 #: resources/ui/performance_page/network_details.blp:63
 msgid "Receive"
@@ -1115,9 +1092,8 @@ msgid "Form factor:"
 msgstr "عامل الشكل:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "إعدادات عامة"
+msgstr "عام"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
@@ -1164,9 +1140,8 @@ msgid "Show CPU Information"
 msgstr "أظهر معلومات المعالج"
 
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "تكوين الذاكرة"
+msgstr "أظهر معلومات الذاكرة"
 
 #: resources/ui/preferences/page.blp:76
 msgid "Show Disk Information"
@@ -1225,9 +1200,8 @@ msgid "Global Units"
 msgstr "الوحدات العالمية"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "استخدام الذاكرة"
+msgstr "وحدة استخدام الذاكرة"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
@@ -1248,9 +1222,8 @@ msgid "Bits"
 msgstr "بيتات"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "استخدام الذاكرة"
+msgstr "أساس استخدام الذاكرة"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
@@ -1284,7 +1257,7 @@ msgstr "استخدم البيتات كوحدة قياس لمحركات الأق�
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr "قاعدة استخدام محرك الأقراص"
+msgstr "أساس استخدام محرك الأقراص"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
@@ -1308,7 +1281,7 @@ msgstr "استخدم البيتات كوحدة قياس لواجهات الشب�
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr "قاعدة استخدام الشبكة"
+msgstr "أساس استخدام الشبكة"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
@@ -1343,9 +1316,8 @@ msgid "Toggle Sidebar"
 msgstr "بدّل الشريط الجانبي"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "تكوين الذاكرة"
+msgstr "انسخ معلومات الجهاز"
 
 #: resources/ui/keyboard_shortcuts.blp:59
 msgid "Toggle Summary Mode"
@@ -1378,9 +1350,8 @@ msgid "Show Details Dialog"
 msgstr "أظهر مربع حوار التفاصيل"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "تفاصيل الخدمة"
+msgstr "صفحة الخدمات"
 
 #: resources/ui/keyboard_shortcuts.blp:125
 msgid "Start Service"
@@ -1395,9 +1366,8 @@ msgid "Restart Service"
 msgstr "أعد تشغيل الخدمة"
 
 #: resources/ui/window.blp:49
-#, fuzzy
 msgid "Enable All"
-msgstr "فعل"
+msgstr "فعّل الكل"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
@@ -1420,9 +1390,8 @@ msgid "Type a name or PID to search"
 msgstr "اكتب اسمًا أو PID للبحث"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "تكوين الذاكرة"
+msgstr "بدّل معلومات الجهاز"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
@@ -1453,9 +1422,8 @@ msgid "_Keyboard Shortcuts"
 msgstr "اخت_صارات لوحة المفاتيح"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
-msgstr "مدير المهام"
+msgstr "_عن مدير المهام"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
@@ -1478,12 +1446,12 @@ msgstr[5] "{} تطبيق يعمل"
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لا عملية تعمل"
+msgstr[1] "عملية تعمل"
+msgstr[2] "عمليتان تعملان"
+msgstr[3] "{} عمليات تعمل"
+msgstr[4] "{} عملية تعمل"
+msgstr[5] "{} عملية تعمل"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
@@ -1634,7 +1602,7 @@ msgstr "متاح أحتياطي"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr "عتبة احتياطية"
+msgstr "حدّ احتياطي"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
 msgid "Total Data Read"
@@ -1658,14 +1626,12 @@ msgid "Control Busy Time"
 msgstr "التحكم في وقت الانشغال"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "الحرارة"
+msgstr "درجة حرارة تحذيرية"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "الحرارة"
+msgstr "درجة حرارة حرجة"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
@@ -1792,13 +1758,12 @@ msgid "Video encode/decode"
 msgstr "ترميز/فك ترميز الفيديو"
 
 #: src/performance_page/gpu.rs:576
-#, fuzzy
 msgid "Total Memory"
-msgstr "الذاكرة"
+msgstr "إجمالي الذاكرة"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr "استخدام الذاكرة المخصّصة والمشتركة على "
+msgstr "استخدام الذاكرة المخصّصة والمشتركة فوق "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
@@ -1807,22 +1772,22 @@ msgstr "إجمالي الذاكرة المشتركة"
 #: src/main.rs:99
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لا سنة"
+msgstr[1] "سنة"
+msgstr[2] "سنتان"
+msgstr[3] "{} سنين"
+msgstr[4] "{} سنة"
+msgstr[5] "{} سنة"
 
 #: src/main.rs:103
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لا شهور"
+msgstr[1] "شهر"
+msgstr[2] "شهران"
+msgstr[3] "{} شهور"
+msgstr[4] "{} شهر"
+msgstr[5] "{} شهر"
 
 #: src/main.rs:107
 msgid "{} day"
@@ -1847,12 +1812,12 @@ msgstr[5] "{} ساعة"
 #: src/main.rs:115 src/main.rs:180
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لا دقيقة"
+msgstr[1] "دقيقة"
+msgstr[2] "دقيقتان"
+msgstr[3] "{} دقائق"
+msgstr[4] "{} دقيقة"
+msgstr[5] "{} دقيقة"
 
 #: src/main.rs:119 src/main.rs:178
 msgid "{} second"
