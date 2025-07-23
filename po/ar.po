@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-07-23 00:01+0000\n"
+"PO-Revision-Date: 2025-07-24 22:09+0000\n"
 "Last-Translator: jonnysemon <jonnysemon@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
@@ -281,7 +281,7 @@ msgstr "أظهر معلومات المعالج افتراضيًا"
 #: data/io.missioncenter.MissionCenter.gschema.xml:188
 #: resources/ui/preferences/page.blp:71
 msgid "Show memory information by default"
-msgstr "أظهِر معلومات الذاكرة افتراضيًا"
+msgstr "أظهر معلومات الذاكرة افتراضيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:193
 #: resources/ui/preferences/page.blp:77
@@ -878,7 +878,7 @@ msgstr "المعالجات المنطقية"
 
 #: resources/ui/performance_page/cpu.blp:120
 msgid "Show Kernel Times"
-msgstr "عرض أوقات النواة"
+msgstr "أظهر أوقات النواة"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
