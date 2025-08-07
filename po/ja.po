@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-04-09 09:06+0000\n"
-"Last-Translator: rainy_sunset "
-"<rainy_sunset@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-08-08 11:02+0000\n"
+"Last-Translator: Yuta Sahara <shryt0206@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ja/>\n"
 "Language: ja\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -465,11 +464,12 @@ msgid "Name"
 msgstr "名前"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "メモリ"
+msgstr ""
+"共有\n"
+"メモリ"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -650,9 +650,8 @@ msgid "Cpufreq governor:"
 msgstr "Cpufreqのガバナー:"
 
 #: resources/ui/performance_page/cpu_details.blp:325
-#, fuzzy
 msgid "Power preference:"
-msgstr "設定"
+msgstr "電源設定:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
@@ -725,14 +724,12 @@ msgstr "PCIバスのアドレス:"
 
 #: resources/ui/performance_page/memory.blp:76
 #: resources/ui/performance_page/gpu.blp:162
-#, fuzzy
 msgid "Memory usage over "
-msgstr "メモリ使用率"
+msgstr "メモリ使用率 "
 
 #: resources/ui/performance_page/memory.blp:121
-#, fuzzy
 msgid "Swap usage over "
-msgstr "メモリ使用率"
+msgstr "スワップ使用率 "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
