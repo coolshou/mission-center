@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
 "PO-Revision-Date: 2025-08-13 07:02+0000\n"
-"Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
+"Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/it/>\n"
 "Language: it\n"
@@ -1607,11 +1607,12 @@ msgstr "Percentuale usata"
 #: src/performance_page/widgets/smart_data_dialog.rs:206
 #, fuzzy
 msgid "Available Spare"
-msgstr "Parte disponibile"
+msgstr "Sostituzione disponibile"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
+#, fuzzy
 msgid "Spare Threshold"
-msgstr ""
+msgstr "Soglia di sostituzione"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
 msgid "Total Data Read"
