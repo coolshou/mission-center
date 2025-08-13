@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-07-27 17:04+0000\n"
+"PO-Revision-Date: 2025-08-13 07:02+0000\n"
 "Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/it/>\n"
@@ -941,7 +941,7 @@ msgstr "Ultimo aggiornamento"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
 msgid "Powered On"
-msgstr "Potenza assorbita"
+msgstr "Acceso"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
@@ -1607,7 +1607,7 @@ msgstr "Percentuale usata"
 #: src/performance_page/widgets/smart_data_dialog.rs:206
 #, fuzzy
 msgid "Available Spare"
-msgstr "Disponibile"
+msgstr "Parte disponibile"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
