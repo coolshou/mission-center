@@ -445,7 +445,7 @@ mod imp {
 
             let settings = settings!();
             if let Some(power_draw) = this.power_draw.get() {
-                if let Some(power_draw_num) = dynamic_cpu_info.power_draw {
+                if let Some(power_draw_num) = dynamic_cpu_info.power_draw_w {
                     power_draw.set_text(&crate::to_human_readable_nice(
                         power_draw_num,
                         &DataType::Watts,
