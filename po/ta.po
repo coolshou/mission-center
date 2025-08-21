@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-01-18 11:51+0000\n"
+"PO-Revision-Date: 2025-06-23 04:03+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ta/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -30,7 +30,7 @@ msgid ""
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
 msgstr ""
 "பணி மேலாளர்; வள மானிட்டர்; கணினி மானிட்டர்; செயலி; செயல்முறைகள்; செயல்திறன் மானிட்டர்; "
-"சிபியு; சி.பீ."
+"சிபியு; சி.பீ.;Disc;Disk;Memory;Network;Utilisation;Utilization"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -41,11 +41,12 @@ msgid "Monitor system resource usage"
 msgstr "கணினி வள பயன்பாட்டை கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
-msgstr "உங்கள் சிபியு, நினைவகம், வட்டு, பிணையம் மற்றும் GPU பயன்பாட்டைக் கண்காணிக்கவும்"
+msgstr ""
+"உங்கள் CPU, நினைவகம், வட்டு, பிணையம் மற்றும் சி.பீ.U usage, accompanied by a per app "
+"and process breakdown of these statistics"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -98,9 +99,8 @@ msgstr ""
 "இயக்கப்படுகிறது"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "கணினி வள பயன்பாட்டை கண்காணிக்கவும்"
+msgstr "கணினி ரசிகர்களை கண்காணிக்கவும்"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
@@ -144,9 +144,8 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
-"லினக்ச் புதினா/இலவங்கப்பட்டை பயன்படுத்தும் போது, தொடங்கப்பட்ட பயன்பாடுகள் \"பயன்பாடுகள்\" "
-"பிரிவில் காட்டப்படாது (அப்ச்ட்ரீம் வெளியீடு: https://github.com/linuxmint/cinman/"
-"issues/12015)"
+"லினக்ச் புதினா/இலவங்கப்பட்டை பயன்படுத்தும்போது, தொடங்கப்பட்ட \"பயன்பாடுகள்\" பிரிவில் "
+"காட்டப்படாது (அப்ச்ட்ரீம் வெளியீடு: https://github.com/linuxmint/cinman/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
 msgid "Comments, suggestions, bug reports and contributions welcome"
@@ -157,13 +156,12 @@ msgid "Which page is shown on application startup"
 msgstr "பயன்பாட்டு தொடக்கத்தில் எந்தப் பக்கம் காட்டப்பட்டுள்ளது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "இடைமுகத்தின் பெயர்:"
+msgstr "இடைமுக நடை"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "ஒளி அல்லது இருண்ட இடைமுக பாணியைப் பயன்படுத்த வேண்டும் என்றால்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
@@ -183,29 +181,28 @@ msgid "How many points should be displayed on each chart?"
 msgstr "ஒவ்வொரு விளக்கப்படத்திலும் எத்தனை புள்ளிகள் காட்டப்பட வேண்டும்?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
 msgstr ""
-"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
+"நினைவகத்திற்கு பிட்கள் அல்லது பைட்டுகள் (இயல்புநிலை) பயன்படுத்தலாமா இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
 msgstr ""
-"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
+"நினைவகத்திற்கு அடிப்படை -10 அல்லது பேச் -2 (இயல்புநிலை) ஐப் பயன்படுத்தலாமா வேண்டாமா "
+"இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
+"இயக்கி விரைவு + அளவிற்கு பிட்கள் அல்லது பைட்டுகள் (இயல்புநிலை) பயன்படுத்த வேண்டுமா "
+"இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
+"இயக்கி விரைவு + அளவிற்கு பேச் -10 அல்லது பேச் -2 (இயல்புநிலை) ஐப் பயன்படுத்தலாமா "
+"இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
@@ -213,17 +210,17 @@ msgstr ""
 "பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
-"பிணைய வேகத்திற்கு பிட்கள் (இயல்புநிலை) அல்லது பைட்டுகளைப் பயன்படுத்த வேண்டுமா இல்லையா"
+"பிணைய வேகத்திற்கு அடிப்படை -10 (இயல்புநிலை) அல்லது பேச் -2 ஐப் பயன்படுத்த வேண்டுமா "
+"இல்லையா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
 "வரைபட அதிகபட்சத்தை அதிகபட்சம் (பொய்) அல்லது அதிகபட்சம் கவனிக்கப்பட்ட (உண்மை) என அமைக்க "
-"வேண்டுமா?"
+"வேண்டுமா"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
@@ -237,9 +234,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும் நெடுவரிசை வரிசையாக்கம் தொடர்கிறது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும் நெடுவரிசை வரிசையாக்கம் தொடர்கிறது"
+msgstr "பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும் நெடுவரிசை ஒழுங்கு தொடர்கிறது"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 #: resources/ui/preferences/page.blp:120
@@ -252,20 +248,19 @@ msgstr ""
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
 msgstr ""
+"பயன்பாடுகளின் பார்வையில் ஒவ்வொரு நெடுவரிசைக்கும் இடையில் ஒரு பிரிப்பான் காண்பி"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "பயன்பாடுகளின் பக்கக் காட்சி வரிசைப்படுத்தப்பட்ட நெடுவரிசை ஐடி"
+msgstr "பயன்பாடுகளின் பக்கக் காட்சி வரிசைப்படுத்தப்பட்ட நெடுவரிசை பெயர்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "பயன்பாடுகளின் பக்கக் காட்சியின் வரிசையாக்க திசை"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "பயன்பாடுகளின் பக்கக் காட்சியின் வரிசையாக்க திசை"
+msgstr "பயன்பாடுகள் பக்கக் காட்சியில் நெடுவரிசைகளின் வரிசை"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:157
 msgid "Which graph is shown on the CPU performance page"
@@ -284,9 +279,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "செயல்திறன் வரைபடங்கள் மென்மையாகவோ அல்லது துண்டிக்கப்பட வேண்டும்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:178
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "செயல்திறன் வரைபடங்கள் மென்மையாகவோ அல்லது துண்டிக்கப்பட வேண்டும்"
+msgstr "வரைபடங்கள் அனிமேசன் செய்யப்பட வேண்டும்"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:183
 #: resources/ui/preferences/page.blp:65
@@ -327,7 +321,6 @@ msgid "Show the swap graph"
 msgstr "இடமாற்று வரைபடத்தைக் காட்டு"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
 msgstr "GPU குறியாக்கம்-டெகோட் வரைபடத்தைக் காட்டு"
 
@@ -376,18 +369,16 @@ msgstr "இதற்கில்லை"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#, fuzzy
 msgid "Type"
-msgstr "தட்டச்சு:"
+msgstr "வகை"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 msgid "Command Line"
-msgstr ""
+msgstr "கட்டளை வரி"
 
 #: resources/ui/apps_page/details_dialog.blp:154
-#, fuzzy
 msgid "Resource Usage"
-msgstr "நினைவக பயன்பாடு"
+msgstr "வள பயன்பாடு"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -403,21 +394,18 @@ msgid "Memory"
 msgstr "நினைவகம்"
 
 #: resources/ui/apps_page/details_dialog.blp:218
-#, fuzzy
 msgid "Shared Memory"
-msgstr "நினைவகம்"
+msgstr "பகிரப்பட்ட நினைவகம்"
 
 #: resources/ui/apps_page/details_dialog.blp:243
-#, fuzzy
 msgid "Drives"
-msgstr "ஓட்டு"
+msgstr "இயக்கிகள்"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
 #: src/apps_page/columns/mod.rs:294
-#, fuzzy
 msgid "Network"
-msgstr "_நெட் வொர்க்"
+msgstr "பிணையம்"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/apps_page/page.blp:216 src/apps_page/columns/mod.rs:300
@@ -429,21 +417,20 @@ msgstr "சி.பீ."
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/apps_page/page.blp:222 src/apps_page/columns/mod.rs:304
 #: src/apps_page/columns/mod.rs:323
-#, fuzzy
 msgid "GPU Memory"
-msgstr "சி.பீ.யூ மெம்"
+msgstr "சி.பீ.யூ நினைவகம்"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "எல்லா பயன்பாடுகளையும் செயல்முறைகளையும் சரிவு"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/keyboard_shortcuts.blp:87
 msgid "Collapse All"
-msgstr ""
+msgstr "அனைத்தையும் சரக்கு"
 
 #: resources/ui/apps_page/page.blp:99
 msgid "Stop the selected app"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயன்பாட்டை நிறுத்துங்கள்"
 
 #: resources/ui/apps_page/page.blp:111 resources/ui/apps_page/page.blp:239
 #: resources/ui/services_page/page.blp:109
@@ -453,16 +440,15 @@ msgstr "நிறுத்து"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "கட்டாயமாகத் தேர்ந்தெடுக்கப்பட்ட பயன்பாட்டை நிறுத்துங்கள்"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
-#, fuzzy
 msgid "Force Stop"
-msgstr "படை நிறுத்த செயல்முறை"
+msgstr "படை நிறுத்தம்"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயன்பாட்டின் விவரங்களைக் காட்டு"
 
 #: resources/ui/apps_page/page.blp:150 resources/ui/apps_page/page.blp:251
 #: resources/ui/services_page/page.blp:148
@@ -479,11 +465,12 @@ msgid "Name"
 msgstr "பெயர்"
 
 #: resources/ui/apps_page/page.blp:198
-#, fuzzy
 msgid ""
 "Shared\n"
 "Memory"
-msgstr "நினைவகம்"
+msgstr ""
+"பகிரப்பட்டது \n"
+"நினைவகம்"
 
 #: resources/ui/apps_page/page.blp:204 src/apps_page/columns/mod.rs:270
 #: src/apps_page/columns/mod.rs:278 src/performance_page/mod.rs:1130
@@ -503,19 +490,16 @@ msgid "The current state of the service"
 msgstr "சேவையின் தற்போதைய நிலை"
 
 #: resources/ui/services_page/details_dialog.blp:75
-#, fuzzy
 msgid "Start service"
-msgstr "சேவைகள்"
+msgstr "சேவையைத் தொடங்கவும்"
 
 #: resources/ui/services_page/details_dialog.blp:90
-#, fuzzy
 msgid "Stop service"
-msgstr "சேவைகள்"
+msgstr "சேவையை நிறுத்துங்கள்"
 
 #: resources/ui/services_page/details_dialog.blp:106
-#, fuzzy
 msgid "Restart service"
-msgstr "மறுதொடக்கம்"
+msgstr "சேவையை மறுதொடக்கம் செய்யுங்கள்"
 
 #: resources/ui/services_page/details_dialog.blp:164
 #: resources/ui/services_page/page.blp:226
@@ -557,7 +541,7 @@ msgstr "பதிவுகள்"
 
 #: resources/ui/services_page/page.blp:78
 msgid "Start the selected service"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட சேவையைத் தொடங்கவும்"
 
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
@@ -566,11 +550,11 @@ msgstr "தொடங்கு"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட சேவையை நிறுத்துங்கள்"
 
 #: resources/ui/services_page/page.blp:117
 msgid "Restart the selected service"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட சேவையை மறுதொடக்கம் செய்யுங்கள்"
 
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
@@ -579,27 +563,27 @@ msgstr "மறுதொடக்கம்"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட சேவையின் விவரங்களைக் காட்டு"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "கணினி பாணியைப் பின்பற்றுங்கள்"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "ஒளி நடை"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "இருண்ட நடை"
 
 #: resources/ui/performance_page/cpu_details.blp:46
 #: resources/ui/performance_page/gpu_details.blp:51
 msgid "Utilization"
-msgstr "பயன்பாடு"
+msgstr "பயன்பாடுத்த"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -667,35 +651,31 @@ msgstr "ஆற்றல் விருப்பம்:"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "வெளியேற்றத் தவறிவிட்டது"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "கொலை"
 
 #: resources/ui/performance_page/gpu_details.blp:80
 msgid "Clock Speed"
 msgstr "கடிகார விரைவு"
 
 #: resources/ui/performance_page/gpu_details.blp:132
-#, fuzzy
 msgid "Power Draw"
 msgstr "பவர் டிரா"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:557
-#, fuzzy
 msgid "Memory Usage"
 msgstr "நினைவக பயன்பாடு"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "நினைவக பயன்பாடு"
+msgstr "பகிரப்பட்ட நினைவக பயன்பாடு"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "நினைவக விரைவு"
 
@@ -724,9 +704,8 @@ msgid "PCI Express speed:"
 msgstr "பிசிஐ எக்ச்பிரச் வேகம்:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "பிசிஐ எக்ச்பிரச் வேகம்:"
+msgstr "அதிகபட்ச பிசிஐ எக்ச்பிரச் வேகம்:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -843,14 +822,12 @@ msgid "Write speed"
 msgstr "விரைவு எழுதுங்கள்"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "மொத்தம் பெறப்பட்டது"
+msgstr "மொத்த வாசிப்பு"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "மொத்தம் அனுப்பப்பட்டது"
+msgstr "மொத்த எழுதப்பட்ட"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -914,19 +891,19 @@ msgstr "கர்னல் நேரங்களைக் காட்டு"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "பயன்பாட்டில்:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "மாற்றியமைக்கப்பட்ட:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "காத்திருப்பு:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "இலவசம்:"
 
 #: resources/ui/performance_page/fan_details.blp:59
 msgid "Fan Speed"
@@ -934,7 +911,7 @@ msgstr "ரசிகர்களின் விரைவு"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "PWM விழுக்காடு"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
@@ -950,71 +927,69 @@ msgstr "வெப்பநிலை ஓவர் "
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "அறிவுள்ள தரவு"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "கடைசியாக புதுப்பிக்கப்பட்டது"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "பவர் டிரா"
+msgstr "இயங்கும்"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "ஆரோக்கியத்தை உந்துங்கள்"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "அறிவுள்ள சோதனை நிலை"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "பண்புக்கூறு"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "மதிப்பு"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "பிஐடி"
+msgstr "ஐடி"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "வடிவமைக்கப்பட்டுள்ளது:"
+msgstr "இயல்பாக்கப்பட்டது"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "நூல்கள்"
+msgstr "வாசல்"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "மோசமான"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
 msgid "Updates"
-msgstr ""
+msgstr "புதுப்பிப்புகள்"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "மதிப்பீடு"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "அறிவுள்ள தரவைப் பெறுவதில் தோல்வி"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"அறிவுள்ள தரவைப் பெறுவதில் சிக்கல் இருந்தது. மேலும் தகவல்களைப் பெற கட்டளை வரியிலிருந்து "
+"இயங்க முயற்சிக்கவும்."
 
 #: resources/ui/performance_page/network.blp:61
 #: resources/ui/performance_page/disk.blp:140
@@ -1027,11 +1002,11 @@ msgstr "பிணைய அமைப்புகள்"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "அறிவுள்ள தரவைக் காட்டு"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "வட்டு வெளியேற்றவும்"
 
 #: resources/ui/performance_page/disk.blp:99
 msgid "Active time over "
@@ -1046,7 +1021,6 @@ msgid "Send"
 msgstr "அனுப்பு"
 
 #: resources/ui/performance_page/network_details.blp:130
-#, fuzzy
 msgid "Total Received"
 msgstr "மொத்தம் பெறப்பட்டது"
 
@@ -1152,11 +1126,11 @@ msgstr "துண்டிக்கப்பட்ட வரிக்கு ப�
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "நெகிழ் வரைபடங்கள்"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "அனிமேட் வரைபடங்கள் (செயல்திறனை எதிர்மறையாக பாதிக்கலாம்)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
@@ -1206,22 +1180,18 @@ msgid "Remember Sorting"
 msgstr "வரிசையாக்கத்தை நினைவில் கொள்க"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist app and process sorting by column, across app restarts"
 msgstr ""
-"பயன்பாட்டு மறுதொடக்கங்களில் பயன்பாடு மற்றும் செயல்முறை பட்டியலை வரிசைப்படுத்துவதை "
-"நினைவில் கொள்க"
+"பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும், நெடுவரிசை மூலம் பயன்பாடு மற்றும் செயல்முறை "
+"வரிசையாக்கத்தை தொடருங்கள்"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "நெடுவரிசை வரிசையை நினைவில் கொள்க"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr ""
-"பயன்பாட்டு மறுதொடக்கங்களில் பயன்பாடு மற்றும் செயல்முறை பட்டியலை வரிசைப்படுத்துவதை "
-"நினைவில் கொள்க"
+msgstr "பயன்பாட்டு மறுதொடக்கங்கள் முழுவதும் நெடுவரிசைகளின் வரிசையைத் தொடருங்கள்"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
@@ -1229,195 +1199,181 @@ msgstr "சிபியு பயன்பாட்டை மைய எண்ண
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "நெடுவரிசை பிரிப்பான்களைக் காட்டு"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "ஒவ்வொரு நெடுவரிசைக்கும் இடையில் ஒரு பிரிப்பான் காட்டு"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
-msgstr ""
+msgstr "உலகளாவிய அலகுகள்"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "நினைவக பயன்பாடு"
+msgstr "நினைவக பயன்பாட்டு அலகு"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "நினைவகத்திற்கான அளவீட்டு அலகு என பைட்டுகளைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "பைட்டுகள்"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "நினைவகத்திற்கான அளவீட்டு அலகு என பிட்களைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "பிட்கள்"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "நினைவக பயன்பாடு"
+msgstr "நினைவக பயன்பாட்டு அடிப்படை"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "நினைவகத்திற்கு அடிப்படை 10 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "அடிப்படை 10"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "நினைவகத்திற்கு அடிப்படை 2 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "அடிப்படை 2"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "பயன்பாட்டு அலகு இயக்கி"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "வட்டு இயக்ககங்களுக்கான அளவீட்டு அலகு என பைட்டுகளைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "வட்டு இயக்ககங்களுக்கான அளவீட்டு அலகு என பிட்களைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "பயன்பாட்டு தளத்தை இயக்கவும்"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "வட்டு இயக்கிகளுக்கு அடிப்படை 10 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "வட்டு இயக்கிகளுக்கு அடிப்படை 2 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "பிணைய பயன்பாட்டு அலகு"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "பிணைய இடைமுகங்களுக்கான அளவீட்டு அலகு என பைட்டுகளைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "பிணையம் இடைமுகங்களுக்கான அளவீட்டு அலகு என பிட்களைப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "பிணைய பயன்பாட்டு அடிப்படை"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "பிணைய இடைமுகங்களுக்கு அடிப்படை 10 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "பிணைய இடைமுகங்களுக்கு அடிப்படை 2 ஐப் பயன்படுத்தவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "விசைப்பலகை குறுக்குவழிகள்"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "உலகளாவிய"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "செயல்திறன் பக்கம்"
+msgstr "செயல்திறன் பக்கத்தைக் காட்டு"
 
 #: resources/ui/keyboard_shortcuts.blp:26
-#, fuzzy
 msgid "Show Apps Page"
-msgstr "பயன்பாட்டு பக்கம்"
+msgstr "பயன்பாடுகள் பக்கத்தைக் காட்டு"
 
 #: resources/ui/keyboard_shortcuts.blp:31
-#, fuzzy
 msgid "Show Services Page"
-msgstr "சேவைகள்"
+msgstr "சேவைகள் பக்கத்தைக் காட்டு"
 
 #: resources/ui/keyboard_shortcuts.blp:36 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
 msgstr "பக்கப்பட்டியை மாற்றவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:54
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "வட்டு தகவலைக் காட்டு"
+msgstr "சாதன தகவல்களை நகலெடுக்கவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:59
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "பக்கப்பட்டியை மாற்றவும்"
+msgstr "சுருக்கம் பயன்முறையை மாற்றவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:64
 msgid "Select a Device"
-msgstr ""
+msgstr "சாதனத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:71
-#, fuzzy
 msgid "Apps Page"
-msgstr "பயன்பாட்டு பக்கம்"
+msgstr "பயன்பாடுகள் பக்கம்"
 
 #: resources/ui/keyboard_shortcuts.blp:82
 #: resources/ui/keyboard_shortcuts.blp:120 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "தேடல்"
 
 #: resources/ui/keyboard_shortcuts.blp:92
-#, fuzzy
 msgid "Stop App or Process"
-msgstr "நிறுத்த செயல்முறை"
+msgstr "பயன்பாடு அல்லது செயல்முறையை நிறுத்து"
 
 #: resources/ui/keyboard_shortcuts.blp:97
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "படை நிறுத்த செயல்முறை"
+msgstr "கட்டாயமாகப் பயன்பாடு அல்லது செயல்முறையை நிறுத்து"
 
 #: resources/ui/keyboard_shortcuts.blp:102
 #: resources/ui/keyboard_shortcuts.blp:140
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "விவரங்கள் உரையாடலைக் காட்டு"
 
 #: resources/ui/keyboard_shortcuts.blp:109
-#, fuzzy
 msgid "Services Page"
-msgstr "சேவைகள்"
+msgstr "சேவைகள் பக்கம்"
 
 #: resources/ui/keyboard_shortcuts.blp:125
-#, fuzzy
 msgid "Start Service"
-msgstr "சேவைகள்"
+msgstr "சேவையைத் தொடங்கவும்"
 
 #: resources/ui/keyboard_shortcuts.blp:130
-#, fuzzy
 msgid "Stop Service"
-msgstr "சேவைகள்"
+msgstr "சேவையை நிறுத்துங்கள்"
 
 #: resources/ui/keyboard_shortcuts.blp:135
-#, fuzzy
 msgid "Restart Service"
-msgstr "மறுதொடக்கம்"
+msgstr "சேவையை மறுதொடக்கம் செய்யுங்கள்"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1444,13 +1400,12 @@ msgid "Type a name or PID to search"
 msgstr "தேட ஒரு பெயர் அல்லது பிஐடி தட்டச்சு செய்க"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "வட்டு தகவலைக் காட்டு"
+msgstr "சாதனத் தகவல்களை மாற்றவும்"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "பட்டியல் விளையாடுங்கள்"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1474,44 +1429,40 @@ msgstr "_ முனைகள்"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "விசைப்பலகை குறுக்குவழிகள்"
 
 #: resources/ui/window.blp:247
-#, fuzzy
 msgid "_About Mission Center"
 msgstr "_அபவுட் மிசன் சென்டர்"
 
 #: src/apps_page/row_model.rs:211
 msgid "Section Header"
-msgstr ""
+msgstr "பிரிவு தலைப்பு"
 
 #: src/apps_page/row_model.rs:212
-#, fuzzy
 msgid "App"
-msgstr "பயன்பாடுகள்"
+msgstr "பயன்பாடு"
 
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
-#, fuzzy
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "சேவைகள் இயங்கும் சேவைகள்"
-msgstr[1] "சேவைகள் இயங்கும் சேவைகள்"
+msgstr[0] "App} இயங்கும் பயன்பாடு"
+msgstr[1] "}} இயங்கும் பயன்பாடுகள்"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
-#, fuzzy
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "சேவைகள் இயங்கும் சேவைகள்"
-msgstr[1] "சேவைகள் இயங்கும் சேவைகள்"
+msgstr[0] "{} இயங்கும் செயல்முறை"
+msgstr[1] "{} இயங்கும் செயல்முறைகள்"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "இடைநிலைப்பலகைக்கு பதிவுகளை நகலெடுக்கவும்"
 
 #: src/services_page/details_dialog.rs:235
 #: src/services_page/details_dialog.rs:304
 msgid "Running"
-msgstr "இயங்கும்"
+msgstr "இயங்குகிறது"
 
 #: src/services_page/details_dialog.rs:237
 #: src/services_page/details_dialog.rs:306
@@ -1524,7 +1475,6 @@ msgid "Stopped"
 msgstr "நிறுத்தப்பட்டது"
 
 #: src/services_page/mod.rs:530
-#, fuzzy
 msgid "{} Running Services"
 msgstr "சேவைகள் இயங்கும் சேவைகள்"
 
@@ -1533,81 +1483,75 @@ msgid "{} failed services out of a total of {}"
 msgstr "{} மொத்தம் {} இல் தோல்வியுற்ற சேவைகள்"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#, fuzzy
 msgid "{} sectors"
-msgstr "{} இரண்டாவது {}"
+msgstr "}} துறைகள்"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #: src/performance_page/widgets/smart_data_dialog.rs:280
 #: src/performance_page/fan.rs:296
 msgid "{} °C"
-msgstr "{}. C."
+msgstr "{} °செ"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:164
 msgid "Close"
-msgstr ""
+msgstr "மூடு"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:165
 msgid "Retry"
-msgstr ""
+msgstr "மீண்டும் முயற்சிக்கவும்"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:166
-#, fuzzy
 msgid "Kill All"
-msgstr "அனைத்தையும் முடக்கு"
+msgstr "அனைத்தையும் கொல்லுங்கள்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:253
-#, fuzzy
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"பயன்பாட்டில் ({} b)\n"
+"பயன்பாட்டில் ({}) \n"
 "\n"
-" இயக்க முறைமை மற்றும் இயங்கும் பயன்பாடுகளால் பயன்படுத்தப்படும் நினைவகம்"
+"இயக்க முறைமை மற்றும் இயங்கும் பயன்பாடுகளால் பயன்படுத்தப்படும் நினைவகம்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:284
-#, fuzzy
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"மாற்றியமைக்கப்பட்ட ({} b)\n"
+"மாற்றியமைக்கப்பட்ட ({}) \n"
 "\n"
-" நினைவகம் அதன் உள்ளடக்கங்கள் மற்றொரு செயல்முறையால் பயன்படுத்தப்படுவதற்கு முன்பு வட்டுக்கு "
+"நினைவகம் அதன் உள்ளடக்கங்கள் மற்றொரு செயல்முறையால் பயன்படுத்தப்படுவதற்கு முன்பு வட்டுக்கு "
 "எழுதப்பட வேண்டும்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:309
-#, fuzzy
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"காத்திருப்பு ({} பி)\n"
+"காத்திருப்பு ({}) \n"
 "\n"
-" தற்காலிகமாக பயன்பாட்டில் இல்லாத தற்காலிக சேமிப்பு தரவு மற்றும் குறியீட்டைக் கொண்ட நினைவகம்"
+"தற்காலிகமாக பயன்பாட்டில் இல்லாத தற்காலிக சேமிப்பு தரவு மற்றும் குறியீட்டைக் கொண்ட நினைவகம்"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:322
-#, fuzzy
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"இலவசம் ({} b)\n"
+"இலவசம் ({}) \n"
 "\n"
-" தற்போது பயன்பாட்டில் இல்லாத நினைவகம், இயக்க முறைமை, இயக்கிகள் அல்லது பயன்பாடுகளுக்கு "
-"அதிக நினைவகம் தேவைப்படும்போது அது முதலில் மீண்டும் உருவாக்கப்படும்"
+"தற்போது பயன்பாட்டில் இல்லாத நினைவகம், இயக்க முறைமை, இயக்கிகள் அல்லது பயன்பாடுகளுக்கு அதி"
+"க நினைவகம் தேவைப்படும்போது அது முதலில் மீண்டும் உருவாக்கப்படும்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 msgid "{} ago"
-msgstr ""
+msgstr "{} முன்பு"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/disk.rs:238 src/performance_page/disk.rs:259
@@ -1625,96 +1569,92 @@ msgstr "தெரியவில்லை"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "முன் தோல்வி"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "பழைய அகவை"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "ஆன்லைனில்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "இணையமில்லாமல்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "தோல்வி"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "கடந்த காலத்தில் தோல்வியுற்றது"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "சரி"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:198
 msgid "Percent Used"
-msgstr ""
+msgstr "பயன்படுத்தப்பட்ட விழுக்காடு"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:206
-#, fuzzy
 msgid "Available Spare"
-msgstr "கிடைக்கிறது"
+msgstr "கிடைக்கும் உதிரி"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:214
 msgid "Spare Threshold"
-msgstr ""
+msgstr "உதிரி வாசல்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:222
-#, fuzzy
 msgid "Total Data Read"
-msgstr "மொத்தம் பெறப்பட்டது"
+msgstr "மொத்த தரவு படித்தது"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:234
 msgid "Total Data Written"
-msgstr ""
+msgstr "எழுதப்பட்ட மொத்த தரவு"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:246
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "முன்னறிவிப்பு தற்காலிக நேரம்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:254
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "சிக்கலான தற்காலிக நேரம்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:262
 #: src/performance_page/widgets/smart_data_dialog.rs:319
 msgid "Control Busy Time"
-msgstr ""
+msgstr "பிசியான நேரத்தைக் கட்டுப்படுத்துங்கள்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:270
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "தற்போதைய வெப்பநிலை"
+msgstr "முன்னறிவிப்பு வெப்பநிலை"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:278
-#, fuzzy
 msgid "Critical Temperature"
-msgstr "தற்போதைய வெப்பநிலை"
+msgstr "சிக்கலான வெப்பநிலை"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:285
 msgid "Temps"
-msgstr ""
+msgstr "டெம்ப்ச்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:287
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "பாதுகாப்பற்ற பணிநிறுத்தங்கள்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:295
 msgid "Media Errors"
-msgstr ""
+msgstr "ஊடக பிழைகள்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:303
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "எண் பிழை பதிவு உள்ளீடுகள்"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:311
 msgid "Power Cycles"
-msgstr ""
+msgstr "ஆற்றல் சுழற்சிகள்"
 
 #: src/performance_page/disk.rs:228
 msgid "Disk {} ({})"
@@ -1749,9 +1689,8 @@ msgid "eMMC"
 msgstr "EMMC"
 
 #: src/performance_page/disk.rs:289 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "SD"
-msgstr "திட நிலை இயக்கி"
+msgstr "எச்.டி."
 
 #: src/performance_page/disk.rs:290 src/performance_page/mod.rs:1126
 msgid "iSCSI"
@@ -1763,12 +1702,11 @@ msgstr "ஆப்டிகல்"
 
 #: src/performance_page/disk.rs:292 src/performance_page/mod.rs:1128
 msgid "Floppy"
-msgstr ""
+msgstr "நெகிழ்"
 
 #: src/performance_page/disk.rs:293 src/performance_page/mod.rs:1129
-#, fuzzy
 msgid "Thumb Drive"
-msgstr "ஓட்டு"
+msgstr "கட்டைவிரல் இயக்கி"
 
 #: src/performance_page/disk.rs:384
 msgid "Drive {} ({})"
@@ -1799,16 +1737,15 @@ msgstr "ஆதரிக்கப்படாதது"
 
 #: src/performance_page/memory.rs:378
 msgid "{} of {}"
-msgstr ""
+msgstr "{} of}"
 
 #: src/performance_page/memory.rs:400
 msgid "Getting additional memory information failed"
 msgstr "கூடுதல் நினைவக தகவல்களைப் பெறுவது தோல்வியடைந்தது"
 
 #: src/performance_page/mod.rs:1135
-#, fuzzy
 msgid "{} {} ({})"
-msgstr "{} {} {} B"
+msgstr "{} {} ({})"
 
 #: src/performance_page/mod.rs:1394 src/performance_page/mod.rs:2164
 #: src/performance_page/gpu.rs:353
@@ -1816,87 +1753,80 @@ msgid "GPU {}"
 msgstr "Gpu {}"
 
 #: src/performance_page/mod.rs:2104 src/performance_page/mod.rs:2105
-#, fuzzy
 msgid "{}: {}"
-msgstr "{}: {} {} {}"
+msgstr "{}: {}"
 
 #: src/performance_page/gpu.rs:285
-#, fuzzy
 msgid "Video encode/decode"
-msgstr "வீடியோ குறியாக்கம்"
+msgstr "வீடியோ குறியாக்கம்/டிகோட்"
 
 #: src/performance_page/gpu.rs:576
-#, fuzzy
 msgid "Total Memory"
-msgstr "நினைவகம்"
+msgstr "மொத்த நினைவகம்"
 
 #: src/performance_page/gpu.rs:606
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "அர்ப்பணிக்கப்பட்ட மற்றும் பகிரப்பட்ட நினைவக பயன்பாடு "
 
 #: src/performance_page/gpu.rs:651
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "மொத்த பகிரப்பட்ட நினைவகம்"
 
 #: src/main.rs:99
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} ஆண்டு"
+msgstr[1] "}} ஆண்டுகள்"
 
 #: src/main.rs:103
-#, fuzzy
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] "{} மணித்துளி {} "
-msgstr[1] "{} மணித்துளி {} "
+msgstr[0] "{} மாதம்"
+msgstr[1] "}} மாதங்கள்"
 
 #: src/main.rs:107
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} நாள்"
+msgstr[1] "}} நாட்கள்"
 
 #: src/main.rs:111
 msgid "{} hour"
 msgid_plural "{} hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} மணி"
+msgstr[1] "{} மணிநேரம்"
 
 #: src/main.rs:115 src/main.rs:180
-#, fuzzy
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] "{} மணித்துளி {} "
-msgstr[1] "{} மணித்துளி {} "
+msgstr[0] "{} மணித்துளி"
+msgstr[1] "{} நிமிடங்கள்"
 
 #: src/main.rs:119 src/main.rs:178
-#, fuzzy
 msgid "{} second"
 msgid_plural "{} seconds"
-msgstr[0] "{} இரண்டாவது {}"
-msgstr[1] "{} இரண்டாவது {}"
+msgstr[0] "}} இரண்டாவது"
+msgstr[1] "}} விநாடிகள்"
 
 #. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
 #: src/main.rs:155
-#, fuzzy
 msgid "{}, {} and {}"
-msgstr "{}: {} {} {}"
+msgstr "{}, {} மற்றும் {}"
 
 #. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
 #. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
 #. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
 #: src/main.rs:158 src/main.rs:161 src/main.rs:164
 msgid "{} and {}"
-msgstr ""
+msgstr "{} மற்றும் {}"
 
 #: src/main.rs:170
 msgid "Less than a minute"
-msgstr ""
+msgstr "ஒரு நிமிடத்திற்கும் குறைவாக"
 
 #: src/main.rs:316
 msgid "_Quit"
-msgstr "_Quit"
+msgstr "வெளியேறு"
 
 #: src/application.rs:398
 msgid "translator-credits"

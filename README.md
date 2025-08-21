@@ -54,6 +54,7 @@ Might also be available in your distribution's repository:
 Installed by default in:
 
 * [Aurora](https://getaurora.dev/)
+* [Bazzite](https://bazzite.gg)
 * [Bluefin](https://projectbluefin.io/)
 * [DeLinuxCo](https://www.delinuxco.com/)
 

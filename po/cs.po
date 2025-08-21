@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-21 06:25+0000\n"
-"PO-Revision-Date: 2025-05-22 17:01+0000\n"
-"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
+"PO-Revision-Date: 2025-07-12 00:01+0000\n"
+"Last-Translator: Fjuro <git@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
 "Language: cs\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -67,7 +67,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "Sledujte využití operační paměti a odkládacího prostoru"
+msgstr "Sledujte využití operační paměti a prostoru swap"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -237,12 +237,12 @@ msgstr "Pořadí sloupců bude mezi restarty aplikace zachováváno"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Zobrazit Využití procesoru u Aplikací a Procesů v měřítku podle počtu "
+"Zobrazit využití procesoru u aplikací a procesů v měřítku podle počtu "
 "dostupných jader"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr "V pohledu Aplikace zobrazovat mezi jednotlivými sloupci oddělovač"
+msgstr "Na stránce Aplikace zobrazovat mezi jednotlivými sloupci oddělovač"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -312,7 +312,7 @@ msgstr "Zobrazit prvek týkající se skladby využití paměti"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 msgid "Show the swap graph"
-msgstr "Zobrazit graf odkládacího prostoru"
+msgstr "Zobrazit graf prostoru swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
 msgid "Show the gpu encode-decode graph"
@@ -372,7 +372,7 @@ msgstr "Příkazový řádek"
 
 #: resources/ui/apps_page/details_dialog.blp:154
 msgid "Resource Usage"
-msgstr "Využití prostředku"
+msgstr "Využití prostředků"
 
 #: resources/ui/apps_page/details_dialog.blp:168
 #: resources/ui/apps_page/page.blp:186 resources/ui/performance_page/cpu.blp:45
@@ -393,7 +393,7 @@ msgstr "Sdílená paměť"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 msgid "Drives"
-msgstr "Jednotky úložiště"
+msgstr "Disky"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/apps_page/page.blp:210 src/apps_page/columns/mod.rs:284
@@ -430,7 +430,7 @@ msgstr "Zastavit označenou aplikaci"
 #: resources/ui/services_page/page.blp:109
 #: resources/ui/services_page/page.blp:269
 msgid "Stop"
-msgstr "Stop"
+msgstr "Zastavit"
 
 #: resources/ui/apps_page/page.blp:118
 msgid "Force stop the selected app"
@@ -438,7 +438,7 @@ msgstr "Vynutit zastavení označené aplikace"
 
 #: resources/ui/apps_page/page.blp:130 resources/ui/apps_page/page.blp:244
 msgid "Force Stop"
-msgstr "Vynutit ukončení"
+msgstr "Vynutit zastavení"
 
 #: resources/ui/apps_page/page.blp:138
 msgid "Show details of the selected app"
@@ -540,7 +540,7 @@ msgstr "Spustit označenou službu"
 #: resources/ui/services_page/page.blp:90
 #: resources/ui/services_page/page.blp:264
 msgid "Start"
-msgstr "Start"
+msgstr "Spustit"
 
 #: resources/ui/services_page/page.blp:97
 msgid "Stop the selected service"
@@ -553,7 +553,7 @@ msgstr "Restartovat označenou službu"
 #: resources/ui/services_page/page.blp:129
 #: resources/ui/services_page/page.blp:274
 msgid "Restart"
-msgstr "Restart"
+msgstr "Restartovat"
 
 #: resources/ui/services_page/page.blp:136
 msgid "Show details of the selected service"
@@ -667,7 +667,7 @@ msgstr "Využití paměti"
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:634
 msgid "Shared Memory Usage"
-msgstr "Využití sdílení paměti"
+msgstr "Využití sdílené paměti"
 
 #: resources/ui/performance_page/gpu_details.blp:332
 msgid "Memory Speed"
@@ -712,7 +712,7 @@ msgstr "Využití paměti za "
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
-msgstr "Využití odkládacího prostoru za "
+msgstr "Využití swap za "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
@@ -724,7 +724,7 @@ msgstr "Zobrazit skladbu využití paměti"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr "Zobrazit využití odkládacího prostoru"
+msgstr "Zobrazit využití prostoru swap"
 
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/gpu.blp:215
@@ -829,7 +829,7 @@ msgstr "Aktivní čas"
 
 #: resources/ui/performance_page/disk_details.blp:217
 msgid "Avg. response time"
-msgstr "Průměrná doba odezvy"
+msgstr "Prům. doba odezvy"
 
 #: resources/ui/performance_page/disk_details.blp:242
 msgid "Capacity:"
@@ -909,7 +909,7 @@ msgstr "Procento PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
 msgid "Current Temperature"
-msgstr "Stávající teplota"
+msgstr "Aktuální teplota"
 
 #: resources/ui/performance_page/fan.blp:61
 msgid "Fan speed over "
@@ -1076,11 +1076,11 @@ msgstr "V mezipaměti"
 
 #: resources/ui/performance_page/memory_details.blp:190
 msgid "Swap used"
-msgstr "Využití odkládacího prostoru"
+msgstr "Použitý swap"
 
 #: resources/ui/performance_page/memory_details.blp:221
 msgid "Swap available"
-msgstr "Odkládací prostor"
+msgstr "Dostupný swap"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Speed:"
@@ -1440,16 +1440,16 @@ msgstr "Aplikace"
 #: src/apps_page/mod.rs:303 src/apps_page/mod.rs:372
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] "{} Spuštěná aplikace"
-msgstr[1] "{} Spuštěné aplikace"
-msgstr[2] "{} Spuštěných aplikací"
+msgstr[0] "{} spuštěná aplikace"
+msgstr[1] "{} spuštěné aplikace"
+msgstr[2] "{} spuštěných aplikací"
 
 #: src/apps_page/mod.rs:313 src/apps_page/mod.rs:382
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] "{} Běžící služba"
-msgstr[1] "{} Běžící služby"
-msgstr[2] "{} Běžících služeb"
+msgstr[0] "{} spuštěný proces"
+msgstr[1] "{} spuštěné procesy"
+msgstr[2] "{} spuštěných procesů"
 
 #: src/services_page/details_dialog.rs:199
 msgid "Copy logs to clipboard"
@@ -1472,7 +1472,7 @@ msgstr "Zastaveno"
 
 #: src/services_page/mod.rs:530
 msgid "{} Running Services"
-msgstr "{} Běžících služeb"
+msgstr "{} běžících služeb"
 
 #: src/services_page/mod.rs:535
 msgid "{} failed services out of a total of {}"
