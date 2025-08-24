@@ -38,29 +38,148 @@ template $ServicesPage : Box {
       Box {
         margin-bottom: 20;
 
-        Box {
-          orientation: vertical;
+        FlowBox service_legend {
+          orientation: horizontal;
+          homogeneous: true;
 
-          spacing: 10;
+          Adw.Bin total_service_box {
+            Box {
+              orientation: vertical;
+              hexpand: true;
 
-          hexpand: true;
+              Label total_label {
+                styles [
+                  "service-legend-header",
+                  "title-3"
+                ]
 
-          Label h1 {
-            styles [
-              "title-1",
-            ]
+                label: _("Total Services");
+              }
 
-            ellipsize: end;
+              Box {
+                halign: center;
 
-            halign: start;
+                Label total_count {
+                  label: _("");
+                }
+              }
+            }
           }
 
-          Label h2 {
-            styles [
-              "faint-text",
-            ]
+          Adw.Bin running_service_box {
+            Box {
+              orientation: vertical;
+              hexpand: true;
 
-            halign: start;
+              Label running_label {
+                styles [
+                  "service-legend-header",
+                  "title-3"
+                ]
+
+                label: _("Running Services");
+              }
+
+              Box {
+                halign: center;
+
+                Image {
+                  icon-name: "service-running";
+                }
+
+                Label running_count {
+                  label: _("");
+                }
+              }
+            }
+          }
+
+          Adw.Bin failed_service_box {
+            Box {
+              orientation: vertical;
+              hexpand: true;
+
+              Label failed_label {
+                styles [
+                  "service-legend-header",
+                  "title-3"
+                ]
+
+                label: _("Failed Services");
+              }
+
+              Box {
+                halign: center;
+
+                Image {
+                  icon-name: "service-failed";
+                }
+
+                Box {
+                  halign: center;
+
+                  Label failed_count {
+                    label: _("");
+                  }
+                }
+              }
+            }
+          }
+
+          Adw.Bin stopped_service_box {
+            Box {
+              orientation: vertical;
+              hexpand: true;
+
+              Label stopped_label {
+                styles [
+                  "service-legend-header",
+                  "title-3"
+                ]
+
+                label: _("Stopped Services");
+              }
+
+              Box {
+                halign: center;
+
+                Image {
+                  icon-name: "service-stopped";
+                }
+
+                Label stopped_count {
+                  label: _("");
+                }
+              }
+            }
+          }
+
+          Adw.Bin disabled_service_box {
+            Box {
+              orientation: vertical;
+              hexpand: true;
+
+              Label disabled_label {
+                styles [
+                  "service-legend-header",
+                  "title-3"
+                ]
+
+                label: _("Disabled Services");
+              }
+
+              Box {
+                halign: center;
+
+                Image {
+                  icon-name: "service-disabled";
+                }
+
+                Label disabled_count {
+                  label: _("");
+                }
+              }
+            }
           }
         }
 

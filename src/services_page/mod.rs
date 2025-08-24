@@ -46,6 +46,7 @@ mod services_list_item;
 
 mod imp {
     use super::*;
+    use adw::glib::subclass::ObjectImplRef;
 
     pub struct Actions {
         pub start: gio::SimpleAction,
@@ -94,9 +95,27 @@ mod imp {
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
         #[template_child]
-        pub h1: TemplateChild<gtk::Label>,
+        pub service_legend: TemplateChild<gtk::FlowBox>,
         #[template_child]
-        pub h2: TemplateChild<gtk::Label>,
+        pub total_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub running_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub failed_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub stopped_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub disabled_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub total_count: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub running_count: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub failed_count: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub stopped_count: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub disabled_count: TemplateChild<gtk::Label>,
         #[template_child]
         pub start: TemplateChild<gtk::Button>,
         #[template_child]
@@ -126,8 +145,17 @@ mod imp {
         fn default() -> Self {
             Self {
                 column_view: TemplateChild::default(),
-                h1: TemplateChild::default(),
-                h2: TemplateChild::default(),
+                service_legend: Default::default(),
+                total_label: Default::default(),
+                running_label: Default::default(),
+                failed_label: Default::default(),
+                stopped_label: Default::default(),
+                disabled_label: Default::default(),
+                total_count: Default::default(),
+                running_count: Default::default(),
+                failed_count: Default::default(),
+                stopped_count: Default::default(),
+                disabled_count: Default::default(),
                 start: TemplateChild::default(),
                 start_label: TemplateChild::default(),
                 stop: TemplateChild::default(),
@@ -164,7 +192,11 @@ mod imp {
             }
             self.details_label.set_visible(false);
 
-            self.h2.set_visible(false);
+            self.total_label.set_visible(false);
+            self.running_label.set_visible(false);
+            self.failed_label.set_visible(false);
+            self.stopped_label.set_visible(false);
+            self.disabled_label.set_visible(false);
 
             self.name_column.set_fixed_width(1);
             self.name_column.set_expand(true);
@@ -180,7 +212,11 @@ mod imp {
             }
             self.details_label.set_visible(true);
 
-            self.h2.set_visible(true);
+            self.total_label.set_visible(true);
+            self.running_label.set_visible(true);
+            self.failed_label.set_visible(true);
+            self.stopped_label.set_visible(true);
+            self.disabled_label.set_visible(true);
 
             self.name_column.set_fixed_width(400);
             self.name_column.set_expand(false);
@@ -376,53 +412,87 @@ mod imp {
             };
 
             let filter = gtk::CustomFilter::new({
+                let this = self.obj().downgrade();
                 let window = window.downgrade();
                 move |obj| {
-                    use textdistance::{Algorithm, Levenshtein};
-
-                    let window = match window.upgrade() {
-                        None => return true,
-                        Some(w) => w,
-                    };
-                    let window = window.imp();
-
-                    if !window.search_button.is_active() {
-                        return true;
-                    }
-
-                    if window.header_search_entry.text().is_empty() {
-                        return true;
-                    }
-
                     let list_item = match obj.downcast_ref::<ServicesListItem>() {
                         None => return false,
                         Some(li) => li,
                     };
 
-                    let entry_name = list_item.name().to_lowercase();
-                    let pid = list_item.pid().to_string();
-                    let search_query = window.header_search_entry.text().to_lowercase();
+                    let searched = || {
+                        use textdistance::{Algorithm, Levenshtein};
 
-                    if entry_name.contains(&search_query)
-                        || (!pid.is_empty() && pid.contains(&search_query))
-                    {
-                        return true;
-                    }
+                        let window = match window.upgrade() {
+                            None => return true,
+                            Some(w) => w,
+                        };
+                        let window = window.imp();
 
-                    if search_query.contains(&entry_name)
-                        || (!pid.is_empty() && search_query.contains(&pid))
-                    {
-                        return true;
-                    }
+                        if !window.search_button.is_active() {
+                            return true;
+                        }
 
-                    let str_distance = Levenshtein::default()
-                        .for_str(&entry_name, &search_query)
-                        .ndist();
-                    if str_distance <= 0.6 {
-                        return true;
-                    }
+                        if window.header_search_entry.text().is_empty() {
+                            return true;
+                        }
 
-                    false
+                        let entry_name = list_item.name().to_lowercase();
+                        let pid = list_item.pid().to_string();
+                        let search_query = window.header_search_entry.text().to_lowercase();
+
+                        if entry_name.contains(&search_query)
+                            || (!pid.is_empty() && pid.contains(&search_query))
+                        {
+                            return true;
+                        }
+
+                        if search_query.contains(&entry_name)
+                            || (!pid.is_empty() && search_query.contains(&pid))
+                        {
+                            return true;
+                        }
+
+                        let str_distance = Levenshtein::default()
+                            .for_str(&entry_name, &search_query)
+                            .ndist();
+                        if str_distance <= 0.6 {
+                            return true;
+                        }
+
+                        false
+                    };
+
+                    let type_filter = || {
+                        let Some(this) = this.upgrade() else {
+                            return true;
+                        };
+
+                        let this = this.imp();
+
+                        this.service_legend
+                            .selected_children()
+                            .first()
+                            .map(|child| match child.index() {
+                                0 => true,
+                                1 => list_item.running(),
+                                2 => list_item.failed(),
+                                3 => {
+                                    list_item.enabled()
+                                        && !list_item.failed()
+                                        && !list_item.running()
+                                }
+                                4 => {
+                                    !list_item.running()
+                                        && !list_item.failed()
+                                        && !list_item.enabled()
+                                }
+                                _ => true,
+                            })
+                            .unwrap_or(true)
+                    };
+
+                    searched() && type_filter()
                 }
             });
 
@@ -441,6 +511,19 @@ mod imp {
                     }
                 }
             });
+
+            self.service_legend.connect_child_activated({
+                let filter = filter.downgrade();
+                move |_, _| {
+                    if let Some(filter) = filter.upgrade() {
+                        filter.changed(gtk::FilterChange::Different);
+                    }
+                }
+            });
+
+            self.service_legend
+                .child_at_index(0)
+                .map(|c| self.service_legend.select_child(&c));
 
             gtk::FilterListModel::new(Some(model), Some(filter))
         }
@@ -513,7 +596,9 @@ mod imp {
             }
 
             let total_services = model.n_items();
+            let mut disabled_services = 0;
             let mut running_services = 0;
+            let mut stopped_services = 0;
             let mut failed_services = 0;
             for i in 0..total_services {
                 let item = model.item(i).unwrap();
@@ -522,19 +607,19 @@ mod imp {
                         running_services += 1;
                     } else if item.failed() {
                         failed_services += 1;
+                    } else if item.enabled() {
+                        stopped_services += 1;
+                    } else {
+                        disabled_services += 1;
                     }
                 }
             }
 
-            self.h1.set_text(&i18n_f(
-                "{} Running Services",
-                &[&running_services.to_string()],
-            ));
-
-            self.h2.set_text(&i18n_f(
-                "{} failed services out of a total of {}",
-                &[&failed_services.to_string(), &total_services.to_string()],
-            ));
+            self.total_count.set_text(&total_services.to_string());
+            self.running_count.set_text(&running_services.to_string());
+            self.stopped_count.set_text(&stopped_services.to_string());
+            self.failed_count.set_text(&failed_services.to_string());
+            self.disabled_count.set_text(&disabled_services.to_string());
 
             if let Some(selection_model) = self
                 .column_view
