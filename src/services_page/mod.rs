@@ -47,6 +47,7 @@ mod services_list_item;
 mod imp {
     use super::*;
     use adw::glib::subclass::ObjectImplRef;
+    use gtk::Orientation::{Horizontal, Vertical};
 
     pub struct Actions {
         pub start: gio::SimpleAction,
@@ -94,6 +95,8 @@ mod imp {
     pub struct ServicesPage {
         #[template_child]
         pub column_view: TemplateChild<gtk::ColumnView>,
+        #[template_child]
+        pub top_legend: TemplateChild<gtk::Box>,
         #[template_child]
         pub service_legend: TemplateChild<gtk::FlowBox>,
         #[template_child]
@@ -145,6 +148,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 column_view: TemplateChild::default(),
+                top_legend: Default::default(),
                 service_legend: Default::default(),
                 total_label: Default::default(),
                 running_label: Default::default(),
@@ -192,6 +196,9 @@ mod imp {
             }
             self.details_label.set_visible(false);
 
+            self.service_legend.set_margin_bottom(10);
+            self.top_legend.set_orientation(Vertical);
+
             self.total_label.set_visible(false);
             self.running_label.set_visible(false);
             self.failed_label.set_visible(false);
@@ -211,6 +218,9 @@ mod imp {
                 self.restart_label.set_visible(true);
             }
             self.details_label.set_visible(true);
+
+            self.service_legend.set_margin_bottom(0);
+            self.top_legend.set_orientation(Horizontal);
 
             self.total_label.set_visible(true);
             self.running_label.set_visible(true);
@@ -536,6 +546,10 @@ mod imp {
                 let item = model.item(i).unwrap();
                 if let Some(item) = item.downcast_ref::<ServicesListItem>() {
                     if let Some(service) = readings.services.remove(item.name().as_str()) {
+                        if service.id == "cups-browsed.service" {
+                            println!("Cups: {:?}", service);
+                        }
+
                         item.set_description(
                             service
                                 .description

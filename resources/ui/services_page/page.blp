@@ -35,9 +35,10 @@ template $ServicesPage : Box {
     child: Box {
       orientation: vertical;
 
-      Box {
+      Box top_legend {
         margin-bottom: 20;
 
+        Box {
         FlowBox service_legend {
           orientation: horizontal;
           homogeneous: true;
@@ -45,15 +46,14 @@ template $ServicesPage : Box {
           Adw.Bin total_service_box {
             Box {
               orientation: vertical;
-              hexpand: true;
 
               Label total_label {
                 styles [
                   "service-legend-header",
-                  "title-3"
+                  "title-4"
                 ]
 
-                label: _("Total Services");
+                label: _("Total");
               }
 
               Box {
@@ -69,15 +69,14 @@ template $ServicesPage : Box {
           Adw.Bin running_service_box {
             Box {
               orientation: vertical;
-              hexpand: true;
 
               Label running_label {
                 styles [
                   "service-legend-header",
-                  "title-3"
+                  "title-4"
                 ]
 
-                label: _("Running Services");
+                label: _("Running");
               }
 
               Box {
@@ -97,15 +96,14 @@ template $ServicesPage : Box {
           Adw.Bin failed_service_box {
             Box {
               orientation: vertical;
-              hexpand: true;
 
               Label failed_label {
                 styles [
                   "service-legend-header",
-                  "title-3"
+                  "title-4"
                 ]
 
-                label: _("Failed Services");
+                label: _("Failed");
               }
 
               Box {
@@ -129,15 +127,14 @@ template $ServicesPage : Box {
           Adw.Bin stopped_service_box {
             Box {
               orientation: vertical;
-              hexpand: true;
 
               Label stopped_label {
                 styles [
                   "service-legend-header",
-                  "title-3"
+                  "title-4"
                 ]
 
-                label: _("Stopped Services");
+                label: _("Stopped");
               }
 
               Box {
@@ -157,15 +154,14 @@ template $ServicesPage : Box {
           Adw.Bin disabled_service_box {
             Box {
               orientation: vertical;
-              hexpand: true;
 
               Label disabled_label {
                 styles [
                   "service-legend-header",
-                  "title-3"
+                  "title-4"
                 ]
 
-                label: _("Disabled Services");
+                label: _("Disabled");
               }
 
               Box {
@@ -184,7 +180,12 @@ template $ServicesPage : Box {
         }
 
         Box {
-          valign: end;
+          hexpand: true;
+        }
+        }
+
+        Box {
+          valign: center;
           spacing: 5;
 
           Box {
