@@ -45,8 +45,8 @@ mod details_dialog;
 mod services_list_item;
 
 mod imp {
-    use adw::gio::ListStore;
     use super::*;
+    use adw::gio::ListStore;
     use gtk::Orientation::{Horizontal, Vertical};
 
     pub struct Actions {
@@ -462,7 +462,9 @@ mod imp {
                             1 => list_item.running(),
                             2 => list_item.failed(),
                             3 => list_item.enabled() && !list_item.failed() && !list_item.running(),
-                            4 => !list_item.running() && !list_item.failed() && !list_item.enabled(),
+                            4 => {
+                                !list_item.running() && !list_item.failed() && !list_item.enabled()
+                            }
                             _ => true,
                         }
                     };
@@ -620,18 +622,24 @@ mod imp {
             let failed_string = failed_services.to_string();
             let disabled_string = disabled_services.to_string();
 
-            let (total_string, running_string, stopped_string, failed_string, disabled_string) = if self.top_legend.orientation() == Horizontal {
-                (
-                    i18n_f("{} Total", &[&total_string]),
-                    i18n_f("{} Running", &[&running_string]),
-                    i18n_f("{} Stopped", &[&stopped_string]),
-                    i18n_f("{} Failed", &[&failed_string]),
-                    i18n_f("{} Disabled", &[&disabled_string]),
-                )
-            } else {
-                (total_string, running_string, stopped_string, failed_string, disabled_string)
-            };
-
+            let (total_string, running_string, stopped_string, failed_string, disabled_string) =
+                if self.top_legend.orientation() == Horizontal {
+                    (
+                        i18n_f("{} Total", &[&total_string]),
+                        i18n_f("{} Running", &[&running_string]),
+                        i18n_f("{} Stopped", &[&stopped_string]),
+                        i18n_f("{} Failed", &[&failed_string]),
+                        i18n_f("{} Disabled", &[&disabled_string]),
+                    )
+                } else {
+                    (
+                        total_string,
+                        running_string,
+                        stopped_string,
+                        failed_string,
+                        disabled_string,
+                    )
+                };
 
             self.total_service_box.set_label(Some(&total_string));
             self.running_service_box.set_label(Some(&running_string));
