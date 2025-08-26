@@ -546,10 +546,6 @@ mod imp {
                 let item = model.item(i).unwrap();
                 if let Some(item) = item.downcast_ref::<ServicesListItem>() {
                     if let Some(service) = readings.services.remove(item.name().as_str()) {
-                        if service.id == "cups-browsed.service" {
-                            println!("Cups: {:?}", service);
-                        }
-
                         item.set_description(
                             service
                                 .description
