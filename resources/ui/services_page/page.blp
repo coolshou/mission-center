@@ -39,149 +39,37 @@ template $ServicesPage : Box {
         margin-bottom: 20;
 
         Box {
-        FlowBox service_legend {
-          orientation: horizontal;
-          homogeneous: true;
+          valign: center;
+          spacing: 5;
 
-          Adw.Bin total_service_box {
-            Box {
-              orientation: vertical;
+          Adw.ToggleGroup service_legend {
+            orientation: horizontal;
+            homogeneous: true;
 
-              Label total_label {
-                styles [
-                  "service-legend-header",
-                  "title-4"
-                ]
+            Adw.Toggle total_service_box {
+              enabled: true;
+            }
 
-                label: _("Total");
-              }
+            Adw.Toggle running_service_box {
+              icon-name: "service-running";
+            }
 
-              Box {
-                halign: center;
+            Adw.Toggle failed_service_box {
+              icon-name: "service-failed";
+            }
 
-                Label total_count {
-                  label: _("");
-                }
-              }
+            Adw.Toggle stopped_service_box {
+              icon-name: "service-stopped";
+            }
+
+            Adw.Toggle disabled_service_box {
+              icon-name: "service-disabled";
             }
           }
 
-          Adw.Bin running_service_box {
-            Box {
-              orientation: vertical;
-
-              Label running_label {
-                styles [
-                  "service-legend-header",
-                  "title-4"
-                ]
-
-                label: _("Running");
-              }
-
-              Box {
-                halign: center;
-
-                Image {
-                  icon-name: "service-running";
-                }
-
-                Label running_count {
-                  label: _("");
-                }
-              }
-            }
+          Box {
+            hexpand: true;
           }
-
-          Adw.Bin failed_service_box {
-            Box {
-              orientation: vertical;
-
-              Label failed_label {
-                styles [
-                  "service-legend-header",
-                  "title-4"
-                ]
-
-                label: _("Failed");
-              }
-
-              Box {
-                halign: center;
-
-                Image {
-                  icon-name: "service-failed";
-                }
-
-                Box {
-                  halign: center;
-
-                  Label failed_count {
-                    label: _("");
-                  }
-                }
-              }
-            }
-          }
-
-          Adw.Bin stopped_service_box {
-            Box {
-              orientation: vertical;
-
-              Label stopped_label {
-                styles [
-                  "service-legend-header",
-                  "title-4"
-                ]
-
-                label: _("Stopped");
-              }
-
-              Box {
-                halign: center;
-
-                Image {
-                  icon-name: "service-stopped";
-                }
-
-                Label stopped_count {
-                  label: _("");
-                }
-              }
-            }
-          }
-
-          Adw.Bin disabled_service_box {
-            Box {
-              orientation: vertical;
-
-              Label disabled_label {
-                styles [
-                  "service-legend-header",
-                  "title-4"
-                ]
-
-                label: _("Disabled");
-              }
-
-              Box {
-                halign: center;
-
-                Image {
-                  icon-name: "service-disabled";
-                }
-
-                Label disabled_count {
-                  label: _("");
-                }
-              }
-            }
-          }
-        }
-
-        Box {
-          hexpand: true;
-        }
         }
 
         Box {

@@ -45,8 +45,8 @@ mod details_dialog;
 mod services_list_item;
 
 mod imp {
+    use adw::gio::ListStore;
     use super::*;
-    use adw::glib::subclass::ObjectImplRef;
     use gtk::Orientation::{Horizontal, Vertical};
 
     pub struct Actions {
@@ -98,27 +98,17 @@ mod imp {
         #[template_child]
         pub top_legend: TemplateChild<gtk::Box>,
         #[template_child]
-        pub service_legend: TemplateChild<gtk::FlowBox>,
+        pub service_legend: TemplateChild<adw::ToggleGroup>,
         #[template_child]
-        pub total_label: TemplateChild<gtk::Label>,
+        pub total_service_box: TemplateChild<adw::Toggle>,
         #[template_child]
-        pub running_label: TemplateChild<gtk::Label>,
+        pub running_service_box: TemplateChild<adw::Toggle>,
         #[template_child]
-        pub failed_label: TemplateChild<gtk::Label>,
+        pub failed_service_box: TemplateChild<adw::Toggle>,
         #[template_child]
-        pub stopped_label: TemplateChild<gtk::Label>,
+        pub stopped_service_box: TemplateChild<adw::Toggle>,
         #[template_child]
-        pub disabled_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub total_count: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub running_count: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub failed_count: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub stopped_count: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub disabled_count: TemplateChild<gtk::Label>,
+        pub disabled_service_box: TemplateChild<adw::Toggle>,
         #[template_child]
         pub start: TemplateChild<gtk::Button>,
         #[template_child]
@@ -150,16 +140,11 @@ mod imp {
                 column_view: TemplateChild::default(),
                 top_legend: Default::default(),
                 service_legend: Default::default(),
-                total_label: Default::default(),
-                running_label: Default::default(),
-                failed_label: Default::default(),
-                stopped_label: Default::default(),
-                disabled_label: Default::default(),
-                total_count: Default::default(),
-                running_count: Default::default(),
-                failed_count: Default::default(),
-                stopped_count: Default::default(),
-                disabled_count: Default::default(),
+                total_service_box: Default::default(),
+                running_service_box: Default::default(),
+                failed_service_box: Default::default(),
+                stopped_service_box: Default::default(),
+                disabled_service_box: Default::default(),
                 start: TemplateChild::default(),
                 start_label: TemplateChild::default(),
                 stop: TemplateChild::default(),
@@ -199,11 +184,7 @@ mod imp {
             self.service_legend.set_margin_bottom(10);
             self.top_legend.set_orientation(Vertical);
 
-            self.total_label.set_visible(false);
-            self.running_label.set_visible(false);
-            self.failed_label.set_visible(false);
-            self.stopped_label.set_visible(false);
-            self.disabled_label.set_visible(false);
+            self.update_section_labels();
 
             self.name_column.set_fixed_width(1);
             self.name_column.set_expand(true);
@@ -222,11 +203,7 @@ mod imp {
             self.service_legend.set_margin_bottom(0);
             self.top_legend.set_orientation(Horizontal);
 
-            self.total_label.set_visible(true);
-            self.running_label.set_visible(true);
-            self.failed_label.set_visible(true);
-            self.stopped_label.set_visible(true);
-            self.disabled_label.set_visible(true);
+            self.update_section_labels();
 
             self.name_column.set_fixed_width(400);
             self.name_column.set_expand(false);
@@ -480,26 +457,14 @@ mod imp {
 
                         let this = this.imp();
 
-                        this.service_legend
-                            .selected_children()
-                            .first()
-                            .map(|child| match child.index() {
-                                0 => true,
-                                1 => list_item.running(),
-                                2 => list_item.failed(),
-                                3 => {
-                                    list_item.enabled()
-                                        && !list_item.failed()
-                                        && !list_item.running()
-                                }
-                                4 => {
-                                    !list_item.running()
-                                        && !list_item.failed()
-                                        && !list_item.enabled()
-                                }
-                                _ => true,
-                            })
-                            .unwrap_or(true)
+                        match this.service_legend.active() {
+                            0 => true,
+                            1 => list_item.running(),
+                            2 => list_item.failed(),
+                            3 => list_item.enabled() && !list_item.failed() && !list_item.running(),
+                            4 => !list_item.running() && !list_item.failed() && !list_item.enabled(),
+                            _ => true,
+                        }
                     };
 
                     searched() && type_filter()
@@ -522,18 +487,14 @@ mod imp {
                 }
             });
 
-            self.service_legend.connect_child_activated({
+            self.service_legend.connect_active_notify({
                 let filter = filter.downgrade();
-                move |_, _| {
+                move |_| {
                     if let Some(filter) = filter.upgrade() {
                         filter.changed(gtk::FilterChange::Different);
                     }
                 }
             });
-
-            self.service_legend
-                .child_at_index(0)
-                .map(|c| self.service_legend.select_child(&c));
 
             gtk::FilterListModel::new(Some(model), Some(filter))
         }
@@ -605,31 +566,7 @@ mod imp {
                 model.append(&model_item_builder.build());
             }
 
-            let total_services = model.n_items();
-            let mut disabled_services = 0;
-            let mut running_services = 0;
-            let mut stopped_services = 0;
-            let mut failed_services = 0;
-            for i in 0..total_services {
-                let item = model.item(i).unwrap();
-                if let Some(item) = item.downcast_ref::<ServicesListItem>() {
-                    if item.running() {
-                        running_services += 1;
-                    } else if item.failed() {
-                        failed_services += 1;
-                    } else if item.enabled() {
-                        stopped_services += 1;
-                    } else {
-                        disabled_services += 1;
-                    }
-                }
-            }
-
-            self.total_count.set_text(&total_services.to_string());
-            self.running_count.set_text(&running_services.to_string());
-            self.stopped_count.set_text(&stopped_services.to_string());
-            self.failed_count.set_text(&failed_services.to_string());
-            self.disabled_count.set_text(&disabled_services.to_string());
+            self.update_section_labels();
 
             if let Some(selection_model) = self
                 .column_view
@@ -653,6 +590,54 @@ mod imp {
                     }
                 }
             }
+        }
+
+        fn update_section_labels(&self) {
+            let model = &self.model;
+            let total_services = model.n_items();
+            let mut disabled_services = 0;
+            let mut running_services = 0;
+            let mut stopped_services = 0;
+            let mut failed_services = 0;
+            for i in 0..total_services {
+                let item = model.item(i).unwrap();
+                if let Some(item) = item.downcast_ref::<ServicesListItem>() {
+                    if item.running() {
+                        running_services += 1;
+                    } else if item.failed() {
+                        failed_services += 1;
+                    } else if item.enabled() {
+                        stopped_services += 1;
+                    } else {
+                        disabled_services += 1;
+                    }
+                }
+            }
+
+            let total_string = total_services.to_string();
+            let running_string = running_services.to_string();
+            let stopped_string = stopped_services.to_string();
+            let failed_string = failed_services.to_string();
+            let disabled_string = disabled_services.to_string();
+
+            let (total_string, running_string, stopped_string, failed_string, disabled_string) = if self.top_legend.orientation() == Horizontal {
+                (
+                    i18n_f("{} Total", &[&total_string]),
+                    i18n_f("{} Running", &[&running_string]),
+                    i18n_f("{} Stopped", &[&stopped_string]),
+                    i18n_f("{} Failed", &[&failed_string]),
+                    i18n_f("{} Disabled", &[&disabled_string]),
+                )
+            } else {
+                (total_string, running_string, stopped_string, failed_string, disabled_string)
+            };
+
+
+            self.total_service_box.set_label(Some(&total_string));
+            self.running_service_box.set_label(Some(&running_string));
+            self.stopped_service_box.set_label(Some(&stopped_string));
+            self.failed_service_box.set_label(Some(&failed_string));
+            self.disabled_service_box.set_label(Some(&disabled_string));
         }
     }
 
