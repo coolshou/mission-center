@@ -1,3 +1,22 @@
+spec:
+  inputs:
+    BUILD_FLATPAK:
+      default: false
+      type: boolean
+    PORTABLE_TARBALL:
+      default: false
+      type: boolean
+    BUILD_APPIMAGE:
+      default: false
+      type: boolean
+    BUILD_SNAP:
+      default: false
+      type: boolean
+    BUILD_ARM:
+      default: false
+      type: boolean
+---
+
 image: "ubuntu:25.04"
 
 workflow:
@@ -121,7 +140,7 @@ flatpak-job-x86:
     paths:
       - flatpak/missioncenter-x86_64.flatpak
   rules:
-    - if: $BUILD_FLATPAK != null
+    - if: "'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
 
 flatpak-job-arm:
@@ -140,7 +159,7 @@ flatpak-job-arm:
     paths:
       - flatpak/missioncenter-aarch64.flatpak
   rules:
-    - if: $BUILD_FLATPAK != null
+    - if: "'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
 
 package-build-job-x86:
@@ -161,7 +180,7 @@ package-build-job-x86:
       - 'logs.txt'
       - 'portable-x86_64.tar.gz'
   rules:
-    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - if: "'false' == '$[[ inputs.PORTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
     - !reference [ ".shared", "ready_to_merge" ]
     - when: never
 
@@ -183,7 +202,7 @@ package-build-job-arm:
       - 'logs.txt'
       - 'portable-aarch64.tar.gz'
   rules:
-    - if: ($PORTABLE_TARBALL == null || $PORTABLE_TARBALL == '') && ($BUILD_APPIMAGE != null || $BUILD_SNAP != null)
+    - if: "'false' == '$[[ inputs.PORTABLE_TARBALL ]]' && ('true' == '$[[ inputs.BUILD_APPIMAGE ]]' || 'true' == '$[[ inputs.BUILD_SNAP ]]')"
     - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-x86:
@@ -204,7 +223,7 @@ snap-job-x86:
     paths:
       - '**/*.snap'
   rules:
-    - if: $BUILD_SNAP != null
+    - if: "'true' == '$[[ inputs.BUILD_SNAP ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
 
 snap-job-arm:
@@ -228,7 +247,7 @@ snap-job-arm:
     paths:
       - '**/*.snap'
   rules:
-    - if: $BUILD_SNAP != null
+    - if: "'true' == '$[[ inputs.BUILD_SNAP ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-x86:
@@ -251,7 +270,7 @@ appimage-job-x86:
     paths:
       - '**/*.AppImage'
   rules:
-    - if: $BUILD_APPIMAGE != null
+    - if: "'true' == '$[[ inputs.BUILD_APPIMAGE ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
 
 appimage-job-arm:
@@ -276,5 +295,5 @@ appimage-job-arm:
     paths:
       - '**/*.AppImage'
   rules:
-    - if: $BUILD_APPIMAGE != null
+    - if: "'true' == '$[[ inputs.BUILD_APPIMAGE ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
