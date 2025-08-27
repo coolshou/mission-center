@@ -19,7 +19,7 @@
  */
 
 use std::collections::HashMap;
-
+use std::env;
 use gtk::gio;
 use gtk::prelude::*;
 
@@ -31,7 +31,8 @@ use magpie_types::services::Service;
 
 fn service_to_section_type(service: &Service) -> ServicesSectionType {
     if let Some(user) = service.user.as_ref() {
-        if user == "root" || user.is_empty() {
+        // todo have magpie set user or not
+        if env::var_os("USER").map(|u| u.to_str().map(|u| u != user)).flatten().unwrap_or(true) || user.is_empty() {
             ServicesSectionType::SystemServices
         } else {
             ServicesSectionType::UserServices
@@ -117,36 +118,30 @@ pub fn update_services(
             row_model
         };
 
-        let prev_children = row_model.children();
-
-        // kill children if we have children and (we dont anymore OR that child changed)
-        if prev_children.n_items() > 0 {
-            if let Some(pid) = service.pid {
-                if let Some(child) = prev_children
-                    .item(0)
-                    .and_then(|obj| obj.downcast::<ServicesRowModel>().ok())
-                {
-                    if child.pid() != pid {
-                        prev_children.remove_all();
-                    }
-                } else {
-                    prev_children.remove_all();
-                };
-            } else {
-                prev_children.remove_all();
-            }
-        }
-
-        row_model.set_pid(service.pid());
         row_model.set_id(service_id.as_str());
         row_model.set_icon(get_service_icon(&service));
         row_model.set_name(service.id.as_str());
+
+        if let Some(process) = process_map.get(service.pid.as_ref().unwrap_or(&0)) {
+            let usage_stats = process.merged_usage_stats(&process_map);
+
+            let command_line = process.cmd.join(" ");
+
+            row_model.set_command_line(command_line);
+            row_model.set_cpu_usage(usage_stats.cpu_usage);
+            row_model.set_memory_usage(usage_stats.memory_usage);
+            row_model.set_shared_memory_usage(usage_stats.shared_memory_usage);
+            row_model.set_disk_usage(usage_stats.disk_usage);
+            row_model.set_network_usage(usage_stats.network_usage);
+            row_model.set_gpu_usage(usage_stats.gpu_usage);
+            row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
+        }
 
         if let Some(pid) = service.pid {
             update(
                 process_map,
                 &pid,
-                list,
+                &row_model.children(),
                 app_icons,
                 icon,
                 use_merged_stats,
@@ -261,7 +256,7 @@ pub fn update(
     let command_line = process.cmd.join(" ");
 
     row_model.set_name(pretty_name);
-    row_model.set_icon(icon);
+    // row_model.set_icon(icon);
     row_model.set_command_line(command_line);
     row_model.set_pid(process.pid);
     row_model.set_cpu_usage(usage_stats.cpu_usage);

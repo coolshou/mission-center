@@ -32,7 +32,6 @@ use gtk::{gio, glib, subclass::prelude::*};
 use crate::magpie_client::App;
 
 use crate::i18n::{i18n, ni18n_f};
-use crate::neo_services_page::row_model::ServicesSectionType::{SystemServices, UserServices};
 use columns::*;
 use row_model::{
     ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
@@ -127,12 +126,12 @@ mod imp {
                 show_column_separators: Cell::new(false),
 
                 user_section: ServicesRowModelBuilder::new()
-                    .name(&i18n("Apps"))
+                    .name(&i18n("User Services"))
                     .content_type(ServicesContentType::SectionHeader)
                     .section_type(ServicesSectionType::UserServices)
                     .build(),
                 system_section: ServicesRowModelBuilder::new()
-                    .name(&i18n("Processes"))
+                    .name(&i18n("System Services"))
                     .content_type(ServicesContentType::SectionHeader)
                     .section_type(ServicesSectionType::SystemServices)
                     .build(),
@@ -326,7 +325,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            SystemServices,
+            ServicesSectionType::SystemServices,
         );
 
         models::update_services(
@@ -336,7 +335,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            UserServices,
+            ServicesSectionType::UserServices,
         );
 
         // Select the first item in the list
@@ -385,7 +384,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            SystemServices,
+            ServicesSectionType::SystemServices,
         );
 
         models::update_services(
@@ -395,7 +394,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            UserServices,
+            ServicesSectionType::UserServices,
         );
 
         let _ = std::mem::replace(
