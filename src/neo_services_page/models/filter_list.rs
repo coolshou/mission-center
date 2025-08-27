@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
+use adw::ToggleGroup;
 use gtk::gio;
 use gtk::glib::g_critical;
 use gtk::prelude::*;
@@ -27,7 +27,10 @@ use textdistance::{Algorithm, Levenshtein};
 use crate::app;
 use crate::neo_services_page::row_model::{ServicesContentType, ServicesRowModel};
 
-pub fn model(tree_list_model: impl IsA<gio::ListModel>) -> gtk::FilterListModel {
+pub fn model(
+    tree_list_model: impl IsA<gio::ListModel>,
+    group: &ToggleGroup,
+) -> gtk::FilterListModel {
     let Some(window) = app!().window() else {
         g_critical!(
             "MissionCenter::ServicesPage",
@@ -38,20 +41,8 @@ pub fn model(tree_list_model: impl IsA<gio::ListModel>) -> gtk::FilterListModel 
 
     let filter = gtk::CustomFilter::new({
         let window = window.downgrade();
+        let group = group.downgrade();
         move |obj| {
-            let Some(window) = window.upgrade() else {
-                return true;
-            };
-            let window = window.imp();
-
-            if !window.search_button.is_active() {
-                return true;
-            }
-
-            if window.header_search_entry.text().is_empty() {
-                return true;
-            }
-
             let Some(row_model) = obj
                 .downcast_ref::<gtk::TreeListRow>()
                 .and_then(|row| row.item())
@@ -60,30 +51,66 @@ pub fn model(tree_list_model: impl IsA<gio::ListModel>) -> gtk::FilterListModel 
                 return false;
             };
 
-            if row_model.content_type() == ServicesContentType::SectionHeader {
-                return true;
-            }
+            let search = (|| {
+                let Some(window) = window.upgrade() else {
+                    return true;
+                };
 
-            let entry_name = row_model.name().to_lowercase();
-            let pid = row_model.pid().to_string();
-            let search_query = window.header_search_entry.text().to_lowercase();
+                let window = window.imp();
 
-            if entry_name.contains(&search_query) || pid.contains(&search_query) {
-                return true;
-            }
+                if !window.search_button.is_active() {
+                    return true;
+                }
 
-            if search_query.contains(&entry_name) || search_query.contains(&pid) {
-                return true;
-            }
+                if window.header_search_entry.text().is_empty() {
+                    return true;
+                }
 
-            let str_distance = Levenshtein::default()
-                .for_str(&entry_name, &search_query)
-                .ndist();
-            if str_distance <= 0.6 {
-                return true;
-            }
+                if row_model.content_type() == ServicesContentType::SectionHeader {
+                    return true;
+                }
 
-            false
+                let entry_name = row_model.name().to_lowercase();
+                let pid = row_model.pid().to_string();
+                let search_query = window.header_search_entry.text().to_lowercase();
+
+                if entry_name.contains(&search_query) || pid.contains(&search_query) {
+                    return true;
+                }
+
+                if search_query.contains(&entry_name) || search_query.contains(&pid) {
+                    return true;
+                }
+
+                let str_distance = Levenshtein::default()
+                    .for_str(&entry_name, &search_query)
+                    .ndist();
+                if str_distance <= 0.6 {
+                    return true;
+                }
+
+                false
+            })();
+
+            let filter = (|| {
+                let Some(group) = group.upgrade() else {
+                    return true;
+                };
+
+                if row_model.content_type() == ServicesContentType::Service {
+                    return match group.active() {
+                        0 => true,
+                        1 => row_model.icon() == "service-running",
+                        2 => row_model.icon() == "service-failed",
+                        3 => row_model.icon() == "service-stopped",
+                        4 => row_model.icon() == "service-disabled",
+                        _ => true,
+                    };
+                }
+                true
+            })();
+
+            search && filter
         }
     });
 
@@ -98,6 +125,15 @@ pub fn model(tree_list_model: impl IsA<gio::ListModel>) -> gtk::FilterListModel 
                 if let Some(filter) = filter.upgrade() {
                     filter.changed(gtk::FilterChange::Different);
                 }
+            }
+        }
+    });
+
+    group.connect_active_notify({
+        let filter = filter.downgrade();
+        move |_| {
+            if let Some(filter) = filter.upgrade() {
+                filter.changed(gtk::FilterChange::Different);
             }
         }
     });

@@ -22,17 +22,18 @@ use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::HashMap;
 use std::fmt::Write;
 
+use crate::magpie_client::App;
 use adw::glib::{ParamSpec, Properties, Value};
 use adw::prelude::*;
 use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
 use glib::{gobject_ffi, Object};
+use gtk::Orientation::Horizontal;
 use gtk::{gio, glib, subclass::prelude::*};
 
-use crate::magpie_client::App;
-
-use crate::i18n::{i18n, ni18n_f};
+use crate::i18n::{i18n, i18n_f, ni18n_f};
 use columns::*;
+use magpie_types::services::Service;
 use row_model::{
     ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
 };
@@ -46,15 +47,27 @@ mod settings;
 
 mod imp {
     use super::*;
+    use gtk::Orientation::{Horizontal, Vertical};
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::ServicesPage)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/services_page/page.ui")]
     pub struct ServicesPage {
         #[template_child]
-        pub h1: TemplateChild<gtk::Label>,
+        pub top_legend: TemplateChild<gtk::Box>,
         #[template_child]
-        pub h2: TemplateChild<gtk::Label>,
+        pub service_legend: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub total_service_box: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub running_service_box: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub failed_service_box: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub stopped_service_box: TemplateChild<adw::Toggle>,
+        #[template_child]
+        pub disabled_service_box: TemplateChild<adw::Toggle>,
+
         #[template_child]
         pub collapse_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -121,8 +134,14 @@ mod imp {
     impl Default for ServicesPage {
         fn default() -> Self {
             Self {
-                h1: TemplateChild::default(),
-                h2: TemplateChild::default(),
+                top_legend: TemplateChild::default(),
+                service_legend: TemplateChild::default(),
+                total_service_box: TemplateChild::default(),
+                running_service_box: TemplateChild::default(),
+                failed_service_box: TemplateChild::default(),
+                stopped_service_box: TemplateChild::default(),
+                disabled_service_box: TemplateChild::default(),
+
                 collapse_label: TemplateChild::default(),
                 stop_label: TemplateChild::default(),
                 force_stop_label: TemplateChild::default(),
@@ -187,7 +206,7 @@ mod imp {
             self.force_stop_label.set_visible(false);
             self.details_label.set_visible(false);
 
-            self.h2.set_visible(false);
+            self.top_legend.set_orientation(Vertical);
         }
 
         pub fn expand(&self) {
@@ -196,7 +215,7 @@ mod imp {
             self.force_stop_label.set_visible(true);
             self.details_label.set_visible(true);
 
-            self.h2.set_visible(true);
+            self.top_legend.set_orientation(Horizontal);
         }
     }
 
@@ -312,33 +331,14 @@ impl ServicesPage {
         // which is not yet available in the constructor.
         let base_model = models::base_model(&imp.user_section, &imp.system_section);
         let tree_list_model = models::tree_list_model(base_model);
-        let filter_list_model = models::filter_list_model(tree_list_model);
+        let filter_list_model =
+            models::filter_list_model(tree_list_model, &imp.service_legend.get());
         let (sort_list_model, row_sorter) =
             models::sort_list_model(filter_list_model, &imp.column_view);
         let selection_model = models::selection_model(&self, sort_list_model);
         imp.column_view.set_model(Some(&selection_model));
 
         let _ = imp.row_sorter.set(row_sorter);
-
-        let mut buffer = ArrayString::<64>::new();
-        let running_apps_len = readings.running_apps.len() as u32;
-        let _ = write!(&mut buffer, "{}", running_apps_len);
-        imp.h1.set_label(&ni18n_f(
-            "{} Running App",
-            "{} Running Apps",
-            running_apps_len,
-            &[buffer.as_str()],
-        ));
-
-        buffer.clear();
-        let running_processes_len = readings.running_processes.len() as u32;
-        let _ = write!(&mut buffer, "{}", running_processes_len);
-        imp.h2.set_label(&ni18n_f(
-            "{} Running Process",
-            "{} Running Processes",
-            running_processes_len,
-            &[buffer.as_str()],
-        ));
 
         update_column_titles(
             &imp.cpu_column,
@@ -373,31 +373,68 @@ impl ServicesPage {
         // Select the first item in the list
         selection_model.set_selected(0);
 
+        self.update_section_labels(&readings.services);
+
         true
+    }
+
+    fn update_section_labels(&self, services: &HashMap<String, Service>) {
+        let services = services.values().collect::<Vec<_>>();
+
+        let total_services = services.len();
+        let mut disabled_services = 0;
+        let mut running_services = 0;
+        let mut stopped_services = 0;
+        let mut failed_services = 0;
+        for service in services {
+            if service.running {
+                running_services += 1;
+            } else if service.failed {
+                failed_services += 1;
+            } else if service.enabled {
+                stopped_services += 1;
+            } else {
+                disabled_services += 1;
+            }
+        }
+
+        let total_string = total_services.to_string();
+        let running_string = running_services.to_string();
+        let stopped_string = stopped_services.to_string();
+        let failed_string = failed_services.to_string();
+        let disabled_string = disabled_services.to_string();
+
+        let imp = self.imp();
+
+        let (total_string, running_string, stopped_string, failed_string, disabled_string) =
+            // collapsed check
+            if imp.top_legend.orientation() == Horizontal {
+                (
+                    i18n_f("{} Total", &[&total_string]),
+                    i18n_f("{} Running", &[&running_string]),
+                    i18n_f("{} Stopped", &[&stopped_string]),
+                    i18n_f("{} Failed", &[&failed_string]),
+                    i18n_f("{} Disabled", &[&disabled_string]),
+                )
+            } else {
+                (
+                    total_string,
+                    running_string,
+                    stopped_string,
+                    failed_string,
+                    disabled_string,
+                )
+            };
+
+        imp.total_service_box.set_label(Some(&total_string));
+        imp.running_service_box.set_label(Some(&running_string));
+        imp.stopped_service_box.set_label(Some(&stopped_string));
+        imp.failed_service_box.set_label(Some(&failed_string));
+        imp.disabled_service_box.set_label(Some(&disabled_string));
     }
 
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
-
-        let mut buffer = ArrayString::<64>::new();
-        let running_apps_len = readings.running_apps.len() as u32;
-        let _ = write!(&mut buffer, "{}", running_apps_len);
-        imp.h1.set_label(&ni18n_f(
-            "{} Running App",
-            "{} Running Apps",
-            running_apps_len,
-            &[buffer.as_str()],
-        ));
-
-        buffer.clear();
-        let running_processes_len = readings.running_processes.len() as u32;
-        let _ = write!(&mut buffer, "{}", running_processes_len);
-        imp.h2.set_label(&ni18n_f(
-            "{} Running Process",
-            "{} Running Processes",
-            running_processes_len,
-            &[buffer.as_str()],
-        ));
 
         update_column_titles(
             &imp.cpu_column,
@@ -441,6 +478,8 @@ impl ServicesPage {
         if readings.network_stats_error.is_some() {
             imp.network_usage_column.set_visible(false);
         }
+
+        self.update_section_labels(&readings.services);
 
         true
     }
