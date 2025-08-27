@@ -17,14 +17,16 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-use std::cmp::Ordering;
 use arrayvec::ArrayString;
 use gtk::glib;
 use gtk::prelude::*;
+use std::cmp::Ordering;
 use std::fmt::Write;
 
-use crate::neo_services_page::row_model::{ServicesContentType, ServicesRowModel, ServicesSectionType};
 use crate::i18n::i18n;
+use crate::neo_services_page::row_model::{
+    ServicesContentType, ServicesRowModel, ServicesSectionType,
+};
 
 pub use cpu::label_formatter as cpu_label_formatter;
 pub use cpu::list_item_factory as cpu_list_item_factory;
@@ -402,14 +404,23 @@ fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {
 }
 
 #[inline]
-fn convert_order(
-    sort_order: gtk::SortType,
-    ordering: Ordering
-) -> Ordering {
+fn convert_order(sort_order: gtk::SortType, ordering: Ordering) -> Ordering {
     match ordering {
-        Ordering::Less => { if sort_order == gtk::SortType::Ascending { Ordering::Less } else { Ordering::Greater } }
-        Ordering::Equal => { Ordering::Equal }
-        Ordering::Greater => { if sort_order == gtk::SortType::Ascending { Ordering::Greater } else { Ordering::Less } }
+        Ordering::Less => {
+            if sort_order == gtk::SortType::Ascending {
+                Ordering::Less
+            } else {
+                Ordering::Greater
+            }
+        }
+        Ordering::Equal => Ordering::Equal,
+        Ordering::Greater => {
+            if sort_order == gtk::SortType::Ascending {
+                Ordering::Greater
+            } else {
+                Ordering::Less
+            }
+        }
     }
 }
 
@@ -431,11 +442,11 @@ fn compare_column_entries_by(
         Ordering::Equal => {
             // continue
         }
-        order => { return convert_order(sort_order, order) }
+        order => return convert_order(sort_order, order),
     }
 
     match lhs.content_type().cmp(&rhs.content_type()) {
-        Ordering::Equal => { compare_fn(lhs, rhs) }
-        order => { convert_order(sort_order, order) }
+        Ordering::Equal => compare_fn(lhs, rhs),
+        order => convert_order(sort_order, order),
     }
 }

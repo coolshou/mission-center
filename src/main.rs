@@ -37,12 +37,12 @@ mod application;
 mod apps_page;
 mod i18n;
 mod magpie_client;
+mod neo_services_page;
 mod performance_page;
 mod preferences;
 mod services_page;
 mod widgets;
 mod window;
-mod neo_services_page;
 
 #[macro_export]
 macro_rules! glib_clone {

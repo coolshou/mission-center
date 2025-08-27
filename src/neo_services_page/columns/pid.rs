@@ -20,11 +20,11 @@
 
 use std::cmp::Ordering;
 
+use super::{compare_column_entries_by, sort_order, ServicesLabelCell};
+use crate::neo_services_page::row_model::ServicesContentType;
+use crate::services_label_cell_factory;
 use gtk::glib;
 use gtk::prelude::*;
-use crate::neo_services_page::row_model::ServicesContentType;
-use super::{compare_column_entries_by, sort_order, ServicesLabelCell};
-use crate::services_label_cell_factory;
 
 pub fn list_item_factory() -> gtk::SignalListItemFactory {
     services_label_cell_factory!("pid", ServicesContentType::SectionHeader, label_formatter)

@@ -108,7 +108,9 @@ pub fn configure(imp: &ServicesPageImp) {
                     return;
                 };
 
-                let Some(row_model) = row.item().and_then(|item| item.downcast::<ServicesRowModel>().ok())
+                let Some(row_model) = row
+                    .item()
+                    .and_then(|item| item.downcast::<ServicesRowModel>().ok())
                 else {
                     continue;
                 };
@@ -148,7 +150,10 @@ fn calculate_anchor_point(
     if x > 0. && y > 0. {
         imp.context_menu.set_has_arrow(false);
 
-        match anchor_widget.compute_point(neo_services_page, &gtk::graphene::Point::new(x as _, y as _)) {
+        match anchor_widget.compute_point(
+            neo_services_page,
+            &gtk::graphene::Point::new(x as _, y as _),
+        ) {
             Some(p) => gdk::Rectangle::new(p.x().round() as i32, p.y().round() as i32, 1, 1),
             None => {
                 g_critical!(
@@ -203,7 +208,10 @@ fn find_stoppable_child(row_model: &ServicesRowModel) -> Option<ServicesRowModel
 
     let children = row_model.children();
     for i in 0..children.n_items() {
-        let Some(child) = children.item(i).and_then(|i| i.downcast::<ServicesRowModel>().ok()) else {
+        let Some(child) = children
+            .item(i)
+            .and_then(|i| i.downcast::<ServicesRowModel>().ok())
+        else {
             continue;
         };
         if let Some(rm) = find_stoppable_child(&child) {

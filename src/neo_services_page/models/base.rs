@@ -22,7 +22,10 @@ use gtk::gio;
 
 use crate::neo_services_page::row_model::ServicesRowModel;
 
-pub fn model(apps_section: &ServicesRowModel, processes_section: &ServicesRowModel) -> gio::ListStore {
+pub fn model(
+    apps_section: &ServicesRowModel,
+    processes_section: &ServicesRowModel,
+) -> gio::ListStore {
     let model = gio::ListStore::new::<ServicesRowModel>();
     model.append(apps_section);
     model.append(processes_section);

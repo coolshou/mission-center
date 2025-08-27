@@ -32,9 +32,11 @@ use gtk::{gio, glib, subclass::prelude::*};
 use crate::magpie_client::App;
 
 use crate::i18n::{i18n, ni18n_f};
-use columns::*;
-use row_model::{ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType};
 use crate::neo_services_page::row_model::ServicesSectionType::{SystemServices, UserServices};
+use columns::*;
+use row_model::{
+    ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
+};
 
 mod actions;
 mod columns;
@@ -324,7 +326,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            SystemServices
+            SystemServices,
         );
 
         models::update_services(
@@ -334,7 +336,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            UserServices
+            UserServices,
         );
 
         // Select the first item in the list
@@ -383,7 +385,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            SystemServices
+            SystemServices,
         );
 
         models::update_services(
@@ -393,7 +395,7 @@ impl ServicesPage {
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
             imp.use_merged_stats.get(),
-            UserServices
+            UserServices,
         );
 
         let _ = std::mem::replace(

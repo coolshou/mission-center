@@ -1,9 +1,9 @@
+use crate::neo_services_page::imp::ServicesPage;
+use crate::settings;
 use glib::g_critical;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
-use crate::neo_services_page::imp::ServicesPage;
-use crate::settings;
 
 pub fn configure(imp: &ServicesPage) {
     let neo_services_page = imp.obj();

@@ -23,9 +23,11 @@ use std::collections::HashMap;
 use gtk::gio;
 use gtk::prelude::*;
 
+use crate::neo_services_page::row_model::{
+    ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
+};
 use magpie_types::processes::Process;
 use magpie_types::services::Service;
-use crate::neo_services_page::row_model::{ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType};
 
 fn service_to_section_type(service: &Service) -> ServicesSectionType {
     if let Some(user) = service.user.as_ref() {
@@ -60,11 +62,14 @@ pub fn update_services(
     app_icons: &HashMap<u32, String>,
     icon: &str,
     use_merged_stats: bool,
-    section_type: ServicesSectionType
+    section_type: ServicesSectionType,
 ) {
     let mut to_remove = Vec::with_capacity(list.n_items() as _);
     for i in (0..list.n_items()).rev() {
-        let Some(service) = list.item(i).and_then(|obj| obj.downcast::<ServicesRowModel>().ok()) else {
+        let Some(service) = list
+            .item(i)
+            .and_then(|obj| obj.downcast::<ServicesRowModel>().ok())
+        else {
             to_remove.push(i);
             continue;
         };
@@ -119,7 +124,8 @@ pub fn update_services(
             if let Some(pid) = service.pid {
                 if let Some(child) = prev_children
                     .item(0)
-                    .and_then(|obj| obj.downcast::<ServicesRowModel>().ok()) {
+                    .and_then(|obj| obj.downcast::<ServicesRowModel>().ok())
+                {
                     if child.pid() != pid {
                         prev_children.remove_all();
                     }

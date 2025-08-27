@@ -686,7 +686,8 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             use crate::{
-                apps_page::AppsPage, performance_page::PerformancePage, neo_services_page::ServicesPage,
+                apps_page::AppsPage, neo_services_page::ServicesPage,
+                performance_page::PerformancePage,
             };
 
             ListCell::ensure_type();
