@@ -228,8 +228,38 @@ template $ServicesPage : Box {
     };
   }
 
+  PopoverMenu service_context_menu {
+    menu-model: service_context_menu_model;
+  }
+
   PopoverMenu context_menu {
     menu-model: context_menu_model;
+  }
+}
+
+menu service_context_menu_model {
+  section {
+    item {
+      label: _("Start");
+      action: "win.selected-svc-start";
+    }
+
+    item {
+      label: _("Stop");
+      action: "win.selected-svc-stop";
+    }
+
+    item {
+      label: _("Restart");
+      action: "win.selected-svc-restart";
+    }
+  }
+
+  section {
+    item {
+      label: _("Details");
+      action: "services-page.details";
+    }
   }
 }
 

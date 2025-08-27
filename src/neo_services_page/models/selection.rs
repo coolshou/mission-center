@@ -48,6 +48,30 @@ pub fn model(
             return;
         };
 
+        if row_model.content_type() == ServicesContentType::SectionHeader {
+            imp.action_stop.set_enabled(false);
+            imp.action_force_stop.set_enabled(false);
+            imp.action_suspend.set_enabled(false);
+            imp.action_continue.set_enabled(false);
+            imp.action_hangup.set_enabled(false);
+            imp.action_interrupt.set_enabled(false);
+            imp.action_user_one.set_enabled(false);
+            imp.action_user_two.set_enabled(false);
+            imp.action_details.set_enabled(false);
+
+            return;
+        }
+
+        imp.action_stop.set_enabled(true);
+        imp.action_force_stop.set_enabled(true);
+        imp.action_suspend.set_enabled(true);
+        imp.action_continue.set_enabled(true);
+        imp.action_hangup.set_enabled(true);
+        imp.action_interrupt.set_enabled(true);
+        imp.action_user_one.set_enabled(true);
+        imp.action_user_two.set_enabled(true);
+        imp.action_details.set_enabled(true);
+
         imp.selected_item.replace(row_model);
     });
 

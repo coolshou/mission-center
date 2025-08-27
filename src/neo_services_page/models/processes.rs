@@ -18,10 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::collections::HashMap;
-use std::env;
 use gtk::gio;
 use gtk::prelude::*;
+use std::collections::HashMap;
+use std::env;
 
 use crate::neo_services_page::row_model::{
     ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
@@ -32,7 +32,12 @@ use magpie_types::services::Service;
 fn service_to_section_type(service: &Service) -> ServicesSectionType {
     if let Some(user) = service.user.as_ref() {
         // todo have magpie set user or not
-        if env::var_os("USER").map(|u| u.to_str().map(|u| u != user)).flatten().unwrap_or(true) || user.is_empty() {
+        if env::var_os("USER")
+            .map(|u| u.to_str().map(|u| u != user))
+            .flatten()
+            .unwrap_or(true)
+            || user.is_empty()
+        {
             ServicesSectionType::SystemServices
         } else {
             ServicesSectionType::UserServices

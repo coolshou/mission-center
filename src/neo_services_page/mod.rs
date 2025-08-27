@@ -85,6 +85,8 @@ mod imp {
         pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
         #[template_child]
         pub context_menu: TemplateChild<gtk::PopoverMenu>,
+        #[template_child]
+        pub service_context_menu: TemplateChild<gtk::PopoverMenu>,
 
         #[property(get, set)]
         pub show_column_separators: Cell<bool>,
@@ -98,6 +100,20 @@ mod imp {
 
         pub app_icons: RefCell<HashMap<u32, String>>,
         pub selected_item: RefCell<ServicesRowModel>,
+
+        pub action_stop: gio::SimpleAction,
+        pub action_force_stop: gio::SimpleAction,
+        pub action_suspend: gio::SimpleAction,
+        pub action_continue: gio::SimpleAction,
+        pub action_hangup: gio::SimpleAction,
+        pub action_interrupt: gio::SimpleAction,
+        pub action_user_one: gio::SimpleAction,
+        pub action_user_two: gio::SimpleAction,
+        pub action_details: gio::SimpleAction,
+
+        pub start: gio::SimpleAction,
+        pub stop: gio::SimpleAction,
+        pub restart: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -121,7 +137,9 @@ mod imp {
                 network_usage_column: TemplateChild::default(),
                 gpu_usage_column: TemplateChild::default(),
                 gpu_memory_column: TemplateChild::default(),
+
                 context_menu: TemplateChild::default(),
+                service_context_menu: TemplateChild::default(),
 
                 show_column_separators: Cell::new(false),
 
@@ -142,6 +160,20 @@ mod imp {
 
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(ServicesRowModelBuilder::new().build()),
+
+                action_stop: gio::SimpleAction::new("stop", None),
+                action_force_stop: gio::SimpleAction::new("force-stop", None),
+                action_suspend: gio::SimpleAction::new("suspend", None),
+                action_continue: gio::SimpleAction::new("continue", None),
+                action_hangup: gio::SimpleAction::new("hangup", None),
+                action_interrupt: gio::SimpleAction::new("interrupt", None),
+                action_user_one: gio::SimpleAction::new("user-one", None),
+                action_user_two: gio::SimpleAction::new("user-two", None),
+                action_details: gio::SimpleAction::new("details", None),
+
+                start: gio::SimpleAction::new("selected-svc-start", None),
+                stop: gio::SimpleAction::new("selected-svc-stop", None),
+                restart: gio::SimpleAction::new("selected-svc-restart", None),
 
                 use_merged_stats: Cell::new(false),
             }
