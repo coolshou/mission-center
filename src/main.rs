@@ -42,6 +42,7 @@ mod preferences;
 mod services_page;
 mod widgets;
 mod window;
+mod neo_services_page;
 
 #[macro_export]
 macro_rules! glib_clone {
