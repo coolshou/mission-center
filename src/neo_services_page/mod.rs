@@ -70,6 +70,11 @@ mod imp {
         pub disabled_service_box: TemplateChild<adw::Toggle>,
 
         #[template_child]
+        pub process_ribbon: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub services_ribbon: TemplateChild<gtk::Box>,
+
+        #[template_child]
         pub collapse_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub stop_label: TemplateChild<gtk::Label>,
@@ -125,9 +130,9 @@ mod imp {
         pub action_user_two: gio::SimpleAction,
         pub action_details: gio::SimpleAction,
 
-        pub start: gio::SimpleAction,
-        pub stop: gio::SimpleAction,
-        pub restart: gio::SimpleAction,
+        pub service_start: gio::SimpleAction,
+        pub service_stop: gio::SimpleAction,
+        pub service_restart: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -142,6 +147,9 @@ mod imp {
                 failed_service_box: TemplateChild::default(),
                 stopped_service_box: TemplateChild::default(),
                 disabled_service_box: TemplateChild::default(),
+
+                process_ribbon: Default::default(),
+                services_ribbon: Default::default(),
 
                 collapse_label: TemplateChild::default(),
                 stop_label: TemplateChild::default(),
@@ -191,9 +199,9 @@ mod imp {
                 action_user_two: gio::SimpleAction::new("user-two", None),
                 action_details: gio::SimpleAction::new("details", None),
 
-                start: gio::SimpleAction::new("selected-svc-start", None),
-                stop: gio::SimpleAction::new("selected-svc-stop", None),
-                restart: gio::SimpleAction::new("selected-svc-restart", None),
+                service_start: gio::SimpleAction::new("selected-svc-start", None),
+                service_stop: gio::SimpleAction::new("selected-svc-stop", None),
+                service_restart: gio::SimpleAction::new("selected-svc-restart", None),
 
                 use_merged_stats: Cell::new(false),
             }

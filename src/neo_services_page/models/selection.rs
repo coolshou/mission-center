@@ -48,6 +48,24 @@ pub fn model(
             return;
         };
 
+        if row_model.icon() == "service-running" {
+            imp.service_stop.set_enabled(true);
+            imp.service_start.set_enabled(false);
+            imp.service_restart.set_enabled(true);
+        } else {
+            imp.service_stop.set_enabled(false);
+            imp.service_start.set_enabled(true);
+            imp.service_restart.set_enabled(false);
+        }
+
+        if row_model.content_type() == ServicesContentType::Process {
+            imp.process_ribbon.set_visible(true);
+            imp.services_ribbon.set_visible(false);
+        } else {
+            imp.process_ribbon.set_visible(false);
+            imp.services_ribbon.set_visible(true);
+        }
+
         if row_model.content_type() == ServicesContentType::SectionHeader {
             imp.action_stop.set_enabled(false);
             imp.action_force_stop.set_enabled(false);
