@@ -1,4 +1,4 @@
-/* ui/apps_page/page.blp
+/* ui/services_page/page.blp
  *
  * Copyright 2025 Mission Center Developers
  *
@@ -107,7 +107,7 @@ template $ServicesPage : Box {
               ]
 
               Button service_start {
-                action-name: "win.selected-svc-start";
+                action-name: "apps-page.selected-svc-start";
                 tooltip-text: _("Start the selected service");
 
                 child: Box {
@@ -126,7 +126,7 @@ template $ServicesPage : Box {
               }
 
               Button service_stop {
-                action-name: "win.selected-svc-stop";
+                action-name: "apps-page.selected-svc-stop";
                 tooltip-text: _("Stop the selected service");
 
                 child: Box {
@@ -146,7 +146,7 @@ template $ServicesPage : Box {
             }
 
             Button service_restart {
-              action-name: "win.selected-svc-restart";
+              action-name: "apps-page.selected-svc-restart";
               tooltip-text: _("Restart the selected service");
 
               child: Box {
@@ -341,17 +341,17 @@ menu service_context_menu_model {
   section {
     item {
       label: _("Start");
-      action: "win.selected-svc-start";
+      action: "apps-page.selected-svc-start";
     }
 
     item {
       label: _("Stop");
-      action: "win.selected-svc-stop";
+      action: "apps-page.selected-svc-stop";
     }
 
     item {
       label: _("Restart");
-      action: "win.selected-svc-restart";
+      action: "apps-page.selected-svc-restart";
     }
   }
 

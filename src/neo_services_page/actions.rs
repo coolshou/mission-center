@@ -279,6 +279,69 @@ pub fn configure(imp: &ServicesPageImp) {
     });
     actions.add_action(&imp.action_details);
 
+    imp.service_start.set_enabled(false);
+    imp.service_start.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let imp = this.imp();
+            
+            let selected_item = imp.selected_item.borrow();
+            if selected_item.content_type() != ServicesContentType::Service {
+                return;
+            }
+
+            if let Ok(magpie_client) = app!().sys_info() {
+                magpie_client.start_service(selected_item.name().to_string());
+            }
+        }
+    });
+    actions.add_action(&imp.service_start);
+
+    imp.service_stop.set_enabled(false);
+    imp.service_stop.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let imp = this.imp();
+            
+            let selected_item = imp.selected_item.borrow();
+            if selected_item.content_type() != ServicesContentType::Service {
+                return;
+            }
+
+            if let Ok(magpie_client) = app!().sys_info() {
+                magpie_client.stop_service(selected_item.name().to_string());
+            }
+        }
+    });
+    actions.add_action(&imp.service_stop);
+
+    imp.service_restart.set_enabled(false);
+    imp.service_restart.connect_activate({
+        let this = this.downgrade();
+        move |_action, _| {
+            let Some(this) = this.upgrade() else {
+                return;
+            };
+            let imp = this.imp();
+            
+            let selected_item = imp.selected_item.borrow();
+            if selected_item.content_type() != ServicesContentType::Service {
+                return;
+            }
+
+            if let Ok(magpie_client) = app!().sys_info() {
+                magpie_client.restart_service(selected_item.name().to_string());
+            }
+        }
+    });
+    actions.add_action(&imp.service_restart);
+
     let action = gio::SimpleAction::new("collapse-all", None);
     action.connect_activate({
         let this = this.downgrade();

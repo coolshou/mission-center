@@ -29,7 +29,7 @@ use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
 use glib::{gobject_ffi, Object};
 use gtk::Orientation::Horizontal;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, subclass::prelude::*, INVALID_LIST_POSITION};
 
 use crate::i18n::{i18n, i18n_f, ni18n_f};
 use columns::*;
@@ -384,6 +384,31 @@ impl ServicesPage {
 
         self.update_section_labels(&readings.services);
 
+        let selected = selection_model.selected();
+        if selected != INVALID_LIST_POSITION {
+            let selected_item = selection_model
+                .selected_item()
+                .and_then(|i| i.downcast_ref::<ServicesRowModel>().cloned());
+
+            if let Some(selected_item) = selected_item {
+                if selected_item.content_type() == ServicesContentType::Service {
+                    if selected_item.icon() == "service-running" {
+                        imp.service_stop.set_enabled(true);
+                        imp.service_start.set_enabled(false);
+                        imp.service_restart.set_enabled(true);
+                    } else {
+                        imp.service_stop.set_enabled(false);
+                        imp.service_start.set_enabled(true);
+                        imp.service_restart.set_enabled(false);
+                    }
+                } else {
+                    imp.service_stop.set_enabled(false);
+                    imp.service_start.set_enabled(false);
+                    imp.service_restart.set_enabled(false);
+                }
+            }
+        }
+
         true
     }
 
@@ -489,6 +514,23 @@ impl ServicesPage {
         }
 
         self.update_section_labels(&readings.services);
+
+        let selected_item = imp.selected_item.borrow();
+        if selected_item.content_type() == ServicesContentType::Service {
+            if selected_item.icon() == "service-running" {
+                imp.service_stop.set_enabled(true);
+                imp.service_start.set_enabled(false);
+                imp.service_restart.set_enabled(true);
+            } else {
+                imp.service_stop.set_enabled(false);
+                imp.service_start.set_enabled(true);
+                imp.service_restart.set_enabled(false);
+            }
+        } else {
+            imp.service_stop.set_enabled(false);
+            imp.service_start.set_enabled(false);
+            imp.service_restart.set_enabled(false);
+        }
 
         true
     }
