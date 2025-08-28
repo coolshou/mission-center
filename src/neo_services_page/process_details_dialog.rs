@@ -1,4 +1,4 @@
-/* neo_services_page/details_dialog.rs
+/* neo_services_page/process_details_dialog
  *
  * Copyright 2025 Mission Center Developers
  *
@@ -33,8 +33,10 @@ mod imp {
     use gtk::prelude::WidgetExt;
 
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/neo_services_page/details_dialog.ui")]
-    pub struct DetailsDialog {
+    #[template(
+        resource = "/io/missioncenter/MissionCenter/ui/services_page/process_details_dialog.ui"
+    )]
+    pub struct ProcessDetailsDialog {
         #[template_child]
         icon: TemplateChild<gtk::Image>,
         #[template_child]
@@ -67,7 +69,7 @@ mod imp {
         pub model: RefCell<ServicesRowModel>,
     }
 
-    impl Default for DetailsDialog {
+    impl Default for ProcessDetailsDialog {
         fn default() -> Self {
             Self {
                 icon: TemplateChild::default(),
@@ -91,7 +93,7 @@ mod imp {
         }
     }
 
-    impl DetailsDialog {
+    impl ProcessDetailsDialog {
         pub fn bind(&self) {
             let model = self.model.borrow();
 
@@ -169,9 +171,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for DetailsDialog {
-        const NAME: &'static str = "ServicesPageDetailsDialog";
-        type Type = super::DetailsDialog;
+    impl ObjectSubclass for ProcessDetailsDialog {
+        const NAME: &'static str = "ProcessDetailsDialog";
+        type Type = super::ProcessDetailsDialog;
         type ParentType = adw::Dialog;
 
         fn class_init(klass: &mut Self::Class) {
@@ -185,19 +187,19 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for DetailsDialog {
+    impl ObjectImpl for ProcessDetailsDialog {
         fn constructed(&self) {
             self.parent_constructed();
         }
     }
 
-    impl WidgetImpl for DetailsDialog {
+    impl WidgetImpl for ProcessDetailsDialog {
         fn realize(&self) {
             self.parent_realize();
         }
     }
 
-    impl AdwDialogImpl for DetailsDialog {
+    impl AdwDialogImpl for ProcessDetailsDialog {
         fn closed(&self) {
             self.unbind();
         }
@@ -205,12 +207,12 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct DetailsDialog(ObjectSubclass<imp::DetailsDialog>)
+    pub struct ProcessDetailsDialog(ObjectSubclass<imp::ProcessDetailsDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl DetailsDialog {
+impl ProcessDetailsDialog {
     pub fn new(model: ServicesRowModel) -> Self {
         let this: Self = glib::Object::builder()
             .property("follows-content-size", true)

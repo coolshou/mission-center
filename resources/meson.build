@@ -32,7 +32,8 @@ blueprints = custom_target('blueprints',
     'ui/preferences/window.blp',
 
     'ui/services_page/page.blp',
-    'ui/services_page/details_dialog.blp',
+    'ui/services_page/process_details_dialog.blp',
+    'ui/services_page/service_details_dialog.blp',
 
     'ui/widgets/theme_selector.blp',
 

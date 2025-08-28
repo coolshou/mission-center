@@ -26,13 +26,13 @@ use gtk::glib::{g_critical, VariantTy};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
-use crate::app;
-
-use super::details_dialog::DetailsDialog;
 use super::imp::ServicesPage as ServicesPageImp;
+use super::process_details_dialog::ProcessDetailsDialog;
 use super::row_model::{ServicesContentType, ServicesRowModel};
 use super::ServicesPage;
 use super::{select_item, upgrade_weak_ptr};
+use crate::app;
+use crate::neo_services_page::service_details_dialog::ServiceDetailsDialog;
 
 pub fn configure(imp: &ServicesPageImp) {
     let this = imp.obj();
@@ -270,8 +270,11 @@ pub fn configure(imp: &ServicesPageImp) {
                 return;
             }
 
-            let details_dialog = DetailsDialog::new(imp.selected_item.borrow().clone());
-            details_dialog.present(Some(&this));
+            if selected_item.content_type() == ServicesContentType::Process {
+                ProcessDetailsDialog::new(imp.selected_item.borrow().clone()).present(Some(&this));
+            } else {
+                ServiceDetailsDialog::new(imp.selected_item.borrow().clone()).present(Some(&this));
+            };
         }
     });
     actions.add_action(&imp.action_details);

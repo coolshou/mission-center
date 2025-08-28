@@ -1,4 +1,4 @@
-/* apps_page/details_dialog.rs
+/* apps_page/process_details_dialog
  *
  * Copyright 2025 Mission Center Developers
  *

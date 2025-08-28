@@ -65,7 +65,8 @@
         <file preprocess="xml-stripblanks">ui/preferences/window.ui</file>
 
         <file preprocess="xml-stripblanks">ui/services_page/page.ui</file>
-        <file preprocess="xml-stripblanks">ui/services_page/details_dialog.ui</file>
+        <file preprocess="xml-stripblanks">ui/services_page/service_details_dialog.ui</file>
+        <file preprocess="xml-stripblanks">ui/services_page/process_details_dialog.ui</file>
 
         <file preprocess="xml-stripblanks">ui/widgets/theme_selector.ui</file>
 

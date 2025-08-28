@@ -40,9 +40,10 @@ use row_model::{
 
 mod actions;
 mod columns;
-mod details_dialog;
 mod models;
+mod process_details_dialog;
 mod row_model;
+mod service_details_dialog;
 mod settings;
 
 mod imp {

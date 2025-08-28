@@ -24,20 +24,20 @@ use std::num::NonZeroU32;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib::{self, g_warning, ParamSpec, Properties, SignalHandlerId, Value};
 
+use crate::neo_services_page::row_model::ServicesRowModel;
 use crate::{app, i18n::*};
-
-use super::services_list_item::ServicesListItem;
 
 mod imp {
     use super::*;
+    use crate::neo_services_page::row_model::ServicesRowModel;
 
     #[derive(Properties)]
-    #[properties(wrapper_type = super::DetailsDialog)]
+    #[properties(wrapper_type = super::ServiceDetailsDialog)]
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/services_page/services_details_dialog.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/services_page/service_details_dialog.ui"
     )]
-    pub struct DetailsDialog {
+    pub struct ServiceDetailsDialog {
         #[template_child]
         group_state: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
@@ -69,7 +69,7 @@ mod imp {
         #[template_child]
         logs_buffer: TemplateChild<gtk::TextBuffer>,
 
-        pub list_item: OnceCell<ServicesListItem>,
+        pub list_item: OnceCell<ServicesRowModel>,
 
         #[property(get, set)]
         pub enabled: Cell<bool>,
@@ -81,7 +81,7 @@ mod imp {
         list_item_enabled_user_change: Cell<bool>,
     }
 
-    impl Default for DetailsDialog {
+    impl Default for ServiceDetailsDialog {
         fn default() -> Self {
             Self {
                 group_state: TemplateChild::default(),
@@ -114,16 +114,16 @@ mod imp {
         }
     }
 
-    impl DetailsDialog {
-        fn list_item(&self) -> ServicesListItem {
+    impl ServiceDetailsDialog {
+        fn list_item(&self) -> ServicesRowModel {
             unsafe { self.list_item.get().unwrap_unchecked().clone() }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for DetailsDialog {
-        const NAME: &'static str = "DetailsDialog";
-        type Type = super::DetailsDialog;
+    impl ObjectSubclass for ServiceDetailsDialog {
+        const NAME: &'static str = "ServiceDetailsDialog";
+        type Type = super::ServiceDetailsDialog;
         type ParentType = adw::Dialog;
 
         fn class_init(klass: &mut Self::Class) {
@@ -135,7 +135,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for DetailsDialog {
+    impl ObjectImpl for ServiceDetailsDialog {
         fn properties() -> &'static [ParamSpec] {
             Self::derived_properties()
         }
@@ -180,7 +180,7 @@ mod imp {
                         }) {
                             Err(e) => {
                                 g_warning!(
-                                    "MissionCenter::DetailsDialog",
+                                    "MissionCenter::ServiceDetailsDialog",
                                     "Failed to get `sys_info`: {}",
                                     e
                                 );
@@ -218,7 +218,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for DetailsDialog {
+    impl WidgetImpl for ServiceDetailsDialog {
         fn realize(&self) {
             self.parent_realize();
 
@@ -232,53 +232,50 @@ mod imp {
             let list_item = self.list_item();
 
             self.label_name.set_text(&list_item.name());
-            self.label_description.set_text(&list_item.description());
-            let running = if list_item.running() {
-                i18n("Running")
-            } else if list_item.failed() {
-                i18n("Failed")
-            } else {
-                i18n("Stopped")
-            };
-            self.label_running.set_text(&running);
-            self.switch_enabled.set_active(list_item.enabled());
+            // self.label_description.set_text(&list_item.description());
+            // let running = if list_item.running() {
+            //     i18n("Running")
+            // } else if list_item.failed() {
+            //     i18n("Failed")
+            // } else {
+            //     i18n("Stopped")
+            // };
+            // self.label_running.set_text(&running);
+            // self.switch_enabled.set_active(list_item.enabled());
 
             let mut group_empty = true;
             let pid = list_item.pid();
-            if !pid.is_empty() {
+            if pid > 0 {
                 group_empty = false;
-                self.label_pid.set_text(&list_item.pid());
+                self.label_pid.set_text(&list_item.pid().to_string());
             } else {
                 self.label_pid.set_text(&i18n("N/A"));
             }
 
-            let user = list_item.user();
-            if !user.is_empty() {
-                group_empty = false;
-                self.label_user.set_text(&list_item.user());
-            } else {
-                self.label_user.set_text(&i18n("N/A"));
-            }
+            // let user = list_item.user();
+            // if !user.is_empty() {
+            //     group_empty = false;
+            //     self.label_user.set_text(&list_item.user());
+            // } else {
+            //     self.label_user.set_text(&i18n("N/A"));
+            // }
 
-            let group = list_item.group();
-            if !group.is_empty() {
-                group_empty = false;
-                self.label_group.set_text(&list_item.group());
-            } else {
-                self.label_group.set_text(&i18n("N/A"));
-            }
+            // let group = list_item.group();
+            // if !group.is_empty() {
+            //     group_empty = false;
+            //     self.label_group.set_text(&list_item.group());
+            // } else {
+            //     self.label_group.set_text(&i18n("N/A"));
+            // }
 
-            if group_empty {
-                self.group_process.set_visible(false);
-            } else {
-                self.group_process.set_visible(true);
-            }
+            // if group_empty {
+            //     self.group_process.set_visible(false);
+            // } else {
+            //     self.group_process.set_visible(true);
+            // }
 
             let logs = app!().sys_info().and_then(|sys_info| {
-                Ok(sys_info.service_logs(
-                    list_item.name().to_string(),
-                    NonZeroU32::new(pid.parse::<u32>().unwrap_or(0)),
-                ))
+                Ok(sys_info.service_logs(list_item.name().to_string(), NonZeroU32::new(pid)))
             });
 
             match logs {
@@ -290,49 +287,49 @@ mod imp {
                 }
                 Err(e) => {
                     g_warning!(
-                        "MissionCenter::DetailsDialog",
+                        "MissionCenter::ServiceDetailsDialog",
                         "Failed to get `sys_info`: {}",
                         e
                     );
                 }
             }
 
-            let notify = list_item.connect_running_notify({
-                let this = self.obj().downgrade();
-                move |li| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
-                        let text = if li.running() {
-                            i18n("Running")
-                        } else if li.failed() {
-                            i18n("Failed")
-                        } else {
-                            i18n("Stopped")
-                        };
-                        this.label_running.set_text(&text);
-                    }
-                }
-            });
-            self.list_item_running_notify.set(from_signal_id(notify));
+            // let notify = list_item.connect_running_notify({
+            //     let this = self.obj().downgrade();
+            //     move |li| {
+            //         if let Some(this) = this.upgrade() {
+            //             let this = this.imp();
+            //             let text = if li.running() {
+            //                 i18n("Running")
+            //             } else if li.failed() {
+            //                 i18n("Failed")
+            //             } else {
+            //                 i18n("Stopped")
+            //             };
+            //             this.label_running.set_text(&text);
+            //         }
+            //     }
+            // });
+            // self.list_item_running_notify.set(from_signal_id(notify));
 
-            let notify = list_item.connect_enabled_notify({
-                let this = self.obj().downgrade();
-                move |li| {
-                    if let Some(this) = this.upgrade() {
-                        let this = this.imp();
-
-                        if li.enabled() != this.switch_enabled.is_active() {
-                            this.list_item_enabled_user_change.set(false);
-                            this.switch_enabled.set_active(this.list_item().enabled());
-                        }
-                    }
-                }
-            });
-            self.list_item_enabled_notify.set(from_signal_id(notify));
+            // let notify = list_item.connect_enabled_notify({
+            //     let this = self.obj().downgrade();
+            //     move |li| {
+            //         if let Some(this) = this.upgrade() {
+            //             let this = this.imp();
+            //
+            //             if li.enabled() != this.switch_enabled.is_active() {
+            //                 this.list_item_enabled_user_change.set(false);
+            //                 this.switch_enabled.set_active(this.list_item().enabled());
+            //             }
+            //         }
+            //     }
+            // });
+            // self.list_item_enabled_notify.set(from_signal_id(notify));
         }
     }
 
-    impl AdwDialogImpl for DetailsDialog {
+    impl AdwDialogImpl for ServiceDetailsDialog {
         fn closed(&self) {
             let list_item = self.list_item();
             list_item.disconnect(to_signal_id(self.list_item_running_notify.get()));
@@ -342,13 +339,13 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct DetailsDialog(ObjectSubclass<imp::DetailsDialog>)
+    pub struct ServiceDetailsDialog(ObjectSubclass<imp::ServiceDetailsDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl DetailsDialog {
-    pub fn new(list_item: ServicesListItem) -> Self {
+impl ServiceDetailsDialog {
+    pub fn new(list_item: ServicesRowModel) -> Self {
         let this: Self = glib::Object::builder()
             .property("follows-content-size", true)
             .build();
