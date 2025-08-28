@@ -287,7 +287,7 @@ pub fn configure(imp: &ServicesPageImp) {
                 return;
             };
             let imp = this.imp();
-            
+
             let selected_item = imp.selected_item.borrow();
             if selected_item.content_type() != ServicesContentType::Service {
                 return;
@@ -308,7 +308,7 @@ pub fn configure(imp: &ServicesPageImp) {
                 return;
             };
             let imp = this.imp();
-            
+
             let selected_item = imp.selected_item.borrow();
             if selected_item.content_type() != ServicesContentType::Service {
                 return;
@@ -329,7 +329,7 @@ pub fn configure(imp: &ServicesPageImp) {
                 return;
             };
             let imp = this.imp();
-            
+
             let selected_item = imp.selected_item.borrow();
             if selected_item.content_type() != ServicesContentType::Service {
                 return;
