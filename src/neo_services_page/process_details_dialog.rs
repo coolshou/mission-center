@@ -1,4 +1,4 @@
-/* apps_page/process_details_dialog
+/* neo_services_page/process_details_dialog
  *
  * Copyright 2025 Mission Center Developers
  *
@@ -25,7 +25,7 @@ use gtk::glib::{self};
 use gtk::prelude::StaticTypeExt;
 
 use super::columns::*;
-use super::row_model::{ContentType, RowModel};
+use super::row_model::{ServicesContentType, ServicesRowModel};
 
 mod imp {
     use super::*;
@@ -33,8 +33,10 @@ mod imp {
     use gtk::prelude::WidgetExt;
 
     #[derive(gtk::CompositeTemplate)]
-    #[template(resource = "/io/missioncenter/MissionCenter/ui/apps_page/details_dialog.ui")]
-    pub struct DetailsDialog {
+    #[template(
+        resource = "/io/missioncenter/MissionCenter/ui/services_page/process_details_dialog.ui"
+    )]
+    pub struct ProcessDetailsDialog {
         #[template_child]
         icon: TemplateChild<gtk::Image>,
         #[template_child]
@@ -50,24 +52,24 @@ mod imp {
         command_line: TemplateChild<gtk::Label>,
 
         #[template_child]
-        cpu: TemplateChild<LabelCell>,
+        cpu: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        memory: TemplateChild<LabelCell>,
+        memory: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        shared_memory: TemplateChild<LabelCell>,
+        shared_memory: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        drives: TemplateChild<LabelCell>,
+        drives: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        network: TemplateChild<LabelCell>,
+        network: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        gpu: TemplateChild<LabelCell>,
+        gpu: TemplateChild<ServicesLabelCell>,
         #[template_child]
-        gpu_memory: TemplateChild<LabelCell>,
+        gpu_memory: TemplateChild<ServicesLabelCell>,
 
-        pub model: RefCell<RowModel>,
+        pub model: RefCell<ServicesRowModel>,
     }
 
-    impl Default for DetailsDialog {
+    impl Default for ProcessDetailsDialog {
         fn default() -> Self {
             Self {
                 icon: TemplateChild::default(),
@@ -86,16 +88,16 @@ mod imp {
                 gpu: TemplateChild::default(),
                 gpu_memory: TemplateChild::default(),
 
-                model: RefCell::new(RowModel::new(ContentType::SectionHeader)),
+                model: RefCell::new(ServicesRowModel::new(ServicesContentType::SectionHeader)),
             }
         }
     }
 
-    impl DetailsDialog {
+    impl ProcessDetailsDialog {
         pub fn bind(&self) {
             let model = self.model.borrow();
 
-            if model.content_type() == ContentType::App {
+            if model.content_type() == ServicesContentType::Service {
                 self.icon.set_pixel_size(24);
             } else {
                 self.icon.set_pixel_size(16);
@@ -169,13 +171,13 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for DetailsDialog {
-        const NAME: &'static str = "AppsPageDetailsDialog";
-        type Type = super::DetailsDialog;
+    impl ObjectSubclass for ProcessDetailsDialog {
+        const NAME: &'static str = "ProcessDetailsDialog";
+        type Type = super::ProcessDetailsDialog;
         type ParentType = adw::Dialog;
 
         fn class_init(klass: &mut Self::Class) {
-            LabelCell::ensure_type();
+            ServicesLabelCell::ensure_type();
 
             klass.bind_template();
         }
@@ -185,19 +187,19 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for DetailsDialog {
+    impl ObjectImpl for ProcessDetailsDialog {
         fn constructed(&self) {
             self.parent_constructed();
         }
     }
 
-    impl WidgetImpl for DetailsDialog {
+    impl WidgetImpl for ProcessDetailsDialog {
         fn realize(&self) {
             self.parent_realize();
         }
     }
 
-    impl AdwDialogImpl for DetailsDialog {
+    impl AdwDialogImpl for ProcessDetailsDialog {
         fn closed(&self) {
             self.unbind();
         }
@@ -205,13 +207,13 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct DetailsDialog(ObjectSubclass<imp::DetailsDialog>)
+    pub struct ProcessDetailsDialog(ObjectSubclass<imp::ProcessDetailsDialog>)
         @extends adw::Dialog, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl DetailsDialog {
-    pub fn new(model: RowModel) -> Self {
+impl ProcessDetailsDialog {
+    pub fn new(model: ServicesRowModel) -> Self {
         let this: Self = glib::Object::builder()
             .property("follows-content-size", true)
             .build();

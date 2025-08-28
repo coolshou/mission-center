@@ -256,7 +256,7 @@ mod imp {
         #[template_child]
         pub services_stack_page: TemplateChild<adw::ViewStackPage>,
         #[template_child]
-        pub services_page: TemplateChild<crate::services_page::ServicesPage>,
+        pub services_page: TemplateChild<crate::neo_services_page::ServicesPage>,
         #[template_child]
         pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
@@ -686,7 +686,8 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             use crate::{
-                apps_page::AppsPage, performance_page::PerformancePage, services_page::ServicesPage,
+                apps_page::AppsPage, neo_services_page::ServicesPage,
+                performance_page::PerformancePage,
             };
 
             ListCell::ensure_type();

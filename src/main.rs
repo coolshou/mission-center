@@ -37,6 +37,7 @@ mod application;
 mod apps_page;
 mod i18n;
 mod magpie_client;
+mod neo_services_page;
 mod performance_page;
 mod preferences;
 mod services_page;
