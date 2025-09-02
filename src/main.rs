@@ -43,6 +43,7 @@ mod preferences;
 mod services_page;
 mod widgets;
 mod window;
+mod process_tree;
 
 #[macro_export]
 macro_rules! glib_clone {

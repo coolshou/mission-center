@@ -32,7 +32,7 @@ pub fn configure(imp: &AppsPageImpl) {
         }
     });
 
-    configure_sorting(&imp.column_view, &settings);
+    configure_sorting(&imp.column_view.imp().column_view, &settings);
 }
 
 fn configure_sorting(column_view: &gtk::ColumnView, settings: &gio::Settings) {
