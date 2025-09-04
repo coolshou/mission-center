@@ -40,6 +40,7 @@ mod magpie_client;
 mod neo_services_page;
 mod performance_page;
 mod preferences;
+mod process_tree;
 mod services_page;
 mod widgets;
 mod window;

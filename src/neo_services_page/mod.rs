@@ -25,29 +25,21 @@ use std::fmt::Write;
 use crate::magpie_client::App;
 use adw::glib::{ParamSpec, Properties, Value};
 use adw::prelude::*;
-use arrayvec::ArrayString;
 use glib::translate::from_glib_full;
 use glib::{gobject_ffi, Object};
 use gtk::Orientation::Horizontal;
-use gtk::{gio, glib, subclass::prelude::*, INVALID_LIST_POSITION};
+use gtk::{gio, glib, subclass::prelude::*};
 
-use crate::i18n::{i18n, i18n_f, ni18n_f};
-use columns::*;
+use crate::i18n::{i18n, i18n_f};
+use crate::process_tree::models;
+use crate::process_tree::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 use magpie_types::services::Service;
-use row_model::{
-    ServicesContentType, ServicesRowModel, ServicesRowModelBuilder, ServicesSectionType,
-};
 
-mod actions;
-mod columns;
-mod models;
-mod process_details_dialog;
-mod row_model;
-mod service_details_dialog;
-mod settings;
-
-mod imp {
+pub(crate) mod imp {
     use super::*;
+    use crate::process_tree::column_view_frame::ColumnViewFrame;
+    use crate::process_tree::process_action_bar::ProcessActionBar;
+    use crate::process_tree::service_action_bar::ServiceActionBar;
     use gtk::Orientation::{Horizontal, Vertical};
 
     #[derive(Properties, gtk::CompositeTemplate)]
@@ -56,6 +48,10 @@ mod imp {
     pub struct ServicesPage {
         #[template_child]
         pub top_legend: TemplateChild<gtk::Box>,
+
+        #[template_child]
+        pub column_view: TemplateChild<ColumnViewFrame>,
+
         #[template_child]
         pub service_legend: TemplateChild<adw::ToggleGroup>,
         #[template_child]
@@ -70,69 +66,18 @@ mod imp {
         pub disabled_service_box: TemplateChild<adw::Toggle>,
 
         #[template_child]
-        pub process_ribbon: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub services_ribbon: TemplateChild<gtk::Box>,
-
-        #[template_child]
         pub collapse_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub stop_label: TemplateChild<gtk::Label>,
+        pub process_action_bar: TemplateChild<ProcessActionBar>,
         #[template_child]
-        pub force_stop_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub details_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub column_view: TemplateChild<gtk::ColumnView>,
-        #[template_child]
-        pub name_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub pid_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub cpu_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub memory_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub shared_memory_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub drive_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub network_usage_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub gpu_usage_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub gpu_memory_column: TemplateChild<gtk::ColumnViewColumn>,
-        #[template_child]
-        pub context_menu: TemplateChild<gtk::PopoverMenu>,
-        #[template_child]
-        pub service_context_menu: TemplateChild<gtk::PopoverMenu>,
+        pub service_action_bar: TemplateChild<ServiceActionBar>,
 
-        #[property(get, set)]
-        pub show_column_separators: Cell<bool>,
-
-        pub user_section: ServicesRowModel,
-        pub system_section: ServicesRowModel,
+        pub user_section: RowModel,
+        pub system_section: RowModel,
 
         pub running_apps: RefCell<HashMap<String, App>>,
 
-        pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
-
         pub app_icons: RefCell<HashMap<u32, String>>,
-        pub selected_item: RefCell<ServicesRowModel>,
-
-        pub action_stop: gio::SimpleAction,
-        pub action_force_stop: gio::SimpleAction,
-        pub action_suspend: gio::SimpleAction,
-        pub action_continue: gio::SimpleAction,
-        pub action_hangup: gio::SimpleAction,
-        pub action_interrupt: gio::SimpleAction,
-        pub action_user_one: gio::SimpleAction,
-        pub action_user_two: gio::SimpleAction,
-        pub action_details: gio::SimpleAction,
-
-        pub service_start: gio::SimpleAction,
-        pub service_stop: gio::SimpleAction,
-        pub service_restart: gio::SimpleAction,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -141,6 +86,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 top_legend: TemplateChild::default(),
+                column_view: Default::default(),
                 service_legend: TemplateChild::default(),
                 total_service_box: TemplateChild::default(),
                 running_service_box: TemplateChild::default(),
@@ -148,60 +94,25 @@ mod imp {
                 stopped_service_box: TemplateChild::default(),
                 disabled_service_box: TemplateChild::default(),
 
-                process_ribbon: Default::default(),
-                services_ribbon: Default::default(),
-
                 collapse_label: TemplateChild::default(),
-                stop_label: TemplateChild::default(),
-                force_stop_label: TemplateChild::default(),
-                details_label: TemplateChild::default(),
-                column_view: TemplateChild::default(),
-                name_column: TemplateChild::default(),
-                pid_column: TemplateChild::default(),
-                cpu_column: TemplateChild::default(),
-                memory_column: TemplateChild::default(),
-                shared_memory_column: TemplateChild::default(),
-                drive_column: TemplateChild::default(),
-                network_usage_column: TemplateChild::default(),
-                gpu_usage_column: TemplateChild::default(),
-                gpu_memory_column: TemplateChild::default(),
 
-                context_menu: TemplateChild::default(),
-                service_context_menu: TemplateChild::default(),
+                process_action_bar: Default::default(),
+                service_action_bar: Default::default(),
 
-                show_column_separators: Cell::new(false),
-
-                user_section: ServicesRowModelBuilder::new()
+                user_section: RowModelBuilder::new()
                     .name(&i18n("User Services"))
-                    .content_type(ServicesContentType::SectionHeader)
-                    .section_type(ServicesSectionType::UserServices)
+                    .content_type(ContentType::SectionHeader)
+                    .section_type(SectionType::FirstSection)
                     .build(),
-                system_section: ServicesRowModelBuilder::new()
+                system_section: RowModelBuilder::new()
                     .name(&i18n("System Services"))
-                    .content_type(ServicesContentType::SectionHeader)
-                    .section_type(ServicesSectionType::SystemServices)
+                    .content_type(ContentType::SectionHeader)
+                    .section_type(SectionType::SecondSection)
                     .build(),
 
                 running_apps: RefCell::new(HashMap::new()),
 
-                row_sorter: OnceCell::new(),
-
                 app_icons: RefCell::new(HashMap::new()),
-                selected_item: RefCell::new(ServicesRowModelBuilder::new().build()),
-
-                action_stop: gio::SimpleAction::new("stop", None),
-                action_force_stop: gio::SimpleAction::new("force-stop", None),
-                action_suspend: gio::SimpleAction::new("suspend", None),
-                action_continue: gio::SimpleAction::new("continue", None),
-                action_hangup: gio::SimpleAction::new("hangup", None),
-                action_interrupt: gio::SimpleAction::new("interrupt", None),
-                action_user_one: gio::SimpleAction::new("user-one", None),
-                action_user_two: gio::SimpleAction::new("user-two", None),
-                action_details: gio::SimpleAction::new("details", None),
-
-                service_start: gio::SimpleAction::new("selected-svc-start", None),
-                service_stop: gio::SimpleAction::new("selected-svc-stop", None),
-                service_restart: gio::SimpleAction::new("selected-svc-restart", None),
 
                 use_merged_stats: Cell::new(false),
             }
@@ -211,18 +122,12 @@ mod imp {
     impl ServicesPage {
         pub fn collapse(&self) {
             self.collapse_label.set_visible(false);
-            self.stop_label.set_visible(false);
-            self.force_stop_label.set_visible(false);
-            self.details_label.set_visible(false);
 
             self.top_legend.set_orientation(Vertical);
         }
 
         pub fn expand(&self) {
             self.collapse_label.set_visible(true);
-            self.stop_label.set_visible(true);
-            self.force_stop_label.set_visible(true);
-            self.details_label.set_visible(true);
 
             self.top_legend.set_orientation(Horizontal);
         }
@@ -235,7 +140,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
-            ServicesRowModel::ensure_type();
+            RowModel::ensure_type();
 
             klass.bind_template();
         }
@@ -260,60 +165,6 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
-
-            actions::configure(self);
-
-            update_column_order(&self.column_view);
-
-            self.name_column
-                .set_factory(Some(&name_list_item_factory()));
-            self.name_column
-                .set_sorter(Some(&name_sorter(&self.column_view)));
-
-            self.pid_column.set_factory(Some(&pid_list_item_factory()));
-            self.pid_column
-                .set_sorter(Some(&pid_sorter(&self.column_view)));
-
-            self.cpu_column.set_factory(Some(&cpu_list_item_factory()));
-            self.cpu_column
-                .set_sorter(Some(&cpu_sorter(&self.column_view)));
-
-            self.memory_column
-                .set_factory(Some(&memory_list_item_factory()));
-            self.memory_column
-                .set_sorter(Some(&memory_sorter(&self.column_view)));
-
-            self.shared_memory_column
-                .set_factory(Some(&shared_memory_list_item_factory()));
-            self.shared_memory_column
-                .set_sorter(Some(&shared_memory_sorter(&self.column_view)));
-
-            self.drive_column
-                .set_factory(Some(&drive_list_item_factory()));
-            self.drive_column
-                .set_sorter(Some(&drive_sorter(&self.column_view)));
-
-            self.network_usage_column
-                .set_factory(Some(&network_list_item_factory()));
-            self.network_usage_column
-                .set_sorter(Some(&network_sorter(&self.column_view)));
-
-            self.gpu_usage_column
-                .set_factory(Some(&gpu_list_item_factory()));
-            self.gpu_usage_column
-                .set_sorter(Some(&gpu_sorter(&self.column_view)));
-
-            self.gpu_memory_column
-                .set_factory(Some(&gpu_memory_list_item_factory()));
-            self.gpu_memory_column
-                .set_sorter(Some(&gpu_memory_sorter(&self.column_view)));
-
-            // Make sure to do this after the columns are set up otherwise restoring sorting
-            // won't work
-            settings::configure(self);
-
-            let column_view_title = self.column_view.first_child();
-            adjust_view_header_alignment(column_view_title);
         }
     }
 
@@ -338,26 +189,36 @@ impl ServicesPage {
 
         // Set up the models here since we need access to the main application window
         // which is not yet available in the constructor.
-        let base_model = models::base_model(&imp.user_section, &imp.system_section);
-        let tree_list_model = models::tree_list_model(base_model);
-        let filter_list_model =
-            models::filter_list_model(tree_list_model, &imp.service_legend.get());
-        let (sort_list_model, row_sorter) =
-            models::sort_list_model(filter_list_model, &imp.column_view);
-        let selection_model = models::selection_model(&self, sort_list_model);
-        imp.column_view.set_model(Some(&selection_model));
-
-        let _ = imp.row_sorter.set(row_sorter);
-
-        update_column_titles(
-            &imp.cpu_column,
-            &imp.memory_column,
-            &imp.drive_column,
-            &imp.network_usage_column,
-            &imp.gpu_usage_column,
-            &imp.gpu_memory_column,
-            readings,
+        imp.column_view.imp().setup(
+            &imp.user_section,
+            &imp.system_section,
+            Some(&imp.process_action_bar),
+            Some(&imp.service_action_bar),
+            Some(&imp.service_legend),
         );
+
+        // Select the first item in the list
+        // selection_model.set_selected(0);
+
+        /*        let selected = self.imp().column_view.imp().column_view.selected();
+        if selected != INVALID_LIST_POSITION {
+            let selected_item = self.imp().column_view.imp().column_view
+                .selected_item()
+                .and_then(|i| i.downcast_ref::<RowModel>().cloned());
+
+            if let Some(selected_item) = selected_item.as_ref() {
+                imp.process_action_bar.imp().handle_changed_selection(selected_item);
+                imp.service_action_bar.imp().handle_changed_selection(selected_item);
+            }
+        }*/
+
+        self.update_common(readings);
+
+        true
+    }
+
+    fn update_common(&self, readings: &mut crate::magpie_client::Readings) {
+        let imp = self.imp();
 
         models::update_services(
             &readings.running_processes,
@@ -365,8 +226,8 @@ impl ServicesPage {
             &imp.system_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
-            ServicesSectionType::SystemServices,
+            imp.column_view.imp().use_merged_stats.get(),
+            SectionType::SecondSection,
         );
 
         models::update_services(
@@ -375,41 +236,25 @@ impl ServicesPage {
             &imp.user_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
-            ServicesSectionType::UserServices,
+            imp.column_view.imp().use_merged_stats.get(),
+            SectionType::FirstSection,
         );
-
-        // Select the first item in the list
-        selection_model.set_selected(0);
 
         self.update_section_labels(&readings.services);
 
-        let selected = selection_model.selected();
-        if selected != INVALID_LIST_POSITION {
-            let selected_item = selection_model
-                .selected_item()
-                .and_then(|i| i.downcast_ref::<ServicesRowModel>().cloned());
+        let _ = std::mem::replace(
+            &mut *imp.running_apps.borrow_mut(),
+            std::mem::take(&mut readings.running_apps),
+        );
 
-            if let Some(selected_item) = selected_item {
-                if selected_item.content_type() == ServicesContentType::Service {
-                    if selected_item.icon() == "service-running" {
-                        imp.service_stop.set_enabled(true);
-                        imp.service_start.set_enabled(false);
-                        imp.service_restart.set_enabled(true);
-                    } else {
-                        imp.service_stop.set_enabled(false);
-                        imp.service_start.set_enabled(true);
-                        imp.service_restart.set_enabled(false);
-                    }
-                } else {
-                    imp.service_stop.set_enabled(false);
-                    imp.service_start.set_enabled(false);
-                    imp.service_restart.set_enabled(false);
-                }
-            }
-        }
+        let selected_item = &imp.column_view.imp().selected_item.borrow();
 
-        true
+        imp.process_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
+        imp.service_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
     }
 
     fn update_section_labels(&self, services: &HashMap<String, Service>) {
@@ -470,66 +315,18 @@ impl ServicesPage {
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
-        update_column_titles(
-            &imp.cpu_column,
-            &imp.memory_column,
-            &imp.drive_column,
-            &imp.network_usage_column,
-            &imp.gpu_usage_column,
-            &imp.gpu_memory_column,
-            readings,
-        );
+        self.update_common(readings);
 
-        models::update_services(
-            &readings.running_processes,
-            &readings.services,
-            &imp.system_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
-            ServicesSectionType::SystemServices,
-        );
-
-        models::update_services(
-            &readings.running_processes,
-            &readings.services,
-            &imp.user_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
-            ServicesSectionType::UserServices,
-        );
-
-        let _ = std::mem::replace(
-            &mut *imp.running_apps.borrow_mut(),
-            std::mem::take(&mut readings.running_apps),
-        );
-
-        if let Some(row_sorter) = imp.row_sorter.get() {
+        if let Some(row_sorter) = imp.column_view.imp().row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
         }
 
         if readings.network_stats_error.is_some() {
-            imp.network_usage_column.set_visible(false);
-        }
-
-        self.update_section_labels(&readings.services);
-
-        let selected_item = imp.selected_item.borrow();
-        if selected_item.content_type() == ServicesContentType::Service {
-            if selected_item.icon() == "service-running" {
-                imp.service_stop.set_enabled(true);
-                imp.service_start.set_enabled(false);
-                imp.service_restart.set_enabled(true);
-            } else {
-                imp.service_stop.set_enabled(false);
-                imp.service_start.set_enabled(true);
-                imp.service_restart.set_enabled(false);
-            }
-        } else {
-            imp.service_stop.set_enabled(false);
-            imp.service_start.set_enabled(false);
-            imp.service_restart.set_enabled(false);
+            imp.column_view
+                .get()
+                .imp()
+                .network_usage_column
+                .set_visible(false);
         }
 
         true
@@ -565,9 +362,9 @@ fn select_item(model: &gtk::SelectionModel, id: &str) -> bool {
             .item(i)
             .and_then(|i| i.downcast::<gtk::TreeListRow>().ok())
             .and_then(|row| row.item())
-            .and_then(|obj| obj.downcast::<ServicesRowModel>().ok())
+            .and_then(|obj| obj.downcast::<RowModel>().ok())
         {
-            if item.content_type() != ServicesContentType::SectionHeader && item.id() == id {
+            if item.content_type() != ContentType::SectionHeader && item.id() == id {
                 model.select_item(i, false);
                 return true;
             }
