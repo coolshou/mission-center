@@ -11,7 +11,7 @@ template $ServiceActionBar: Box {
     ]
 
     Button service_start {
-      action-name: "services-page.selected-svc-start";
+      action-name: "win.selected-svc-start";
       tooltip-text: _("Start the selected service");
 
       child: Box {
@@ -30,7 +30,7 @@ template $ServiceActionBar: Box {
     }
 
     Button service_stop {
-      action-name: "services-page.selected-svc-stop";
+      action-name: "win.selected-svc-stop";
       tooltip-text: _("Stop the selected service");
 
       child: Box {
@@ -50,7 +50,7 @@ template $ServiceActionBar: Box {
   }
 
   Button service_restart {
-    action-name: "services-page.selected-svc-restart";
+    action-name: "win.selected-svc-restart";
     tooltip-text: _("Restart the selected service");
 
     child: Box {
@@ -96,17 +96,17 @@ menu service_context_menu_model {
   section {
     item {
       label: _("Start");
-      action: "services-page.selected-svc-start";
+      action: "win.selected-svc-start";
     }
 
     item {
       label: _("Stop");
-      action: "services-page.selected-svc-stop";
+      action: "win.selected-svc-stop";
     }
 
     item {
       label: _("Restart");
-      action: "services-page.selected-svc-restart";
+      action: "win.selected-svc-restart";
     }
   }
 

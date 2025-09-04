@@ -214,15 +214,6 @@ impl ServicesPage {
 
         self.update_common(readings);
 
-        let selected_item = &imp.column_view.imp().selected_item.borrow();
-
-        imp.process_action_bar
-            .imp()
-            .handle_changed_selection(selected_item);
-        imp.service_action_bar
-            .imp()
-            .handle_changed_selection(selected_item);
-
         true
     }
 
@@ -255,6 +246,15 @@ impl ServicesPage {
             &mut *imp.running_apps.borrow_mut(),
             std::mem::take(&mut readings.running_apps),
         );
+
+        let selected_item = &imp.column_view.imp().selected_item.borrow();
+
+        imp.process_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
+        imp.service_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
     }
 
     fn update_section_labels(&self, services: &HashMap<String, Service>) {
