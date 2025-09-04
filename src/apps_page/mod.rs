@@ -60,9 +60,6 @@ mod imp {
         #[template_child]
         pub process_action_bar: TemplateChild<ProcessActionBar>,
 
-        #[property(get, set)]
-        pub show_column_separators: Cell<bool>,
-
         pub apps_section: RowModel,
         pub processes_section: RowModel,
 
@@ -83,8 +80,6 @@ mod imp {
                 collapse_label: TemplateChild::default(),
                 column_view: TemplateChild::default(),
                 process_action_bar: TemplateChild::default(),
-
-                show_column_separators: Cell::new(false),
 
                 apps_section: RowModelBuilder::new()
                     .name(&i18n("Apps"))
@@ -186,13 +181,6 @@ impl AppsPage {
 
         self.update_common(readings);
 
-        let _ = imp
-            .column_view
-            .imp()
-            .column_view
-            .model()
-            .map(|it| it.select_item(0, true));
-
         true
     }
 
@@ -201,7 +189,7 @@ impl AppsPage {
 
         self.update_common(readings);
 
-        if let Some(row_sorter) = imp.row_sorter.get() {
+        if let Some(row_sorter) = imp.column_view.imp().row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
         }
 

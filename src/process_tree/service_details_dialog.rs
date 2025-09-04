@@ -35,7 +35,7 @@ mod imp {
     #[properties(wrapper_type = super::ServiceDetailsDialog)]
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/services_page/service_details_dialog.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/process_column_view/service_details_dialog.ui"
     )]
     pub struct ServiceDetailsDialog {
         #[template_child]
@@ -232,16 +232,16 @@ mod imp {
             let list_item = self.list_item();
 
             self.label_name.set_text(&list_item.name());
-            // self.label_description.set_text(&list_item.description());
-            // let running = if list_item.running() {
-            //     i18n("Running")
-            // } else if list_item.failed() {
-            //     i18n("Failed")
-            // } else {
-            //     i18n("Stopped")
-            // };
-            // self.label_running.set_text(&running);
-            // self.switch_enabled.set_active(list_item.enabled());
+            self.label_description.set_text(&list_item.description());
+            let running = if list_item.service_running() {
+                i18n("Running")
+            } else if list_item.service_failed() {
+                i18n("Failed")
+            } else {
+                i18n("Stopped")
+            };
+            self.label_running.set_text(&running);
+            self.switch_enabled.set_active(list_item.service_enabled());
 
             let mut group_empty = true;
             let pid = list_item.pid();
@@ -252,27 +252,27 @@ mod imp {
                 self.label_pid.set_text(&i18n("N/A"));
             }
 
-            // let user = list_item.user();
-            // if !user.is_empty() {
-            //     group_empty = false;
-            //     self.label_user.set_text(&list_item.user());
-            // } else {
-            //     self.label_user.set_text(&i18n("N/A"));
-            // }
+            let user = list_item.user();
+            if !user.is_empty() {
+                group_empty = false;
+                self.label_user.set_text(&list_item.user());
+            } else {
+                self.label_user.set_text(&i18n("N/A"));
+            }
 
-            // let group = list_item.group();
-            // if !group.is_empty() {
-            //     group_empty = false;
-            //     self.label_group.set_text(&list_item.group());
-            // } else {
-            //     self.label_group.set_text(&i18n("N/A"));
-            // }
+            let group = list_item.group();
+            if !group.is_empty() {
+                group_empty = false;
+                self.label_group.set_text(&list_item.group());
+            } else {
+                self.label_group.set_text(&i18n("N/A"));
+            }
 
-            // if group_empty {
-            //     self.group_process.set_visible(false);
-            // } else {
-            //     self.group_process.set_visible(true);
-            // }
+            if group_empty {
+                self.group_process.set_visible(false);
+            } else {
+                self.group_process.set_visible(true);
+            }
 
             let logs = app!().sys_info().and_then(|sys_info| {
                 Ok(sys_info.service_logs(list_item.name().to_string(), NonZeroU32::new(pid)))
@@ -294,38 +294,38 @@ mod imp {
                 }
             }
 
-            // let notify = list_item.connect_running_notify({
-            //     let this = self.obj().downgrade();
-            //     move |li| {
-            //         if let Some(this) = this.upgrade() {
-            //             let this = this.imp();
-            //             let text = if li.running() {
-            //                 i18n("Running")
-            //             } else if li.failed() {
-            //                 i18n("Failed")
-            //             } else {
-            //                 i18n("Stopped")
-            //             };
-            //             this.label_running.set_text(&text);
-            //         }
-            //     }
-            // });
-            // self.list_item_running_notify.set(from_signal_id(notify));
+            let notify = list_item.connect_service_running_notify({
+                let this = self.obj().downgrade();
+                move |li| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+                        let text = if li.service_running() {
+                            i18n("Running")
+                        } else if li.service_failed() {
+                            i18n("Failed")
+                        } else {
+                            i18n("Stopped")
+                        };
+                        this.label_running.set_text(&text);
+                    }
+                }
+            });
+            self.list_item_running_notify.set(from_signal_id(notify));
 
-            // let notify = list_item.connect_enabled_notify({
-            //     let this = self.obj().downgrade();
-            //     move |li| {
-            //         if let Some(this) = this.upgrade() {
-            //             let this = this.imp();
-            //
-            //             if li.enabled() != this.switch_enabled.is_active() {
-            //                 this.list_item_enabled_user_change.set(false);
-            //                 this.switch_enabled.set_active(this.list_item().enabled());
-            //             }
-            //         }
-            //     }
-            // });
-            // self.list_item_enabled_notify.set(from_signal_id(notify));
+            let notify = list_item.connect_service_running_notify({
+                let this = self.obj().downgrade();
+                move |li| {
+                    if let Some(this) = this.upgrade() {
+                        let this = this.imp();
+
+                        if li.service_enabled() != this.switch_enabled.is_active() {
+                            this.list_item_enabled_user_change.set(false);
+                            this.switch_enabled.set_active(this.list_item().service_enabled());
+                        }
+                    }
+                }
+            });
+            self.list_item_enabled_notify.set(from_signal_id(notify));
         }
     }
 

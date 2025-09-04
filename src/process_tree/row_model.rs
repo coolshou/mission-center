@@ -72,6 +72,13 @@ mod imp {
         #[property(get, set)]
         pub service_stopped: Cell<bool>,
 
+        #[property(get = Self::user, set = Self::set_user)]
+        pub user: Cell<glib::GString>,
+        #[property(get = Self::group, set = Self::set_group)]
+        pub group: Cell<glib::GString>,
+        #[property(get = Self::description, set = Self::set_description)]
+        pub description: Cell<glib::GString>,
+
         #[property(get = Self::command_line, set = Self::set_command_line)]
         pub command_line: Cell<glib::GString>,
 
@@ -104,6 +111,10 @@ mod imp {
                 service_failed: Cell::new(false),
                 service_stopped: Cell::new(false),
 
+                user: Cell::new(Default::default()),
+                group: Cell::new(Default::default()),
+                description: Cell::new(Default::default()),
+                
                 command_line: Cell::new(Default::default()),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
@@ -164,6 +175,60 @@ mod imp {
             }
 
             self.name.set(glib::GString::from(name));
+        }
+
+        pub fn user(&self) -> glib::GString {
+            let user = self.user.take();
+            let result = user.clone();
+            self.user.set(user);
+
+            result
+        }
+
+        pub fn set_user(&self, user: &str) {
+            let current_user = self.user.take();
+            if current_user == user {
+                self.user.set(current_user);
+                return;
+            }
+
+            self.user.set(glib::GString::from(user));
+        }
+
+        pub fn group(&self) -> glib::GString {
+            let group = self.group.take();
+            let result = group.clone();
+            self.group.set(group);
+
+            result
+        }
+
+        pub fn set_group(&self, group: &str) {
+            let current_group = self.group.take();
+            if current_group == group {
+                self.group.set(current_group);
+                return;
+            }
+
+            self.group.set(glib::GString::from(group));
+        }
+
+        pub fn description(&self) -> glib::GString {
+            let description = self.description.take();
+            let result = description.clone();
+            self.description.set(description);
+
+            result
+        }
+
+        pub fn set_description(&self, description: &str) {
+            let current_description = self.description.take();
+            if current_description == description {
+                self.description.set(current_description);
+                return;
+            }
+
+            self.description.set(glib::GString::from(description));
         }
 
         pub fn command_line(&self) -> glib::GString {
@@ -262,6 +327,10 @@ pub struct RowModelBuilder {
     running: bool,
     stopped: bool,
     failed: bool,
+    
+    user: glib::GString,
+    group: glib::GString,
+    description: glib::GString,
 }
 
 #[allow(unused)]
@@ -290,6 +359,10 @@ impl RowModelBuilder {
             running: false,
             stopped: false,
             failed: false,
+            
+            user: Default::default(),
+            group: Default::default(),
+            description: Default::default(),
         }
     }
 
@@ -378,6 +451,21 @@ impl RowModelBuilder {
         self
     }
 
+    pub fn user(mut self, user: &str) -> Self {
+        self.user = user.into();
+        self
+    }
+
+    pub fn group(mut self, group: &str) -> Self {
+        self.group = group.into();
+        self
+    }
+
+    pub fn description(mut self, description: &str) -> Self {
+        self.description = description.into();
+        self
+    }
+
     pub fn build(self) -> RowModel {
         let this = RowModel::new(self.content_type);
 
@@ -403,6 +491,10 @@ impl RowModelBuilder {
             this.service_running.set(self.running);
             this.service_stopped.set(self.stopped);
             this.service_failed.set(self.failed);
+
+            this.user.set(self.user);
+            this.group.set(self.group);
+            this.description.set(self.description);
         }
 
         this

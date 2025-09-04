@@ -12,6 +12,7 @@ mod imp {
     use crate::app;
     use crate::process_tree::service_details_dialog::ServiceDetailsDialog;
     use adw::glib::{g_critical, VariantTy};
+    use crate::process_tree::process_details_dialog::ProcessDetailsDialog;
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::ServiceActionBar)]
@@ -173,20 +174,18 @@ mod imp {
             self.service_details.connect_activate({
                 let this = this.downgrade();
                 move |_action, _| {
-                    // todo reimplement this
-                    /*                    let Some(this) = this.upgrade() else {
+                    let Some(this) = this.upgrade() else {
                         return;
                     };
                     let imp = this.imp();
 
                     let selected_item = imp.selected_item.borrow();
-                    if selected_item.content_type() != ContentType::Service {
-                        return;
-                    }
 
-                    if let Ok(magpie_client) = app!().sys_info() {
-                        magpie_client.restart_service(selected_item.name().to_string());
-                    }*/
+                    if selected_item.content_type() == ContentType::Service
+                    {
+                        ServiceDetailsDialog::new(imp.selected_item.borrow().clone())
+                            .present(Some(&this));
+                    };
                 }
             });
             actions.add_action(&self.service_details);

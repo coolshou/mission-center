@@ -54,6 +54,9 @@ pub(crate) mod imp {
         pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
 
         pub use_merged_stats: Cell<bool>,
+
+        #[property(get, set)]
+        pub show_column_separators: Cell<bool>,
     }
 
     impl Default for ColumnViewFrame {
@@ -74,6 +77,8 @@ pub(crate) mod imp {
                 row_sorter: OnceCell::new(),
 
                 use_merged_stats: Cell::new(false),
+
+                show_column_separators: Cell::new(false),
             }
         }
     }
@@ -154,8 +159,6 @@ pub(crate) mod imp {
             self.gpu_memory_column
                 .set_sorter(Some(&gpu_memory_sorter(&self.column_view)));
 
-            configure_column_frame(self);
-
             let column_view_title = self.column_view.first_child();
             adjust_view_header_alignment(column_view_title);
         }
@@ -191,13 +194,19 @@ pub(crate) mod imp {
 
             let _ = self.row_sorter.set(row_sorter);
 
+            selection_model.set_selected(0);
+
             if let Some(process_action_bar) = process_action_bar {
                 process_action_bar.imp().configure(self);
+                process_action_bar.imp().handle_changed_selection(&self.selected_item.borrow());
             }
 
             if let Some(service_action_bar) = service_action_bar {
                 service_action_bar.imp().configure(self);
+                service_action_bar.imp().handle_changed_selection(&self.selected_item.borrow());
             }
+
+            configure_column_frame(self);
         }
 
         fn create_tree_model(model: impl IsA<gio::ListModel>) -> gtk::TreeListModel {

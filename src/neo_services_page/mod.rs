@@ -72,18 +72,12 @@ pub(crate) mod imp {
         #[template_child]
         pub service_action_bar: TemplateChild<ServiceActionBar>,
 
-        #[property(get, set)]
-        pub show_column_separators: Cell<bool>,
-
         pub user_section: RowModel,
         pub system_section: RowModel,
 
         pub running_apps: RefCell<HashMap<String, App>>,
 
-        pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
-
         pub app_icons: RefCell<HashMap<u32, String>>,
-        pub selected_item: RefCell<RowModel>,
 
         pub use_merged_stats: Cell<bool>,
     }
@@ -105,8 +99,6 @@ pub(crate) mod imp {
                 process_action_bar: Default::default(),
                 service_action_bar: Default::default(),
 
-                show_column_separators: Cell::new(false),
-
                 user_section: RowModelBuilder::new()
                     .name(&i18n("User Services"))
                     .content_type(ContentType::SectionHeader)
@@ -120,10 +112,7 @@ pub(crate) mod imp {
 
                 running_apps: RefCell::new(HashMap::new()),
 
-                row_sorter: OnceCell::new(),
-
                 app_icons: RefCell::new(HashMap::new()),
-                selected_item: RefCell::new(RowModelBuilder::new().build()),
 
                 use_merged_stats: Cell::new(false),
             }
@@ -208,16 +197,38 @@ impl ServicesPage {
             Some(&imp.service_legend),
         );
 
-        /*        update_column_titles(
-                    &imp.cpu_column,
-                    &imp.memory_column,
-                    &imp.drive_column,
-                    &imp.network_usage_column,
-                    &imp.gpu_usage_column,
-                    &imp.gpu_memory_column,
-                    readings,
-                );
-        */
+        // Select the first item in the list
+        // selection_model.set_selected(0);
+
+        /*        let selected = self.imp().column_view.imp().column_view.selected();
+        if selected != INVALID_LIST_POSITION {
+            let selected_item = self.imp().column_view.imp().column_view
+                .selected_item()
+                .and_then(|i| i.downcast_ref::<RowModel>().cloned());
+
+            if let Some(selected_item) = selected_item.as_ref() {
+                imp.process_action_bar.imp().handle_changed_selection(selected_item);
+                imp.service_action_bar.imp().handle_changed_selection(selected_item);
+            }
+        }*/
+
+        self.update_common(readings);
+
+        let selected_item = &imp.column_view.imp().selected_item.borrow();
+
+        imp.process_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
+        imp.service_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
+
+        true
+    }
+
+    fn update_common(&self, readings: &mut crate::magpie_client::Readings) {
+        let imp = self.imp();
+
         models::update_services(
             &readings.running_processes,
             &readings.services,
@@ -238,33 +249,12 @@ impl ServicesPage {
             SectionType::FirstSection,
         );
 
-        // Select the first item in the list
-        // selection_model.set_selected(0);
-
-        /*        let selected = self.imp().column_view.imp().column_view.selected();
-        if selected != INVALID_LIST_POSITION {
-            let selected_item = self.imp().column_view.imp().column_view
-                .selected_item()
-                .and_then(|i| i.downcast_ref::<RowModel>().cloned());
-
-            if let Some(selected_item) = selected_item.as_ref() {
-                imp.process_action_bar.imp().handle_changed_selection(selected_item);
-                imp.service_action_bar.imp().handle_changed_selection(selected_item);
-            }
-        }*/
-
         self.update_section_labels(&readings.services);
 
-        let selected_item = &imp.selected_item.borrow();
-
-        imp.process_action_bar
-            .imp()
-            .handle_changed_selection(selected_item);
-        imp.service_action_bar
-            .imp()
-            .handle_changed_selection(selected_item);
-
-        true
+        let _ = std::mem::replace(
+            &mut *imp.running_apps.borrow_mut(),
+            std::mem::take(&mut readings.running_apps),
+        );
     }
 
     fn update_section_labels(&self, services: &HashMap<String, Service>) {
@@ -325,42 +315,9 @@ impl ServicesPage {
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
-        /*        update_column_titles(
-                    &imp.cpu_column,
-                    &imp.memory_column,
-                    &imp.drive_column,
-                    &imp.network_usage_column,
-                    &imp.gpu_usage_column,
-                    &imp.gpu_memory_column,
-                    readings,
-                );
-        */
-        models::update_services(
-            &readings.running_processes,
-            &readings.services,
-            &imp.system_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            imp.column_view.imp().use_merged_stats.get(),
-            SectionType::SecondSection,
-        );
+        self.update_common(readings);
 
-        models::update_services(
-            &readings.running_processes,
-            &readings.services,
-            &imp.user_section.children(),
-            &imp.app_icons.borrow(),
-            "application-x-executable-symbolic",
-            imp.column_view.imp().use_merged_stats.get(),
-            SectionType::FirstSection,
-        );
-
-        let _ = std::mem::replace(
-            &mut *imp.running_apps.borrow_mut(),
-            std::mem::take(&mut readings.running_apps),
-        );
-
-        if let Some(row_sorter) = imp.row_sorter.get() {
+        if let Some(row_sorter) = imp.column_view.imp().row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)
         }
 
@@ -371,8 +328,6 @@ impl ServicesPage {
                 .network_usage_column
                 .set_visible(false);
         }
-
-        self.update_section_labels(&readings.services);
 
         true
     }
