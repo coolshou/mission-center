@@ -6,24 +6,22 @@ use adw::prelude::*;
 use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::process_tree::columns::*;
-use crate::process_tree::row_model::{
-    ContentType, RowModel,
-};
+use crate::process_tree::row_model::{ContentType, RowModel};
 
 pub(crate) mod imp {
-    use std::cell::OnceCell;
     use super::*;
-    use crate::{app, settings, DataType};
+    use crate::i18n::i18n;
     use crate::process_tree::process_action_bar::ProcessActionBar;
+    use crate::process_tree::row_model::RowModelBuilder;
+    use crate::process_tree::service_action_bar::ServiceActionBar;
+    use crate::process_tree::settings::configure_column_frame;
+    use crate::{app, settings, DataType};
     use adw::glib::g_critical;
     use adw::ToggleGroup;
     use arrayvec::ArrayString;
     use gtk::glib::WeakRef;
+    use std::cell::{Cell, OnceCell};
     use textdistance::{Algorithm, Levenshtein};
-    use crate::i18n::i18n;
-    use crate::neo_services_page::ServicesPage;
-    use crate::process_tree::row_model::RowModelBuilder;
-    use crate::process_tree::service_action_bar::ServiceActionBar;
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::ColumnViewFrame)]
@@ -54,6 +52,8 @@ pub(crate) mod imp {
 
         pub selected_item: RefCell<RowModel>,
         pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
+
+        pub use_merged_stats: Cell<bool>,
     }
 
     impl Default for ColumnViewFrame {
@@ -72,6 +72,8 @@ pub(crate) mod imp {
 
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
                 row_sorter: OnceCell::new(),
+
+                use_merged_stats: Cell::new(false),
             }
         }
     }
@@ -152,6 +154,8 @@ pub(crate) mod imp {
             self.gpu_memory_column
                 .set_sorter(Some(&gpu_memory_sorter(&self.column_view)));
 
+            configure_column_frame(self);
+
             let column_view_title = self.column_view.first_child();
             adjust_view_header_alignment(column_view_title);
         }
@@ -166,19 +170,34 @@ pub(crate) mod imp {
     impl BoxImpl for ColumnViewFrame {}
 
     impl ColumnViewFrame {
-        pub fn setup(&self, section_item_1: &RowModel, section_item_2: &RowModel, process_action_bar: Option<&ProcessActionBar>, service_action_bar: Option<&ServiceActionBar>, service_toggle_group: Option<&ToggleGroup>) {
+        pub fn setup(
+            &self,
+            section_item_1: &RowModel,
+            section_item_2: &RowModel,
+            process_action_bar: Option<&ProcessActionBar>,
+            service_action_bar: Option<&ServiceActionBar>,
+            service_toggle_group: Option<&ToggleGroup>,
+        ) {
             let model = gio::ListStore::new::<RowModel>();
             model.append(section_item_1);
             model.append(section_item_2);
 
             let tree_model = Self::create_tree_model(model);
             let filter_list_model = self.configure_filter(tree_model, service_toggle_group);
-            let (sort_list_model, row_sorter) =
-                self.setup_filter_model(filter_list_model);
-            let selection_model = self.setup_selection_model(sort_list_model, process_action_bar, service_action_bar);
+            let (sort_list_model, row_sorter) = self.setup_filter_model(filter_list_model);
+            let selection_model =
+                self.setup_selection_model(sort_list_model, process_action_bar, service_action_bar);
             self.column_view.set_model(Some(&selection_model));
 
             let _ = self.row_sorter.set(row_sorter);
+
+            if let Some(process_action_bar) = process_action_bar {
+                process_action_bar.imp().configure(self);
+            }
+
+            if let Some(service_action_bar) = service_action_bar {
+                service_action_bar.imp().configure(self);
+            }
         }
 
         fn create_tree_model(model: impl IsA<gio::ListModel>) -> gtk::TreeListModel {
@@ -190,7 +209,11 @@ pub(crate) mod imp {
             })
         }
 
-        fn configure_filter(&self, tree_list_model: impl IsA<gio::ListModel>, group: Option<&ToggleGroup>) -> gtk::FilterListModel {
+        fn configure_filter(
+            &self,
+            tree_list_model: impl IsA<gio::ListModel>,
+            group: Option<&ToggleGroup>,
+        ) -> gtk::FilterListModel {
             let Some(window) = app!().window() else {
                 g_critical!(
             "MissionCenter::ServicesPage",
@@ -289,14 +312,16 @@ pub(crate) mod imp {
                 }
             });
 
-            group.map(|it| it.connect_active_notify({
-                let filter = filter.downgrade();
-                move |_| {
-                    if let Some(filter) = filter.upgrade() {
-                        filter.changed(gtk::FilterChange::Different);
+            group.map(|it| {
+                it.connect_active_notify({
+                    let filter = filter.downgrade();
+                    move |_| {
+                        if let Some(filter) = filter.upgrade() {
+                            filter.changed(gtk::FilterChange::Different);
+                        }
                     }
-                }
-            }));
+                })
+            });
 
             gtk::FilterListModel::new(Some(tree_list_model), Some(filter))
         }
@@ -323,8 +348,8 @@ pub(crate) mod imp {
                         let Some(sorted_column_id) = sorted_column.id() else {
                             return;
                         };
-                        let _ =
-                            settings.set_string("apps-page-sorting-column-name", sorted_column_id.as_str());
+                        let _ = settings
+                            .set_string("apps-page-sorting-column-name", sorted_column_id.as_str());
 
                         let sort_order = sorter.primary_sort_order();
                         let _ = settings.set_enum(
@@ -378,12 +403,20 @@ pub(crate) mod imp {
                         return;
                     };
 
-                    if let Some(process_action_bar) = process_action_bar_weak.as_ref().and_then(|it| it.upgrade()) {
-                        process_action_bar.imp().handle_changed_selection(&row_model);
+                    if let Some(process_action_bar) =
+                        process_action_bar_weak.as_ref().and_then(|it| it.upgrade())
+                    {
+                        process_action_bar
+                            .imp()
+                            .handle_changed_selection(&row_model);
                     }
 
-                    if let Some(service_action_bar) = service_action_bar_weak.as_ref().and_then(|it| it.upgrade()) {
-                        service_action_bar.imp().handle_changed_selection(&row_model);
+                    if let Some(service_action_bar) =
+                        service_action_bar_weak.as_ref().and_then(|it| it.upgrade())
+                    {
+                        service_action_bar
+                            .imp()
+                            .handle_changed_selection(&row_model);
                     }
 
                     imp.selected_item.replace(row_model);
@@ -393,10 +426,7 @@ pub(crate) mod imp {
             selection_model
         }
 
-        pub fn update_column_titles(
-            &self,
-            readings: &crate::magpie_client::Readings,
-        ) {
+        pub fn update_column_titles(&self, readings: &crate::magpie_client::Readings) {
             let mut buffer = ArrayString::<128>::new();
 
             let cpu_usage = readings.cpu.total_usage_percent.round() as u32;
@@ -447,8 +477,11 @@ pub(crate) mod imp {
                     sum += proc.usage_stats.network_usage.round();
                 }
 
-                let label =
-                    crate::to_human_readable_nice(sum, &DataType::NetworkBytesPerSecond, &settings!());
+                let label = crate::to_human_readable_nice(
+                    sum,
+                    &DataType::NetworkBytesPerSecond,
+                    &settings!(),
+                );
 
                 let _ = write!(&mut buffer, "{}\n{}", i18n("Network"), label);
             }

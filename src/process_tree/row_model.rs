@@ -62,7 +62,7 @@ mod imp {
         pub gpu_usage: Cell<f32>,
         #[property(get, set)]
         pub gpu_memory_usage: Cell<u64>,
-        
+
         #[property(get, set)]
         pub service_enabled: Cell<bool>,
         #[property(get, set)]
@@ -103,7 +103,7 @@ mod imp {
                 service_running: Cell::new(false),
                 service_failed: Cell::new(false),
                 service_stopped: Cell::new(false),
-                
+
                 command_line: Cell::new(Default::default()),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
@@ -256,9 +256,8 @@ pub struct RowModelBuilder {
     network_usage: f32,
     gpu_usage: f32,
     gpu_mem_usage: u64,
-    
+
     // service related
-    
     enabled: bool,
     running: bool,
     stopped: bool,
@@ -286,7 +285,7 @@ impl RowModelBuilder {
             network_usage: 0.,
             gpu_usage: 0.,
             gpu_mem_usage: 0,
-            
+
             enabled: false,
             running: false,
             stopped: false,
@@ -399,7 +398,7 @@ impl RowModelBuilder {
             this.network_usage.set(self.network_usage);
             this.gpu_usage.set(self.gpu_usage);
             this.gpu_memory_usage.set(self.gpu_mem_usage);
-            
+
             this.service_enabled.set(self.enabled);
             this.service_running.set(self.running);
             this.service_stopped.set(self.stopped);

@@ -34,7 +34,7 @@ mod imp {
 
     #[derive(gtk::CompositeTemplate)]
     #[template(
-        resource = "/io/missioncenter/MissionCenter/ui/services_page/process_details_dialog.ui"
+        resource = "/io/missioncenter/MissionCenter/ui/process_column_view/process_details_dialog.ui"
     )]
     pub struct ProcessDetailsDialog {
         #[template_child]

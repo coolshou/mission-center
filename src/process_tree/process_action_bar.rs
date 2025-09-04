@@ -1,7 +1,7 @@
 use std::fmt::Write;
 
-use adw::glib::{gobject_ffi, Object, ParamSpec, Properties, Value};
 use adw::glib::translate::from_glib_full;
+use adw::glib::{gobject_ffi, Object, ParamSpec, Properties, Value};
 use adw::prelude::*;
 use gtk::{gio, glib, subclass::prelude::*};
 
@@ -37,8 +37,8 @@ mod imp {
     use crate::app;
     use crate::process_tree::process_details_dialog::ProcessDetailsDialog;
     use crate::process_tree::service_details_dialog::ServiceDetailsDialog;
-    use adw::glib::{g_critical, VariantTy};
     use crate::process_tree::util::calculate_anchor_point;
+    use adw::glib::{g_critical, VariantTy};
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::ProcessActionBar)]
@@ -75,7 +75,7 @@ mod imp {
                 details_label: Default::default(),
 
                 context_menu: Default::default(),
-                
+
                 action_stop: gio::SimpleAction::new("stop", None),
                 action_force_stop: gio::SimpleAction::new("force-stop", None),
                 action_suspend: gio::SimpleAction::new("suspend", None),
@@ -131,11 +131,14 @@ mod imp {
     impl BoxImpl for ProcessActionBar {}
 
     impl ProcessActionBar {
-        pub fn configure(&self, imp: &crate::process_tree::column_view_frame::imp::ColumnViewFrame) {
+        pub fn configure(
+            &self,
+            imp: &crate::process_tree::column_view_frame::imp::ColumnViewFrame,
+        ) {
             let this = imp.obj();
 
             let actions = gio::SimpleActionGroup::new();
-            this.insert_action_group("apps-page", Some(&actions));
+            self.obj().insert_action_group("apps-page", Some(&actions));
 
             let action = gio::SimpleAction::new("show-context-menu", Some(VariantTy::TUPLE));
             action.connect_activate({
@@ -169,14 +172,8 @@ mod imp {
                         return;
                     };
 
-                    let anchor_widget =
-                        upgrade_weak_ptr(anchor_widget as _);
-                    let (anchor, show_arrow) = calculate_anchor_point(
-                        &this,
-                        &anchor_widget,
-                        x,
-                        y,
-                    );
+                    let anchor_widget = upgrade_weak_ptr(anchor_widget as _);
+                    let (anchor, show_arrow) = calculate_anchor_point(&this, &anchor_widget, x, y);
 
                     if select_item(&model, &id) {
                         match imp.selected_item.borrow().content_type() {
@@ -213,7 +210,9 @@ mod imp {
 
                     let selected_item = imp.selected_item.borrow();
 
-                    if selected_item.content_type() == ContentType::Process {
+                    if selected_item.content_type() == ContentType::Process
+                        || selected_item.content_type() == ContentType::App
+                    {
                         ProcessDetailsDialog::new(imp.selected_item.borrow().clone())
                             .present(Some(&this));
                     };
@@ -223,7 +222,6 @@ mod imp {
         }
 
         pub fn handle_changed_selection(&self, row_model: &RowModel) {
-            println!("Updating process bar {:?}", row_model.content_type());
             match row_model.content_type() {
                 ContentType::Process | ContentType::App => {
                     self.toggle_actions_enabled(true);
@@ -241,7 +239,6 @@ mod imp {
         }
 
         fn toggle_actions_enabled(&self, enabled: bool) {
-            println!("Togglear {}", enabled);
             self.action_stop.set_enabled(enabled);
             self.action_force_stop.set_enabled(enabled);
             self.action_suspend.set_enabled(enabled);

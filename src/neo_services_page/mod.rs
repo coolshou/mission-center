@@ -28,24 +28,19 @@ use adw::prelude::*;
 use glib::translate::from_glib_full;
 use glib::{gobject_ffi, Object};
 use gtk::Orientation::Horizontal;
-use gtk::{gio, glib, subclass::prelude::*, INVALID_LIST_POSITION};
+use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::i18n::{i18n, i18n_f};
-use crate::process_tree::columns::*;
-use magpie_types::services::Service;
-use crate::process_tree::row_model::{
-    ContentType, RowModel, RowModelBuilder, SectionType,
-};
 use crate::process_tree::models;
+use crate::process_tree::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
+use magpie_types::services::Service;
 
-mod settings;
-
-mod imp {
+pub(crate) mod imp {
     use super::*;
-    use gtk::Orientation::{Horizontal, Vertical};
     use crate::process_tree::column_view_frame::ColumnViewFrame;
     use crate::process_tree::process_action_bar::ProcessActionBar;
     use crate::process_tree::service_action_bar::ServiceActionBar;
+    use gtk::Orientation::{Horizontal, Vertical};
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::ServicesPage)]
@@ -181,10 +176,6 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
-
-            // Make sure to do this after the columns are set up otherwise restoring sorting
-            // won't work
-            settings::configure(self);
         }
     }
 
@@ -209,25 +200,31 @@ impl ServicesPage {
 
         // Set up the models here since we need access to the main application window
         // which is not yet available in the constructor.
-        imp.column_view.imp().setup(&imp.user_section, &imp.system_section, Some(&imp.process_action_bar), Some(&imp.service_action_bar), Some(&imp.service_legend));
-
-/*        update_column_titles(
-            &imp.cpu_column,
-            &imp.memory_column,
-            &imp.drive_column,
-            &imp.network_usage_column,
-            &imp.gpu_usage_column,
-            &imp.gpu_memory_column,
-            readings,
+        imp.column_view.imp().setup(
+            &imp.user_section,
+            &imp.system_section,
+            Some(&imp.process_action_bar),
+            Some(&imp.service_action_bar),
+            Some(&imp.service_legend),
         );
-*/
+
+        /*        update_column_titles(
+                    &imp.cpu_column,
+                    &imp.memory_column,
+                    &imp.drive_column,
+                    &imp.network_usage_column,
+                    &imp.gpu_usage_column,
+                    &imp.gpu_memory_column,
+                    readings,
+                );
+        */
         models::update_services(
             &readings.running_processes,
             &readings.services,
             &imp.system_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
+            imp.column_view.imp().use_merged_stats.get(),
             SectionType::SecondSection,
         );
 
@@ -237,14 +234,14 @@ impl ServicesPage {
             &imp.user_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
+            imp.column_view.imp().use_merged_stats.get(),
             SectionType::FirstSection,
         );
 
         // Select the first item in the list
         // selection_model.set_selected(0);
 
-/*        let selected = self.imp().column_view.imp().column_view.selected();
+        /*        let selected = self.imp().column_view.imp().column_view.selected();
         if selected != INVALID_LIST_POSITION {
             let selected_item = self.imp().column_view.imp().column_view
                 .selected_item()
@@ -260,8 +257,12 @@ impl ServicesPage {
 
         let selected_item = &imp.selected_item.borrow();
 
-        imp.process_action_bar.imp().handle_changed_selection(selected_item);
-        imp.service_action_bar.imp().handle_changed_selection(selected_item);
+        imp.process_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
+        imp.service_action_bar
+            .imp()
+            .handle_changed_selection(selected_item);
 
         true
     }
@@ -324,23 +325,23 @@ impl ServicesPage {
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
-/*        update_column_titles(
-            &imp.cpu_column,
-            &imp.memory_column,
-            &imp.drive_column,
-            &imp.network_usage_column,
-            &imp.gpu_usage_column,
-            &imp.gpu_memory_column,
-            readings,
-        );
-*/
+        /*        update_column_titles(
+                    &imp.cpu_column,
+                    &imp.memory_column,
+                    &imp.drive_column,
+                    &imp.network_usage_column,
+                    &imp.gpu_usage_column,
+                    &imp.gpu_memory_column,
+                    readings,
+                );
+        */
         models::update_services(
             &readings.running_processes,
             &readings.services,
             &imp.system_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
+            imp.column_view.imp().use_merged_stats.get(),
             SectionType::SecondSection,
         );
 
@@ -350,7 +351,7 @@ impl ServicesPage {
             &imp.user_section.children(),
             &imp.app_icons.borrow(),
             "application-x-executable-symbolic",
-            imp.use_merged_stats.get(),
+            imp.column_view.imp().use_merged_stats.get(),
             SectionType::FirstSection,
         );
 
@@ -364,7 +365,11 @@ impl ServicesPage {
         }
 
         if readings.network_stats_error.is_some() {
-            imp.column_view.get().imp().network_usage_column.set_visible(false);
+            imp.column_view
+                .get()
+                .imp()
+                .network_usage_column
+                .set_visible(false);
         }
 
         self.update_section_labels(&readings.services);

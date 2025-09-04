@@ -22,10 +22,7 @@ use gtk::gio;
 
 use crate::process_tree::row_model::RowModel;
 
-pub fn model(
-    apps_section: &RowModel,
-    processes_section: &RowModel,
-) -> gio::ListStore {
+pub fn model(apps_section: &RowModel, processes_section: &RowModel) -> gio::ListStore {
     let model = gio::ListStore::new::<RowModel>();
     model.append(apps_section);
     model.append(processes_section);

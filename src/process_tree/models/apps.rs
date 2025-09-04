@@ -28,9 +28,7 @@ use magpie_types::apps::icon::Icon;
 use magpie_types::apps::App;
 use magpie_types::processes::{Process, ProcessUsageStats};
 
-use crate::process_tree::row_model::{
-    ContentType, RowModel, RowModelBuilder, SectionType,
-};
+use crate::process_tree::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
 pub fn update(
     app_map: &HashMap<String, App>,
@@ -43,10 +41,7 @@ pub fn update(
 
     let mut to_remove = Vec::with_capacity(list.n_items() as _);
     for i in (0..list.n_items()).rev() {
-        let Some(app) = list
-            .item(i)
-            .and_then(|obj| obj.downcast::<RowModel>().ok())
-        else {
+        let Some(app) = list.item(i).and_then(|obj| obj.downcast::<RowModel>().ok()) else {
             to_remove.push(i);
             continue;
         };

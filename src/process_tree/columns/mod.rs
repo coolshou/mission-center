@@ -24,9 +24,7 @@ use std::cmp::Ordering;
 use std::fmt::Write;
 
 use crate::i18n::i18n;
-use crate::process_tree::row_model::{
-    ContentType, RowModel, SectionType,
-};
+use crate::process_tree::row_model::{ContentType, RowModel, SectionType};
 
 pub use cpu::label_formatter as cpu_label_formatter;
 pub use cpu::list_item_factory as cpu_list_item_factory;
@@ -285,4 +283,3 @@ fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {
         .and_then(|sorter| Some(sorter.primary_sort_order()))
         .unwrap_or(gtk::SortType::Ascending)
 }
-

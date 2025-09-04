@@ -1,11 +1,12 @@
 use crate::neo_services_page::imp::ServicesPage;
+use crate::process_tree::column_view_frame::imp::ColumnViewFrame;
 use crate::settings;
 use glib::g_critical;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 
-pub fn configure(imp: &ServicesPage) {
+pub fn configure_column_frame(imp: &ColumnViewFrame) {
     let neo_services_page = imp.obj();
 
     let settings = settings!();
@@ -31,7 +32,7 @@ pub fn configure(imp: &ServicesPage) {
         }
     });
 
-    configure_sorting(&imp.column_view.imp().column_view, &settings);
+    configure_sorting(&imp.column_view, &settings!());
 }
 
 fn configure_sorting(column_view: &gtk::ColumnView, settings: &gio::Settings) {

@@ -18,18 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use crate::process_tree::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 use gtk::gio;
+use gtk::glib::g_critical;
 use gtk::prelude::*;
+use magpie_types::apps::icon::Icon;
+use magpie_types::apps::App;
+use magpie_types::processes::{Process, ProcessUsageStats};
+use magpie_types::services::Service;
 use std::collections::{HashMap, HashSet};
 use std::env;
-use gtk::glib::g_critical;
-use magpie_types::apps::App;
-use crate::process_tree::row_model::{
-    ContentType, RowModel, RowModelBuilder, SectionType,
-};
-use magpie_types::processes::{Process, ProcessUsageStats};
-use magpie_types::apps::icon::Icon;
-use magpie_types::services::Service;
 
 fn service_to_section_type(service: &Service) -> SectionType {
     if let Some(user) = service.user.as_ref() {
@@ -74,10 +72,7 @@ pub fn update_services(
 ) {
     let mut to_remove = Vec::with_capacity(list.n_items() as _);
     for i in (0..list.n_items()).rev() {
-        let Some(service) = list
-            .item(i)
-            .and_then(|obj| obj.downcast::<RowModel>().ok())
-        else {
+        let Some(service) = list.item(i).and_then(|obj| obj.downcast::<RowModel>().ok()) else {
             to_remove.push(i);
             continue;
         };

@@ -32,17 +32,17 @@ use gtk::{gio, glib, subclass::prelude::*};
 use crate::magpie_client::App;
 
 use crate::i18n::{i18n, ni18n_f};
-use crate::process_tree::models::{base_model, filter_list_model, sort_list_model, tree_list_model, update_apps, update_processes};
+use crate::process_tree::models::{
+    base_model, filter_list_model, sort_list_model, tree_list_model, update_apps, update_processes,
+};
 use crate::process_tree::row_model::{ContentType, RowModel};
 
-mod settings;
-
 mod imp {
+    use super::*;
     use crate::process_tree::column_view_frame::ColumnViewFrame;
     use crate::process_tree::columns::adjust_view_header_alignment;
     use crate::process_tree::process_action_bar::ProcessActionBar;
     use crate::process_tree::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
-    use super::*;
 
     #[derive(Properties, gtk::CompositeTemplate)]
     #[properties(wrapper_type = super::AppsPage)]
@@ -73,8 +73,6 @@ mod imp {
 
         pub app_icons: RefCell<HashMap<u32, String>>,
         pub selected_item: RefCell<RowModel>,
-
-        pub use_merged_stats: Cell<bool>,
     }
 
     impl Default for AppsPage {
@@ -106,8 +104,6 @@ mod imp {
 
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
-
-                use_merged_stats: Cell::new(false),
             }
         }
     }
@@ -158,10 +154,6 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
-
-            // Make sure to do this after the columns are set up otherwise restoring sorting
-            // won't work
-            settings::configure(self);
         }
     }
 
@@ -184,11 +176,22 @@ impl AppsPage {
     pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
-        imp.column_view.imp().setup(&imp.apps_section, &imp.processes_section, Some(&imp.process_action_bar), None, None);
+        imp.column_view.imp().setup(
+            &imp.apps_section,
+            &imp.processes_section,
+            Some(&imp.process_action_bar),
+            None,
+            None,
+        );
 
         self.update_common(readings);
 
-        let _ = imp.column_view.imp().column_view.model().map(|it| it.select_item(0, true));
+        let _ = imp
+            .column_view
+            .imp()
+            .column_view
+            .model()
+            .map(|it| it.select_item(0, true));
 
         true
     }
@@ -203,7 +206,11 @@ impl AppsPage {
         }
 
         if readings.network_stats_error.is_some() {
-            imp.column_view.get().imp().network_usage_column.set_visible(false);
+            imp.column_view
+                .get()
+                .imp()
+                .network_usage_column
+                .set_visible(false);
         }
 
         true
@@ -244,7 +251,7 @@ impl AppsPage {
                     &imp.processes_section.children(),
                     &imp.app_icons.borrow(),
                     "application-x-executable-symbolic",
-                    imp.use_merged_stats.get(),
+                    imp.column_view.imp().use_merged_stats.get(),
                     &mut process_model_map,
                 );
             }

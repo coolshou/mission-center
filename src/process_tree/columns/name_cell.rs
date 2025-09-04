@@ -91,12 +91,7 @@ mod imp {
     }
 
     impl ServicesNameCell {
-        pub fn bind(
-            &self,
-            model: &RowModel,
-            list_cell: &ListCell,
-            expander: &gtk::TreeExpander,
-        ) {
+        pub fn bind(&self, model: &RowModel, list_cell: &ListCell, expander: &gtk::TreeExpander) {
             let this = self.obj().downgrade();
 
             self.model.set(model.downgrade());
@@ -359,12 +354,7 @@ impl ServicesNameCell {
         glib::Object::builder().build()
     }
 
-    pub fn bind(
-        &self,
-        model: &RowModel,
-        list_cell: &ListCell,
-        expander: &gtk::TreeExpander,
-    ) {
+    pub fn bind(&self, model: &RowModel, list_cell: &ListCell, expander: &gtk::TreeExpander) {
         self.imp().bind(model, list_cell, expander);
     }
 

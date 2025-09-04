@@ -1,7 +1,7 @@
 use std::fmt::Write;
 
-use adw::glib::{gobject_ffi, Object, ParamSpec, Properties, Value};
 use adw::glib::translate::from_glib_full;
+use adw::glib::{gobject_ffi, Object, ParamSpec, Properties, Value};
 use adw::prelude::*;
 use gtk::{gio, glib, subclass::prelude::*};
 
@@ -34,6 +34,7 @@ mod imp {
         pub service_start: gio::SimpleAction,
         pub service_stop: gio::SimpleAction,
         pub service_restart: gio::SimpleAction,
+        pub service_details: gio::SimpleAction,
     }
 
     impl Default for ServiceActionBar {
@@ -44,10 +45,11 @@ mod imp {
                 service_restart_label: Default::default(),
                 service_details_label: Default::default(),
                 service_context_menu: Default::default(),
-                
+
                 service_start: gio::SimpleAction::new("selected-svc-start", None),
                 service_stop: gio::SimpleAction::new("selected-svc-stop", None),
                 service_restart: gio::SimpleAction::new("selected-svc-restart", None),
+                service_details: gio::SimpleAction::new("details", None),
             }
         }
     }
@@ -94,11 +96,15 @@ mod imp {
     impl BoxImpl for ServiceActionBar {}
 
     impl ServiceActionBar {
-        pub fn configure(&self, imp: &crate::process_tree::column_view_frame::imp::ColumnViewFrame) {
+        pub fn configure(
+            &self,
+            imp: &crate::process_tree::column_view_frame::imp::ColumnViewFrame,
+        ) {
             let this = imp.obj();
-            
+
             let actions = gio::SimpleActionGroup::new();
-            this.insert_action_group("services-page", Some(&actions));
+            self.obj()
+                .insert_action_group("services-page", Some(&actions));
 
             self.service_start.set_enabled(false);
             self.service_start.connect_activate({
@@ -162,10 +168,31 @@ mod imp {
                 }
             });
             actions.add_action(&self.service_restart);
+
+            self.service_details.set_enabled(false);
+            self.service_details.connect_activate({
+                let this = this.downgrade();
+                move |_action, _| {
+                    // todo reimplement this
+                    /*                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    let selected_item = imp.selected_item.borrow();
+                    if selected_item.content_type() != ContentType::Service {
+                        return;
+                    }
+
+                    if let Ok(magpie_client) = app!().sys_info() {
+                        magpie_client.restart_service(selected_item.name().to_string());
+                    }*/
+                }
+            });
+            actions.add_action(&self.service_details);
         }
 
         pub fn handle_changed_selection(&self, row_model: &RowModel) {
-            println!("Updating service bar");
             match row_model.content_type() {
                 ContentType::Service => {
                     self.obj().set_visible(true);
@@ -178,9 +205,12 @@ mod imp {
                         self.service_start.set_enabled(true);
                         self.service_restart.set_enabled(false);
                     }
+
+                    self.service_details.set_enabled(true);
                 }
                 _ => {
                     self.obj().set_visible(false);
+                    self.service_details.set_enabled(false);
                 }
             }
         }
